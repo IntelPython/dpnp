@@ -15,12 +15,8 @@ DPNP_QUEUE_GPU=1 python examples/example1.py
 
 ## Build from source:
 ```
-git clone <this repo>
+git clone https://github.com/IntelPython/dpnp
 cd dpnp
-. /opt/intel/oneapi/setvars.sh
-# or
-. ./0.env.sh
-
 ./0.build.sh
 ```
 
