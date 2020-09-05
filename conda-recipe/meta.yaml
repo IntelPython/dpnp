@@ -1,0 +1,35 @@
+{% set version = "0.0.1" %}
+{% set buildnumber = 0 %}
+
+package:
+    name: dpnp
+    version: {{version}}
+
+source:
+    path: ..
+
+requirements:
+    host:
+      - python
+      - setuptools
+      - numpy-devel >=1.18
+      - cython
+    run:
+      - python
+
+build:
+    number: {{buildnumber}}
+    include_recipe: False
+    script_env:
+      - ONEAPI_ROOT
+
+test:
+    requires:
+      - pytest
+    commands:
+      - python -c "import dpnp"
+
+about:
+    license: ISSL
+    license_file: LICENSE.txt
+    summary: Subclass of numpy.ndarray that uses mkl_malloc

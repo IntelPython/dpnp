@@ -1,0 +1,184 @@
+deselect:
+  - tests/test_matmul.py::test_matmul[shape_pair10-types0]
+  - tests/test_matmul.py::test_matmul[shape_pair10-types1]
+  - tests/test_matmul.py::test_matmul[shape_pair10-types2]
+  - tests/test_matmul.py::test_matmul[shape_pair10-types3]
+  - tests/test_matmul.py::test_matmul[shape_pair12-types0]
+  - tests/test_matmul.py::test_matmul[shape_pair12-types1]
+  - tests/test_matmul.py::test_matmul[shape_pair12-types2]
+  - tests/test_matmul.py::test_matmul[shape_pair12-types3]
+  - tests/test_matmul.py::test_matmul[shape_pair14-types0]
+  - tests/test_matmul.py::test_matmul[shape_pair14-types1]
+  - tests/test_matmul.py::test_matmul[shape_pair14-types2]
+  - tests/test_matmul.py::test_matmul[shape_pair14-types3]
+  - tests/test_matmul.py::test_matmul[shape_pair15-types0]
+  - tests/test_matmul.py::test_matmul[shape_pair15-types1]
+  - tests/test_matmul.py::test_matmul[shape_pair15-types2]
+  - tests/test_matmul.py::test_matmul[shape_pair15-types3]
+  - tests/test_matmul.py::test_matmul[shape_pair16-types0]
+  - tests/test_matmul.py::test_matmul[shape_pair16-types1]
+  - tests/test_matmul.py::test_matmul[shape_pair16-types2]
+  - tests/test_matmul.py::test_matmul[shape_pair16-types3]
+  - tests/test_matmul.py::test_matmul[shape_pair18-types0]
+  - tests/test_matmul.py::test_matmul[shape_pair18-types1]
+  - tests/test_matmul.py::test_matmul[shape_pair18-types2]
+  - tests/test_matmul.py::test_matmul[shape_pair18-types3]
+  - tests/test_matmul.py::test_matmul[shape_pair19-types0]
+  - tests/test_matmul.py::test_matmul[shape_pair19-types1]
+  - tests/test_matmul.py::test_matmul[shape_pair19-types2]
+  - tests/test_matmul.py::test_matmul[shape_pair19-types3]
+  - tests/test_matmul.py::test_matmul[shape_pair20-types0]
+  - tests/test_matmul.py::test_matmul[shape_pair20-types1]
+  - tests/test_matmul.py::test_matmul[shape_pair20-types2]
+  - tests/test_matmul.py::test_matmul[shape_pair20-types3]
+  - tests/test_matmul.py::test_matmul[shape_pair21-types0]
+  - tests/test_matmul.py::test_matmul[shape_pair21-types1]
+  - tests/test_matmul.py::test_matmul[shape_pair21-types2]
+  - tests/test_matmul.py::test_matmul[shape_pair21-types3]
+  - tests/test_matmul.py::test_matmul[shape_pair22-types0]
+  - tests/test_matmul.py::test_matmul[shape_pair22-types1]
+  - tests/test_matmul.py::test_matmul[shape_pair22-types2]
+  - tests/test_matmul.py::test_matmul[shape_pair22-types3]
+  - tests/test_matmul.py::test_matmul[shape_pair23-types0]
+  - tests/test_matmul.py::test_matmul[shape_pair23-types1]
+  - tests/test_matmul.py::test_matmul[shape_pair23-types2]
+  - tests/test_matmul.py::test_matmul[shape_pair23-types3]
+  - tests/test_matmul.py::test_matmul[shape_pair24-types0]
+  - tests/test_matmul.py::test_matmul[shape_pair24-types1]
+  - tests/test_matmul.py::test_matmul[shape_pair24-types2]
+  - tests/test_matmul.py::test_matmul[shape_pair24-types3]
+  - tests/test_matmul.py::test_matmul[shape_pair26-types0]
+  - tests/test_matmul.py::test_matmul[shape_pair26-types1]
+  - tests/test_matmul.py::test_matmul[shape_pair26-types2]
+  - tests/test_matmul.py::test_matmul[shape_pair26-types3]
+  - tests/test_matmul.py::test_matmul[shape_pair28-types0]
+  - tests/test_matmul.py::test_matmul[shape_pair28-types1]
+  - tests/test_matmul.py::test_matmul[shape_pair28-types2]
+  - tests/test_matmul.py::test_matmul[shape_pair28-types3]
+  - tests/test_matmul.py::test_matmul[shape_pair29-types0]
+  - tests/test_matmul.py::test_matmul[shape_pair29-types1]
+  - tests/test_matmul.py::test_matmul[shape_pair29-types2]
+  - tests/test_matmul.py::test_matmul[shape_pair29-types3]
+  - tests/test_matmul.py::test_matmul[shape_pair30-types0]
+  - tests/test_matmul.py::test_matmul[shape_pair30-types1]
+  - tests/test_matmul.py::test_matmul[shape_pair30-types2]
+  - tests/test_matmul.py::test_matmul[shape_pair30-types3]
+  - tests/test_matmul.py::test_matmul[shape_pair31-types0]
+  - tests/test_matmul.py::test_matmul[shape_pair31-types1]
+  - tests/test_matmul.py::test_matmul[shape_pair31-types2]
+  - tests/test_matmul.py::test_matmul[shape_pair31-types3]
+  - tests/test_matmul.py::test_matmul[shape_pair32-types0]
+  - tests/test_matmul.py::test_matmul[shape_pair32-types1]
+  - tests/test_matmul.py::test_matmul[shape_pair32-types2]
+  - tests/test_matmul.py::test_matmul[shape_pair32-types3]
+  - tests/test_matmul.py::test_matmul[shape_pair33-types0]
+  - tests/test_matmul.py::test_matmul[shape_pair33-types1]
+  - tests/test_matmul.py::test_matmul[shape_pair33-types2]
+  - tests/test_matmul.py::test_matmul[shape_pair33-types3]
+  - tests/test_matmul.py::test_matmul[shape_pair34-types0]
+  - tests/test_matmul.py::test_matmul[shape_pair34-types1]
+  - tests/test_matmul.py::test_matmul[shape_pair34-types2]
+  - tests/test_matmul.py::test_matmul[shape_pair34-types3]
+  - tests/test_matmul.py::test_matmul[shape_pair35-types0]
+  - tests/test_matmul.py::test_matmul[shape_pair35-types1]
+  - tests/test_matmul.py::test_matmul[shape_pair35-types2]
+  - tests/test_matmul.py::test_matmul[shape_pair35-types3]
+  - tests/test_matmul.py::test_matmul[shape_pair36-types0]
+  - tests/test_matmul.py::test_matmul[shape_pair36-types1]
+  - tests/test_matmul.py::test_matmul[shape_pair36-types2]
+  - tests/test_matmul.py::test_matmul[shape_pair36-types3]
+  - tests/test_matmul.py::test_matmul[shape_pair37-types0]
+  - tests/test_matmul.py::test_matmul[shape_pair37-types1]
+  - tests/test_matmul.py::test_matmul[shape_pair37-types2]
+  - tests/test_matmul.py::test_matmul[shape_pair37-types3]
+  - tests/test_matmul.py::test_matmul[shape_pair38-types0]
+  - tests/test_matmul.py::test_matmul[shape_pair38-types1]
+  - tests/test_matmul.py::test_matmul[shape_pair38-types2]
+  - tests/test_matmul.py::test_matmul[shape_pair38-types3]
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_10_{shape_pair=((5, 3, 2), (5, 2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_10_{shape_pair=((5, 3, 2), (5, 2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_12_{shape_pair=((5, 3, 2), (2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_12_{shape_pair=((5, 3, 2), (2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_14_{shape_pair=((3, 2), (5, 2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_14_{shape_pair=((3, 2), (5, 2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_15_{shape_pair=((3, 2), (0, 2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_15_{shape_pair=((3, 2), (0, 2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_16_{shape_pair=((5, 3, 2), (1, 2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_16_{shape_pair=((5, 3, 2), (1, 2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_18_{shape_pair=((1, 3, 2), (5, 2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_18_{shape_pair=((1, 3, 2), (5, 2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_19_{shape_pair=((1, 3, 2), (0, 2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_19_{shape_pair=((1, 3, 2), (0, 2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_20_{shape_pair=((5, 3, 2), (2,))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_20_{shape_pair=((5, 3, 2), (2,))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_21_{shape_pair=((5, 3, 0), (0,))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_21_{shape_pair=((5, 3, 0), (0,))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_22_{shape_pair=((2,), (5, 2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_22_{shape_pair=((2,), (5, 2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_23_{shape_pair=((0,), (5, 0, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_23_{shape_pair=((0,), (5, 0, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_24_{shape_pair=((2, 2, 3, 2), (2, 2, 2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_24_{shape_pair=((2, 2, 3, 2), (2, 2, 2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_26_{shape_pair=((6, 5, 3, 2), (2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_26_{shape_pair=((6, 5, 3, 2), (2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_28_{shape_pair=((3, 2), (6, 5, 2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_28_{shape_pair=((3, 2), (6, 5, 2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_29_{shape_pair=((3, 2), (5, 0, 2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_29_{shape_pair=((3, 2), (5, 0, 2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_30_{shape_pair=((1, 5, 3, 2), (6, 1, 2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_30_{shape_pair=((1, 5, 3, 2), (6, 1, 2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_31_{shape_pair=((1, 0, 3, 2), (6, 1, 2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_31_{shape_pair=((1, 0, 3, 2), (6, 1, 2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_32_{shape_pair=((6, 1, 3, 2), (1, 5, 2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_32_{shape_pair=((6, 1, 3, 2), (1, 5, 2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_33_{shape_pair=((6, 1, 3, 2), (1, 0, 2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_33_{shape_pair=((6, 1, 3, 2), (1, 0, 2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_34_{shape_pair=((6, 5, 3, 2), (2,))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_34_{shape_pair=((6, 5, 3, 2), (2,))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_35_{shape_pair=((6, 5, 3, 0), (0,))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_35_{shape_pair=((6, 5, 3, 0), (0,))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_36_{shape_pair=((2,), (6, 5, 2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_36_{shape_pair=((2,), (6, 5, 2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_37_{shape_pair=((0,), (6, 5, 0, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_37_{shape_pair=((0,), (6, 5, 0, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_38_{shape_pair=((1, 3, 3), (10, 1, 3, 1))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_38_{shape_pair=((1, 3, 3), (10, 1, 3, 1))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulLarge_param_0_{shape_pair=((6, 5, 3, 2), (6, 5, 2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulLarge_param_0_{shape_pair=((6, 5, 3, 2), (6, 5, 2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulLarge_param_1_{shape_pair=((6, 5, 3, 2), (6, 1, 2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulLarge_param_1_{shape_pair=((6, 5, 3, 2), (6, 1, 2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulLarge_param_2_{shape_pair=((6, 5, 3, 2), (1, 5, 2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulLarge_param_2_{shape_pair=((6, 5, 3, 2), (1, 5, 2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulLarge_param_3_{shape_pair=((6, 5, 3, 2), (1, 1, 2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulLarge_param_3_{shape_pair=((6, 5, 3, 2), (1, 1, 2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulLarge_param_4_{shape_pair=((6, 1, 3, 2), (6, 5, 2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulLarge_param_4_{shape_pair=((6, 1, 3, 2), (6, 5, 2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulLarge_param_5_{shape_pair=((1, 5, 3, 2), (6, 5, 2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulLarge_param_5_{shape_pair=((1, 5, 3, 2), (6, 5, 2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulLarge_param_6_{shape_pair=((1, 1, 3, 2), (6, 5, 2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulLarge_param_6_{shape_pair=((1, 1, 3, 2), (6, 5, 2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulLarge_param_7_{shape_pair=((3, 2), (6, 5, 2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulLarge_param_7_{shape_pair=((3, 2), (6, 5, 2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulLarge_param_8_{shape_pair=((6, 5, 3, 2), (2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulLarge_param_8_{shape_pair=((6, 5, 3, 2), (2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulLarge_param_9_{shape_pair=((2,), (6, 5, 2, 4))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulLarge_param_9_{shape_pair=((2,), (6, 5, 2, 4))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulLarge_param_10_{shape_pair=((6, 5, 3, 2), (2,))}::test_cupy_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulLarge_param_10_{shape_pair=((6, 5, 3, 2), (2,))}::test_operator_matmul
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulInvalidShape_param_0_{shape_pair=((5, 3, 1), (3, 1, 4))}::test_invalid_shape
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulInvalidShape_param_1_{shape_pair=((3, 2, 3), (3, 2, 4))}::test_invalid_shape
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulInvalidShape_param_2_{shape_pair=((3, 2), ())}::test_invalid_shape
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulInvalidShape_param_3_{shape_pair=((), (3, 2))}::test_invalid_shape
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulInvalidShape_param_4_{shape_pair=((), ())}::test_invalid_shape
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulInvalidShape_param_5_{shape_pair=((3, 2), (1,))}::test_invalid_shape
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulInvalidShape_param_6_{shape_pair=((0, 2), (3, 0))}::test_invalid_shape
+  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulInvalidShape_param_7_{shape_pair=((0, 1, 1), (2, 1, 1))}::test_invalid_shape
+  - tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_arctan2
+  - tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_deg2rad
+  - tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_hypot
+  - tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_rad2deg
+  - tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim
+  - tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim_with_discont
+  - tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_2dim_with_axis
+  - tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_2dim_with_discont
+  - tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_2dim_without_axis

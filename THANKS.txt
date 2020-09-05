@@ -1,0 +1,3 @@
+Sergey Shalnov : for the Intel NumPy core, the Intel NumPy guide, various bug-fixes and code contributions
+Oleksandr Pavlyk : who designed memory handling subsystem
+Alexander Makaryev :
