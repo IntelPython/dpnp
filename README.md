@@ -3,6 +3,8 @@
 
 # DPNP: NumPy-like API accelerated with SYCL
 
+Full documentation: https://intelpython.github.io/dpnp/
+
 The project contains:
 - Python interface with NumPy-like API
 - C++ library with SYCL based kernels
