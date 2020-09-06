@@ -37,13 +37,10 @@
 
 #pragma once
 
+#include <cstdint>
 #include <vector>
 
-#ifdef _WIN
-#define INP_DLLEXPORT __declspec(dllexport)
-#else
-#define INP_DLLEXPORT
-#endif
+#include <backend/backend_iface.hpp>
 
 /**
  * @defgroup BACKEND_FUNC_PTR_API Backend C++ library runtime interface API

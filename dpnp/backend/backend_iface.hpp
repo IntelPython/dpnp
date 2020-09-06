@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <vector>
 
 #ifdef _WIN
