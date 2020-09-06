@@ -267,11 +267,3 @@ INP_DLLEXPORT void mkl_rng_uniform(void* result, size_t size);
  */
 template <typename _DataType>
 INP_DLLEXPORT void mkl_rng_uniform_mt19937(void* result, long low, long high, size_t size);
-
-/**
- * Experimental interface. DO NOT USE IT!
- *
- * parameter @ref type_name will be converted into var_args or char *[] with extra length parameter
- */
-INP_DLLEXPORT
-void* get_backend_function_name(const char* func_name, const char* type_name);
