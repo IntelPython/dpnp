@@ -52,7 +52,7 @@ __all__ = [
 ]
 
 
-def cov(in_array1):
+def cov(in_array1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None):
     """
     Estimate a covariance matrix, given data and weights.
     """
@@ -60,6 +60,19 @@ def cov(in_array1):
     is_dparray1 = isinstance(in_array1, dparray)
 
     if (not use_origin_backend(in_array1) and is_dparray1):
+        if y is not None:
+            checker_throw_value_error("cov", "y", type(y), None)
+        if rowvar is not True:
+            checker_throw_value_error("cov", "rowvar", rowvar, True)
+        if bias is not False:
+            checker_throw_value_error("cov", "bias", bias, False)
+        if ddof is not None:
+            checker_throw_value_error("cov", "ddof", type(ddof), None)
+        if fweights is not None:
+            checker_throw_value_error("cov", "fweights", type(fweights), None)
+        if aweights is not None:
+            checker_throw_value_error("cov", "aweights", type(aweights), None)
+
         return dpnp_cov(in_array1)
 
     return numpy.cov(in_array1)
