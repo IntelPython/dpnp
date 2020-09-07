@@ -47,8 +47,22 @@ from dpnp.dparray import dparray
 from dpnp.dpnp_utils import checker_throw_value_error, use_origin_backend
 
 __all__ = [
+    'cov',
     'mean'
 ]
+
+
+def cov(in_array1):
+    """
+    Estimate a covariance matrix, given data and weights.
+    """
+
+    is_dparray1 = isinstance(in_array1, dparray)
+
+    if (not use_origin_backend(in_array1) and is_dparray1):
+        return dpnp_cov(in_array1)
+
+    return numpy.cov(in_array1)
 
 
 def mean(a, axis=None):
