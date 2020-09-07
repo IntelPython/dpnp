@@ -14,7 +14,7 @@ from tests.third_party.cupy.testing import random
 from tests.third_party.cupy.testing.attr import gpu
 # from tests.third_party.cupy.testing.attr import multi_gpu
 from tests.third_party.cupy.testing.attr import slow
-# from tests.third_party.cupy.testing.helper import assert_warns
+from tests.third_party.cupy.testing.helper import assert_warns
 # from tests.third_party.cupy.testing.helper import empty
 from tests.third_party.cupy.testing.helper import for_all_dtypes
 from tests.third_party.cupy.testing.helper import for_all_dtypes_combination
