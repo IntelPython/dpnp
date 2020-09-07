@@ -38,20 +38,21 @@
 
 #include <backend/backend_iface_fptr.hpp>
 
-// C function pointer to the C library template functions
-typedef void (*custom_math_2in_1out_func_ptr_t)(void*, void*, void*, size_t);
+// C function pointer to the C++ backend library functions
+typedef void (*func_2in_1out_ptr_t)(void*, void*, void*, size_t);
 
-typedef struct custom_math_2in_1out
+typedef struct func_data
 {
-    DPNPFuncType return_type;            // return type identifier which expected by the `ptr` function
-    custom_math_2in_1out_func_ptr_t ptr; //  # C function pointer
-} custom_math_2in_1out_t;
+    DPNPFuncType return_type; /**< return type identifier which expected by the @ref ptr function */
+    func_2in_1out_ptr_t ptr;  /**< C++ backend function pointer */
+} func_data_t;
 
-typedef std::map<DPNPFuncType, custom_math_2in_1out_t> map_2p_t;
+typedef std::map<DPNPFuncType, func_data_t> map_2p_t;
 typedef std::map<DPNPFuncType, map_2p_t> map_1p_t;
+typedef std::map<DPNPFuncName, map_1p_t> func_map_t;
 
-// type_T3 result = func_name<T1, T2>()
-std::map<DPNPFuncName, map_1p_t> func_map =
+
+func_map_t func_map =
 {
   { DPNPFuncName::DPNP_FN_ADD,
     { // T1. First template parameter
@@ -92,9 +93,29 @@ std::map<DPNPFuncName, map_1p_t> func_map =
 };
 
 
-void* get_dpnp_function_ptr(DPNPFuncName func_name, DPNPFuncType func_type)
+void* get_dpnp_function_ptr(DPNPFuncName func_name, const std::vector<DPNPFuncType> &func_type)
 {
-    return nullptr;
+    func_map_t::const_iterator func_it = func_map.find(func_name);
+    if (func_it == func_map.cend())
+    {
+        throw std::runtime_error("Intel NumPy Error: Unsupported function call."); // TODO print Function ID
+    }
+
+    const map_1p_t &type1_map = func_it->second;
+    map_1p_t::const_iterator type1_map_it = type1_map.find(func_type.at(0));
+    if (type1_map_it == type1_map.cend())
+    {
+        throw std::runtime_error("Intel NumPy Error: Function ID with unsupported first parameter type."); // TODO print Function ID
+    }
+
+    const map_2p_t &type2_map = type1_map_it->second;
+    map_2p_t::const_iterator type2_map_it = type2_map.find(func_type.at(1));
+    if (type2_map_it == type2_map.cend())
+    {
+        throw std::runtime_error("Intel NumPy Error: Function ID with unsupported second parameter type."); // TODO print Function ID
+    }
+
+    return (void*) type2_map_it->second.ptr;
 }
 
 void* get_backend_function_name(const char *func_name, const char *type_name)
