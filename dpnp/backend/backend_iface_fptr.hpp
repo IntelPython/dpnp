@@ -79,6 +79,19 @@ enum class DPNPFuncType : size_t
 };
 
 /**
+ * @ingroup BACKEND_FUNC_PTR_API
+ * @brief Contains information about the C++ backend function
+ *
+ * The structure defines the types that are used
+ * by @ref get_dpnp_function_ptr "get_dpnp_function_ptr".
+ */
+typedef struct DPNPFuncData
+{
+    DPNPFuncType return_type; /**< return type identifier which expected by the @ref ptr function */
+    void* ptr;                /**< C++ backend function pointer */
+} DPNPFuncData_t;
+
+/**
  * @ingroup BACKEND_API
  * @brief get runtime pointer to selected function
  *
@@ -87,10 +100,10 @@ enum class DPNPFuncType : size_t
  * @param [in]  name   Name of the function pointed by @ref DPNPFuncName
  * @param [in]  types  Array of the function template type pointed by @ref DPNPFuncType
  *
- * @return  A pointer to the backend API function.
+ * @return struct @ref DPNPFuncData_t with information about the backend API function.
  */
 INP_DLLEXPORT
-void* get_dpnp_function_ptr(DPNPFuncName name, const std::vector<DPNPFuncType>& types);
+DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName name, const std::vector<DPNPFuncType>& types);
 
 /**
  * DEPRECATED.

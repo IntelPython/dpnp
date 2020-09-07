@@ -38,16 +38,7 @@
 
 #include <backend/backend_iface_fptr.hpp>
 
-// C function pointer to the C++ backend library functions
-typedef void (*func_2in_1out_ptr_t)(void*, void*, void*, size_t);
-
-typedef struct func_data
-{
-    DPNPFuncType return_type; /**< return type identifier which expected by the @ref ptr function */
-    func_2in_1out_ptr_t ptr;  /**< C++ backend function pointer */
-} func_data_t;
-
-typedef std::map<DPNPFuncType, func_data_t> map_2p_t;
+typedef std::map<DPNPFuncType, DPNPFuncData_t> map_2p_t;
 typedef std::map<DPNPFuncType, map_2p_t> map_1p_t;
 typedef std::map<DPNPFuncName, map_1p_t> func_map_t;
 
@@ -117,7 +108,9 @@ void* get_dpnp_function_ptr(DPNPFuncName func_name, const std::vector<DPNPFuncTy
             "Intel NumPy Error: Function ID with unsupported second parameter type."); // TODO print Function ID
     }
 
-    return (void*)type2_map_it->second.ptr;
+    DPNPFuncData_t func_info = type2_map_it->second;
+
+    return func_info;
 }
 
 void* get_backend_function_name(const char* func_name, const char* type_name)
