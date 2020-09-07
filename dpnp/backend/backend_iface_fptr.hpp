@@ -90,7 +90,7 @@ enum class DPNPFuncType : size_t
  * @return  A pointer to the backend API function.
  */
 INP_DLLEXPORT
-void* get_dpnp_function_ptr(DPNPFuncName name, const std::vector<DPNPFuncType> &types);
+void* get_dpnp_function_ptr(DPNPFuncName name, const std::vector<DPNPFuncType>& types);
 
 /**
  * DEPRECATED.

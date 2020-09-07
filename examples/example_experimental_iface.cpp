@@ -42,17 +42,19 @@ int main(int, char**)
     void* result = get_backend_function_name("dpnp_dot", "float");
     std::cout << "Result Dot() function pointer (by old interface): " << result << std::endl;
 
-    try {
+    try
+    {
         DPNPFuncType func_dot_type = DPNPFuncType::DPNP_FT_FLOAT;
         void* dpnp_dot_fptr = get_dpnp_function_ptr(DPNPFuncName::DPNP_FN_DOT, {DPNPFuncType::DPNP_FT_FLOAT});
         std::cout << "Result Dot() function pointer: " << dpnp_dot_fptr << std::endl;
     }
-    catch (std::runtime_error &e)
+    catch (std::runtime_error& e)
     {
         std::cout << "Function Dot is not implemented in the library yet." << std::endl;
     }
 
-    void* dpnp_add_fptr = get_dpnp_function_ptr(DPNPFuncName::DPNP_FN_ADD, {DPNPFuncType::DPNP_FT_FLOAT, DPNPFuncType::DPNP_FT_FLOAT});
+    void* dpnp_add_fptr =
+        get_dpnp_function_ptr(DPNPFuncName::DPNP_FN_ADD, {DPNPFuncType::DPNP_FT_FLOAT, DPNPFuncType::DPNP_FT_FLOAT});
     std::cout << "Result Add() function pointer: " << dpnp_add_fptr << std::endl;
 
     return 0;
