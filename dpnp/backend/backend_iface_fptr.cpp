@@ -84,7 +84,7 @@ func_map_t func_map =
 };
 
 
-void* get_dpnp_function_ptr(DPNPFuncName func_name, const std::vector<DPNPFuncType> &func_type)
+DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName func_name, const std::vector<DPNPFuncType> &func_type)
 {
     func_map_t::const_iterator func_it = func_map.find(func_name);
     if (func_it == func_map.cend())

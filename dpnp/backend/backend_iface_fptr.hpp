@@ -100,7 +100,7 @@ typedef struct DPNPFuncData
  * @param [in]  name   Name of the function pointed by @ref DPNPFuncName
  * @param [in]  types  Array of the function template type pointed by @ref DPNPFuncType
  *
- * @return struct @ref DPNPFuncData_t with information about the backend API function.
+ * @return Struct @ref DPNPFuncData_t with information about the backend API function.
  */
 INP_DLLEXPORT
 DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName name, const std::vector<DPNPFuncType>& types);
