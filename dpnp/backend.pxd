@@ -95,7 +95,8 @@ cdef extern from "backend/backend_iface.hpp":
     void mkl_rng_uniform_mt19937[_DataType](void * result, long low, long high, size_t size)
 
     # Sorting routines
-    void custom_argsort_c[_DataType, _idx_DataType](void* array, void* result, size_t size)
+    void custom_argsort_c[_DataType, _idx_DataType](void * array, void * result, size_t size)
+    void custom_sort_c[_DataType](void * array, void * result, size_t size)
 
 
 cpdef dparray dpnp_remainder(dparray array1, int scalar)
@@ -164,3 +165,4 @@ cpdef dparray dpnp_mean(dparray a, axis)
 Sorting functions
 """
 cpdef dparray dpnp_argsort(dparray array1)
+cpdef dparray dpnp_sort(dparray array1)

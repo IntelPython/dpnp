@@ -6,12 +6,16 @@ import pytest
 import dpnp as cupy
 from tests.third_party.cupy import testing
 
+
 def get_array_module(*args):
     for arg in args:
         if isinstance(arg, cupy.ndarray):
             return cupy
     return numpy
+
+
 cupy.get_array_module = get_array_module
+
 
 @testing.gpu
 class TestSort(unittest.TestCase):

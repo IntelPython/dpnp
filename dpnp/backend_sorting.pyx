@@ -38,7 +38,8 @@ from dpnp.dpnp_utils cimport checker_throw_type_error, normalize_axis
 
 
 __all__ += [
-    "dpnp_argsort"
+    "dpnp_argsort",
+    "dpnp_sort"
 ]
 
 
@@ -59,5 +60,26 @@ cpdef dparray dpnp_argsort(dparray in_array1):
         custom_argsort_c[int, long](in_array1.get_data(), result.get_data(), size)
     else:
         checker_throw_type_error("dpnp_argsort", call_type)
+
+    return result
+
+
+cpdef dparray dpnp_sort(dparray in_array1):
+    call_type = in_array1.dtype
+
+    cdef dparray result = dparray(in_array1.shape, dtype=call_type)
+
+    cdef size_t size = in_array1.size
+
+    if call_type == numpy.float64:
+        custom_sort_c[double](in_array1.get_data(), result.get_data(), size)
+    elif call_type == numpy.float32:
+        custom_sort_c[float](in_array1.get_data(), result.get_data(), size)
+    elif call_type == numpy.int64:
+        custom_sort_c[long](in_array1.get_data(), result.get_data(), size)
+    elif call_type == numpy.int32:
+        custom_sort_c[int](in_array1.get_data(), result.get_data(), size)
+    else:
+        checker_throw_type_error("dpnp_sort", call_type)
 
     return result

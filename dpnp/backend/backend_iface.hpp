@@ -168,6 +168,20 @@ INP_DLLEXPORT void mkl_lapack_syevd_c(void* array1, void* result1, size_t size);
 template <typename _DataType, typename _idx_DataType>
 INP_DLLEXPORT void custom_argsort_c(void* array, void* result, size_t size);
 
+/**
+ * @ingroup BACKEND_API
+ * @brief MKL implementation of sort function
+ *
+ * @param [in]  array   Input array with data.
+ *
+ * @param [out] result  Output array with indeces.
+ *
+ * @param [in]  size    Number of elements in input arrays.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_sort_c(void* array, void* result, size_t size);
+
 #if 0 // Example for OpenCL kernel
 template <typename _DataType>
 void custom_dgemm_c_opencl(void* array_1, void* array_2, void* result_1, size_t size);

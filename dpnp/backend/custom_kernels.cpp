@@ -137,11 +137,8 @@ private:
     _DataType* _data_ptr = nullptr;
 };
 
-// necessary for creating separate kernels inside execution with policy
 template <typename _DataType, typename _idx_DataType>
-struct device_policy_tmplt
-{
-};
+class custom_argsort_c_kernel;
 
 template <typename _DataType, typename _idx_DataType>
 void custom_argsort_c(void* array1_in, void* result1, size_t size)
@@ -156,7 +153,8 @@ void custom_argsort_c(void* array1_in, void* result1, size_t size)
 
     auto queue = DPNP_QUEUE;
 
-    auto policy = oneapi::dpl::execution::make_device_policy<device_policy_tmplt<_DataType, _idx_DataType>>(queue);
+    auto policy =
+        oneapi::dpl::execution::make_device_policy<class custom_argsort_c_kernel<_DataType, _idx_DataType>>(queue);
 
     std::sort(policy, result, result + size, _argsort_less<_DataType, _idx_DataType>(array_1));
 
@@ -171,6 +169,45 @@ template void custom_argsort_c<double, int>(void* array1_in, void* result1, size
 template void custom_argsort_c<float, int>(void* array1_in, void* result1, size_t size);
 template void custom_argsort_c<long, int>(void* array1_in, void* result1, size_t size);
 template void custom_argsort_c<int, int>(void* array1_in, void* result1, size_t size);
+
+template <typename _DataType>
+struct _sort_less
+{
+    inline bool operator()(const _DataType& val1, const _DataType& val2)
+    {
+        return (val1 < val2);
+    }
+};
+
+template <typename _DataType>
+class custom_sort_c_kernel;
+
+template <typename _DataType>
+void custom_sort_c(void* array1_in, void* result1, size_t size)
+{
+    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    for (size_t i = 0; i < size; ++i)
+    {
+        result[i] = array_1[i];
+    }
+
+    auto queue = DPNP_QUEUE;
+
+    auto policy = oneapi::dpl::execution::make_device_policy<class custom_sort_c_kernel<_DataType>>(queue);
+
+    // fails without explicitly specifying of comparator or with std::less during kernels compilation
+    // affects other kernels
+    std::sort(policy, result, result + size, _sort_less<_DataType>());
+
+    queue.wait_and_throw(); // looks like it is necessary to sync after call of pstl
+}
+
+template void custom_sort_c<double>(void* array1_in, void* result1, size_t size);
+template void custom_sort_c<float>(void* array1_in, void* result1, size_t size);
+template void custom_sort_c<long>(void* array1_in, void* result1, size_t size);
+template void custom_sort_c<int>(void* array1_in, void* result1, size_t size);
 
 #if 0 // Example for OpenCL kernel
 #include <map>
