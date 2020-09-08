@@ -49,34 +49,34 @@ func_map_t func_map =
     { // T1. First template parameter
       { DPNPFuncType::DPNP_FT_INT,
         { // T2. Second template parameter
-          { DPNPFuncType::DPNP_FT_INT, { DPNPFuncType::DPNP_FT_INT, &custom_elemwise_add_c<int, int, int> }},
-          { DPNPFuncType::DPNP_FT_LONG, { DPNPFuncType::DPNP_FT_LONG, &custom_elemwise_add_c<int, long, long> }},
-          { DPNPFuncType::DPNP_FT_FLOAT, { DPNPFuncType::DPNP_FT_DOUBLE, &custom_elemwise_add_c<int, float, double> }},
-          { DPNPFuncType::DPNP_FT_DOUBLE, { DPNPFuncType::DPNP_FT_DOUBLE, &custom_elemwise_add_c<int, double, double> }}
+          { DPNPFuncType::DPNP_FT_INT, { DPNPFuncType::DPNP_FT_INT, (void*)custom_elemwise_add_c<int, int, int> }},
+          { DPNPFuncType::DPNP_FT_LONG, { DPNPFuncType::DPNP_FT_LONG, (void*)custom_elemwise_add_c<int, long, long> }},
+          { DPNPFuncType::DPNP_FT_FLOAT, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<int, float, double> }},
+          { DPNPFuncType::DPNP_FT_DOUBLE, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<int, double, double> }}
         }
       },
       { DPNPFuncType::DPNP_FT_LONG,
         { // T2. Second template parameter
-          { DPNPFuncType::DPNP_FT_INT, { DPNPFuncType::DPNP_FT_LONG, &custom_elemwise_add_c<long, int, long> }},
-          { DPNPFuncType::DPNP_FT_LONG, { DPNPFuncType::DPNP_FT_LONG, &custom_elemwise_add_c<long, long, long> }},
-          { DPNPFuncType::DPNP_FT_FLOAT, { DPNPFuncType::DPNP_FT_DOUBLE, &custom_elemwise_add_c<long, float, double> }},
-          { DPNPFuncType::DPNP_FT_DOUBLE, { DPNPFuncType::DPNP_FT_DOUBLE, &custom_elemwise_add_c<long, double, double> }}
+          { DPNPFuncType::DPNP_FT_INT, { DPNPFuncType::DPNP_FT_LONG, (void*)custom_elemwise_add_c<long, int, long> }},
+          { DPNPFuncType::DPNP_FT_LONG, { DPNPFuncType::DPNP_FT_LONG, (void*)custom_elemwise_add_c<long, long, long> }},
+          { DPNPFuncType::DPNP_FT_FLOAT, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<long, float, double> }},
+          { DPNPFuncType::DPNP_FT_DOUBLE, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<long, double, double> }}
         }
       },
       { DPNPFuncType::DPNP_FT_FLOAT,
         { // T2. Second template parameter
-          { DPNPFuncType::DPNP_FT_INT, { DPNPFuncType::DPNP_FT_DOUBLE, &custom_elemwise_add_c<float, int, double> }},
-          { DPNPFuncType::DPNP_FT_LONG, { DPNPFuncType::DPNP_FT_DOUBLE, &custom_elemwise_add_c<float, long, double> }},
-          { DPNPFuncType::DPNP_FT_FLOAT, { DPNPFuncType::DPNP_FT_FLOAT, &custom_elemwise_add_c<float, float, float> }},
-          { DPNPFuncType::DPNP_FT_DOUBLE, { DPNPFuncType::DPNP_FT_DOUBLE, &custom_elemwise_add_c<float, double, double> }}
+          { DPNPFuncType::DPNP_FT_INT, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<float, int, double> }},
+          { DPNPFuncType::DPNP_FT_LONG, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<float, long, double> }},
+          { DPNPFuncType::DPNP_FT_FLOAT, { DPNPFuncType::DPNP_FT_FLOAT, (void*)custom_elemwise_add_c<float, float, float> }},
+          { DPNPFuncType::DPNP_FT_DOUBLE, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<float, double, double> }}
         }
       },
       { DPNPFuncType::DPNP_FT_DOUBLE,
         { // T2. Second template parameter
-          { DPNPFuncType::DPNP_FT_INT, { DPNPFuncType::DPNP_FT_DOUBLE, &custom_elemwise_add_c<double, int, double> }},
-          { DPNPFuncType::DPNP_FT_LONG, { DPNPFuncType::DPNP_FT_DOUBLE, &custom_elemwise_add_c<double, long, double> }},
-          { DPNPFuncType::DPNP_FT_FLOAT, { DPNPFuncType::DPNP_FT_DOUBLE, &custom_elemwise_add_c<double, float, double> }},
-          { DPNPFuncType::DPNP_FT_DOUBLE, { DPNPFuncType::DPNP_FT_DOUBLE, &custom_elemwise_add_c<double, double, double> }}
+          { DPNPFuncType::DPNP_FT_INT, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<double, int, double> }},
+          { DPNPFuncType::DPNP_FT_LONG, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<double, long, double> }},
+          { DPNPFuncType::DPNP_FT_FLOAT, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<double, float, double> }},
+          { DPNPFuncType::DPNP_FT_DOUBLE, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<double, double, double> }}
         }
       }
     }
