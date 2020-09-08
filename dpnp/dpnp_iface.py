@@ -68,6 +68,7 @@ from dpnp.dpnp_iface_linearalgebra import *
 from dpnp.dpnp_iface_logic import *
 from dpnp.dpnp_iface_manipulation import *
 from dpnp.dpnp_iface_mathematical import *
+from dpnp.dpnp_iface_sorting import *
 from dpnp.dpnp_iface_statistics import *
 from dpnp.dpnp_iface_trigonometric import *
 
@@ -76,6 +77,7 @@ from dpnp.dpnp_iface_linearalgebra import __all__ as __all__linearalgebra
 from dpnp.dpnp_iface_logic import __all__ as __all__logic
 from dpnp.dpnp_iface_manipulation import __all__ as __all__manipulation
 from dpnp.dpnp_iface_mathematical import __all__ as __all__mathematical
+from dpnp.dpnp_iface_sorting import __all__ as __all__sorting
 from dpnp.dpnp_iface_statistics import __all__ as __all__statistics
 from dpnp.dpnp_iface_trigonometric import __all__ as __all__trigonometric
 
@@ -84,6 +86,7 @@ __all__ += __all__linearalgebra
 __all__ += __all__logic
 __all__ += __all__manipulation
 __all__ += __all__mathematical
+__all__ += __all__sorting
 __all__ += __all__statistics
 __all__ += __all__trigonometric
 
