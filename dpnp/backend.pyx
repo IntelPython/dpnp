@@ -56,8 +56,9 @@ __all__ = [
 include "backend_logic.pyx"
 include "backend_manipulation.pyx"
 include "backend_mathematical.pyx"
-include "backend_trigonometric.pyx"
+include "backend_sorting.pyx"
 include "backend_statistics.pyx"
+include "backend_trigonometric.pyx"
 
 
 cpdef dparray dpnp_arange(start, stop, step, dtype):

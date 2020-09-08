@@ -154,9 +154,13 @@ void custom_argsort_c(void* array1_in, void* result1, size_t size)
         result[i] = i;
     }
 
-    auto policy = oneapi::dpl::execution::make_device_policy<device_policy_tmplt<_DataType, _idx_DataType>>(DPNP_QUEUE);
+    auto queue = DPNP_QUEUE;
+
+    auto policy = oneapi::dpl::execution::make_device_policy<device_policy_tmplt<_DataType, _idx_DataType>>(queue);
 
     std::sort(policy, result, result + size, _argsort_less<_DataType, _idx_DataType>(array_1));
+
+    queue.wait_and_throw(); // looks like it is necessary to sync after call of pstl
 }
 
 template void custom_argsort_c<double, long>(void* array1_in, void* result1, size_t size);

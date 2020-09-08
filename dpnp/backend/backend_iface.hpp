@@ -160,7 +160,7 @@ INP_DLLEXPORT void mkl_lapack_syevd_c(void* array1, void* result1, size_t size);
  *
  * @param [in]  array   Input array with data.
  *
- * @param [out] result  Input/Output array with indeces.
+ * @param [out] result  Output array with indeces.
  *
  * @param [in]  size    Number of elements in input arrays.
  *
