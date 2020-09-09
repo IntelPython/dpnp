@@ -41,28 +41,33 @@ void mkl_lapack_syevd_c(void* array_in, void* result1, size_t size)
     _DataType* array = reinterpret_cast<_DataType*>(array_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
+    _DataType* syevd_array = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * size * sizeof(_DataType)));
+    dpnp_memory_memcpy_c(syevd_array, array, size * size * sizeof(_DataType));
+
     const std::int64_t lda = std::max<size_t>(1UL, size);
 
-    auto queue = DPNP_QUEUE;
-
     const std::int64_t scratchpad_size =
-        mkl::lapack::syevd_scratchpad_size<_DataType>(queue, mkl::job::vec, mkl::uplo::upper, size, lda);
+        mkl::lapack::syevd_scratchpad_size<_DataType>(DPNP_QUEUE, mkl::job::vec, mkl::uplo::upper, size, lda);
 
     _DataType* scratchpad = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(_DataType)));
 
-    status = mkl::lapack::syevd(queue,            // queue
+    status = mkl::lapack::syevd(DPNP_QUEUE,       // queue
                                 mkl::job::vec,    // jobz
                                 mkl::uplo::upper, // uplo
                                 size,             // The order of the matrix A (0≤n)
-                                array,            // will be overwritten with eigenvectors
+                                syevd_array,      // will be overwritten with eigenvectors
                                 lda,
                                 result,
                                 scratchpad,
                                 scratchpad_size);
-
     status.wait();
 
     dpnp_memory_free_c(scratchpad);
+
+    custom_elemwise_transpose_c<_DataType>(
+        syevd_array, {(long)size, (long)size}, {(long)size, (long)size}, {1, 0}, array, size * size);
+
+    dpnp_memory_free_c(syevd_array);
 }
 
 template void mkl_lapack_syevd_c<double>(void* array1_in, void* result1, size_t size);

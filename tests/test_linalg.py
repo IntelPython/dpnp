@@ -4,9 +4,6 @@ import dpnp as inp
 
 import numpy
 
-import sys
-numpy.set_printoptions(threshold=sys.maxsize)
-
 
 def vvsort(val, vec, size):
     for i in range(size):
@@ -31,14 +28,12 @@ def vvsort(val, vec, size):
 @pytest.mark.parametrize("size",
                          [2, 4, 8, 16, 300])
 def test_eig_arange(type, size):
-    a = (numpy.arange(size * size, dtype=type) + 1).reshape((size, size))
-    symm = numpy.tril(a) + numpy.tril(a, -1).T
-    isymm = inp.array(a)
+    a = numpy.arange(size * size, dtype=type).reshape((size, size))
+    symm = numpy.tril(a) + numpy.tril(a, -1).T + numpy.diag(numpy.full((size,), size * size, dtype=type))
+    isymm = inp.array(symm)
 
     dpnp_val, dpnp_vec = inp.linalg.eig(isymm)
     np_val, np_vec = numpy.linalg.eig(symm)
-
-    dpnp_vec = dpnp_vec.T
 
     # DPNP sort val/vec by abs value
     vvsort(dpnp_val, dpnp_vec, size)
@@ -51,15 +46,5 @@ def test_eig_arange(type, size):
         if np_vec[0, i] * dpnp_vec[0, i] < 0:
             np_vec[:, i] = -np_vec[:, i]
 
-    # print("----------------------------------")
-    # print("dpnp_val", numpy.array(dpnp_val))
-    # print("----------------------------------")
-    # print("np_val", np_val)
-    # print("----------------------------------")
-    # print("dpnp_vec", numpy.array(dpnp_vec))
-    # print("----------------------------------")
-    # print("np_vec", np_vec)
-    # print("----------------------------------")
-
-    numpy.testing.assert_allclose(dpnp_val, np_val)
-    numpy.testing.assert_allclose(dpnp_vec, np_vec)
+    numpy.testing.assert_allclose(dpnp_val, np_val, rtol=1e-05, atol=1e-05)
+    numpy.testing.assert_allclose(dpnp_vec, np_vec, rtol=1e-05, atol=1e-05)
