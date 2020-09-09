@@ -30,6 +30,10 @@
 #include <backend/backend_iface.hpp>
 #include "queue_sycl.hpp"
 
+// for beta08/beta09 compatibility
+#include <oneapi/dpl/algorithm>
+using namespace oneapi;
+
 template <typename _DataType>
 void dpnp_blas_gemm_c(void* array1_in, void* array2_in, void* result1, size_t size_m, size_t size_n, size_t size_k)
 {
@@ -89,20 +93,20 @@ void dpnp_blas_gemm_c(void* array1_in, void* array2_in, void* result1, size_t si
 #endif
     try
     {
-        status = oneapi::mkl::blas::gemm(DPNP_QUEUE,
-                                         oneapi::mkl::transpose::nontrans,
-                                         oneapi::mkl::transpose::nontrans,
-                                         size_n,
-                                         size_m,
-                                         size_k,
-                                         _DataType(1),
-                                         array_2,
-                                         ldb,
-                                         array_1,
-                                         lda,
-                                         _DataType(0),
-                                         result,
-                                         ldc);
+        status = mkl::blas::gemm(DPNP_QUEUE,
+                                 mkl::transpose::nontrans,
+                                 mkl::transpose::nontrans,
+                                 size_n,
+                                 size_m,
+                                 size_k,
+                                 _DataType(1),
+                                 array_2,
+                                 ldb,
+                                 array_1,
+                                 lda,
+                                 _DataType(0),
+                                 result,
+                                 ldc);
     }
     catch (cl::sycl::exception const& e)
     {

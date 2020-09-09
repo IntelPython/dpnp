@@ -30,6 +30,10 @@
 #include <backend/backend_iface.hpp>
 #include "queue_sycl.hpp"
 
+// for beta08/beta09 compatibility
+#include <oneapi/dpl/algorithm>
+using namespace oneapi;
+
 template <typename _DataType>
 void mkl_lapack_syevd_c(void* array_in, void* result1, size_t size)
 {
@@ -42,20 +46,20 @@ void mkl_lapack_syevd_c(void* array_in, void* result1, size_t size)
 
     auto queue = DPNP_QUEUE;
 
-    const std::int64_t scratchpad_size = oneapi::mkl::lapack::syevd_scratchpad_size<_DataType>(
-        queue, oneapi::mkl::job::vec, oneapi::mkl::uplo::upper, size, lda);
+    const std::int64_t scratchpad_size =
+        mkl::lapack::syevd_scratchpad_size<_DataType>(queue, mkl::job::vec, mkl::uplo::upper, size, lda);
 
     _DataType* scratchpad = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(_DataType)));
 
-    status = oneapi::mkl::lapack::syevd(queue,                    // queue
-                                        oneapi::mkl::job::vec,    // jobz
-                                        oneapi::mkl::uplo::upper, // uplo
-                                        size,                     // The order of the matrix A (0≤n)
-                                        array,                    // will be overwritten with eigenvectors
-                                        lda,
-                                        result,
-                                        scratchpad,
-                                        scratchpad_size);
+    status = mkl::lapack::syevd(queue,            // queue
+                                mkl::job::vec,    // jobz
+                                mkl::uplo::upper, // uplo
+                                size,             // The order of the matrix A (0≤n)
+                                array,            // will be overwritten with eigenvectors
+                                lda,
+                                result,
+                                scratchpad,
+                                scratchpad_size);
 
     status.wait();
 
