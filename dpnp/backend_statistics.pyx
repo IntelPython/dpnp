@@ -38,8 +38,42 @@ from dpnp.dpnp_utils cimport checker_throw_type_error, normalize_axis
 
 
 __all__ += [
+    "dpnp_cov",
     "dpnp_mean"
 ]
+
+
+cpdef dparray dpnp_cov(dparray array1):
+    # behaviour of original numpy
+    if array1.ndim > 2:
+        raise ValueError("array has more than 2 dimensions")
+
+    if array1.ndim < 2:
+        raise NotImplementedError
+
+    # numpy provide result as float64 for any input type
+    cdef dparray mean = dparray(array1.shape[0], dtype=numpy.float64)
+    cdef dparray X = dparray(array1.shape, dtype=numpy.float64)
+
+    # mean(array1, axis=1) #################################
+    # dpmp.mean throws: 'dpnp.dparray.dparray' object is not callable
+    for i in range(array1.shape[0]):
+        sum = 0.0
+        for j in range(array1.shape[1]):
+            sum += array1[i, j]
+        mean[i] = sum / array1.shape[1]
+    ########################################################
+    #X = array1 - mean[:, None]
+    #X = array1 - mean[:, numpy.newaxis]
+    #X = array1 - mean.reshape((array1.shape[0], 1))
+    for i in range(array1.shape[0]):
+        for j in range(array1.shape[1]):
+            X[i, j] = array1[i, j] - mean[i]
+    ########################################################
+    Y = X.transpose()
+    res = dpnp_matmul(X, Y) / (array1.shape[1] - 1)
+
+    return res
 
 
 cpdef dparray dpnp_mean(dparray a, axis):

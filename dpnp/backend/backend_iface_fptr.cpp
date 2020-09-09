@@ -38,53 +38,45 @@
 
 #include <backend/backend_iface_fptr.hpp>
 
-// C function pointer to the C library template functions
-typedef void (*custom_math_2in_1out_func_ptr_t)(void*, void*, void*, size_t);
-
-typedef struct custom_math_2in_1out
-{
-    DPNPFuncType return_type;            // return type identifier which expected by the `ptr` function
-    custom_math_2in_1out_func_ptr_t ptr; //  # C function pointer
-} custom_math_2in_1out_t;
-
-typedef std::map<DPNPFuncType, custom_math_2in_1out_t> map_2p_t;
+typedef std::map<DPNPFuncType, DPNPFuncData_t> map_2p_t;
 typedef std::map<DPNPFuncType, map_2p_t> map_1p_t;
+typedef std::map<DPNPFuncName, map_1p_t> func_map_t;
 
-// type_T3 result = func_name<T1, T2>()
-std::map<DPNPFuncName, map_1p_t> func_map =
+
+func_map_t func_map =
 {
   { DPNPFuncName::DPNP_FN_ADD,
     { // T1. First template parameter
       { DPNPFuncType::DPNP_FT_INT,
         { // T2. Second template parameter
-          { DPNPFuncType::DPNP_FT_INT, { DPNPFuncType::DPNP_FT_INT, &custom_elemwise_add_c<int, int, int> }},
-          { DPNPFuncType::DPNP_FT_LONG, { DPNPFuncType::DPNP_FT_LONG, &custom_elemwise_add_c<int, long, long> }},
-          { DPNPFuncType::DPNP_FT_FLOAT, { DPNPFuncType::DPNP_FT_DOUBLE, &custom_elemwise_add_c<int, float, double> }},
-          { DPNPFuncType::DPNP_FT_DOUBLE, { DPNPFuncType::DPNP_FT_DOUBLE, &custom_elemwise_add_c<int, double, double> }}
+          { DPNPFuncType::DPNP_FT_INT, { DPNPFuncType::DPNP_FT_INT, (void*)custom_elemwise_add_c<int, int, int> }},
+          { DPNPFuncType::DPNP_FT_LONG, { DPNPFuncType::DPNP_FT_LONG, (void*)custom_elemwise_add_c<int, long, long> }},
+          { DPNPFuncType::DPNP_FT_FLOAT, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<int, float, double> }},
+          { DPNPFuncType::DPNP_FT_DOUBLE, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<int, double, double> }}
         }
       },
       { DPNPFuncType::DPNP_FT_LONG,
         { // T2. Second template parameter
-          { DPNPFuncType::DPNP_FT_INT, { DPNPFuncType::DPNP_FT_LONG, &custom_elemwise_add_c<long, int, long> }},
-          { DPNPFuncType::DPNP_FT_LONG, { DPNPFuncType::DPNP_FT_LONG, &custom_elemwise_add_c<long, long, long> }},
-          { DPNPFuncType::DPNP_FT_FLOAT, { DPNPFuncType::DPNP_FT_DOUBLE, &custom_elemwise_add_c<long, float, double> }},
-          { DPNPFuncType::DPNP_FT_DOUBLE, { DPNPFuncType::DPNP_FT_DOUBLE, &custom_elemwise_add_c<long, double, double> }}
+          { DPNPFuncType::DPNP_FT_INT, { DPNPFuncType::DPNP_FT_LONG, (void*)custom_elemwise_add_c<long, int, long> }},
+          { DPNPFuncType::DPNP_FT_LONG, { DPNPFuncType::DPNP_FT_LONG, (void*)custom_elemwise_add_c<long, long, long> }},
+          { DPNPFuncType::DPNP_FT_FLOAT, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<long, float, double> }},
+          { DPNPFuncType::DPNP_FT_DOUBLE, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<long, double, double> }}
         }
       },
       { DPNPFuncType::DPNP_FT_FLOAT,
         { // T2. Second template parameter
-          { DPNPFuncType::DPNP_FT_INT, { DPNPFuncType::DPNP_FT_DOUBLE, &custom_elemwise_add_c<float, int, double> }},
-          { DPNPFuncType::DPNP_FT_LONG, { DPNPFuncType::DPNP_FT_DOUBLE, &custom_elemwise_add_c<float, long, double> }},
-          { DPNPFuncType::DPNP_FT_FLOAT, { DPNPFuncType::DPNP_FT_FLOAT, &custom_elemwise_add_c<float, float, float> }},
-          { DPNPFuncType::DPNP_FT_DOUBLE, { DPNPFuncType::DPNP_FT_DOUBLE, &custom_elemwise_add_c<float, double, double> }}
+          { DPNPFuncType::DPNP_FT_INT, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<float, int, double> }},
+          { DPNPFuncType::DPNP_FT_LONG, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<float, long, double> }},
+          { DPNPFuncType::DPNP_FT_FLOAT, { DPNPFuncType::DPNP_FT_FLOAT, (void*)custom_elemwise_add_c<float, float, float> }},
+          { DPNPFuncType::DPNP_FT_DOUBLE, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<float, double, double> }}
         }
       },
       { DPNPFuncType::DPNP_FT_DOUBLE,
         { // T2. Second template parameter
-          { DPNPFuncType::DPNP_FT_INT, { DPNPFuncType::DPNP_FT_DOUBLE, &custom_elemwise_add_c<double, int, double> }},
-          { DPNPFuncType::DPNP_FT_LONG, { DPNPFuncType::DPNP_FT_DOUBLE, &custom_elemwise_add_c<double, long, double> }},
-          { DPNPFuncType::DPNP_FT_FLOAT, { DPNPFuncType::DPNP_FT_DOUBLE, &custom_elemwise_add_c<double, float, double> }},
-          { DPNPFuncType::DPNP_FT_DOUBLE, { DPNPFuncType::DPNP_FT_DOUBLE, &custom_elemwise_add_c<double, double, double> }}
+          { DPNPFuncType::DPNP_FT_INT, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<double, int, double> }},
+          { DPNPFuncType::DPNP_FT_LONG, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<double, long, double> }},
+          { DPNPFuncType::DPNP_FT_FLOAT, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<double, float, double> }},
+          { DPNPFuncType::DPNP_FT_DOUBLE, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<double, double, double> }}
         }
       }
     }
@@ -92,35 +84,62 @@ std::map<DPNPFuncName, map_1p_t> func_map =
 };
 
 
-void* get_dpnp_function_ptr(DPNPFuncName func_name, DPNPFuncType func_type)
+DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName func_name, const std::vector<DPNPFuncType> &func_type)
 {
-    return nullptr;
+    func_map_t::const_iterator func_it = func_map.find(func_name);
+    if (func_it == func_map.cend())
+    {
+        throw std::runtime_error("Intel NumPy Error: Unsupported function call."); // TODO print Function ID
+    }
+
+    const map_1p_t& type1_map = func_it->second;
+    map_1p_t::const_iterator type1_map_it = type1_map.find(func_type.at(0));
+    if (type1_map_it == type1_map.cend())
+    {
+        throw std::runtime_error(
+            "Intel NumPy Error: Function ID with unsupported first parameter type."); // TODO print Function ID
+    }
+
+    const map_2p_t& type2_map = type1_map_it->second;
+    map_2p_t::const_iterator type2_map_it = type2_map.find(func_type.at(1));
+    if (type2_map_it == type2_map.cend())
+    {
+        throw std::runtime_error(
+            "Intel NumPy Error: Function ID with unsupported second parameter type."); // TODO print Function ID
+    }
+
+    DPNPFuncData_t func_info = type2_map_it->second;
+
+    return func_info;
 }
 
-void* get_backend_function_name(const char *func_name, const char *type_name)
+void* get_backend_function_name(const char* func_name, const char* type_name)
 {
     /** Implement it in this way to allow easier play with it */
-    const char *supported_func_name = "dpnp_dot";
-    const char *supported_type1_name = "double";
-    const char *supported_type2_name = "float";
-    const char *supported_type3_name = "long";
-    const char *supported_type4_name = "int";
+    const char* supported_func_name = "dpnp_dot";
+    const char* supported_type1_name = "double";
+    const char* supported_type2_name = "float";
+    const char* supported_type3_name = "long";
+    const char* supported_type4_name = "int";
 
     /** of coerce it will be converted into std::map later */
     if (!strncmp(func_name, supported_func_name, strlen(supported_func_name)))
     {
         if (!strncmp(type_name, supported_type1_name, strlen(supported_type1_name)))
         {
-            return reinterpret_cast<void*>(mkl_blas_dot_c<double> );
-        } else if (!strncmp(type_name, supported_type2_name, strlen(supported_type2_name)))
+            return reinterpret_cast<void*>(mkl_blas_dot_c<double>);
+        }
+        else if (!strncmp(type_name, supported_type2_name, strlen(supported_type2_name)))
         {
-            return reinterpret_cast<void*>(mkl_blas_dot_c<float> );
-        } else if (!strncmp(type_name, supported_type3_name, strlen(supported_type3_name)))
+            return reinterpret_cast<void*>(mkl_blas_dot_c<float>);
+        }
+        else if (!strncmp(type_name, supported_type3_name, strlen(supported_type3_name)))
         {
-            return reinterpret_cast<void*>(custom_blas_dot_c<long> );
-        } else if (!strncmp(type_name, supported_type4_name, strlen(supported_type4_name)))
+            return reinterpret_cast<void*>(custom_blas_dot_c<long>);
+        }
+        else if (!strncmp(type_name, supported_type4_name, strlen(supported_type4_name)))
         {
-            return reinterpret_cast<void*>(custom_blas_dot_c<int> );
+            return reinterpret_cast<void*>(custom_blas_dot_c<int>);
         }
     }
 

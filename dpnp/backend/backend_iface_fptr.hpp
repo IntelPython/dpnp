@@ -37,7 +37,6 @@
 
 #pragma once
 
-#include <cstdint>
 #include <vector>
 
 #include <backend/backend_iface.hpp>
@@ -56,7 +55,7 @@
  * The structure defines the parameters that are used
  * by @ref get_dpnp_function_ptr "get_dpnp_function_ptr".
  */
-enum class DPNPFuncName : uint32_t
+enum class DPNPFuncName : size_t
 {
     DPNP_FN_NONE, /**< Very first element of the enumeration */
     DPNP_FN_ADD,  /**< Used in numpy.add() implementation  */
@@ -71,7 +70,7 @@ enum class DPNPFuncName : uint32_t
  * The structure defines the types that are used
  * by @ref get_dpnp_function_ptr "get_dpnp_function_ptr".
  */
-enum class DPNPFuncType : uint32_t
+enum class DPNPFuncType : size_t
 {
     DPNP_FT_INT,   /**< analog of numpy.int32 or int */
     DPNP_FT_LONG,  /**< analog of numpy.int64 or long */
@@ -80,18 +79,31 @@ enum class DPNPFuncType : uint32_t
 };
 
 /**
+ * @ingroup BACKEND_FUNC_PTR_API
+ * @brief Contains information about the C++ backend function
+ *
+ * The structure defines the types that are used
+ * by @ref get_dpnp_function_ptr "get_dpnp_function_ptr".
+ */
+typedef struct DPNPFuncData
+{
+    DPNPFuncType return_type; /**< return type identifier which expected by the @ref ptr function */
+    void* ptr;                /**< C++ backend function pointer */
+} DPNPFuncData_t;
+
+/**
  * @ingroup BACKEND_API
  * @brief get runtime pointer to selected function
  *
  * Runtime pointer to the backend API function
  *
- * @param [in]  name  Name of the function pointed by @ref DPNPFuncName
- * @param [in]  type  The function template type pointed by @ref DPNPFuncType
+ * @param [in]  name   Name of the function pointed by @ref DPNPFuncName
+ * @param [in]  types  Array of the function template type pointed by @ref DPNPFuncType
  *
- * @return  A pointer to the backend API function.
+ * @return Struct @ref DPNPFuncData_t with information about the backend API function.
  */
 INP_DLLEXPORT
-void* get_dpnp_function_ptr(DPNPFuncName func_name, DPNPFuncType func_type);
+DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName name, const std::vector<DPNPFuncType>& types);
 
 /**
  * DEPRECATED.
