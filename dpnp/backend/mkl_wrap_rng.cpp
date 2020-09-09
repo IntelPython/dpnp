@@ -34,7 +34,6 @@
 #include "queue_sycl.hpp"
 
 // for beta08/beta09 compatibility
-#include <oneapi/dpl/algorithm>
 using namespace oneapi;
 
 template <typename _DataType>
