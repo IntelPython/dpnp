@@ -107,25 +107,15 @@ def mean(input, axis=None):
 
     dim_input = input.ndim
 
-    if dim_input == 0:
-        """
-        Means scalar at input
-        input.shape[0] will failed because it is list
-        TODO need to copy it into new 'result' array
-        """
-        return numpy.mean(input, axis=axis)
-
-    if dim_input > 2 and axis is not None:
-        raise NotImplementedError
-
     is_input_dparray = isinstance(input, dparray)
 
-    if axis is not None and (axis >= dim_input or -1 * axis >=dim_input):
+    if axis is not None and (not isinstance(axis, int) or (axis >= dim_input or -1*axis >=dim_input))\
+            or dim_input == 0:
         return numpy.mean(input, axis=axis)
 
     if not use_origin_backend(input) and is_input_dparray:
-        if not isinstance(axis, int) and axis is not None:
-            return numpy.mean(input, axis=axis)
+        if dim_input > 2 and axis is not None:
+            raise NotImplementedError
 
         result = dpnp_mean(input, axis=axis)
 
