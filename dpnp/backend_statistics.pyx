@@ -35,6 +35,7 @@ and the rest of the library
 
 import numpy
 from dpnp.dpnp_utils cimport checker_throw_type_error, normalize_axis
+from dpnp.backend cimport *
 
 
 __all__ += [
@@ -76,65 +77,37 @@ cpdef dparray dpnp_cov(dparray array1):
     return res
 
 
-cpdef dparray dpnp_mean(dparray a, axis):
-    cdef dparray_shape_type shape_a = a.shape
-    cdef long size_a = a.size
-    cdef size_t dim_a = a.ndim
+cpdef dparray dpnp_mean(dparray input, axis):
+    cdef dparray_shape_type shape_input = input.shape
+    cdef long size_input = input.size
+    cdef size_t dim_input = input.ndim
 
-    if dim_a == 0:
-        """
-        Means scalar at input
-        shape_a[0] will failed because it is list
-        TODO need to copy it into new 'result' array
-        """
-        return a
-
-    if a.dtype == numpy.float32:
+    if input.dtype == numpy.float32:
         res_type = numpy.float32
     else:
         res_type = numpy.float64
 
-    if dim_a > 2:
-        raise NotImplementedError
-
-    if axis is not None and axis >= dim_a:
-        raise IndexError("Tuple index out of range")
-
     cdef float sum_val = 0
 
     if axis is None:
-        if dim_a == 2:
-            for i in range(shape_a[0]):
-                for j in range(shape_a[1]):
-                    sum_val += a[i, j]
-        else:
-            for i in range(shape_a[0]):
-                sum_val += a[i]
-
-        result = dparray(1, dtype=res_type)
-        result[0] = sum_val / size_a
-
-    elif axis == 0:
-        if dim_a == 2:
-            result = dparray(2, dtype=res_type)
-            for i in range(shape_a[1]):
+        sum_val = dpnp_sum(input)
+        result = dparray((1, ), dtype=res_type)
+        result[0] = sum_val
+        return result / size_input
+    else:
+        axis_ = axis if axis >= 0 else -1*axis
+        if dim_input == 2:
+            result = dparray(shape_input[~axis_], dtype=res_type)
+            for i in range(shape_input[~axis_]):
                 sum_val = 0
-                for j in range(shape_a[0]):
-                    sum_val += a[j, i]
-                result[i] = sum_val / shape_a[0]
+                for j in range(shape_input[axis_]):
+                    index = (i, j)
+                    sum_val += input[index[~axis_], index[axis_]]
+                result[i] = sum_val
         else:
-            result = dparray(1, dtype=res_type)
+            result = dparray((1, ), dtype=res_type)
             sum_val = 0
-            for i in range(shape_a[0]):
-                sum_val += a[i]
-            result[0] = sum_val / size_a
-
-    elif axis == 1:
-        result = dparray(shape_a[0], dtype=res_type)
-        for i in range(shape_a[0]):
-            sum_val = 0
-            for j in range(shape_a[1]):
-                sum_val += a[i, j]
-            result[i] = sum_val / shape_a[1]
-
-    return result
+            for i in range(shape_input[axis_]):
+                sum_val += input[i]
+            result[0] = sum_val
+        return result / shape_input[axis_]
