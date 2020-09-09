@@ -42,54 +42,22 @@ void mkl_lapack_syevd_c(void* array_in, void* result1, size_t size)
 
     auto queue = DPNP_QUEUE;
 
-    const std::int64_t scratchpad_size =
-        mkl::lapack::syevd_scratchpad_size<_DataType>(queue, mkl::job::vec, mkl::uplo::upper, size, lda);
-    // const std::int64_t scratchpad_size = 7; // size = 2 & novec & lower
-    // const std::int64_t scratchpad_size = 34; // size = 2 & vec & upper
+    const std::int64_t scratchpad_size = oneapi::mkl::lapack::syevd_scratchpad_size<_DataType>(
+        queue, oneapi::mkl::job::vec, oneapi::mkl::uplo::upper, size, lda);
 
     _DataType* scratchpad = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(_DataType)));
 
-#if 1
-    printf("mkl_lapack_syevd_c array ptr type %d \n", cl::sycl::get_pointer_type(array, queue.get_context()));
-    printf("mkl_lapack_syevd_c result ptr type %d \n", cl::sycl::get_pointer_type(result, queue.get_context()));
-    printf("mkl_lapack_syevd_c scratchpad ptr type %d \n", cl::sycl::get_pointer_type(scratchpad, queue.get_context()));
-    printf("mkl_lapack_syevd_c array[0] %g \n", array[0]);
-    printf("mkl_lapack_syevd_c result[0] %g \n", result[0]);
-    std::cout << "mkl_lapack_syevd_c size = " << size << std::endl;
-    std::cout << "mkl_lapack_syevd_c lda = " << lda << std::endl;
-    std::cout << "mkl_lapack_syevd_c scratchpad_size = " << scratchpad_size << std::endl;
-#endif
-
-    try
-    {
-        queue.wait_and_throw();
-        status = mkl::lapack::syevd(queue,            // queue
-                                    mkl::job::vec,    // jobz
-                                    mkl::uplo::upper, // uplo
-                                    size,             // The order of the matrix A (0≤n)
-                                    array,            // will be overwritten with eigenvectors
-                                    lda,
-                                    result,
-                                    scratchpad,
-                                    scratchpad_size);
-    }
-    catch (mkl::lapack::exception const& e)
-    {
-        // Handle LAPACK related exceptions happened during asynchronous call
-        std::cout << "Unexpected exception caught during asynchronous LAPACK operation:\n"
-                  << e.reason() << "\ninfo: " << e.info() << std::endl;
-    }
-    catch (cl::sycl::exception const& e)
-    {
-        std::cerr << "Caught synchronous SYCL exception during mkl_lapack_syevd_c():\n"
-                  << e.what() << "\nOpenCL status: " << e.get_cl_code() << std::endl;
-    }
+    status = oneapi::mkl::lapack::syevd(queue,                    // queue
+                                        oneapi::mkl::job::vec,    // jobz
+                                        oneapi::mkl::uplo::upper, // uplo
+                                        size,                     // The order of the matrix A (0≤n)
+                                        array,                    // will be overwritten with eigenvectors
+                                        lda,
+                                        result,
+                                        scratchpad,
+                                        scratchpad_size);
 
     status.wait();
-
-#if 1
-    std::cout << "mkl_lapack_syevd_c res = " << result[0] << std::endl;
-#endif
 
     dpnp_memory_free_c(scratchpad);
 }
