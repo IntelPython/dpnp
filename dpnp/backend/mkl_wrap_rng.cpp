@@ -42,16 +42,16 @@ void mkl_rng_gaussian(void* result, size_t size)
     // choose engine as is in numpy
     // seed number
     size_t seed = std::time(nullptr);
-    mkl::rng::philox4x32x10 engine(DPNP_QUEUE, seed);
+    oneapi::mkl::rng::philox4x32x10 engine(DPNP_QUEUE, seed);
 
     const _DataType mean = _DataType(0.0);
     const _DataType stddev = _DataType(1.0);
 
-    mkl::rng::gaussian<_DataType> distribution(mean, stddev);
+    oneapi::mkl::rng::gaussian<_DataType> distribution(mean, stddev);
     try
     {
         // perform generation
-        mkl::rng::generate(distribution, engine, size, result1);
+        oneapi::mkl::rng::generate(distribution, engine, size, result1);
         DPNP_QUEUE.wait_and_throw();
     }
     catch (cl::sycl::exception const& e)
@@ -70,16 +70,16 @@ void mkl_rng_uniform(void* result, size_t size)
     // choose engine as is in numpy
     // seed number
     size_t seed = std::time(nullptr);
-    mkl::rng::philox4x32x10 engine(DPNP_QUEUE, seed);
+    oneapi::mkl::rng::philox4x32x10 engine(DPNP_QUEUE, seed);
 
     const _DataType a = (_DataType(0.0));
     const _DataType b = (_DataType(1.0));
 
-    mkl::rng::uniform<_DataType> distribution(a, b);
+    oneapi::mkl::rng::uniform<_DataType> distribution(a, b);
     try
     {
         // perform generation
-        mkl::rng::generate(distribution, engine, size, result1);
+        oneapi::mkl::rng::generate(distribution, engine, size, result1);
         DPNP_QUEUE.wait_and_throw();
     }
     catch (cl::sycl::exception const& e)
@@ -98,18 +98,18 @@ void mkl_rng_uniform_mt19937(void* result, long low, long high, size_t size)
     // choose engine as is in numpy
     // seed number
     size_t seed = std::time(nullptr);
-    mkl::rng::mt19937 engine(DPNP_QUEUE, seed);
+    oneapi::mkl::rng::mt19937 engine(DPNP_QUEUE, seed);
 
     // set left bound of distribution
     const _DataType a = (_DataType(low));
     // set right bound of distribution
     const _DataType b = (_DataType(high));
 
-    mkl::rng::uniform<_DataType> distribution(a, b);
+    oneapi::mkl::rng::uniform<_DataType> distribution(a, b);
     try
     {
         // perform generation
-        mkl::rng::generate(distribution, engine, size, result1);
+        oneapi::mkl::rng::generate(distribution, engine, size, result1);
         DPNP_QUEUE.wait_and_throw();
     }
     catch (cl::sycl::exception const& e)

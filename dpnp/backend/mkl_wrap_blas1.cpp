@@ -41,13 +41,13 @@ void mkl_blas_dot_c(void* array1_in, void* array2_in, void* result1, size_t size
 
     try
     {
-        status = mkl::blas::dot(DPNP_QUEUE,
-                                size,
-                                array_1,
-                                1, // array_1 stride
-                                array_2,
-                                1, // array_2 stride
-                                result);
+        status = oneapi::mkl::blas::dot(DPNP_QUEUE,
+                                        size,
+                                        array_1,
+                                        1, // array_1 stride
+                                        array_2,
+                                        1, // array_2 stride
+                                        result);
     }
     catch (cl::sycl::exception const& e)
     {

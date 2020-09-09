@@ -42,8 +42,8 @@ void mkl_lapack_syevd_c(void* array_in, void* result1, size_t size)
 
     auto queue = DPNP_QUEUE;
 
-    const std::int64_t scratchpad_size =
-        mkl::lapack::syevd_scratchpad_size<_DataType>(queue, mkl::job::vec, mkl::uplo::upper, size, lda);
+    const std::int64_t scratchpad_size = oneapi::mkl::lapack::syevd_scratchpad_size<_DataType>(
+        queue, oneapi::mkl::job::vec, oneapi::mkl::uplo::upper, size, lda);
     // const std::int64_t scratchpad_size = 7; // size = 2 & novec & lower
     // const std::int64_t scratchpad_size = 34; // size = 2 & vec & upper
 
@@ -63,17 +63,17 @@ void mkl_lapack_syevd_c(void* array_in, void* result1, size_t size)
     try
     {
         queue.wait_and_throw();
-        status = mkl::lapack::syevd(queue,            // queue
-                                    mkl::job::vec,    // jobz
-                                    mkl::uplo::upper, // uplo
-                                    size,             // The order of the matrix A (0≤n)
-                                    array,            // will be overwritten with eigenvectors
-                                    lda,
-                                    result,
-                                    scratchpad,
-                                    scratchpad_size);
+        status = oneapi::mkl::lapack::syevd(queue,                    // queue
+                                            oneapi::mkl::job::vec,    // jobz
+                                            oneapi::mkl::uplo::upper, // uplo
+                                            size,                     // The order of the matrix A (0≤n)
+                                            array,                    // will be overwritten with eigenvectors
+                                            lda,
+                                            result,
+                                            scratchpad,
+                                            scratchpad_size);
     }
-    catch (mkl::lapack::exception const& e)
+    catch (oneapi::mkl::lapack::exception const& e)
     {
         // Handle LAPACK related exceptions happened during asynchronous call
         std::cout << "Unexpected exception caught during asynchronous LAPACK operation:\n"
