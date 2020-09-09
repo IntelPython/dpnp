@@ -102,7 +102,7 @@ def absolute(input):
     input1 = dpnp.asnumpy(input) if is_input_dparray else input
 
     # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.abs(input)
+    result_numpy = numpy.abs(input1)
     result = result_numpy
     if isinstance(result, numpy.ndarray):
         result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
