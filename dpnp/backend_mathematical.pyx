@@ -115,10 +115,10 @@ func_map[add_name][int32_name][int32_name] = [int32_name, & custom_elemwise_add_
 
 
 cpdef dparray dpnp_absolute(dparray x):
-    result = dparray(x.shape, dtype=x.dtype)
-
     cdef dparray_shape_type shape_x = x.shape
     cdef size_t dim_x = x.ndim
+
+    result = dparray(shape_x, dtype=x.dtype)
 
     if dim_x > 2:
         raise NotImplementedError
@@ -126,10 +126,12 @@ cpdef dparray dpnp_absolute(dparray x):
     if dim_x == 2:
         for i in range(shape_x[0]):
             for j in range(shape_x[1]):
-                result[i, j] = x[i, j] if x[i, j] >= 0 else -1*x[i, j]
+                elem = x[i, j]
+                result[i, j] = elem if elem >= 0 else -1*elem
     else:
         for i in range(shape_x[0]):
-            result[i] += x[i] if x[i] >= 0 else -1*x[i]
+            elem = x[i]
+            result[i] = elem if elem >= 0 else -1*elem
 
     return result
 
