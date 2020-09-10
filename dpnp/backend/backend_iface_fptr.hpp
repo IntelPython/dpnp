@@ -72,6 +72,7 @@ enum class DPNPFuncName : size_t
  */
 enum class DPNPFuncType : size_t
 {
+    DPNP_FT_NONE,  /**< Very first element of the enumeration */
     DPNP_FT_INT,   /**< analog of numpy.int32 or int */
     DPNP_FT_LONG,  /**< analog of numpy.int64 or long */
     DPNP_FT_FLOAT, /**< analog of numpy.float32 or float */
@@ -95,15 +96,16 @@ typedef struct DPNPFuncData
  * @ingroup BACKEND_API
  * @brief get runtime pointer to selected function
  *
- * Runtime pointer to the backend API function
+ * Runtime pointer to the backend API function from storage map<name, map<first_type, map<second_type, DPNPFuncData_t>>>
  *
- * @param [in]  name   Name of the function pointed by @ref DPNPFuncName
- * @param [in]  types  Array of the function template type pointed by @ref DPNPFuncType
+ * @param [in]  name         Name of the function in storage
+ * @param [in]  first_type   First type of the storage
+ * @param [in]  second_type  Second type of the storage
  *
  * @return Struct @ref DPNPFuncData_t with information about the backend API function.
  */
 INP_DLLEXPORT
-DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName name, const std::vector<DPNPFuncType>& types);
+DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type = DPNPFuncType::DPNP_FT_NONE);
 
 /**
  * DEPRECATED.
