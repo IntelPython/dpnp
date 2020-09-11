@@ -5,12 +5,15 @@ stages:
     steps:
     - script: echo Building!
     - bash: |
-        echo This multiline script always runs in Bash.
+        echo ===================This multiline script always runs in Bash.
         echo ${SHELL}
-        echo run PWD
+        echo ===================run PWD
         pwd
-        echo run SET
+        echo ===================run SET
         set
+        echo ===================install
+        sudo apt-get install intel-basekit
+        clang++ --version
 - stage: Test
   jobs:
   - job: TestOnWindows
