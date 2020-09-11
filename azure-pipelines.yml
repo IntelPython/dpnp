@@ -4,6 +4,13 @@ stages:
   - job: BuildJob
     steps:
     - script: echo Building!
+    - bash: |
+        echo This multiline script always runs in Bash.
+        echo ${SHELL}
+        echo run PWD
+        pwd
+        echo run SET
+        set
 - stage: Test
   jobs:
   - job: TestOnWindows
