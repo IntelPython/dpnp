@@ -45,47 +45,57 @@ typedef std::map<DPNPFuncName, map_1p_t> func_map_t;
 
 func_map_t func_map =
 {
-  { DPNPFuncName::DPNP_FN_ADD,
+  {DPNPFuncName::DPNP_FN_ADD,
     { // T1. First template parameter
-      { DPNPFuncType::DPNP_FT_INT,
+      {DPNPFuncType::DPNP_FT_INT,
         { // T2. Second template parameter
-          { DPNPFuncType::DPNP_FT_INT, { DPNPFuncType::DPNP_FT_INT, (void*)custom_elemwise_add_c<int, int, int> }},
-          { DPNPFuncType::DPNP_FT_LONG, { DPNPFuncType::DPNP_FT_LONG, (void*)custom_elemwise_add_c<int, long, long> }},
-          { DPNPFuncType::DPNP_FT_FLOAT, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<int, float, double> }},
-          { DPNPFuncType::DPNP_FT_DOUBLE, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<int, double, double> }}
+          {DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_INT, (void*)custom_elemwise_add_c<int, int, int>}},
+          {DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_LONG, (void*)custom_elemwise_add_c<int, long, long>}},
+          {DPNPFuncType::DPNP_FT_FLOAT, {DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<int, float, double>}},
+          {DPNPFuncType::DPNP_FT_DOUBLE, {DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<int, double, double>}}
         }
       },
-      { DPNPFuncType::DPNP_FT_LONG,
+      {DPNPFuncType::DPNP_FT_LONG,
         { // T2. Second template parameter
-          { DPNPFuncType::DPNP_FT_INT, { DPNPFuncType::DPNP_FT_LONG, (void*)custom_elemwise_add_c<long, int, long> }},
-          { DPNPFuncType::DPNP_FT_LONG, { DPNPFuncType::DPNP_FT_LONG, (void*)custom_elemwise_add_c<long, long, long> }},
-          { DPNPFuncType::DPNP_FT_FLOAT, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<long, float, double> }},
-          { DPNPFuncType::DPNP_FT_DOUBLE, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<long, double, double> }}
+          {DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_LONG, (void*)custom_elemwise_add_c<long, int, long>}},
+          {DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_LONG, (void*)custom_elemwise_add_c<long, long, long>}},
+          {DPNPFuncType::DPNP_FT_FLOAT, {DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<long, float, double>}},
+          {DPNPFuncType::DPNP_FT_DOUBLE, {DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<long, double, double>}}
         }
       },
-      { DPNPFuncType::DPNP_FT_FLOAT,
+      {DPNPFuncType::DPNP_FT_FLOAT,
         { // T2. Second template parameter
-          { DPNPFuncType::DPNP_FT_INT, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<float, int, double> }},
-          { DPNPFuncType::DPNP_FT_LONG, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<float, long, double> }},
-          { DPNPFuncType::DPNP_FT_FLOAT, { DPNPFuncType::DPNP_FT_FLOAT, (void*)custom_elemwise_add_c<float, float, float> }},
-          { DPNPFuncType::DPNP_FT_DOUBLE, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<float, double, double> }}
+          {DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<float, int, double>}},
+          {DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<float, long, double>}},
+          {DPNPFuncType::DPNP_FT_FLOAT, {DPNPFuncType::DPNP_FT_FLOAT, (void*)custom_elemwise_add_c<float, float, float>}},
+          {DPNPFuncType::DPNP_FT_DOUBLE, {DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<float, double, double>}}
         }
       },
-      { DPNPFuncType::DPNP_FT_DOUBLE,
+      {DPNPFuncType::DPNP_FT_DOUBLE,
         { // T2. Second template parameter
-          { DPNPFuncType::DPNP_FT_INT, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<double, int, double> }},
-          { DPNPFuncType::DPNP_FT_LONG, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<double, long, double> }},
-          { DPNPFuncType::DPNP_FT_FLOAT, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<double, float, double> }},
-          { DPNPFuncType::DPNP_FT_DOUBLE, { DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<double, double, double> }}
+          {DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<double, int, double>}},
+          {DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<double, long, double>}},
+          {DPNPFuncType::DPNP_FT_FLOAT, {DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<double, float, double>}},
+          {DPNPFuncType::DPNP_FT_DOUBLE, {DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<double, double, double>}}
         }
       }
+    }
+  },
+  {DPNPFuncName::DPNP_FN_DOT,
+    {
+      {DPNPFuncType::DPNP_FT_INT, {{DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_INT, (void*)custom_blas_dot_c<int>}}}},
+      {DPNPFuncType::DPNP_FT_LONG, {{DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_LONG, (void*)custom_blas_dot_c<long>}}}},
+      {DPNPFuncType::DPNP_FT_FLOAT, {{DPNPFuncType::DPNP_FT_FLOAT, {DPNPFuncType::DPNP_FT_FLOAT, (void*)mkl_blas_dot_c<float>}}}},
+      {DPNPFuncType::DPNP_FT_DOUBLE, {{DPNPFuncType::DPNP_FT_DOUBLE, {DPNPFuncType::DPNP_FT_DOUBLE, (void*)mkl_blas_dot_c<double>}}}},
     }
   }
 };
 
 
-DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName func_name, const std::vector<DPNPFuncType> &func_type)
+DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName func_name, DPNPFuncType first_type, DPNPFuncType second_type)
 {
+    DPNPFuncType local_second_type = (second_type == DPNPFuncType::DPNP_FT_NONE) ? first_type : second_type;
+
     func_map_t::const_iterator func_it = func_map.find(func_name);
     if (func_it == func_map.cend())
     {
@@ -93,7 +103,7 @@ DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName func_name, const std::vector<D
     }
 
     const map_1p_t& type1_map = func_it->second;
-    map_1p_t::const_iterator type1_map_it = type1_map.find(func_type.at(0));
+    map_1p_t::const_iterator type1_map_it = type1_map.find(first_type);
     if (type1_map_it == type1_map.cend())
     {
         throw std::runtime_error(
@@ -101,7 +111,7 @@ DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName func_name, const std::vector<D
     }
 
     const map_2p_t& type2_map = type1_map_it->second;
-    map_2p_t::const_iterator type2_map_it = type2_map.find(func_type.at(1));
+    map_2p_t::const_iterator type2_map_it = type2_map.find(local_second_type);
     if (type2_map_it == type2_map.cend())
     {
         throw std::runtime_error(

@@ -27,6 +27,9 @@
 
 #include <algorithm>
 #include <iostream>
+#include <iterator>
+
+#include <backend/backend_iface_fptr.hpp>
 
 /**
  * @defgroup BACKEND_UTILS Backend C++ library utilities
@@ -52,6 +55,23 @@ std::ostream& operator<<(std::ostream& out, const std::vector<T>& vec)
         std::copy(vec.begin(), vec.end(), std::ostream_iterator<T>(out, ", "));
         out << "\b\b]";
     }
+
+    return out;
+}
+
+/**
+ * @ingroup BACKEND_UTILS
+ * @brief print @ref DPNPFuncType to std::ostream.
+ *
+ * To print DPNPFuncType type to std::out.
+ * TODO implement string representation of the enum
+ *
+ * @param [in]  elem  DPNPFuncType value to be printed.
+ */
+template <typename T>
+std::ostream& operator<<(std::ostream& out, DPNPFuncType elem)
+{
+    out << static_cast<size_t>(elem);
 
     return out;
 }
