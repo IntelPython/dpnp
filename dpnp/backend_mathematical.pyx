@@ -41,6 +41,7 @@ import numpy
 cimport numpy
 
 __all__ += [
+    "dpnp_absolute",
     "dpnp_add",
     'dpnp_arctan2',
     "dpnp_divide",
@@ -111,6 +112,29 @@ func_map[add_name][int32_name][float64_name] = [float64_name, & custom_elemwise_
 func_map[add_name][int32_name][float32_name] = [float64_name, & custom_elemwise_add_c[int, float, double]]
 func_map[add_name][int32_name][int64_name] = [int64_name, & custom_elemwise_add_c[int, long, long]]
 func_map[add_name][int32_name][int32_name] = [int32_name, & custom_elemwise_add_c[int, int, int]]
+
+
+cpdef dparray dpnp_absolute(dparray x):
+    cdef dparray_shape_type shape_x = x.shape
+    cdef size_t dim_x = x.ndim
+
+    result = dparray(shape_x, dtype=x.dtype)
+
+    if dim_x > 2:
+        raise NotImplementedError
+
+    if dim_x == 2:
+        for i in range(shape_x[0]):
+            for j in range(shape_x[1]):
+                elem = x[i, j]
+                result[i, j] = elem if elem >= 0 else -1*elem
+    else:
+        for i in range(shape_x[0]):
+            elem = x[i]
+            result[i] = elem if elem >= 0 else -1*elem
+
+    return result
+
 
 cpdef dparray dpnp_add(dparray array1, dparray array2):
     cdef dparray result

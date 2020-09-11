@@ -49,6 +49,8 @@ from dpnp.dpnp_utils import checker_throw_value_error, checker_throw_type_error,
 
 
 __all__ = [
+    "abs",
+    "absolute",
     "add",
     "divide",
     "multiply",
@@ -57,6 +59,57 @@ __all__ = [
     "subtract",
     "sum"
 ]
+
+
+def abs(x):
+    return absolute(x)
+
+
+def absolute(input):
+    """
+    Calculate the absolute value element-wise.
+
+    Parameters
+    ----------
+    input : array_like
+        Input array.
+
+    Returns
+    -------
+    absolute : ndarray
+        An ndarray containing the absolute value of each element in x.
+    """
+
+    dim_input = input.ndim
+
+    if dim_input == 0:
+        return numpy.abs(input)
+
+    if dim_input > 2:
+        raise NotImplementedError
+
+    is_input_dparray = isinstance(input, dparray)
+
+    if not use_origin_backend(input) and is_input_dparray:
+        result = dpnp_absolute(input)
+
+        # scalar returned
+        if result.shape == (1,):
+            return result.dtype.type(result[0])
+
+        return result
+
+    input1 = dpnp.asnumpy(input) if is_input_dparray else input
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.abs(input1)
+    result = result_numpy
+    if isinstance(result, numpy.ndarray):
+        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_numpy.item(i))
+
+    return result
 
 
 def add(x1, x2, out=None):
