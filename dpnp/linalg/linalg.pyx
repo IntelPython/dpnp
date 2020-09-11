@@ -45,23 +45,26 @@ __all__ = [
 ]
 
 
-cpdef dparray dpnp_eig(dparray in_array1):
-    cdef vector[Py_ssize_t] shape1 = in_array1.shape
+cpdef tuple dpnp_eig(dparray in_array1):
+    cdef dparray_shape_type shape1 = in_array1.shape
 
     call_type = in_array1.dtype
+    res_type = call_type
+    if res_type != numpy.float32:
+        res_type = numpy.float64
 
     cdef size_t size1 = 0
     if not shape1.empty():
         size1 = shape1.front()
 
-    cdef dparray res_val = dparray((size1,), dtype=call_type)
+    cdef dparray res_val = dparray((size1,), dtype=res_type)
 
     # this array is used as input for MKL and will be overwritten with eigen vectors
-    cdef dparray res_vec = dparray(shape1, dtype=call_type)
+    cdef dparray res_vec = dparray(shape1, dtype=res_type)
     for i in range(in_array1.size):
         res_vec[i] = in_array1[i]
 
-    if call_type == numpy.float64:
+    if call_type in [numpy.float64, numpy.int32, numpy.int64]:
         mkl_lapack_syevd_c[double](res_vec.get_data(), res_val.get_data(), size1)
     elif call_type == numpy.float32:
         mkl_lapack_syevd_c[float](res_vec.get_data(), res_val.get_data(), size1)
