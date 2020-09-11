@@ -42,6 +42,7 @@ it contains:
 
 import numpy
 
+import dpnp
 from dpnp.backend import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import checker_throw_value_error, use_origin_backend
@@ -78,7 +79,7 @@ def cov(in_array1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aw
     return numpy.cov(in_array1)
 
 
-def mean(a, axis=None):
+def mean(input, axis=None):
     """
     Compute the arithmetic mean along the specified axis.
 
@@ -86,8 +87,8 @@ def mean(a, axis=None):
 
     Parameters
     ----------
-    a : array_like
-        Array containing numbers whose mean is desired. If `a` is not an
+    input : array_like
+        Array containing numbers whose mean is desired. If `input` is not an
         array, a conversion is attempted.
     axis : None or int or tuple of ints, optional
         Axis or axes along which the means are computed. The default is to
@@ -104,23 +105,19 @@ def mean(a, axis=None):
 
     """
 
-    if use_origin_backend():
-        return numpy.mean(a, axis=axis)
+    dim_input = input.ndim
 
-    # TODO This block needs to be redesigned
-    # Test pytest tests/third_party/cupy/statistics_tests/test_mean.py::TestMeanVar::test_mean_all
-    # failed if uncomment the code
-    # if numpy.shape(a) == ():
-    #     if axis is None:
-    #         return a
-    #     else:
-    #         raise AttributeError("Object has no attribute 'mean'")
+    is_input_dparray = isinstance(input, dparray)
 
-    if not isinstance(axis, int) and axis is not None:
-        raise TypeError("Parameter axis can be only int!")
+    if axis is not None and (not isinstance(axis, int) or (axis >= dim_input or -1*axis >=dim_input))\
+            or dim_input == 0:
+        return numpy.mean(input, axis=axis)
 
-    if isinstance(a, dparray):
-        result = dpnp_mean(a, axis=axis)
+    if not use_origin_backend(input) and is_input_dparray:
+        if dim_input > 2 and axis is not None:
+            raise NotImplementedError
+
+        result = dpnp_mean(input, axis=axis)
 
         # scalar returned
         if result.shape == (1,):
@@ -128,7 +125,10 @@ def mean(a, axis=None):
 
         return result
 
-    result_numpy = numpy.mean(a, axis=axis)
+    input1 = dpnp.asnumpy(input) if is_input_dparray else input
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.mean(input1, axis=axis)
     result = result_numpy
     if isinstance(result, numpy.ndarray):
         result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
