@@ -30,8 +30,7 @@
 #include <backend/backend_iface.hpp>
 #include "queue_sycl.hpp"
 
-// for beta08/beta09 compatibility
-using namespace oneapi;
+namespace mkl_lapack = oneapi::mkl::lapack;
 
 template <typename _DataType>
 void mkl_lapack_syevd_c(void* array_in, void* result1, size_t size)
@@ -46,20 +45,20 @@ void mkl_lapack_syevd_c(void* array_in, void* result1, size_t size)
 
     const std::int64_t lda = std::max<size_t>(1UL, size);
 
-    const std::int64_t scratchpad_size =
-        mkl::lapack::syevd_scratchpad_size<_DataType>(DPNP_QUEUE, mkl::job::vec, mkl::uplo::upper, size, lda);
+    const std::int64_t scratchpad_size = mkl_lapack::syevd_scratchpad_size<_DataType>(
+        DPNP_QUEUE, oneapi::mkl::job::vec, oneapi::mkl::uplo::upper, size, lda);
 
     _DataType* scratchpad = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(_DataType)));
 
-    status = mkl::lapack::syevd(DPNP_QUEUE,       // queue
-                                mkl::job::vec,    // jobz
-                                mkl::uplo::upper, // uplo
-                                size,             // The order of the matrix A (0≤n)
-                                syevd_array,      // will be overwritten with eigenvectors
-                                lda,
-                                result,
-                                scratchpad,
-                                scratchpad_size);
+    status = mkl_lapack::syevd(DPNP_QUEUE,               // queue
+                               oneapi::mkl::job::vec,    // jobz
+                               oneapi::mkl::uplo::upper, // uplo
+                               size,                     // The order of the matrix A (0≤n)
+                               syevd_array,              // will be overwritten with eigenvectors
+                               lda,
+                               result,
+                               scratchpad,
+                               scratchpad_size);
     status.wait();
 
     dpnp_memory_free_c(scratchpad);

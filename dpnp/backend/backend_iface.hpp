@@ -46,11 +46,6 @@
 #define INP_DLLEXPORT
 #endif
 
-// for beta08/beta09 compatibility
-namespace oneapi
-{
-}
-
 /**
  * @defgroup BACKEND_API Backend C++ library interface API
  * @{

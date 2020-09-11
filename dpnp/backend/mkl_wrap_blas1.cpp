@@ -30,8 +30,7 @@
 #include <backend/backend_iface.hpp>
 #include "queue_sycl.hpp"
 
-// for beta08/beta09 compatibility
-using namespace oneapi;
+namespace mkl_blas = oneapi::mkl::blas;
 
 template <typename _DataType>
 void mkl_blas_dot_c(void* array1_in, void* array2_in, void* result1, size_t size)
@@ -44,13 +43,13 @@ void mkl_blas_dot_c(void* array1_in, void* array2_in, void* result1, size_t size
 
     try
     {
-        status = mkl::blas::dot(DPNP_QUEUE,
-                                size,
-                                array_1,
-                                1, // array_1 stride
-                                array_2,
-                                1, // array_2 stride
-                                result);
+        status = mkl_blas::dot(DPNP_QUEUE,
+                               size,
+                               array_1,
+                               1, // array_1 stride
+                               array_2,
+                               1, // array_2 stride
+                               result);
     }
     catch (cl::sycl::exception const& e)
     {
