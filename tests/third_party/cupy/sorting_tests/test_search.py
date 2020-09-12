@@ -182,18 +182,18 @@ class TestSearch(unittest.TestCase):
     # def test_cub_argmin(self, xp, dtype):
         # a = testing.shaped_random(self.shape, xp, dtype)
         # if self.order == 'C':
-            # a = xp.ascontiguousarray(a)
+        # a = xp.ascontiguousarray(a)
         # else:
-            # a = xp.asfortranarray(a)
+        # a = xp.asfortranarray(a)
 
         # if xp is numpy:
-            # return a.argmin()
+        # return a.argmin()
 
         # # xp is cupy, first ensure we really use CUB
         # ret = cupy.empty(())  # Cython checks return type, need to fool it
         # func = 'cupy.core._routines_statistics.cub.device_reduce'
         # with testing.AssertFunctionIsCalled(func, return_value=ret):
-            # a.argmin()
+        # a.argmin()
         # # ...then perform the actual computation
         # return a.argmin()
 
@@ -202,18 +202,18 @@ class TestSearch(unittest.TestCase):
     # def test_cub_argmax(self, xp, dtype):
         # a = testing.shaped_random(self.shape, xp, dtype)
         # if self.order == 'C':
-            # a = xp.ascontiguousarray(a)
+        # a = xp.ascontiguousarray(a)
         # else:
-            # a = xp.asfortranarray(a)
+        # a = xp.asfortranarray(a)
 
         # if xp is numpy:
-            # return a.argmax()
+        # return a.argmax()
 
         # # xp is cupy, first ensure we really use CUB
         # ret = cupy.empty(())  # Cython checks return type, need to fool it
         # func = 'cupy.core._routines_statistics.cub.device_reduce'
         # with testing.AssertFunctionIsCalled(func, return_value=ret):
-            # a.argmax()
+        # a.argmax()
         # # ...then perform the actual computation
         # return a.argmax()
 
@@ -244,9 +244,9 @@ class TestArgMinMaxDtype(unittest.TestCase):
 
 @testing.parameterize(
     {'cond_shape': (2, 3, 4), 'x_shape': (2, 3, 4), 'y_shape': (2, 3, 4)},
-    {'cond_shape': (4,),      'x_shape': (2, 3, 4), 'y_shape': (2, 3, 4)},
+    {'cond_shape': (4,), 'x_shape': (2, 3, 4), 'y_shape': (2, 3, 4)},
     {'cond_shape': (2, 3, 4), 'x_shape': (2, 3, 4), 'y_shape': (3, 4)},
-    {'cond_shape': (3, 4),    'x_shape': (2, 3, 4), 'y_shape': (4,)},
+    {'cond_shape': (3, 4), 'x_shape': (2, 3, 4), 'y_shape': (4,)},
 )
 @testing.gpu
 class TestWhereTwoArrays(unittest.TestCase):
@@ -372,7 +372,7 @@ class TestArgwhere(unittest.TestCase):
 
     # def test_argwhere(self):
         # with testing.assert_warns(DeprecationWarning):
-            # return cupy.nonzero(self.array)
+        # return cupy.nonzero(self.array)
 
 
 @testing.gpu
@@ -632,7 +632,7 @@ class TestSearchSortedNanInf(unittest.TestCase):
         # x = testing.shaped_arange((10,), xp, xp.float64)
         # x[-1] = float('nan')
         # bins = xp.array([float('nan'), float('nan'), float('nan'),
-                         # float('nan'), float('nan')])
+        # float('nan'), float('nan')])
         # y = xp.searchsorted(bins, x, side=self.side)
         # return y,
 ###############################################################################

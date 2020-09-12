@@ -105,7 +105,9 @@ typedef struct DPNPFuncData
  * @return Struct @ref DPNPFuncData_t with information about the backend API function.
  */
 INP_DLLEXPORT
-DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type = DPNPFuncType::DPNP_FT_NONE);
+DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName name,
+                                     DPNPFuncType first_type,
+                                     DPNPFuncType second_type = DPNPFuncType::DPNP_FT_NONE);
 
 /**
  * DEPRECATED.

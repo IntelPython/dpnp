@@ -95,7 +95,7 @@ cpdef dparray dpnp_mean(dparray input, axis):
         result[0] = sum_val
         return result / size_input
     else:
-        axis_ = axis if axis >= 0 else -1*axis
+        axis_ = axis if axis >= 0 else -1 * axis
         if dim_input == 2:
             result = dparray(shape_input[~axis_], dtype=res_type)
             for i in range(shape_input[~axis_]):

@@ -127,11 +127,11 @@ cpdef dparray dpnp_absolute(dparray x):
         for i in range(shape_x[0]):
             for j in range(shape_x[1]):
                 elem = x[i, j]
-                result[i, j] = elem if elem >= 0 else -1*elem
+                result[i, j] = elem if elem >= 0 else -1 * elem
     else:
         for i in range(shape_x[0]):
             elem = x[i]
-            result[i] = elem if elem >= 0 else -1*elem
+            result[i] = elem if elem >= 0 else -1 * elem
 
     return result
 

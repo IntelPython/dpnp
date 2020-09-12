@@ -109,7 +109,7 @@ def mean(input, axis=None):
 
     is_input_dparray = isinstance(input, dparray)
 
-    if axis is not None and (not isinstance(axis, int) or (axis >= dim_input or -1*axis >=dim_input))\
+    if axis is not None and (not isinstance(axis, int) or (axis >= dim_input or -1 * axis >= dim_input))\
             or dim_input == 0:
         return numpy.mean(input, axis=axis)
 
