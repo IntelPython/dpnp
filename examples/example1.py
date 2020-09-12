@@ -52,20 +52,22 @@ except ImportError:
 
 
 def run_dgemm(executor, name, size, test_type, repetition):
-    x = executor.arange(size * size, dtype=test_type).reshape((size, size))
-    y = executor.arange(size * size, dtype=test_type).reshape((size, size))
+    x1 = executor.arange(size * size, dtype=test_type).reshape((size, size))
+    x2 = executor.arange(size * size, dtype=test_type).reshape((size, size))
 
     times = []
     for iteration in range(repetition):
         start_time = time.perf_counter()
-        result = executor.matmul(x, y)
+        result = executor.matmul(x1, x2)
         # print("result[5]=%f" % (result.item(5)))
         end_time = time.perf_counter()
         times.append(end_time - start_time)
 
-    execution_time = numpy.median(times)
+    min_time = numpy.min(times)
+    med_time = numpy.median(times)
+    max_time = numpy.max(times)
     # print("%s gemm() execution time: %f  verification result[5]=%f" % (name, execution_time, result.item(5)))
-    return execution_time, result.item(5)
+    return (min_time, med_time, max_time), result.item(5)
 
 
 if __name__ == '__main__':
@@ -75,12 +77,12 @@ if __name__ == '__main__':
         print(f"...Test data type is {test_type}, each test repetitions {test_repetition}")
 
         for size in [16, 32, 64, 128]:  # , 256, 512, 1024, 2048, 4096]:
-            time_python, result_python = run_dgemm(numpy, "    <NumPy>", size, test_type, test_repetition)
-            time_mkl, result_mkl = run_dgemm(dpnp, "<Intel MKL>", size, test_type, test_repetition)
+            times_python, result_python = run_dgemm(numpy, "    <NumPy>", size, test_type, test_repetition)
+            times_sycl, result_mkl = run_dgemm(dpnp, "<Intel MKL>", size, test_type, test_repetition)
 
             verification = False
             if result_mkl == result_python:
                 verification = True
 
             print(
-                f"type:{type_name}:N:{size:4}:NumPy:{time_python:.3e}:SYCL:{time_mkl:.3e}:ratio:{time_python/time_mkl:6.2f}:verification:{verification}")
+                f"type:{type_name}:N:{size:4}:__NumPy__:{times_python[1]:.3e}:(min:{times_python[0]:.3e}:max:{times_python[2]:.3e}):__SYCL__:{times_sycl[1]:.3e}:(min:{times_sycl[0]:.3e}:max:{times_sycl[2]:.3e}):ratio:{times_python[1]/times_sycl[1]:6.2f}:verification:{verification}")
