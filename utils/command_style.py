@@ -58,9 +58,7 @@ class source_style(Command):
     _py_checker_command_line = [_py_checker]
     _py_formatter_command_line = [
         _py_formatter,
-        '--in-place',
-        '--aggressive',
-        '--aggressive']
+        '--in-place']
     _py_file_extensions = ['.py', '.pyx', '.pxd', '.pxi']
 
     def _get_file_list(self, path, search_extentions):
