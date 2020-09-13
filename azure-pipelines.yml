@@ -1,12 +1,13 @@
 stages:
-- stage: Build
+- stage: Prepare build and test environment
   jobs:
-  - job: BuildJob
+  - job: install Intel OneAPI
     steps:
-    - script: echo Building!
+    - script: echo installing packages
     - bash: |
         echo ===================This multiline script always runs in Bash.
         echo ${SHELL}
+        uname -a
         echo ===================run PWD
         pwd
         echo ===================run SET
@@ -18,21 +19,23 @@ stages:
         sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
         sudo apt-get update
         sudo apt-get upgrade
-        sudo apt-get install intel-oneapi-mkl-2021.1-beta07
-        sudo apt-get -f install
+        sudo apt-get install intel-oneapi-mkl intel-oneapi-dpcpp-compiler
+        # sudo apt-get -f install
         clang++ --version
         which clang++
-- stage: Test
+- stage: Build DPNP
   jobs:
   - job: TestOnWindows
     steps:
     - script: echo Testing on Windows!
-  - job: TestOnLinux
+  - job: BuildOnLinux
     steps:
     - script: echo Testing on Linux!
     - bash: |
         clang++ --version
         which clang++
+        uname -a
+        ./0.build.sh
 - stage: Deploy
   jobs:
   - job: ubuntu1804
