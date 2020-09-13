@@ -35,6 +35,8 @@
  */
 
 #pragma once
+#ifndef BACKEND_PSTL_H // Cython compatibility
+#define BACKEND_PSTL_H
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-local-typedef"
@@ -45,3 +47,5 @@
 #include <oneapi/dpl/execution>
 
 #pragma clang diagnostic pop
+
+#endif // BACKEND_PSTL_H

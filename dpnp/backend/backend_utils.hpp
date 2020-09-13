@@ -24,6 +24,8 @@
 //*****************************************************************************
 
 #pragma once
+#ifndef BACKEND_UTILS_H // Cython compatibility
+#define BACKEND_UTILS_H
 
 #include <algorithm>
 #include <iostream>
@@ -75,3 +77,5 @@ std::ostream& operator<<(std::ostream& out, DPNPFuncType elem)
 
     return out;
 }
+
+#endif // BACKEND_UTILS_H

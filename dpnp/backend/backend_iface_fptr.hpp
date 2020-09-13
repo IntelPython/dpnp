@@ -36,6 +36,8 @@
  */
 
 #pragma once
+#ifndef BACKEND_IFACE_FPTR_H // Cython compatibility
+#define BACKEND_IFACE_FPTR_H
 
 #include <vector>
 
@@ -117,3 +119,5 @@ DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName name,
  */
 INP_DLLEXPORT
 void* get_backend_function_name(const char* func_name, const char* type_name) __attribute__((deprecated));
+
+#endif // BACKEND_IFACE_FPTR_H

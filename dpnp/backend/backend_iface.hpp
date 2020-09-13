@@ -36,6 +36,8 @@
  */
 
 #pragma once
+#ifndef BACKEND_IFACE_H // Cython compatibility
+#define BACKEND_IFACE_H
 
 #include <cstdint>
 #include <vector>
@@ -282,3 +284,5 @@ INP_DLLEXPORT void mkl_rng_uniform(void* result, size_t size);
  */
 template <typename _DataType>
 INP_DLLEXPORT void mkl_rng_uniform_mt19937(void* result, long low, long high, size_t size);
+
+#endif // BACKEND_IFACE_H

@@ -24,6 +24,8 @@
 //*****************************************************************************
 
 #pragma once
+#ifndef QUEUE_SYCL_H // Cython compatibility
+#define QUEUE_SYCL_H
 
 #include <CL/sycl.hpp>
 
@@ -79,3 +81,5 @@ public:
         return *queue;
     }
 };
+
+#endif // QUEUE_SYCL_H
