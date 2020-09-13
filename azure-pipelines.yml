@@ -1,7 +1,7 @@
 stages:
-- stage: Prepare build and test environment
+- stage: Prepare_build_test_environment
   jobs:
-  - job: install Intel OneAPI
+  - job: install_Intel_OneAPI
     steps:
     - script: echo installing packages
     - bash: |
@@ -23,7 +23,7 @@ stages:
         # sudo apt-get -f install
         clang++ --version
         which clang++
-- stage: Build DPNP
+- stage: Build_DPNP
   jobs:
   - job: TestOnWindows
     steps:
