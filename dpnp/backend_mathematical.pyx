@@ -116,13 +116,13 @@ cpdef dparray dpnp_absolute(dparray x):
 cpdef dparray dpnp_add(dparray array1, dparray array2):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
     cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(array2.dtype)
-    
+
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ADD, param1_type, param2_type)
-    
-    result_type = dpnp_DPNPFuncType_to_dtype(<size_t>kernel_data.return_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     cdef dparray result = dparray(array1.shape, dtype=result_type)
 
-    cdef custom_math_2in_1out_func_ptr_t func = <custom_math_2in_1out_func_ptr_t> kernel_data.ptr
+    cdef custom_math_2in_1out_func_ptr_t func = <custom_math_2in_1out_func_ptr_t > kernel_data.ptr
     func(array1.get_data(), array2.get_data(), result.get_data(), array1.size)
 
     return result

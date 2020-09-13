@@ -45,7 +45,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncType":  # n
 cdef extern from "backend/backend_iface_fptr.hpp":
     struct DPNPFuncData:
         DPNPFuncType return_type
-        void* ptr
+        void * ptr
 
     DPNPFuncData get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type)
 

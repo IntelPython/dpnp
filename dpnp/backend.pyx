@@ -293,13 +293,13 @@ cpdef dpnp_DPNPFuncType_to_dtype(size_t type):
     Type 'size_t' used instead 'DPNPFuncType' because Cython has lack of Enum support (0.29)
     TODO needs to use DPNPFuncType here
     """
-    if type == <size_t>DPNP_FT_DOUBLE:
+    if type == <size_t > DPNP_FT_DOUBLE:
         return numpy.float64
-    elif type == <size_t>DPNP_FT_FLOAT:
+    elif type == <size_t > DPNP_FT_FLOAT:
         return numpy.float32
-    elif type == <size_t>DPNP_FT_LONG:
+    elif type == <size_t > DPNP_FT_LONG:
         return numpy.int64
-    elif type == <size_t>DPNP_FT_INT:
+    elif type == <size_t > DPNP_FT_INT:
         return numpy.int32
     else:
         checker_throw_type_error("dpnp_DPNPFuncType_to_dtype", type)
