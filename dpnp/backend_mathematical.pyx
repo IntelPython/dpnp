@@ -91,29 +91,6 @@ cdef custom_math_2in_1out_t _elementwise_2arg_3type(string name1, string name2, 
     return kernel_data
 
 
-# Sorry, did not find a way to initialize the map statically
-cdef string add_name = "add".encode()
-func_map[add_name][float64_name][float64_name] = [float64_name, & custom_elemwise_add_c[double, double, double]]
-func_map[add_name][float64_name][float32_name] = [float64_name, & custom_elemwise_add_c[double, float, double]]
-func_map[add_name][float64_name][int64_name] = [float64_name, & custom_elemwise_add_c[double, long, double]]
-func_map[add_name][float64_name][int32_name] = [float64_name, & custom_elemwise_add_c[double, int, double]]
-
-func_map[add_name][float32_name][float64_name] = [float64_name, & custom_elemwise_add_c[float, double, double]]
-func_map[add_name][float32_name][float32_name] = [float32_name, & custom_elemwise_add_c[float, float, float]]
-func_map[add_name][float32_name][int64_name] = [float64_name, & custom_elemwise_add_c[float, long, double]]
-func_map[add_name][float32_name][int32_name] = [float64_name, & custom_elemwise_add_c[float, int, double]]
-
-func_map[add_name][int64_name][float64_name] = [float64_name, & custom_elemwise_add_c[long, double, double]]
-func_map[add_name][int64_name][float32_name] = [float64_name, & custom_elemwise_add_c[long, float, double]]
-func_map[add_name][int64_name][int64_name] = [int64_name, & custom_elemwise_add_c[long, long, long]]
-func_map[add_name][int64_name][int32_name] = [int64_name, & custom_elemwise_add_c[long, int, long]]
-
-func_map[add_name][int32_name][float64_name] = [float64_name, & custom_elemwise_add_c[int, double, double]]
-func_map[add_name][int32_name][float32_name] = [float64_name, & custom_elemwise_add_c[int, float, double]]
-func_map[add_name][int32_name][int64_name] = [int64_name, & custom_elemwise_add_c[int, long, long]]
-func_map[add_name][int32_name][int32_name] = [int32_name, & custom_elemwise_add_c[int, int, int]]
-
-
 cpdef dparray dpnp_absolute(dparray x):
     cdef dparray_shape_type shape_x = x.shape
     cdef size_t dim_x = x.ndim
@@ -137,16 +114,16 @@ cpdef dparray dpnp_absolute(dparray x):
 
 
 cpdef dparray dpnp_add(dparray array1, dparray array2):
-    cdef dparray result
-    param1_type = array1.dtype
-    param2_type = array2.dtype
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(array2.dtype)
+    
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ADD, param1_type, param2_type)
+    
+    result_type = dpnp_DPNPFuncType_to_dtype(<size_t>kernel_data.return_type)
+    cdef dparray result = dparray(array1.shape, dtype=result_type)
 
-    cdef custom_math_2in_1out_t kernel_data = _elementwise_2arg_3type(add_name, param1_type.name.encode(), param2_type.name.encode())
-    if ( < long > kernel_data.ptr == 0):
-        checker_throw_type_error("dpnp_add", (param1_type, param2_type))
-
-    result = dparray(array1.shape, dtype=kernel_data.return_type)
-    kernel_data.ptr(array1.get_data(), array2.get_data(), result.get_data(), array1.size)
+    cdef custom_math_2in_1out_func_ptr_t func = <custom_math_2in_1out_func_ptr_t> kernel_data.ptr
+    func(array1.get_data(), array2.get_data(), result.get_data(), array1.size)
 
     return result
 

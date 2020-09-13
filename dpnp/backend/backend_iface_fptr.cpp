@@ -42,7 +42,7 @@ typedef std::map<DPNPFuncType, DPNPFuncData_t> map_2p_t;
 typedef std::map<DPNPFuncType, map_2p_t> map_1p_t;
 typedef std::map<DPNPFuncName, map_1p_t> func_map_t;
 
-
+// clang-format off
 func_map_t func_map =
 {
   {DPNPFuncName::DPNP_FN_ADD,
@@ -90,7 +90,7 @@ func_map_t func_map =
     }
   }
 };
-
+// clang-format on
 
 DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName func_name, DPNPFuncType first_type, DPNPFuncType second_type)
 {
@@ -154,4 +154,18 @@ void* get_backend_function_name(const char* func_name, const char* type_name)
     }
 
     throw std::runtime_error("Intel NumPy Error: Unsupported function call");
+}
+
+/**
+ * This operator is needed for compatibility with Cython 0.29 which has a bug in Enum handling
+ * TODO needs to be deleted in future
+ */
+size_t operator-(DPNPFuncType lhs, DPNPFuncType rhs)
+{
+    size_t lhs_base = static_cast<size_t>(lhs);
+    size_t rhs_base = static_cast<size_t>(rhs);
+
+    size_t result = lhs_base - rhs_base;
+
+    return result;
 }
