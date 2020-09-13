@@ -7,25 +7,29 @@ stages:
     steps:
     - script: echo installing packages
     - bash: |
-        echo ===================This multiline script always runs in Bash.
+        echo ========================= current SHELL ===============================
         echo ${SHELL}
+        echo ========================= current machine kernel ===============================
         uname -a
-        echo ===================run PWD
+        echo ========================= current directory ===============================
         pwd
-        echo ===================run SET
-        # set
-        echo ===================install
+        echo ========================= install Intel repository ===============================
         wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
         sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
         rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
         sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
         sudo apt-get update
         # sudo apt-get upgrade
+        echo ========================= install Intel OneAPI ===============================
         sudo apt-get install intel-oneapi-mkl intel-oneapi-dpcpp-compiler
         # sudo apt-get -f install
-        ls -l /opt/intel/oneapi/
+        echo ========================= setup Intel OneAPI ===============================
+        . /opt/intel/oneapi/setvars.sh
+        echo ========================= Current clang version ===============================
         clang++ --version
         which clang++
+        echo ========================= build DPNP ===============================
+        ./0.build.sh
 - stage: Build_DPNP
   jobs:
   - job: TestOnWindows
