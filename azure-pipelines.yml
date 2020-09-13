@@ -32,6 +32,10 @@ stages:
         echo ========================= Current clang version ===============================
         clang++ --version
         which clang++
+        echo ========================= MKL headers ls -l /opt/intel/oneapi/mkl/ ===============================
+        ls -l /opt/intel/oneapi/mkl/
+        echo ========================= MKL headers ls -l /opt/intel/oneapi/mkl/2021.1-beta09/include ===============================
+        ls -l /opt/intel/oneapi/mkl/2021.1-beta09/include
         echo ========================= build DPNP ===============================
         ./0.build.sh
 - stage: Build_DPNP
