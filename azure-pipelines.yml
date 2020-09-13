@@ -22,6 +22,7 @@ stages:
         # sudo apt-get upgrade
         echo ========================= install Intel OneAPI ===============================
         sudo apt-get install intel-oneapi-mkl-2021.1-beta09                \
+                             intel-oneapi-mkl-devel-2021.1-beta09          \
                              intel-oneapi-dpcpp-cpp-compiler-2021.1-beta09 \
                              intel-oneapi-python                           \
                              intel-oneapi-dpcpp-cpp-2021.1-beta09
