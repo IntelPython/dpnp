@@ -21,7 +21,7 @@ stages:
         sudo apt-get update
         # sudo apt-get upgrade
         echo ========================= install Intel OneAPI ===============================
-        sudo apt-get install intel-oneapi-mkl intel-oneapi-dpcpp-compiler intel-oneapi-python
+        sudo apt-get install intel-oneapi-mkl intel-oneapi-dpcpp-compiler intel-oneapi-python intel-oneapi-icc-dpcpp-shared
         # sudo apt-get -f install
         echo ========================= setup Intel OneAPI ===============================
         ls -l /opt/intel/oneapi/
