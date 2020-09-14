@@ -1,6 +1,6 @@
 jobs:
 - job: 
-  pool: ubuntu-20.04
+  pool:
     vmImage: 'ubuntu-20.04'
   steps:
   - script: echo installing packages
