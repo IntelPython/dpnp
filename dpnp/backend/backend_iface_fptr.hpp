@@ -118,6 +118,25 @@ DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName name,
                                      DPNPFuncType second_type = DPNPFuncType::DPNP_FT_NONE);
 
 /**
+ * @ingroup BACKEND_API
+ * @brief get runtime pointer to selected function
+ *
+ * Same interface function as @ref get_dpnp_function_ptr with a bit diffrent interface
+ *
+ * @param [out] result_type  Type of the result provided by the backend API function
+ * @param [in]  name         Name of the function in storage
+ * @param [in]  first_type   First type of the storage
+ * @param [in]  second_type  Second type of the storage
+ *
+ * @return pointer to the backend API function.
+ */
+INP_DLLEXPORT
+void* get_dpnp_function_ptr1(DPNPFuncType& result_type,
+                             DPNPFuncName name,
+                             DPNPFuncType first_type,
+                             DPNPFuncType second_type = DPNPFuncType::DPNP_FT_NONE);
+
+/**
  * DEPRECATED.
  * Experimental interface. DO NOT USE IT!
  *
