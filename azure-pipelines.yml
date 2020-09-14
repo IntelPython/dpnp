@@ -1,87 +1,85 @@
-stages:
-- stage: all_tests
-  jobs:
-  - job: 
-    pool: ubuntu-20.04
-      vmImage: 'ubuntu-20.04'
-    steps:
-    - script: echo installing packages
-    - bash: |
-        echo ========================= current SHELL ===============================
-        echo ${SHELL}
-        echo ========================= current machine kernel ===============================
-        uname -a
-        echo ========================= current directory ===============================
-        pwd
-        echo ========================= install Intel repository ===============================
-        wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-        sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-        rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-        sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
-        sudo apt-get update
-        # sudo apt-get upgrade
-        echo ========================= Python version ===============================
-        python --version
-        python3 --version
-        echo ========================= install Python 3.8 ===============================
-        sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10 #alias python=python3 # sudo apt-get install python3.8
-        echo ========================= Python version ===============================
-        python --version
-        python3 --version
-        echo ========================= install Numpy ===============================
-        pip3 install numpy cython
-        echo ========================= install Intel OneAPI ===============================
-        # intel-oneapi-python
-        sudo apt-get install intel-oneapi-mkl-2021.1-beta09                \
-                             intel-oneapi-mkl-devel-2021.1-beta09          \
-                             intel-oneapi-dpcpp-cpp-compiler-2021.1-beta09 \
-                             intel-oneapi-dpcpp-cpp-2021.1-beta09
-        # sudo apt-get -f install
-        echo ========================= setup Intel OneAPI ===============================
-        ls -l /opt/intel/oneapi/
-        . /opt/intel/oneapi/setvars.sh
-        echo ========================= Current clang version ===============================
-        clang++ --version
-        which clang++
-        # echo ========================= MKL headers ls -l /opt/intel/oneapi/mkl/ ===============================
-        # ls -l /opt/intel/oneapi/mkl/
-        # echo ========================= MKL headers ls -l /opt/intel/oneapi/mkl/2021.1-beta09/include ===============================
-        # ls -l /opt/intel/oneapi/mkl/2021.1-beta09/include
-        echo ========================= build DPNP ===============================
-        ./0.build.sh
-        pytest
-  - job: ubuntu1804
-    pool:
-      vmImage: 'ubuntu-18.04'
-    steps:
-    - script: |
-        wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-        sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-        rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-        echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
-        sudo add-apt-repository -y "deb https://apt.repos.intel.com/oneapi all main"
-        sudo add-apt-repository -y ppa:intel-opencl/intel-opencl
-        sudo apt-get update
-        sudo apt-get install              \
-            intel-oneapi-common-vars      \
-            intel-oneapi-common-licensing \
-            intel-oneapi-mkl-devel        \
-            intel-oneapi-tbb              \
-            intel-oneapi-dpcpp-compiler   \
-            intel-oneapi-dev-utilities    \
-            intel-oneapi-libdpstd-devel   \
-            cmake                         \
-            opencl-headers                \
-            libze-loader                  \
-            libze-intel-gpu
-        sudo bash -c 'echo libintelocl.so > /etc/OpenCL/vendors/intel-cpu.icd'
-        sudo mv -f /opt/intel/oneapi/compiler/latest/linux/lib/oclfpga /opt/intel/oneapi/compiler/latest/linux/lib/oclfpga_
-      displayName: 'apt-get'
-    - script: conda create -q -y -n CB python=3.7 conda-build conda-verify
-      displayName: Create Anaconda environment
-    - script: |
-        export ONEAPI_ROOT=/opt/intel/oneapi
-        . /usr/share/miniconda/etc/profile.d/conda.sh
-        conda activate CB
-        conda build --override-channels -c conda-forge -c intel conda-recipe
-      displayName: conda build
+jobs:
+- job: 
+  pool: ubuntu-20.04
+    vmImage: 'ubuntu-20.04'
+  steps:
+  - script: echo installing packages
+  - bash: |
+      echo ========================= current SHELL ===============================
+      echo ${SHELL}
+      echo ========================= current machine kernel ===============================
+      uname -a
+      echo ========================= current directory ===============================
+      pwd
+      echo ========================= install Intel repository ===============================
+      wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+      sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+      rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+      sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
+      sudo apt-get update
+      # sudo apt-get upgrade
+      echo ========================= Python version ===============================
+      python --version
+      python3 --version
+      echo ========================= install Python 3.8 ===============================
+      sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10 #alias python=python3 # sudo apt-get install python3.8
+      echo ========================= Python version ===============================
+      python --version
+      python3 --version
+      echo ========================= install Numpy ===============================
+      pip3 install numpy cython
+      echo ========================= install Intel OneAPI ===============================
+      # intel-oneapi-python
+      sudo apt-get install intel-oneapi-mkl-2021.1-beta09                \
+                           intel-oneapi-mkl-devel-2021.1-beta09          \
+                           intel-oneapi-dpcpp-cpp-compiler-2021.1-beta09 \
+                           intel-oneapi-dpcpp-cpp-2021.1-beta09
+      # sudo apt-get -f install
+      echo ========================= setup Intel OneAPI ===============================
+      ls -l /opt/intel/oneapi/
+      . /opt/intel/oneapi/setvars.sh
+      echo ========================= Current clang version ===============================
+      clang++ --version
+      which clang++
+      # echo ========================= MKL headers ls -l /opt/intel/oneapi/mkl/ ===============================
+      # ls -l /opt/intel/oneapi/mkl/
+      # echo ========================= MKL headers ls -l /opt/intel/oneapi/mkl/2021.1-beta09/include ===============================
+      # ls -l /opt/intel/oneapi/mkl/2021.1-beta09/include
+      echo ========================= build DPNP ===============================
+      ./0.build.sh
+      pytest
+- job: ubuntu1804
+  pool:
+    vmImage: 'ubuntu-18.04'
+  steps:
+  - script: |
+      wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+      sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+      rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+      echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+      sudo add-apt-repository -y "deb https://apt.repos.intel.com/oneapi all main"
+      sudo add-apt-repository -y ppa:intel-opencl/intel-opencl
+      sudo apt-get update
+      sudo apt-get install              \
+          intel-oneapi-common-vars      \
+          intel-oneapi-common-licensing \
+          intel-oneapi-mkl-devel        \
+          intel-oneapi-tbb              \
+          intel-oneapi-dpcpp-compiler   \
+          intel-oneapi-dev-utilities    \
+          intel-oneapi-libdpstd-devel   \
+          cmake                         \
+          opencl-headers                \
+          libze-loader                  \
+          libze-intel-gpu
+      sudo bash -c 'echo libintelocl.so > /etc/OpenCL/vendors/intel-cpu.icd'
+      sudo mv -f /opt/intel/oneapi/compiler/latest/linux/lib/oclfpga /opt/intel/oneapi/compiler/latest/linux/lib/oclfpga_
+    displayName: 'apt-get'
+  - script: conda create -q -y -n CB python=3.7 conda-build conda-verify
+    displayName: Create Anaconda environment
+  - script: |
+      export ONEAPI_ROOT=/opt/intel/oneapi
+      . /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate CB
+      conda build --override-channels -c conda-forge -c intel conda-recipe
+    displayName: conda build
