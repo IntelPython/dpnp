@@ -47,7 +47,8 @@ jobs:
       # ls -l /opt/intel/oneapi/mkl/2021.1-beta09/include
       echo ========================= build DPNP ===============================
       ./0.build.sh
-      pytest
+      echo ========================= run pytest ===============================
+      python -m pytest
 - job: ubuntu1804
   pool:
     vmImage: 'ubuntu-18.04'
