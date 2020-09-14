@@ -1,8 +1,8 @@
 stages:
-- stage: Prepare_build_test_environment
+- stage: all_tests
   jobs:
-  - job: install_Intel_OneAPI
-    pool:
+  - job: 
+    pool: ubuntu-20.04
       vmImage: 'ubuntu-20.04'
     steps:
     - script: echo installing packages
@@ -49,21 +49,7 @@ stages:
         # ls -l /opt/intel/oneapi/mkl/2021.1-beta09/include
         echo ========================= build DPNP ===============================
         ./0.build.sh
-- stage: Build_DPNP
-  jobs:
-  - job: TestOnWindows
-    steps:
-    - script: echo Testing on Windows!
-  - job: BuildOnLinux
-    steps:
-    - script: echo Testing on Linux!
-    - bash: |
-        clang++ --version
-        which clang++
-        uname -a
-        ./0.build.sh
-- stage: Deploy
-  jobs:
+        pytest
   - job: ubuntu1804
     pool:
       vmImage: 'ubuntu-18.04'
