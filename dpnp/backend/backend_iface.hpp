@@ -184,6 +184,20 @@ INP_DLLEXPORT void custom_argsort_c(void* array, void* result, size_t size);
 template <typename _DataType>
 INP_DLLEXPORT void custom_sort_c(void* array, void* result, size_t size);
 
+/**
+ * @ingroup BACKEND_API
+ * @brief Custom implementation of cov function with MKL and PSTL
+ *
+ * @param [in]  array       Input array.
+ *
+ * @param [out] result      Output array.
+ *
+ * @param [in]  input_shape Shape of input array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_cov_c(void* array1_in, void* result1, const std::vector<long>& input_shape);
+
 #if 0 // Example for OpenCL kernel
 template <typename _DataType>
 void custom_dgemm_c_opencl(void* array_1, void* array_2, void* result_1, size_t size);

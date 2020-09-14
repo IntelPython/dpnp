@@ -45,36 +45,23 @@ __all__ += [
 
 
 cpdef dparray dpnp_cov(dparray array1):
-    # behaviour of original numpy
-    if array1.ndim > 2:
-        raise ValueError("array has more than 2 dimensions")
+    cdef dparray_shape_type input_shape = array1.shape
 
-    if array1.ndim < 2:
-        raise NotImplementedError
+    call_type = array1.dtype
 
-    # numpy provide result as float64 for any input type
-    cdef dparray mean = dparray(array1.shape[0], dtype=numpy.float64)
-    cdef dparray X = dparray(array1.shape, dtype=numpy.float64)
+    if array1.ndim == 1:
+        input_shape.insert(input_shape.begin(), 1)
 
-    # mean(array1, axis=1) #################################
-    # dpmp.mean throws: 'dpnp.dparray.dparray' object is not callable
-    for i in range(array1.shape[0]):
-        sum = 0.0
-        for j in range(array1.shape[1]):
-            sum += array1[i, j]
-        mean[i] = sum / array1.shape[1]
-    ########################################################
-    #X = array1 - mean[:, None]
-    #X = array1 - mean[:, numpy.newaxis]
-    #X = array1 - mean.reshape((array1.shape[0], 1))
-    for i in range(array1.shape[0]):
-        for j in range(array1.shape[1]):
-            X[i, j] = array1[i, j] - mean[i]
-    ########################################################
-    Y = X.transpose()
-    res = dpnp_matmul(X, Y) / (array1.shape[1] - 1)
+    # numpy uses float64 for all input types
+    in_array = array1.astype(numpy.float64)
+    cdef dparray result = dparray((input_shape[0], input_shape[0]), dtype=numpy.float64)
 
-    return res
+    if call_type in [numpy.float64, numpy.float32, numpy.int32, numpy.int64]:
+        custom_cov_c[double](in_array.get_data(), result.get_data(), input_shape)
+    else:
+        checker_throw_type_error("dpnp_eig", call_type)
+
+    return result
 
 
 cpdef dparray dpnp_mean(dparray input, axis):

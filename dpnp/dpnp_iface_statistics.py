@@ -61,6 +61,10 @@ def cov(in_array1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aw
     is_dparray1 = isinstance(in_array1, dparray)
 
     if (not use_origin_backend(in_array1) and is_dparray1):
+        # behaviour of original numpy
+        if in_array1.ndim > 2:
+            raise ValueError("array has more than 2 dimensions")
+
         if y is not None:
             checker_throw_value_error("cov", "y", type(y), None)
         if rowvar is not True:
@@ -76,7 +80,7 @@ def cov(in_array1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aw
 
         return dpnp_cov(in_array1)
 
-    return numpy.cov(in_array1)
+    return numpy.cov(in_array1, y, rowvar, bias, ddof, fweights, aweights)
 
 
 def mean(input, axis=None):

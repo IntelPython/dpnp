@@ -114,7 +114,6 @@ Set compiler for the project
 # default variables (for Linux)
 _project_compiler = "clang++"
 _project_linker = "clang++"
-_project_cmplr_flag_sycl_devel = ["-fsycl-device-code-split=per_kernel"]
 _project_cmplr_flag_sycl = ["-fsycl"]
 _project_cmplr_flag_compatibility = ["-Wl,--enable-new-dtags", "-fPIC"]
 _project_cmplr_flag_lib = []
@@ -135,9 +134,6 @@ if IS_WIN:
 
 
 try:
-    """
-    set environment variables to control setuptools build procedure
-    """
     # check if we have preset variables in environment
     os.environ["CC"] == _project_compiler
     os.environ["CXX"] == _project_compiler
@@ -147,14 +143,6 @@ except KeyError:
     os.environ["CC"] = _project_compiler
     os.environ["CXX"] = _project_compiler
     os.environ["LD"] = _project_linker
-
-
-"""
-Get the project build type
-"""
-__dpnp_debug__ = os.environ.get('DEBUG', None)
-if not __dpnp_debug__ is None:
-    _project_cmplr_flag_sycl += _project_cmplr_flag_sycl_devel
 
 
 """
@@ -228,6 +216,7 @@ dpnp_backend_c = [
                 "dpnp/backend/custom_kernels_elemwise.cpp",
                 "dpnp/backend/custom_kernels_manipulation.cpp",
                 "dpnp/backend/custom_kernels_reduction.cpp",
+                "dpnp/backend/custom_kernels_statistics.cpp",
                 "dpnp/backend/memory_sycl.cpp",
                 "dpnp/backend/mkl_wrap_blas1.cpp",
                 "dpnp/backend/mkl_wrap_blas3.cpp",
