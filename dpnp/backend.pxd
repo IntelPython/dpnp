@@ -94,6 +94,9 @@ cdef extern from "backend/backend_iface.hpp":
     void mkl_rng_uniform[_DataType](void * result, size_t size)
     void mkl_rng_uniform_mt19937[_DataType](void * result, long low, long high, size_t size)
 
+    # Statistics routines
+    void custom_cov_c[_DataType](void * array, void * result, dparray_shape_type & input_shape)
+
     # Sorting routines
     void custom_argsort_c[_DataType, _idx_DataType](void * array, void * result, size_t size)
     void custom_sort_c[_DataType](void * array, void * result, size_t size)
@@ -159,6 +162,7 @@ cpdef dparray dpnp_transpose(dparray array1, axes=*)
 Statistics functions
 """
 cpdef dparray dpnp_mean(dparray a, axis)
+cpdef dparray dpnp_cov(dparray array1)
 
 
 """

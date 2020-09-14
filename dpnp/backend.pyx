@@ -103,11 +103,10 @@ cpdef dparray dpnp_array(obj, dtype=None):
 
 
 cpdef dparray dpnp_astype(dparray array1, dtype_target):
-
     cdef dparray result = dparray(array1.shape, dtype=dtype_target)
 
     for i in range(result.size):
-        result[i] = <long > array1[i]
+        result[i] = array1[i]
 
     return result
 

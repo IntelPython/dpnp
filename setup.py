@@ -228,6 +228,7 @@ dpnp_backend_c = [
                 "dpnp/backend/custom_kernels_elemwise.cpp",
                 "dpnp/backend/custom_kernels_manipulation.cpp",
                 "dpnp/backend/custom_kernels_reduction.cpp",
+                "dpnp/backend/custom_kernels_statistics.cpp",
                 "dpnp/backend/memory_sycl.cpp",
                 "dpnp/backend/mkl_wrap_blas1.cpp",
                 "dpnp/backend/mkl_wrap_blas3.cpp",
