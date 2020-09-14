@@ -33,7 +33,6 @@ and the rest of the library
 """
 
 from dpnp.dpnp_utils cimport checker_throw_type_error
-from libcpp.vector cimport vector
 from dpnp.backend cimport *
 from dpnp.dparray cimport dparray, dparray_shape_type
 import numpy
@@ -60,9 +59,7 @@ cpdef tuple dpnp_eig(dparray in_array1):
     cdef dparray res_val = dparray((size1,), dtype=res_type)
 
     # this array is used as input for MKL and will be overwritten with eigen vectors
-    cdef dparray res_vec = dparray(shape1, dtype=res_type)
-    for i in range(in_array1.size):
-        res_vec[i] = in_array1[i]
+    res_vec = in_array1.astype(res_type)
 
     if call_type in [numpy.float64, numpy.int32, numpy.int64]:
         mkl_lapack_syevd_c[double](res_vec.get_data(), res_val.get_data(), size1)
