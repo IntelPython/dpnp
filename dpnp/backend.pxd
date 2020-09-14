@@ -29,6 +29,27 @@ from libcpp.vector cimport vector
 from libcpp cimport bool
 from dpnp.dparray cimport dparray, dparray_shape_type
 
+cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
+    cdef enum DPNPFuncName "DPNPFuncName":
+        DPNP_FN_ADD
+        DPNP_FN_DOT
+
+cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
+    cdef enum DPNPFuncType "DPNPFuncType":
+        DPNP_FT_NONE
+        DPNP_FT_INT
+        DPNP_FT_LONG
+        DPNP_FT_FLOAT
+        DPNP_FT_DOUBLE
+
+cdef extern from "backend/backend_iface_fptr.hpp":
+    struct DPNPFuncData:
+        DPNPFuncType return_type
+        void * ptr
+
+    DPNPFuncData get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type)
+
+
 cdef extern from "backend/backend_iface.hpp" namespace "QueueOptions":  # need this namespace for Enum import
     cdef enum QueueOptions "QueueOptions":
         CPU_SELECTOR
@@ -104,6 +125,13 @@ cdef extern from "backend/backend_iface.hpp":
 
 cpdef dparray dpnp_remainder(dparray array1, int scalar)
 cpdef dparray dpnp_astype(dparray array1, dtype_target)
+
+
+"""
+Internal functions
+"""
+cpdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype)
+cpdef dpnp_DPNPFuncType_to_dtype(size_t type)
 
 
 """

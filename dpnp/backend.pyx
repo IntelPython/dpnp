@@ -270,3 +270,35 @@ cpdef dparray dpnp_remainder(dparray array1, int scalar):
         result[i] = (array1[i] % scalar)
 
     return result
+
+"""
+Internal functions
+"""
+cpdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype):
+
+    if dtype == numpy.float64:
+        return DPNP_FT_DOUBLE
+    elif dtype == numpy.float32:
+        return DPNP_FT_FLOAT
+    elif dtype == numpy.int64:
+        return DPNP_FT_LONG
+    elif dtype == numpy.int32:
+        return DPNP_FT_INT
+    else:
+        checker_throw_type_error("dpnp_dtype_to_DPNPFuncType", dtype)
+
+cpdef dpnp_DPNPFuncType_to_dtype(size_t type):
+    """
+    Type 'size_t' used instead 'DPNPFuncType' because Cython has lack of Enum support (0.29)
+    TODO needs to use DPNPFuncType here
+    """
+    if type == <size_t > DPNP_FT_DOUBLE:
+        return numpy.float64
+    elif type == <size_t > DPNP_FT_FLOAT:
+        return numpy.float32
+    elif type == <size_t > DPNP_FT_LONG:
+        return numpy.int64
+    elif type == <size_t > DPNP_FT_INT:
+        return numpy.int32
+    else:
+        checker_throw_type_error("dpnp_DPNPFuncType_to_dtype", type)

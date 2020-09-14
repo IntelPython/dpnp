@@ -82,6 +82,12 @@ enum class DPNPFuncType : size_t
 };
 
 /**
+ * This operator is needed for compatibility with Cython 0.29 which has a bug in Enum handling
+ * TODO needs to be deleted in future
+ */
+size_t operator-(DPNPFuncType lhs, DPNPFuncType rhs);
+
+/**
  * @ingroup BACKEND_FUNC_PTR_API
  * @brief Contains information about the C++ backend function
  *
