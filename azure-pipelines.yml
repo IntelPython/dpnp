@@ -3,7 +3,7 @@ jobs:
   pool:
     vmImage: 'ubuntu-20.04'
   steps:
-  - script: echo installing packages
+    displayName: full testing
   - bash: |
       echo ========================= current SHELL ===============================
       echo ${SHELL}
@@ -27,7 +27,7 @@ jobs:
       python --version
       python3 --version
       echo ========================= install Numpy ===============================
-      pip3 install numpy cython
+      pip3 install numpy cython pytest
       echo ========================= install Intel OneAPI ===============================
       # intel-oneapi-python
       sudo apt-get install intel-oneapi-mkl-2021.1-beta09                \
