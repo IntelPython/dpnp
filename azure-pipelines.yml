@@ -29,7 +29,7 @@ stages:
         python --version
         python3 --version
         echo ========================= install Numpy ===============================
-        pip3 install numpy
+        pip3 install numpy cython
         echo ========================= install Intel OneAPI ===============================
         # intel-oneapi-python
         sudo apt-get install intel-oneapi-mkl-2021.1-beta09                \
