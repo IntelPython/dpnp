@@ -4,6 +4,7 @@ jobs:
     vmImage: 'ubuntu-20.04'
   steps:
     displayName: full testing
+  - script: echo ====++++====
   - bash: |
       echo ========================= current SHELL ===============================
       echo ${SHELL}
