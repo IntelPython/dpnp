@@ -20,11 +20,17 @@ stages:
         sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
         sudo apt-get update
         # sudo apt-get upgrade
+        echo ========================= Python version ===============================
+        python --version
+        echo ========================= install Python 3.8 ===============================
+        sudo apt-get install python3.8
+        echo ========================= Python version ===============================
+        python --version
         echo ========================= install Intel OneAPI ===============================
+        # intel-oneapi-python
         sudo apt-get install intel-oneapi-mkl-2021.1-beta09                \
                              intel-oneapi-mkl-devel-2021.1-beta09          \
                              intel-oneapi-dpcpp-cpp-compiler-2021.1-beta09 \
-                             intel-oneapi-python                           \
                              intel-oneapi-dpcpp-cpp-2021.1-beta09
         # sudo apt-get -f install
         echo ========================= setup Intel OneAPI ===============================
