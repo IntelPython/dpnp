@@ -22,10 +22,16 @@ stages:
         # sudo apt-get upgrade
         echo ========================= Python version ===============================
         python --version
+        python3 --version
+        which python3
+        which python3.8
         echo ========================= install Python 3.8 ===============================
         alias python=python3 # sudo apt-get install python3.8
         echo ========================= Python version ===============================
         python --version
+        python3 --version
+        which python3
+        which python3.8
         echo ========================= install Intel OneAPI ===============================
         # intel-oneapi-python
         sudo apt-get install intel-oneapi-mkl-2021.1-beta09                \
@@ -39,10 +45,10 @@ stages:
         echo ========================= Current clang version ===============================
         clang++ --version
         which clang++
-        echo ========================= MKL headers ls -l /opt/intel/oneapi/mkl/ ===============================
-        ls -l /opt/intel/oneapi/mkl/
-        echo ========================= MKL headers ls -l /opt/intel/oneapi/mkl/2021.1-beta09/include ===============================
-        ls -l /opt/intel/oneapi/mkl/2021.1-beta09/include
+        # echo ========================= MKL headers ls -l /opt/intel/oneapi/mkl/ ===============================
+        # ls -l /opt/intel/oneapi/mkl/
+        # echo ========================= MKL headers ls -l /opt/intel/oneapi/mkl/2021.1-beta09/include ===============================
+        # ls -l /opt/intel/oneapi/mkl/2021.1-beta09/include
         echo ========================= build DPNP ===============================
         ./0.build.sh
 - stage: Build_DPNP
