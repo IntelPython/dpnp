@@ -40,7 +40,8 @@ from dpnp.backend cimport *
 
 __all__ += [
     "dpnp_cov",
-    "dpnp_mean"
+    "dpnp_mean",
+    "dpnp_min"
 ]
 
 
@@ -111,3 +112,43 @@ cpdef dparray dpnp_mean(dparray input, axis):
                 sum_val += input[i]
             result[0] = sum_val
         return result / shape_input[axis_]
+
+
+cpdef dparray dpnp_min(dparray input, axis):
+    cdef dparray_shape_type shape_input = input.shape
+    cdef long size_input = input.size
+    cdef size_t dim_input = input.ndim
+
+    res_type = input.dtype
+
+    cdef float min_val = 0
+
+    if dim_input == 2:
+        if axis is None:
+            result = dparray((1, ), dtype=res_type)
+            min_val = input[0, 0]
+            for i in range(shape_input[0]):
+                for j in range(shape_input[1]):
+                    if min_val > input[i, j]:
+                        min_val = input[i, j]
+            result[0] = min_val
+        else:
+            axis_ = axis if axis >= 0 else -1*axis
+            result = dparray(shape_input[~axis_], dtype=res_type)
+            for i in range(shape_input[~axis_]):
+                min_val = input[i, 0]
+                for j in range(shape_input[axis_]):
+                    index = (i, j)
+                    if min_val > input[index[~axis_], index[axis_]]:
+                        min_val = input[index[~axis_], index[axis_]]
+                result[i] = min_val
+    else:
+        result = dparray((1, ), dtype=res_type)
+        min_val = input[0]
+        for i in range(shape_input[0]):
+            if min_val > input[i]:
+                min_val = input[i]
+        result[0] = min_val
+
+    return result
+

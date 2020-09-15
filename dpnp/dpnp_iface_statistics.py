@@ -49,7 +49,8 @@ from dpnp.dpnp_utils import checker_throw_value_error, use_origin_backend
 
 __all__ = [
     'cov',
-    'mean'
+    'mean',
+    'min'
 ]
 
 
@@ -129,6 +130,68 @@ def mean(input, axis=None):
 
     # TODO need to put dparray memory into NumPy call
     result_numpy = numpy.mean(input1, axis=axis)
+    result = result_numpy
+    if isinstance(result, numpy.ndarray):
+        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_numpy.item(i))
+
+    return result
+
+
+def min(input, axis=None, out=None):
+    """
+        Return the minimum along a given axis.
+
+        Parameters
+        ----------
+        input : array_like
+            Input data.
+        axis : None or int or tuple of ints, optional
+            Axis or axes along which to operate. By default, flattened input is used.
+            New in version 1.7.0.
+            If this is a tuple of ints, the minimum is selected over multiple axes,
+            instead of a single axis or all the axes as before.
+        out : ndarray, optional
+            Alternative output array in which to place the result. Must be of the
+            same shape and buffer length as the expected output.
+            See ufuncs-output-type for more details.
+
+
+        Returns
+        -------
+        m : ndarray, see dtype parameter above
+            Minimum of a. If axis is None, the result is a scalar value.
+            If axis is given, the result is an array of dimension a.ndim - 1.
+
+        """
+
+    dim_input = input.ndim
+
+    is_input_dparray = isinstance(input, dparray)
+
+    if axis is not None and (not isinstance(axis, int) or (axis >= dim_input or -1 * axis >= dim_input)) \
+            or dim_input == 0:
+        return numpy.min(input, axis=axis)
+
+    if not use_origin_backend(input) and is_input_dparray:
+        if dim_input > 2 and axis is not None:
+            raise NotImplementedError
+        if out is not None:
+            checker_throw_value_error("min", "out", type(out), None)
+
+        result = dpnp_min(input, axis=axis)
+
+        # scalar returned
+        if result.shape == (1,):
+            return result.dtype.type(result[0])
+
+        return result
+
+    input1 = dpnp.asnumpy(input) if is_input_dparray else input
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.min(input1, axis=axis)
     result = result_numpy
     if isinstance(result, numpy.ndarray):
         result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
