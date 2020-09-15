@@ -14,7 +14,7 @@ jobs:
   steps:
   - script: echo installing packages
   - bash: |
-      echo ========================= current SHELL ===============================
+      echo ========================== current SHELL ===============================
       echo ${SHELL}
       echo ========================= current machine kernel ===============================
       uname -a
