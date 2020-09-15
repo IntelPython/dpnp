@@ -1,6 +1,5 @@
 jobs:
-
-  - job:
+  - job: CodeStyle
     displayName: Code style check Ubuntu 20.04
     pool:
       vmImage: 'ubuntu-20.04'
@@ -9,7 +8,7 @@ jobs:
     - bash: |
       python ./setup.py style
 
-  - job:
+  - job: FullTests
     displayName: testing on Ubuntu 20.04
     pool:
       vmImage: 'ubuntu-20.04'
