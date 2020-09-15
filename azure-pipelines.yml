@@ -1,18 +1,24 @@
 jobs:
+
 - job: myCodeStyle
   displayName: Code style check Ubuntu 20.04
+
   pool:
     vmImage: 'ubuntu-20.04'
+
   steps:
-  - script: echo Code style check
+
   - bash: |
     python ./setup.py style
-- job:
+
+- job: ubuntu2004
   displayName: testing on Ubuntu 20.04
+
   pool:
     vmImage: 'ubuntu-20.04'
+
   steps:
-  - script: echo installing packages
+
   - bash: |
       echo ========================== current SHELL ===============================
       echo ${SHELL}
