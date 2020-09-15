@@ -7,8 +7,7 @@ jobs:
   - script: echo Code style check
   - bash: |
     python ./setup.py style
-
-- job: 
+- job:
   displayName: testing on Ubuntu 20.04
   pool:
     vmImage: 'ubuntu-20.04'
