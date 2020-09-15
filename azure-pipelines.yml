@@ -9,7 +9,7 @@ jobs:
   steps:
 
   - bash: |
-    python ./setup.py style
+      python ./setup.py style
 
 - job: ubuntu2004
   displayName: testing on Ubuntu 20.04
