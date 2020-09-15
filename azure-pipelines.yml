@@ -9,6 +9,14 @@ jobs:
   steps:
 
   - bash: |
+      echo ========================= install Python 3.8 ===============================
+      sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
+      echo ========================= Python version ===============================
+      python --version
+      python3 --version
+      echo ========================= install Numpy cython pytest ===============================
+      pip3 install numpy cython pytest
+      echo ========================= Run style check ===============================
       python ./setup.py style
 
 - job: ubuntu2004
