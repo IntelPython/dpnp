@@ -293,8 +293,6 @@ class TestWhereError(unittest.TestCase):
 
 
 @testing.parameterize(
-    {'array': numpy.random.randint(0, 2, (20,))},
-    {'array': numpy.random.randn(3, 2, 4)},
     {'array': numpy.empty((0,))},
     {'array': numpy.empty((0, 2))},
     {'array': numpy.empty((0, 2, 0))},
@@ -326,8 +324,6 @@ class TestNonzeroZeroDimension(unittest.TestCase):
 
 
 @testing.parameterize(
-    {'array': numpy.random.randint(0, 2, (20,))},
-    {'array': numpy.random.randn(3, 2, 4)},
     {'array': numpy.array(0)},
     {'array': numpy.array(1)},
     {'array': numpy.empty((0,))},
@@ -345,8 +341,6 @@ class TestFlatNonzero(unittest.TestCase):
 
 
 @testing.parameterize(
-    {'array': numpy.random.randint(0, 2, (20,))},
-    {'array': numpy.random.randn(3, 2, 4)},
     {'array': numpy.empty((0,))},
     {'array': numpy.empty((0, 2))},
     {'array': numpy.empty((0, 2, 0))},
