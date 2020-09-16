@@ -14,6 +14,16 @@ jobs:
       echo ========================= Python version ===============================
       python --version
       python3 --version
+      echo ========================= conda activate ===============================
+      which conda
+      conda --version
+      conda activate
+      which conda
+      conda --version
+      which python
+      python --version
+      conda update
+      conda upgrade
       echo ========================= install Numpy cython pytest pycodestyle autopep8===============================
       conda install -y numpy cython pytest pycodestyle autopep8
       echo ========================= Run style check ===============================
