@@ -28,6 +28,8 @@ jobs:
       conda install -y numpy cython pytest pycodestyle autopep8
       which pycodestyle
       ls -l /home/vsts/work/1/s/utils/../setup.py
+      echo $PATH
+      ls -l /usr/bin
       echo ========================= Run style check ===============================
       # variables are not used but have to be installed for setuptools
       export ONEAPI_ROOT=/opt/intel
