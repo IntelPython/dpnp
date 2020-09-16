@@ -11,35 +11,19 @@ jobs:
   - bash: |
       echo ========================= install Python 3.8 ===============================
       sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
-      # export PATH=/usr/bin:${PATH}
       echo ========================= Python version ===============================
       python --version
       python3 --version
-      # echo ========================= conda activate ===============================
-      # pip3 install -V numpy cython pytest pycodestyle autopep8
-      # which conda
-      # conda --version
-      # conda activate
-      # conda update --prefix /usr/share/miniconda anaconda
-      # which conda
-      # conda --version
-      # which python
-      # python --version
       echo ========================= Conda ENV ===============================
       conda create -q -y -n CondaCodeStyle python=3.8 conda-build conda-verify numpy cython pytest pycodestyle autopep8
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate CondaCodeStyle
-      # echo ========================= install Numpy cython pytest pycodestyle autopep8===============================
-      # conda install -y numpy cython pytest pycodestyle autopep8
-      # which pycodestyle
-      # ls -l /home/vsts/work/1/s/utils/../setup.py
-      # echo $PATH
-      # ls -l /usr/bin
       echo ========================= Run style check ===============================
       # variables are not used but have to be installed for setuptools
       export ONEAPI_ROOT=/opt/intel
       export MKLROOT=/opt/intel
       python ./setup.py style
+      echo "##vso[task.logissue type=error]Style Check Failed."
 
 - job: ubuntu2004
   displayName: testing on Ubuntu 20.04
