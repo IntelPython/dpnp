@@ -1,7 +1,7 @@
 jobs:
 
 - job: myCodeStyle
-  displayName: Code style check Ubuntu 20.04
+  displayName: Code style
 
   pool:
     vmImage: 'ubuntu-20.04'
@@ -14,13 +14,17 @@ jobs:
       echo ========================= Python version ===============================
       python --version
       python3 --version
-      echo ========================= install Numpy cython pytest pycodestyle autopep8===============================
-      pip3 install numpy cython pytest pycodestyle autopep8
+      echo ========================= Conda ENV ===============================
+      conda create -q -y -n CondaCodeStyle python=3.8 conda-build conda-verify numpy cython pytest pycodestyle autopep8
+      . /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate CondaCodeStyle
       echo ========================= Run style check ===============================
       # variables are not used but have to be installed for setuptools
       export ONEAPI_ROOT=/opt/intel
       export MKLROOT=/opt/intel
       python ./setup.py style
+      # echo "##vso[task.logissue type=error]Style Check Failed."
+      # ##vso[task.complete result=Failed;]Style Check Failed
 
 - job: ubuntu2004
   displayName: testing on Ubuntu 20.04
