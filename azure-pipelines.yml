@@ -23,8 +23,8 @@ jobs:
       export ONEAPI_ROOT=/opt/intel
       export MKLROOT=/opt/intel
       python ./setup.py style
-      echo "##vso[task.logissue type=error]Style Check Failed."
-      ##vso[task.complete result=Failed;]Style Check Failed
+      # echo "##vso[task.logissue type=error]Style Check Failed."
+      # ##vso[task.complete result=Failed;]Style Check Failed
 
 - job: ubuntu2004
   displayName: testing on Ubuntu 20.04
