@@ -15,7 +15,7 @@ jobs:
       python --version
       python3 --version
       echo ========================= install Numpy cython pytest pycodestyle autopep8===============================
-      conda install numpy cython pytest pycodestyle autopep8
+      conda install -y numpy cython pytest pycodestyle autopep8
       echo ========================= Run style check ===============================
       # variables are not used but have to be installed for setuptools
       export ONEAPI_ROOT=/opt/intel
