@@ -133,6 +133,7 @@ class source_style(Command):
                     command_output = subprocess.Popen(
                         self._py_checker_command_line + [f])
                     returncode = command_output.wait()
+                    print(f"++++++++++>returncode={returncode}")
                     if returncode != 0:
                         bad_style_file_names.append(f)
                 else:
