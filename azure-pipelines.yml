@@ -1,7 +1,7 @@
 jobs:
 
 - job: myCodeStyle
-  displayName: Code style check Ubuntu 20.04
+  displayName: Code style
 
   pool:
     vmImage: 'ubuntu-20.04'
