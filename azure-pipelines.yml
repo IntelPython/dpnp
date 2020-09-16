@@ -18,12 +18,11 @@ jobs:
       which conda
       conda --version
       conda activate
+      conda update --prefix /usr/share/miniconda anaconda
       which conda
       conda --version
       which python
       python --version
-      conda update
-      conda upgrade
       echo ========================= install Numpy cython pytest pycodestyle autopep8===============================
       conda install -y numpy cython pytest pycodestyle autopep8
       echo ========================= Run style check ===============================
