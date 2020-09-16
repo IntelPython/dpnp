@@ -26,6 +26,8 @@ jobs:
       python --version
       echo ========================= install Numpy cython pytest pycodestyle autopep8===============================
       conda install -y numpy cython pytest pycodestyle autopep8
+      which pycodestyle
+      ls -l /home/vsts/work/1/s/utils/../setup.py
       echo ========================= Run style check ===============================
       # variables are not used but have to be installed for setuptools
       export ONEAPI_ROOT=/opt/intel
