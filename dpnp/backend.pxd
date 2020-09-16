@@ -122,6 +122,9 @@ cdef extern from "backend/backend_iface.hpp":
     void custom_argsort_c[_DataType, _idx_DataType](void * array, void * result, size_t size)
     void custom_sort_c[_DataType](void * array, void * result, size_t size)
 
+    # Sorting routines
+    void custom_argmax_c[_DataType, _idx_DataType](void * array, void * result, size_t size)
+    void custom_argmin_c[_DataType, _idx_DataType](void * array, void * result, size_t size)
 
 cpdef dparray dpnp_remainder(dparray array1, int scalar)
 cpdef dparray dpnp_astype(dparray array1, dtype_target)
@@ -198,3 +201,9 @@ Sorting functions
 """
 cpdef dparray dpnp_argsort(dparray array1)
 cpdef dparray dpnp_sort(dparray array1)
+
+"""
+Searching functions
+"""
+cpdef dparray dpnp_argmax(dparray array1)
+cpdef dparray dpnp_argmin(dparray array1)
