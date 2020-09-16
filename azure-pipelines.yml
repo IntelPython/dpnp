@@ -25,6 +25,10 @@ jobs:
       conda --version
       which python
       python --version
+      echo ========================= Conda ENV ===============================
+      conda create -q -y -n CondaCodeStyle python conda-build conda-verify
+      . /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate CondaCodeStyle
       echo ========================= install Numpy cython pytest pycodestyle autopep8===============================
       conda install -y numpy cython pytest pycodestyle autopep8
       which pycodestyle
