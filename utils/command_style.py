@@ -129,6 +129,7 @@ class source_style(Command):
         try:
             for f in py_files:
                 if not self.apply:
+                    print(f"++++++++++>command={self._py_checker_command_line + [f]}")
                     command_output = subprocess.Popen(
                         self._py_checker_command_line + [f])
                     returncode = command_output.wait()
