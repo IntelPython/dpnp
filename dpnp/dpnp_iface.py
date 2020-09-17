@@ -50,19 +50,14 @@ from dpnp.dpnp_utils import checker_throw_value_error, use_origin_backend
 import collections
 
 __all__ = [
-    "arange",
-    "array",
     "array_equal",
-    "asarray",
     "asnumpy",
-    "empty",
     "dpnp_queue_initialize",
     "matmul",
-    "ones",
-    "remainder",
-    "zeros"
+    "remainder"
 ]
 
+from dpnp.dpnp_iface_arraycreation import *
 from dpnp.dpnp_iface_libmath import *
 from dpnp.dpnp_iface_linearalgebra import *
 from dpnp.dpnp_iface_logic import *
@@ -72,6 +67,7 @@ from dpnp.dpnp_iface_sorting import *
 from dpnp.dpnp_iface_statistics import *
 from dpnp.dpnp_iface_trigonometric import *
 
+from dpnp.dpnp_iface_arraycreation import __all__ as __all__arraycreation
 from dpnp.dpnp_iface_libmath import __all__ as __all__libmath
 from dpnp.dpnp_iface_linearalgebra import __all__ as __all__linearalgebra
 from dpnp.dpnp_iface_logic import __all__ as __all__logic
@@ -81,6 +77,7 @@ from dpnp.dpnp_iface_sorting import __all__ as __all__sorting
 from dpnp.dpnp_iface_statistics import __all__ as __all__statistics
 from dpnp.dpnp_iface_trigonometric import __all__ as __all__trigonometric
 
+__all__ += __all__arraycreation
 __all__ += __all__libmath
 __all__ += __all__linearalgebra
 __all__ += __all__logic
@@ -89,121 +86,6 @@ __all__ += __all__mathematical
 __all__ += __all__sorting
 __all__ += __all__statistics
 __all__ += __all__trigonometric
-
-
-def arange(*args, **kwargs):
-    """Returns an array with evenly spaced values within a given interval.
-
-    Values are generated within the half-open interval [start, stop). The first
-    three arguments are mapped like the ``range`` built-in function, i.e. start
-    and step are optional.
-
-    Parameters
-    ----------
-        start: Start of the interval.
-        stop: End of the interval.
-        step: Step width between each pair of consecutive values.
-        dtype: Data type specifier. It is inferred from other arguments by
-            default.
-
-    Returns
-    -------
-        inumpy.dparray: The 1-D array of range values.
-
-    .. seealso:: :func:`numpy.arange`
-
-    """
-
-    if (use_origin_backend()):
-        return numpy.arange(*args, **kwargs)
-
-    if not isinstance(args[0], (int)):
-        raise TypeError(f"Intel NumPy arange(): scalar arguments expected. Given:{type(args[0])}")
-
-    start_param = 0
-    stop_param = 0
-    step_param = 1
-    dtype_param = kwargs.pop("dtype", None)
-    if dtype_param is None:
-        dtype_param = numpy.float64
-
-    if kwargs:
-        raise TypeError("Intel NumPy arange(): unexpected keyword argument(s): %s" % ",".join(kwargs.keys()))
-
-    args_len = len(args)
-    if args_len == 1:
-        stop_param = args[0]
-    elif args_len == 2:
-        start_param = args[0]
-        stop_param = args[1]
-    elif args_len == 3:
-        start_param, stop_param, step_param = args
-    else:
-        raise TypeError("Intel NumPy arange() takes 3 positional arguments: arange([start], stop, [step])")
-
-    return dpnp_arange(start_param, stop_param, step_param, dtype_param)
-
-
-def array(obj, dtype=None, copy=True, order='C', subok=False, ndmin=0):
-    """
-    Creates an array.
-
-    This function currently does not support the ``subok`` option.
-
-    Args:
-        obj: :class:`inumpy.dparray` object or any other object that can be
-            passed to :func:`numpy.array`.
-        dtype: Data type specifier.
-        copy (bool): If ``False``, this function returns ``obj`` if possible.
-            Otherwise this function always returns a new array.
-        order ({'C', 'F', 'A', 'K'}): Row-major (C-style) or column-major
-            (Fortran-style) order.
-            When ``order`` is 'A', it uses 'F' if ``a`` is column-major and
-            uses 'C' otherwise.
-            And when ``order`` is 'K', it keeps strides as closely as
-            possible.
-            If ``obj`` is :class:`numpy.ndarray`, the function returns 'C' or
-            'F' order array.
-        subok (bool): If True, then sub-classes will be passed-through,
-            otherwise the returned array will be forced to be a base-class
-            array (default).
-        ndmin (int): Minimum number of dimensions. Ones are inserted to the
-            head of the shape if needed.
-
-    Returns:
-        inumpy.dparray: An array on the current device.
-
-
-
-    .. note::
-       This method currently does not support ``subok`` argument.
-
-    .. seealso:: :func:`numpy.array`
-
-    """
-
-    if (use_origin_backend(obj)):
-        return numpy.array(obj, dtype=dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)
-
-    # if not isinstance(obj, collections.abc.Sequence):
-    #     return numpy.array(obj, dtype=dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)
-
-    # if isinstance(obj, numpy.object):
-    #     return numpy.array(obj, dtype=dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)
-
-    if subok is not False:
-        checker_throw_value_error("array", "subok", subok, False)
-
-    if copy is not True:
-        checker_throw_value_error("array", "copy", copy, True)
-
-    if order is not 'C':
-        checker_throw_value_error("array", "order", order, 'K')
-
-    if ndmin is not 0:
-        checker_throw_value_error("array", "ndmin", ndmin, 0)
-
-    return dpnp_array(obj, dtype)
 
 
 def array_equal(a1, a2, equal_nan=False):
@@ -240,73 +122,6 @@ def asnumpy(input, order='C'):
     """
 
     return numpy.asarray(input, order=order)
-
-
-def asarray(input, dtype=None, order='C'):
-    """Converts an input object into array.
-
-    This is equivalent to ``array(a, dtype, copy=False)``.
-
-    Args:
-        input: The source object.
-        dtype: Data type specifier. It is inferred from the input by default.
-        order{‘C’, ‘F’}, optional
-            Whether to use row-major (C-style) or column-major (Fortran-style) memory representation.
-            Defaults to ‘C’.
-
-    Returns:
-        inumpy.dparray populated with input data
-
-    .. seealso:: :func:`numpy.asarray`
-
-    """
-
-    if (use_origin_backend(input)):
-        return numpy.asarray(input, dtype=dtype, order=order)
-
-    return array(input, dtype=dtype, order=order)
-
-
-def empty(shape, dtype=None, order='C'):
-    """Return a new matrix of given shape and type, without initializing entries.
-    Parameters
-    ----------
-    shape : int or tuple of int
-        Shape of the empty matrix.
-    dtype : data-type, optional
-        Desired output data-type.
-    order : {'C', 'F'}, optional
-        Whether to store multi-dimensional data in row-major
-        (C-style) or column-major (Fortran-style) order in
-        memory.
-    See Also
-    --------
-    empty_like, zeros
-    Notes
-    -----
-    `empty`, unlike `zeros`, does not set the matrix values to zero,
-    and may therefore be marginally faster.  On the other hand, it requires
-    the user to manually set all the values in the array, and should be
-    used with caution.
-    Examples
-    --------
-    >>> import numpy.matlib
-    >>> np.matlib.empty((2, 2))    # filled with random data
-    matrix([[  6.76425276e-320,   9.79033856e-307], # random
-            [  7.39337286e-309,   3.22135945e-309]])
-    >>> np.matlib.empty((2, 2), dtype=int)
-    matrix([[ 6600475,        0], # random
-            [ 6586976, 22740995]])
-    """
-
-    if (use_origin_backend()):
-        return numpy.empty(shape, dtype, order=order)
-
-    # only 'C' order is supported for now
-    if order not in ('C', 'c', None):
-        checker_throw_value_error("empty", "order", order, 'C')
-
-    return dparray(shape, dtype)
 
 
 def matmul(in_array1, in_array2, out=None):
@@ -362,59 +177,6 @@ def matmul(in_array1, in_array2, out=None):
 
     # TODO need to return dparray instead ndarray
     return numpy.matmul(input1, input2, out=out)
-
-
-def ones(shape, dtype=None, order='C'):
-    """
-    Return a new array of given shape and type, filled with ones.
-
-    Parameters
-    ----------
-    shape : int or sequence of ints
-        Shape of the new array, e.g., ``(2, 3)`` or ``2``.
-    dtype : data-type, optional
-        The desired data-type for the array, e.g., `numpy.int64`.  Default is
-        `numpy.float64`.
-    order : {'C', 'F'}, optional, default: C
-        Whether to store multi-dimensional data in row-major
-        (C-style) or column-major (Fortran-style) order in
-        memory.
-
-    Returns
-    -------
-    out : dparray
-        Array of ones with the given shape, dtype, and order.
-
-    See Also
-    --------
-    ones_like : Return an array of ones with shape and type of input.
-    empty : Return a new uninitialized array.
-    zeros : Return a new array setting values to zero.
-    full : Return a new array of given shape filled with value.
-
-    Examples
-    --------
-    >>> np.ones(5)
-    array([1., 1., 1., 1., 1.])
-    >>> np.ones((5,), dtype=int64)
-    array([1, 1, 1, 1, 1])
-    >>> np.ones((2, 1))
-    array([[1.],
-           [1.]])
-    >>> s = (2,2)
-    >>> np.ones(s)
-    array([[1.,  1.],
-           [1.,  1.]])
-    """
-
-    if (use_origin_backend()):
-        return numpy.ones(shape, dtype=dtype, order=order)
-
-    # only 'C' order is supported for now
-    if order not in ('C', 'c', None):
-        checker_throw_value_error("ones", "order", order, 'C')
-
-    return dpnp_init_val(shape, dtype, 1)
 
 
 def remainder(x1, x2):
@@ -497,21 +259,3 @@ def remainder(x1, x2):
         raise TypeError(f"Intel NumPy remainder(): Unsupported input2={type(x2)}")
 
     return dpnp_remainder(x1, x2)
-
-
-def zeros(shape, dtype=None, order='C'):
-    """
-    Return a new array of given shape and type, filled with zeros.
-
-    .. seealso:: :func:`numpy.zeros`
-
-    """
-
-    if (use_origin_backend()):
-        return numpy.zeros(shape, dtype=dtype, order=order)
-
-    # only 'C' order is supported for now
-    if order not in ('C', 'c', None):
-        checker_throw_value_error("zeros", "order", order, 'C')
-
-    return dpnp_init_val(shape, dtype, 0)
