@@ -42,6 +42,7 @@ it contains:
 
 import numpy
 
+import dpnp
 from dpnp.backend import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import checker_throw_value_error, use_origin_backend
@@ -49,6 +50,7 @@ import dpnp.config as config
 
 __all__ = [
     'dot',
+    "einsum_path"
 ]
 
 
@@ -113,3 +115,28 @@ def dot(in_array1, in_array2, out_array=None):
         return result.dtype.type(result[0])
 
     return result
+
+
+def einsum_path(*operands, optimize='greedy', einsum_call=False):
+    """
+    einsum_path(subscripts, *operands, optimize='greedy')
+
+    Evaluates the lowest cost contraction order for an einsum expression by
+    considering the creation of intermediate arrays.
+
+    See Also
+    --------
+    :meth:`numpy.multi_dot`
+
+    """
+
+    new_operands = []
+
+    for item in operands:
+        if isinstance(item, dparray):
+            dpnp_array = dpnp.asnumpy(item)
+            new_operands.append(dpnp_array)
+        else:
+            new_operands.append(item)
+
+    return numpy.einsum_path(*new_operands, optimize=optimize, einsum_call=einsum_call)
