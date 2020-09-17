@@ -302,7 +302,7 @@ def empty_like(prototype, dtype=None, order='C', subok=False, shape=None):
         if order not in ('C', 'c', None):
             checker_throw_value_error("empty_like", "order", order, 'C')
         if subok is not False:
-            checker_throw_value_error("empty_like", "subok", bias, False)
+            checker_throw_value_error("empty_like", "subok", subok, False)
 
         _shape = shape if shape is not None else prototype.shape
         _dtype = dtype if dtype is not None else prototype.dtype.type
@@ -421,7 +421,7 @@ def full_like(prototype, fill_value, dtype=None, order='C', subok=False, shape=N
         if order not in ('C', 'c', None):
             checker_throw_value_error("full_like", "order", order, 'C')
         if subok is not False:
-            checker_throw_value_error("full_like", "subok", bias, False)
+            checker_throw_value_error("full_like", "subok", subok, False)
 
         _shape = shape if shape is not None else prototype.shape
         _dtype = dtype if dtype is not None else prototype.dtype
@@ -541,7 +541,7 @@ def ones_like(prototype, dtype=None, order='C', subok=False, shape=None):
         if order not in ('C', 'c', None):
             checker_throw_value_error("ones_like", "order", order, 'C')
         if subok is not False:
-            checker_throw_value_error("ones_like", "subok", bias, False)
+            checker_throw_value_error("ones_like", "subok", subok, False)
 
         _shape = shape if shape is not None else prototype.shape
         _dtype = dtype if dtype is not None else prototype.dtype
@@ -668,7 +668,7 @@ def zeros_like(prototype, dtype=None, order='C', subok=False, shape=None):
         if order not in ('C', 'c', None):
             checker_throw_value_error("zeros_like", "order", order, 'C')
         if subok is not False:
-            checker_throw_value_error("zeros_like", "subok", bias, False)
+            checker_throw_value_error("zeros_like", "subok", subok, False)
 
         _shape = shape if shape is not None else prototype.shape
         _dtype = dtype if dtype is not None else prototype.dtype
