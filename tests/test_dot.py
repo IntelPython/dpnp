@@ -34,3 +34,23 @@ def test_dot_arange(type):
     result = inp.dot(ia, ib)
     expected = numpy.dot(a, b)
     numpy.testing.assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("type",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['float64', 'float32', 'int64', 'int32'])
+def test_multi_dot(type):
+    n = 16
+    a = inp.arange(n, dtype=type).reshape((4, 4))
+    b = inp.arange(n, dtype=type).reshape((4, 4))
+    c = inp.arange(n, dtype=type).reshape((4, 4))
+    d = inp.arange(n, dtype=type).reshape((4, 4))
+
+    a1 = numpy.arange(n, dtype=type).reshape((4, 4))
+    b1 = numpy.arange(n, dtype=type).reshape((4, 4))
+    c1 = numpy.arange(n, dtype=type).reshape((4, 4))
+    d1 = numpy.arange(n, dtype=type).reshape((4, 4))
+
+    result = inp.multi_dot([a, b, c, d])
+    expected = numpy.linalg.multi_dot([a1, b1, c1, d1])
+    numpy.testing.assert_array_equal(expected, result)

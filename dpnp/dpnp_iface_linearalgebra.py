@@ -49,6 +49,7 @@ import dpnp.config as config
 
 __all__ = [
     'dot',
+    "multi_dot"
 ]
 
 
@@ -111,5 +112,41 @@ def dot(in_array1, in_array2, out_array=None):
     # scalar returned
     if result.shape == (1,):
         return result.dtype.type(result[0])
+
+    return result
+
+
+def multi_dot(arrays, out=None):
+    """
+    Compute the dot product of two or more arrays in a single function call
+
+    Parameters
+    ----------
+    arrays : sequence of array_like
+        If the first argument is 1-D it is treated as row vector.
+        If the last argument is 1-D it is treated as column vector.
+        The other arguments must be 2-D.
+    out : ndarray, optional
+        unsupported
+
+    Returns
+    -------
+    output : ndarray
+        Returns the dot product of the supplied arrays.
+
+    See Also
+    --------
+    :meth:`numpy.multi_dot`
+
+    """
+
+    n = len(arrays)
+    # optimization only makes sense for len(arrays) > 2
+    if n < 2:
+        checker_throw_value_error("multi_dot", "arrays", n, ">1")
+
+    result = arrays[0]
+    for id in range(1, n):
+        result = dot(result, arrays[id])
 
     return result
