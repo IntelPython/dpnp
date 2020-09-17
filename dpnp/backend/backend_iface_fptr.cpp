@@ -81,6 +81,62 @@ func_map_t func_map =
       }
     }
   },
+  {DPNPFuncName::DPNP_FN_ARGMAX,
+    { // T1. First template parameter
+      {DPNPFuncType::DPNP_FT_INT,
+        { // T2. Second template parameter
+          {DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_INT, (void*)custom_argmax_c<int, int>}},
+          {DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_LONG, (void*)custom_argmax_c<int, long>}}
+        }
+      },
+      {DPNPFuncType::DPNP_FT_LONG,
+        { // T2. Second template parameter
+          {DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_INT, (void*)custom_argmax_c<long, int>}},
+          {DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_LONG, (void*)custom_argmax_c<long, long>}}
+        }
+      },
+      {DPNPFuncType::DPNP_FT_FLOAT,
+        { // T2. Second template parameter
+          {DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_INT, (void*)custom_argmax_c<float, int>}},
+          {DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_LONG, (void*)custom_argmax_c<float, long>}}
+        }
+      },
+      {DPNPFuncType::DPNP_FT_DOUBLE,
+        { // T2. Second template parameter
+          {DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_INT, (void*)custom_argmax_c<double, int>}},
+          {DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_LONG, (void*)custom_argmax_c<double, long>}}
+        }
+      }
+    }
+  },
+  {DPNPFuncName::DPNP_FN_ARGMIN,
+    { // T1. First template parameter
+      {DPNPFuncType::DPNP_FT_INT,
+        { // T2. Second template parameter
+          {DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_INT, (void*)custom_argmin_c<int, int>}},
+          {DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_LONG, (void*)custom_argmin_c<int, long>}}
+        }
+      },
+      {DPNPFuncType::DPNP_FT_LONG,
+        { // T2. Second template parameter
+          {DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_INT, (void*)custom_argmin_c<long, int>}},
+          {DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_LONG, (void*)custom_argmin_c<long, long>}}
+        }
+      },
+      {DPNPFuncType::DPNP_FT_FLOAT,
+        { // T2. Second template parameter
+          {DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_INT, (void*)custom_argmin_c<float, int>}},
+          {DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_LONG, (void*)custom_argmin_c<float, long>}}
+        }
+      },
+      {DPNPFuncType::DPNP_FT_DOUBLE,
+        { // T2. Second template parameter
+          {DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_INT, (void*)custom_argmin_c<double, int>}},
+          {DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_LONG, (void*)custom_argmin_c<double, long>}}
+        }
+      }
+    }
+  },
   {DPNPFuncName::DPNP_FN_DOT,
     {
       {DPNPFuncType::DPNP_FT_INT, {{DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_INT, (void*)custom_blas_dot_c<int>}}}},
