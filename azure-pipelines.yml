@@ -54,14 +54,15 @@ jobs:
       echo ========================= Python version ===============================
       python --version
       python3 --version
+      echo ========================= install valgrind ===============================
+      sudo apt-get install valgrind
       echo ========================= install Numpy cython pytest ===============================
       pip3 install numpy cython pytest pytest-valgrind
       echo ========================= install Intel OneAPI ===============================
       sudo apt-get install intel-oneapi-mkl-2021.1-beta09                \
                            intel-oneapi-mkl-devel-2021.1-beta09          \
                            intel-oneapi-dpcpp-cpp-compiler-2021.1-beta09 \
-                           intel-oneapi-dpcpp-cpp-2021.1-beta09          \
-                           valgrind
+                           intel-oneapi-dpcpp-cpp-2021.1-beta09
       echo ========================= setup Intel OneAPI ===============================
       ls -l /opt/intel/oneapi/
       . /opt/intel/oneapi/setvars.sh
