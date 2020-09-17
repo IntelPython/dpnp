@@ -55,10 +55,7 @@ void custom_argsort_c(void* array1_in, void* result1, size_t size)
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _idx_DataType* result = reinterpret_cast<_idx_DataType*>(result1);
 
-    for (size_t i = 0; i < size; ++i)
-    {
-        result[i] = i;
-    }
+    std::iota(result, result + size, 0);
 
     auto policy =
         oneapi::dpl::execution::make_device_policy<class custom_argsort_c_kernel<_DataType, _idx_DataType>>(DPNP_QUEUE);
@@ -95,10 +92,7 @@ void custom_sort_c(void* array1_in, void* result1, size_t size)
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    for (size_t i = 0; i < size; ++i)
-    {
-        result[i] = array_1[i];
-    }
+    std::copy(array_1, array_1 + size, result);
 
     auto policy = oneapi::dpl::execution::make_device_policy<class custom_sort_c_kernel<_DataType>>(DPNP_QUEUE);
 
