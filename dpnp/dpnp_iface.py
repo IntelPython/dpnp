@@ -54,7 +54,6 @@ __all__ = [
     "array_equal",
     "asnumpy",
     "dpnp_queue_initialize",
-    "empty",
     "get_include",
     "matmul",
     "remainder"
