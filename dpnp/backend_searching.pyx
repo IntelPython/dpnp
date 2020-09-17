@@ -32,7 +32,7 @@ and the rest of the library
 
 """
 
-
+import cython
 import numpy
 from dpnp.dpnp_utils cimport checker_throw_type_error, normalize_axis
 
@@ -43,43 +43,42 @@ __all__ += [
 ]
 
 
+# C function pointer to the C library template functions
+ctypedef void (*custom_math_1in_1out_func_ptr_t) (void * , void * , size_t)
+
+
+cdef struct custom_math_2in_1out:
+    string return_type  # return type identifier which expected by the `ptr` function
+    custom_math_1in_1out_func_ptr_t ptr  # C function pointer
+
+
 cpdef dparray dpnp_argmax(dparray in_array1):
-    call_type = in_array1.dtype
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(in_array1.dtype)
+    cdef DPNPFuncType output_type = dpnp_dtype_to_DPNPFuncType(numpy.int64)
 
-    cdef dparray result = dparray((1,), dtype=numpy.int64)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ARGMAX, param1_type, output_type)
 
-    cdef size_t size = in_array1.size
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    cdef dparray result = dparray((1,), dtype=result_type)
 
-    if call_type == numpy.float64:
-        custom_argmax_c[double, long](in_array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_argmax_c[float, long](in_array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_argmax_c[long, long](in_array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_argmax_c[int, long](in_array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_argmax", call_type)
+    cdef custom_math_1in_1out_func_ptr_t func = <custom_math_1in_1out_func_ptr_t > kernel_data.ptr
+
+    func(in_array1.get_data(), result.get_data(), in_array1.size)
 
     return result
 
 
 cpdef dparray dpnp_argmin(dparray in_array1):
-    call_type = in_array1.dtype
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(in_array1.dtype)
+    cdef DPNPFuncType output_type = dpnp_dtype_to_DPNPFuncType(numpy.int64)
 
-    cdef dparray result = dparray((1,), dtype=numpy.int64)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ARGMIN, param1_type, output_type)
 
-    cdef size_t size = in_array1.size
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    cdef dparray result = dparray((1,), dtype=result_type)
 
-    if call_type == numpy.float64:
-        custom_argmin_c[double, long](in_array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_argmin_c[float, long](in_array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_argmin_c[long, long](in_array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_argmin_c[int, long](in_array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_argmin", call_type)
+    cdef custom_math_1in_1out_func_ptr_t func = <custom_math_1in_1out_func_ptr_t > kernel_data.ptr
+
+    func(in_array1.get_data(), result.get_data(), in_array1.size)
 
     return result

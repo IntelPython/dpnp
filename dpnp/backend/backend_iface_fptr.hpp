@@ -59,10 +59,12 @@
  */
 enum class DPNPFuncName : size_t
 {
-    DPNP_FN_NONE, /**< Very first element of the enumeration */
-    DPNP_FN_ADD,  /**< Used in numpy.add() implementation  */
-    DPNP_FN_DOT,  /**< Used in numpy.dot() implementation  */
-    DPNP_FN_LAST  /**< The latest element of the enumeration */
+    DPNP_FN_NONE,   /**< Very first element of the enumeration */
+    DPNP_FN_ADD,    /**< Used in numpy.add() implementation  */
+    DPNP_FN_ARGMAX, /**< Used in numpy.argmax() implementation  */
+    DPNP_FN_ARGMIN, /**< Used in numpy.argmin() implementation  */
+    DPNP_FN_DOT,    /**< Used in numpy.dot() implementation  */
+    DPNP_FN_LAST    /**< The latest element of the enumeration */
 };
 
 /**
