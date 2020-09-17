@@ -75,7 +75,8 @@ jobs:
       echo ========================= run valgrind ===============================
       export PYTHONMALLOC=malloc
       valgrind --show-leak-kinds=definite --log-file=/tmp/valgrind-output \
-               python -m pytest -vv --valgrind --valgrind-log=/tmp/valgrind-output
+               python -m pytest tests/third_party/cupy/math_tests/test_arithmetic.py \
+                                -vv --valgrind --valgrind-log=/tmp/valgrind-output
 
 - job: ubuntu2004
   displayName: testing on Ubuntu 20.04
