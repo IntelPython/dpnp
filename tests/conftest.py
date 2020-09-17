@@ -30,6 +30,7 @@ import pytest
 
 skip_mark = pytest.mark.skip(reason='Skipping test.')
 
+
 def pytest_collection_modifyitems(config, items):
     excluded_tests = []
     # global skip file
