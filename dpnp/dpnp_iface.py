@@ -40,6 +40,7 @@ it contains:
 """
 
 
+import os
 import numpy
 
 from dpnp.backend import *
@@ -53,6 +54,8 @@ __all__ = [
     "array_equal",
     "asnumpy",
     "dpnp_queue_initialize",
+    "empty",
+    "get_include",
     "matmul",
     "remainder"
 ]
@@ -122,6 +125,16 @@ def asnumpy(input, order='C'):
     """
 
     return numpy.asarray(input, order=order)
+
+
+def get_include():
+    """
+    Return the directory that contains the DPNP C++ backend \\*.h header files.
+    """
+
+    dpnp_path = os.path.join(os.path.dirname(__file__), 'backend')
+
+    return dpnp_path
 
 
 def matmul(in_array1, in_array2, out=None):

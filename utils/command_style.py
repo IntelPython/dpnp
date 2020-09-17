@@ -149,5 +149,7 @@ class source_style(Command):
             for line in bad_style_file_names:
                 print(line)
             print("%s Style check failed" % self._result_marker)
+            exit(1)
         else:
             print("%s Style check passed" % self._result_marker)
+            exit(0)

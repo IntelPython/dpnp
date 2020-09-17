@@ -30,7 +30,9 @@
 #include <backend/backend_iface.hpp>
 #include "queue_sycl.hpp"
 
+#if defined(DPNP_LOCAL_QUEUE)
 cl::sycl::queue* backend_sycl::queue = nullptr;
+#endif
 
 /**
  * Function push the SYCL kernels to be linked (final stage of the compilation) for the current queue
@@ -56,6 +58,7 @@ static long dpnp_custom_kernels_link()
     return result;
 }
 
+#if defined(DPNP_LOCAL_QUEUE)
 // Catch asynchronous exceptions
 static void exception_handler(cl::sycl::exception_list exceptions)
 {
@@ -71,9 +74,11 @@ static void exception_handler(cl::sycl::exception_list exceptions)
         }
     }
 };
+#endif
 
 void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
 {
+#if defined(DPNP_LOCAL_QUEUE)
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
     if (queue)
@@ -96,16 +101,21 @@ void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
 
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> time_queue_init = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+#endif
 
-    dpnp_custom_kernels_link();
     std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
+    dpnp_custom_kernels_link();
+    std::chrono::high_resolution_clock::time_point t4 = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> time_kernels_link =
-        std::chrono::duration_cast<std::chrono::duration<double>>(t3 - t2);
+        std::chrono::duration_cast<std::chrono::duration<double>>(t4 - t3);
 
-    std::cout << "Running on: " << DPNP_QUEUE.get_device().get_info<sycl::info::device::name>() << "\n"
-              << "queue initialization time: " << time_queue_init.count() << " (sec.)\n"
-              << "SYCL kernels link time: " << time_kernels_link.count() << " (sec.)\n"
-              << std::endl;
+    std::cout << "Running on: " << DPNP_QUEUE.get_device().get_info<sycl::info::device::name>() << "\n";
+#if defined(DPNP_LOCAL_QUEUE)
+    std::cout << "queue initialization time: " << time_queue_init.count() << " (sec.)\n";
+#else
+    std::cout << "DPCtrl SYCL queue used\n";
+#endif
+    std::cout << "SYCL kernels link time: " << time_kernels_link.count() << " (sec.)\n" << std::endl;
 }
 
 void dpnp_queue_initialize_c(QueueOptions selector)
