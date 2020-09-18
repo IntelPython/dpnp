@@ -15,6 +15,6 @@ def test_median(type, size):
     ia = dpnp.array(a)
 
     np_res = numpy.median(a)
-    dpnp_res = dpnp.median(a)
+    dpnp_res = dpnp.median(ia)
 
     numpy.testing.assert_allclose(dpnp_res, np_res)
