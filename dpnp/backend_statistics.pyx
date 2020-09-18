@@ -40,7 +40,8 @@ from dpnp.backend cimport *
 
 __all__ += [
     "dpnp_cov",
-    "dpnp_mean"
+    "dpnp_mean",
+    "dpnp_median"
 ]
 
 
@@ -59,7 +60,7 @@ cpdef dparray dpnp_cov(dparray array1):
     if call_type in [numpy.float64, numpy.float32, numpy.int32, numpy.int64]:
         custom_cov_c[double](in_array.get_data(), result.get_data(), input_shape)
     else:
-        checker_throw_type_error("dpnp_eig", call_type)
+        checker_throw_type_error("dpnp_cov", call_type)
 
     return result
 
@@ -98,3 +99,31 @@ cpdef dparray dpnp_mean(dparray input, axis):
                 sum_val += input[i]
             result[0] = sum_val
         return result / shape_input[axis_]
+
+
+cpdef dparray dpnp_median(dparray array1):
+    call_type = array1.dtype
+
+    cdef dparray sorted = dparray(array1.shape, dtype=call_type)
+
+    cdef size_t size = array1.size
+
+    if call_type == numpy.float64:
+        custom_sort_c[double](array1.get_data(), sorted.get_data(), size)
+    elif call_type == numpy.float32:
+        custom_sort_c[float](array1.get_data(), sorted.get_data(), size)
+    elif call_type == numpy.int64:
+        custom_sort_c[long](array1.get_data(), sorted.get_data(), size)
+    elif call_type == numpy.int32:
+        custom_sort_c[int](array1.get_data(), sorted.get_data(), size)
+    else:
+        checker_throw_type_error("dpnp_median", call_type)
+
+    cdef dparray result = dparray((1,), dtype=numpy.float64)
+
+    if size % 2 == 0:
+        result[0] = (sorted[size / 2] + sorted[size / 2 - 1]) / 2
+    else:
+        result[0] = sorted[(size - 1) / 2]
+
+    return result
