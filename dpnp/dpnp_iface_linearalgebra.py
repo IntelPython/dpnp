@@ -143,7 +143,7 @@ def einsum_path(*operands, optimize='greedy', einsum_call=False):
     return numpy.einsum_path(*new_operands, optimize=optimize, einsum_call=einsum_call)
 
 
-  def multi_dot(arrays, out=None):
+def multi_dot(arrays, out=None):
     """
     Compute the dot product of two or more arrays in a single function call
 
@@ -177,3 +177,4 @@ def einsum_path(*operands, optimize='greedy', einsum_call=False):
         result = dot(result, arrays[id])
 
     return result
+
