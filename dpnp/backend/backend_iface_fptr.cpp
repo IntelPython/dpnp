@@ -42,111 +42,9 @@ typedef std::map<DPNPFuncType, DPNPFuncData_t> map_2p_t;
 typedef std::map<DPNPFuncType, map_2p_t> map_1p_t;
 typedef std::map<DPNPFuncName, map_1p_t> func_map_t;
 
-// clang-format off
-func_map_t func_map =
-{
-  {DPNPFuncName::DPNP_FN_ADD,
-    { // T1. First template parameter
-      {DPNPFuncType::DPNP_FT_INT,
-        { // T2. Second template parameter
-          {DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_INT, (void*)custom_elemwise_add_c<int, int, int>}},
-          {DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_LONG, (void*)custom_elemwise_add_c<int, long, long>}},
-          {DPNPFuncType::DPNP_FT_FLOAT, {DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<int, float, double>}},
-          {DPNPFuncType::DPNP_FT_DOUBLE, {DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<int, double, double>}}
-        }
-      },
-      {DPNPFuncType::DPNP_FT_LONG,
-        { // T2. Second template parameter
-          {DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_LONG, (void*)custom_elemwise_add_c<long, int, long>}},
-          {DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_LONG, (void*)custom_elemwise_add_c<long, long, long>}},
-          {DPNPFuncType::DPNP_FT_FLOAT, {DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<long, float, double>}},
-          {DPNPFuncType::DPNP_FT_DOUBLE, {DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<long, double, double>}}
-        }
-      },
-      {DPNPFuncType::DPNP_FT_FLOAT,
-        { // T2. Second template parameter
-          {DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<float, int, double>}},
-          {DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<float, long, double>}},
-          {DPNPFuncType::DPNP_FT_FLOAT, {DPNPFuncType::DPNP_FT_FLOAT, (void*)custom_elemwise_add_c<float, float, float>}},
-          {DPNPFuncType::DPNP_FT_DOUBLE, {DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<float, double, double>}}
-        }
-      },
-      {DPNPFuncType::DPNP_FT_DOUBLE,
-        { // T2. Second template parameter
-          {DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<double, int, double>}},
-          {DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<double, long, double>}},
-          {DPNPFuncType::DPNP_FT_FLOAT, {DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<double, float, double>}},
-          {DPNPFuncType::DPNP_FT_DOUBLE, {DPNPFuncType::DPNP_FT_DOUBLE, (void*)custom_elemwise_add_c<double, double, double>}}
-        }
-      }
-    }
-  },
-  {DPNPFuncName::DPNP_FN_ARGMAX,
-    { // T1. First template parameter
-      {DPNPFuncType::DPNP_FT_INT,
-        { // T2. Second template parameter
-          {DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_INT, (void*)custom_argmax_c<int, int>}},
-          {DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_LONG, (void*)custom_argmax_c<int, long>}}
-        }
-      },
-      {DPNPFuncType::DPNP_FT_LONG,
-        { // T2. Second template parameter
-          {DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_INT, (void*)custom_argmax_c<long, int>}},
-          {DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_LONG, (void*)custom_argmax_c<long, long>}}
-        }
-      },
-      {DPNPFuncType::DPNP_FT_FLOAT,
-        { // T2. Second template parameter
-          {DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_INT, (void*)custom_argmax_c<float, int>}},
-          {DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_LONG, (void*)custom_argmax_c<float, long>}}
-        }
-      },
-      {DPNPFuncType::DPNP_FT_DOUBLE,
-        { // T2. Second template parameter
-          {DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_INT, (void*)custom_argmax_c<double, int>}},
-          {DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_LONG, (void*)custom_argmax_c<double, long>}}
-        }
-      }
-    }
-  },
-  {DPNPFuncName::DPNP_FN_ARGMIN,
-    { // T1. First template parameter
-      {DPNPFuncType::DPNP_FT_INT,
-        { // T2. Second template parameter
-          {DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_INT, (void*)custom_argmin_c<int, int>}},
-          {DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_LONG, (void*)custom_argmin_c<int, long>}}
-        }
-      },
-      {DPNPFuncType::DPNP_FT_LONG,
-        { // T2. Second template parameter
-          {DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_INT, (void*)custom_argmin_c<long, int>}},
-          {DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_LONG, (void*)custom_argmin_c<long, long>}}
-        }
-      },
-      {DPNPFuncType::DPNP_FT_FLOAT,
-        { // T2. Second template parameter
-          {DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_INT, (void*)custom_argmin_c<float, int>}},
-          {DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_LONG, (void*)custom_argmin_c<float, long>}}
-        }
-      },
-      {DPNPFuncType::DPNP_FT_DOUBLE,
-        { // T2. Second template parameter
-          {DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_INT, (void*)custom_argmin_c<double, int>}},
-          {DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_LONG, (void*)custom_argmin_c<double, long>}}
-        }
-      }
-    }
-  },
-  {DPNPFuncName::DPNP_FN_DOT,
-    {
-      {DPNPFuncType::DPNP_FT_INT, {{DPNPFuncType::DPNP_FT_INT, {DPNPFuncType::DPNP_FT_INT, (void*)custom_blas_dot_c<int>}}}},
-      {DPNPFuncType::DPNP_FT_LONG, {{DPNPFuncType::DPNP_FT_LONG, {DPNPFuncType::DPNP_FT_LONG, (void*)custom_blas_dot_c<long>}}}},
-      {DPNPFuncType::DPNP_FT_FLOAT, {{DPNPFuncType::DPNP_FT_FLOAT, {DPNPFuncType::DPNP_FT_FLOAT, (void*)mkl_blas_dot_c<float>}}}},
-      {DPNPFuncType::DPNP_FT_DOUBLE, {{DPNPFuncType::DPNP_FT_DOUBLE, {DPNPFuncType::DPNP_FT_DOUBLE, (void*)mkl_blas_dot_c<double>}}}},
-    }
-  }
-};
-// clang-format on
+static func_map_t func_map_init();
+
+func_map_t func_map = func_map_init();
 
 DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName func_name, DPNPFuncType first_type, DPNPFuncType second_type)
 {
@@ -236,3 +134,53 @@ void* get_dpnp_function_ptr1(DPNPFuncType& result_type,
     result_type = result.return_type;
     return result.ptr;
 }
+
+static func_map_t func_map_init()
+{
+    const DPNPFuncType eft_INT = DPNPFuncType::DPNP_FT_INT;
+    const DPNPFuncType eft_LNG = DPNPFuncType::DPNP_FT_LONG;
+    const DPNPFuncType eft_FLT = DPNPFuncType::DPNP_FT_FLOAT;
+    const DPNPFuncType eft_DBL = DPNPFuncType::DPNP_FT_DOUBLE;
+    func_map_t fmap;
+
+    fmap[DPNPFuncName::DPNP_FN_ADD][eft_INT][eft_INT] = {eft_INT, (void*)custom_elemwise_add_c<int, int, int>};
+    fmap[DPNPFuncName::DPNP_FN_ADD][eft_INT][eft_LNG] = {eft_LNG, (void*)custom_elemwise_add_c<int, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_ADD][eft_INT][eft_FLT] = {eft_DBL, (void*)custom_elemwise_add_c<int, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_ADD][eft_INT][eft_DBL] = {eft_DBL, (void*)custom_elemwise_add_c<int, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_ADD][eft_LNG][eft_INT] = {eft_LNG, (void*)custom_elemwise_add_c<long, int, long>};
+    fmap[DPNPFuncName::DPNP_FN_ADD][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_elemwise_add_c<long, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_ADD][eft_LNG][eft_FLT] = {eft_DBL, (void*)custom_elemwise_add_c<long, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_ADD][eft_LNG][eft_DBL] = {eft_DBL, (void*)custom_elemwise_add_c<long, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_ADD][eft_FLT][eft_INT] = {eft_DBL, (void*)custom_elemwise_add_c<float, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_ADD][eft_FLT][eft_LNG] = {eft_DBL, (void*)custom_elemwise_add_c<float, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_ADD][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_elemwise_add_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_ADD][eft_FLT][eft_DBL] = {eft_DBL, (void*)custom_elemwise_add_c<float, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_ADD][eft_DBL][eft_INT] = {eft_DBL, (void*)custom_elemwise_add_c<double, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_ADD][eft_DBL][eft_LNG] = {eft_DBL, (void*)custom_elemwise_add_c<double, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_ADD][eft_DBL][eft_FLT] = {eft_DBL, (void*)custom_elemwise_add_c<double, float, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_INT][eft_INT] = {eft_INT, (void*)custom_argmax_c<int, int>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_INT][eft_LNG] = {eft_LNG, (void*)custom_argmax_c<int, long>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_LNG][eft_INT] = {eft_INT, (void*)custom_argmax_c<long, int>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_argmax_c<long, long>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_FLT][eft_INT] = {eft_INT, (void*)custom_argmax_c<float, int>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_FLT][eft_LNG] = {eft_LNG, (void*)custom_argmax_c<float, long>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_DBL][eft_INT] = {eft_INT, (void*)custom_argmax_c<double, int>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_DBL][eft_LNG] = {eft_LNG, (void*)custom_argmax_c<double, long>};
+
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_INT][eft_INT] = {eft_INT, (void*)custom_argmin_c<int, int>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_INT][eft_LNG] = {eft_LNG, (void*)custom_argmin_c<int, long>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_LNG][eft_INT] = {eft_INT, (void*)custom_argmin_c<long, int>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_argmin_c<long, long>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_FLT][eft_INT] = {eft_INT, (void*)custom_argmin_c<float, int>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_FLT][eft_LNG] = {eft_LNG, (void*)custom_argmin_c<float, long>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_DBL][eft_INT] = {eft_INT, (void*)custom_argmin_c<double, int>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_DBL][eft_LNG] = {eft_LNG, (void*)custom_argmin_c<double, long>};
+
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_INT] = {eft_INT, (void*)custom_blas_dot_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_blas_dot_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_FLT] = {eft_FLT, (void*)mkl_blas_dot_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_DBL] = {eft_DBL, (void*)mkl_blas_dot_c<double>};
+
+    return fmap;
+};
