@@ -574,11 +574,8 @@ def numpy_cupy_equal(name='xp', sp_name=None, scipy_name=None):
         @functools.wraps(impl)
         def test_func(self, *args, **kw):
             # Run cupy and numpy
-            (
-                cupy_result, cupy_error, cupy_tb,
-                numpy_result, numpy_error, numpy_tb) = (
-                    _call_func_numpy_cupy(
-                        self, impl, args, kw, name, sp_name, scipy_name))
+            (cupy_result, cupy_error, cupy_tb, numpy_result, numpy_error, numpy_tb) = (
+                _call_func_numpy_cupy(self, impl, args, kw, name, sp_name, scipy_name))
 
             if cupy_result != numpy_result:
                 message = '''Results are not equal:

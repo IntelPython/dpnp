@@ -50,6 +50,7 @@ import dpnp.config as config
 
 __all__ = [
     'dot',
+    "einsum",
     "einsum_path",
     "multi_dot"
 ]
@@ -118,6 +119,33 @@ def dot(in_array1, in_array2, out_array=None):
     return result
 
 
+def einsum(*operands, **kwargs):
+    """
+    einsum(subscripts, *operands, dtype=False)
+
+    Evaluates the Einstein summation convention on the operands.
+    Using the Einstein summation convention, many common multi-dimensional
+    array operations can be represented in a simple fashion. This function
+    provides a way to compute such summations.
+
+    See Also
+    --------
+    :meth:`numpy.einsum`
+
+    """
+
+    new_operands = []
+
+    for item in operands:
+        if isinstance(item, dparray):
+            dpnp_array = dpnp.asnumpy(item)
+            new_operands.append(dpnp_array)
+        else:
+            new_operands.append(item)
+
+    return numpy.einsum(*new_operands, **kwargs)
+
+
 def einsum_path(*operands, optimize='greedy', einsum_call=False):
     """
     einsum_path(subscripts, *operands, optimize='greedy')
@@ -127,7 +155,7 @@ def einsum_path(*operands, optimize='greedy', einsum_call=False):
 
     See Also
     --------
-    :meth:`numpy.multi_dot`
+    :meth:`numpy.einsum_path`
 
     """
 
@@ -177,4 +205,3 @@ def multi_dot(arrays, out=None):
         result = dot(result, arrays[id])
 
     return result
-
