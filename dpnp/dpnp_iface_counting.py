@@ -110,7 +110,6 @@ def count_nonzero(in_array1, axis=None, *, keepdims=False):
 
         result = dpnp_count_nonzero(in_array1)
 
-        print("count_nonzero!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         # scalar returned
         if result.shape == (1,):
             return result.dtype.type(result[0])
