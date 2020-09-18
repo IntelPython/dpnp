@@ -10,11 +10,8 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{s
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_empty_like_reshape_contiguity3_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_empty_like_reshape_contiguity_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_empty_like_reshape_cupy_only
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_full_like_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_full_like_reshape_cupy_only
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_ones_like_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_ones_like_reshape_cupy_only
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_zeros_like_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_zeros_like_reshape_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{shape=(4,)}::test_empty_like_K_strides_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{shape=(4,)}::test_empty_like_reshape
@@ -25,11 +22,8 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{s
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{shape=(4,)}::test_empty_like_reshape_contiguity3_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{shape=(4,)}::test_empty_like_reshape_contiguity_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{shape=(4,)}::test_empty_like_reshape_cupy_only
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{shape=(4,)}::test_full_like_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{shape=(4,)}::test_full_like_reshape_cupy_only
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{shape=(4,)}::test_ones_like_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{shape=(4,)}::test_ones_like_reshape_cupy_only
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{shape=(4,)}::test_zeros_like_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{shape=(4,)}::test_zeros_like_reshape_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_2_{shape=(4, 2)}::test_empty_like_K_strides_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_2_{shape=(4, 2)}::test_empty_like_reshape
@@ -40,11 +34,8 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_2_{s
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_2_{shape=(4, 2)}::test_empty_like_reshape_contiguity3_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_2_{shape=(4, 2)}::test_empty_like_reshape_contiguity_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_2_{shape=(4, 2)}::test_empty_like_reshape_cupy_only
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_2_{shape=(4, 2)}::test_full_like_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_2_{shape=(4, 2)}::test_full_like_reshape_cupy_only
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_2_{shape=(4, 2)}::test_ones_like_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_2_{shape=(4, 2)}::test_ones_like_reshape_cupy_only
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_2_{shape=(4, 2)}::test_zeros_like_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_2_{shape=(4, 2)}::test_zeros_like_reshape_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_3_{shape=(4, 2, 3)}::test_empty_like_K_strides_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_3_{shape=(4, 2, 3)}::test_empty_like_reshape
@@ -55,11 +46,8 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_3_{s
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_3_{shape=(4, 2, 3)}::test_empty_like_reshape_contiguity3_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_3_{shape=(4, 2, 3)}::test_empty_like_reshape_contiguity_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_3_{shape=(4, 2, 3)}::test_empty_like_reshape_cupy_only
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_3_{shape=(4, 2, 3)}::test_full_like_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_3_{shape=(4, 2, 3)}::test_full_like_reshape_cupy_only
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_3_{shape=(4, 2, 3)}::test_ones_like_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_3_{shape=(4, 2, 3)}::test_ones_like_reshape_cupy_only
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_3_{shape=(4, 2, 3)}::test_zeros_like_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_3_{shape=(4, 2, 3)}::test_zeros_like_reshape_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_4_{shape=(5, 4, 2, 3)}::test_empty_like_K_strides_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_4_{shape=(5, 4, 2, 3)}::test_empty_like_reshape
@@ -70,11 +58,8 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_4_{s
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_4_{shape=(5, 4, 2, 3)}::test_empty_like_reshape_contiguity3_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_4_{shape=(5, 4, 2, 3)}::test_empty_like_reshape_contiguity_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_4_{shape=(5, 4, 2, 3)}::test_empty_like_reshape_cupy_only
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_4_{shape=(5, 4, 2, 3)}::test_full_like_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_4_{shape=(5, 4, 2, 3)}::test_full_like_reshape_cupy_only
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_4_{shape=(5, 4, 2, 3)}::test_ones_like_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_4_{shape=(5, 4, 2, 3)}::test_ones_like_reshape_cupy_only
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_4_{shape=(5, 4, 2, 3)}::test_zeros_like_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_4_{shape=(5, 4, 2, 3)}::test_zeros_like_reshape_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_huge_size
@@ -92,15 +77,11 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like_
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_scalar
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_zero_sized_array_strides
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_eye
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full_default_dtype
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full_default_dtype_cpu_input
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full_like
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full_like_subok
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_identity
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_ones_like
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_ones_like_subok
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_zeros_like
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_zeros_like_subok
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_zeros_strides
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumBinaryOperationWithScalar::test_scalar_1
@@ -122,170 +103,6 @@ tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumLarge_param_6_{opt
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumLarge_param_7_{opt='greedy', subscript='dcc,fce,ea,dbf->ab'}::test_einsum
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumLarge_param_8_{opt='greedy', subscript='a,ac,ab,ad,cd,bd,bc->'}::test_einsum
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumLarge_param_9_{opt='optimal', subscript='acdf,jbje,gihb,hfac,gfac,gifabc,hfac'}::test_einsum
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_0_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij'}, 'dec': 0, 'drop': False}, shape_a=(2, 3), subscripts='ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_102_{_raw_params={'orig': {'shape_a': (2, 2, 2, 2), 'subscripts': 'ijkj->kij'}, 'dec': 1, 'drop': True}, shape_a=(1, 1, 1, 1), subscripts='ijkj->kij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_103_{_raw_params={'orig': {'shape_a': (2, 2, 2, 2), 'subscripts': 'ijij->ij'}, 'dec': 1, 'drop': True}, shape_a=(1, 1, 1, 1), subscripts='ijij->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_104_{_raw_params={'orig': {'shape_a': (2, 2, 2, 2), 'subscripts': 'jiji->ij'}, 'dec': 1, 'drop': True}, shape_a=(1, 1, 1, 1), subscripts='jiji->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_109_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->ij...'}, 'dec': 1, 'drop': True}, shape_a=(1, 1), subscripts='ij->ij...'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_109_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->ij...'}, 'dec': 1, 'drop': True}, shape_a=(1, 2), subscripts='ij->ij...'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_10_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'ijk->ikj'}, 'dec': 0, 'drop': False}, shape_a=(2, 3, 4), subscripts='ijk->ikj'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_110_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->i...j'}, 'dec': 1, 'drop': True}, shape_a=(1, 1), subscripts='ij->i...j'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_110_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->i...j'}, 'dec': 1, 'drop': True}, shape_a=(1, 2), subscripts='ij->i...j'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_111_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->...ij'}, 'dec': 1, 'drop': True}, shape_a=(1, 1), subscripts='ij->...ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_112_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij...->ij'}, 'dec': 1, 'drop': True}, shape_a=(1, 1), subscripts='ij...->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_112_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij...->ij'}, 'dec': 1, 'drop': True}, shape_a=(1, 2), subscripts='ij...->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_113_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'i...j->ij'}, 'dec': 1, 'drop': True}, shape_a=(1, 1), subscripts='i...j->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_113_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'i...j->ij'}, 'dec': 1, 'drop': True}, shape_a=(1, 2), subscripts='i...j->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_116_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij'}, 'dec': 2, 'drop': False}, shape_a=(0, 1), subscripts='ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_117_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': '...'}, 'dec': 2, 'drop': False}, shape_a=(0, 1), subscripts='...'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_118_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ji'}, 'dec': 2, 'drop': False}, shape_a=(0, 1), subscripts='ji'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_119_{_raw_params={'orig': {'shape_a': (3, 3), 'subscripts': 'ii->i'}, 'dec': 2, 'drop': False}, shape_a=(1, 1), subscripts='ii->i'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_11_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'kji->ikj'}, 'dec': 0, 'drop': False}, shape_a=(2, 3, 4), subscripts='kji->ikj'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_120_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': 'jii->ij'}, 'dec': 2, 'drop': False}, shape_a=(1, 1, 1), subscripts='jii->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_121_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': 'iji->ij'}, 'dec': 2, 'drop': False}, shape_a=(1, 1, 1), subscripts='iji->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_122_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': '...ii->...i'}, 'dec': 2, 'drop': False}, shape_a=(1, 1, 1), subscripts='...ii->...i'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_123_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': 'iii->i'}, 'dec': 2, 'drop': False}, shape_a=(1, 1, 1), subscripts='iii->i'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_124_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'ijk->jik'}, 'dec': 2, 'drop': False}, shape_a=(0, 1, 2), subscripts='ijk->jik'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_125_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'ijk->kij'}, 'dec': 2, 'drop': False}, shape_a=(0, 1, 2), subscripts='ijk->kij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_126_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'ijk->ikj'}, 'dec': 2, 'drop': False}, shape_a=(0, 1, 2), subscripts='ijk->ikj'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_127_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'kji->ikj'}, 'dec': 2, 'drop': False}, shape_a=(0, 1, 2), subscripts='kji->ikj'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_128_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'j...i->i...j'}, 'dec': 2, 'drop': False}, shape_a=(0, 1, 2), subscripts='j...i->i...j'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_12_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'j...i->i...j'}, 'dec': 0, 'drop': False}, shape_a=(2, 3, 4), subscripts='j...i->i...j'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_131_{_raw_params={'orig': {'shape_a': (2, 2, 2, 2), 'subscripts': 'ijkj->kij'}, 'dec': 2, 'drop': False}, shape_a=(0, 0, 0, 0), subscripts='ijkj->kij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_132_{_raw_params={'orig': {'shape_a': (2, 2, 2, 2), 'subscripts': 'ijij->ij'}, 'dec': 2, 'drop': False}, shape_a=(0, 0, 0, 0), subscripts='ijij->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_133_{_raw_params={'orig': {'shape_a': (2, 2, 2, 2), 'subscripts': 'jiji->ij'}, 'dec': 2, 'drop': False}, shape_a=(0, 0, 0, 0), subscripts='jiji->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_138_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->ij...'}, 'dec': 2, 'drop': False}, shape_a=(0, 1), subscripts='ij->ij...'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_139_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->i...j'}, 'dec': 2, 'drop': False}, shape_a=(0, 1), subscripts='ij->i...j'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_140_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->...ij'}, 'dec': 2, 'drop': False}, shape_a=(0, 1), subscripts='ij->...ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_141_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij...->ij'}, 'dec': 2, 'drop': False}, shape_a=(0, 1), subscripts='ij...->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_142_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'i...j->ij'}, 'dec': 2, 'drop': False}, shape_a=(0, 1), subscripts='i...j->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_145_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij'}, 'dec': 2, 'drop': True}, shape_a=(0, 1), subscripts='ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_145_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij'}, 'dec': 2, 'drop': True}, shape_a=(1, 1), subscripts='ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_146_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': '...'}, 'dec': 2, 'drop': True}, shape_a=(0, 1), subscripts='...'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_147_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ji'}, 'dec': 2, 'drop': True}, shape_a=(0, 1), subscripts='ji'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_147_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ji'}, 'dec': 2, 'drop': True}, shape_a=(1, 1), subscripts='ji'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_148_{_raw_params={'orig': {'shape_a': (3, 3), 'subscripts': 'ii->i'}, 'dec': 2, 'drop': True}, shape_a=(1, 1), subscripts='ii->i'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_149_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': 'jii->ij'}, 'dec': 2, 'drop': True}, shape_a=(1, 1, 1), subscripts='jii->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_150_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': 'iji->ij'}, 'dec': 2, 'drop': True}, shape_a=(1, 1, 1), subscripts='iji->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_151_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': '...ii->...i'}, 'dec': 2, 'drop': True}, shape_a=(1, 1, 1), subscripts='...ii->...i'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_152_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': 'iii->i'}, 'dec': 2, 'drop': True}, shape_a=(1, 1, 1), subscripts='iii->i'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_153_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'ijk->jik'}, 'dec': 2, 'drop': True}, shape_a=(0, 1, 2), subscripts='ijk->jik'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_153_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'ijk->jik'}, 'dec': 2, 'drop': True}, shape_a=(1, 1, 2), subscripts='ijk->jik'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_154_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'ijk->kij'}, 'dec': 2, 'drop': True}, shape_a=(0, 1, 1), subscripts='ijk->kij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_154_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'ijk->kij'}, 'dec': 2, 'drop': True}, shape_a=(1, 1, 1), subscripts='ijk->kij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_155_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'ijk->ikj'}, 'dec': 2, 'drop': True}, shape_a=(1, 1, 1), subscripts='ijk->ikj'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_155_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'ijk->ikj'}, 'dec': 2, 'drop': True}, shape_a=(1, 1, 2), subscripts='ijk->ikj'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_156_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'kji->ikj'}, 'dec': 2, 'drop': True}, shape_a=(0, 1, 2), subscripts='kji->ikj'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_156_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'kji->ikj'}, 'dec': 2, 'drop': True}, shape_a=(1, 1, 2), subscripts='kji->ikj'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_157_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'j...i->i...j'}, 'dec': 2, 'drop': True}, shape_a=(0, 1, 2), subscripts='j...i->i...j'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_157_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'j...i->i...j'}, 'dec': 2, 'drop': True}, shape_a=(1, 1, 2), subscripts='j...i->i...j'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_15_{_raw_params={'orig': {'shape_a': (2, 2, 2, 2), 'subscripts': 'ijkj->kij'}, 'dec': 0, 'drop': False}, shape_a=(2, 2, 2, 2), subscripts='ijkj->kij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_160_{_raw_params={'orig': {'shape_a': (2, 2, 2, 2), 'subscripts': 'ijkj->kij'}, 'dec': 2, 'drop': True}, shape_a=(0, 0, 0, 0), subscripts='ijkj->kij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_160_{_raw_params={'orig': {'shape_a': (2, 2, 2, 2), 'subscripts': 'ijkj->kij'}, 'dec': 2, 'drop': True}, shape_a=(1, 1, 1, 1), subscripts='ijkj->kij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_161_{_raw_params={'orig': {'shape_a': (2, 2, 2, 2), 'subscripts': 'ijij->ij'}, 'dec': 2, 'drop': True}, shape_a=(0, 0, 0, 0), subscripts='ijij->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_161_{_raw_params={'orig': {'shape_a': (2, 2, 2, 2), 'subscripts': 'ijij->ij'}, 'dec': 2, 'drop': True}, shape_a=(1, 1, 1, 1), subscripts='ijij->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_162_{_raw_params={'orig': {'shape_a': (2, 2, 2, 2), 'subscripts': 'jiji->ij'}, 'dec': 2, 'drop': True}, shape_a=(0, 0, 0, 0), subscripts='jiji->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_162_{_raw_params={'orig': {'shape_a': (2, 2, 2, 2), 'subscripts': 'jiji->ij'}, 'dec': 2, 'drop': True}, shape_a=(1, 1, 1, 1), subscripts='jiji->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_167_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->ij...'}, 'dec': 2, 'drop': True}, shape_a=(1, 1), subscripts='ij->ij...'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_168_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->i...j'}, 'dec': 2, 'drop': True}, shape_a=(0, 1), subscripts='ij->i...j'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_168_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->i...j'}, 'dec': 2, 'drop': True}, shape_a=(1, 1), subscripts='ij->i...j'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_169_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->...ij'}, 'dec': 2, 'drop': True}, shape_a=(0, 1), subscripts='ij->...ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_169_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->...ij'}, 'dec': 2, 'drop': True}, shape_a=(1, 1), subscripts='ij->...ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_16_{_raw_params={'orig': {'shape_a': (2, 2, 2, 2), 'subscripts': 'ijij->ij'}, 'dec': 0, 'drop': False}, shape_a=(2, 2, 2, 2), subscripts='ijij->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_170_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij...->ij'}, 'dec': 2, 'drop': True}, shape_a=(0, 1), subscripts='ij...->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_171_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'i...j->ij'}, 'dec': 2, 'drop': True}, shape_a=(0, 1), subscripts='i...j->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_17_{_raw_params={'orig': {'shape_a': (2, 2, 2, 2), 'subscripts': 'jiji->ij'}, 'dec': 0, 'drop': False}, shape_a=(2, 2, 2, 2), subscripts='jiji->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_1_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': '...'}, 'dec': 0, 'drop': False}, shape_a=(2, 3), subscripts='...'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_22_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->ij...'}, 'dec': 0, 'drop': False}, shape_a=(2, 3), subscripts='ij->ij...'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_23_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->i...j'}, 'dec': 0, 'drop': False}, shape_a=(2, 3), subscripts='ij->i...j'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_24_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->...ij'}, 'dec': 0, 'drop': False}, shape_a=(2, 3), subscripts='ij->...ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_25_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij...->ij'}, 'dec': 0, 'drop': False}, shape_a=(2, 3), subscripts='ij...->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_26_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'i...j->ij'}, 'dec': 0, 'drop': False}, shape_a=(2, 3), subscripts='i...j->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_29_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij'}, 'dec': 0, 'drop': True}, shape_a=(1, 1), subscripts='ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_29_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij'}, 'dec': 0, 'drop': True}, shape_a=(2, 3), subscripts='ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_2_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ji'}, 'dec': 0, 'drop': False}, shape_a=(2, 3), subscripts='ji'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_30_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': '...'}, 'dec': 0, 'drop': True}, shape_a=(1, 1), subscripts='...'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_31_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ji'}, 'dec': 0, 'drop': True}, shape_a=(1, 3), subscripts='ji'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_32_{_raw_params={'orig': {'shape_a': (3, 3), 'subscripts': 'ii->i'}, 'dec': 0, 'drop': True}, shape_a=(3, 3), subscripts='ii->i'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_33_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': 'jii->ij'}, 'dec': 0, 'drop': True}, shape_a=(1, 1, 1), subscripts='jii->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_33_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': 'jii->ij'}, 'dec': 0, 'drop': True}, shape_a=(3, 3, 3), subscripts='jii->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_34_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': 'iji->ij'}, 'dec': 0, 'drop': True}, shape_a=(1, 1, 1), subscripts='iji->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_34_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': 'iji->ij'}, 'dec': 0, 'drop': True}, shape_a=(3, 3, 3), subscripts='iji->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_35_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': '...ii->...i'}, 'dec': 0, 'drop': True}, shape_a=(1, 1, 1), subscripts='...ii->...i'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_35_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': '...ii->...i'}, 'dec': 0, 'drop': True}, shape_a=(3, 3, 3), subscripts='...ii->...i'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_36_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': 'iii->i'}, 'dec': 0, 'drop': True}, shape_a=(1, 1, 1), subscripts='iii->i'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_37_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'ijk->jik'}, 'dec': 0, 'drop': True}, shape_a=(1, 1, 1), subscripts='ijk->jik'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_38_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'ijk->kij'}, 'dec': 0, 'drop': True}, shape_a=(1, 1, 4), subscripts='ijk->kij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_39_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'ijk->ikj'}, 'dec': 0, 'drop': True}, shape_a=(1, 1, 1), subscripts='ijk->ikj'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_39_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'ijk->ikj'}, 'dec': 0, 'drop': True}, shape_a=(2, 3, 4), subscripts='ijk->ikj'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_3_{_raw_params={'orig': {'shape_a': (3, 3), 'subscripts': 'ii->i'}, 'dec': 0, 'drop': False}, shape_a=(3, 3), subscripts='ii->i'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_40_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'kji->ikj'}, 'dec': 0, 'drop': True}, shape_a=(1, 1, 1), subscripts='kji->ikj'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_41_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'j...i->i...j'}, 'dec': 0, 'drop': True}, shape_a=(1, 1, 1), subscripts='j...i->i...j'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_41_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'j...i->i...j'}, 'dec': 0, 'drop': True}, shape_a=(1, 1, 4), subscripts='j...i->i...j'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_44_{_raw_params={'orig': {'shape_a': (2, 2, 2, 2), 'subscripts': 'ijkj->kij'}, 'dec': 0, 'drop': True}, shape_a=(1, 1, 1, 1), subscripts='ijkj->kij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_44_{_raw_params={'orig': {'shape_a': (2, 2, 2, 2), 'subscripts': 'ijkj->kij'}, 'dec': 0, 'drop': True}, shape_a=(2, 2, 2, 2), subscripts='ijkj->kij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_45_{_raw_params={'orig': {'shape_a': (2, 2, 2, 2), 'subscripts': 'ijij->ij'}, 'dec': 0, 'drop': True}, shape_a=(2, 2, 2, 2), subscripts='ijij->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_46_{_raw_params={'orig': {'shape_a': (2, 2, 2, 2), 'subscripts': 'jiji->ij'}, 'dec': 0, 'drop': True}, shape_a=(2, 2, 2, 2), subscripts='jiji->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_4_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': 'jii->ij'}, 'dec': 0, 'drop': False}, shape_a=(3, 3, 3), subscripts='jii->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_51_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->ij...'}, 'dec': 0, 'drop': True}, shape_a=(1, 1), subscripts='ij->ij...'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_51_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->ij...'}, 'dec': 0, 'drop': True}, shape_a=(2, 3), subscripts='ij->ij...'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_52_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->i...j'}, 'dec': 0, 'drop': True}, shape_a=(2, 1), subscripts='ij->i...j'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_52_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->i...j'}, 'dec': 0, 'drop': True}, shape_a=(2, 3), subscripts='ij->i...j'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_53_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->...ij'}, 'dec': 0, 'drop': True}, shape_a=(1, 1), subscripts='ij->...ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_53_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->...ij'}, 'dec': 0, 'drop': True}, shape_a=(1, 3), subscripts='ij->...ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_54_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij...->ij'}, 'dec': 0, 'drop': True}, shape_a=(1, 1), subscripts='ij...->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_54_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij...->ij'}, 'dec': 0, 'drop': True}, shape_a=(2, 1), subscripts='ij...->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_55_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'i...j->ij'}, 'dec': 0, 'drop': True}, shape_a=(2, 1), subscripts='i...j->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_55_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'i...j->ij'}, 'dec': 0, 'drop': True}, shape_a=(2, 3), subscripts='i...j->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_58_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij'}, 'dec': 1, 'drop': False}, shape_a=(1, 2), subscripts='ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_59_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': '...'}, 'dec': 1, 'drop': False}, shape_a=(1, 2), subscripts='...'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_5_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': 'iji->ij'}, 'dec': 0, 'drop': False}, shape_a=(3, 3, 3), subscripts='iji->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_60_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ji'}, 'dec': 1, 'drop': False}, shape_a=(1, 2), subscripts='ji'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_61_{_raw_params={'orig': {'shape_a': (3, 3), 'subscripts': 'ii->i'}, 'dec': 1, 'drop': False}, shape_a=(2, 2), subscripts='ii->i'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_62_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': 'jii->ij'}, 'dec': 1, 'drop': False}, shape_a=(2, 2, 2), subscripts='jii->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_63_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': 'iji->ij'}, 'dec': 1, 'drop': False}, shape_a=(2, 2, 2), subscripts='iji->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_64_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': '...ii->...i'}, 'dec': 1, 'drop': False}, shape_a=(2, 2, 2), subscripts='...ii->...i'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_65_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': 'iii->i'}, 'dec': 1, 'drop': False}, shape_a=(2, 2, 2), subscripts='iii->i'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_66_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'ijk->jik'}, 'dec': 1, 'drop': False}, shape_a=(1, 2, 3), subscripts='ijk->jik'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_67_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'ijk->kij'}, 'dec': 1, 'drop': False}, shape_a=(1, 2, 3), subscripts='ijk->kij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_68_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'ijk->ikj'}, 'dec': 1, 'drop': False}, shape_a=(1, 2, 3), subscripts='ijk->ikj'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_69_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'kji->ikj'}, 'dec': 1, 'drop': False}, shape_a=(1, 2, 3), subscripts='kji->ikj'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_6_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': '...ii->...i'}, 'dec': 0, 'drop': False}, shape_a=(3, 3, 3), subscripts='...ii->...i'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_70_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'j...i->i...j'}, 'dec': 1, 'drop': False}, shape_a=(1, 2, 3), subscripts='j...i->i...j'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_73_{_raw_params={'orig': {'shape_a': (2, 2, 2, 2), 'subscripts': 'ijkj->kij'}, 'dec': 1, 'drop': False}, shape_a=(1, 1, 1, 1), subscripts='ijkj->kij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_74_{_raw_params={'orig': {'shape_a': (2, 2, 2, 2), 'subscripts': 'ijij->ij'}, 'dec': 1, 'drop': False}, shape_a=(1, 1, 1, 1), subscripts='ijij->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_75_{_raw_params={'orig': {'shape_a': (2, 2, 2, 2), 'subscripts': 'jiji->ij'}, 'dec': 1, 'drop': False}, shape_a=(1, 1, 1, 1), subscripts='jiji->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_7_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': 'iii->i'}, 'dec': 0, 'drop': False}, shape_a=(3, 3, 3), subscripts='iii->i'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_80_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->ij...'}, 'dec': 1, 'drop': False}, shape_a=(1, 2), subscripts='ij->ij...'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_81_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->i...j'}, 'dec': 1, 'drop': False}, shape_a=(1, 2), subscripts='ij->i...j'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_82_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij->...ij'}, 'dec': 1, 'drop': False}, shape_a=(1, 2), subscripts='ij->...ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_83_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij...->ij'}, 'dec': 1, 'drop': False}, shape_a=(1, 2), subscripts='ij...->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_84_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'i...j->ij'}, 'dec': 1, 'drop': False}, shape_a=(1, 2), subscripts='i...j->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_87_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ij'}, 'dec': 1, 'drop': True}, shape_a=(1, 2), subscripts='ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_88_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': '...'}, 'dec': 1, 'drop': True}, shape_a=(1, 1), subscripts='...'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_88_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': '...'}, 'dec': 1, 'drop': True}, shape_a=(1, 2), subscripts='...'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_89_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ji'}, 'dec': 1, 'drop': True}, shape_a=(1, 1), subscripts='ji'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_89_{_raw_params={'orig': {'shape_a': (2, 3), 'subscripts': 'ji'}, 'dec': 1, 'drop': True}, shape_a=(1, 2), subscripts='ji'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_8_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'ijk->jik'}, 'dec': 0, 'drop': False}, shape_a=(2, 3, 4), subscripts='ijk->jik'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_90_{_raw_params={'orig': {'shape_a': (3, 3), 'subscripts': 'ii->i'}, 'dec': 1, 'drop': True}, shape_a=(1, 1), subscripts='ii->i'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_90_{_raw_params={'orig': {'shape_a': (3, 3), 'subscripts': 'ii->i'}, 'dec': 1, 'drop': True}, shape_a=(2, 2), subscripts='ii->i'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_91_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': 'jii->ij'}, 'dec': 1, 'drop': True}, shape_a=(1, 1, 1), subscripts='jii->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_91_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': 'jii->ij'}, 'dec': 1, 'drop': True}, shape_a=(2, 2, 2), subscripts='jii->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_92_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': 'iji->ij'}, 'dec': 1, 'drop': True}, shape_a=(1, 1, 1), subscripts='iji->ij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_93_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': '...ii->...i'}, 'dec': 1, 'drop': True}, shape_a=(1, 1, 1), subscripts='...ii->...i'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_93_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': '...ii->...i'}, 'dec': 1, 'drop': True}, shape_a=(2, 2, 2), subscripts='...ii->...i'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_94_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': 'iii->i'}, 'dec': 1, 'drop': True}, shape_a=(1, 1, 1), subscripts='iii->i'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_94_{_raw_params={'orig': {'shape_a': (3, 3, 3), 'subscripts': 'iii->i'}, 'dec': 1, 'drop': True}, shape_a=(2, 2, 2), subscripts='iii->i'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_95_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'ijk->jik'}, 'dec': 1, 'drop': True}, shape_a=(1, 2, 3), subscripts='ijk->jik'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_96_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'ijk->kij'}, 'dec': 1, 'drop': True}, shape_a=(1, 1, 3), subscripts='ijk->kij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_96_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'ijk->kij'}, 'dec': 1, 'drop': True}, shape_a=(1, 2, 1), subscripts='ijk->kij'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_97_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'ijk->ikj'}, 'dec': 1, 'drop': True}, shape_a=(1, 1, 1), subscripts='ijk->ikj'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_97_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'ijk->ikj'}, 'dec': 1, 'drop': True}, shape_a=(1, 2, 3), subscripts='ijk->ikj'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_98_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'kji->ikj'}, 'dec': 1, 'drop': True}, shape_a=(1, 1, 1), subscripts='kji->ikj'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_98_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'kji->ikj'}, 'dec': 1, 'drop': True}, shape_a=(1, 2, 3), subscripts='kji->ikj'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_99_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'j...i->i...j'}, 'dec': 1, 'drop': True}, shape_a=(1, 1, 3), subscripts='j...i->i...j'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_99_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'j...i->i...j'}, 'dec': 1, 'drop': True}, shape_a=(1, 2, 3), subscripts='j...i->i...j'}::test_einsum_unary_views
-tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperation_param_9_{_raw_params={'orig': {'shape_a': (2, 3, 4), 'subscripts': 'ijk->kij'}, 'dec': 0, 'drop': False}, shape_a=(2, 3, 4), subscripts='ijk->kij'}::test_einsum_unary_views
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperationWithScalar::test_scalar_float
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperationWithScalar::test_scalar_int
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestListArgEinSumError::test_invalid_sub1
@@ -468,9 +285,7 @@ tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matri
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_dot_vec2
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_dot_vec3
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_inner
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_kron
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_multidim_inner
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_multidim_kron
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_multidim_outer
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_multidim_vdot
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_outer
@@ -770,26 +585,14 @@ tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_4_
 tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_5_{func='argmax', is_module=True, shape=()}::test_argminmax_dtype
 tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_6_{func='argmax', is_module=False, shape=(3, 4)}::test_argminmax_dtype
 tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_7_{func='argmax', is_module=False, shape=()}::test_argminmax_dtype
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere_param_0_{array=array([1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0])}::test_argwhere
 tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere_param_0_{array=array([], dtype=float64)}::test_argwhere
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere_param_1_{array=array([[[ 0.17423132,  0.15308645,  0.52318244, ...354366, -0.16542617, -0.1874786 ,  0.87887809]]])}::test_argwhere
 tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere_param_1_{array=array([], shape=(0, 2), dtype=float64)}::test_argwhere
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere_param_2_{array=array([], dtype=float64)}::test_argwhere
 tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere_param_2_{array=array([], shape=(0, 2, 0), dtype=float64)}::test_argwhere
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere_param_3_{array=array([], shape=(0, 2), dtype=float64)}::test_argwhere
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere_param_4_{array=array([], shape=(0, 2, 0), dtype=float64)}::test_argwhere
 tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_0_{array=array(0)}::test_flatnonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_0_{array=array([1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1])}::test_flatnonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_1_{array=array([[[-1.5714631 ,  0.15203628, -1.52998103, ...310753,  1.46387426,  1.66073965, -0.24951177]]])}::test_flatnonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_1_{array=array(1)}::test_flatnonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_2_{array=array(0)}::test_flatnonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_2_{array=array([], dtype=float64)}::test_flatnonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_3_{array=array(1)}::test_flatnonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_3_{array=array([], shape=(0, 2), dtype=float64)}::test_flatnonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_4_{array=array([], dtype=float64)}::test_flatnonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_4_{array=array([], shape=(0, 2, 0), dtype=float64)}::test_flatnonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_5_{array=array([], shape=(0, 2), dtype=float64)}::test_flatnonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_6_{array=array([], shape=(0, 2, 0), dtype=float64)}::test_flatnonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_all
 tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_axis0
 tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_axis1
@@ -818,14 +621,9 @@ tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargm
 tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_zero_size
 tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_zero_size_axis0
 tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_zero_size_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestNonzero_param_0_{array=array([1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1])}::test_nonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestNonzero_param_0_{array=array([], dtype=float64)}::test_nonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestNonzero_param_1_{array=array([[[-0.35952335, -1.42571779,  0.64309254, ...930201, -0.15287903,  0.15578094,  0.05199203]]])}::test_nonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestNonzero_param_1_{array=array([], shape=(0, 2), dtype=float64)}::test_nonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestNonzero_param_2_{array=array([], dtype=float64)}::test_nonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestNonzero_param_2_{array=array([], shape=(0, 2, 0), dtype=float64)}::test_nonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestNonzero_param_3_{array=array([], shape=(0, 2), dtype=float64)}::test_nonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestNonzero_param_4_{array=array([], shape=(0, 2, 0), dtype=float64)}::test_nonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_0_{array=array(0)}::test_nonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_1_{array=array(1)}::test_nonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSortedInvalid::test_searchsorted_ndbins
@@ -906,29 +704,19 @@ tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_9_{b
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSortedWithSorter::test_invalid_sorter
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSortedWithSorter::test_nonint_sorter
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSortedWithSorter::test_sorter
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_all
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_axis0
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_axis1
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_axis2
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_axis_large
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_nan
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_tie
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_zero_size
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_zero_size_axis0
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_zero_size_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_all
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_axis0
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_axis1
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_axis2
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_axis_large
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_nan
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_tie
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_zero_size
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_zero_size_axis0
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_zero_size_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_external_argmax_all
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_external_argmax_axis_large
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_external_argmin_all
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_external_argmin_axis_large
 tests/third_party/cupy/sorting_tests/test_search.py::TestWhereCond_param_0_{cond_shape=(2, 3, 4)}::test_where_cond
 tests/third_party/cupy/sorting_tests/test_search.py::TestWhereCond_param_1_{cond_shape=(4,)}::test_where_cond
