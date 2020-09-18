@@ -1235,3 +1235,5 @@ tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_4_{ar
 tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere_param_0_{array=array([], dtype=float64)}::test_argwhere
 tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere_param_1_{array=array([], shape=(0, 2), dtype=float64)}::test_argwhere
 tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere_param_2_{array=array([], shape=(0, 2, 0), dtype=float64)}::test_argwhere
+tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all2
+tests/test_linalg.py::test_eig_arange[8-float32]
