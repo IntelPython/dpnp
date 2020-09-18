@@ -52,6 +52,7 @@ __all__ = [
     'dot',
     "einsum",
     "einsum_path",
+    "kron",
     "multi_dot"
 ]
 
@@ -169,6 +170,29 @@ def einsum_path(*operands, optimize='greedy', einsum_call=False):
             new_operands.append(item)
 
     return numpy.einsum_path(*new_operands, optimize=optimize, einsum_call=einsum_call)
+
+
+def kron(input1, input2):
+    """
+    Returns the kronecker product of two arrays.
+
+    .. seealso:: :func:`numpy.kron`
+
+    """
+
+    if isinstance(input1, dparray):
+        input1_n = dpnp.asnumpy(input1)
+    else:
+        input1_n = input1
+
+    if isinstance(input2, dparray):
+        input2_n = dpnp.asnumpy(input2)
+    else:
+        input2_n = input2
+
+    result = numpy.kron(input1_n, input2_n)
+
+    return result
 
 
 def multi_dot(arrays, out=None):
