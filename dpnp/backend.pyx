@@ -54,6 +54,7 @@ __all__ = [
 
 
 include "backend_counting.pyx"
+include "backend_linearalgebra.pyx"
 include "backend_logic.pyx"
 include "backend_manipulation.pyx"
 include "backend_mathematical.pyx"

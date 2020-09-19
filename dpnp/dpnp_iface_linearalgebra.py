@@ -53,7 +53,8 @@ __all__ = [
     "einsum",
     "einsum_path",
     "kron",
-    "multi_dot"
+    "multi_dot",
+    "outer"
 ]
 
 
@@ -227,5 +228,36 @@ def multi_dot(arrays, out=None):
     result = arrays[0]
     for id in range(1, n):
         result = dot(result, arrays[id])
+
+    return result
+
+
+def outer(x1, x2, out=None):
+    """
+    Returns the outer product of two vectors.
+
+    The input arrays are flattened into 1-D vectors and then it performs outer
+    product of these vectors.
+
+    .. seealso:: :func:`numpy.outer`
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+    is_x2_dparray = isinstance(x2, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and (out is None)):
+        return dpnp_outer(x1, x2)
+
+    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
+    input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.outer(input1, input2, out)
+    result = result_numpy
+    if isinstance(result, numpy.ndarray):
+        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_numpy.item(i))
 
     return result
