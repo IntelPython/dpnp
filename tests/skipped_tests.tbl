@@ -284,8 +284,6 @@ tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matri
 tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_of_two
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_dot_vec2
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_dot_vec3
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_inner
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_multidim_inner
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_multidim_vdot
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_inner
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_kron
@@ -298,7 +296,6 @@ tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_tensordot
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_dot
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_dot_with_out
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_dot_with_out_f_contiguous
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_higher_order_inner
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_multidim_vdot
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_tensordot
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_tensordot_with_int_axes

@@ -38,6 +38,7 @@ cimport numpy
 
 __all__ += [
     "dpnp_dot",
+    "dpnp_inner",
     "dpnp_outer"
 ]
 
@@ -88,6 +89,66 @@ cpdef dparray dpnp_dot(dparray in_array1, dparray in_array2):
         custom_blas_dot_c[int](in_array1.get_data(), in_array2.get_data(), result.get_data(), size1)
     else:
         checker_throw_type_error("dpnp_dot", call_type)
+
+    return result
+
+
+cpdef dparray dpnp_inner(dparray array1, dparray array2):
+    result_type = numpy.promote_types(array1.dtype, array1.dtype)
+
+    assert(len(array1.shape) == len(array2.shape))
+
+    cdef dparray_shape_type array1_no_last_axes = array1.shape[:-1]
+    cdef dparray_shape_type array2_no_last_axes = array2.shape[:-1]
+
+    cdef dparray_shape_type result_shape = array1_no_last_axes
+    result_shape.insert(result_shape.end(), array2_no_last_axes.begin(), array2_no_last_axes.end())
+
+    cdef dparray result = dparray(result_shape, dtype=result_type)
+
+    # calculate input arrays offsets
+    cdef dparray_shape_type array1_offsets = [1] * len(array1.shape)
+    cdef dparray_shape_type array2_offsets = [1] * len(array2.shape)
+    cdef size_t acc1 = 1
+    cdef size_t acc2 = 1
+    for axis in range(len(array1.shape) -1, -1, -1):
+        array1_offsets[axis] = acc1
+        array2_offsets[axis] = acc2
+        acc1 *= array1.shape[axis]
+        acc2 *= array2.shape[axis]
+
+    cdef dparray_shape_type result_shape_offsets = [1] * len(result.shape)
+    acc = 1
+    for i in range(len(result.shape) - 1, -1, -1):
+      result_shape_offsets[i] = acc
+      acc *= result.shape[i]
+
+    cdef dparray_shape_type xyz
+    cdef size_t array1_lin_index_base
+    cdef size_t array2_lin_index_base
+    cdef size_t axis2
+    cdef long remainder
+    cdef long quotient
+    for idx1 in range(result.size):
+        # reconstruct x,y,z from linear index
+        xyz.clear()
+        remainder = idx1
+        for i in result_shape_offsets:
+            quotient, remainder = divmod(remainder, i)
+            xyz.push_back(quotient)
+
+        # calculate linear base input index
+        array1_lin_index_base = 0
+        array2_lin_index_base = 0
+        for axis in range(len(array1_offsets) - 1):
+            axis2 = axis + (len(xyz) / 2)
+            array1_lin_index_base += array1_offsets[axis] * xyz[axis]
+            array2_lin_index_base += array2_offsets[axis] * xyz[axis2]
+
+        # do inner product
+        result[idx1] = 0
+        for idx2 in range(array1.shape[-1]):
+            result[idx1] += array1[array1_lin_index_base + idx2] * array2[array2_lin_index_base + idx2]
 
     return result
 
