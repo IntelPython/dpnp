@@ -30,6 +30,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -159,9 +160,11 @@
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
+ | <a href="#K"><strong>K</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
@@ -177,6 +180,8 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="numpy_api.html#dpnp.absolute">absolute() (in module dpnp)</a>
+</li>
       <li><a href="numpy_api.html#dpnp.add">add() (in module dpnp)</a>
 </li>
       <li><a href="numpy_api.html#dpnp.arange">arange() (in module dpnp)</a>
@@ -189,13 +194,19 @@
 </li>
       <li><a href="numpy_api.html#dpnp.arcsinh">arcsinh() (in module dpnp)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="numpy_api.html#dpnp.arctan">arctan() (in module dpnp)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="numpy_api.html#dpnp.arctan2">arctan2() (in module dpnp)</a>
 </li>
       <li><a href="numpy_api.html#dpnp.arctanh">arctanh() (in module dpnp)</a>
+</li>
+      <li><a href="numpy_api.html#dpnp.argmax">argmax() (in module dpnp)</a>
+</li>
+      <li><a href="numpy_api.html#dpnp.argmin">argmin() (in module dpnp)</a>
+</li>
+      <li><a href="numpy_api.html#dpnp.argsort">argsort() (in module dpnp)</a>
 </li>
       <li><a href="numpy_api.html#dpnp.array">array() (in module dpnp)</a>
 </li>
@@ -213,11 +224,15 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="numpy_api.html#dpnp.cbrt">cbrt() (in module dpnp)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="numpy_api.html#dpnp.cos">cos() (in module dpnp)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="numpy_api.html#dpnp.cosh">cosh() (in module dpnp)</a>
+</li>
+      <li><a href="numpy_api.html#dpnp.count_nonzero">count_nonzero() (in module dpnp)</a>
+</li>
+      <li><a href="numpy_api.html#dpnp.cov">cov() (in module dpnp)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -250,14 +265,20 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="numpy_api.html#dpnp.einsum">einsum() (in module dpnp)</a>
+</li>
+      <li><a href="numpy_api.html#dpnp.einsum_path">einsum_path() (in module dpnp)</a>
+</li>
       <li><a href="numpy_api.html#dpnp.empty">empty() (in module dpnp)</a>
 </li>
+      <li><a href="numpy_api.html#dpnp.empty_like">empty_like() (in module dpnp)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="numpy_api.html#dpnp.equal">equal() (in module dpnp)</a>
 </li>
       <li><a href="numpy_api.html#dpnp.erf">erf() (in module dpnp)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="numpy_api.html#dpnp.exp">exp() (in module dpnp)</a>
 </li>
       <li><a href="numpy_api.html#dpnp.exp2">exp2() (in module dpnp)</a>
@@ -267,13 +288,27 @@
   </ul></td>
 </tr></table>
 
-<h2 id="G">G</h2>
+<h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="numpy_api.html#dpnp.greater">greater() (in module dpnp)</a>
+      <li><a href="numpy_api.html#dpnp.full">full() (in module dpnp)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="numpy_api.html#dpnp.full_like">full_like() (in module dpnp)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="numpy_api.html#dpnp.get_include">get_include() (in module dpnp)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="numpy_api.html#dpnp.greater">greater() (in module dpnp)</a>
+</li>
       <li><a href="numpy_api.html#dpnp.greater_equal">greater_equal() (in module dpnp)</a>
 </li>
   </ul></td>
@@ -291,6 +326,14 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="numpy_api.html#dpnp.isclose">isclose() (in module dpnp)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="numpy_api.html#dpnp.kron">kron() (in module dpnp)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -330,6 +373,8 @@
 </li>
       <li><a href="numpy_api.html#dpnp.mean">mean() (in module dpnp)</a>
 </li>
+      <li><a href="numpy_api.html#dpnp.median">median() (in module dpnp)</a>
+</li>
       <li>
     module
 
@@ -340,6 +385,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="numpy_api.html#dpnp.moveaxis">moveaxis() (in module dpnp)</a>
+</li>
+      <li><a href="numpy_api.html#dpnp.multi_dot">multi_dot() (in module dpnp)</a>
 </li>
       <li><a href="numpy_api.html#dpnp.multiply">multiply() (in module dpnp)</a>
 </li>
@@ -362,6 +409,12 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="numpy_api.html#dpnp.ones">ones() (in module dpnp)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="numpy_api.html#dpnp.ones_like">ones_like() (in module dpnp)</a>
+</li>
+      <li><a href="numpy_api.html#dpnp.outer">outer() (in module dpnp)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -398,6 +451,8 @@
       <li><a href="numpy_api.html#dpnp.sin">sin() (in module dpnp)</a>
 </li>
       <li><a href="numpy_api.html#dpnp.sinh">sinh() (in module dpnp)</a>
+</li>
+      <li><a href="numpy_api.html#dpnp.sort">sort() (in module dpnp)</a>
 </li>
       <li><a href="numpy_api.html#dpnp.sqrt">sqrt() (in module dpnp)</a>
 </li>
@@ -440,6 +495,10 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="numpy_api.html#dpnp.zeros">zeros() (in module dpnp)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="numpy_api.html#dpnp.zeros_like">zeros_like() (in module dpnp)</a>
 </li>
   </ul></td>
 </tr></table>
