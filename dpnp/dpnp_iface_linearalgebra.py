@@ -52,6 +52,7 @@ __all__ = [
     'dot',
     "einsum",
     "einsum_path",
+    "inner",
     "kron",
     "multi_dot",
     "outer"
@@ -171,6 +172,37 @@ def einsum_path(*operands, optimize='greedy', einsum_call=False):
             new_operands.append(item)
 
     return numpy.einsum_path(*new_operands, optimize=optimize, einsum_call=einsum_call)
+
+
+def inner(x1, x2):
+    """
+    Returns the inner product of two vectors.
+
+    The input arrays are flattened into 1-D vectors and then it performs inner
+    product of these vectors.
+
+    .. seealso:: :func:`numpy.inner`
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+    is_x2_dparray = isinstance(x2, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray):
+        return dpnp_inner(x1, x2)
+
+    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
+    input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.inner(input1, input2)
+    result = result_numpy
+    if isinstance(result, numpy.ndarray):
+        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_numpy.item(i))
+
+    return result
 
 
 def kron(input1, input2):
