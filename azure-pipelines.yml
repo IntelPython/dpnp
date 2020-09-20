@@ -78,6 +78,53 @@ jobs:
                python -m pytest tests/third_party/cupy/math_tests/test_arithmetic.py \
                                 -vv --valgrind --valgrind-log=/tmp/valgrind-output
 
+- job: mycodecoverage
+  displayName: Code coverage
+
+  pool:
+    vmImage: 'ubuntu-20.04'
+
+  steps:
+
+  - bash: |
+      echo ========================== current SHELL ===============================
+      echo ${SHELL}
+      echo ========================= current machine kernel ===============================
+      uname -a
+      echo ========================= current directory ===============================
+      pwd
+      echo ========================= install Intel repository ===============================
+      wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+      sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+      rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+      sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
+      sudo apt-get update
+      echo ========================= install Python 3.8 ===============================
+      sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
+      echo ========================= Python version ===============================
+      python --version
+      python3 --version
+      echo ========================= install valgrind ===============================
+      sudo apt-get install valgrind
+      echo ========================= install Numpy cython pytest ===============================
+      pip3 install numpy cython pytest pytest-valgrind pytest-cov
+      echo ========================= install Intel OneAPI ===============================
+      sudo apt-get install intel-oneapi-mkl-2021.1-beta09                \
+                           intel-oneapi-mkl-devel-2021.1-beta09          \
+                           intel-oneapi-dpcpp-cpp-compiler-2021.1-beta09 \
+                           intel-oneapi-dpcpp-cpp-2021.1-beta09
+      echo ========================= setup Intel OneAPI ===============================
+      ls -l /opt/intel/oneapi/
+      . /opt/intel/oneapi/setvars.sh
+      echo ========================= Current clang version ===============================
+      valgrind --version
+      clang++ --version
+      which clang++
+      echo ========================= build DPNP ===============================
+      ./0.build.sh
+      echo ========================= run valgrind ===============================
+      pytest --cov-report term-missing --cov=dpnp
+
 - job: ubuntu2004
   displayName: testing on Ubuntu 20.04
 
