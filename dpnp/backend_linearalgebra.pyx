@@ -111,7 +111,7 @@ cpdef dparray dpnp_inner(dparray array1, dparray array2):
     cdef dparray_shape_type array2_offsets = [1] * len(array2.shape)
     cdef size_t acc1 = 1
     cdef size_t acc2 = 1
-    for axis in range(len(array1.shape) -1, -1, -1):
+    for axis in range(len(array1.shape) - 1, -1, -1):
         array1_offsets[axis] = acc1
         array2_offsets[axis] = acc2
         acc1 *= array1.shape[axis]
@@ -120,8 +120,8 @@ cpdef dparray dpnp_inner(dparray array1, dparray array2):
     cdef dparray_shape_type result_shape_offsets = [1] * len(result.shape)
     acc = 1
     for i in range(len(result.shape) - 1, -1, -1):
-      result_shape_offsets[i] = acc
-      acc *= result.shape[i]
+        result_shape_offsets[i] = acc
+        acc *= result.shape[i]
 
     cdef dparray_shape_type xyz
     cdef size_t array1_lin_index_base
