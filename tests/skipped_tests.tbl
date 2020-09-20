@@ -286,9 +286,7 @@ tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_dot_vec2
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_dot_vec3
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_inner
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_multidim_inner
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_multidim_outer
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_multidim_vdot
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_outer
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_inner
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_kron
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_outer
