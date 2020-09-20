@@ -44,7 +44,7 @@ __all__ += [
 
 
 # C function pointer to the C library template functions
-ctypedef void (*custom_math_1in_1out_func_ptr_t) (void * , void * , size_t)
+ctypedef void(*custom_math_1in_1out_func_ptr_t)(void * , void * , size_t)
 
 
 cdef struct custom_math_2in_1out:

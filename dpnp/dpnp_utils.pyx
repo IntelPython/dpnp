@@ -47,13 +47,15 @@ cpdef checker_throw_runtime_error(function_name, message):
 cpdef checker_throw_value_error(function_name, param_name, param, expected):
     # import sys
     # sys.tracebacklimit = 0
-    raise ValueError(
-        f"{ERROR_PREFIX} in function {function_name}() paramenter '{param_name}' expected `{expected}`, but '{param}' provided")
+    err_msg = f"{ERROR_PREFIX} in function {function_name}() paramenter '{param_name}'"
+    err_msg += f" expected `{expected}`, but '{param}' provided"
+    raise ValueError(err_msg)
 
 
 cpdef checker_throw_axis_error(function_name, param_name, param, expected):
-    raise numpy.AxisError(
-        f"{ERROR_PREFIX} in function {function_name}() axes '{param_name}' expected `{expected}`, but '{param}' provided")
+    err_msg = f"{ERROR_PREFIX} in function {function_name}()"
+    err_msg += f" axes '{param_name}' expected `{expected}`, but '{param}' provided"
+    raise numpy.AxisError(err_msg)
 
 
 cpdef checker_throw_type_error(function_name, given_type):

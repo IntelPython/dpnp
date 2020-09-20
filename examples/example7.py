@@ -81,5 +81,6 @@ if __name__ == '__main__':
             else:
                 verification = f"({result_mkl} != {result_python})"
 
-            print(
-                f"type:{type_name}:N:{size:4}:NumPy:{time_python:.3e}:SYCL:{time_mkl:.3e}:ratio:{time_python/time_mkl:6.2f}:verification:{verification}")
+            msg = f"type:{type_name}:N:{size:4}:NumPy:{time_python:.3e}:SYCL:{time_mkl:.3e}"
+            msg += f":ratio:{time_python/time_mkl:6.2f}:verification:{verification}"
+            print(msg)

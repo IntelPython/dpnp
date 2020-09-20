@@ -176,7 +176,7 @@ except KeyError:
 Get the project build type
 """
 __dpnp_debug__ = os.environ.get('DEBUG', None)
-if not __dpnp_debug__ is None:
+if __dpnp_debug__ is not None:
     _project_cmplr_flag_sycl += _project_cmplr_flag_sycl_devel
 
 

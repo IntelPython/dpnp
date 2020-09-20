@@ -55,4 +55,7 @@ for function in [numpy.equal, numpy.arctan2]:
             data1 = numpy.array([1, 2, 3, 4], dtype=input1_type)
             data2 = numpy.array([11, 21, 31, 41], dtype=input2_type)
             result = function(data1, data2)
-            print(f"input1:{data1.dtype.name:10}: input2:{data2.dtype.name:10}: outout:{result.dtype.name:10}: name:{function}")
+
+            msg = f"input1:{data1.dtype.name:10}: input2:{data2.dtype.name:10}"
+            msg += f": output:{result.dtype.name:10}: name:{function}"
+            print(msg)
