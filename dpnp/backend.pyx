@@ -45,7 +45,6 @@ __all__ = [
     "dpnp_arange",
     "dpnp_array",
     "dpnp_astype",
-    "dpnp_dot",
     "dpnp_init_val",
     "dpnp_matmul",
     "dpnp_queue_initialize",
@@ -110,56 +109,6 @@ cpdef dparray dpnp_astype(dparray array1, dtype_target):
 
     for i in range(result.size):
         result[i] = array1[i]
-
-    return result
-
-
-cpdef dparray dpnp_dot(dparray in_array1, dparray in_array2):
-    cdef vector[Py_ssize_t] shape1 = in_array1.shape
-    cdef vector[Py_ssize_t] shape2 = in_array2.shape
-
-    call_type = in_array1.dtype
-
-    cdef size_t dim1 = in_array1.ndim
-    cdef size_t dim2 = in_array2.ndim
-
-    # matrix
-    if dim1 == 2 and dim2 == 2:
-        return dpnp_matmul(in_array1, in_array2)
-
-    # scalar
-    if dim1 == 0 or dim2 == 0:
-        return dpnp_multiply(in_array1, in_array2)
-
-    if dim1 >= 2 and dim2 == 1:
-        raise NotImplementedError
-
-    if dim1 >= 2 and dim2 >= 2:
-        raise NotImplementedError
-
-    cdef size_t size1 = 0
-    cdef size_t size2 = 0
-    if not shape1.empty():
-        size1 = shape1.front()
-    if not shape1.empty():
-        size2 = shape2.front()
-
-    # vector
-    # test: pytest tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_dot_vec1 -v -s
-    if size1 != size2:
-        raise checker_throw_runtime_error("dpnp_dot", "input vectors must be of equal size")
-
-    cdef dparray result = dparray((1,), dtype=call_type)
-    if call_type == numpy.float64:
-        mkl_blas_dot_c[double](in_array1.get_data(), in_array2.get_data(), result.get_data(), size1)
-    elif call_type == numpy.float32:
-        mkl_blas_dot_c[float](in_array1.get_data(), in_array2.get_data(), result.get_data(), size1)
-    elif call_type == numpy.int64:
-        custom_blas_dot_c[long](in_array1.get_data(), in_array2.get_data(), result.get_data(), size1)
-    elif call_type == numpy.int32:
-        custom_blas_dot_c[int](in_array1.get_data(), in_array2.get_data(), result.get_data(), size1)
-    else:
-        checker_throw_type_error("dpnp_dot", call_type)
 
     return result
 
