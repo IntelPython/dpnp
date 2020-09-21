@@ -53,6 +53,10 @@ __all__ = [
     "absolute",
     "add",
     "divide",
+    "fmax",
+    "fmin",
+    "maximum",
+    "minimum",
     "multiply",
     "negative",
     "power",
@@ -201,6 +205,102 @@ def divide(x1, x2, out=None):
 
     # TODO need to put dparray memory into NumPy call
     result_numpy = numpy.divide(input1, input2, out=out)
+    result = result_numpy
+    if isinstance(result, numpy.ndarray):
+        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_numpy.item(i))
+
+    return result
+
+
+def fmax(x1, x2, out=None):
+    """
+    Element-wise maximum of array elements.
+
+    .. seealso:: :func:`numpy.fmax`
+
+    """
+
+    return dpnp.maximum(x1, x2, out)
+
+
+def fmin(x1, x2, out=None):
+    """
+    Element-wise minimum of array elements.
+
+    .. seealso:: :func:`numpy.fmin`
+
+    """
+
+    return dpnp.minimum(x1, x2, out)
+
+
+def maximum(x1, x2, out=None):
+    """
+    Element-wise maximum of array elements.
+
+    .. seealso:: :func:`numpy.maximum`
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+    is_x2_dparray = isinstance(x2, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray):
+        if out is not None:
+            checker_throw_value_error("maximum", "out", out, None)
+
+        if (x1.size != x2.size):
+            checker_throw_value_error("maximum", "size", x1.size, x2.size)
+
+        if (x1.shape != x2.shape):
+            checker_throw_value_error("maximum", "shape", x1.shape, x2.shape)
+
+        return dpnp_maximum(x1, x2)
+
+    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
+    input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.maximum(input1, input2, out=out)
+    result = result_numpy
+    if isinstance(result, numpy.ndarray):
+        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_numpy.item(i))
+
+    return result
+
+
+def minimum(x1, x2, out=None):
+    """
+    Element-wise minimum of array elements.
+
+    .. seealso:: :func:`numpy.minimum`
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+    is_x2_dparray = isinstance(x2, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray):
+        if out is not None:
+            checker_throw_value_error("minimum", "out", out, None)
+
+        if (x1.size != x2.size):
+            checker_throw_value_error("minimum", "size", x1.size, x2.size)
+
+        if (x1.shape != x2.shape):
+            checker_throw_value_error("minimum", "shape", x1.shape, x2.shape)
+
+        return dpnp_minimum(x1, x2)
+
+    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
+    input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.minimum(input1, input2, out=out)
     result = result_numpy
     if isinstance(result, numpy.ndarray):
         result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
