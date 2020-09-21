@@ -106,8 +106,13 @@ jobs:
       python3 --version
       echo ========================= install valgrind ===============================
       sudo apt-get install valgrind
-      echo ========================= install Numpy cython pytest ===============================
-      pip3 install numpy cython pytest pytest-valgrind pytest-cov
+      echo ========================= Conda ENV ===============================
+      conda create -q -y -n CondaCodeStyle python=3.8 conda-build conda-verify \
+                                                      numpy cython pytest \
+                                                      pycodestyle autopep8 \
+                                                      cython pytest pytest-cov
+      . /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate CondaCodeStyle
       echo ========================= install Intel OneAPI ===============================
       sudo apt-get install intel-oneapi-mkl-2021.1-beta09                \
                            intel-oneapi-mkl-devel-2021.1-beta09          \
