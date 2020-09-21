@@ -44,12 +44,12 @@ __all__ += [
 
 
 # C function pointer to the C library template functions
-ctypedef void(*custom_math_1in_1out_func_ptr_t)(void * , void * , size_t)
+ctypedef void(*custom_search_1in_1out_func_ptr_t)(void * , void * , size_t)
 
 
 cdef struct custom_math_2in_1out:
     string return_type  # return type identifier which expected by the `ptr` function
-    custom_math_1in_1out_func_ptr_t ptr  # C function pointer
+    custom_search_1in_1out_func_ptr_t ptr  # C function pointer
 
 
 cpdef dparray dpnp_argmax(dparray in_array1):
@@ -61,7 +61,7 @@ cpdef dparray dpnp_argmax(dparray in_array1):
     result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     cdef dparray result = dparray((1,), dtype=result_type)
 
-    cdef custom_math_1in_1out_func_ptr_t func = <custom_math_1in_1out_func_ptr_t > kernel_data.ptr
+    cdef custom_search_1in_1out_func_ptr_t func = <custom_search_1in_1out_func_ptr_t > kernel_data.ptr
 
     func(in_array1.get_data(), result.get_data(), in_array1.size)
 
@@ -77,7 +77,7 @@ cpdef dparray dpnp_argmin(dparray in_array1):
     result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     cdef dparray result = dparray((1,), dtype=result_type)
 
-    cdef custom_math_1in_1out_func_ptr_t func = <custom_math_1in_1out_func_ptr_t > kernel_data.ptr
+    cdef custom_search_1in_1out_func_ptr_t func = <custom_search_1in_1out_func_ptr_t > kernel_data.ptr
 
     func(in_array1.get_data(), result.get_data(), in_array1.size)
 

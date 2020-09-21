@@ -45,6 +45,7 @@ __all__ += [
     "dpnp_add",
     'dpnp_arctan2',
     "dpnp_divide",
+    "dpnp_fabs",
     'dpnp_hypot',
     "dpnp_maximum",
     "dpnp_minimum",
@@ -62,7 +63,9 @@ cdef string int64_name = numpy.int64.__name__.encode()
 cdef string int32_name = numpy.int32.__name__.encode()
 
 # C function pointer to the C library template functions
-ctypedef void (*custom_math_2in_1out_func_ptr_t) (void *, void * , void * , size_t)
+ctypedef void * void_ptr
+ctypedef void(*custom_math_2in_1out_func_ptr_t)(void_ptr, void_ptr, void_ptr, size_t)
+ctypedef void(*custom_math_1in_1out_func_ptr_t)(void_ptr, void_ptr, size_t)
 
 cdef struct custom_math_2in_1out:
     string return_type  # return type identifier which expected by the `ptr` function
@@ -198,6 +201,20 @@ cpdef dparray dpnp_divide(dparray array1, dparray array2):
 
     result = dparray(array1.shape, dtype=kernel_data.return_type)
     kernel_data.ptr(array1.get_data(), array2.get_data(), result.get_data(), array1.size)
+
+    return result
+
+
+cpdef dparray dpnp_fabs(dparray array1):
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FABS, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    cdef dparray result = dparray(array1.shape, dtype=result_type)
+
+    cdef custom_math_1in_1out_func_ptr_t func = <custom_math_1in_1out_func_ptr_t > kernel_data.ptr
+    func(array1.get_data(), result.get_data(), array1.size)
 
     return result
 
