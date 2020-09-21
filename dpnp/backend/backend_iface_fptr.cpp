@@ -183,5 +183,69 @@ static func_map_t func_map_init()
     fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_FLT] = {eft_FLT, (void*)mkl_blas_dot_c<float>};
     fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_DBL] = {eft_DBL, (void*)mkl_blas_dot_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_MAXIMUM][eft_INT][eft_INT] = {eft_INT, (void*)custom_elemwise_maximum_c<int, int, int>};
+    fmap[DPNPFuncName::DPNP_FN_MAXIMUM][eft_INT][eft_LNG] = {eft_LNG,
+                                                             (void*)custom_elemwise_maximum_c<int, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_MAXIMUM][eft_INT][eft_FLT] = {eft_DBL,
+                                                             (void*)custom_elemwise_maximum_c<int, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_MAXIMUM][eft_INT][eft_DBL] = {eft_DBL,
+                                                             (void*)custom_elemwise_maximum_c<int, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_MAXIMUM][eft_LNG][eft_INT] = {eft_LNG,
+                                                             (void*)custom_elemwise_maximum_c<long, int, long>};
+    fmap[DPNPFuncName::DPNP_FN_MAXIMUM][eft_LNG][eft_LNG] = {eft_LNG,
+                                                             (void*)custom_elemwise_maximum_c<long, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_MAXIMUM][eft_LNG][eft_FLT] = {eft_DBL,
+                                                             (void*)custom_elemwise_maximum_c<long, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_MAXIMUM][eft_LNG][eft_DBL] = {eft_DBL,
+                                                             (void*)custom_elemwise_maximum_c<long, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_MAXIMUM][eft_FLT][eft_INT] = {eft_DBL,
+                                                             (void*)custom_elemwise_maximum_c<float, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_MAXIMUM][eft_FLT][eft_LNG] = {eft_DBL,
+                                                             (void*)custom_elemwise_maximum_c<float, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_MAXIMUM][eft_FLT][eft_FLT] = {eft_FLT,
+                                                             (void*)custom_elemwise_maximum_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_MAXIMUM][eft_FLT][eft_DBL] = {eft_DBL,
+                                                             (void*)custom_elemwise_maximum_c<float, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_MAXIMUM][eft_DBL][eft_INT] = {eft_DBL,
+                                                             (void*)custom_elemwise_maximum_c<double, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_MAXIMUM][eft_DBL][eft_LNG] = {eft_DBL,
+                                                             (void*)custom_elemwise_maximum_c<double, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_MAXIMUM][eft_DBL][eft_FLT] = {eft_DBL,
+                                                             (void*)custom_elemwise_maximum_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_MAXIMUM][eft_DBL][eft_DBL] = {eft_DBL,
+                                                             (void*)custom_elemwise_maximum_c<double, double, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_MINIMUM][eft_INT][eft_INT] = {eft_INT, (void*)custom_elemwise_minimum_c<int, int, int>};
+    fmap[DPNPFuncName::DPNP_FN_MINIMUM][eft_INT][eft_LNG] = {eft_LNG,
+                                                             (void*)custom_elemwise_minimum_c<int, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_MINIMUM][eft_INT][eft_FLT] = {eft_DBL,
+                                                             (void*)custom_elemwise_minimum_c<int, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_MINIMUM][eft_INT][eft_DBL] = {eft_DBL,
+                                                             (void*)custom_elemwise_minimum_c<int, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_MINIMUM][eft_LNG][eft_INT] = {eft_LNG,
+                                                             (void*)custom_elemwise_minimum_c<long, int, long>};
+    fmap[DPNPFuncName::DPNP_FN_MINIMUM][eft_LNG][eft_LNG] = {eft_LNG,
+                                                             (void*)custom_elemwise_minimum_c<long, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_MINIMUM][eft_LNG][eft_FLT] = {eft_DBL,
+                                                             (void*)custom_elemwise_minimum_c<long, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_MINIMUM][eft_LNG][eft_DBL] = {eft_DBL,
+                                                             (void*)custom_elemwise_minimum_c<long, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_MINIMUM][eft_FLT][eft_INT] = {eft_DBL,
+                                                             (void*)custom_elemwise_minimum_c<float, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_MINIMUM][eft_FLT][eft_LNG] = {eft_DBL,
+                                                             (void*)custom_elemwise_minimum_c<float, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_MINIMUM][eft_FLT][eft_FLT] = {eft_FLT,
+                                                             (void*)custom_elemwise_minimum_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_MINIMUM][eft_FLT][eft_DBL] = {eft_DBL,
+                                                             (void*)custom_elemwise_minimum_c<float, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_MINIMUM][eft_DBL][eft_INT] = {eft_DBL,
+                                                             (void*)custom_elemwise_minimum_c<double, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_MINIMUM][eft_DBL][eft_LNG] = {eft_DBL,
+                                                             (void*)custom_elemwise_minimum_c<double, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_MINIMUM][eft_DBL][eft_FLT] = {eft_DBL,
+                                                             (void*)custom_elemwise_minimum_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_MINIMUM][eft_DBL][eft_DBL] = {eft_DBL,
+                                                             (void*)custom_elemwise_minimum_c<double, double, double>};
+
     return fmap;
 };

@@ -35,6 +35,8 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_ARGMAX
         DPNP_FN_ARGMIN
         DPNP_FN_DOT
+        DPNP_FN_MAXIMUM
+        DPNP_FN_MINIMUM
 
 cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
     cdef enum DPNPFuncType "DPNPFuncType":
@@ -177,6 +179,8 @@ cpdef dparray dpnp_arctan2(dparray array1, dparray array2)
 cpdef dparray dpnp_cos(dparray array1)
 cpdef dparray dpnp_divide(dparray array1, dparray array2)
 cpdef dparray dpnp_hypot(dparray array1, dparray array2)
+cpdef dparray dpnp_maximum(dparray array1, dparray array2)
+cpdef dparray dpnp_minimum(dparray array1, dparray array2)
 cpdef dparray dpnp_multiply(dparray array1, dparray array2)
 cpdef dparray dpnp_negative(dparray array1)
 cpdef dparray dpnp_power(dparray array1, dparray array2)
