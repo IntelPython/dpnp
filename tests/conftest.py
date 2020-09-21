@@ -38,11 +38,11 @@ def pytest_collection_modifyitems(config, items):
     test_exclude_file = os.path.join(test_path, 'skipped_tests.tbl')
     if os.path.exists(test_exclude_file):
         with open(test_exclude_file) as skip_names_file:
-            excluded_tests = skip_names_file.read()
+            excluded_tests = skip_names_file.readlines()
 
     for item in items:
         # some test name contains '\n' in the parameters
-        test_name = item.nodeid.replace('\n', '')
+        test_name = item.nodeid.replace('\n', '').strip()
 #         test_file = test_name.split(':', -1)[0]
 #         test_path = os.path.split(test_file)[0]
 #         test_exclude_file = os.path.join(test_path, 'skipped_tests.tbl')
@@ -50,5 +50,9 @@ def pytest_collection_modifyitems(config, items):
 #             with open(test_exclude_file) as skip_names_file:
 #                 excluded_tests = skip_names_file.read()
 
-        if test_name in excluded_tests:
-            item.add_marker(skip_mark)
+        for item_tbl in excluded_tests:
+            # remove end-of-line character
+            item_tbl_str = item_tbl.strip()
+            # exact match of the test name with items from excluded_list
+            if test_name == item_tbl_str:
+                item.add_marker(skip_mark)
