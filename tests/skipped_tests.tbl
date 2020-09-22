@@ -407,7 +407,6 @@ tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticUnary_param_
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticUnary_param_6_{arg1=True, name='reciprocal'}::test_unary
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp2
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_absolute_negative
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_clip1
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_clip2
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_clip3
@@ -416,8 +415,6 @@ tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_clip_min_max_none
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_clip_min_none
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_external_clip1
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_external_clip2
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_fmax_nan
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_fmin_nan
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_maximum_nan
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_minimum_nan
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num
