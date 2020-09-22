@@ -615,12 +615,12 @@ cdef class dparray:
 
         return mean(self)
 
-    def min(self):
+    def min(self, axis=None):
         """
         Return the minimum along a given axis.
         """
 
-        return min(self)
+        return min(self, axis)
 
     """
     -------------------------------------------------------------------------

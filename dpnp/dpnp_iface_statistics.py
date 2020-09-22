@@ -48,10 +48,55 @@ from dpnp.dparray import dparray
 from dpnp.dpnp_utils import checker_throw_value_error, use_origin_backend
 
 __all__ = [
+    'amin',
     'cov',
     'mean',
     'min'
 ]
+
+
+def amin(input, axis=None, out=None):
+    """
+        Return the minimum of an array or minimum along an axis.
+        Parameters
+        ----------
+        input : array_like
+            Input data.
+        axis : None or int or tuple of ints, optional
+            Axis or axes along which to operate.  By default, flattened input is
+            used.
+            .. versionadded:: 1.7.0
+            If this is a tuple of ints, the minimum is selected over multiple axes,
+            instead of a single axis or all the axes as before.
+        out : ndarray, optional
+            Alternative output array in which to place the result.  Must
+            be of the same shape and buffer length as the expected output.
+            See `ufuncs-output-type` for more details.
+        keepdims : bool, optional
+            If this is set to True, the axes which are reduced are left
+            in the result as dimensions with size one. With this option,
+            the result will broadcast correctly against the input array.
+            If the default value is passed, then `keepdims` will not be
+            passed through to the `amin` method of sub-classes of
+            `ndarray`, however any non-default value will be.  If the
+            sub-class' method does not implement `keepdims` any
+            exceptions will be raised.
+        initial : scalar, optional
+            The maximum value of an output element. Must be present to allow
+            computation on empty slice. See `~numpy.ufunc.reduce` for details.
+            .. versionadded:: 1.15.0
+        where : array_like of bool, optional
+            Elements to compare for the minimum. See `~numpy.ufunc.reduce`
+            for details.
+            .. versionadded:: 1.17.0
+        Returns
+        -------
+        amin : ndarray or scalar
+            Minimum of `input`. If `axis` is None, the result is a scalar value.
+            If `axis` is given, the result is an array of dimension
+            ``input.ndim - 1``.
+    """
+    return min(input, axis=axis, out=out)
 
 
 def cov(in_array1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None):
@@ -175,7 +220,7 @@ def min(input, axis=None, out=None):
         return numpy.min(input, axis=axis)
 
     if not use_origin_backend(input) and is_input_dparray:
-        if dim_input > 2 and axis is not None:
+        if dim_input > 3 and axis is not None:
             raise NotImplementedError
         if out is not None:
             checker_throw_value_error("min", "out", type(out), None)

@@ -159,6 +159,7 @@ cpdef dparray dpnp_transpose(dparray array1, axes=*)
 Statistics functions
 """
 cpdef dparray dpnp_mean(dparray a, axis)
+cpdef dparray dpnp_min(dparray a, axis)
 
 
 """
