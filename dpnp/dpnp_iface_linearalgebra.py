@@ -42,6 +42,7 @@ it contains:
 
 import numpy
 
+import dpnp
 from dpnp.backend import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import checker_throw_value_error, use_origin_backend
@@ -49,6 +50,12 @@ import dpnp.config as config
 
 __all__ = [
     'dot',
+    "einsum",
+    "einsum_path",
+    "inner",
+    "kron",
+    "multi_dot",
+    "outer"
 ]
 
 
@@ -111,5 +118,178 @@ def dot(in_array1, in_array2, out_array=None):
     # scalar returned
     if result.shape == (1,):
         return result.dtype.type(result[0])
+
+    return result
+
+
+def einsum(*operands, **kwargs):
+    """
+    einsum(subscripts, *operands, dtype=False)
+
+    Evaluates the Einstein summation convention on the operands.
+    Using the Einstein summation convention, many common multi-dimensional
+    array operations can be represented in a simple fashion. This function
+    provides a way to compute such summations.
+
+    See Also
+    --------
+    :meth:`numpy.einsum`
+
+    """
+
+    new_operands = []
+
+    for item in operands:
+        if isinstance(item, dparray):
+            dpnp_array = dpnp.asnumpy(item)
+            new_operands.append(dpnp_array)
+        else:
+            new_operands.append(item)
+
+    return numpy.einsum(*new_operands, **kwargs)
+
+
+def einsum_path(*operands, optimize='greedy', einsum_call=False):
+    """
+    einsum_path(subscripts, *operands, optimize='greedy')
+
+    Evaluates the lowest cost contraction order for an einsum expression by
+    considering the creation of intermediate arrays.
+
+    See Also
+    --------
+    :meth:`numpy.einsum_path`
+
+    """
+
+    new_operands = []
+
+    for item in operands:
+        if isinstance(item, dparray):
+            dpnp_array = dpnp.asnumpy(item)
+            new_operands.append(dpnp_array)
+        else:
+            new_operands.append(item)
+
+    return numpy.einsum_path(*new_operands, optimize=optimize, einsum_call=einsum_call)
+
+
+def inner(x1, x2):
+    """
+    Returns the inner product of two vectors.
+
+    The input arrays are flattened into 1-D vectors and then it performs inner
+    product of these vectors.
+
+    .. seealso:: :func:`numpy.inner`
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+    is_x2_dparray = isinstance(x2, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray):
+        return dpnp_inner(x1, x2)
+
+    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
+    input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.inner(input1, input2)
+    result = result_numpy
+    if isinstance(result, numpy.ndarray):
+        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_numpy.item(i))
+
+    return result
+
+
+def kron(input1, input2):
+    """
+    Returns the kronecker product of two arrays.
+
+    .. seealso:: :func:`numpy.kron`
+
+    """
+
+    if isinstance(input1, dparray):
+        input1_n = dpnp.asnumpy(input1)
+    else:
+        input1_n = input1
+
+    if isinstance(input2, dparray):
+        input2_n = dpnp.asnumpy(input2)
+    else:
+        input2_n = input2
+
+    result = numpy.kron(input1_n, input2_n)
+
+    return result
+
+
+def multi_dot(arrays, out=None):
+    """
+    Compute the dot product of two or more arrays in a single function call
+
+    Parameters
+    ----------
+    arrays : sequence of array_like
+        If the first argument is 1-D it is treated as row vector.
+        If the last argument is 1-D it is treated as column vector.
+        The other arguments must be 2-D.
+    out : ndarray, optional
+        unsupported
+
+    Returns
+    -------
+    output : ndarray
+        Returns the dot product of the supplied arrays.
+
+    See Also
+    --------
+    :meth:`numpy.multi_dot`
+
+    """
+
+    n = len(arrays)
+
+    if n < 2:
+        checker_throw_value_error("multi_dot", "arrays", n, ">1")
+
+    result = arrays[0]
+    for id in range(1, n):
+        result = dot(result, arrays[id])
+
+    return result
+
+
+def outer(x1, x2, out=None):
+    """
+    Returns the outer product of two vectors.
+
+    The input arrays are flattened into 1-D vectors and then it performs outer
+    product of these vectors.
+
+    .. seealso:: :func:`numpy.outer`
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+    is_x2_dparray = isinstance(x2, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and (out is None)):
+        return dpnp_outer(x1, x2)
+
+    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
+    input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.outer(input1, input2, out)
+    result = result_numpy
+    if isinstance(result, numpy.ndarray):
+        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_numpy.item(i))
 
     return result

@@ -25,47 +25,31 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""Module Backend
+"""Module Backend (Counting part)
 
 This module contains interface functions between C backend layer
 and the rest of the library
 
 """
 
-from dpnp.dpnp_utils cimport checker_throw_type_error
-from dpnp.backend cimport *
-from dpnp.dparray cimport dparray, dparray_shape_type
+
 import numpy
-cimport numpy
+from dpnp.dpnp_utils cimport checker_throw_type_error, normalize_axis
 
 
-__all__ = [
-    "dpnp_eig",
+__all__ += [
+    "dpnp_count_nonzero"
 ]
 
 
-cpdef tuple dpnp_eig(dparray in_array1):
-    cdef dparray_shape_type shape1 = in_array1.shape
+cpdef dparray dpnp_count_nonzero(dparray in_array1):
+    cdef dparray result = dparray((1,), dtype=numpy.int64)
 
-    call_type = in_array1.dtype
-    res_type = call_type
-    if res_type != numpy.float32:
-        res_type = numpy.float64
+    count = 0
+    for i in range(in_array1.size):
+        if in_array1[i] != 0:
+            count += 1
 
-    cdef size_t size1 = 0
-    if not shape1.empty():
-        size1 = shape1.front()
+    result[0] = count
 
-    cdef dparray res_val = dparray((size1,), dtype=res_type)
-
-    # this array is used as input for MKL and will be overwritten with eigen vectors
-    res_vec = in_array1.astype(res_type)
-
-    if call_type in [numpy.float64, numpy.int32, numpy.int64]:
-        mkl_lapack_syevd_c[double](res_vec.get_data(), res_val.get_data(), size1)
-    elif call_type == numpy.float32:
-        mkl_lapack_syevd_c[float](res_vec.get_data(), res_val.get_data(), size1)
-    else:
-        checker_throw_type_error("dpnp_eig", call_type)
-
-    return res_val, res_vec
+    return result

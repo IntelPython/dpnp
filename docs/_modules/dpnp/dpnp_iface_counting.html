@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.dpnp_iface_libmath &mdash; dpnp 0.0.1 documentation</title>
+  <title>dpnp.dpnp_iface_counting &mdash; dpnp 0.0.1 documentation</title>
   
 
   
@@ -137,7 +137,7 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
-      <li>dpnp.dpnp_iface_libmath</li>
+      <li>dpnp.dpnp_iface_counting</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -152,7 +152,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for dpnp.dpnp_iface_libmath</h1><div class="highlight"><pre>
+  <h1>Source code for dpnp.dpnp_iface_counting</h1><div class="highlight"><pre>
 <span></span><span class="c1"># cython: language_level=3</span>
 <span class="c1"># distutils: language = c++</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
@@ -182,7 +182,7 @@
 <span class="c1"># *****************************************************************************</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Interface of the function from Python Math library</span>
+<span class="sd">Interface of the counting function of the dpnp</span>
 
 <span class="sd">Notes</span>
 <span class="sd">-----</span>
@@ -195,32 +195,83 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
 
+<span class="kn">from</span> <span class="nn">dpnp.backend</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dparray</span> <span class="kn">import</span> <span class="n">dparray</span>
-
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="n">checker_throw_value_error</span><span class="p">,</span> <span class="n">use_origin_backend</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;erf&quot;</span>
+    <span class="s1">&#39;count_nonzero&#39;</span>
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="erf"><a class="viewcode-back" href="../../numpy_api.html#dpnp.erf">[docs]</a><span class="k">def</span> <span class="nf">erf</span><span class="p">(</span><span class="n">in_array1</span><span class="p">):</span>
+<div class="viewcode-block" id="count_nonzero"><a class="viewcode-back" href="../../numpy_api.html#dpnp.count_nonzero">[docs]</a><span class="k">def</span> <span class="nf">count_nonzero</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return the &#39;error function&#39; at in_array1.</span>
+<span class="sd">    Counts the number of non-zero values in the array ``a``.</span>
 
-<span class="sd">    .. seealso:: :func:`math.erf`</span>
+<span class="sd">    The word &quot;non-zero&quot; is in reference to the Python 2.x</span>
+<span class="sd">    built-in method ``__nonzero__()`` (renamed ``__bool__()``</span>
+<span class="sd">    in Python 3.x) of Python objects that tests an object&#39;s</span>
+<span class="sd">    &quot;truthfulness&quot;. For example, any number is considered</span>
+<span class="sd">    truthful if it is nonzero, whereas any string is considered</span>
+<span class="sd">    truthful if it is not the empty string. Thus, this function</span>
+<span class="sd">    (recursively) counts how many elements in ``a`` (and in</span>
+<span class="sd">    sub-arrays thereof) have their ``__nonzero__()`` or ``__bool__()``</span>
+<span class="sd">    method evaluated to ``True``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : array_like</span>
+<span class="sd">        The array for which to count non-zeros.</span>
+<span class="sd">    axis : int or tuple, optional</span>
+<span class="sd">        Axis or tuple of axes along which to count non-zeros.</span>
+<span class="sd">        Default is None, meaning that non-zeros will be counted</span>
+<span class="sd">        along a flattened version of ``a``.</span>
+
+<span class="sd">        .. versionadded:: 1.12.0</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    count : int or array of int</span>
+<span class="sd">        Number of non-zero values in the array along a given axis.</span>
+<span class="sd">        Otherwise, the total number of non-zero values in the array</span>
+<span class="sd">        is returned.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    nonzero : Return the coordinates of all the non-zero values.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; np.count_nonzero(np.eye(4))</span>
+<span class="sd">    4</span>
+<span class="sd">    &gt;&gt;&gt; np.count_nonzero([[0,1,7,0,0],[3,0,0,2,19]])</span>
+<span class="sd">    5</span>
+<span class="sd">    &gt;&gt;&gt; np.count_nonzero([[0,1,7,0,0],[3,0,0,2,19]], axis=0)</span>
+<span class="sd">    array([1, 1, 1, 1, 1])</span>
+<span class="sd">    &gt;&gt;&gt; np.count_nonzero([[0,1,7,0,0],[3,0,0,2,19]], axis=1)</span>
+<span class="sd">    array([2, 3])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">dparray</span><span class="p">(</span><span class="n">in_array1</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">in_array1</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
-            <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">erf</span><span class="p">(</span><span class="n">in_array1</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">is_dparray1</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">in_array1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_dparray1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;count_nonzero&quot;</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">axis</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">keepdims</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;count_nonzero&quot;</span><span class="p">,</span> <span class="s2">&quot;keepdims&quot;</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_count_nonzero</span><span class="p">(</span><span class="n">in_array1</span><span class="p">)</span>
+
+        <span class="c1"># scalar returned</span>
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,):</span>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
         <span class="k">return</span> <span class="n">result</span>
 
-    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">erf</span><span class="p">(</span><span class="n">in_array1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

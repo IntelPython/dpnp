@@ -1,7 +1,185 @@
 jobs:
+
+- job: myCodeStyle
+  displayName: Code style
+
+  pool:
+    vmImage: 'ubuntu-20.04'
+
+  steps:
+
+  - bash: |
+      echo ========================= install Python 3.8 ===============================
+      sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
+      echo ========================= Python version ===============================
+      python --version
+      python3 --version
+      echo ========================= Conda ENV ===============================
+      conda create -q -y -n CondaCodeStyle python=3.8 conda-build conda-verify \
+                                                      numpy cython pytest \
+                                                      pycodestyle autopep8 black
+      . /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate CondaCodeStyle
+      echo ========================= Run style check ===============================
+      # variables are not used but have to be installed for setuptools
+      export ONEAPI_ROOT=/opt/intel
+      export MKLROOT=/opt/intel
+      python ./setup.py style
+      # echo "##vso[task.logissue type=error]Style Check Failed."
+      # ##vso[task.complete result=Failed;]Style Check Failed
+
+- job: test_valgrind
+  displayName: Valgrind
+
+  pool:
+    vmImage: 'ubuntu-20.04'
+
+  steps:
+
+  - bash: |
+      echo ========================== current SHELL ===============================
+      echo ${SHELL}
+      echo ========================= current machine kernel ===============================
+      uname -a
+      echo ========================= current directory ===============================
+      pwd
+      echo ========================= install Intel repository ===============================
+      wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+      sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+      rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+      sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
+      sudo apt-get update
+      echo ========================= install Python 3.8 ===============================
+      sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
+      echo ========================= Python version ===============================
+      python --version
+      python3 --version
+      echo ========================= install valgrind ===============================
+      sudo apt-get install valgrind
+      echo ========================= install Numpy cython pytest ===============================
+      pip3 install numpy cython pytest pytest-valgrind
+      echo ========================= install Intel OneAPI ===============================
+      sudo apt-get install intel-oneapi-mkl-2021.1-beta09                \
+                           intel-oneapi-mkl-devel-2021.1-beta09          \
+                           intel-oneapi-dpcpp-cpp-compiler-2021.1-beta09 \
+                           intel-oneapi-dpcpp-cpp-2021.1-beta09
+      echo ========================= setup Intel OneAPI ===============================
+      ls -l /opt/intel/oneapi/
+      . /opt/intel/oneapi/setvars.sh
+      echo ========================= Current clang version ===============================
+      valgrind --version
+      clang++ --version
+      which clang++
+      echo ========================= build DPNP ===============================
+      ./0.build.sh
+      echo ========================= run valgrind ===============================
+      export PYTHONMALLOC=malloc
+      valgrind --show-leak-kinds=definite --log-file=/tmp/valgrind-output \
+               python -m pytest tests/third_party/cupy/math_tests/test_arithmetic.py \
+                                -vv --valgrind --valgrind-log=/tmp/valgrind-output
+
+- job: mycodecoverage
+  displayName: Code coverage
+
+  pool:
+    vmImage: 'ubuntu-20.04'
+
+  steps:
+
+  - bash: |
+      echo ========================== current SHELL ===============================
+      echo ${SHELL}
+      echo ========================= current machine kernel ===============================
+      uname -a
+      echo ========================= current directory ===============================
+      pwd
+      echo ========================= install Intel repository ===============================
+      wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+      sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+      rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+      sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
+      sudo apt-get update
+      echo ========================= install Python 3.8 ===============================
+      sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
+      echo ========================= Python version ===============================
+      python --version
+      python3 --version
+      echo ========================= install valgrind ===============================
+      sudo apt-get install valgrind
+      echo ========================= Conda ENV ===============================
+      conda create -q -y -n CondaCodeStyle python=3.8 conda-build conda-verify \
+                                                      numpy cython pytest \
+                                                      pycodestyle autopep8 \
+                                                      cython pytest pytest-cov
+      . /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate CondaCodeStyle
+      echo ========================= install Intel OneAPI ===============================
+      sudo apt-get install intel-oneapi-mkl-2021.1-beta09                \
+                           intel-oneapi-mkl-devel-2021.1-beta09          \
+                           intel-oneapi-dpcpp-cpp-compiler-2021.1-beta09 \
+                           intel-oneapi-dpcpp-cpp-2021.1-beta09
+      echo ========================= setup Intel OneAPI ===============================
+      ls -l /opt/intel/oneapi/
+      . /opt/intel/oneapi/setvars.sh
+      echo ========================= Current clang version ===============================
+      valgrind --version
+      clang++ --version
+      which clang++
+      echo ========================= build DPNP ===============================
+      ./0.build.sh
+      echo ========================= run valgrind ===============================
+      pytest --cov-report term-missing --cov=dpnp
+
+- job: ubuntu2004
+  displayName: testing on Ubuntu 20.04
+
+  pool:
+    vmImage: 'ubuntu-20.04'
+
+  steps:
+
+  - bash: |
+      echo ========================== current SHELL ===============================
+      echo ${SHELL}
+      echo ========================= current machine kernel ===============================
+      uname -a
+      echo ========================= current directory ===============================
+      pwd
+      echo ========================= install Intel repository ===============================
+      wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+      sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+      rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+      sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
+      sudo apt-get update
+      echo ========================= install Python 3.8 ===============================
+      sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
+      echo ========================= Python version ===============================
+      python --version
+      python3 --version
+      echo ========================= install Numpy cython pytest ===============================
+      pip3 install numpy cython pytest
+      echo ========================= install Intel OneAPI ===============================
+      sudo apt-get install intel-oneapi-mkl-2021.1-beta09                \
+                           intel-oneapi-mkl-devel-2021.1-beta09          \
+                           intel-oneapi-dpcpp-cpp-compiler-2021.1-beta09 \
+                           intel-oneapi-dpcpp-cpp-2021.1-beta09
+      echo ========================= setup Intel OneAPI ===============================
+      ls -l /opt/intel/oneapi/
+      . /opt/intel/oneapi/setvars.sh
+      echo ========================= Current clang version ===============================
+      clang++ --version
+      which clang++
+      echo ========================= build DPNP ===============================
+      ./0.build.sh
+      echo ========================= run pytest ===============================
+      python -m pytest --tb=short
+
 - job: ubuntu1804
+  displayName: make package
+
   pool:
     vmImage: 'ubuntu-18.04'
+
   steps:
   - script: |
       wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
@@ -23,14 +201,12 @@ jobs:
           opencl-headers                \
           libze-loader                  \
           libze-intel-gpu
-      sudo bash -c 'echo libintelocl.so > /etc/OpenCL/vendors/intel-cpu.icd'
-      sudo mv -f /opt/intel/oneapi/compiler/latest/linux/lib/oclfpga /opt/intel/oneapi/compiler/latest/linux/lib/oclfpga_
-    displayName: 'apt-get'
-  - script: conda create -q -y -n CB python=3.7 conda-build conda-verify
-    displayName: Create Anaconda environment
+      # sudo bash -c 'echo libintelocl.so > /etc/OpenCL/vendors/intel-cpu.icd'
+      # sudo mv -f /opt/intel/oneapi/compiler/latest/linux/lib/oclfpga /opt/intel/oneapi/compiler/latest/linux/lib/oclfpga_
+
   - script: |
+      conda create -q -y -n CB python=3.8 conda-build conda-verify
       export ONEAPI_ROOT=/opt/intel/oneapi
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate CB
       conda build --override-channels -c conda-forge -c intel conda-recipe
-    displayName: conda build

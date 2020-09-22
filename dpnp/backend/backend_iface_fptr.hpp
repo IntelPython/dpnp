@@ -59,10 +59,15 @@
  */
 enum class DPNPFuncName : size_t
 {
-    DPNP_FN_NONE, /**< Very first element of the enumeration */
-    DPNP_FN_ADD,  /**< Used in numpy.add() implementation  */
-    DPNP_FN_DOT,  /**< Used in numpy.dot() implementation  */
-    DPNP_FN_LAST  /**< The latest element of the enumeration */
+    DPNP_FN_NONE,    /**< Very first element of the enumeration */
+    DPNP_FN_ADD,     /**< Used in numpy.add() implementation  */
+    DPNP_FN_ARGMAX,  /**< Used in numpy.argmax() implementation  */
+    DPNP_FN_ARGMIN,  /**< Used in numpy.argmin() implementation  */
+    DPNP_FN_DOT,     /**< Used in numpy.dot() implementation  */
+    DPNP_FN_FABS,    /**< Used in numpy.fabs() implementation  */
+    DPNP_FN_MAXIMUM, /**< Used in numpy.maximum() implementation  */
+    DPNP_FN_MINIMUM, /**< Used in numpy.minimum() implementation  */
+    DPNP_FN_LAST     /**< The latest element of the enumeration */
 };
 
 /**
@@ -80,6 +85,12 @@ enum class DPNPFuncType : size_t
     DPNP_FT_FLOAT, /**< analog of numpy.float32 or float */
     DPNP_FT_DOUBLE /**< analog of numpy.float32 or double */
 };
+
+/**
+ * This operator is needed for compatibility with Cython 0.29 which has a bug in Enum handling
+ * TODO needs to be deleted in future
+ */
+size_t operator-(DPNPFuncType lhs, DPNPFuncType rhs);
 
 /**
  * @ingroup BACKEND_FUNC_PTR_API
@@ -110,6 +121,25 @@ INP_DLLEXPORT
 DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName name,
                                      DPNPFuncType first_type,
                                      DPNPFuncType second_type = DPNPFuncType::DPNP_FT_NONE);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief get runtime pointer to selected function
+ *
+ * Same interface function as @ref get_dpnp_function_ptr with a bit diffrent interface
+ *
+ * @param [out] result_type  Type of the result provided by the backend API function
+ * @param [in]  name         Name of the function in storage
+ * @param [in]  first_type   First type of the storage
+ * @param [in]  second_type  Second type of the storage
+ *
+ * @return pointer to the backend API function.
+ */
+INP_DLLEXPORT
+void* get_dpnp_function_ptr1(DPNPFuncType& result_type,
+                             DPNPFuncName name,
+                             DPNPFuncType first_type,
+                             DPNPFuncType second_type = DPNPFuncType::DPNP_FT_NONE);
 
 /**
  * DEPRECATED.

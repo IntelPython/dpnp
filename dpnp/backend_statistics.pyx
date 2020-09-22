@@ -42,41 +42,29 @@ from dpnp.backend cimport *
 __all__ += [
     "dpnp_cov",
     "dpnp_mean",
+    "dpnp_median",
     "dpnp_min"
 ]
 
 
 cpdef dparray dpnp_cov(dparray array1):
-    # behaviour of original numpy
-    if array1.ndim > 2:
-        raise ValueError("array has more than 2 dimensions")
+    cdef dparray_shape_type input_shape = array1.shape
 
-    if array1.ndim < 2:
-        raise NotImplementedError
+    call_type = array1.dtype
 
-    # numpy provide result as float64 for any input type
-    cdef dparray mean = dparray(array1.shape[0], dtype=numpy.float64)
-    cdef dparray X = dparray(array1.shape, dtype=numpy.float64)
+    if array1.ndim == 1:
+        input_shape.insert(input_shape.begin(), 1)
 
-    # mean(array1, axis=1) #################################
-    # dpmp.mean throws: 'dpnp.dparray.dparray' object is not callable
-    for i in range(array1.shape[0]):
-        sum = 0.0
-        for j in range(array1.shape[1]):
-            sum += array1[i, j]
-        mean[i] = sum / array1.shape[1]
-    ########################################################
-    #X = array1 - mean[:, None]
-    #X = array1 - mean[:, numpy.newaxis]
-    #X = array1 - mean.reshape((array1.shape[0], 1))
-    for i in range(array1.shape[0]):
-        for j in range(array1.shape[1]):
-            X[i, j] = array1[i, j] - mean[i]
-    ########################################################
-    Y = X.transpose()
-    res = dpnp_matmul(X, Y) / (array1.shape[1] - 1)
+    # numpy uses float64 for all input types
+    in_array = array1.astype(numpy.float64)
+    cdef dparray result = dparray((input_shape[0], input_shape[0]), dtype=numpy.float64)
 
-    return res
+    if call_type in [numpy.float64, numpy.float32, numpy.int32, numpy.int64]:
+        custom_cov_c[double](in_array.get_data(), result.get_data(), input_shape)
+    else:
+        checker_throw_type_error("dpnp_cov", call_type)
+
+    return result
 
 
 cpdef dparray dpnp_mean(dparray input, axis):
@@ -113,6 +101,34 @@ cpdef dparray dpnp_mean(dparray input, axis):
                 sum_val += input[i]
             result[0] = sum_val
         return result / shape_input[axis_]
+
+
+cpdef dparray dpnp_median(dparray array1):
+    call_type = array1.dtype
+
+    cdef dparray sorted = dparray(array1.shape, dtype=call_type)
+
+    cdef size_t size = array1.size
+
+    if call_type == numpy.float64:
+        custom_sort_c[double](array1.get_data(), sorted.get_data(), size)
+    elif call_type == numpy.float32:
+        custom_sort_c[float](array1.get_data(), sorted.get_data(), size)
+    elif call_type == numpy.int64:
+        custom_sort_c[long](array1.get_data(), sorted.get_data(), size)
+    elif call_type == numpy.int32:
+        custom_sort_c[int](array1.get_data(), sorted.get_data(), size)
+    else:
+        checker_throw_type_error("dpnp_median", call_type)
+
+    cdef dparray result = dparray((1,), dtype=numpy.float64)
+
+    if size % 2 == 0:
+        result[0] = (sorted[size / 2] + sorted[size / 2 - 1]) / 2
+    else:
+        result[0] = sorted[(size - 1) / 2]
+
+    return result
 
 
 cpdef dparray dpnp_min(dparray input, axis):

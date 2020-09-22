@@ -84,5 +84,8 @@ if __name__ == '__main__':
             if result_mkl == result_python:
                 verification = True
 
-            print(
-                f"type:{type_name}:N:{size:4}:__NumPy__:{times_python[1]:.3e}:(min:{times_python[0]:.3e}:max:{times_python[2]:.3e}):__SYCL__:{times_sycl[1]:.3e}:(min:{times_sycl[0]:.3e}:max:{times_sycl[2]:.3e}):ratio:{times_python[1]/times_sycl[1]:6.2f}:verification:{verification}")
+            msg = f"type:{type_name}:N:{size:4}"
+            msg += f":__NumPy__:{times_python[1]:.3e}:(min:{times_python[0]:.3e}:max:{times_python[2]:.3e})"
+            msg += f":__SYCL__:{times_sycl[1]:.3e}:(min:{times_sycl[0]:.3e}:max:{times_sycl[2]:.3e})"
+            msg += f":ratio:{times_python[1]/times_sycl[1]:6.2f}:verification:{verification}"
+            print(msg)

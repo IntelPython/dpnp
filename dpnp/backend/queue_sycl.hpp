@@ -29,6 +29,10 @@
 
 #include <CL/sycl.hpp>
 
+#if !defined(DPNP_LOCAL_QUEUE)
+#include <dppl_sycl_queue_interface.h>
+#endif
+
 #define DPNP_QUEUE backend_sycl::get_queue()
 
 /**
@@ -38,18 +42,24 @@
  */
 class backend_sycl
 {
+#if defined(DPNP_LOCAL_QUEUE)
     static cl::sycl::queue* queue; /**< contains SYCL queue pointer initialized in @ref backend_sycl_queue_init */
+#endif
 
     static void destroy()
     {
+#if defined(DPNP_LOCAL_QUEUE)
         delete queue;
         queue = nullptr;
+#endif
     }
 
 public:
     backend_sycl()
     {
+#if defined(DPNP_LOCAL_QUEUE)
         queue = nullptr;
+#endif
     }
 
     virtual ~backend_sycl()
@@ -73,12 +83,18 @@ public:
      */
     static cl::sycl::queue& get_queue()
     {
+#if defined(DPNP_LOCAL_QUEUE)
         if (!queue)
         {
             backend_sycl_queue_init();
         }
 
         return *queue;
+#else
+        // temporal solution. Started from Sept-2020
+        DPPLSyclQueueRef DPCtrl_queue = DPPLGetCurrentQueue();
+        return *(reinterpret_cast<cl::sycl::queue*>(DPCtrl_queue));
+#endif
     }
 };
 

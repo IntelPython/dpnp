@@ -160,6 +160,9 @@ class TestMisc(unittest.TestCase):
     def test_absolute_negative(self):
         self.check_unary_negative('absolute')
 
+    def test_fabs(self):
+        self.check_unary('fabs')
+
     def test_sign(self):
         self.check_unary('sign', no_bool=True)
 

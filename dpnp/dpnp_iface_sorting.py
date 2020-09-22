@@ -27,7 +27,7 @@
 # *****************************************************************************
 
 """
-Interface of the statistics function of the Intel NumPy
+Interface of the sorting function of the dpnp
 
 Notes
 -----

@@ -29,6 +29,32 @@ from libcpp.vector cimport vector
 from libcpp cimport bool
 from dpnp.dparray cimport dparray, dparray_shape_type
 
+cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
+    cdef enum DPNPFuncName "DPNPFuncName":
+        DPNP_FN_ADD
+        DPNP_FN_ARGMAX
+        DPNP_FN_ARGMIN
+        DPNP_FN_DOT
+        DPNP_FN_FABS
+        DPNP_FN_MAXIMUM
+        DPNP_FN_MINIMUM
+
+cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
+    cdef enum DPNPFuncType "DPNPFuncType":
+        DPNP_FT_NONE
+        DPNP_FT_INT
+        DPNP_FT_LONG
+        DPNP_FT_FLOAT
+        DPNP_FT_DOUBLE
+
+cdef extern from "backend/backend_iface_fptr.hpp":
+    struct DPNPFuncData:
+        DPNPFuncType return_type
+        void * ptr
+
+    DPNPFuncData get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type)
+
+
 cdef extern from "backend/backend_iface.hpp" namespace "QueueOptions":  # need this namespace for Enum import
     cdef enum QueueOptions "QueueOptions":
         CPU_SELECTOR
@@ -94,13 +120,26 @@ cdef extern from "backend/backend_iface.hpp":
     void mkl_rng_uniform[_DataType](void * result, size_t size)
     void mkl_rng_uniform_mt19937[_DataType](void * result, long low, long high, size_t size)
 
+    # Statistics routines
+    void custom_cov_c[_DataType](void * array, void * result, dparray_shape_type & input_shape)
+
     # Sorting routines
     void custom_argsort_c[_DataType, _idx_DataType](void * array, void * result, size_t size)
     void custom_sort_c[_DataType](void * array, void * result, size_t size)
 
+    # Sorting routines
+    void custom_argmax_c[_DataType, _idx_DataType](void * array, void * result, size_t size)
+    void custom_argmin_c[_DataType, _idx_DataType](void * array, void * result, size_t size)
 
 cpdef dparray dpnp_remainder(dparray array1, int scalar)
 cpdef dparray dpnp_astype(dparray array1, dtype_target)
+
+
+"""
+Internal functions
+"""
+cpdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype)
+cpdef dpnp_DPNPFuncType_to_dtype(size_t type)
 
 
 """
@@ -141,6 +180,8 @@ cpdef dparray dpnp_arctan2(dparray array1, dparray array2)
 cpdef dparray dpnp_cos(dparray array1)
 cpdef dparray dpnp_divide(dparray array1, dparray array2)
 cpdef dparray dpnp_hypot(dparray array1, dparray array2)
+cpdef dparray dpnp_maximum(dparray array1, dparray array2)
+cpdef dparray dpnp_minimum(dparray array1, dparray array2)
 cpdef dparray dpnp_multiply(dparray array1, dparray array2)
 cpdef dparray dpnp_negative(dparray array1)
 cpdef dparray dpnp_power(dparray array1, dparray array2)
@@ -158,6 +199,7 @@ cpdef dparray dpnp_transpose(dparray array1, axes=*)
 """
 Statistics functions
 """
+cpdef dparray dpnp_cov(dparray array1)
 cpdef dparray dpnp_mean(dparray a, axis)
 cpdef dparray dpnp_min(dparray a, axis)
 
@@ -167,3 +209,9 @@ Sorting functions
 """
 cpdef dparray dpnp_argsort(dparray array1)
 cpdef dparray dpnp_sort(dparray array1)
+
+"""
+Searching functions
+"""
+cpdef dparray dpnp_argmax(dparray array1)
+cpdef dparray dpnp_argmin(dparray array1)

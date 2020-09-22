@@ -45,7 +45,6 @@ __all__ = [
     "dpnp_arange",
     "dpnp_array",
     "dpnp_astype",
-    "dpnp_dot",
     "dpnp_init_val",
     "dpnp_matmul",
     "dpnp_queue_initialize",
@@ -53,9 +52,12 @@ __all__ = [
 ]
 
 
+include "backend_counting.pyx"
+include "backend_linearalgebra.pyx"
 include "backend_logic.pyx"
 include "backend_manipulation.pyx"
 include "backend_mathematical.pyx"
+include "backend_searching.pyx"
 include "backend_sorting.pyx"
 include "backend_statistics.pyx"
 include "backend_trigonometric.pyx"
@@ -103,61 +105,10 @@ cpdef dparray dpnp_array(obj, dtype=None):
 
 
 cpdef dparray dpnp_astype(dparray array1, dtype_target):
-
     cdef dparray result = dparray(array1.shape, dtype=dtype_target)
 
     for i in range(result.size):
-        result[i] = <long > array1[i]
-
-    return result
-
-
-cpdef dparray dpnp_dot(dparray in_array1, dparray in_array2):
-    cdef vector[Py_ssize_t] shape1 = in_array1.shape
-    cdef vector[Py_ssize_t] shape2 = in_array2.shape
-
-    call_type = in_array1.dtype
-
-    cdef size_t dim1 = in_array1.ndim
-    cdef size_t dim2 = in_array2.ndim
-
-    # matrix
-    if dim1 == 2 and dim2 == 2:
-        return dpnp_matmul(in_array1, in_array2)
-
-    # scalar
-    if dim1 == 0 or dim2 == 0:
-        return dpnp_multiply(in_array1, in_array2)
-
-    if dim1 >= 2 and dim2 == 1:
-        raise NotImplementedError
-
-    if dim1 >= 2 and dim2 >= 2:
-        raise NotImplementedError
-
-    cdef size_t size1 = 0
-    cdef size_t size2 = 0
-    if not shape1.empty():
-        size1 = shape1.front()
-    if not shape1.empty():
-        size2 = shape2.front()
-
-    # vector
-    # test: pytest tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_dot_vec1 -v -s
-    if size1 != size2:
-        raise checker_throw_runtime_error("dpnp_dot", "input vectors must be of equal size")
-
-    cdef dparray result = dparray((1,), dtype=call_type)
-    if call_type == numpy.float64:
-        mkl_blas_dot_c[double](in_array1.get_data(), in_array2.get_data(), result.get_data(), size1)
-    elif call_type == numpy.float32:
-        mkl_blas_dot_c[float](in_array1.get_data(), in_array2.get_data(), result.get_data(), size1)
-    elif call_type == numpy.int64:
-        custom_blas_dot_c[long](in_array1.get_data(), in_array2.get_data(), result.get_data(), size1)
-    elif call_type == numpy.int32:
-        custom_blas_dot_c[int](in_array1.get_data(), in_array2.get_data(), result.get_data(), size1)
-    else:
-        checker_throw_type_error("dpnp_dot", call_type)
+        result[i] = array1[i]
 
     return result
 
@@ -271,3 +222,35 @@ cpdef dparray dpnp_remainder(dparray array1, int scalar):
         result[i] = (array1[i] % scalar)
 
     return result
+
+"""
+Internal functions
+"""
+cpdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype):
+
+    if dtype == numpy.float64:
+        return DPNP_FT_DOUBLE
+    elif dtype == numpy.float32:
+        return DPNP_FT_FLOAT
+    elif dtype == numpy.int64:
+        return DPNP_FT_LONG
+    elif dtype == numpy.int32:
+        return DPNP_FT_INT
+    else:
+        checker_throw_type_error("dpnp_dtype_to_DPNPFuncType", dtype)
+
+cpdef dpnp_DPNPFuncType_to_dtype(size_t type):
+    """
+    Type 'size_t' used instead 'DPNPFuncType' because Cython has lack of Enum support (0.29)
+    TODO needs to use DPNPFuncType here
+    """
+    if type == <size_t > DPNP_FT_DOUBLE:
+        return numpy.float64
+    elif type == <size_t > DPNP_FT_FLOAT:
+        return numpy.float32
+    elif type == <size_t > DPNP_FT_LONG:
+        return numpy.int64
+    elif type == <size_t > DPNP_FT_INT:
+        return numpy.int32
+    else:
+        checker_throw_type_error("dpnp_DPNPFuncType_to_dtype", type)

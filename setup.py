@@ -119,7 +119,30 @@ _project_cmplr_flag_sycl = ["-fsycl"]
 _project_cmplr_flag_compatibility = ["-Wl,--enable-new-dtags", "-fPIC"]
 _project_cmplr_flag_lib = []
 _project_cmplr_macro = []
+_project_sycl_queue_control_macro = [("DPNP_LOCAL_QUEUE", "1")]
 _project_rpath = ["$ORIGIN"]
+_dpctrl_include = []
+_dpctrl_libpath = []
+_dpctrl_lib = []
+
+
+try:
+    """
+    Detect external SYCL queue handling library
+    """
+    import dppl
+
+    # TODO this will not work with no Conda environment
+    _conda_root = os.environ.get('CONDA_PREFIX', "conda_include_error")
+    _dpctrl_include += [os.path.join(_conda_root, 'include')]
+    _dpctrl_libpath += [os.path.join(_conda_root, 'lib')]
+    _dpctrl_lib += ["DPPLSyclInterface"]
+except ImportError:
+    """
+    Set local SYCL queue handler
+    """
+    _project_cmplr_macro += _project_sycl_queue_control_macro
+
 
 # other OS specific
 if IS_WIN:
@@ -153,7 +176,7 @@ except KeyError:
 Get the project build type
 """
 __dpnp_debug__ = os.environ.get('DEBUG', None)
-if not __dpnp_debug__ is None:
+if __dpnp_debug__ is not None:
     _project_cmplr_flag_sycl += _project_cmplr_flag_sycl_devel
 
 
@@ -196,7 +219,7 @@ Final set of arguments for extentions
 """
 _project_extra_link_args = _project_cmplr_flag_compatibility + ["-Wl,-rpath," + x for x in _project_rpath]
 _project_dir = os.path.dirname(os.path.abspath(__file__))
-_project_main_module_dir = os.path.join(_project_dir, "dpnp")
+_project_main_module_dir = [os.path.join(_project_dir, "dpnp")]
 
 
 """
@@ -228,6 +251,9 @@ dpnp_backend_c = [
                 "dpnp/backend/custom_kernels_elemwise.cpp",
                 "dpnp/backend/custom_kernels_manipulation.cpp",
                 "dpnp/backend/custom_kernels_reduction.cpp",
+                "dpnp/backend/custom_kernels_searching.cpp",
+                "dpnp/backend/custom_kernels_sorting.cpp",
+                "dpnp/backend/custom_kernels_statistics.cpp",
                 "dpnp/backend/memory_sycl.cpp",
                 "dpnp/backend/mkl_wrap_blas1.cpp",
                 "dpnp/backend/mkl_wrap_blas3.cpp",
@@ -235,12 +261,12 @@ dpnp_backend_c = [
                 "dpnp/backend/mkl_wrap_rng.cpp",
                 "dpnp/backend/queue_sycl.cpp"
             ],
-            "include_dirs": _mkl_include + [_project_main_module_dir],
-            "library_dirs": _mkl_libpath + _omp_libpath,
-            "runtime_library_dirs": _project_rpath + _mkl_rpath + _cmplr_rpath + _omp_rpath,
+            "include_dirs": _mkl_include + _project_main_module_dir + _dpctrl_include,
+            "library_dirs": _mkl_libpath + _omp_libpath + _dpctrl_libpath,
+            "runtime_library_dirs": _project_rpath + _mkl_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath,
             "extra_preargs": _project_cmplr_flag_sycl,
             "extra_link_postargs": _project_cmplr_flag_compatibility + _project_cmplr_flag_lib,
-            "libraries": _mkl_libs,
+            "libraries": _mkl_libs + _dpctrl_lib,
             "macros": _project_cmplr_macro,
             "language": "c++"
         }

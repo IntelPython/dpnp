@@ -1,4 +1,3 @@
-# cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2020, Intel Corporation
@@ -25,47 +24,35 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""Module Backend
-
-This module contains interface functions between C backend layer
-and the rest of the library
-
-"""
-
-from dpnp.dpnp_utils cimport checker_throw_type_error
-from dpnp.backend cimport *
-from dpnp.dparray cimport dparray, dparray_shape_type
-import numpy
-cimport numpy
+import os
+import pytest
 
 
-__all__ = [
-    "dpnp_eig",
-]
+skip_mark = pytest.mark.skip(reason='Skipping test.')
 
 
-cpdef tuple dpnp_eig(dparray in_array1):
-    cdef dparray_shape_type shape1 = in_array1.shape
+def pytest_collection_modifyitems(config, items):
+    excluded_tests = []
+    # global skip file
+    test_path = os.path.split(__file__)[0]
+    test_exclude_file = os.path.join(test_path, 'skipped_tests.tbl')
+    if os.path.exists(test_exclude_file):
+        with open(test_exclude_file) as skip_names_file:
+            excluded_tests = skip_names_file.readlines()
 
-    call_type = in_array1.dtype
-    res_type = call_type
-    if res_type != numpy.float32:
-        res_type = numpy.float64
+    for item in items:
+        # some test name contains '\n' in the parameters
+        test_name = item.nodeid.replace('\n', '').strip()
+#         test_file = test_name.split(':', -1)[0]
+#         test_path = os.path.split(test_file)[0]
+#         test_exclude_file = os.path.join(test_path, 'skipped_tests.tbl')
+#         if os.path.exists(test_exclude_file):
+#             with open(test_exclude_file) as skip_names_file:
+#                 excluded_tests = skip_names_file.read()
 
-    cdef size_t size1 = 0
-    if not shape1.empty():
-        size1 = shape1.front()
-
-    cdef dparray res_val = dparray((size1,), dtype=res_type)
-
-    # this array is used as input for MKL and will be overwritten with eigen vectors
-    res_vec = in_array1.astype(res_type)
-
-    if call_type in [numpy.float64, numpy.int32, numpy.int64]:
-        mkl_lapack_syevd_c[double](res_vec.get_data(), res_val.get_data(), size1)
-    elif call_type == numpy.float32:
-        mkl_lapack_syevd_c[float](res_vec.get_data(), res_val.get_data(), size1)
-    else:
-        checker_throw_type_error("dpnp_eig", call_type)
-
-    return res_val, res_vec
+        for item_tbl in excluded_tests:
+            # remove end-of-line character
+            item_tbl_str = item_tbl.strip()
+            # exact match of the test name with items from excluded_list
+            if test_name == item_tbl_str:
+                item.add_marker(skip_mark)

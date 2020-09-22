@@ -30,6 +30,7 @@
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -194,6 +195,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 
 <span class="kn">from</span> <span class="nn">dpnp.backend</span> <span class="kn">import</span> <span class="o">*</span>
@@ -204,157 +206,49 @@
 <span class="kn">import</span> <span class="nn">collections</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;arange&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;array&quot;</span><span class="p">,</span>
     <span class="s2">&quot;array_equal&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;asarray&quot;</span><span class="p">,</span>
     <span class="s2">&quot;asnumpy&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;empty&quot;</span><span class="p">,</span>
     <span class="s2">&quot;dpnp_queue_initialize&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_include&quot;</span><span class="p">,</span>
     <span class="s2">&quot;matmul&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ones&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;remainder&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;zeros&quot;</span>
+    <span class="s2">&quot;remainder&quot;</span>
 <span class="p">]</span>
 
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_arraycreation</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_counting</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_libmath</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_linearalgebra</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_logic</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_manipulation</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_mathematical</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_searching</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_sorting</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_statistics</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_trigonometric</span> <span class="kn">import</span> <span class="o">*</span>
 
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_arraycreation</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__arraycreation</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_counting</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__counting</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_libmath</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__libmath</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_linearalgebra</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__linearalgebra</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_logic</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__logic</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_manipulation</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__manipulation</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_mathematical</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__mathematical</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_searching</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__searching</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_sorting</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__sorting</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_statistics</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__statistics</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_trigonometric</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__trigonometric</span>
 
+<span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__arraycreation</span>
+<span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__counting</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__libmath</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__linearalgebra</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__logic</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__manipulation</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__mathematical</span>
+<span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__searching</span>
+<span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__sorting</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__statistics</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__trigonometric</span>
-
-
-<div class="viewcode-block" id="arange"><a class="viewcode-back" href="../../numpy_api.html#dpnp.arange">[docs]</a><span class="k">def</span> <span class="nf">arange</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Returns an array with evenly spaced values within a given interval.</span>
-
-<span class="sd">    Values are generated within the half-open interval [start, stop). The first</span>
-<span class="sd">    three arguments are mapped like the ``range`` built-in function, i.e. start</span>
-<span class="sd">    and step are optional.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">        start: Start of the interval.</span>
-<span class="sd">        stop: End of the interval.</span>
-<span class="sd">        step: Step width between each pair of consecutive values.</span>
-<span class="sd">        dtype: Data type specifier. It is inferred from other arguments by</span>
-<span class="sd">            default.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">        inumpy.dparray: The 1-D array of range values.</span>
-
-<span class="sd">    .. seealso:: :func:`numpy.arange`</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">()):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="nb">int</span><span class="p">)):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Intel NumPy arange(): scalar arguments expected. Given:</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="n">start_param</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">stop_param</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">step_param</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">dtype_param</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;dtype&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">dtype_param</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">dtype_param</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float64</span>
-
-    <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Intel NumPy arange(): unexpected keyword argument(s): </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
-
-    <span class="n">args_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">args_len</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">stop_param</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">elif</span> <span class="n">args_len</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="n">start_param</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">stop_param</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">elif</span> <span class="n">args_len</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-        <span class="n">start_param</span><span class="p">,</span> <span class="n">stop_param</span><span class="p">,</span> <span class="n">step_param</span> <span class="o">=</span> <span class="n">args</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Intel NumPy arange() takes 3 positional arguments: arange([start], stop, [step])&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_arange</span><span class="p">(</span><span class="n">start_param</span><span class="p">,</span> <span class="n">stop_param</span><span class="p">,</span> <span class="n">step_param</span><span class="p">,</span> <span class="n">dtype_param</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="array"><a class="viewcode-back" href="../../numpy_api.html#dpnp.array">[docs]</a><span class="k">def</span> <span class="nf">array</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Creates an array.</span>
-
-<span class="sd">    This function currently does not support the ``subok`` option.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        obj: :class:`inumpy.dparray` object or any other object that can be</span>
-<span class="sd">            passed to :func:`numpy.array`.</span>
-<span class="sd">        dtype: Data type specifier.</span>
-<span class="sd">        copy (bool): If ``False``, this function returns ``obj`` if possible.</span>
-<span class="sd">            Otherwise this function always returns a new array.</span>
-<span class="sd">        order ({&#39;C&#39;, &#39;F&#39;, &#39;A&#39;, &#39;K&#39;}): Row-major (C-style) or column-major</span>
-<span class="sd">            (Fortran-style) order.</span>
-<span class="sd">            When ``order`` is &#39;A&#39;, it uses &#39;F&#39; if ``a`` is column-major and</span>
-<span class="sd">            uses &#39;C&#39; otherwise.</span>
-<span class="sd">            And when ``order`` is &#39;K&#39;, it keeps strides as closely as</span>
-<span class="sd">            possible.</span>
-<span class="sd">            If ``obj`` is :class:`numpy.ndarray`, the function returns &#39;C&#39; or</span>
-<span class="sd">            &#39;F&#39; order array.</span>
-<span class="sd">        subok (bool): If True, then sub-classes will be passed-through,</span>
-<span class="sd">            otherwise the returned array will be forced to be a base-class</span>
-<span class="sd">            array (default).</span>
-<span class="sd">        ndmin (int): Minimum number of dimensions. Ones are inserted to the</span>
-<span class="sd">            head of the shape if needed.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        inumpy.dparray: An array on the current device.</span>
-
-
-
-<span class="sd">    .. note::</span>
-<span class="sd">       This method currently does not support ``subok`` argument.</span>
-
-<span class="sd">    .. seealso:: :func:`numpy.array`</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">obj</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="n">ndmin</span><span class="p">)</span>
-
-    <span class="c1"># if not isinstance(obj, collections.abc.Sequence):</span>
-    <span class="c1">#     return numpy.array(obj, dtype=dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)</span>
-
-    <span class="c1"># if isinstance(obj, numpy.object):</span>
-    <span class="c1">#     return numpy.array(obj, dtype=dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)</span>
-
-    <span class="k">if</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
-        <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="s2">&quot;subok&quot;</span><span class="p">,</span> <span class="n">subok</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">copy</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="s2">&quot;copy&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span>
-        <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="s2">&quot;order&quot;</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">ndmin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="s2">&quot;ndmin&quot;</span><span class="p">,</span> <span class="n">ndmin</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_array</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="array_equal"><a class="viewcode-back" href="../../numpy_api.html#dpnp.array_equal">[docs]</a><span class="k">def</span> <span class="nf">array_equal</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -393,71 +287,14 @@
     <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="asarray"><a class="viewcode-back" href="../../numpy_api.html#dpnp.asarray">[docs]</a><span class="k">def</span> <span class="nf">asarray</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Converts an input object into array.</span>
-
-<span class="sd">    This is equivalent to ``array(a, dtype, copy=False)``.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        input: The source object.</span>
-<span class="sd">        dtype: Data type specifier. It is inferred from the input by default.</span>
-<span class="sd">        order{‘C’, ‘F’}, optional</span>
-<span class="sd">            Whether to use row-major (C-style) or column-major (Fortran-style) memory representation.</span>
-<span class="sd">            Defaults to ‘C’.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        inumpy.dparray populated with input data</span>
-
-<span class="sd">    .. seealso:: :func:`numpy.asarray`</span>
-
+<div class="viewcode-block" id="get_include"><a class="viewcode-back" href="../../numpy_api.html#dpnp.get_include">[docs]</a><span class="k">def</span> <span class="nf">get_include</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the directory that contains the DPNP C++ backend \\*.h header files.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="nb">input</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+    <span class="n">dpnp_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;backend&#39;</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">array</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="empty"><a class="viewcode-back" href="../../numpy_api.html#dpnp.empty">[docs]</a><span class="k">def</span> <span class="nf">empty</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return a new matrix of given shape and type, without initializing entries.</span>
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    shape : int or tuple of int</span>
-<span class="sd">        Shape of the empty matrix.</span>
-<span class="sd">    dtype : data-type, optional</span>
-<span class="sd">        Desired output data-type.</span>
-<span class="sd">    order : {&#39;C&#39;, &#39;F&#39;}, optional</span>
-<span class="sd">        Whether to store multi-dimensional data in row-major</span>
-<span class="sd">        (C-style) or column-major (Fortran-style) order in</span>
-<span class="sd">        memory.</span>
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    empty_like, zeros</span>
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    `empty`, unlike `zeros`, does not set the matrix values to zero,</span>
-<span class="sd">    and may therefore be marginally faster.  On the other hand, it requires</span>
-<span class="sd">    the user to manually set all the values in the array, and should be</span>
-<span class="sd">    used with caution.</span>
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import numpy.matlib</span>
-<span class="sd">    &gt;&gt;&gt; np.matlib.empty((2, 2))    # filled with random data</span>
-<span class="sd">    matrix([[  6.76425276e-320,   9.79033856e-307], # random</span>
-<span class="sd">            [  7.39337286e-309,   3.22135945e-309]])</span>
-<span class="sd">    &gt;&gt;&gt; np.matlib.empty((2, 2), dtype=int)</span>
-<span class="sd">    matrix([[ 6600475,        0], # random</span>
-<span class="sd">            [ 6586976, 22740995]])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">()):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
-
-    <span class="c1"># only &#39;C&#39; order is supported for now</span>
-    <span class="k">if</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;empty&quot;</span><span class="p">,</span> <span class="s2">&quot;order&quot;</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dparray</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">dpnp_path</span></div>
 
 
 <div class="viewcode-block" id="matmul"><a class="viewcode-back" href="../../numpy_api.html#dpnp.matmul">[docs]</a><span class="k">def</span> <span class="nf">matmul</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">in_array2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -513,59 +350,6 @@
 
     <span class="c1"># TODO need to return dparray instead ndarray</span>
     <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">input1</span><span class="p">,</span> <span class="n">input2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="ones"><a class="viewcode-back" href="../../numpy_api.html#dpnp.ones">[docs]</a><span class="k">def</span> <span class="nf">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return a new array of given shape and type, filled with ones.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    shape : int or sequence of ints</span>
-<span class="sd">        Shape of the new array, e.g., ``(2, 3)`` or ``2``.</span>
-<span class="sd">    dtype : data-type, optional</span>
-<span class="sd">        The desired data-type for the array, e.g., `numpy.int64`.  Default is</span>
-<span class="sd">        `numpy.float64`.</span>
-<span class="sd">    order : {&#39;C&#39;, &#39;F&#39;}, optional, default: C</span>
-<span class="sd">        Whether to store multi-dimensional data in row-major</span>
-<span class="sd">        (C-style) or column-major (Fortran-style) order in</span>
-<span class="sd">        memory.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dparray</span>
-<span class="sd">        Array of ones with the given shape, dtype, and order.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    ones_like : Return an array of ones with shape and type of input.</span>
-<span class="sd">    empty : Return a new uninitialized array.</span>
-<span class="sd">    zeros : Return a new array setting values to zero.</span>
-<span class="sd">    full : Return a new array of given shape filled with value.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; np.ones(5)</span>
-<span class="sd">    array([1., 1., 1., 1., 1.])</span>
-<span class="sd">    &gt;&gt;&gt; np.ones((5,), dtype=int64)</span>
-<span class="sd">    array([1, 1, 1, 1, 1])</span>
-<span class="sd">    &gt;&gt;&gt; np.ones((2, 1))</span>
-<span class="sd">    array([[1.],</span>
-<span class="sd">           [1.]])</span>
-<span class="sd">    &gt;&gt;&gt; s = (2,2)</span>
-<span class="sd">    &gt;&gt;&gt; np.ones(s)</span>
-<span class="sd">    array([[1.,  1.],</span>
-<span class="sd">           [1.,  1.]])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">()):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
-
-    <span class="c1"># only &#39;C&#39; order is supported for now</span>
-    <span class="k">if</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;ones&quot;</span><span class="p">,</span> <span class="s2">&quot;order&quot;</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_init_val</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="remainder"><a class="viewcode-back" href="../../numpy_api.html#dpnp.remainder">[docs]</a><span class="k">def</span> <span class="nf">remainder</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>
@@ -648,24 +432,6 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Intel NumPy remainder(): Unsupported input2=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_remainder</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="zeros"><a class="viewcode-back" href="../../numpy_api.html#dpnp.zeros">[docs]</a><span class="k">def</span> <span class="nf">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return a new array of given shape and type, filled with zeros.</span>
-
-<span class="sd">    .. seealso:: :func:`numpy.zeros`</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">()):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
-
-    <span class="c1"># only &#39;C&#39; order is supported for now</span>
-    <span class="k">if</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;zeros&quot;</span><span class="p">,</span> <span class="s2">&quot;order&quot;</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_init_val</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
