@@ -38,6 +38,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_FABS
         DPNP_FN_MAXIMUM
         DPNP_FN_MINIMUM
+        DPNP_FN_SIGN
 
 cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
     cdef enum DPNPFuncType "DPNPFuncType":

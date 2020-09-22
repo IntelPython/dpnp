@@ -252,5 +252,10 @@ static func_map_t func_map_init()
     fmap[DPNPFuncName::DPNP_FN_MINIMUM][eft_DBL][eft_DBL] = {eft_DBL,
                                                              (void*)custom_elemwise_minimum_c<double, double, double>};
 
+    fmap[DPNPFuncName::DPNP_FN_SIGN][eft_INT][eft_INT] = {eft_INT, (void*)custom_elemwise_sign_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_SIGN][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_elemwise_sign_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_SIGN][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_elemwise_sign_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_SIGN][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_elemwise_sign_c<double>};
+
     return fmap;
 };
