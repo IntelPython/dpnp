@@ -2950,3 +2950,4 @@ tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_ptp_axis1
 tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_ptp_axis2
 tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_ptp_axis_large
 tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_ptp_nan
+tests/third_party/cupy/linalg_tests/test_einsum.py::TestListArgEinSumError::test_invalid_sub1
