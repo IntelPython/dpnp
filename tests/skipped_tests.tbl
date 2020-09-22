@@ -1,5 +1,11 @@
 tests/test_linalg.py::test_eig_arange[16-float32]
 tests/test_linalg.py::test_eig_arange[300-float32]
+tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_and
+tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_or
+tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_xor
+tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_invert
+tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_left_shift
+tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_right_shift
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_empty_like_K_strides_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_empty_like_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_empty_like_reshape_contiguity
