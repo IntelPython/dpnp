@@ -364,6 +364,7 @@ setup(name="DPNP",
                 'dpnp.linalg',
                 ],
       package_data={'dpnp': ['libdpnp_backend_c.so']},
+      include_package_data=True,
 
       # this is needed for 'build' command to automatically call 'build_clib'
       # it attach the library to all extensions (it is not needed)
