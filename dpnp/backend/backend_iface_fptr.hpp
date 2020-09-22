@@ -64,6 +64,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_ARGMAX,  /**< Used in numpy.argmax() implementation  */
     DPNP_FN_ARGMIN,  /**< Used in numpy.argmin() implementation  */
     DPNP_FN_DOT,     /**< Used in numpy.dot() implementation  */
+    DPNP_FN_FABS,    /**< Used in numpy.fabs() implementation  */
     DPNP_FN_MAXIMUM, /**< Used in numpy.maximum() implementation  */
     DPNP_FN_MINIMUM, /**< Used in numpy.minimum() implementation  */
     DPNP_FN_LAST     /**< The latest element of the enumeration */

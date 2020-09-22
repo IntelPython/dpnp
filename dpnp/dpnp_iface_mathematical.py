@@ -53,6 +53,7 @@ __all__ = [
     "absolute",
     "add",
     "divide",
+    "fabs",
     "fmax",
     "fmin",
     "maximum",
@@ -66,7 +67,7 @@ __all__ = [
 
 
 def abs(x):
-    return absolute(x)
+    return dpnp.absolute(x)
 
 
 def absolute(input):
@@ -205,6 +206,35 @@ def divide(x1, x2, out=None):
 
     # TODO need to put dparray memory into NumPy call
     result_numpy = numpy.divide(input1, input2, out=out)
+    result = result_numpy
+    if isinstance(result, numpy.ndarray):
+        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_numpy.item(i))
+
+    return result
+
+
+def fabs(x1, out=None):
+    """
+    Compute the absolute values element-wise.
+
+    .. seealso:: :func:`numpy.fabs`
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray):
+        if out is not None:
+            checker_throw_value_error("fabs", "out", out, None)
+
+        return dpnp_fabs(x1)
+
+    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.fabs(input1, out=out)
     result = result_numpy
     if isinstance(result, numpy.ndarray):
         result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
