@@ -61,6 +61,7 @@ __all__ = [
     "multiply",
     "negative",
     "power",
+    "sign",
     "subtract",
     "sum"
 ]
@@ -446,6 +447,35 @@ def power(x1, x2, out=None, modulo=None):
         checker_throw_value_error("power", "shape", x1.shape, x2.shape)
 
     return dpnp_power(x1, x2)
+
+
+def sign(x1, out=None):
+    """
+    Compute the absolute values element-wise.
+
+    .. seealso:: :func:`numpy.sign`
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray):
+        if out is not None:
+            checker_throw_value_error("sign", "out", out, None)
+
+        return dpnp_sign(x1)
+
+    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.sign(input1, out=out)
+    result = result_numpy
+    if isinstance(result, numpy.ndarray):
+        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_numpy.item(i))
+
+    return result
 
 
 def subtract(x1, x2, out=None):
