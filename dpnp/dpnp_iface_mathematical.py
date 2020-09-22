@@ -63,7 +63,8 @@ __all__ = [
     "power",
     "sign",
     "subtract",
-    "sum"
+    "sum",
+    "true_divide"
 ]
 
 
@@ -559,3 +560,14 @@ def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=0, where=Tr
             result._setitem_scalar(i, result_numpy.item(i))
 
     return result
+
+
+def true_divide(x1, x2, out=None):
+    """
+    Provide a true division of the inputs, element-wise.
+
+    .. seealso:: :func:`numpy.true_divide`
+
+    """
+
+    return dpnp.divide(x1, x2, out)
