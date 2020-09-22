@@ -14,8 +14,7 @@ signed_int_types = [numpy.int32, numpy.int64]
 unsigned_int_types = []
 int_types = signed_int_types + unsigned_int_types
 all_types = float_types + int_types + complex_types
-negative_types = (
-    float_types + signed_int_types + complex_types)
+negative_types = (float_types + signed_int_types + complex_types)
 negative_no_complex_types = float_types + signed_int_types
 no_complex_types = float_types + int_types
 
@@ -23,9 +22,13 @@ no_complex_types = float_types + int_types
 @testing.gpu
 @testing.parameterize(*(
     testing.product({
+        'nargs': [1],
+        'name': ['reciprocal', 'angle'],
+    }) + testing.product({
         'nargs': [2],
         'name': [
-            'add', 'multiply', 'divide', 'power', 'subtract', 'remainder'],
+            'add', 'multiply', 'divide', 'power', 'subtract', 'true_divide',
+            'floor_divide', 'fmod', 'remainder'],
     })
 ))
 class TestArithmeticRaisesWithNumpyInput(unittest.TestCase):
@@ -50,7 +53,7 @@ class TestArithmeticRaisesWithNumpyInput(unittest.TestCase):
     testing.product({
         'arg1': ([testing.shaped_arange((2, 3), numpy, dtype=d) + 1
                   for d in all_types
-                  ] + [2, 2.0, True]),
+                  ] + [2, 2.0]),
         'name': ['reciprocal'],
     })
 ))
@@ -159,17 +162,76 @@ class ArithmeticBinaryBase:
         # TODO(unno): boolean subtract causes DeprecationWarning in numpy>=1.13
         'arg1': [testing.shaped_arange((2, 3), numpy, dtype=d)
                  for d in all_types
-                 ] + [0, 0.0, 2, 2.0, True, False],
+                 ] + [0, 0.0, 2, 2.0],
         'arg2': [testing.shaped_reverse_arange((2, 3), numpy, dtype=d)
                  for d in all_types
-                 ] + [0, 0.0, 2, 2.0, True, False],
+                 ] + [0, 0.0, 2, 2.0],
         'name': ['add', 'multiply', 'power', 'subtract'],
+    }) + testing.product({
+        'arg1': [numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
+                 for d in negative_types
+                 ] + [0, 0.0, 2, 2.0, -2, -2.0],
+        'arg2': [numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
+                 for d in negative_types
+                 ] + [0, 0.0, 2, 2.0, -2, -2.0],
+        'name': ['divide', 'true_divide', 'subtract'],
     })
 ))
 class TestArithmeticBinary(ArithmeticBinaryBase, unittest.TestCase):
 
     def test_binary(self):
         self.use_dtype = False
+        self.check_binary()
+
+
+@testing.gpu
+@testing.parameterize(*(
+    testing.product({
+        'arg1': [numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
+                 for d in int_types
+                 ] + [0, 0.0, 2, 2.0, -2, -2.0],
+        'arg2': [numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
+                 for d in int_types
+                 ] + [0, 0.0, 2, 2.0, -2, -2.0],
+        'name': ['true_divide'],
+        'dtype': [numpy.float64],
+        'use_dtype': [True, False],
+    }) + testing.product({
+        'arg1': [numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
+                 for d in float_types] + [0.0, 2.0, -2.0],
+        'arg2': [numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
+                 for d in float_types] + [0.0, 2.0, -2.0],
+        'name': ['power', 'true_divide', 'subtract'],
+        'dtype': [numpy.float64],
+        'use_dtype': [True, False],
+    }) + testing.product({
+        'arg1': [testing.shaped_arange((2, 3), numpy, dtype=d)
+                 for d in no_complex_types
+                 ] + [0, 0.0, 2, 2.0, -2, -2.0],
+        'arg2': [testing.shaped_reverse_arange((2, 3), numpy, dtype=d)
+                 for d in no_complex_types
+                 ] + [0, 0.0, 2, 2.0, -2, -2.0],
+        'name': ['floor_divide', 'fmod', 'remainder'],
+        'dtype': [numpy.float64],
+        'use_dtype': [True, False],
+    }) + testing.product({
+        'arg1': [numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
+                 for d in negative_no_complex_types
+                 ] + [0, 0.0, 2, 2.0, -2, -2.0],
+        'arg2': [numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
+                 for d in negative_no_complex_types
+                 ] + [0, 0.0, 2, 2.0, -2, -2.0],
+        'name': ['floor_divide', 'fmod', 'remainder'],
+        'dtype': [numpy.float64],
+        'use_dtype': [True, False],
+    })
+))
+class TestArithmeticBinary2(ArithmeticBinaryBase, unittest.TestCase):
+
+    def test_binary(self):
+        if (self.use_dtype and
+                numpy.lib.NumpyVersion(numpy.__version__) < '1.10.0'):
+            raise unittest.SkipTest('Test for numpy>=1.10')
         self.check_binary()
 
 
@@ -184,3 +246,21 @@ class TestArithmeticModf(unittest.TestCase):
         d[0] = b
         d[1] = c
         return d
+
+
+@testing.parameterize(*testing.product({
+    'xp': [numpy, cupy],
+    'shape': [(3, 2), (), (3, 0, 2)]
+}))
+@testing.gpu
+class TestBoolSubtract(unittest.TestCase):
+
+    def test_bool_subtract(self):
+        xp = self.xp
+        if xp is numpy and not testing.numpy_satisfies('>=1.14.0'):
+            raise unittest.SkipTest('NumPy<1.14.0')
+        shape = self.shape
+        x = testing.shaped_random(shape, xp, dtype=numpy.bool_)
+        y = testing.shaped_random(shape, xp, dtype=numpy.bool_)
+        with pytest.raises(TypeError):
+            xp.subtract(x, y)
