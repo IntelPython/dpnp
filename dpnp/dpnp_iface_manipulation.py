@@ -47,7 +47,7 @@ import dpnp
 from dpnp.backend import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import (checker_throw_value_error, use_origin_backend, normalize_axis,
-                             checker_throw_axis_error, dp2ndarray, nd2dparray)
+                             checker_throw_axis_error, dp2nd_array, nd2dp_array)
 
 
 __all__ = [
@@ -163,25 +163,21 @@ def rollaxis(a, axis, start=0):
     """
 
     if not use_origin_backend(a):
-        def use_dpnp_backend(a, axis, start):
-            if not isinstance(a, dparray):
-                return False
-            if not isinstance(axis, int):
-                return False
-            if start < -a.ndim or start > a.ndim:
-                return False
-
-            return True
-
-        if use_dpnp_backend(a, axis, start):
+        if not isinstance(a, dparray):
+            pass
+        elif not isinstance(axis, int):
+            pass
+        elif start < -a.ndim or start > a.ndim:
+            pass
+        else:
             start_norm = start + a.ndim if start < 0 else start
             destination = start_norm - 1 if start_norm > axis else start_norm
 
-            return moveaxis(a, axis, destination)
+            return dpnp.moveaxis(a, axis, destination)
 
-    result = numpy.rollaxis(dp2ndarray(a), axis, start)
+    result = numpy.rollaxis(dp2nd_array(a), axis, start)
 
-    return nd2dparray(result)
+    return nd2dp_array(result)
 
 
 def swapaxes(x1, axis1, axis2):
