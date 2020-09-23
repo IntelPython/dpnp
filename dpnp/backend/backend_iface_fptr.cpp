@@ -36,7 +36,7 @@
 #include <map>
 #include <stdexcept>
 
-#include <backend/backend_iface_fptr.hpp>
+#include <backend_iface_fptr.hpp>
 
 typedef std::map<DPNPFuncType, DPNPFuncData_t> map_2p_t;
 typedef std::map<DPNPFuncType, map_2p_t> map_1p_t;
@@ -188,6 +188,11 @@ static func_map_t func_map_init()
     fmap[DPNPFuncName::DPNP_FN_FABS][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_elemwise_fabs_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_FABS][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_elemwise_fabs_c<double, double>};
 
+    fmap[DPNPFuncName::DPNP_FN_FLOOR][eft_INT][eft_INT] = {eft_DBL, (void*)custom_elemwise_floor_c<int, double>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR][eft_LNG][eft_LNG] = {eft_DBL, (void*)custom_elemwise_floor_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_elemwise_floor_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_elemwise_floor_c<double, double>};
+
     fmap[DPNPFuncName::DPNP_FN_MAXIMUM][eft_INT][eft_INT] = {eft_INT, (void*)custom_elemwise_maximum_c<int, int, int>};
     fmap[DPNPFuncName::DPNP_FN_MAXIMUM][eft_INT][eft_LNG] = {eft_LNG,
                                                              (void*)custom_elemwise_maximum_c<int, long, long>};
@@ -251,6 +256,11 @@ static func_map_t func_map_init()
                                                              (void*)custom_elemwise_minimum_c<double, float, double>};
     fmap[DPNPFuncName::DPNP_FN_MINIMUM][eft_DBL][eft_DBL] = {eft_DBL,
                                                              (void*)custom_elemwise_minimum_c<double, double, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_SIGN][eft_INT][eft_INT] = {eft_INT, (void*)custom_elemwise_sign_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_SIGN][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_elemwise_sign_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_SIGN][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_elemwise_sign_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_SIGN][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_elemwise_sign_c<double>};
 
     return fmap;
 };

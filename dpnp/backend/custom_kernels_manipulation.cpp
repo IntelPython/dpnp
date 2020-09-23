@@ -28,7 +28,7 @@
 #include <mkl_blas_sycl.hpp>
 #include <vector>
 
-#include <backend/backend_iface.hpp>
+#include <backend_iface.hpp>
 #include "backend_utils.hpp"
 #include "queue_sycl.hpp"
 

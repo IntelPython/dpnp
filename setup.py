@@ -130,13 +130,13 @@ try:
     """
     Detect external SYCL queue handling library
     """
-    import dppl
+    import dpctrl
 
     # TODO this will not work with no Conda environment
     _conda_root = os.environ.get('CONDA_PREFIX', "conda_include_error")
     _dpctrl_include += [os.path.join(_conda_root, 'include')]
     _dpctrl_libpath += [os.path.join(_conda_root, 'lib')]
-    _dpctrl_lib += ["DPPLSyclInterface"]
+    _dpctrl_lib += ["dpctrlsyclinterface"]
 except ImportError:
     """
     Set local SYCL queue handler
@@ -220,6 +220,7 @@ Final set of arguments for extentions
 _project_extra_link_args = _project_cmplr_flag_compatibility + ["-Wl,-rpath," + x for x in _project_rpath]
 _project_dir = os.path.dirname(os.path.abspath(__file__))
 _project_main_module_dir = [os.path.join(_project_dir, "dpnp")]
+_project_backend_dir = [os.path.join(_project_dir, "dpnp", "backend")]
 
 
 """
@@ -261,7 +262,7 @@ dpnp_backend_c = [
                 "dpnp/backend/mkl_wrap_rng.cpp",
                 "dpnp/backend/queue_sycl.cpp"
             ],
-            "include_dirs": _mkl_include + _project_main_module_dir + _dpctrl_include,
+            "include_dirs": _mkl_include + _project_backend_dir + _dpctrl_include,
             "library_dirs": _mkl_libpath + _omp_libpath + _dpctrl_libpath,
             "runtime_library_dirs": _project_rpath + _mkl_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath,
             "extra_preargs": _project_cmplr_flag_sycl,
@@ -277,7 +278,7 @@ dpnp_backend = Extension(
     name="dpnp.backend",
     sources=["dpnp/backend.pyx"],
     libraries=[],
-    include_dirs=[numpy.get_include()],
+    include_dirs=[numpy.get_include()] + _project_backend_dir,
     extra_compile_args=[],
     extra_link_args=_project_extra_link_args,
     define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
@@ -288,7 +289,7 @@ dpnp_dparray = Extension(
     name="dpnp.dparray",
     sources=["dpnp/dparray.pyx"],
     libraries=[],
-    include_dirs=[numpy.get_include()],
+    include_dirs=[numpy.get_include()] + _project_backend_dir,
     extra_compile_args=[],
     extra_link_args=_project_extra_link_args,
     define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
@@ -298,7 +299,7 @@ dpnp_dparray = Extension(
 dpnp_random = Extension(
     name="dpnp.random._random",
     sources=["dpnp/random/_random.pyx"],
-    include_dirs=[numpy.get_include()],
+    include_dirs=[numpy.get_include()] + _project_backend_dir,
     extra_link_args=_project_extra_link_args,
     define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
     language="c++"
@@ -307,7 +308,7 @@ dpnp_random = Extension(
 dpnp_utils = Extension(
     name="dpnp.dpnp_utils",
     sources=["dpnp/dpnp_utils.pyx"],
-    include_dirs=[numpy.get_include()],
+    include_dirs=[numpy.get_include()] + _project_backend_dir,
     extra_compile_args=[],
     extra_link_args=_project_extra_link_args,
     language="c++"
@@ -316,7 +317,7 @@ dpnp_utils = Extension(
 dpnp_linalg = Extension(
     name="dpnp.linalg.linalg",
     sources=["dpnp/linalg/linalg.pyx"],
-    include_dirs=[numpy.get_include()],
+    include_dirs=[numpy.get_include()] + _project_backend_dir,
     extra_link_args=_project_extra_link_args,
     define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
     language="c++"
@@ -364,6 +365,7 @@ setup(name="DPNP",
                 'dpnp.linalg',
                 ],
       package_data={'dpnp': ['libdpnp_backend_c.so']},
+      include_package_data=True,
 
       # this is needed for 'build' command to automatically call 'build_clib'
       # it attach the library to all extensions (it is not needed)

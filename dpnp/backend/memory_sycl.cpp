@@ -27,7 +27,7 @@
 #include <exception>
 #include <iostream>
 
-#include <backend/backend_iface.hpp>
+#include <backend_iface.hpp>
 #include "queue_sycl.hpp"
 
 // This variable is needed for the NumPy corner case

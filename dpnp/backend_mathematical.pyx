@@ -46,12 +46,14 @@ __all__ += [
     'dpnp_arctan2',
     "dpnp_divide",
     "dpnp_fabs",
+    "dpnp_floor",
     'dpnp_hypot',
     "dpnp_maximum",
     "dpnp_minimum",
     "dpnp_multiply",
     "dpnp_negative",
     "dpnp_power",
+    "dpnp_sign",
     "dpnp_subtract",
     "dpnp_sum"
 ]
@@ -219,6 +221,20 @@ cpdef dparray dpnp_fabs(dparray array1):
     return result
 
 
+cpdef dparray dpnp_floor(dparray array1):
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FLOOR, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    cdef dparray result = dparray(array1.shape, dtype=result_type)
+
+    cdef custom_math_1in_1out_func_ptr_t func = <custom_math_1in_1out_func_ptr_t > kernel_data.ptr
+    func(array1.get_data(), result.get_data(), array1.size)
+
+    return result
+
+
 cdef string hypot_name = "hypot".encode()
 func_map[hypot_name][float64_name][float64_name] = [float64_name, & custom_elemwise_hypot_c[double, double, double]]
 func_map[hypot_name][float64_name][float32_name] = [float64_name, & custom_elemwise_hypot_c[double, float, double]]
@@ -362,6 +378,20 @@ cpdef dparray dpnp_power(dparray array1, dparray array2):
 
     result = dparray(array1.shape, dtype=kernel_data.return_type)
     kernel_data.ptr(array1.get_data(), array2.get_data(), result.get_data(), array1.size)
+
+    return result
+
+
+cpdef dparray dpnp_sign(dparray array1):
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_SIGN, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    cdef dparray result = dparray(array1.shape, dtype=result_type)
+
+    cdef custom_math_1in_1out_func_ptr_t func = <custom_math_1in_1out_func_ptr_t > kernel_data.ptr
+    func(array1.get_data(), result.get_data(), array1.size)
 
     return result
 

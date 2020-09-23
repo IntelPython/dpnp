@@ -27,7 +27,7 @@
 #include <iostream>
 #include <mkl_blas_sycl.hpp>
 
-#include <backend/backend_iface.hpp>
+#include <backend_iface.hpp>
 #include "backend_utils.hpp"
 #include "queue_sycl.hpp"
 
@@ -64,7 +64,7 @@
     template void custom_elemwise_##__name__##_c<long, double>(void* array1_in, void* result1, size_t size);           \
     template void custom_elemwise_##__name__##_c<int, double>(void* array1_in, void* result1, size_t size);
 
-#include <backend/custom_1arg_2type_tbl.hpp>
+#include <custom_1arg_2type_tbl.hpp>
 
 /* ========================================================================== */
 #define MACRO_CUSTOM_1ARG_1TYPE_OP(__name__, __operation__)                                                            \
@@ -100,7 +100,7 @@
     template void custom_elemwise_##__name__##_c<long>(void* array1_in, void* result1, size_t size);                   \
     template void custom_elemwise_##__name__##_c<int>(void* array1_in, void* result1, size_t size);
 
-#include <backend/custom_1arg_1type_tbl.hpp>
+#include <custom_1arg_1type_tbl.hpp>
 
 /* ========================================================================== */
 #define MACRO_CUSTOM_2ARG_3TYPES_OP(__name__, __operation__)                                                                      \
@@ -180,7 +180,7 @@
     template void custom_elemwise_##__name__##_c<int, double, double>(                                                            \
         void* array1_in, void* array2_in, void* result1, size_t size);
 
-#include <backend/custom_2arg_3type_tbl.hpp>
+#include <custom_2arg_3type_tbl.hpp>
 
 /* ========================================================================== */
 #if 0 // Switch between SYCL and OpenCL kernels

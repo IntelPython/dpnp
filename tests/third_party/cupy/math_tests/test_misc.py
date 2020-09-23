@@ -28,7 +28,7 @@ class TestMisc(unittest.TestCase):
         b = testing.shaped_reverse_arange((2, 3), xp, dtype)
         return getattr(xp, name)(a, b)
 
-    @testing.for_dtypes(['i', 'q', 'f', 'd', 'F', 'D'])
+    @testing.for_dtypes(['i', 'q', 'f', 'd'])
     @testing.numpy_cupy_allclose(atol=1e-5)
     def check_unary_negative(self, name, xp, dtype, no_bool=False):
         if no_bool and numpy.dtype(dtype).char == '?':
@@ -38,7 +38,7 @@ class TestMisc(unittest.TestCase):
             a += (a * 1j).astype(dtype)
         return getattr(xp, name)(a)
 
-    @testing.for_dtypes(['f', 'd', 'F', 'D'])
+    @testing.for_dtypes(['f', 'd'])
     @testing.numpy_cupy_allclose(atol=1e-5)
     def check_unary_inf(self, name, xp, dtype):
         inf = numpy.inf
@@ -51,7 +51,7 @@ class TestMisc(unittest.TestCase):
                          dtype=dtype)
         return getattr(xp, name)(a)
 
-    @testing.for_dtypes(['f', 'd', 'F', 'D'])
+    @testing.for_dtypes(['f', 'd'])
     @testing.numpy_cupy_allclose(atol=1e-5)
     def check_unary_nan(self, name, xp, dtype):
         nan = numpy.nan
@@ -64,7 +64,7 @@ class TestMisc(unittest.TestCase):
                          dtype=dtype)
         return getattr(xp, name)(a)
 
-    @testing.for_dtypes(['f', 'd', 'F', 'D'])
+    @testing.for_dtypes(['f', 'd'])
     @testing.numpy_cupy_allclose(atol=1e-5)
     def check_unary_inf_nan(self, name, xp, dtype):
         inf = numpy.inf
@@ -78,7 +78,7 @@ class TestMisc(unittest.TestCase):
                          dtype=dtype)
         return getattr(xp, name)(a)
 
-    @testing.for_dtypes(['f', 'd', 'F', 'D'])
+    @testing.for_dtypes(['f', 'd'])
     @testing.numpy_cupy_array_equal()
     def check_binary_nan(self, name, xp, dtype):
         a = xp.array([-3, numpy.NAN, -1, numpy.NAN, 0, numpy.NAN, 2],
