@@ -36,6 +36,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_ARGMIN
         DPNP_FN_DOT
         DPNP_FN_FABS
+        DPNP_FN_FLOOR
         DPNP_FN_MAXIMUM
         DPNP_FN_MINIMUM
         DPNP_FN_SIGN
