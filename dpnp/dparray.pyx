@@ -607,12 +607,12 @@ cdef class dparray:
         # numpy with dparray call public dpnp.sum via __array_interface__`
         return numpy.sum(*args, **kwargs)
 
-    def mean(self):
+    def mean(self, axis=None):
         """
         Returns the average of the array elements.
         """
 
-        return mean(self)
+        return mean(self, axis)
 
     """
     -------------------------------------------------------------------------
