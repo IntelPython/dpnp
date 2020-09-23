@@ -6,17 +6,9 @@ tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_b
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_invert
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_left_shift
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_right_shift
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_max_all
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_max_all_keepdims
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_max_axis0
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_max_axis1
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_max_axis2
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_max_axis_large
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_max_multiple_axes
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_max_multiple_axes_keepdims
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_max_nan
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_min_all_keepdims
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_min_multiple_axes
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_min_multiple_axes_keepdims
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_all
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_ptp_all_keepdims
