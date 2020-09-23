@@ -39,10 +39,30 @@ from dpnp.backend cimport *
 
 
 __all__ += [
+    "dpnp_average",
     "dpnp_cov",
     "dpnp_mean",
     "dpnp_median"
 ]
+
+
+cpdef dpnp_average(dparray array):
+    call_type = array.dtype
+    return_type = numpy.float32 if call_type == numpy.float32 else numpy.float64
+    cdef dparray result = dparray((1), dtype=call_type)
+
+    if call_type == numpy.float64:
+        custom_sum_c[double](array.get_data(), result.get_data(), array.size)
+    elif call_type == numpy.float32:
+        custom_sum_c[float](array.get_data(), result.get_data(), array.size)
+    elif call_type == numpy.int64:
+        custom_sum_c[long](array.get_data(), result.get_data(), array.size)
+    elif call_type == numpy.int32:
+        custom_sum_c[int](array.get_data(), result.get_data(), array.size)
+    else:
+        checker_throw_type_error("dpnp_average", call_type)
+
+    return return_type(result[0] / array.size)
 
 
 cpdef dparray dpnp_cov(dparray array1):
