@@ -52,6 +52,7 @@ __all__ = [
     "abs",
     "absolute",
     "add",
+    "ceil",
     "divide",
     "fabs",
     "floor",
@@ -157,6 +158,35 @@ def add(x1, x2, out=None):
 
     # TODO need to put dparray memory into NumPy call
     result_numpy = numpy.add(input1, input2, out=out)
+    result = result_numpy
+    if isinstance(result, numpy.ndarray):
+        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_numpy.item(i))
+
+    return result
+
+
+def ceil(x1, out=None):
+    """
+    Compute  the ceiling of the input, element-wise.
+
+    .. seealso:: :func:`numpy.ceil`
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray):
+        if out is not None:
+            checker_throw_value_error("ceil", "out", out, None)
+
+        return dpnp_ceil(x1)
+
+    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.ceil(input1, out=out)
     result = result_numpy
     if isinstance(result, numpy.ndarray):
         result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
