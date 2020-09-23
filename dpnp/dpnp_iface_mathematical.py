@@ -93,9 +93,6 @@ def absolute(input):
     if dim_input == 0:
         return numpy.abs(input)
 
-    if dim_input > 2:
-        raise NotImplementedError
-
     is_input_dparray = isinstance(input, dparray)
 
     if not use_origin_backend(input) and is_input_dparray:
