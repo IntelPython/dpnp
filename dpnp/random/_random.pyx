@@ -205,10 +205,9 @@ def randint(low, high=None, size=None, dtype=int):
     elif isinstance(size, tuple):
         for dim in size:
             if not isinstance(dim, int):
-                checker_throw_value_error("randint", "size", )
+                checker_throw_value_error("randint", "type(dim)", type(dim), int)
     elif not isinstance(size, int):
-        checker_throw_value_error("randint", "size", size, -1)
-        raise ValueError('Unsupported type %r for `size`' % type(size))
+        checker_throw_value_error("randint", "type(size)", type(size), int)
 
     if high is None:
         high = low
@@ -218,7 +217,7 @@ def randint(low, high=None, size=None, dtype=int):
     high = int(high)
 
     if low >= high:
-        raise ValueError('low >= high')
+        checker_throw_runtime_error("randint", "low >= high")
 
     _dtype = numpy.dtype(dtype)
 
