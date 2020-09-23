@@ -28,12 +28,12 @@ from dpnp.random._random import *
 
 __all__ = [
     'rand',
-    'randn',
-    'random_sample',
-    'random',
     'randf',
-    'sample',
     'randint',
+    'randn',
+    'random',
     'random_integers',
+    'random_sample',
+    'sample',
     'uniform'
 ]
