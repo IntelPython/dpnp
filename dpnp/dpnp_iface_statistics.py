@@ -359,16 +359,10 @@ def mean(input, axis=None):
 
     """
 
-    dim_input = input.ndim
-
     is_input_dparray = isinstance(input, dparray)
 
-    if axis is not None and (not isinstance(axis, int) or (axis >= dim_input or -1 * axis >= dim_input))\
-            or dim_input == 0:
-        return numpy.mean(input, axis=axis)
-
     if not use_origin_backend(input) and is_input_dparray:
-        if dim_input > 2 and axis is not None:
+        if (input.ndim > 2) and (axis is not None):
             raise NotImplementedError
 
         result = dpnp_mean(input, axis=axis)
