@@ -285,10 +285,14 @@ def random(size):
 
     if (use_origin_backend(size)):
         return numpy.random.random(size)
-
-    for dim in size:
-        if not isinstance(dim, int):
-            raise TypeError(f"Intel NumPy random.random(): Unsupported dim={type(dim)}")
+    elif isinstance(size, tuple):
+        for dim in size:
+            if not isinstance(dim, int):
+                raise TypeError(f"Intel NumPy random.sample(): Unsupported dim={type(dim)}")
+    elif isinstance(size, int):
+        size = (size,)
+    else:
+        raise ValueError('Unsupported type %r for `size`' % type(size))
 
     return dpnp_random(size)
 
