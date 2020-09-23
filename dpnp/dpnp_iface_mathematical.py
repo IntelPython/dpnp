@@ -54,6 +54,7 @@ __all__ = [
     "add",
     "divide",
     "fabs",
+    "floor",
     "fmax",
     "fmin",
     "maximum",
@@ -237,6 +238,38 @@ def fabs(x1, out=None):
 
     # TODO need to put dparray memory into NumPy call
     result_numpy = numpy.fabs(input1, out=out)
+    result = result_numpy
+    if isinstance(result, numpy.ndarray):
+        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_numpy.item(i))
+
+    return result
+
+
+def floor(x1, out=None):
+    """
+    Compute the floor of the input, element-wise.
+
+    Some spreadsheet programs calculate the “floor-towards-zero”, in other words floor(-2.5) == -2.
+    dpNP instead uses the definition of floor where floor(-2.5) == -3.
+
+    .. seealso:: :func:`numpy.floor`
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray):
+        if out is not None:
+            checker_throw_value_error("floor", "out", out, None)
+
+        return dpnp_floor(x1)
+
+    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.floor(input1, out=out)
     result = result_numpy
     if isinstance(result, numpy.ndarray):
         result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
