@@ -55,6 +55,7 @@ __all__ += [
     "dpnp_multiply",
     "dpnp_negative",
     "dpnp_power",
+    "dpnp_prod",
     "dpnp_sign",
     "dpnp_subtract",
     "dpnp_sum"
@@ -424,6 +425,26 @@ cpdef dparray dpnp_power(dparray array1, dparray array2):
     kernel_data.ptr(array1.get_data(), array2.get_data(), result.get_data(), array1.size)
 
     return result
+
+
+cpdef dpnp_prod(dparray array1):
+    return_type = array1.dtype
+
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PROD, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray((1), dtype=result_type)
+
+    cdef custom_math_1in_1out_func_ptr_t func = <custom_math_1in_1out_func_ptr_t > kernel_data.ptr
+    func(array1.get_data(), result.get_data(), array1.size)
+
+    if array1.dtype == numpy.int32:
+        """ Numpy interface inconsistency """
+        return_type = numpy.dtype(numpy.int64)
+
+    return return_type.type(result[0])
 
 
 cpdef dparray dpnp_sign(dparray array1):

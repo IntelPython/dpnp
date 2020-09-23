@@ -73,6 +73,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_MATMUL,  /**< Used in numpy.matmul() implementation  */
     DPNP_FN_MAXIMUM, /**< Used in numpy.maximum() implementation  */
     DPNP_FN_MINIMUM, /**< Used in numpy.minimum() implementation  */
+    DPNP_FN_PROD,    /**< Used in numpy.prod() implementation  */
     DPNP_FN_RAND,    /**< Used in numpy.random.rand() implementation  */
     DPNP_FN_SIGN,    /**< Used in numpy.sign() implementation  */
     DPNP_FN_SUM,     /**< Used in numpy.sum() implementation  */

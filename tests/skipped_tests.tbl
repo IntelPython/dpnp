@@ -2362,7 +2362,6 @@ tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_1
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_15_{axis=0, func='nanprod', keepdims=False, shape=(20, 30, 40), transpose_axes=False}::test_nansum_axis_transposed
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_9_{axis=0, func='nanprod', keepdims=True, shape=(2, 3, 4), transpose_axes=False}::test_nansum_all
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_9_{axis=0, func='nanprod', keepdims=True, shape=(2, 3, 4), transpose_axes=False}::test_nansum_axis_transposed
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_external_prod_all
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_external_prod_axis
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_prod_all
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_prod_axis
