@@ -64,6 +64,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_ARGMAX,  /**< Used in numpy.argmax() implementation  */
     DPNP_FN_ARGMIN,  /**< Used in numpy.argmin() implementation  */
     DPNP_FN_ARGSORT, /**< Used in numpy.argsort() implementation  */
+    DPNP_FN_CEIL,    /**< Used in numpy.ceil() implementation  */
     DPNP_FN_COV,     /**< Used in numpy.cov() implementation  */
     DPNP_FN_DOT,     /**< Used in numpy.dot() implementation  */
     DPNP_FN_EIG,     /**< Used in numpy.linalg.eig() implementation  */
