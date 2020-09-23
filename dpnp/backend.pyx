@@ -52,6 +52,7 @@ __all__ = [
 ]
 
 
+include "backend_bitwise.pyx"
 include "backend_counting.pyx"
 include "backend_linearalgebra.pyx"
 include "backend_logic.pyx"

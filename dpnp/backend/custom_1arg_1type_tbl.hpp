@@ -39,6 +39,7 @@
 #endif
 
 MACRO_CUSTOM_1ARG_1TYPE_OP(recip, _DataType(1) / input_elem) // error: no member named 'recip' in namespace 'cl::sycl'
+MACRO_CUSTOM_1ARG_1TYPE_OP(sign, cl::sycl::sign((double)input_elem)) // no sycl::sign for int and long
 MACRO_CUSTOM_1ARG_1TYPE_OP(square, input_elem* input_elem)
 
 #undef MACRO_CUSTOM_1ARG_1TYPE_OP

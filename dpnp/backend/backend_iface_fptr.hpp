@@ -41,7 +41,7 @@
 
 #include <vector>
 
-#include <backend/backend_iface.hpp>
+#include <backend_iface.hpp>
 
 /**
  * @defgroup BACKEND_FUNC_PTR_API Backend C++ library runtime interface API
@@ -65,8 +65,10 @@ enum class DPNPFuncName : size_t
     DPNP_FN_ARGMIN,  /**< Used in numpy.argmin() implementation  */
     DPNP_FN_DOT,     /**< Used in numpy.dot() implementation  */
     DPNP_FN_FABS,    /**< Used in numpy.fabs() implementation  */
+    DPNP_FN_FLOOR,   /**< Used in numpy.floor() implementation  */
     DPNP_FN_MAXIMUM, /**< Used in numpy.maximum() implementation  */
     DPNP_FN_MINIMUM, /**< Used in numpy.minimum() implementation  */
+    DPNP_FN_SIGN,    /**< Used in numpy.sign() implementation  */
     DPNP_FN_LAST     /**< The latest element of the enumeration */
 };
 

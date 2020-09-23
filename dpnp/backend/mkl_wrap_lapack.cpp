@@ -27,7 +27,7 @@
 #include <iostream>
 #include <mkl_lapack_sycl.hpp>
 
-#include <backend/backend_iface.hpp>
+#include <backend_iface.hpp>
 #include "queue_sycl.hpp"
 
 namespace mkl_lapack = oneapi::mkl::lapack;
