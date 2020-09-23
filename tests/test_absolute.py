@@ -39,3 +39,15 @@ def test_absolute_float(type):
     result = inp.absolute(ia)
     expected = numpy.absolute(a)
     numpy.testing.assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("type",
+                         [numpy.float64],
+                         ids=['float64'])
+def test_absolute_float_3(type):
+    a = numpy.array([[[-2., 3.], [9.1, 0.2]], [[-2., 5.0], [-2, -1.2]], [[1.0, -2.], [5.0, -1.1]]])
+    ia = inp.array(a)
+
+    result = inp.absolute(ia)
+    expected = numpy.absolute(a)
+    numpy.testing.assert_array_equal(expected, result)

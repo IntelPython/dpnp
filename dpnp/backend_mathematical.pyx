@@ -37,6 +37,7 @@ from libcpp.map cimport map
 from libcpp.string cimport string
 from dpnp.dpnp_utils cimport checker_throw_type_error
 
+import dpnp
 import numpy
 cimport numpy
 
@@ -96,26 +97,54 @@ cdef custom_math_2in_1out_t _elementwise_2arg_3type(string name1, string name2, 
     return kernel_data
 
 
-cpdef dparray dpnp_absolute(dparray x):
-    cdef dparray_shape_type shape_x = x.shape
-    cdef size_t dim_x = x.ndim
+cpdef dparray dpnp_absolute(dparray input):
+    cdef dparray_shape_type shape_input = input.shape
+    cdef long size_input = input.size
+    output_shape = dparray(len(shape_input), dtype=numpy.int64)
+    for id, shape_ in enumerate(shape_input):
+        output_shape[id] = shape_
+    cdef long prod = 1
+    for i in range(len(output_shape)):
+        if output_shape[i] != 0:
+            prod *= output_shape[i]
+    result_array = [None] * prod
+    input_shape_offsets = [None] * len(shape_input)
+    acc = 1
+    for i in range(len(shape_input)):
+        ind = len(shape_input) - 1 - i
+        input_shape_offsets[ind] = acc
+        acc *= shape_input[ind]
+    output_shape_offsets = [None] * len(shape_input)
+    acc = 1
+    for i in range(len(output_shape)):
+        ind = len(output_shape) - 1 - i
+        output_shape_offsets[ind] = acc
+        acc *= output_shape[ind]
+        result_offsets = input_shape_offsets[:] # need copy. not a reference
 
-    result = dparray(shape_x, dtype=x.dtype)
+    for source_idx in range(size_input):
 
-    if dim_x > 2:
-        raise NotImplementedError
+        # reconstruct x,y,z from linear source_idx
+        xyz = []
+        remainder = source_idx
+        for i in input_shape_offsets:
+            quotient, remainder = divmod(remainder, i)
+            xyz.append(quotient)
 
-    if dim_x == 2:
-        for i in range(shape_x[0]):
-            for j in range(shape_x[1]):
-                elem = x[i, j]
-                result[i, j] = elem if elem >= 0 else -1 * elem
-    else:
-        for i in range(shape_x[0]):
-            elem = x[i]
-            result[i] = elem if elem >= 0 else -1 * elem
+        result_indexes = []
+        for idx, offset in enumerate(xyz):
+            result_indexes.append(offset)
 
-    return result
+        result_offset = 0
+        for i, result_indexes_val in enumerate(result_indexes):
+            result_offset += (output_shape_offsets[i] * result_indexes_val)
+
+        input_elem = input.item(source_idx)
+        result_array[result_offset] = input_elem if input_elem >= 0 else -1 * input_elem
+
+    dpnp_array = dpnp.array(result_array, dtype=input.dtype)
+    dpnp_result_array = dpnp_array.reshape(output_shape)
+    return dpnp_result_array
 
 
 cpdef dparray dpnp_add(dparray array1, dparray array2):
