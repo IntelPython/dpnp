@@ -34,12 +34,20 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_ADD
         DPNP_FN_ARGMAX
         DPNP_FN_ARGMIN
+        DPNP_FN_ARGSORT
+        DPNP_FN_CEIL
+        DPNP_FN_COV
         DPNP_FN_DOT
+        DPNP_FN_EIG
         DPNP_FN_FABS
         DPNP_FN_FLOOR
+        DPNP_FN_MATMUL
         DPNP_FN_MAXIMUM
         DPNP_FN_MINIMUM
+        DPNP_FN_RAND
         DPNP_FN_SIGN
+        DPNP_FN_SUM
+        DPNP_FN_TRUNC
 
 cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
     cdef enum DPNPFuncType "DPNPFuncType":
@@ -201,8 +209,9 @@ cpdef dparray dpnp_transpose(dparray array1, axes=*)
 """
 Statistics functions
 """
-cpdef dparray dpnp_mean(dparray a, axis)
 cpdef dparray dpnp_cov(dparray array1)
+cpdef dparray dpnp_mean(dparray a, axis)
+cpdef dparray dpnp_min(dparray a, axis)
 
 
 """

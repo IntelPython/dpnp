@@ -39,6 +39,7 @@ from libcpp cimport bool
 from dpnp.dpnp_iface_types import *
 from dpnp.dpnp_iface import *
 from dpnp.backend cimport *
+from dpnp.dpnp_iface_statistics import min
 import numpy
 cimport numpy
 
@@ -607,12 +608,19 @@ cdef class dparray:
         # numpy with dparray call public dpnp.sum via __array_interface__`
         return numpy.sum(*args, **kwargs)
 
-    def mean(self):
+    def mean(self, axis=None):
         """
         Returns the average of the array elements.
         """
 
-        return mean(self)
+        return mean(self, axis)
+
+    def min(self, axis=None):
+        """
+        Return the minimum along a given axis.
+        """
+
+        return min(self, axis)
 
     """
     -------------------------------------------------------------------------

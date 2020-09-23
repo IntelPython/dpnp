@@ -37,6 +37,7 @@ from libcpp.map cimport map
 from libcpp.string cimport string
 from dpnp.dpnp_utils cimport checker_throw_type_error
 
+import dpnp
 import numpy
 cimport numpy
 
@@ -44,6 +45,7 @@ __all__ += [
     "dpnp_absolute",
     "dpnp_add",
     'dpnp_arctan2',
+    "dpnp_ceil",
     "dpnp_divide",
     "dpnp_fabs",
     "dpnp_floor",
@@ -55,7 +57,8 @@ __all__ += [
     "dpnp_power",
     "dpnp_sign",
     "dpnp_subtract",
-    "dpnp_sum"
+    "dpnp_sum",
+    "dpnp_trunc"
 ]
 
 # binary names definition because they are unicode in Python
@@ -98,26 +101,54 @@ cdef custom_math_2in_1out_t _elementwise_2arg_3type(string name1, string name2, 
     return kernel_data
 
 
-cpdef dparray dpnp_absolute(dparray x):
-    cdef dparray_shape_type shape_x = x.shape
-    cdef size_t dim_x = x.ndim
+cpdef dparray dpnp_absolute(dparray input):
+    cdef dparray_shape_type shape_input = input.shape
+    cdef long size_input = input.size
+    output_shape = dparray(len(shape_input), dtype=numpy.int64)
+    for id, shape_ in enumerate(shape_input):
+        output_shape[id] = shape_
+    cdef long prod = 1
+    for i in range(len(output_shape)):
+        if output_shape[i] != 0:
+            prod *= output_shape[i]
+    result_array = [None] * prod
+    input_shape_offsets = [None] * len(shape_input)
+    acc = 1
+    for i in range(len(shape_input)):
+        ind = len(shape_input) - 1 - i
+        input_shape_offsets[ind] = acc
+        acc *= shape_input[ind]
+    output_shape_offsets = [None] * len(shape_input)
+    acc = 1
+    for i in range(len(output_shape)):
+        ind = len(output_shape) - 1 - i
+        output_shape_offsets[ind] = acc
+        acc *= output_shape[ind]
+        result_offsets = input_shape_offsets[:]  # need copy. not a reference
 
-    result = dparray(shape_x, dtype=x.dtype)
+    for source_idx in range(size_input):
 
-    if dim_x > 2:
-        raise NotImplementedError
+        # reconstruct x,y,z from linear source_idx
+        xyz = []
+        remainder = source_idx
+        for i in input_shape_offsets:
+            quotient, remainder = divmod(remainder, i)
+            xyz.append(quotient)
 
-    if dim_x == 2:
-        for i in range(shape_x[0]):
-            for j in range(shape_x[1]):
-                elem = x[i, j]
-                result[i, j] = elem if elem >= 0 else -1 * elem
-    else:
-        for i in range(shape_x[0]):
-            elem = x[i]
-            result[i] = elem if elem >= 0 else -1 * elem
+        result_indexes = []
+        for idx, offset in enumerate(xyz):
+            result_indexes.append(offset)
 
-    return result
+        result_offset = 0
+        for i, result_indexes_val in enumerate(result_indexes):
+            result_offset += (output_shape_offsets[i] * result_indexes_val)
+
+        input_elem = input.item(source_idx)
+        result_array[result_offset] = input_elem if input_elem >= 0 else -1 * input_elem
+
+    dpnp_array = dpnp.array(result_array, dtype=input.dtype)
+    dpnp_result_array = dpnp_array.reshape(output_shape)
+    return dpnp_result_array
 
 
 cpdef dparray dpnp_add(dparray array1, dparray array2):
@@ -126,7 +157,7 @@ cpdef dparray dpnp_add(dparray array1, dparray array2):
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ADD, param1_type, param2_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     cdef dparray result = dparray(array1.shape, dtype=result_type)
 
     cdef custom_math_2in_1out_func_ptr_t func = <custom_math_2in_1out_func_ptr_t > kernel_data.ptr
@@ -162,11 +193,25 @@ cpdef dparray dpnp_arctan2(dparray array1, dparray array2):
     param2_type = array2.dtype
 
     cdef custom_math_2in_1out_t kernel_data = _elementwise_2arg_3type(arctan2_name, param1_type.name.encode(), param2_type.name.encode())
-    if ( < long > kernel_data.ptr == 0):
+    if (< long > kernel_data.ptr == 0):
         checker_throw_type_error("dpnp_arctan2", (param1_type, param2_type))
 
     result = dparray(array1.shape, dtype=kernel_data.return_type)
     kernel_data.ptr(array1.get_data(), array2.get_data(), result.get_data(), array1.size)
+
+    return result
+
+
+cpdef dparray dpnp_ceil(dparray array1):
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_CEIL, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray(array1.shape, dtype=result_type)
+
+    cdef custom_math_1in_1out_func_ptr_t func = <custom_math_1in_1out_func_ptr_t > kernel_data.ptr
+    func(array1.get_data(), result.get_data(), array1.size)
 
     return result
 
@@ -198,7 +243,7 @@ cpdef dparray dpnp_divide(dparray array1, dparray array2):
     param2_type = array2.dtype
 
     cdef custom_math_2in_1out_t kernel_data = _elementwise_2arg_3type(divide_name, param1_type.name.encode(), param2_type.name.encode())
-    if ( < long > kernel_data.ptr == 0):
+    if (< long > kernel_data.ptr == 0):
         checker_throw_type_error("dpnp_divide", (param1_type, param2_type))
 
     result = dparray(array1.shape, dtype=kernel_data.return_type)
@@ -212,7 +257,7 @@ cpdef dparray dpnp_fabs(dparray array1):
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FABS, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     cdef dparray result = dparray(array1.shape, dtype=result_type)
 
     cdef custom_math_1in_1out_func_ptr_t func = <custom_math_1in_1out_func_ptr_t > kernel_data.ptr
@@ -226,7 +271,7 @@ cpdef dparray dpnp_floor(dparray array1):
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FLOOR, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     cdef dparray result = dparray(array1.shape, dtype=result_type)
 
     cdef custom_math_1in_1out_func_ptr_t func = <custom_math_1in_1out_func_ptr_t > kernel_data.ptr
@@ -262,7 +307,7 @@ cpdef dparray dpnp_hypot(dparray array1, dparray array2):
     param2_type = array2.dtype
 
     cdef custom_math_2in_1out_t kernel_data = _elementwise_2arg_3type(hypot_name, param1_type.name.encode(), param2_type.name.encode())
-    if ( < long > kernel_data.ptr == 0):
+    if (< long > kernel_data.ptr == 0):
         checker_throw_type_error("dpnp_hypot", (param1_type, param2_type))
 
     result = dparray(array1.shape, dtype=kernel_data.return_type)
@@ -277,7 +322,7 @@ cpdef dparray dpnp_maximum(dparray array1, dparray array2):
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MAXIMUM, param1_type, param2_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     cdef dparray result = dparray(array1.shape, dtype=result_type)
 
     cdef custom_math_2in_1out_func_ptr_t func = <custom_math_2in_1out_func_ptr_t > kernel_data.ptr
@@ -292,7 +337,7 @@ cpdef dparray dpnp_minimum(dparray array1, dparray array2):
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MINIMUM, param1_type, param2_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     cdef dparray result = dparray(array1.shape, dtype=result_type)
 
     cdef custom_math_2in_1out_func_ptr_t func = <custom_math_2in_1out_func_ptr_t > kernel_data.ptr
@@ -328,7 +373,7 @@ cpdef dparray dpnp_multiply(dparray array1, dparray array2):
     param2_type = array2.dtype
 
     cdef custom_math_2in_1out_t kernel_data = _elementwise_2arg_3type(multiply_name, param1_type.name.encode(), param2_type.name.encode())
-    if ( < long > kernel_data.ptr == 0):
+    if (< long > kernel_data.ptr == 0):
         checker_throw_type_error("dpnp_multiply", (param1_type, param2_type))
 
     result = dparray(array1.shape, dtype=kernel_data.return_type)
@@ -373,7 +418,7 @@ cpdef dparray dpnp_power(dparray array1, dparray array2):
     param2_type = array2.dtype
 
     cdef custom_math_2in_1out_t kernel_data = _elementwise_2arg_3type(power_name, param1_type.name.encode(), param2_type.name.encode())
-    if ( < long > kernel_data.ptr == 0):
+    if (< long > kernel_data.ptr == 0):
         checker_throw_type_error("dpnp_power", (param1_type, param2_type))
 
     result = dparray(array1.shape, dtype=kernel_data.return_type)
@@ -387,7 +432,7 @@ cpdef dparray dpnp_sign(dparray array1):
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_SIGN, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     cdef dparray result = dparray(array1.shape, dtype=result_type)
 
     cdef custom_math_1in_1out_func_ptr_t func = <custom_math_1in_1out_func_ptr_t > kernel_data.ptr
@@ -423,7 +468,7 @@ cpdef dparray dpnp_subtract(dparray array1, dparray array2):
     param2_type = array2.dtype
 
     cdef custom_math_2in_1out_t kernel_data = _elementwise_2arg_3type(subtract_name, param1_type.name.encode(), param2_type.name.encode())
-    if ( < long > kernel_data.ptr == 0):
+    if (< long > kernel_data.ptr == 0):
         checker_throw_type_error("dpnp_subtract", (param1_type, param2_type))
 
     result = dparray(array1.shape, dtype=kernel_data.return_type)
@@ -451,3 +496,17 @@ cpdef dpnp_sum(dparray array):
         checker_throw_type_error("dpnp_sum", call_type)
 
     return return_type.type(result[0])
+
+
+cpdef dparray dpnp_trunc(dparray array1):
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRUNC, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray(array1.shape, dtype=result_type)
+
+    cdef custom_math_1in_1out_func_ptr_t func = <custom_math_1in_1out_func_ptr_t > kernel_data.ptr
+    func(array1.get_data(), result.get_data(), array1.size)
+
+    return result

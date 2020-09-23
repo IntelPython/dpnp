@@ -41,6 +41,9 @@ __all__ += [
     "dpnp_greater",
     "dpnp_greater_equal",
     "dpnp_isclose",
+    "dpnp_isfinite",
+    "dpnp_isinf",
+    "dpnp_isnan",
     "dpnp_less",
     "dpnp_less_equal",
     "dpnp_logical_and",
@@ -91,6 +94,33 @@ cpdef dparray dpnp_isclose(dparray input1, input2, double rtol=1e-05, double ato
     else:
         for i in range(result.size):
             result[i] = numpy.isclose(input1[i], input2[i], rtol, atol, equal_nan)
+
+    return result
+
+
+cpdef dparray dpnp_isfinite(dparray input1):
+    cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
+
+    for i in range(result.size):
+        result[i] = numpy.isfinite(input1[i])
+
+    return result
+
+
+cpdef dparray dpnp_isinf(dparray input1):
+    cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
+
+    for i in range(result.size):
+        result[i] = numpy.isinf(input1[i])
+
+    return result
+
+
+cpdef dparray dpnp_isnan(dparray input1):
+    cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
+
+    for i in range(result.size):
+        result[i] = numpy.isnan(input1[i])
 
     return result
 
