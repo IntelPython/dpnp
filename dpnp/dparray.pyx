@@ -39,6 +39,7 @@ from libcpp cimport bool
 from dpnp.dpnp_iface_types import *
 from dpnp.dpnp_iface import *
 from dpnp.backend cimport *
+from dpnp.dpnp_iface_statistics import min
 import numpy
 cimport numpy
 
@@ -613,6 +614,13 @@ cdef class dparray:
         """
 
         return mean(self)
+
+    def min(self, axis=None):
+        """
+        Return the minimum along a given axis.
+        """
+
+        return min(self, axis)
 
     """
     -------------------------------------------------------------------------

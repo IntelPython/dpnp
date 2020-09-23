@@ -48,14 +48,61 @@ from dpnp.dparray import dparray
 from dpnp.dpnp_utils import checker_throw_value_error, use_origin_backend
 
 __all__ = [
+    'amin',
     'average',
     'cov',
     'mean',
-    'median'
+    'median',
+    'min'
 ]
 
 
-def average(in_array1, axis=None, weights=None, returned=False):
+def amin(input, axis=None, out=None):
+    """
+        Return the minimum of an array or minimum along an axis.
+        Parameters
+        ----------
+        input : array_like
+            Input data.
+        axis : None or int or tuple of ints, optional
+            Axis or axes along which to operate.  By default, flattened input is
+            used.
+            .. versionadded:: 1.7.0
+            If this is a tuple of ints, the minimum is selected over multiple axes,
+            instead of a single axis or all the axes as before.
+        out : ndarray, optional
+            Alternative output array in which to place the result.  Must
+            be of the same shape and buffer length as the expected output.
+            See `ufuncs-output-type` for more details.
+        keepdims : bool, optional
+            If this is set to True, the axes which are reduced are left
+            in the result as dimensions with size one. With this option,
+            the result will broadcast correctly against the input array.
+            If the default value is passed, then `keepdims` will not be
+            passed through to the `amin` method of sub-classes of
+            `ndarray`, however any non-default value will be.  If the
+            sub-class' method does not implement `keepdims` any
+            exceptions will be raised.
+        initial : scalar, optional
+            The maximum value of an output element. Must be present to allow
+            computation on empty slice. See `~numpy.ufunc.reduce` for details.
+            .. versionadded:: 1.15.0
+        where : array_like of bool, optional
+            Elements to compare for the minimum. See `~numpy.ufunc.reduce`
+            for details.
+            .. versionadded:: 1.17.0
+        Returns
+        -------
+        amin : ndarray or scalar
+            Minimum of `input`. If `axis` is None, the result is a scalar value.
+            If `axis` is given, the result is an array of dimension
+            ``input.ndim - 1``.
+    """
+
+    return min(input, axis=axis, out=out)
+
+
+  def average(in_array1, axis=None, weights=None, returned=False):
     """
     Compute the weighted average along the specified axis.
 
@@ -348,9 +395,7 @@ def mean(input, axis=None):
 def median(in_array1, axis=None, out=None, overwrite_input=False, keepdims=False):
     """
     Compute the median along the specified axis.
-
     Returns the median of the array elements.
-
     Parameters
     ----------
     a : array_like
@@ -375,9 +420,7 @@ def median(in_array1, axis=None, out=None, overwrite_input=False, keepdims=False
         If this is set to True, the axes which are reduced are left
         in the result as dimensions with size one. With this option,
         the result will broadcast correctly against the original `arr`.
-
         .. versionadded:: 1.9.0
-
     Returns
     -------
     median : ndarray
@@ -386,18 +429,15 @@ def median(in_array1, axis=None, out=None, overwrite_input=False, keepdims=False
         ``np.float64``.  Otherwise, the data-type of the output is the
         same as that of the input. If `out` is specified, that array is
         returned instead.
-
     See Also
     --------
     mean, percentile
-
     Notes
     -----
     Given a vector ``V`` of length ``N``, the median of ``V`` is the
     middle value of a sorted copy of ``V``, ``V_sorted`` - i
     e., ``V_sorted[(N-1)/2]``, when ``N`` is odd, and the average of the
     two middle values of ``V_sorted`` when ``N`` is even.
-
     Examples
     --------
     >>> a = np.array([[10, 7, 4], [3, 2, 1]])
@@ -424,7 +464,6 @@ def median(in_array1, axis=None, out=None, overwrite_input=False, keepdims=False
     >>> np.median(b, axis=None, overwrite_input=True)
     3.5
     >>> assert not np.all(a==b)
-
     """
 
     is_dparray1 = isinstance(in_array1, dparray)
@@ -450,3 +489,61 @@ def median(in_array1, axis=None, out=None, overwrite_input=False, keepdims=False
     input1 = dpnp.asnumpy(in_array1) if is_dparray1 else in_array1
 
     return numpy.median(input1, axis, out, overwrite_input, keepdims)
+
+
+def min(input, axis=None, out=None):
+    """
+        Return the minimum along a given axis.
+        Parameters
+        ----------
+        input : array_like
+            Input data.
+        axis : None or int or tuple of ints, optional
+            Axis or axes along which to operate. By default, flattened input is used.
+            New in version 1.7.0.
+            If this is a tuple of ints, the minimum is selected over multiple axes,
+            instead of a single axis or all the axes as before.
+        out : ndarray, optional
+            Alternative output array in which to place the result. Must be of the
+            same shape and buffer length as the expected output.
+            See ufuncs-output-type for more details.
+        Returns
+        -------
+        m : ndarray, see dtype parameter above
+            Minimum of a. If axis is None, the result is a scalar value.
+            If axis is given, the result is an array of dimension a.ndim - 1.
+        """
+
+    dim_input = input.ndim
+
+    is_input_dparray = isinstance(input, dparray)
+
+    if axis is not None and (not isinstance(axis, int) or (axis >= dim_input or -1 * axis >= dim_input)) \
+            or dim_input == 0:
+        return numpy.min(input, axis=axis)
+
+    if not use_origin_backend(input) and is_input_dparray:
+        if dim_input > 3 and axis is not None:
+            raise NotImplementedError
+        if out is not None:
+            checker_throw_value_error("min", "out", type(out), None)
+
+        result = dpnp_min(input, axis=axis)
+
+        # scalar returned
+        if result.shape == (1,):
+            return result.dtype.type(result[0])
+
+        return result
+
+    input1 = dpnp.asnumpy(input) if is_input_dparray else input
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.min(input1, axis=axis)
+    result = result_numpy
+    if isinstance(result, numpy.ndarray):
+        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_numpy.item(i))
+
+    return result
