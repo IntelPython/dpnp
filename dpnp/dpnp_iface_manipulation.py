@@ -46,12 +46,14 @@ import numpy
 import dpnp
 from dpnp.backend import *
 from dpnp.dparray import dparray
-from dpnp.dpnp_utils import checker_throw_value_error, use_origin_backend, normalize_axis, checker_throw_axis_error
+from dpnp.dpnp_utils import (checker_throw_value_error, use_origin_backend, normalize_axis,
+                             checker_throw_axis_error, dp2ndarray, nd2dparray)
 
 
 __all__ = [
     "moveaxis",
     "repeat",
+    "rollaxis",
     "swapaxes",
     "transpose"
 ]
@@ -133,6 +135,53 @@ def repeat(x1, repeats, axis=None):
             result._setitem_scalar(i, result_numpy.item(i))
 
     return result
+
+
+def rollaxis(a, axis, start=0):
+    """
+    Roll the specified axis backwards, until it lies in a given position.
+
+    Parameters
+    ----------
+    a: array_like
+        Input array.
+    axis: int
+        The axis to be rolled. The positions of the other axes do not change relative to one another.
+    start: int, optional
+        When start <= axis, the axis is rolled back until it lies in this position.
+        When start > axis, the axis is rolled until it lies before this position.
+
+    Returns
+    -------
+    out: ndarray
+        Output array.
+
+    See Also
+    --------
+    moveaxis, roll
+
+    """
+
+    if not use_origin_backend(a):
+        def use_dpnp_backend(a, axis, start):
+            if not isinstance(a, dparray):
+                return False
+            if not isinstance(axis, int):
+                return False
+            if start < -a.ndim or start > a.ndim:
+                return False
+
+            return True
+
+        if use_dpnp_backend(a, axis, start):
+            start_norm = start + a.ndim if start < 0 else start
+            destination = start_norm - 1 if start_norm > axis else start_norm
+
+            return moveaxis(a, axis, destination)
+
+    result = numpy.rollaxis(dp2ndarray(a), axis, start)
+
+    return nd2dparray(result)
 
 
 def swapaxes(x1, axis1, axis2):
