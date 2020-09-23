@@ -633,14 +633,14 @@ def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=0, where=Tr
     is_x1_dparray = isinstance(x1, dparray)
 
     if (not use_origin_backend(x1)
-            and is_x1_dparray
-            and (axis is None)
-            and (dtype is None)
-            and (out is None)
-            and (keepdims is False)
-            and (initial is 0)
-            and (where is True)
-            ):
+        and is_x1_dparray
+        and (axis is None)
+        and (dtype is None)
+        and (out is None)
+        and (keepdims is False)
+        and (initial is 0)
+        and (where is True)
+        ):
         return dpnp_sum(x1)
 
     input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
