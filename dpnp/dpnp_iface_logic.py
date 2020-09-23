@@ -52,6 +52,9 @@ __all__ = [
     "greater",
     "greater_equal",
     "isclose",
+    "isfinite",
+    "isinf",
+    "isnan",
     "less",
     "less_equal",
     "logical_and",
@@ -156,6 +159,191 @@ def isclose(x1, x2, rtol=1e-05, atol=1e-08, equal_nan=False):
     return numpy.isclose(x1, x2, rtol=rtol, atol=atol, equal_nan=equal_nan)
 
 
+def isfinite(in_array1, out=None, where=True, **kwargs):
+    """
+    Test element-wise for finiteness (not infinity or not Not a Number).
+
+    The result is returned as a boolean array.
+
+    Parameters
+    ----------
+    x : array_like
+        Input values.
+    out : ndarray, None, or tuple of ndarray and None, optional
+        A location into which the result is stored. If provided, it must have
+        a shape that the inputs broadcast to. If not provided or None,
+        a freshly-allocated array is returned. A tuple (possible only as a
+        keyword argument) must have length equal to the number of outputs.
+    where : array_like, optional
+        This condition is broadcast over the input. At locations where the
+        condition is True, the `out` array will be set to the ufunc result.
+        Elsewhere, the `out` array will retain its original value.
+        Note that if an uninitialized `out` array is created via the default
+        ``out=None``, locations within it where the condition is False will
+        remain uninitialized.
+    **kwargs
+        For other keyword-only arguments, see the
+        :ref:`ufunc docs <ufuncs.kwargs>`.
+
+    Returns
+    -------
+    y : ndarray, bool
+        True where ``x`` is not positive infinity, negative infinity,
+        or NaN; false otherwise.
+        This is a scalar if `x` is a scalar.
+
+    See Also
+    --------
+    isinf, isneginf, isposinf, isnan
+
+    Notes
+    -----
+    Not a Number, positive infinity and negative infinity are considered
+    to be non-finite.
+
+    NumPy uses the IEEE Standard for Binary Floating-Point for Arithmetic
+    (IEEE 754). This means that Not a Number is not equivalent to infinity.
+    Also that positive infinity is not equivalent to negative infinity. But
+    infinity is equivalent to positive infinity.  Errors result if the
+    second argument is also supplied when `x` is a scalar input, or if
+    first and second arguments have different shapes.
+
+    """
+
+    is_dparray1 = isinstance(in_array1, dparray)
+
+    if (not use_origin_backend(in_array1) and is_dparray1):
+        if out is not None:
+            checker_throw_value_error("isfinite", "out", type(out), None)
+        if where is not True:
+            checker_throw_value_error("isfinite", "where", where, True)
+
+        return dpnp_isfinite(in_array1)
+
+    input1 = dpnp.asnumpy(in_array1) if is_dparray1 else in_array1
+
+    return numpy.isfinite(input1, out, where, **kwargs)
+
+
+def isinf(in_array1, out=None, where=True, **kwargs):
+    """
+    Test element-wise for positive or negative infinity.
+
+    Returns a boolean array of the same shape as `x`, True where ``x ==
+    +/-inf``, otherwise False.
+
+    Parameters
+    ----------
+    x : array_like
+        Input values
+    out : ndarray, None, or tuple of ndarray and None, optional
+        A location into which the result is stored. If provided, it must have
+        a shape that the inputs broadcast to. If not provided or None,
+        a freshly-allocated array is returned. A tuple (possible only as a
+        keyword argument) must have length equal to the number of outputs.
+    where : array_like, optional
+        This condition is broadcast over the input. At locations where the
+        condition is True, the `out` array will be set to the ufunc result.
+        Elsewhere, the `out` array will retain its original value.
+        Note that if an uninitialized `out` array is created via the default
+        ``out=None``, locations within it where the condition is False will
+        remain uninitialized.
+    **kwargs
+        For other keyword-only arguments, see the
+        :ref:`ufunc docs <ufuncs.kwargs>`.
+
+    Returns
+    -------
+    y : bool (scalar) or boolean ndarray
+        True where ``x`` is positive or negative infinity, false otherwise.
+        This is a scalar if `x` is a scalar.
+
+    See Also
+    --------
+    isneginf, isposinf, isnan, isfinite
+
+    Notes
+    -----
+    NumPy uses the IEEE Standard for Binary Floating-Point for Arithmetic
+    (IEEE 754).
+
+    Errors result if the second argument is supplied when the first
+    argument is a scalar, or if the first and second arguments have
+    different shapes.
+
+    """
+
+    is_dparray1 = isinstance(in_array1, dparray)
+
+    if (not use_origin_backend(in_array1) and is_dparray1):
+        if out is not None:
+            checker_throw_value_error("isinf", "out", type(out), None)
+        if where is not True:
+            checker_throw_value_error("isinf", "where", where, True)
+
+        return dpnp_isinf(in_array1)
+
+    input1 = dpnp.asnumpy(in_array1) if is_dparray1 else in_array1
+
+    return numpy.isinf(input1, out, where, **kwargs)
+
+
+def isnan(in_array1, out=None, where=True, **kwargs):
+    """
+    Test element-wise for NaN and return result as a boolean array.
+
+    Parameters
+    ----------
+    x : array_like
+        Input array.
+    out : ndarray, None, or tuple of ndarray and None, optional
+        A location into which the result is stored. If provided, it must have
+        a shape that the inputs broadcast to. If not provided or None,
+        a freshly-allocated array is returned. A tuple (possible only as a
+        keyword argument) must have length equal to the number of outputs.
+    where : array_like, optional
+        This condition is broadcast over the input. At locations where the
+        condition is True, the `out` array will be set to the ufunc result.
+        Elsewhere, the `out` array will retain its original value.
+        Note that if an uninitialized `out` array is created via the default
+        ``out=None``, locations within it where the condition is False will
+        remain uninitialized.
+    **kwargs
+        For other keyword-only arguments, see the
+        :ref:`ufunc docs <ufuncs.kwargs>`.
+
+    Returns
+    -------
+    y : ndarray or bool
+        True where ``x`` is NaN, false otherwise.
+        This is a scalar if `x` is a scalar.
+
+    See Also
+    --------
+    isinf, isneginf, isposinf, isfinite, isnat
+
+    Notes
+    -----
+    NumPy uses the IEEE Standard for Binary Floating-Point for Arithmetic
+    (IEEE 754). This means that Not a Number is not equivalent to infinity.
+
+    """
+
+    is_dparray1 = isinstance(in_array1, dparray)
+
+    if (not use_origin_backend(in_array1) and is_dparray1):
+        if out is not None:
+            checker_throw_value_error("isnan", "out", type(out), None)
+        if where is not True:
+            checker_throw_value_error("isnan", "where", where, True)
+
+        return dpnp_isnan(in_array1)
+
+    input1 = dpnp.asnumpy(in_array1) if is_dparray1 else in_array1
+
+    return numpy.isnan(input1, out, where, **kwargs)
+
+
 def less(x1, x2):
     """
     Return (x1 < x2) element-wise.
@@ -186,64 +374,221 @@ def less_equal(x1, x2):
     return numpy.less_equal(x1, x2)
 
 
-def logical_and(x1, x2):
+def logical_and(x1, x2, out=None, where=True, **kwargs):
     """
-    Return (x1 AND x2) element-wise.
+    Compute the truth value of x1 AND x2 element-wise.
+
+    Parameters
+    ----------
+    x1, x2 : array_like
+        Input arrays. If ``x1.shape != x2.shape``, they must be broadcastable to a common shape (which becomes the shape of the output).
+    out : ndarray, None, or tuple of ndarray and None, optional
+        A location into which the result is stored. If provided, it must have
+        a shape that the inputs broadcast to. If not provided or None,
+        a freshly-allocated array is returned. A tuple (possible only as a
+        keyword argument) must have length equal to the number of outputs.
+    where : array_like, optional
+        This condition is broadcast over the input. At locations where the
+        condition is True, the `out` array will be set to the ufunc result.
+        Elsewhere, the `out` array will retain its original value.
+        Note that if an uninitialized `out` array is created via the default
+        ``out=None``, locations within it where the condition is False will
+        remain uninitialized.
+    **kwargs
+        For other keyword-only arguments, see the
+        :ref:`ufunc docs <ufuncs.kwargs>`.
+
+    Returns
+    -------
+    y : ndarray or bool
+        Boolean result of the logical AND operation applied to the elements
+        of `x1` and `x2`; the shape is determined by broadcasting.
+        This is a scalar if both `x1` and `x2` are scalars.
+
+    See Also
+    --------
+    logical_or, logical_not, logical_xor
+    bitwise_and
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.logical_and(x1, x2)
+    is_dparray1 = isinstance(x1, dparray)
+    is_dparray2 = isinstance(x2, dparray)
 
-    if isinstance(x1, dparray) or isinstance(x2, dparray):
+    if (not use_origin_backend(x1) and is_dparray1 and is_dparray2):
+        if out is not None:
+            checker_throw_value_error("logical_and", "out", type(out), None)
+        if where is not True:
+            checker_throw_value_error("logical_and", "where", where, True)
+
         return dpnp_logical_and(x1, x2)
 
-    return numpy.logical_and(x1, x2)
+    input1 = dpnp.asnumpy(x1) if is_dparray1 else x1
+    input2 = dpnp.asnumpy(x2) if is_dparray1 else x2
+
+    return numpy.logical_and(input1, input2, out, where, **kwargs)
 
 
-def logical_not(x1):
+def logical_not(x1, out=None, where=True, **kwargs):
     """
-    Return (NOT x1) element-wise.
+    Compute the truth value of NOT x element-wise.
+
+    Parameters
+    ----------
+    x : array_like
+        Logical NOT is applied to the elements of `x`.
+    out : ndarray, None, or tuple of ndarray and None, optional
+        A location into which the result is stored. If provided, it must have
+        a shape that the inputs broadcast to. If not provided or None,
+        a freshly-allocated array is returned. A tuple (possible only as a
+        keyword argument) must have length equal to the number of outputs.
+    where : array_like, optional
+        This condition is broadcast over the input. At locations where the
+        condition is True, the `out` array will be set to the ufunc result.
+        Elsewhere, the `out` array will retain its original value.
+        Note that if an uninitialized `out` array is created via the default
+        ``out=None``, locations within it where the condition is False will
+        remain uninitialized.
+    **kwargs
+        For other keyword-only arguments, see the
+        :ref:`ufunc docs <ufuncs.kwargs>`.
+
+    Returns
+    -------
+    y : bool or ndarray of bool
+        Boolean result with the same shape as `x` of the NOT operation
+        on elements of `x`.
+        This is a scalar if `x` is a scalar.
+
+    See Also
+    --------
+    logical_and, logical_or, logical_xor
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.logical_not(x1)
+    is_dparray1 = isinstance(x1, dparray)
 
-    if isinstance(x1, dparray):
+    if (not use_origin_backend(x1) and is_dparray1):
+        if out is not None:
+            checker_throw_value_error("logical_not", "out", type(out), None)
+        if where is not True:
+            checker_throw_value_error("logical_not", "where", where, True)
+
         return dpnp_logical_not(x1)
 
-    return numpy.logical_not(x1)
+    input1 = dpnp.asnumpy(x1) if is_dparray1 else x1
+
+    return numpy.logical_not(input1, out, where, **kwargs)
 
 
-def logical_or(x1, x2):
+def logical_or(x1, x2, out=None, where=True, **kwargs):
     """
-    Return (x1 OR x2) element-wise.
+    Compute the truth value of x1 OR x2 element-wise.
+
+    Parameters
+    ----------
+    x1, x2 : array_like
+        Logical OR is applied to the elements of `x1` and `x2`.
+        If ``x1.shape != x2.shape``, they must be broadcastable to a common shape (which becomes the shape of the output).
+    out : ndarray, None, or tuple of ndarray and None, optional
+        A location into which the result is stored. If provided, it must have
+        a shape that the inputs broadcast to. If not provided or None,
+        a freshly-allocated array is returned. A tuple (possible only as a
+        keyword argument) must have length equal to the number of outputs.
+    where : array_like, optional
+        This condition is broadcast over the input. At locations where the
+        condition is True, the `out` array will be set to the ufunc result.
+        Elsewhere, the `out` array will retain its original value.
+        Note that if an uninitialized `out` array is created via the default
+        ``out=None``, locations within it where the condition is False will
+        remain uninitialized.
+    **kwargs
+        For other keyword-only arguments, see the
+        :ref:`ufunc docs <ufuncs.kwargs>`.
+
+    Returns
+    -------
+    y : ndarray or bool
+        Boolean result of the logical OR operation applied to the elements
+        of `x1` and `x2`; the shape is determined by broadcasting.
+        This is a scalar if both `x1` and `x2` are scalars.
+
+    See Also
+    --------
+    logical_and, logical_not, logical_xor
+    bitwise_or
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.logical_or(x1, x2)
+    is_dparray1 = isinstance(x1, dparray)
+    is_dparray2 = isinstance(x2, dparray)
 
-    if isinstance(x1, dparray) or isinstance(x2, dparray):
+    if (not use_origin_backend(x1) and is_dparray1 and is_dparray2):
+        if out is not None:
+            checker_throw_value_error("logical_or", "out", type(out), None)
+        if where is not True:
+            checker_throw_value_error("logical_or", "where", where, True)
+
         return dpnp_logical_or(x1, x2)
 
-    return numpy.logical_or(x1, x2)
+    input1 = dpnp.asnumpy(x1) if is_dparray1 else x1
+    input2 = dpnp.asnumpy(x2) if is_dparray1 else x2
+
+    return numpy.logical_or(input1, input2, out, where, **kwargs)
 
 
-def logical_xor(x1, x2):
+def logical_xor(x1, x2, out=None, where=True, **kwargs):
     """
-    Return (x1 XOR x2) element-wise.
+    Compute the truth value of x1 XOR x2, element-wise.
+
+    Parameters
+    ----------
+    x1, x2 : array_like
+        Logical XOR is applied to the elements of `x1` and `x2`. If ``x1.shape != x2.shape``, they must be broadcastable to a common shape (which becomes the shape of the output).
+    out : ndarray, None, or tuple of ndarray and None, optional
+        A location into which the result is stored. If provided, it must have
+        a shape that the inputs broadcast to. If not provided or None,
+        a freshly-allocated array is returned. A tuple (possible only as a
+        keyword argument) must have length equal to the number of outputs.
+    where : array_like, optional
+        This condition is broadcast over the input. At locations where the
+        condition is True, the `out` array will be set to the ufunc result.
+        Elsewhere, the `out` array will retain its original value.
+        Note that if an uninitialized `out` array is created via the default
+        ``out=None``, locations within it where the condition is False will
+        remain uninitialized.
+    **kwargs
+        For other keyword-only arguments, see the
+        :ref:`ufunc docs <ufuncs.kwargs>`.
+
+    Returns
+    -------
+    y : bool or ndarray of bool
+        Boolean result of the logical XOR operation applied to the elements
+        of `x1` and `x2`; the shape is determined by broadcasting.
+        This is a scalar if both `x1` and `x2` are scalars.
+
+    See Also
+    --------
+    logical_and, logical_or, logical_not, bitwise_xor
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.logical_xor(x1, x2)
+    is_dparray1 = isinstance(x1, dparray)
+    is_dparray2 = isinstance(x2, dparray)
 
-    if isinstance(x1, dparray) or isinstance(x2, dparray):
+    if (not use_origin_backend(x1) and is_dparray1 and is_dparray2):
+        if out is not None:
+            checker_throw_value_error("logical_xor", "out", type(out), None)
+        if where is not True:
+            checker_throw_value_error("logical_xor", "where", where, True)
+
         return dpnp_logical_xor(x1, x2)
 
-    return numpy.logical_xor(x1, x2)
+    input1 = dpnp.asnumpy(x1) if is_dparray1 else x1
+    input2 = dpnp.asnumpy(x2) if is_dparray1 else x2
+
+    return numpy.logical_xor(input1, input2, out, where, **kwargs)
 
 
 def not_equal(x1, x2):

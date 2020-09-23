@@ -42,21 +42,6 @@ import dpnp.config as config
 from dpnp.dpnp_utils import use_origin_backend
 
 
-cpdef dparray dpnp_random(dims):
-    """
-    Create an array of the given shape and populate it
-    with random samples from a uniform distribution over [0, 1).
-
-    """
-
-    cdef dparray result = dparray(dims, dtype=numpy.float64)
-    cdef size_t result_size = result.size
-
-    mkl_rng_uniform[double](result.get_data(), result_size)
-
-    return result
-
-
 cpdef dparray dpnp_randn(dims):
     """
     Return a random matrix with data from the "standard normal" distribution.
@@ -70,6 +55,21 @@ cpdef dparray dpnp_randn(dims):
     cdef size_t result_size = result.size
 
     mkl_rng_gaussian[double](result.get_data(), result_size)
+
+    return result
+
+
+cpdef dparray dpnp_random(dims):
+    """
+    Create an array of the given shape and populate it
+    with random samples from a uniform distribution over [0, 1).
+
+    """
+
+    cdef dparray result = dparray(dims, dtype=numpy.float64)
+    cdef size_t result_size = result.size
+
+    mkl_rng_uniform[double](result.get_data(), result_size)
 
     return result
 
@@ -130,95 +130,6 @@ def rand(d0, *dn):
     return dpnp_random(dims)
 
 
-def randn(d0, *dn):
-    """
-    If positive int_like arguments are provided, randn generates an array of shape (d0, d1, ..., dn),
-    filled with random floats sampled from a univariate “normal” (Gaussian) distribution of mean 0 and variance 1.
-
-    Parameters
-    ----------
-    d0, d1, …, dn : The dimensions of the returned array, must be non-negative.
-
-    Returns
-    -------
-    out : (d0, d1, ..., dn)-shaped array of floating-point samples from the standard normal distribution.
-
-    See Also
-    --------
-    standard_normal
-    normal
-
-    """
-
-    if (use_origin_backend(d0)):
-        return numpy.random.randn(d0, *dn)
-
-    dims = tuple([d0, *dn])
-
-    for dim in dims:
-        if not isinstance(dim, int):
-            raise TypeError(f"Intel NumPy random.randn(): Unsupported dim={type(dim)}")
-
-    return dpnp_randn(dims)
-
-
-def random_sample(size):
-    """
-    Return random floats in the half-open interval [0.0, 1.0).
-
-    Parameters
-    ----------
-    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
-
-    Returns
-    -------
-    out : Array of random floats of shape size.
-
-    See Also
-    --------
-    random
-
-    """
-
-    if (use_origin_backend(size)):
-        return numpy.random.random_sample(size)
-
-    for dim in size:
-        if not isinstance(dim, int):
-            raise TypeError(f"Intel NumPy random.random_sample(): Unsupported dim={type(dim)}")
-
-    return dpnp_random(size)
-
-
-def random(size):
-    """
-    Return random floats in the half-open interval [0.0, 1.0).
-    Alias for random_sample.
-
-    Parameters
-    ----------
-    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
-
-    Returns
-    -------
-    out : Array of random floats of shape size.
-
-    See Also
-    --------
-    random
-
-    """
-
-    if (use_origin_backend(size)):
-        return numpy.random.random(size)
-
-    for dim in size:
-        if not isinstance(dim, int):
-            raise TypeError(f"Intel NumPy random.random(): Unsupported dim={type(dim)}")
-
-    return dpnp_random(size)
-
-
 def randf(size):
     """
     Return random floats in the half-open interval [0.0, 1.0).
@@ -244,35 +155,6 @@ def randf(size):
     for dim in size:
         if not isinstance(dim, int):
             raise TypeError(f"Intel NumPy random.randf(): Unsupported dim={type(dim)}")
-
-    return dpnp_random(size)
-
-
-def sample(size):
-    """
-    Return random floats in the half-open interval [0.0, 1.0).
-    This is an alias of random_sample.
-
-    Parameters
-    ----------
-    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
-
-    Returns
-    -------
-    out : Array of random floats of shape size.
-
-    See Also
-    --------
-    random
-
-    """
-
-    if (use_origin_backend(size)):
-        return numpy.random.sample(size)
-
-    for dim in size:
-        if not isinstance(dim, int):
-            raise TypeError(f"Intel NumPy random.sample(): Unsupported dim={type(dim)}")
 
     return dpnp_random(size)
 
@@ -350,6 +232,67 @@ def randint(low, high=None, size=None, dtype=int):
     return dpnp_uniform(low, high, size, _dtype)
 
 
+def randn(d0, *dn):
+    """
+    If positive int_like arguments are provided, randn generates an array of shape (d0, d1, ..., dn),
+    filled with random floats sampled from a univariate “normal” (Gaussian) distribution of mean 0 and variance 1.
+
+    Parameters
+    ----------
+    d0, d1, …, dn : The dimensions of the returned array, must be non-negative.
+
+    Returns
+    -------
+    out : (d0, d1, ..., dn)-shaped array of floating-point samples from the standard normal distribution.
+
+    See Also
+    --------
+    standard_normal
+    normal
+
+    """
+
+    if (use_origin_backend(d0)):
+        return numpy.random.randn(d0, *dn)
+
+    dims = tuple([d0, *dn])
+
+    for dim in dims:
+        if not isinstance(dim, int):
+            raise TypeError(f"Intel NumPy random.randn(): Unsupported dim={type(dim)}")
+
+    return dpnp_randn(dims)
+
+
+def random(size):
+    """
+    Return random floats in the half-open interval [0.0, 1.0).
+    Alias for random_sample.
+
+    Parameters
+    ----------
+    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
+
+    Returns
+    -------
+    out : Array of random floats of shape size.
+
+    See Also
+    --------
+    random
+
+    """
+
+    if (use_origin_backend(size)):
+        return numpy.random.random(size)
+
+    for dim in size:
+        if not isinstance(dim, int):
+            raise TypeError(f"Intel NumPy random.random(): Unsupported dim={type(dim)}")
+
+    return dpnp_random(size)
+
+
 def random_integers(low, high=None, size=None):
     """
     random_integers(low, high=None, size=None)
@@ -393,12 +336,61 @@ def random_integers(low, high=None, size=None):
     return randint(low, int(high) + 1, size=size)
 
 
-"""
-Distributions
-# TODO:
-# currently in the same file with Simple random data funcs
+def random_sample(size):
+    """
+    Return random floats in the half-open interval [0.0, 1.0).
 
-"""
+    Parameters
+    ----------
+    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
+
+    Returns
+    -------
+    out : Array of random floats of shape size.
+
+    See Also
+    --------
+    random
+
+    """
+
+    if (use_origin_backend(size)):
+        return numpy.random.random_sample(size)
+
+    for dim in size:
+        if not isinstance(dim, int):
+            raise TypeError(f"Intel NumPy random.random_sample(): Unsupported dim={type(dim)}")
+
+    return dpnp_random(size)
+
+
+def sample(size):
+    """
+    Return random floats in the half-open interval [0.0, 1.0).
+    This is an alias of random_sample.
+
+    Parameters
+    ----------
+    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
+
+    Returns
+    -------
+    out : Array of random floats of shape size.
+
+    See Also
+    --------
+    random
+
+    """
+
+    if (use_origin_backend(size)):
+        return numpy.random.sample(size)
+
+    for dim in size:
+        if not isinstance(dim, int):
+            raise TypeError(f"Intel NumPy random.sample(): Unsupported dim={type(dim)}")
+
+    return dpnp_random(size)
 
 
 def uniform(low=0.0, high=1.0, size=None):
@@ -448,14 +440,3 @@ def uniform(low=0.0, high=1.0, size=None):
         low, high = high, low
 
     return dpnp_uniform(low, high, size, dtype=numpy.float64)
-
-
-def seed(seed=None):
-    """
-    Seed the generator.
-
-    This method is called when RandomState is initialized.It can be called again to re-seed the generator. For details, see RandomState.
-    """
-
-    # TODO: provide implementation
-    return
