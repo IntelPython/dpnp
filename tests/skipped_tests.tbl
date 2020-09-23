@@ -328,9 +328,6 @@ tests/third_party/cupy/logic_tests/test_comparison.py::TestComparisonOperator::t
 tests/third_party/cupy/logic_tests/test_comparison.py::TestComparisonOperator::test_binary_array_pyscalar
 tests/third_party/cupy/logic_tests/test_comparison.py::TestComparisonOperator::test_binary_npscalar_array
 tests/third_party/cupy/logic_tests/test_comparison.py::TestComparisonOperator::test_binary_pyscalar_array
-tests/third_party/cupy/logic_tests/test_content.py::TestContent::test_isfinite
-tests/third_party/cupy/logic_tests/test_content.py::TestContent::test_isinf
-tests/third_party/cupy/logic_tests/test_content.py::TestContent::test_isnan
 tests/third_party/cupy/manipulation_tests/test_tiling.py::TestRepeat1D_param_3_{axis=None, repeats=[1, 2, 3, 4]}::test_array_repeat
 tests/third_party/cupy/manipulation_tests/test_tiling.py::TestRepeat1D_param_4_{axis=0, repeats=[1, 2, 3, 4]}::test_array_repeat
 tests/third_party/cupy/manipulation_tests/test_tiling.py::TestRepeatRepeatsNdarray::test_func
