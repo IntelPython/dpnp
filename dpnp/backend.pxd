@@ -47,6 +47,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_RAND
         DPNP_FN_SIGN
         DPNP_FN_SUM
+        DPNP_FN_TRUNC
 
 cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
     cdef enum DPNPFuncType "DPNPFuncType":

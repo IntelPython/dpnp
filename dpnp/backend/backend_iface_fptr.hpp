@@ -76,6 +76,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RAND,    /**< Used in numpy.random.rand() implementation  */
     DPNP_FN_SIGN,    /**< Used in numpy.sign() implementation  */
     DPNP_FN_SUM,     /**< Used in numpy.sum() implementation  */
+    DPNP_FN_TRUNC,   /**< Used in numpy.trunc() implementation  */
     DPNP_FN_LAST     /**< The latest element of the enumeration */
 };
 
