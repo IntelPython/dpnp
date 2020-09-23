@@ -25,7 +25,7 @@
 
 #include <iostream>
 
-#include <backend/backend_iface.hpp>
+#include <backend_iface.hpp>
 #include "backend_pstl.hpp"
 #include "queue_sycl.hpp"
 

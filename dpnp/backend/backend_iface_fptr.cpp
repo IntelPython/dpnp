@@ -36,7 +36,7 @@
 #include <map>
 #include <stdexcept>
 
-#include <backend/backend_iface_fptr.hpp>
+#include <backend_iface_fptr.hpp>
 
 typedef std::map<DPNPFuncType, DPNPFuncData_t> map_2p_t;
 typedef std::map<DPNPFuncType, map_2p_t> map_1p_t;

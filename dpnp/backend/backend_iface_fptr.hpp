@@ -41,7 +41,7 @@
 
 #include <vector>
 
-#include <backend/backend_iface.hpp>
+#include <backend_iface.hpp>
 
 /**
  * @defgroup BACKEND_FUNC_PTR_API Backend C++ library runtime interface API

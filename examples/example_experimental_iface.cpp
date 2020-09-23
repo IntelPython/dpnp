@@ -35,7 +35,7 @@
 
 #include <iostream>
 
-#include <backend/backend_iface_fptr.hpp>
+#include <backend_iface_fptr.hpp>
 // TODO #include <backend/backend_utils.hpp>
 
 int main(int, char**)

@@ -248,19 +248,19 @@ INP_DLLEXPORT void
     template <typename _DataType_input, typename _DataType_output>                                                     \
     INP_DLLEXPORT void custom_elemwise_##__name__##_c(void* array1, void* result1, size_t size);
 
-#include <backend/custom_1arg_2type_tbl.hpp>
+#include <custom_1arg_2type_tbl.hpp>
 
 #define MACRO_CUSTOM_1ARG_1TYPE_OP(__name__, __operation__)                                                            \
     template <typename _DataType>                                                                                      \
     INP_DLLEXPORT void custom_elemwise_##__name__##_c(void* array1, void* result1, size_t size);
 
-#include <backend/custom_1arg_1type_tbl.hpp>
+#include <custom_1arg_1type_tbl.hpp>
 
 #define MACRO_CUSTOM_2ARG_3TYPES_OP(__name__, __operation__)                                                           \
     template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>                         \
     INP_DLLEXPORT void custom_elemwise_##__name__##_c(void* array1, void* array2, void* result1, size_t size);
 
-#include <backend/custom_2arg_3type_tbl.hpp>
+#include <custom_2arg_3type_tbl.hpp>
 
 /**
  * @ingroup BACKEND_API

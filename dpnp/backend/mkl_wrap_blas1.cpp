@@ -27,7 +27,7 @@
 #include <iostream>
 #include <mkl_blas_sycl.hpp>
 
-#include <backend/backend_iface.hpp>
+#include <backend_iface.hpp>
 #include "queue_sycl.hpp"
 
 namespace mkl_blas = oneapi::mkl::blas;
