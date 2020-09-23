@@ -2898,7 +2898,6 @@ tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_external
 tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_mean_all_complex_dtype
 tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_mean_all_float64_dtype
 tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_mean_all_int64_dtype
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_mean_axis
 tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_std_all
 tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_std_all_ddof
 tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_std_axis
