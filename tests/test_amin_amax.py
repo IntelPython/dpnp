@@ -18,7 +18,6 @@ def test_amax_float64(type):
         numpy.testing.assert_array_equal(expected, result)
 
 
-
 @pytest.mark.parametrize("type",
                          [numpy.int64],
                          ids=['int64'])

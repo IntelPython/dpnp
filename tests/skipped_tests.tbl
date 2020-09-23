@@ -2260,7 +2260,6 @@ tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_fix
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_rint
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_rint_negative
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_round_
-tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_trunc
 tests/third_party/cupy/math_tests/test_rounding.py::TestRound_param_0_{decimals=-2}::test_round
 tests/third_party/cupy/math_tests/test_rounding.py::TestRound_param_0_{decimals=-2}::test_round_out
 tests/third_party/cupy/math_tests/test_rounding.py::TestRound_param_1_{decimals=-1}::test_round
@@ -2890,7 +2889,6 @@ tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_external
 tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_mean_all_complex_dtype
 tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_mean_all_float64_dtype
 tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_mean_all_int64_dtype
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_mean_axis
 tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_std_all
 tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_std_all_ddof
 tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_std_axis

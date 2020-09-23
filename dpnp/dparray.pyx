@@ -617,12 +617,12 @@ cdef class dparray:
         return max(self, axis)
 
 
-    def mean(self):
+    def mean(self, axis=None):
         """
         Returns the average of the array elements.
         """
 
-        return mean(self)
+        return mean(self, axis)
 
     def min(self, axis=None):
         """

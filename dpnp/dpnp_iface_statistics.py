@@ -445,9 +445,6 @@ def mean(input, axis=None):
     is_input_dparray = isinstance(input, dparray)
 
     if not use_origin_backend(input) and is_input_dparray:
-        if (input.ndim > 2) and (axis is not None):
-            raise NotImplementedError
-
         result = dpnp_mean(input, axis=axis)
 
         # scalar returned
