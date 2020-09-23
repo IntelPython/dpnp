@@ -73,7 +73,7 @@ class TestArrayReduction(unittest.TestCase):
     @testing.for_complex_dtypes()
     @testing.numpy_cupy_allclose()
     def test_max_nan_imag(self, xp, dtype):
-        a = xp.array([float('nan')*1.j, 1.j, -1.j], dtype)
+        a = xp.array([float('nan') * 1.j, 1.j, -1.j], dtype)
         return a.max()
 
     @testing.for_all_dtypes()
@@ -139,7 +139,7 @@ class TestArrayReduction(unittest.TestCase):
     @testing.for_complex_dtypes()
     @testing.numpy_cupy_allclose()
     def test_min_nan_imag(self, xp, dtype):
-        a = xp.array([float('nan')*1.j, 1.j, -1.j], dtype)
+        a = xp.array([float('nan') * 1.j, 1.j, -1.j], dtype)
         return a.min()
 
     # skip bool: numpy's ptp raises a TypeError on bool inputs
@@ -209,7 +209,7 @@ class TestArrayReduction(unittest.TestCase):
     @testing.for_complex_dtypes()
     @testing.numpy_cupy_allclose()
     def test_ptp_nan_imag(self, xp, dtype):
-        a = xp.array([float('nan')*1.j, 1.j, -1.j], dtype)
+        a = xp.array([float('nan') * 1.j, 1.j, -1.j], dtype)
         return a.ptp()
 
 

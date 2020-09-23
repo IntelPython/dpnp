@@ -186,7 +186,7 @@ cpdef dparray dpnp_min(dparray input, axis):
             ind = len(output_shape) - 1 - i
             output_shape_offsets[ind] = acc
             acc *= output_shape[ind]
-            result_offsets = input_shape_offsets[:] # need copy. not a reference
+            result_offsets = input_shape_offsets[:]  # need copy. not a reference
         for i in axis_:
             result_offsets[i] = 0
 
@@ -212,7 +212,7 @@ cpdef dparray dpnp_min(dparray input, axis):
         result_offset = 0
         if axis_ is not None:
             for i, result_axis_val in enumerate(result_axis):
-              result_offset += (output_shape_offsets[i] * result_axis_val)
+                result_offset += (output_shape_offsets[i] * result_axis_val)
 
         input_elem = input.item(source_idx)
         if axis_ is None:

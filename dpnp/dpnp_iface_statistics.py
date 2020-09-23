@@ -102,7 +102,7 @@ def amin(input, axis=None, out=None):
     return min(input, axis=axis, out=out)
 
 
-  def average(in_array1, axis=None, weights=None, returned=False):
+def average(in_array1, axis=None, weights=None, returned=False):
     """
     Compute the weighted average along the specified axis.
 
