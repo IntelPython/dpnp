@@ -56,7 +56,8 @@ __all__ += [
     "dpnp_power",
     "dpnp_sign",
     "dpnp_subtract",
-    "dpnp_sum"
+    "dpnp_sum",
+    "dpnp_trunc"
 ]
 
 # binary names definition because they are unicode in Python
@@ -480,3 +481,17 @@ cpdef dpnp_sum(dparray array):
         checker_throw_type_error("dpnp_sum", call_type)
 
     return return_type.type(result[0])
+
+
+cpdef dparray dpnp_trunc(dparray array1):
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRUNC, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray(array1.shape, dtype=result_type)
+
+    cdef custom_math_1in_1out_func_ptr_t func = <custom_math_1in_1out_func_ptr_t > kernel_data.ptr
+    func(array1.get_data(), result.get_data(), array1.size)
+
+    return result

@@ -63,5 +63,6 @@ MACRO_CUSTOM_1ARG_2TYPES_OP(sinh, cl::sycl::sinh(input_elem))
 MACRO_CUSTOM_1ARG_2TYPES_OP(sqrt, cl::sycl::sqrt(input_elem))
 MACRO_CUSTOM_1ARG_2TYPES_OP(tan, cl::sycl::tan(input_elem))
 MACRO_CUSTOM_1ARG_2TYPES_OP(tanh, cl::sycl::tanh(input_elem))
+MACRO_CUSTOM_1ARG_2TYPES_OP(trunc, cl::sycl::trunc(input_elem))
 
 #undef MACRO_CUSTOM_1ARG_2TYPES_OP
