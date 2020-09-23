@@ -2849,7 +2849,6 @@ tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_hist
 tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_same_value
 tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_weights_basic
 tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_weights_mismatch
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestAverage::test_average_all
 tests/third_party/cupy/statics_tests/test_meanvar.py::TestAverage::test_average_axis
 tests/third_party/cupy/statics_tests/test_meanvar.py::TestAverage::test_average_axis_weights
 tests/third_party/cupy/statics_tests/test_meanvar.py::TestAverage::test_average_weights
