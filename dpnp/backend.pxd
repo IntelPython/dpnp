@@ -44,6 +44,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_MATMUL
         DPNP_FN_MAXIMUM
         DPNP_FN_MINIMUM
+        DPNP_FN_PROD
         DPNP_FN_RAND
         DPNP_FN_SIGN
         DPNP_FN_SUM

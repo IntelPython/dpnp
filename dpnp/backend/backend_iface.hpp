@@ -128,6 +128,19 @@ INP_DLLEXPORT void custom_sum_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
+ * @brief Product of array elements
+ *
+ * @param [in]  array  Input array.
+ *
+ * @param [in]  size    Number of input elements in `array`.
+ *
+ * @param [out] result Output array contains one element.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_prod_c(void* array, void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief MKL implementation of dot function
  *
  * @param [in]  array1  Input array.

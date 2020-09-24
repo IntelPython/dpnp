@@ -163,3 +163,24 @@ template void custom_sum_c<double>(void* array1_in, void* result1, size_t size);
 template void custom_sum_c<float>(void* array1_in, void* result1, size_t size);
 template void custom_sum_c<long>(void* array1_in, void* result1, size_t size);
 template void custom_sum_c<int>(void* array1_in, void* result1, size_t size);
+
+template <typename _KernelNameSpecialization>
+class custom_prod_c_kernel;
+
+template <typename _DataType>
+void custom_prod_c(void* array1_in, void* result1, size_t size)
+{
+    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    auto policy = oneapi::dpl::execution::make_device_policy<custom_prod_c_kernel<_DataType>>(DPNP_QUEUE);
+
+    result[0] = std::reduce(policy, array_1, array_1 + size, _DataType(1), std::multiplies<_DataType>());
+
+    policy.queue().wait();
+}
+
+template void custom_prod_c<double>(void* array1_in, void* result1, size_t size);
+template void custom_prod_c<float>(void* array1_in, void* result1, size_t size);
+template void custom_prod_c<long>(void* array1_in, void* result1, size_t size);
+template void custom_prod_c<int>(void* array1_in, void* result1, size_t size);
