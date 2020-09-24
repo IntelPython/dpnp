@@ -39,7 +39,7 @@ from dpnp.dparray cimport dparray
 from dpnp.backend cimport *
 
 import dpnp.config as config
-from dpnp.dpnp_utils import use_origin_backend, checker_throw_value_error, checker_throw_runtime_error
+from dpnp.dpnp_utils import use_origin_backend, checker_throw_value_error, checker_throw_runtime_error, checker_throw_type_error
 
 
 cpdef dparray dpnp_randn(dims):
@@ -205,9 +205,9 @@ def randint(low, high=None, size=None, dtype=int):
     elif isinstance(size, tuple):
         for dim in size:
             if not isinstance(dim, int):
-                raise TypeError(f"Intel NumPy random.sample(): Unsupported dim={type(dim)}")
+                checker_throw_value_error("randint", "type(dim)", type(dim), int)
     elif not isinstance(size, int):
-        raise ValueError('Unsupported type %r for `size`' % type(size))
+        checker_throw_value_error("randint", "type(size)", type(size), int)
 
     if high is None:
         high = low
@@ -217,7 +217,7 @@ def randint(low, high=None, size=None, dtype=int):
     high = int(high)
 
     if low >= high:
-        raise ValueError('low >= high')
+        checker_throw_runtime_error("randint", "low >= high")
 
     _dtype = numpy.dtype(dtype)
 
