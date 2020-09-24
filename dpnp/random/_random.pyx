@@ -216,8 +216,8 @@ def randint(low, high=None, size=None, dtype=int):
     low = int(low)
     high = int(high)
 
-    if low >= high:
-        checker_throw_runtime_error("randint", "low >= high")
+    if (low >= high):
+        checker_throw_value_error("randint", "low", low, high)
 
     _dtype = numpy.dtype(dtype)
 
