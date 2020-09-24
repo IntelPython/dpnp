@@ -39,7 +39,8 @@ from dpnp.dparray cimport dparray
 from dpnp.backend cimport *
 
 import dpnp.config as config
-from dpnp.dpnp_utils import use_origin_backend, checker_throw_value_error, checker_throw_runtime_error, checker_throw_type_error
+from dpnp.dpnp_utils import (use_origin_backend, checker_throw_value_error,
+                             checker_throw_runtime_error, checker_throw_type_error)
 
 
 cpdef dparray dpnp_randn(dims):
@@ -169,7 +170,7 @@ cdef class RandomState:
         Returns
         -------
         out : Random values.
-    
+
         See Also
         --------
         random
@@ -180,7 +181,7 @@ cdef class RandomState:
             return numpy.random.rand(d0, *dn)
 
         dims = tuple([d0, *dn])
-    
+
         for dim in dims:
             if not isinstance(dim, int):
                 checker_throw_value_error("randint", "type(dim)", type(dim), int)
@@ -191,7 +192,7 @@ cdef class RandomState:
         """
         Return random floats in the half-open interval [0.0, 1.0).
         This is an alias of random_sample.
-    
+
         Parameters
         ----------
         size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
@@ -403,7 +404,7 @@ cdef class RandomState:
         See Also
         --------
         random
-    
+
         """
 
         if (use_origin_backend(size)):
@@ -428,8 +429,8 @@ random = _rand.random
 random_integers = _rand.random_integers
 random_sample = _rand.random_sample
 # TODO
-#seed = _rand.seed
-#set_state = _rand.set_state
+# seed = _rand.seed
+# set_state = _rand.set_state
 
 
 def sample(size):
