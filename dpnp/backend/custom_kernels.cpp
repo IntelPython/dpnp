@@ -109,11 +109,14 @@ void custom_blas_dot_c(void* array1_in, void* array2_in, void* result1, size_t s
 
     event.wait();
 
-    for (size_t i = 1; i < size; ++i)
-    {
-        local_mem[0] += local_mem[i];
-    }
-    result[0] = local_mem[0];
+    auto policy = oneapi::dpl::execution::make_device_policy<class custom_blas_dot_c_kernel<_DataType>>(DPNP_QUEUE);
+
+    _DataType accumulator = 0;
+    accumulator = std::reduce(policy, local_mem, local_mem + size, _DataType(0), std::plus<_DataType>());
+    policy.queue().wait();
+
+    result[0] = accumulator;
+
     free(local_mem, DPNP_QUEUE);
 }
 
