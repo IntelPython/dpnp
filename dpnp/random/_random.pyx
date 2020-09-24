@@ -125,7 +125,7 @@ def rand(d0, *dn):
 
     for dim in dims:
         if not isinstance(dim, int):
-            raise TypeError(f"Intel NumPy random.rand(): Unsupported dim={type(dim)}")
+            checker_throw_value_error("randint", "type(dim)", type(dim), int)
 
     return dpnp_random(dims)
 
@@ -154,7 +154,7 @@ def randf(size):
 
     for dim in size:
         if not isinstance(dim, int):
-            raise TypeError(f"Intel NumPy random.randf(): Unsupported dim={type(dim)}")
+            checker_throw_value_error("randint", "type(dim)", type(dim), int)
 
     return dpnp_random(size)
 
@@ -259,7 +259,7 @@ def randn(d0, *dn):
 
     for dim in dims:
         if not isinstance(dim, int):
-            raise TypeError(f"Intel NumPy random.randn(): Unsupported dim={type(dim)}")
+            checker_throw_value_error("randint", "type(dim)", type(dim), int)
 
     return dpnp_randn(dims)
 
@@ -288,7 +288,7 @@ def random(size):
 
     for dim in size:
         if not isinstance(dim, int):
-            raise TypeError(f"Intel NumPy random.random(): Unsupported dim={type(dim)}")
+            checker_throw_value_error("randint", "type(dim)", type(dim), int)
 
     return dpnp_random(size)
 
@@ -359,7 +359,7 @@ def random_sample(size):
 
     for dim in size:
         if not isinstance(dim, int):
-            raise TypeError(f"Intel NumPy random.random_sample(): Unsupported dim={type(dim)}")
+            checker_throw_value_error("randint", "type(dim)", type(dim), int)
 
     return dpnp_random(size)
 
@@ -388,7 +388,7 @@ def sample(size):
 
     for dim in size:
         if not isinstance(dim, int):
-            raise TypeError(f"Intel NumPy random.sample(): Unsupported dim={type(dim)}")
+            checker_throw_value_error("randint", "type(dim)", type(dim), int)
 
     return dpnp_random(size)
 
@@ -434,8 +434,9 @@ def uniform(low=0.0, high=1.0, size=None):
         # TODO:
         # currently dparray.full is not implemented
         # return dpnp.dparray.dparray.full(size, low, dtype=numpy.float64)
-        raise ValueError('`low` equal to `high`, should return an array, filled with `low` value.'
-                         '  Currently not supported. See: numpy.full TODO')
+        message = '`low` equal to `high`, should return an array, filled with `low` value.'\
+                  + '  Currently not supported. See: numpy.full TODO'
+        checker_throw_runtime_error("uniform", message)
     elif low > high:
         low, high = high, low
 
