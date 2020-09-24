@@ -1,3 +1,4 @@
+tests/third_party/cupy/linalg_tests/test_einsum.py::TestListArgEinSumError::test_invalid_sub1
 tests/test_linalg.py::test_eig_arange[16-float32]
 tests/test_linalg.py::test_eig_arange[300-float32]
 tests/test_linalg.py::test_eig_arange[8-float32]
