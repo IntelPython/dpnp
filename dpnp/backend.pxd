@@ -132,7 +132,7 @@ cdef extern from "backend/backend_iface.hpp":
     void mkl_rng_uniform_mt19937[_DataType](void * result, long low, long high, size_t size)
 
     # Statistics routines
-    void custom_cov_c[_DataType](void * array, void * result, dparray_shape_type & input_shape)
+    void custom_cov_c[_DataType](void * array, void * result, size_t nrows, size_t ncols)
 
     # Sorting routines
     void custom_argsort_c[_DataType, _idx_DataType](void * array, void * result, size_t size)
