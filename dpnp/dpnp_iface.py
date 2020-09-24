@@ -55,8 +55,7 @@ __all__ = [
     "asnumpy",
     "dpnp_queue_initialize",
     "get_include",
-    "matmul",
-    "remainder"
+    "matmul"
 ]
 
 from dpnp.dpnp_iface_arraycreation import *
@@ -198,85 +197,3 @@ def matmul(in_array1, in_array2, out=None):
 
     # TODO need to return dparray instead ndarray
     return numpy.matmul(input1, input2, out=out)
-
-
-def remainder(x1, x2):
-    """
-    Return element-wise remainder of division.
-
-    Computes the remainder complementary to the `floor_divide` function.  It is
-    equivalent to the Python modulus operator``x1 % x2`` and has the same sign
-    as the divisor `x2`. The MATLAB function equivalent to ``np.remainder``
-    is ``mod``.
-
-    .. warning::
-
-    This should not be confused with:
-
-    * Python 3.7's `math.remainder` and C's ``remainder``, which
-      computes the IEEE remainder, which are the complement to
-      ``round(x1 / x2)``.
-    * The MATLAB ``rem`` function and or the C ``%`` operator which is the
-      complement to ``int(x1 / x2)``.
-
-    Parameters
-    ----------
-    x1 : array_like
-        Dividend array.
-    x2 : array_like
-        Divisor array. If ``x1.shape != x2.shape``, they must be broadcastable
-        to a common shape (which becomes the shape of the output).
-    out : ndarray, None, or tuple of ndarray and None, optional
-        A location into which the result is stored. If provided, it must have
-        a shape that the inputs broadcast to. If not provided or None,
-        a freshly-allocated array is returned. A tuple (possible only as a
-        keyword argument) must have length equal to the number of outputs.
-    where : array_like, optional
-        This condition is broadcast over the input. At locations where the
-        condition is True, the `out` array will be set to the ufunc result.
-        Elsewhere, the `out` array will retain its original value.
-        Note that if an uninitialized `out` array is created via the default
-        ``out=None``, locations within it where the condition is False will
-        remain uninitialized.
-    **kwargs
-        For other keyword-only arguments, see the
-        :ref:`ufunc docs <ufuncs.kwargs>`.
-
-    Returns
-    -------
-    y : ndarray
-        The element-wise remainder of the quotient ``floor_divide(x1, x2)``.
-        This is a scalar if both `x1` and `x2` are scalars.
-
-    See Also
-    --------
-    floor_divide : Equivalent of Python ``//`` operator.
-    divmod : Simultaneous floor division and remainder.
-    fmod : Equivalent of the MATLAB ``rem`` function.
-    divide, floor
-
-    Notes
-    -----
-    Returns 0 when `x2` is 0 and both `x1` and `x2` are (arrays of)
-    integers.
-    ``mod`` is an alias of ``remainder``.
-
-    Examples
-    --------
-    >>> np.remainder([4, 7], [2, 3])
-    array([0, 1])
-    >>> np.remainder(np.arange(7), 5)
-    array([0, 1, 2, 3, 4, 0, 1])
-
-    """
-
-    if (use_origin_backend(x1)):
-        return numpy.remainder(x1, x2)
-
-    if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy remainder(): Unsupported input1={type(x1)}")
-
-    if not isinstance(x2, int):
-        raise TypeError(f"Intel NumPy remainder(): Unsupported input2={type(x2)}")
-
-    return dpnp_remainder(x1, x2)
