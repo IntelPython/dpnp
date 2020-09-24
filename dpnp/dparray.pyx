@@ -958,6 +958,7 @@ cdef class dparray:
     Other attributes
     -------------------------------------------------------------------------
     """
+
     @property
     def T(self):
         """Shape-reversed view of the array.
@@ -975,3 +976,27 @@ cdef class dparray:
 
     cdef void * get_data(self):
         return self._dparray_data
+
+    def fill(self, value):
+        """
+        Fill the array with a scalar value.
+
+        Parameters
+        ----------
+        value : scalar
+            All elements of `a` will be assigned this value.
+
+        Examples
+        --------
+        >>> a = np.array([1, 2])
+        >>> a.fill(0)
+        >>> a
+        array([0, 0])
+        >>> a = np.empty(2)
+        >>> a.fill(1)
+        >>> a
+        array([1.,  1.])
+        """
+
+        for i in range(self.size):
+            self[i] = value
