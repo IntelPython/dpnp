@@ -379,8 +379,6 @@ tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_4_{reps
 tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_5_{reps=(2, 3, 4, 5)}::test_array_tile
 tests/third_party/cupy/manipulation_tests/test_transpose.py::TestTranspose::test_moveaxis_invalid5_2
 tests/third_party/cupy/manipulation_tests/test_transpose.py::TestTranspose::test_moveaxis_invalid5_3
-tests/third_party/cupy/manipulation_tests/test_transpose.py::TestTranspose::test_rollaxis
-tests/third_party/cupy/manipulation_tests/test_transpose.py::TestTranspose::test_rollaxis_failure
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_0_{arg1=array([-3, -2, -1,  1,  2,  3], dtype=int32), arg2=array([-3, -2, -1,  1,  2,  3], dtype=int32), dtype=float64, name='true_divide', use_dtype=True}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1000_{arg1=array([-3, -2, -1,  1,  2,  3], dtype=int32), arg2=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), dtype=float64, name='fmod', use_dtype=True}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1001_{arg1=array([-3, -2, -1,  1,  2,  3], dtype=int32), arg2=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), dtype=float64, name='fmod', use_dtype=False}::test_binary
