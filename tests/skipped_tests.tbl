@@ -8,6 +8,31 @@ tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_b
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_invert
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_left_shift
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_right_shift
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_strides
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_strides_broadcast
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_strides_negative
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_strides_swapped
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_type
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_type_c_contiguous_no_copy
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_type_f_contiguous_no_copy
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_diagonal1
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_diagonal2
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_fill_with_numpy_nonscalar_ndarray
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_flatten
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_flatten_copied
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_isinstance_numpy_copy
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_isinstance_numpy_copy_not_slice
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_isinstance_numpy_copy_wrong_dtype
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_isinstance_numpy_copy_wrong_shape
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_transposed_flatten
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_view
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_view_0d
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_view_0d_raise
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_view_itemsize
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_view_non_contiguous_raise
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestNumPyArrayCopyView_param_0_{src_order='C'}::test_isinstance_numpy_view_copy_f
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestNumPyArrayCopyView_param_1_{src_order='F'}::test_isinstance_numpy_view_copy_f
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_max_all_keepdims
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_max_multiple_axes_keepdims
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_min_all_keepdims
@@ -38,7 +63,6 @@ tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_pa
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_7_{order='F', shape=(10, 20, 30, 40)}::test_cub_max
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_7_{order='F', shape=(10, 20, 30, 40)}::test_cub_min
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_empty_like_K_strides_reshape
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_empty_like_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_empty_like_reshape_contiguity
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_empty_like_reshape_contiguity2
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_empty_like_reshape_contiguity2_cupy_only
@@ -50,7 +74,6 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{s
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_ones_like_reshape_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_0_{shape=4}::test_zeros_like_reshape_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{shape=(4,)}::test_empty_like_K_strides_reshape
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{shape=(4,)}::test_empty_like_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{shape=(4,)}::test_empty_like_reshape_contiguity
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{shape=(4,)}::test_empty_like_reshape_contiguity2
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{shape=(4,)}::test_empty_like_reshape_contiguity2_cupy_only
@@ -62,7 +85,6 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{s
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{shape=(4,)}::test_ones_like_reshape_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_1_{shape=(4,)}::test_zeros_like_reshape_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_2_{shape=(4, 2)}::test_empty_like_K_strides_reshape
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_2_{shape=(4, 2)}::test_empty_like_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_2_{shape=(4, 2)}::test_empty_like_reshape_contiguity
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_2_{shape=(4, 2)}::test_empty_like_reshape_contiguity2
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_2_{shape=(4, 2)}::test_empty_like_reshape_contiguity2_cupy_only
@@ -74,7 +96,6 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_2_{s
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_2_{shape=(4, 2)}::test_ones_like_reshape_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_2_{shape=(4, 2)}::test_zeros_like_reshape_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_3_{shape=(4, 2, 3)}::test_empty_like_K_strides_reshape
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_3_{shape=(4, 2, 3)}::test_empty_like_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_3_{shape=(4, 2, 3)}::test_empty_like_reshape_contiguity
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_3_{shape=(4, 2, 3)}::test_empty_like_reshape_contiguity2
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_3_{shape=(4, 2, 3)}::test_empty_like_reshape_contiguity2_cupy_only
@@ -86,7 +107,6 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_3_{s
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_3_{shape=(4, 2, 3)}::test_ones_like_reshape_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_3_{shape=(4, 2, 3)}::test_zeros_like_reshape_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_4_{shape=(5, 4, 2, 3)}::test_empty_like_K_strides_reshape
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_4_{shape=(5, 4, 2, 3)}::test_empty_like_reshape
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_4_{shape=(5, 4, 2, 3)}::test_empty_like_reshape_contiguity
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_4_{shape=(5, 4, 2, 3)}::test_empty_like_reshape_contiguity2
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_4_{shape=(5, 4, 2, 3)}::test_empty_like_reshape_contiguity2_cupy_only
@@ -97,20 +117,16 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_4_{s
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_4_{shape=(5, 4, 2, 3)}::test_full_like_reshape_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_4_{shape=(5, 4, 2, 3)}::test_ones_like_reshape_cupy_only
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasicReshape_param_4_{shape=(5, 4, 2, 3)}::test_zeros_like_reshape_cupy_only
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_huge_size
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_huge_size_fill0
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_int
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_int_huge_size
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_int_huge_size_fill0
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like_contiguity
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like_contiguity2
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like_contiguity3
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like_invalid_order
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like_K_strides
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_like_subok
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_scalar
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_empty_zero_sized_array_strides
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_eye
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full_default_dtype
