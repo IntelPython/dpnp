@@ -133,7 +133,7 @@ cdef class dparray:
         """
 
         string = "<Intel Numpy DParray:name={}".format(self.__class__.__name__)
-        string += ": mem=0x{:x}".format( < size_t > self._dparray_data)
+        string += ": mem=0x{:x}".format(< size_t > self._dparray_data)
         string += ": size={}".format(self.size)
         string += ": shape={}".format(self.shape)
         string += ": type={}".format(self.dtype)
@@ -270,7 +270,7 @@ cdef class dparray:
     def __array_interface__(self):
         # print(f"====__array_interface__====self._dparray_data={ < size_t > self._dparray_data}")
         interface_dict = {
-            "data": ( < size_t > self._dparray_data, False),  # last parameter is "Writable"
+            "data": (< size_t > self._dparray_data, False),  # last parameter is "Writable"
             "strides": self.strides,
             "descr": None,
             "typestr": self.dtype.str,
@@ -338,15 +338,15 @@ cdef class dparray:
             raise utils.checker_throw_index_error("__getitem__", lin_idx, self.size)
 
         if self.dtype == numpy.float64:
-            return ( < double * > self._dparray_data)[lin_idx]
+            return (< double * > self._dparray_data)[lin_idx]
         elif self.dtype == numpy.float32:
-            return ( < float * > self._dparray_data)[lin_idx]
+            return (< float * > self._dparray_data)[lin_idx]
         elif self.dtype == numpy.int64:
-            return ( < long * > self._dparray_data)[lin_idx]
+            return (< long * > self._dparray_data)[lin_idx]
         elif self.dtype == numpy.int32:
-            return ( < int * > self._dparray_data)[lin_idx]
+            return (< int * > self._dparray_data)[lin_idx]
         elif self.dtype == numpy.bool:
-            return ( < bool * > self._dparray_data)[lin_idx]
+            return (< bool * > self._dparray_data)[lin_idx]
 
         utils.checker_throw_type_error("__getitem__", self.dtype)
 
@@ -363,15 +363,15 @@ cdef class dparray:
             raise utils.checker_throw_index_error("__setitem__", lin_idx, self.size)
 
         if self.dtype == numpy.float64:
-            ( < double * > self._dparray_data)[lin_idx] = <double > value
+            (< double * > self._dparray_data)[lin_idx] = <double > value
         elif self.dtype == numpy.float32:
-            ( < float * > self._dparray_data)[lin_idx] = <float > value
+            (< float * > self._dparray_data)[lin_idx] = <float > value
         elif self.dtype == numpy.int64:
-            ( < long * > self._dparray_data)[lin_idx] = <long > value
+            (< long * > self._dparray_data)[lin_idx] = <long > value
         elif self.dtype == numpy.int32:
-            ( < int * > self._dparray_data)[lin_idx] = <int > value
+            (< int * > self._dparray_data)[lin_idx] = <int > value
         elif self.dtype == numpy.bool:
-            ( < bool * > self._dparray_data)[lin_idx] = <bool > value
+            (< bool * > self._dparray_data)[lin_idx] = <bool > value
         else:
             utils.checker_throw_type_error("__setitem__", self.dtype)
 
@@ -608,14 +608,12 @@ cdef class dparray:
         # numpy with dparray call public dpnp.sum via __array_interface__`
         return numpy.sum(*args, **kwargs)
 
-
     def max(self, axis=None):
         """
         Return the maximum along an axis.
         """
 
         return max(self, axis)
-
 
     def mean(self, axis=None):
         """
