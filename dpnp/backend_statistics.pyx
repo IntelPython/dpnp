@@ -82,7 +82,7 @@ cpdef dparray dpnp_cov(dparray array1):
     cdef dparray result = dparray((input_shape[0], input_shape[0]), dtype=numpy.float64)
 
     if call_type in [numpy.float64, numpy.float32, numpy.int32, numpy.int64]:
-        custom_cov_c[double](in_array.get_data(), result.get_data(), input_shape)
+        custom_cov_c[double](in_array.get_data(), result.get_data(), input_shape[0], input_shape[1])
     else:
         checker_throw_type_error("dpnp_cov", call_type)
 
