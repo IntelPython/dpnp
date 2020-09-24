@@ -99,289 +99,352 @@ cpdef dparray dpnp_uniform(long low, long high, size, dtype=numpy.int32):
 
     return result
 
-
-def rand(d0, *dn):
+cdef class RandomState:
     """
-    Create an array of the given shape and populate it
-    with random samples from a uniform distribution over [0, 1).
-
-    Parameters
-    ----------
-    d0, d1, …, dn : The dimensions of the returned array, must be non-negative.
-
-    Returns
-    -------
-    out : Random values.
-
-    See Also
-    --------
-    random
-
+    TODO:
+    description
     """
 
-    if (use_origin_backend(d0)):
-        return numpy.random.rand(d0, *dn)
+    def __init__(self, seed=None):
+        # TODO:
+        bit_generator = seed
+        seed = 1
 
-    dims = tuple([d0, *dn])
+    def __repr__(self):
+        return self.__str__() + ' at 0x{:X}'.format(id(self))
 
-    for dim in dims:
-        if not isinstance(dim, int):
-            checker_throw_value_error("randint", "type(dim)", type(dim), int)
+    def __str__(self):
+        _str = self.__class__.__name__
+        return _str
 
-    return dpnp_random(dims)
+#    # Pickling support:
+#    def __getstate__(self):
+#        return self.get_state(legacy=False)
+#
+#    def __setstate__(self, state):
+#        self.set_state(state)
+#
+#    def __reduce__(self):
+#        state = self.get_state(legacy=False)
+#
+#    cdef _reset_gauss(self):
+#        self._aug_state.has_gauss = 0
+#        self._aug_state.gauss = 0.0
 
+    def seed(self, seed=None):
+        """
+        seed(self, seed=None)
+        Reseed a legacy MT19937 BitGenerator
+        Notes
+        -----
+        This is a convenience, legacy function.
+        The best practice is to **not** reseed a BitGenerator, rather to
+        recreate a new one. This method is here for legacy reasons.
+        """
+        pass
 
-def randf(size):
-    """
-    Return random floats in the half-open interval [0.0, 1.0).
-    This is an alias of random_sample.
+    def get_state(self, legacy=True):
+        """
+        get_state()
+        Return a tuple representing the internal state of the generator.
+        """
+        pass
 
-    Parameters
-    ----------
-    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
+    def set_state(self, state):
+        """
+        set_state(state)
+        Set the internal state of the generator from a tuple.
+        """
+        pass
 
-    Returns
-    -------
-    out : Array of random floats of shape size.
+    def rand(d0, *dn):
+        """
+        Create an array of the given shape and populate it
+        with random samples from a uniform distribution over [0, 1).
 
-    See Also
-    --------
-    random
+        Parameters
+        ----------
+        d0, d1, …, dn : The dimensions of the returned array, must be non-negative.
 
-    """
+        Returns
+        -------
+        out : Random values.
+    
+        See Also
+        --------
+        random
 
-    if (use_origin_backend(size)):
-        return numpy.random.ranf(size)
+        """
 
-    for dim in size:
-        if not isinstance(dim, int):
-            checker_throw_value_error("randint", "type(dim)", type(dim), int)
+        if (use_origin_backend(d0)):
+            return numpy.random.rand(d0, *dn)
 
-    return dpnp_random(size)
+        dims = tuple([d0, *dn])
+    
+        for dim in dims:
+            if not isinstance(dim, int):
+                checker_throw_value_error("randint", "type(dim)", type(dim), int)
 
+        return dpnp_random(dims)
 
-def randint(low, high=None, size=None, dtype=int):
-    """
-    randint(low, high=None, size=None, dtype=int)
+    def randf(self, size):
+        """
+        Return random floats in the half-open interval [0.0, 1.0).
+        This is an alias of random_sample.
+    
+        Parameters
+        ----------
+        size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
 
-    Return random integers from `low` (inclusive) to `high` (exclusive).
-    Return random integers from the "discrete uniform" distribution of
-    the specified dtype in the "half-open" interval [`low`, `high`). If
-    `high` is None (the default), then results are from [0, `low`).
+        Returns
+        -------
+        out : Array of random floats of shape size.
 
-    Parameters
-    ----------
-    low : int
-        Lowest (signed) integer to be drawn from the distribution (unless
-        ``high=None``, in which case this parameter is one above the
-        *highest* such integer).
-    high : int, optional
-        If provided, one above the largest (signed) integer to be drawn
-        from the distribution.
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  Default is None, in which case a
-        single value is returned.
-    dtype : dtype, optional
-        Desired dtype of the result. Byteorder must be native.
-        The default value is int.
-    Returns
-    -------
-    out : array of random ints
-        `size`-shaped array of random integers from the appropriate
-        distribution, or a single such random int if `size` not provided.
-    See Also
-    --------
-    random_integers : similar to `randint`, only for the closed
-        interval [`low`, `high`], and 1 is the lowest value if `high` is
-        omitted.
+        See Also
+        --------
+        random
 
-    """
+        """
 
-    if (use_origin_backend(low)):
-        return numpy.random.randint(low, high, size, dtype)
+        if (use_origin_backend(size)):
+            return numpy.random.ranf(size)
 
-    if size is None:
-        size = 1
-    elif isinstance(size, tuple):
         for dim in size:
             if not isinstance(dim, int):
                 checker_throw_value_error("randint", "type(dim)", type(dim), int)
-    elif not isinstance(size, int):
-        checker_throw_value_error("randint", "type(size)", type(size), int)
 
-    if high is None:
-        high = low
-        low = 0
+        return dpnp_random(size)
 
-    low = int(low)
-    high = int(high)
+    def randint(self, low, high=None, size=None, dtype=int):
+        """
+        randint(low, high=None, size=None, dtype=int)
 
-    if (low >= high):
-        checker_throw_value_error("randint", "low", low, high)
+        Return random integers from `low` (inclusive) to `high` (exclusive).
+        Return random integers from the "discrete uniform" distribution of
+        the specified dtype in the "half-open" interval [`low`, `high`). If
+        `high` is None (the default), then results are from [0, `low`).
 
-    _dtype = numpy.dtype(dtype)
+        Parameters
+        ----------
+        low : int
+            Lowest (signed) integer to be drawn from the distribution (unless
+            ``high=None``, in which case this parameter is one above the
+            *highest* such integer).
+        high : int, optional
+            If provided, one above the largest (signed) integer to be drawn
+            from the distribution.
+        size : int or tuple of ints, optional
+            Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+            ``m * n * k`` samples are drawn.  Default is None, in which case a
+            single value is returned.
+        dtype : dtype, optional
+            Desired dtype of the result. Byteorder must be native.
+            The default value is int.
+        Returns
+        -------
+        out : array of random ints
+            `size`-shaped array of random integers from the appropriate
+            distribution, or a single such random int if `size` not provided.
+        See Also
+        --------
+        random_integers : similar to `randint`, only for the closed
+            interval [`low`, `high`], and 1 is the lowest value if `high` is
+            omitted.
 
-    # TODO:
-    # supported only int32
-    # or just raise error when dtype != numpy.int32
-    if _dtype == numpy.int32 or _dtype == numpy.int64:
-        _dtype = numpy.int32
-    else:
-        raise TypeError('Unsupported dtype %r for randint' % dtype)
+        """
 
-    return dpnp_uniform(low, high, size, _dtype)
+        if (use_origin_backend(low)):
+            return numpy.random.randint(low, high, size, dtype)
+
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("randint", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("randint", "type(size)", type(size), int)
+
+        if high is None:
+            high = low
+            low = 0
+
+        low = int(low)
+        high = int(high)
+
+        if (low >= high):
+            checker_throw_value_error("randint", "low", low, high)
+
+        _dtype = numpy.dtype(dtype)
+
+        # TODO:
+        # supported only int32
+        # or just raise error when dtype != numpy.int32
+        if _dtype == numpy.int32 or _dtype == numpy.int64:
+            _dtype = numpy.int32
+        else:
+            checker_throw_type_error("randint", dtype)
+
+        return dpnp_uniform(low, high, size, _dtype)
+
+    def randn(self, d0, *dn):
+        """
+        If positive int_like arguments are provided, randn generates an array of shape (d0, d1, ..., dn),
+        filled with random floats sampled from a univariate “normal” (Gaussian) distribution of mean 0 and variance 1.
+
+        Parameters
+        ----------
+        d0, d1, …, dn : The dimensions of the returned array, must be non-negative.
+
+        Returns
+        -------
+        out : (d0, d1, ..., dn)-shaped array of floating-point samples from the standard normal distribution.
+
+        See Also
+        --------
+        standard_normal
+        normal
+
+        """
+
+        if (use_origin_backend(d0)):
+            return numpy.random.randn(d0, *dn)
+
+        dims = tuple([d0, *dn])
+
+        for dim in dims:
+            if not isinstance(dim, int):
+                checker_throw_value_error("randint", "type(dim)", type(dim), int)
+
+        return dpnp_randn(dims)
+
+    def random(self, size):
+        """
+        Return random floats in the half-open interval [0.0, 1.0).
+        Alias for random_sample.
+
+        Parameters
+        ----------
+        size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
+
+        Returns
+        -------
+        out : Array of random floats of shape size.
+
+        See Also
+        --------
+        random
+
+        """
+
+        if (use_origin_backend(size)):
+            return numpy.random.random(size)
+
+        for dim in size:
+            if not isinstance(dim, int):
+                checker_throw_value_error("randint", "type(dim)", type(dim), int)
+
+        return dpnp_random(size)
+
+    def random_integers(self, low, high=None, size=None):
+        """
+        random_integers(low, high=None, size=None)
+
+        Random integers between `low` and `high`, inclusive.
+        Return random integers from the "discrete uniform" distribution in
+        the closed interval [`low`, `high`].  If `high` is
+        None (the default), then results are from [1, `low`].
+
+        Parameters
+        ----------
+        low : int
+            Lowest (signed) integer to be drawn from the distribution (unless
+            ``high=None``, in which case this parameter is the *highest* such
+            integer).
+        high : int, optional
+            If provided, the largest (signed) integer to be drawn from the
+            distribution (see above for behavior if ``high=None``).
+        size : int or tuple of ints, optional
+            Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+            ``m * n * k`` samples are drawn.  Default is None, in which case a
+            single value is returned.
+        Returns
+        -------
+        out : array of random ints
+            `size`-shaped array of random integers from the appropriate
+            distribution, or a single such random int if `size` not provided.
+        See Also
+        --------
+        randint
+
+        """
+
+        if (use_origin_backend(low)):
+            return numpy.random.random_integers(low, high, size)
+
+        if high is None:
+            high = low
+            low = 1
+
+        return self.randint(low, int(high) + 1, size=size)
+
+    def random_sample(self, size):
+        """
+        Return random floats in the half-open interval [0.0, 1.0).
+
+        Parameters
+        ----------
+        size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
+
+        Returns
+        -------
+        out : Array of random floats of shape size.
+
+        See Also
+        --------
+        random
+    
+        """
+
+        if (use_origin_backend(size)):
+            return numpy.random.random_sample(size)
+
+        for dim in size:
+            if not isinstance(dim, int):
+                checker_throw_value_error("randint", "type(dim)", type(dim), int)
+
+        return dpnp_random(size)
 
 
-def randn(d0, *dn):
-    """
-    If positive int_like arguments are provided, randn generates an array of shape (d0, d1, ..., dn),
-    filled with random floats sampled from a univariate “normal” (Gaussian) distribution of mean 0 and variance 1.
+_rand = RandomState()
 
-    Parameters
-    ----------
-    d0, d1, …, dn : The dimensions of the returned array, must be non-negative.
-
-    Returns
-    -------
-    out : (d0, d1, ..., dn)-shaped array of floating-point samples from the standard normal distribution.
-
-    See Also
-    --------
-    standard_normal
-    normal
-
-    """
-
-    if (use_origin_backend(d0)):
-        return numpy.random.randn(d0, *dn)
-
-    dims = tuple([d0, *dn])
-
-    for dim in dims:
-        if not isinstance(dim, int):
-            checker_throw_value_error("randint", "type(dim)", type(dim), int)
-
-    return dpnp_randn(dims)
-
-
-def random(size):
-    """
-    Return random floats in the half-open interval [0.0, 1.0).
-    Alias for random_sample.
-
-    Parameters
-    ----------
-    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
-
-    Returns
-    -------
-    out : Array of random floats of shape size.
-
-    See Also
-    --------
-    random
-
-    """
-
-    if (use_origin_backend(size)):
-        return numpy.random.random(size)
-
-    for dim in size:
-        if not isinstance(dim, int):
-            checker_throw_value_error("randint", "type(dim)", type(dim), int)
-
-    return dpnp_random(size)
-
-
-def random_integers(low, high=None, size=None):
-    """
-    random_integers(low, high=None, size=None)
-
-    Random integers between `low` and `high`, inclusive.
-    Return random integers from the "discrete uniform" distribution in
-    the closed interval [`low`, `high`].  If `high` is
-    None (the default), then results are from [1, `low`].
-
-    Parameters
-    ----------
-    low : int
-        Lowest (signed) integer to be drawn from the distribution (unless
-        ``high=None``, in which case this parameter is the *highest* such
-        integer).
-    high : int, optional
-        If provided, the largest (signed) integer to be drawn from the
-        distribution (see above for behavior if ``high=None``).
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  Default is None, in which case a
-        single value is returned.
-    Returns
-    -------
-    out : array of random ints
-        `size`-shaped array of random integers from the appropriate
-        distribution, or a single such random int if `size` not provided.
-    See Also
-    --------
-    randint
-
-    """
-
-    if (use_origin_backend(low)):
-        return numpy.random.random_integers(low, high, size)
-
-    if high is None:
-        high = low
-        low = 1
-
-    return randint(low, int(high) + 1, size=size)
-
-
-def random_sample(size):
-    """
-    Return random floats in the half-open interval [0.0, 1.0).
-
-    Parameters
-    ----------
-    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
-
-    Returns
-    -------
-    out : Array of random floats of shape size.
-
-    See Also
-    --------
-    random
-
-    """
-
-    if (use_origin_backend(size)):
-        return numpy.random.random_sample(size)
-
-    for dim in size:
-        if not isinstance(dim, int):
-            checker_throw_value_error("randint", "type(dim)", type(dim), int)
-
-    return dpnp_random(size)
+rand = _rand.rand
+# TODO:
+# update randf to f or randf
+randf = _rand.randf
+randint = _rand.randint
+randn = _rand.randn
+random = _rand.random
+random_integers = _rand.random_integers
+random_sample = _rand.random_sample
+# TODO
+#seed = _rand.seed
+#set_state = _rand.set_state
 
 
 def sample(size):
     """
     Return random floats in the half-open interval [0.0, 1.0).
     This is an alias of random_sample.
-
     Parameters
     ----------
     size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
-
     Returns
     -------
     out : Array of random floats of shape size.
-
     See Also
     --------
     random
-
     """
 
     if (use_origin_backend(size)):
@@ -397,7 +460,6 @@ def sample(size):
 def uniform(low=0.0, high=1.0, size=None):
     """
     uniform(low=0.0, high=1.0, size=None)
-
     Draw samples from a uniform distribution.
     Samples are uniformly distributed over the half-open interval
     ``[low, high)`` (includes low, but excludes high).  In other words,
@@ -422,7 +484,6 @@ def uniform(low=0.0, high=1.0, size=None):
     See Also
     --------
     random : Floats uniformly distributed over ``[0, 1)``.
-
     """
 
     if (use_origin_backend(low)):
