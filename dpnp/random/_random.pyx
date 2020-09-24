@@ -39,7 +39,7 @@ from dpnp.dparray cimport dparray
 from dpnp.backend cimport *
 
 import dpnp.config as config
-from dpnp.dpnp_utils import use_origin_backend
+from dpnp.dpnp_utils import use_origin_backend, checker_throw_value_error, checker_throw_runtime_error
 
 
 cpdef dparray dpnp_randn(dims):
@@ -434,8 +434,8 @@ def uniform(low=0.0, high=1.0, size=None):
         # TODO:
         # currently dparray.full is not implemented
         # return dpnp.dparray.dparray.full(size, low, dtype=numpy.float64)
-        message = '`low` equal to `high`, should return an array, filled with `low` value.'\
-                  + '  Currently not supported. See: numpy.full TODO'
+        message = "`low` equal to `high`, should return an array, filled with `low` value."
+        message += "  Currently not supported. See: numpy.full TODO"
         checker_throw_runtime_error("uniform", message)
     elif low > high:
         low, high = high, low
