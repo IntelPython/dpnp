@@ -527,8 +527,9 @@ def prod(x1, axis=None, dtype=None, out=None, keepdims=False, initial=1, where=T
         and (dtype is None)
         and (out is None)
         and (keepdims is False)
-        and (initial is 0)
-            and (where is True)):
+        and (initial is 1)
+        and (where is True)
+        ):
         return dpnp_prod(x1)
 
     input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
