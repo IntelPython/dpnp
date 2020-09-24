@@ -52,6 +52,7 @@ from dpnp.dpnp_utils import (checker_throw_value_error, use_origin_backend, norm
 
 __all__ = [
     "moveaxis",
+    "ravel",
     "repeat",
     "rollaxis",
     "swapaxes",
@@ -100,6 +101,36 @@ def moveaxis(x1, source, destination):
         input_permute.insert(destination_id, source_id)
 
     return transpose(x1, axes=input_permute)
+
+
+def ravel(a, order='C'):
+    """
+    Return a contiguous flattened array.
+
+    Parameters
+    ----------
+    a: array_like
+        Input array.
+    order: {'C', 'F', 'A', 'K'}, optional
+        The elements of a are read using this index order.
+
+    Returns
+    -------
+    out: ndarray
+        Output array.
+
+    See Also
+    --------
+    flat, flatten, reshape
+
+    """
+
+    if not use_origin_backend(a) and isinstance(a, dparray):
+        return a.ravel(order=order)
+
+    result = numpy.rollaxis(dp2nd_array(a), order=order)
+
+    return nd2dp_array(result)
 
 
 def repeat(x1, repeats, axis=None):

@@ -44,6 +44,7 @@ import numpy
 cimport numpy
 
 cimport dpnp.dpnp_utils as utils
+from dpnp.dpnp_utils import checker_throw_runtime_error, use_origin_backend, dp2nd_array, nd2dp_array
 
 
 cdef class dparray:
@@ -392,6 +393,82 @@ cdef class dparray:
     # -------------------------------------------------------------------------
     # Shape manipulation
     # -------------------------------------------------------------------------
+    def flatten(self, order='C'):
+        """
+        Return a copy of the array collapsed into one dimension.
+
+        Parameters
+        ----------
+        order: {'C', 'F', 'A', 'K'}, optional
+            'C' means to flatten in row-major (C-style) order.
+            'F' means to flatten in column-major (Fortran- style) order.
+            'A' means to flatten in column-major order if a is Fortran contiguous in memory, row-major order otherwise.
+            'K' means to flatten a in the order the elements occur in memory. The default is 'C'.
+
+        Returns
+        -------
+        out: ndarray
+            A copy of the input array, flattened to one dimension.
+
+        See Also
+        --------
+        ravel, flat
+
+        """
+
+        if not use_origin_backend(self):
+            c_order, fortran_order, _ = self.flags
+
+            if order not in {'C', 'F', 'A', 'K'}:
+                pass
+            elif order == 'K' and not c_order and not fortran_order:
+                # skip dpnp backend if both C-style and Fortran-style order not found in flags
+                pass
+            else:
+                if order == 'K':
+                    # either C-style or Fortran-style found in flags
+                    order = 'C' if c_order else 'F'
+                elif order == 'A':
+                    order = 'F' if fortran_order else 'C'
+
+                if order == 'F':
+                    return self.transpose().reshape(self.size)
+
+                result = dparray(self.size, dtype=self.dtype)
+                for i in range(result.size):
+                    result[i] = self[i]
+
+                return result
+
+        result = dp2nd_array(self).flatten(order=order)
+
+        return nd2dp_array(result)
+
+    def ravel(self, order='C'):
+        """
+        Return a contiguous flattened array.
+
+        Parameters
+        ----------
+        order: {'C', 'F', 'A', 'K'}, optional
+            'C' means to flatten in row-major (C-style) order.
+            'F' means to flatten in column-major (Fortran- style) order.
+            'A' means to flatten in column-major order if a is Fortran contiguous in memory, row-major order otherwise.
+            'K' means to flatten a in the order the elements occur in memory. The default is 'C'.
+
+        Returns
+        -------
+        out: ndarray
+            A copy of the input array, flattened to one dimension.
+
+        See Also
+        --------
+        ravel, flat
+
+        """
+        # TODO: don't copy the input array
+        return self.flatten(order=order)
+
     def reshape(self, shape, order=b'C'):
         """Change the shape of the array.
 
