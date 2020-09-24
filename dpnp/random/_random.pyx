@@ -65,11 +65,12 @@ cpdef dparray dpnp_random(dims):
     with random samples from a uniform distribution over [0, 1).
 
     """
-
+    cdef long low = 0
+    cdef long high = 1
     cdef dparray result = dparray(dims, dtype=numpy.float64)
     cdef size_t result_size = result.size
 
-    mkl_rng_uniform[double](result.get_data(), result_size)
+    mkl_rng_uniform[double](result.get_data(), low, high, result_size)
 
     return result
 
@@ -90,11 +91,11 @@ cpdef dparray dpnp_uniform(long low, long high, size, dtype=numpy.int32):
     # TODO:
     # supported dtype int32
     if dtype == numpy.int32:
-        mkl_rng_uniform_mt19937[int](result.get_data(), low, high, result_size)
+        mkl_rng_uniform[int](result.get_data(), low, high, result_size)
     elif dtype == numpy.float32:
-        mkl_rng_uniform_mt19937[float](result.get_data(), low, high, result_size)
+        mkl_rng_uniform[float](result.get_data(), low, high, result_size)
     elif dtype == numpy.float64:
-        mkl_rng_uniform_mt19937[double](result.get_data(), low, high, result_size)
+        mkl_rng_uniform[double](result.get_data(), low, high, result_size)
 
     return result
 
