@@ -64,6 +64,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_ARGMAX,  /**< Used in numpy.argmax() implementation  */
     DPNP_FN_ARGMIN,  /**< Used in numpy.argmin() implementation  */
     DPNP_FN_ARGSORT, /**< Used in numpy.argsort() implementation  */
+    DPNP_FN_CEIL,    /**< Used in numpy.ceil() implementation  */
     DPNP_FN_COV,     /**< Used in numpy.cov() implementation  */
     DPNP_FN_DOT,     /**< Used in numpy.dot() implementation  */
     DPNP_FN_EIG,     /**< Used in numpy.linalg.eig() implementation  */
@@ -72,9 +73,11 @@ enum class DPNPFuncName : size_t
     DPNP_FN_MATMUL,  /**< Used in numpy.matmul() implementation  */
     DPNP_FN_MAXIMUM, /**< Used in numpy.maximum() implementation  */
     DPNP_FN_MINIMUM, /**< Used in numpy.minimum() implementation  */
+    DPNP_FN_PROD,    /**< Used in numpy.prod() implementation  */
     DPNP_FN_RAND,    /**< Used in numpy.random.rand() implementation  */
     DPNP_FN_SIGN,    /**< Used in numpy.sign() implementation  */
     DPNP_FN_SUM,     /**< Used in numpy.sum() implementation  */
+    DPNP_FN_TRUNC,   /**< Used in numpy.trunc() implementation  */
     DPNP_FN_LAST     /**< The latest element of the enumeration */
 };
 

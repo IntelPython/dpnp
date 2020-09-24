@@ -52,6 +52,7 @@ __all__ = [
     "abs",
     "absolute",
     "add",
+    "ceil",
     "divide",
     "fabs",
     "floor",
@@ -59,13 +60,17 @@ __all__ = [
     "fmin",
     "maximum",
     "minimum",
+    "mod",
     "multiply",
     "negative",
     "power",
+    "prod",
+    "remainder",
     "sign",
     "subtract",
     "sum",
-    "true_divide"
+    "true_divide",
+    "trunc"
 ]
 
 
@@ -157,6 +162,35 @@ def add(x1, x2, out=None):
 
     # TODO need to put dparray memory into NumPy call
     result_numpy = numpy.add(input1, input2, out=out)
+    result = result_numpy
+    if isinstance(result, numpy.ndarray):
+        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_numpy.item(i))
+
+    return result
+
+
+def ceil(x1, out=None):
+    """
+    Compute  the ceiling of the input, element-wise.
+
+    .. seealso:: :func:`numpy.ceil`
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray):
+        if out is not None:
+            checker_throw_value_error("ceil", "out", out, None)
+
+        return dpnp_ceil(x1)
+
+    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.ceil(input1, out=out)
     result = result_numpy
     if isinstance(result, numpy.ndarray):
         result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
@@ -372,6 +406,19 @@ def minimum(x1, x2, out=None):
     return result
 
 
+def mod(*args, **kwargs):
+    """
+    Compute element-wise remainder of division.
+
+    Alias for :func:`dpnp.remainder`
+
+    .. seealso:: :func:`numpy.mod`
+
+    """
+
+    return dpnp.remainder(*args, **kwargs)
+
+
 def multiply(x1, x2, out=None):
     """
     Multiply arguments element-wise.
@@ -478,6 +525,77 @@ def power(x1, x2, out=None, modulo=None):
         checker_throw_value_error("power", "shape", x1.shape, x2.shape)
 
     return dpnp_power(x1, x2)
+
+
+def prod(x1, axis=None, dtype=None, out=None, keepdims=False, initial=1, where=True):
+    """
+    Calculate product of array elements over a given axis.
+
+    .. seealso:: :func:`numpy.prod`
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+
+    if (not use_origin_backend(x1)
+        and is_x1_dparray
+        and (axis is None)
+        and (dtype is None)
+        and (out is None)
+        and (keepdims is False)
+        and (initial is 1)
+        and (where is True)
+        ):
+        return dpnp_prod(x1)
+
+    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.prod(input1, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)
+    result = result_numpy
+    if isinstance(result, numpy.ndarray):
+        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_numpy.item(i))
+
+    return result
+
+
+def remainder(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
+    """
+    Return element-wise remainder of division.
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+    is_x2_dparray = isinstance(x2, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray):
+        if out is not None:
+            checker_throw_value_error("remainder", "out", out, None)
+
+        if (x1.size != x2.size):
+            checker_throw_value_error("remainder", "size", x1.size, x2.size)
+
+        if (x1.shape != x2.shape):
+            checker_throw_value_error("remainder", "shape", x1.shape, x2.shape)
+
+        return dpnp_remainder(x1, x2)
+
+    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
+    input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.remainder(input1, input2, out=out)
+    result = result_numpy
+    if isinstance(result, numpy.ndarray):
+        result_dtype = result_numpy.dtype
+        if (dtype is not None):
+            result_dtype = dtype
+        result = dparray(result_numpy.shape, dtype=result_dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_numpy.item(i))
+
+    return result
 
 
 def sign(x1, out=None):
@@ -601,3 +719,32 @@ def true_divide(x1, x2, out=None):
     """
 
     return dpnp.divide(x1, x2, out)
+
+
+def trunc(x1, out=None):
+    """
+    Compute the truncated value of the input, element-wise.
+
+    .. seealso:: :func:`numpy.trunc`
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray):
+        if out is not None:
+            checker_throw_value_error("trunc", "out", out, None)
+
+        return dpnp_trunc(x1)
+
+    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.trunc(input1, out=out)
+    result = result_numpy
+    if isinstance(result, numpy.ndarray):
+        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_numpy.item(i))
+
+    return result

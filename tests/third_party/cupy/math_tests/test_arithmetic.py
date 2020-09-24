@@ -28,7 +28,7 @@ no_complex_types = float_types + int_types
         'nargs': [2],
         'name': [
             'add', 'multiply', 'divide', 'power', 'subtract', 'true_divide',
-            'floor_divide', 'fmod', 'remainder'],
+            'floor_divide', 'fmod', 'remainder', 'mod'],
     })
 ))
 class TestArithmeticRaisesWithNumpyInput(unittest.TestCase):
@@ -147,7 +147,7 @@ class ArithmeticBinaryBase:
         # depending on the architecture.
         # As it is not possible for CuPy to replicate this behavior, we ignore
         # the difference here.
-        if self.name in ('floor_divide', 'remainder'):
+        if self.name in ('floor_divide', 'remainder', 'mod'):
             if y.dtype in (float_types + complex_types) and (np2 == 0).any():
                 y = xp.asarray(y)
                 y[y == numpy.inf] = numpy.nan
@@ -211,7 +211,7 @@ class TestArithmeticBinary(ArithmeticBinaryBase, unittest.TestCase):
         'arg2': [testing.shaped_reverse_arange((2, 3), numpy, dtype=d)
                  for d in no_complex_types
                  ] + [0, 0.0, 2, 2.0, -2, -2.0],
-        'name': ['floor_divide', 'fmod', 'remainder'],
+        'name': ['floor_divide', 'fmod', 'remainder', 'mod'],
         'dtype': [numpy.float64],
         'use_dtype': [True, False],
     }) + testing.product({
@@ -221,7 +221,7 @@ class TestArithmeticBinary(ArithmeticBinaryBase, unittest.TestCase):
         'arg2': [numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
                  for d in negative_no_complex_types
                  ] + [0, 0.0, 2, 2.0, -2, -2.0],
-        'name': ['floor_divide', 'fmod', 'remainder'],
+        'name': ['floor_divide', 'fmod', 'remainder', 'mod'],
         'dtype': [numpy.float64],
         'use_dtype': [True, False],
     })

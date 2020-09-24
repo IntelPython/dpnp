@@ -39,7 +39,7 @@ from libcpp cimport bool
 from dpnp.dpnp_iface_types import *
 from dpnp.dpnp_iface import *
 from dpnp.backend cimport *
-from dpnp.dpnp_iface_statistics import min
+from dpnp.dpnp_iface_statistics import min, max
 import numpy
 cimport numpy
 
@@ -133,7 +133,7 @@ cdef class dparray:
         """
 
         string = "<Intel Numpy DParray:name={}".format(self.__class__.__name__)
-        string += ": mem=0x{:x}".format( < size_t > self._dparray_data)
+        string += ": mem=0x{:x}".format(< size_t > self._dparray_data)
         string += ": size={}".format(self.size)
         string += ": shape={}".format(self.shape)
         string += ": type={}".format(self.dtype)
@@ -270,7 +270,7 @@ cdef class dparray:
     def __array_interface__(self):
         # print(f"====__array_interface__====self._dparray_data={ < size_t > self._dparray_data}")
         interface_dict = {
-            "data": ( < size_t > self._dparray_data, False),  # last parameter is "Writable"
+            "data": (< size_t > self._dparray_data, False),  # last parameter is "Writable"
             "strides": self.strides,
             "descr": None,
             "typestr": self.dtype.str,
@@ -338,15 +338,15 @@ cdef class dparray:
             raise utils.checker_throw_index_error("__getitem__", lin_idx, self.size)
 
         if self.dtype == numpy.float64:
-            return ( < double * > self._dparray_data)[lin_idx]
+            return (< double * > self._dparray_data)[lin_idx]
         elif self.dtype == numpy.float32:
-            return ( < float * > self._dparray_data)[lin_idx]
+            return (< float * > self._dparray_data)[lin_idx]
         elif self.dtype == numpy.int64:
-            return ( < long * > self._dparray_data)[lin_idx]
+            return (< long * > self._dparray_data)[lin_idx]
         elif self.dtype == numpy.int32:
-            return ( < int * > self._dparray_data)[lin_idx]
+            return (< int * > self._dparray_data)[lin_idx]
         elif self.dtype == numpy.bool:
-            return ( < bool * > self._dparray_data)[lin_idx]
+            return (< bool * > self._dparray_data)[lin_idx]
 
         utils.checker_throw_type_error("__getitem__", self.dtype)
 
@@ -363,15 +363,15 @@ cdef class dparray:
             raise utils.checker_throw_index_error("__setitem__", lin_idx, self.size)
 
         if self.dtype == numpy.float64:
-            ( < double * > self._dparray_data)[lin_idx] = <double > value
+            (< double * > self._dparray_data)[lin_idx] = <double > value
         elif self.dtype == numpy.float32:
-            ( < float * > self._dparray_data)[lin_idx] = <float > value
+            (< float * > self._dparray_data)[lin_idx] = <float > value
         elif self.dtype == numpy.int64:
-            ( < long * > self._dparray_data)[lin_idx] = <long > value
+            (< long * > self._dparray_data)[lin_idx] = <long > value
         elif self.dtype == numpy.int32:
-            ( < int * > self._dparray_data)[lin_idx] = <int > value
+            (< int * > self._dparray_data)[lin_idx] = <int > value
         elif self.dtype == numpy.bool:
-            ( < bool * > self._dparray_data)[lin_idx] = <bool > value
+            (< bool * > self._dparray_data)[lin_idx] = <bool > value
         else:
             utils.checker_throw_type_error("__setitem__", self.dtype)
 
@@ -608,12 +608,19 @@ cdef class dparray:
         # numpy with dparray call public dpnp.sum via __array_interface__`
         return numpy.sum(*args, **kwargs)
 
-    def mean(self):
+    def max(self, axis=None):
+        """
+        Return the maximum along an axis.
+        """
+
+        return max(self, axis)
+
+    def mean(self, axis=None):
         """
         Returns the average of the array elements.
         """
 
-        return mean(self)
+        return mean(self, axis)
 
     def min(self, axis=None):
         """
@@ -951,6 +958,7 @@ cdef class dparray:
     Other attributes
     -------------------------------------------------------------------------
     """
+
     @property
     def T(self):
         """Shape-reversed view of the array.
@@ -968,3 +976,27 @@ cdef class dparray:
 
     cdef void * get_data(self):
         return self._dparray_data
+
+    def fill(self, value):
+        """
+        Fill the array with a scalar value.
+
+        Parameters
+        ----------
+        value : scalar
+            All elements of `a` will be assigned this value.
+
+        Examples
+        --------
+        >>> a = np.array([1, 2])
+        >>> a.fill(0)
+        >>> a
+        array([0, 0])
+        >>> a = np.empty(2)
+        >>> a.fill(1)
+        >>> a
+        array([1.,  1.])
+        """
+
+        for i in range(self.size):
+            self[i] = value

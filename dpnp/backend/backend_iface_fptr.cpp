@@ -187,6 +187,11 @@ static func_map_t func_map_init()
     fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_DBL][eft_INT] = {eft_INT, (void*)custom_argsort_c<double, int>};
     fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_DBL][eft_LNG] = {eft_LNG, (void*)custom_argsort_c<double, long>};
 
+    fmap[DPNPFuncName::DPNP_FN_CEIL][eft_INT][eft_INT] = {eft_DBL, (void*)custom_elemwise_ceil_c<int, double>};
+    fmap[DPNPFuncName::DPNP_FN_CEIL][eft_LNG][eft_LNG] = {eft_DBL, (void*)custom_elemwise_ceil_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_CEIL][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_elemwise_ceil_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_CEIL][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_elemwise_ceil_c<double, double>};
+
     fmap[DPNPFuncName::DPNP_FN_COV][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_cov_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_INT] = {eft_INT, (void*)custom_blas_dot_c<int>};
@@ -276,6 +281,11 @@ static func_map_t func_map_init()
     fmap[DPNPFuncName::DPNP_FN_MINIMUM][eft_DBL][eft_DBL] = {eft_DBL,
                                                              (void*)custom_elemwise_minimum_c<double, double, double>};
 
+    fmap[DPNPFuncName::DPNP_FN_PROD][eft_INT][eft_INT] = {eft_INT, (void*)custom_prod_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_PROD][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_prod_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_PROD][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_prod_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_PROD][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_prod_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_RAND][eft_FLT][eft_FLT] = {eft_FLT, (void*)mkl_rng_uniform<float>};
     fmap[DPNPFuncName::DPNP_FN_RAND][eft_DBL][eft_DBL] = {eft_DBL, (void*)mkl_rng_uniform<double>};
 
@@ -288,6 +298,11 @@ static func_map_t func_map_init()
     fmap[DPNPFuncName::DPNP_FN_SUM][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_sum_c<long>};
     fmap[DPNPFuncName::DPNP_FN_SUM][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_sum_c<float>};
     fmap[DPNPFuncName::DPNP_FN_SUM][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_sum_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_TRUNC][eft_INT][eft_INT] = {eft_DBL, (void*)custom_elemwise_trunc_c<int, double>};
+    fmap[DPNPFuncName::DPNP_FN_TRUNC][eft_LNG][eft_LNG] = {eft_DBL, (void*)custom_elemwise_trunc_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_TRUNC][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_elemwise_trunc_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_TRUNC][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_elemwise_trunc_c<double, double>};
 
     return fmap;
 };

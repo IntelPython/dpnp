@@ -48,13 +48,42 @@ from dpnp.dparray import dparray
 from dpnp.dpnp_utils import checker_throw_value_error, use_origin_backend
 
 __all__ = [
+    'amax',
     'amin',
     'average',
     'cov',
+    'max',
     'mean',
     'median',
     'min'
 ]
+
+
+def amax(input, axis=None, out=None):
+    """
+        Return the maximum of an array or maximum along an axis.
+        Parameters
+        ----------
+        input : array_like
+            Input data.
+        axis : None or int or tuple of ints, optional
+            Axis or axes along which to operate.  By default, flattened input is
+            used.
+            .. versionadded:: 1.7.0
+            If this is a tuple of ints, the maximum is selected over multiple axes,
+            instead of a single axis or all the axes as before.
+        out : ndarray, optional
+            Alternative output array in which to place the result.  Must
+            be of the same shape and buffer length as the expected output.
+            See `ufuncs-output-type` for more details.
+        Returns
+        -------
+        amax : ndarray or scalar
+            Maximum of `a`. If `axis` is None, the result is a scalar value.
+            If `axis` is given, the result is an array of dimension
+            ``a.ndim - 1``.
+        """
+    return max(input, axis=axis, out=out)
 
 
 def amin(input, axis=None, out=None):
@@ -102,7 +131,7 @@ def amin(input, axis=None, out=None):
     return min(input, axis=axis, out=out)
 
 
-  def average(in_array1, axis=None, weights=None, returned=False):
+def average(in_array1, axis=None, weights=None, returned=False):
     """
     Compute the weighted average along the specified axis.
 
@@ -333,6 +362,60 @@ def cov(in_array1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aw
     return numpy.cov(input1, y, rowvar, bias, ddof, fweights, aweights)
 
 
+def max(input, axis=None, out=None):
+    """
+        Return the maximum of an array or maximum along an axis.
+        Parameters
+        ----------
+        input : array_like
+            Input data.
+        axis : None or int or tuple of ints, optional
+            Axis or axes along which to operate.  By default, flattened input is
+            used.
+            .. versionadded:: 1.7.0
+            If this is a tuple of ints, the maximum is selected over multiple axes,
+            instead of a single axis or all the axes as before.
+        out : ndarray, optional
+            Alternative output array in which to place the result.  Must
+            be of the same shape and buffer length as the expected output.
+            See `ufuncs-output-type` for more details.
+        Returns
+        -------
+        amax : ndarray or scalar
+            Maximum of `a`. If `axis` is None, the result is a scalar value.
+            If `axis` is given, the result is an array of dimension
+            ``a.ndim - 1``.
+        """
+
+    dim_input = input.ndim
+
+    is_input_dparray = isinstance(input, dparray)
+
+    if not use_origin_backend(input) and is_input_dparray:
+        if out is not None:
+            checker_throw_value_error("max", "out", type(out), None)
+
+        result = dpnp_max(input, axis=axis)
+
+        # scalar returned
+        if result.shape == (1,):
+            return result.dtype.type(result[0])
+
+        return result
+
+    input1 = dpnp.asnumpy(input) if is_input_dparray else input
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.max(input1, axis=axis)
+    result = result_numpy
+    if isinstance(result, numpy.ndarray):
+        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_numpy.item(i))
+
+    return result
+
+
 def mean(input, axis=None):
     """
     Compute the arithmetic mean along the specified axis.
@@ -359,18 +442,9 @@ def mean(input, axis=None):
 
     """
 
-    dim_input = input.ndim
-
     is_input_dparray = isinstance(input, dparray)
 
-    if axis is not None and (not isinstance(axis, int) or (axis >= dim_input or -1 * axis >= dim_input))\
-            or dim_input == 0:
-        return numpy.mean(input, axis=axis)
-
     if not use_origin_backend(input) and is_input_dparray:
-        if dim_input > 2 and axis is not None:
-            raise NotImplementedError
-
         result = dpnp_mean(input, axis=axis)
 
         # scalar returned
@@ -518,13 +592,7 @@ def min(input, axis=None, out=None):
 
     is_input_dparray = isinstance(input, dparray)
 
-    if axis is not None and (not isinstance(axis, int) or (axis >= dim_input or -1 * axis >= dim_input)) \
-            or dim_input == 0:
-        return numpy.min(input, axis=axis)
-
     if not use_origin_backend(input) and is_input_dparray:
-        if dim_input > 3 and axis is not None:
-            raise NotImplementedError
         if out is not None:
             checker_throw_value_error("min", "out", type(out), None)
 

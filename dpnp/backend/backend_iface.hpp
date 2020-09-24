@@ -128,6 +128,19 @@ INP_DLLEXPORT void custom_sum_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
+ * @brief Product of array elements
+ *
+ * @param [in]  array  Input array.
+ *
+ * @param [in]  size    Number of input elements in `array`.
+ *
+ * @param [out] result Output array contains one element.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_prod_c(void* array, void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief MKL implementation of dot function
  *
  * @param [in]  array1  Input array.
@@ -192,11 +205,13 @@ INP_DLLEXPORT void custom_sort_c(void* array, void* result, size_t size);
  *
  * @param [out] result      Output array.
  *
- * @param [in]  input_shape Shape of input array.
+ * @param [in]  nrows       Number of rows in input array.
+ *
+ * @param [in]  ncols       Number of columns in input array.
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_cov_c(void* array1_in, void* result1, const std::vector<long>& input_shape);
+INP_DLLEXPORT void custom_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols);
 
 /**
  * @ingroup BACKEND_API

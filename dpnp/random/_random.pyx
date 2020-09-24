@@ -39,7 +39,7 @@ from dpnp.dparray cimport dparray
 from dpnp.backend cimport *
 
 import dpnp.config as config
-from dpnp.dpnp_utils import checker_throw_value_error, checker_throw_type_error, use_origin_backend
+from dpnp.dpnp_utils import use_origin_backend, checker_throw_value_error, checker_throw_runtime_error, checker_throw_type_error
 
 
 cpdef dparray dpnp_randn(dims):
@@ -125,7 +125,7 @@ def rand(d0, *dn):
 
     for dim in dims:
         if not isinstance(dim, int):
-            raise TypeError(f"Intel NumPy random.rand(): Unsupported dim={type(dim)}")
+            checker_throw_value_error("randint", "type(dim)", type(dim), int)
 
     return dpnp_random(dims)
 
@@ -154,7 +154,7 @@ def randf(size):
 
     for dim in size:
         if not isinstance(dim, int):
-            raise TypeError(f"Intel NumPy random.randf(): Unsupported dim={type(dim)}")
+            checker_throw_value_error("randint", "type(dim)", type(dim), int)
 
     return dpnp_random(size)
 
@@ -259,7 +259,7 @@ def randn(d0, *dn):
 
     for dim in dims:
         if not isinstance(dim, int):
-            raise TypeError(f"Intel NumPy random.randn(): Unsupported dim={type(dim)}")
+            checker_throw_value_error("randint", "type(dim)", type(dim), int)
 
     return dpnp_randn(dims)
 
@@ -285,14 +285,10 @@ def random(size):
 
     if (use_origin_backend(size)):
         return numpy.random.random(size)
-    elif isinstance(size, tuple):
-        for dim in size:
-            if not isinstance(dim, int):
-                raise TypeError(f"Intel NumPy random.sample(): Unsupported dim={type(dim)}")
-    elif isinstance(size, int):
-        size = (size,)
-    else:
-        raise ValueError('Unsupported type %r for `size`' % type(size))
+
+    for dim in size:
+        if not isinstance(dim, int):
+            checker_throw_value_error("randint", "type(dim)", type(dim), int)
 
     return dpnp_random(size)
 
@@ -363,7 +359,7 @@ def random_sample(size):
 
     for dim in size:
         if not isinstance(dim, int):
-            raise TypeError(f"Intel NumPy random.random_sample(): Unsupported dim={type(dim)}")
+            checker_throw_value_error("randint", "type(dim)", type(dim), int)
 
     return dpnp_random(size)
 
@@ -392,7 +388,7 @@ def sample(size):
 
     for dim in size:
         if not isinstance(dim, int):
-            raise TypeError(f"Intel NumPy random.sample(): Unsupported dim={type(dim)}")
+            checker_throw_value_error("randint", "type(dim)", type(dim), int)
 
     return dpnp_random(size)
 
@@ -438,8 +434,9 @@ def uniform(low=0.0, high=1.0, size=None):
         # TODO:
         # currently dparray.full is not implemented
         # return dpnp.dparray.dparray.full(size, low, dtype=numpy.float64)
-        raise ValueError('`low` equal to `high`, should return an array, filled with `low` value.'
-                         '  Currently not supported. See: numpy.full TODO')
+        message = "`low` equal to `high`, should return an array, filled with `low` value."
+        message += "  Currently not supported. See: numpy.full TODO"
+        checker_throw_runtime_error("uniform", message)
     elif low > high:
         low, high = high, low
 

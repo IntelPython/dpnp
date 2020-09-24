@@ -31,6 +31,7 @@ This module contains differnt helpers and utilities
 
 """
 
+import dpnp
 import dpnp.config as config
 import numpy
 cimport cpython
@@ -216,3 +217,20 @@ cpdef long _get_linear_index(key, tuple shape, int ndim):
     else:
         li = key
     return li
+
+
+def dp2nd_array(arr):
+    """Convert dparray to ndarray"""
+    return dpnp.asnumpy(arr) if isinstance(arr, dparray) else arr
+
+
+def nd2dp_array(arr):
+    """Convert ndarray to dparray"""
+    if not isinstance(arr, numpy.ndarray):
+        return arr
+
+    result = dparray(arr.shape, dtype=arr.dtype)
+    for i in range(result.size):
+        result._setitem_scalar(i, arr.item(i))
+
+    return result

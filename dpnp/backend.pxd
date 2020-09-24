@@ -35,6 +35,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_ARGMAX
         DPNP_FN_ARGMIN
         DPNP_FN_ARGSORT
+        DPNP_FN_CEIL
         DPNP_FN_COV
         DPNP_FN_DOT
         DPNP_FN_EIG
@@ -43,9 +44,11 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_MATMUL
         DPNP_FN_MAXIMUM
         DPNP_FN_MINIMUM
+        DPNP_FN_PROD
         DPNP_FN_RAND
         DPNP_FN_SIGN
         DPNP_FN_SUM
+        DPNP_FN_TRUNC
 
 cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
     cdef enum DPNPFuncType "DPNPFuncType":
@@ -129,7 +132,7 @@ cdef extern from "backend/backend_iface.hpp":
     void mkl_rng_uniform_mt19937[_DataType](void * result, long low, long high, size_t size)
 
     # Statistics routines
-    void custom_cov_c[_DataType](void * array, void * result, dparray_shape_type & input_shape)
+    void custom_cov_c[_DataType](void * array, void * result, size_t nrows, size_t ncols)
 
     # Sorting routines
     void custom_argsort_c[_DataType, _idx_DataType](void * array, void * result, size_t size)
