@@ -43,6 +43,7 @@ from dpnp.backend cimport *
 __all__ += [
     "dpnp_average",
     "dpnp_cov",
+    "dpnp_max",
     "dpnp_mean",
     "dpnp_median",
     "dpnp_min"
@@ -86,6 +87,85 @@ cpdef dparray dpnp_cov(dparray array1):
         checker_throw_type_error("dpnp_cov", call_type)
 
     return result
+
+
+cpdef dparray dpnp_max(dparray input, axis):
+    cdef dparray_shape_type shape_input = input.shape
+    cdef long size_input = input.size
+    if isinstance(axis, int):
+        axis_ = tuple([axis])
+    else:
+        axis_ = axis
+    if axis_ is None:
+        output_shape = dparray(1, dtype=numpy.int64)
+        output_shape[0] = 1
+    else:
+        output_shape = dparray(len(shape_input) - len(axis_), dtype=numpy.int64)
+        ind = 0
+        for id, shape_axis in enumerate(shape_input):
+            if id not in axis_:
+                output_shape[ind] = shape_axis
+                ind += 1
+    cdef long prod = 1
+    for i in range(len(output_shape)):
+        if output_shape[i] != 0:
+            prod *= output_shape[i]
+    result_array = [None] * prod
+    input_shape_offsets = [None] * len(shape_input)
+    acc = 1
+    for i in range(len(shape_input)):
+        ind = len(shape_input) - 1 - i
+        input_shape_offsets[ind] = acc
+        acc *= shape_input[ind]
+    output_shape_offsets = [None] * len(shape_input)
+    acc = 1
+    if axis_ is not None:
+        for i in range(len(output_shape)):
+            ind = len(output_shape) - 1 - i
+            output_shape_offsets[ind] = acc
+            acc *= output_shape[ind]
+            result_offsets = input_shape_offsets[:]  # need copy. not a reference
+        for i in axis_:
+            result_offsets[i] = 0
+
+    for source_idx in range(size_input):
+
+        # reconstruct x,y,z from linear source_idx
+        xyz = []
+        remainder = source_idx
+        for i in input_shape_offsets:
+            quotient, remainder = divmod(remainder, i)
+            xyz.append(quotient)
+
+        # extract result axis
+        result_axis = []
+        if axis_ is None:
+            result_axis = xyz
+        else:
+            for idx, offset in enumerate(xyz):
+                if idx not in axis_:
+                    result_axis.append(offset)
+
+        # Construct result offset
+        result_offset = 0
+        if axis_ is not None:
+            for i, result_axis_val in enumerate(result_axis):
+                result_offset += (output_shape_offsets[i] * result_axis_val)
+
+        input_elem = input.item(source_idx)
+        if axis_ is None:
+            if result_array[0] is None:
+                result_array[0] = input_elem
+            else:
+                result_array[0] = max(result_array[0], input_elem)
+        else:
+            if result_array[result_offset] is None:
+                result_array[result_offset] = input_elem
+            else:
+                result_array[result_offset] = max(result_array[result_offset], input_elem)
+    dpnp_array = dpnp.array(result_array, dtype=input.dtype)
+    dpnp_result_array = dpnp_array.reshape(output_shape)
+    return dpnp_result_array
 
 
 cpdef dparray dpnp_mean(dparray input, axis):

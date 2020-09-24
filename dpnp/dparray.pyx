@@ -39,7 +39,7 @@ from libcpp cimport bool
 from dpnp.dpnp_iface_types import *
 from dpnp.dpnp_iface import *
 from dpnp.backend cimport *
-from dpnp.dpnp_iface_statistics import min
+from dpnp.dpnp_iface_statistics import min, max
 import numpy
 cimport numpy
 
@@ -607,6 +607,15 @@ cdef class dparray:
         # TODO don't know how to call `sum from python public interface. Simple call executes internal `sum` function.
         # numpy with dparray call public dpnp.sum via __array_interface__`
         return numpy.sum(*args, **kwargs)
+
+
+    def max(self, axis=None):
+        """
+        Return the maximum along an axis.
+        """
+
+        return max(self, axis)
+
 
     def mean(self, axis=None):
         """
