@@ -98,3 +98,13 @@ cpdef long _get_linear_index(key, tuple shape, int ndim)
 """
 Compute linear index of an element in memory from array indices
 """
+
+cpdef dp2nd_array(arr)
+"""
+Convert dparray to ndarray
+"""
+
+cpdef nd2dp_array(arr)
+"""
+Convert ndarray to dparray
+"""

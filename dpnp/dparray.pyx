@@ -24,7 +24,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
-from builtins import None
+
 
 """Module DPArray
 
@@ -44,7 +44,6 @@ import numpy
 cimport numpy
 
 cimport dpnp.dpnp_utils as utils
-from dpnp.dpnp_utils import checker_throw_runtime_error, use_origin_backend, dp2nd_array, nd2dp_array
 
 
 cdef class dparray:
@@ -416,7 +415,7 @@ cdef class dparray:
 
         """
 
-        if not use_origin_backend(self):
+        if not utils.use_origin_backend(self):
             c_order, fortran_order, _ = self.flags
 
             if order not in {'C', 'F', 'A', 'K'}:
@@ -440,9 +439,9 @@ cdef class dparray:
 
                 return result
 
-        result = dp2nd_array(self).flatten(order=order)
+        result = utils.dp2nd_array(self).flatten(order=order)
 
-        return nd2dp_array(result)
+        return utils.nd2dp_array(result)
 
     def ravel(self, order='C'):
         """

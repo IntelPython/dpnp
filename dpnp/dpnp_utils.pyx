@@ -219,12 +219,12 @@ cpdef long _get_linear_index(key, tuple shape, int ndim):
     return li
 
 
-def dp2nd_array(arr):
+cpdef dp2nd_array(arr):
     """Convert dparray to ndarray"""
     return dpnp.asnumpy(arr) if isinstance(arr, dparray) else arr
 
 
-def nd2dp_array(arr):
+cpdef nd2dp_array(arr):
     """Convert ndarray to dparray"""
     if not isinstance(arr, numpy.ndarray):
         return arr
