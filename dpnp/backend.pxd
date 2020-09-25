@@ -32,22 +32,28 @@ from dpnp.dparray cimport dparray, dparray_shape_type
 cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
     cdef enum DPNPFuncName "DPNPFuncName":
         DPNP_FN_ADD
+        DPNP_FN_ARCTAN2
         DPNP_FN_ARGMAX
         DPNP_FN_ARGMIN
         DPNP_FN_ARGSORT
         DPNP_FN_CEIL
         DPNP_FN_COV
+        DPNP_FN_DIVIDE
         DPNP_FN_DOT
         DPNP_FN_EIG
         DPNP_FN_FABS
         DPNP_FN_FLOOR
         DPNP_FN_FMOD
+        DPNP_FN_HYPOT
         DPNP_FN_MATMUL
         DPNP_FN_MAXIMUM
         DPNP_FN_MINIMUM
+        DPNP_FN_MULTIPLY
+        DPNP_FN_POWER
         DPNP_FN_PROD
         DPNP_FN_RAND
         DPNP_FN_SIGN
+        DPNP_FN_SUBTRACT
         DPNP_FN_SUM
         DPNP_FN_TRUNC
 
