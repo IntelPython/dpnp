@@ -719,7 +719,7 @@ def subtract(x1, x2, out=None):
     is_x1_dparray = isinstance(x1, dparray)
     is_x2_dparray = isinstance(x2, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray):
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and x1.dtype != numpy.bool and x2.dtype != numpy.bool):
         if out is not None:
             checker_throw_value_error("subtract", "out", out, None)
 
