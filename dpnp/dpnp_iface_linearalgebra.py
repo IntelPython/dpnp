@@ -55,7 +55,8 @@ __all__ = [
     "inner",
     "kron",
     "multi_dot",
-    "outer"
+    "outer",
+    "vdot"
 ]
 
 
@@ -293,3 +294,16 @@ def outer(x1, x2, out=None):
             result._setitem_scalar(i, result_numpy.item(i))
 
     return result
+
+
+def vdot(*args, **kwargs):
+    """
+    Return the dot product of two vectors.
+
+    See Also
+    --------
+    :meth:`numpy.vdot`
+
+    """
+
+    return dpnp.dot(*args, **kwargs)
