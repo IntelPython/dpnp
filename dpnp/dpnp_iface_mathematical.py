@@ -58,6 +58,7 @@ __all__ = [
     "floor",
     "fmax",
     "fmin",
+    "fmod",
     "maximum",
     "minimum",
     "mod",
@@ -330,6 +331,74 @@ def fmin(x1, x2, out=None):
     """
 
     return dpnp.minimum(x1, x2, out)
+
+
+def fmod(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
+    """
+    Calculate the element-wise remainder of division.
+
+    .. seealso:: :func:`numpy.fmod`
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+    is_x2_dparray = isinstance(x2, dparray)
+
+    # "dtype is None" is important here because we have no kernels with runtime dependent output type
+    # kernels are (use "python example4.py" to investigate):
+    # input1:float64   : input2:float64   : output:float64   : name:<ufunc 'fmod'>
+    # input1:float64   : input2:float32   : output:float64   : name:<ufunc 'fmod'>
+    # input1:float64   : input2:int64     : output:float64   : name:<ufunc 'fmod'>
+    # input1:float64   : input2:int32     : output:float64   : name:<ufunc 'fmod'>
+    # input1:float64   : input2:bool      : output:float64   : name:<ufunc 'fmod'>
+    # input1:float32   : input2:float64   : output:float64   : name:<ufunc 'fmod'>
+    # input1:float32   : input2:float32   : output:float32   : name:<ufunc 'fmod'>
+    # input1:float32   : input2:int64     : output:float64   : name:<ufunc 'fmod'>
+    # input1:float32   : input2:int32     : output:float64   : name:<ufunc 'fmod'>
+    # input1:float32   : input2:bool      : output:float32   : name:<ufunc 'fmod'>
+    # input1:int64     : input2:float64   : output:float64   : name:<ufunc 'fmod'>
+    # input1:int64     : input2:float32   : output:float64   : name:<ufunc 'fmod'>
+    # input1:int64     : input2:int64     : output:int64     : name:<ufunc 'fmod'>
+    # input1:int64     : input2:int32     : output:int64     : name:<ufunc 'fmod'>
+    # input1:int64     : input2:bool      : output:int64     : name:<ufunc 'fmod'>
+    # input1:int32     : input2:float64   : output:float64   : name:<ufunc 'fmod'>
+    # input1:int32     : input2:float32   : output:float64   : name:<ufunc 'fmod'>
+    # input1:int32     : input2:int64     : output:int64     : name:<ufunc 'fmod'>
+    # input1:int32     : input2:int32     : output:int32     : name:<ufunc 'fmod'>
+    # input1:int32     : input2:bool      : output:int32     : name:<ufunc 'fmod'>
+    # input1:bool      : input2:float64   : output:float64   : name:<ufunc 'fmod'>
+    # input1:bool      : input2:float32   : output:float32   : name:<ufunc 'fmod'>
+    # input1:bool      : input2:int64     : output:int64     : name:<ufunc 'fmod'>
+    # input1:bool      : input2:int32     : output:int32     : name:<ufunc 'fmod'>
+    # input1:bool      : input2:bool      : output:int8      : name:<ufunc 'fmod'>
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and dtype is None):
+        if out is not None:
+            checker_throw_value_error("fmod", "out", out, None)
+
+        if (x1.size != x2.size):
+            checker_throw_value_error("fmod", "size", x1.size, x2.size)
+
+        if (x1.shape != x2.shape):
+            checker_throw_value_error("fmod", "shape", x1.shape, x2.shape)
+
+        return dpnp_fmod(x1, x2)
+
+    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
+    input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.fmod(input1, input2, out=out, where=where, casting=casting,
+                              order=order, dtype=dtype, subok=subok)
+    result = result_numpy
+    if isinstance(result, numpy.ndarray):
+        result_dtype = result_numpy.dtype
+        if (dtype is not None):
+            result_dtype = dtype
+        result = dparray(result_numpy.shape, dtype=result_dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_numpy.item(i))
+
+    return result
 
 
 def maximum(x1, x2, out=None):
