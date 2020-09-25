@@ -70,6 +70,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_EIG,     /**< Used in numpy.linalg.eig() implementation  */
     DPNP_FN_FABS,    /**< Used in numpy.fabs() implementation  */
     DPNP_FN_FLOOR,   /**< Used in numpy.floor() implementation  */
+    DPNP_FN_FMOD,    /**< Used in numpy.fmod() implementation  */
     DPNP_FN_MATMUL,  /**< Used in numpy.matmul() implementation  */
     DPNP_FN_MAXIMUM, /**< Used in numpy.maximum() implementation  */
     DPNP_FN_MINIMUM, /**< Used in numpy.minimum() implementation  */
