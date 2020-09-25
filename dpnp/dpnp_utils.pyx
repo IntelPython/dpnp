@@ -31,6 +31,7 @@ This module contains differnt helpers and utilities
 
 """
 
+from libcpp cimport bool as cpp_bool
 import dpnp
 import dpnp.config as config
 import numpy
@@ -171,13 +172,15 @@ cdef long copy_values_to_dparray(dparray dst, input_obj, size_t dst_idx=0) excep
             dst_idx = copy_values_to_dparray(dst, elem_value, dst_idx)
         else:
             if elem_dtype == numpy.float64:
-                ( < double * > dst.get_data())[dst_idx] = elem_value
+                (< double * > dst.get_data())[dst_idx] = elem_value
             elif elem_dtype == numpy.float32:
-                ( < float * > dst.get_data())[dst_idx] = elem_value
+                (< float * > dst.get_data())[dst_idx] = elem_value
             elif elem_dtype == numpy.int64:
-                ( < long * > dst.get_data())[dst_idx] = elem_value
+                (< long * > dst.get_data())[dst_idx] = elem_value
             elif elem_dtype == numpy.int32:
-                ( < int * > dst.get_data())[dst_idx] = elem_value
+                (< int * > dst.get_data())[dst_idx] = elem_value
+            elif elem_dtype == numpy.bool_ or elem_dtype == numpy.bool:
+                (< cpp_bool * > dst.get_data())[dst_idx] = elem_value
             else:
                 checker_throw_type_error("copy_values_to_dparray", elem_dtype)
 

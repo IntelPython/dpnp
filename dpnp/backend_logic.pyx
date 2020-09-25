@@ -85,7 +85,7 @@ cpdef dparray dpnp_greater_equal(dparray input1, dparray input2):
     return result
 
 
-cpdef dparray dpnp_isclose(dparray input1, input2, double rtol=1e-05, double atol=1e-08, bool equal_nan=False):
+cpdef dparray dpnp_isclose(dparray input1, input2, double rtol=1e-05, double atol=1e-08, cpp_bool equal_nan=False):
     cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
 
     if isinstance(input2, int):

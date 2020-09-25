@@ -34,7 +34,7 @@ using USB interface for an Intel GPU device.
 """
 
 
-from libcpp cimport bool
+from libcpp cimport bool as cpp_bool
 
 from dpnp.dpnp_iface_types import *
 from dpnp.dpnp_iface import *
@@ -346,7 +346,7 @@ cdef class dparray:
         elif self.dtype == numpy.int32:
             return (< int * > self._dparray_data)[lin_idx]
         elif self.dtype == numpy.bool:
-            return (< bool * > self._dparray_data)[lin_idx]
+            return (< cpp_bool * > self._dparray_data)[lin_idx]
 
         utils.checker_throw_type_error("__getitem__", self.dtype)
 
@@ -371,7 +371,7 @@ cdef class dparray:
         elif self.dtype == numpy.int32:
             (< int * > self._dparray_data)[lin_idx] = <int > value
         elif self.dtype == numpy.bool:
-            (< bool * > self._dparray_data)[lin_idx] = <bool > value
+            (< cpp_bool * > self._dparray_data)[lin_idx] = < cpp_bool > value
         else:
             utils.checker_throw_type_error("__setitem__", self.dtype)
 

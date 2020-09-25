@@ -37,6 +37,8 @@ This module provides public type interface file for the library
 import numpy
 
 __all__ = [
+    "bool",
+    "bool_",
     "dtype",
     "float",
     "float32",
@@ -46,6 +48,9 @@ __all__ = [
     "int64",
     "newaxis"
 ]
+
+bool = numpy.bool
+bool_ = numpy.bool_
 
 dtype = numpy.dtype
 
