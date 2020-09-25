@@ -321,13 +321,6 @@ tests/third_party/cupy/linalg_tests/test_product.py::TestDot_param_8_{shape=((1,
 tests/third_party/cupy/linalg_tests/test_product.py::TestDot_param_8_{shape=((1, 1), (1, 2)), trans_a=True, trans_b=True}::test_dot_with_out
 tests/third_party/cupy/linalg_tests/test_product.py::TestDot_param_9_{shape=((1, 1), (1, 2)), trans_a=True, trans_b=False}::test_dot
 tests/third_party/cupy/linalg_tests/test_product.py::TestDot_param_9_{shape=((1, 1), (1, 2)), trans_a=True, trans_b=False}::test_dot_with_out
-tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_0
-tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_1
-tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_2
-tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_3
-tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_inv1
-tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_inv2
-tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_inv3
 tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_invlarge
 tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_large
 tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_of_two
