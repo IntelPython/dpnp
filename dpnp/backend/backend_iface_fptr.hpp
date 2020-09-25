@@ -59,33 +59,33 @@
  */
 enum class DPNPFuncName : size_t
 {
-    DPNP_FN_NONE,    /**< Very first element of the enumeration */
-    DPNP_FN_ADD,     /**< Used in numpy.add() implementation  */
-    DPNP_FN_ARCTAN2, /**< Used in numpy.arctan2() implementation  */
-    DPNP_FN_ARGMAX,  /**< Used in numpy.argmax() implementation  */
-    DPNP_FN_ARGMIN,  /**< Used in numpy.argmin() implementation  */
-    DPNP_FN_ARGSORT, /**< Used in numpy.argsort() implementation  */
-    DPNP_FN_CEIL,    /**< Used in numpy.ceil() implementation  */
-    DPNP_FN_COV,     /**< Used in numpy.cov() implementation  */
-    DPNP_FN_DIVIDE,  /**< Used in numpy.divide() implementation  */
-    DPNP_FN_DOT,     /**< Used in numpy.dot() implementation  */
-    DPNP_FN_EIG,     /**< Used in numpy.linalg.eig() implementation  */
-    DPNP_FN_FABS,    /**< Used in numpy.fabs() implementation  */
-    DPNP_FN_FLOOR,   /**< Used in numpy.floor() implementation  */
-    DPNP_FN_FMOD,    /**< Used in numpy.fmod() implementation  */
-    DPNP_FN_HYPOT,   /**< Used in numpy.hypot() implementation  */
-    DPNP_FN_MATMUL,  /**< Used in numpy.matmul() implementation  */
-    DPNP_FN_MAXIMUM, /**< Used in numpy.maximum() implementation  */
-    DPNP_FN_MINIMUM, /**< Used in numpy.minimum() implementation  */
+    DPNP_FN_NONE,     /**< Very first element of the enumeration */
+    DPNP_FN_ADD,      /**< Used in numpy.add() implementation  */
+    DPNP_FN_ARCTAN2,  /**< Used in numpy.arctan2() implementation  */
+    DPNP_FN_ARGMAX,   /**< Used in numpy.argmax() implementation  */
+    DPNP_FN_ARGMIN,   /**< Used in numpy.argmin() implementation  */
+    DPNP_FN_ARGSORT,  /**< Used in numpy.argsort() implementation  */
+    DPNP_FN_CEIL,     /**< Used in numpy.ceil() implementation  */
+    DPNP_FN_COV,      /**< Used in numpy.cov() implementation  */
+    DPNP_FN_DIVIDE,   /**< Used in numpy.divide() implementation  */
+    DPNP_FN_DOT,      /**< Used in numpy.dot() implementation  */
+    DPNP_FN_EIG,      /**< Used in numpy.linalg.eig() implementation  */
+    DPNP_FN_FABS,     /**< Used in numpy.fabs() implementation  */
+    DPNP_FN_FLOOR,    /**< Used in numpy.floor() implementation  */
+    DPNP_FN_FMOD,     /**< Used in numpy.fmod() implementation  */
+    DPNP_FN_HYPOT,    /**< Used in numpy.hypot() implementation  */
+    DPNP_FN_MATMUL,   /**< Used in numpy.matmul() implementation  */
+    DPNP_FN_MAXIMUM,  /**< Used in numpy.maximum() implementation  */
+    DPNP_FN_MINIMUM,  /**< Used in numpy.minimum() implementation  */
     DPNP_FN_MULTIPLY, /**< Used in numpy.multiply() implementation  */
     DPNP_FN_POWER,    /**< Used in numpy.random.power() implementation  */
-    DPNP_FN_PROD,    /**< Used in numpy.prod() implementation  */
-    DPNP_FN_RAND,    /**< Used in numpy.random.rand() implementation  */
-    DPNP_FN_SIGN,    /**< Used in numpy.sign() implementation  */
+    DPNP_FN_PROD,     /**< Used in numpy.prod() implementation  */
+    DPNP_FN_RAND,     /**< Used in numpy.random.rand() implementation  */
+    DPNP_FN_SIGN,     /**< Used in numpy.sign() implementation  */
     DPNP_FN_SUBTRACT, /**< Used in numpy.subtract() implementation  */
-    DPNP_FN_SUM,     /**< Used in numpy.sum() implementation  */
-    DPNP_FN_TRUNC,   /**< Used in numpy.trunc() implementation  */
-    DPNP_FN_LAST     /**< The latest element of the enumeration */
+    DPNP_FN_SUM,      /**< Used in numpy.sum() implementation  */
+    DPNP_FN_TRUNC,    /**< Used in numpy.trunc() implementation  */
+    DPNP_FN_LAST      /**< The latest element of the enumeration */
 };
 
 /**
