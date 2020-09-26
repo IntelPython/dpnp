@@ -45,7 +45,7 @@ import numpy
 import dpnp
 from dpnp.backend import *
 from dpnp.dparray import dparray
-from dpnp.dpnp_utils import checker_throw_value_error, checker_throw_type_error, use_origin_backend
+from dpnp.dpnp_utils import *
 
 
 __all__ = [
@@ -76,7 +76,7 @@ __all__ = [
 ]
 
 
-def _fallback(function, *args, **kwargs):
+def _origin_backend(function, *args, **kwargs):
     """
     Call fallback function for unsupported cases
     """
@@ -87,12 +87,18 @@ def _fallback(function, *args, **kwargs):
         args_new.append(argx)
 
     # TODO need to put dparray memory into NumPy call
-    result_fallback = function(*args_new, **kwargs)
-    result = result_fallback
+    result_origin = function(*args_new, **kwargs)
+    result = result_origin
     if isinstance(result, numpy.ndarray):
-        result = dparray(result_fallback.shape, dtype=result_fallback.dtype)
+        result_dtype = result_origin.dtype
+
+        kwargs_dtype = kwargs.get("dtype", None)
+        if (kwargs_dtype is not None):
+            result_dtype = kwargs_dtype
+
+        result = dparray(result_origin.shape, dtype=result_dtype)
         for i in range(result.size):
-            result._setitem_scalar(i, result_fallback.item(i))
+            result._setitem_scalar(i, result_origin.item(i))
 
     return result
 
@@ -108,13 +114,13 @@ def abs(*args, **kwargs):
     return dpnp.absolute(*args, **kwargs)
 
 
-def absolute(input, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
+def absolute(x1, **kwargs):
     """
     Calculate the absolute value element-wise.
 
     Parameters
     ----------
-    input : array_like
+    x1 : array_like
         Input array.
 
     Returns
@@ -123,15 +129,10 @@ def absolute(input, out=None, where=True, casting='same_kind', order='K', dtype=
         An ndarray containing the absolute value of each element in x.
     """
 
-    dim_input = input.ndim
+    is_input_dparray = isinstance(x1, dparray)
 
-    if dim_input == 0:
-        return numpy.abs(input)
-
-    is_input_dparray = isinstance(input, dparray)
-
-    if not use_origin_backend(input) and is_input_dparray:
-        result = dpnp_absolute(input)
+    if not use_origin_backend(x1) and is_input_dparray and x1.ndim != 0 and not kwargs:
+        result = dpnp_absolute(x1)
 
         # scalar returned
         if result.shape == (1,):
@@ -139,20 +140,10 @@ def absolute(input, out=None, where=True, casting='same_kind', order='K', dtype=
 
         return result
 
-    input1 = dpnp.asnumpy(input) if is_input_dparray else input
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.absolute(input1, out=out, where=where, casting=casting, order=order, dtype=dtype, subok=subok)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return _origin_backend(numpy.absolute, x1, **kwargs)
 
 
-def add(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
+def add(x1, x2, **kwargs):
     """
     Add arguments element-wise.
 
@@ -175,10 +166,7 @@ def add(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=None
     is_x1_dparray = isinstance(x1, dparray)
     is_x2_dparray = isinstance(x2, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray):
-        if out is not None:
-            checker_throw_value_error("add", "out", out, None)
-
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
         if (x1.size != x2.size):
             checker_throw_value_error("add", "size", x1.size, x2.size)
 
@@ -187,22 +175,10 @@ def add(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=None
 
         return dpnp_add(x1, x2)
 
-    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
-    input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.add(input1, input2, out=out, where=where, casting=casting,
-                             order=order, dtype=dtype, subok=subok)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return _origin_backend(numpy.add, x1, x2, **kwargs)
 
 
-def ceil(x1, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
+def ceil(x1, **kwargs):
     """
     Compute  the ceiling of the input, element-wise.
 
@@ -212,26 +188,13 @@ def ceil(x1, out=None, where=True, casting='same_kind', order='K', dtype=None, s
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray):
-        if out is not None:
-            checker_throw_value_error("ceil", "out", out, None)
-
+    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
         return dpnp_ceil(x1)
 
-    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.ceil(input1, out=out, where=where, casting=casting, order=order, dtype=dtype, subok=subok)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return _origin_backend(numpy.ceil, x1, x2, **kwargs)
 
 
-def divide(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
+def divide(x1, x2, **kwargs):
     """
     Divide arguments element-wise.
 
@@ -254,10 +217,7 @@ def divide(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=N
     is_x1_dparray = isinstance(x1, dparray)
     is_x2_dparray = isinstance(x2, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray):
-        if out is not None:
-            checker_throw_value_error("divide", "out", out, None)
-
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
         if (x1.size != x2.size):
             checker_throw_value_error("divide", "size", x1.size, x2.size)
 
@@ -266,22 +226,10 @@ def divide(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=N
 
         return dpnp_divide(x1, x2)
 
-    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
-    input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.divide(input1, input2, out=out, where=where, casting=casting,
-                                order=order, dtype=dtype, subok=subok)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return _origin_backend(numpy.divide, x1, x2, **kwargs)
 
 
-def fabs(x1, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
+def fabs(x1, **kwargs):
     """
     Compute the absolute values element-wise.
 
@@ -292,25 +240,12 @@ def fabs(x1, out=None, where=True, casting='same_kind', order='K', dtype=None, s
     is_x1_dparray = isinstance(x1, dparray)
 
     if (not use_origin_backend(x1) and is_x1_dparray):
-        if out is not None:
-            checker_throw_value_error("fabs", "out", out, None)
-
         return dpnp_fabs(x1)
 
-    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.fabs(input1, out=out, where=where, casting=casting, order=order, dtype=dtype, subok=subok)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return _origin_backend(numpy.fabs, x1, **kwargs)
 
 
-def floor(x1, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
+def floor(x1, **kwargs):
     """
     Compute the floor of the input, element-wise.
 
@@ -323,26 +258,13 @@ def floor(x1, out=None, where=True, casting='same_kind', order='K', dtype=None, 
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray):
-        if out is not None:
-            checker_throw_value_error("floor", "out", out, None)
-
+    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
         return dpnp_floor(x1)
 
-    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.floor(input1, out=out, where=where, casting=casting, order=order, dtype=dtype, subok=subok)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return _origin_backend(numpy.floor, x1, **kwargs)
 
 
-def floor_divide(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
+def floor_divide(x1, x2, **kwargs):
     """
     Compute the largest integer smaller or equal to the division of the inputs.
 
@@ -353,25 +275,10 @@ def floor_divide(x1, x2, out=None, where=True, casting='same_kind', order='K', d
     is_x1_dparray = isinstance(x1, dparray)
     is_x2_dparray = isinstance(x2, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and dtype is None):
-        if out is not None:
-            checker_throw_value_error("floor_divide", "out", out, None)
-
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
         return dpnp_floor_divide(x1)
 
-    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
-    input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.floor_divide(input1, input2, out=out, where=where,
-                                      casting=casting, order=order, dtype=dtype, subok=subok)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return _origin_backend(numpy.floor_divide, x1, x2, **kwargs)
 
 
 def fmax(*args, **kwargs):
@@ -396,7 +303,7 @@ def fmin(*args, **kwargs):
     return dpnp.minimum(*args, **kwargs)
 
 
-def fmod(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
+def fmod(x1, x2, **kwargs):
     """
     Calculate the element-wise remainder of division.
 
@@ -434,10 +341,7 @@ def fmod(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=Non
     # input1:bool      : input2:int64     : output:int64     : name:<ufunc 'fmod'>
     # input1:bool      : input2:int32     : output:int32     : name:<ufunc 'fmod'>
     # input1:bool      : input2:bool      : output:int8      : name:<ufunc 'fmod'>
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and dtype is None):
-        if out is not None:
-            checker_throw_value_error("fmod", "out", out, None)
-
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
         if (x1.size != x2.size):
             checker_throw_value_error("fmod", "size", x1.size, x2.size)
 
@@ -446,25 +350,10 @@ def fmod(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=Non
 
         return dpnp_fmod(x1, x2)
 
-    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
-    input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.fmod(input1, input2, out=out, where=where, casting=casting,
-                              order=order, dtype=dtype, subok=subok)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result_dtype = result_numpy.dtype
-        if (dtype is not None):
-            result_dtype = dtype
-        result = dparray(result_numpy.shape, dtype=result_dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return _origin_backend(numpy.fmod, x1, x2, **kwargs)
 
 
-def maximum(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
+def maximum(x1, x2, **kwargs):
     """
     Element-wise maximum of array elements.
 
@@ -475,10 +364,7 @@ def maximum(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=
     is_x1_dparray = isinstance(x1, dparray)
     is_x2_dparray = isinstance(x2, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray):
-        if out is not None:
-            checker_throw_value_error("maximum", "out", out, None)
-
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
         if (x1.size != x2.size):
             checker_throw_value_error("maximum", "size", x1.size, x2.size)
 
@@ -487,22 +373,10 @@ def maximum(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=
 
         return dpnp_maximum(x1, x2)
 
-    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
-    input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.maximum(input1, input2, out=out, where=where, casting=casting,
-                                 order=order, dtype=dtype, subok=subok)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return _origin_backend(numpy.maximum, x1, x2, **kwargs)
 
 
-def minimum(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
+def minimum(x1, x2, **kwargs):
     """
     Element-wise minimum of array elements.
 
@@ -513,10 +387,7 @@ def minimum(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=
     is_x1_dparray = isinstance(x1, dparray)
     is_x2_dparray = isinstance(x2, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray):
-        if out is not None:
-            checker_throw_value_error("minimum", "out", out, None)
-
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
         if (x1.size != x2.size):
             checker_throw_value_error("minimum", "size", x1.size, x2.size)
 
@@ -525,19 +396,7 @@ def minimum(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=
 
         return dpnp_minimum(x1, x2)
 
-    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
-    input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.minimum(input1, input2, out=out, where=where, casting=casting,
-                                 order=order, dtype=dtype, subok=subok)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return _origin_backend(numpy.minimum, x1, x2, **kwargs)
 
 
 def mod(*args, **kwargs):
@@ -553,7 +412,7 @@ def mod(*args, **kwargs):
     return dpnp.remainder(*args, **kwargs)
 
 
-def multiply(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
+def multiply(x1, x2, **kwargs):
     """
     Multiply arguments element-wise.
 
@@ -576,10 +435,7 @@ def multiply(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype
     is_x1_dparray = isinstance(x1, dparray)
     is_x2_dparray = isinstance(x2, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray):
-        if out is not None:
-            checker_throw_value_error("multiply", "out", out, None)
-
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
         if (x1.size != x2.size):
             checker_throw_value_error("multiply", "size", x1.size, x2.size)
 
@@ -588,22 +444,10 @@ def multiply(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype
 
         return dpnp_multiply(x1, x2)
 
-    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
-    input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.multiply(input1, input2, out=out, where=where, casting=casting,
-                                  order=order, dtype=dtype, subok=subok)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return _origin_backend(numpy.multiply, x1, x2, **kwargs)
 
 
-def negative(x1, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
+def negative(x1, **kwargs):
     """
     Negative element-wise.
 
@@ -611,16 +455,15 @@ def negative(x1, out=None, where=True, casting='same_kind', order='K', dtype=Non
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.negative(x1, out=out, where=where, casting=casting, order=order, dtype=dtype, subok=subok)
+    is_x1_dparray = isinstance(x1, dparray)
 
-    if not isinstance(x1, dparray):
-        return numpy.negative(x1, out=out, where=where, casting=casting, order=order, dtype=dtype, subok=subok)
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
+        return dpnp_negative(x1, x2)
 
-    return dpnp_negative(x1)
+    return _origin_backend(numpy.negative, x1, **kwargs)
 
 
-def power(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
+def power(x1, x2, **kwargs):
     """
     First array elements raised to powers from second array, element-wise.
 
@@ -640,25 +483,22 @@ def power(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=No
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.power(x1, x2, out=out, where=where, casting=casting, order=order, dtype=dtype, subok=subok)
+    is_x1_dparray = isinstance(x1, dparray)
+    is_x2_dparray = isinstance(x2, dparray)
 
-    if not (isinstance(x1, dparray) or isinstance(x2, dparray)):
-        return numpy.power(x1, x2, out=out, where=where, casting=casting, order=order, dtype=dtype, subok=subok)
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
+        if (x1.size != x2.size):
+            checker_throw_value_error("power", "size", x1.size, x2.size)
 
-    if out is not None:
-        checker_throw_value_error("power", "out", type(out), None)
+        if (x1.shape != x2.shape):
+            checker_throw_value_error("power", "shape", x1.shape, x2.shape)
 
-    if (x1.size != x2.size):
-        checker_throw_value_error("power", "size", x1.size, x2.size)
+        return dpnp_power(x1, x2)
 
-    if (x1.shape != x2.shape):
-        checker_throw_value_error("power", "shape", x1.shape, x2.shape)
-
-    return dpnp_power(x1, x2)
+    return _origin_backend(numpy.power, x1, x2, **kwargs)
 
 
-def prod(x1, axis=None, dtype=None, out=None, keepdims=False, initial=1, where=True):
+def prod(x1, **kwargs):
     """
     Calculate product of array elements over a given axis.
 
@@ -668,31 +508,13 @@ def prod(x1, axis=None, dtype=None, out=None, keepdims=False, initial=1, where=T
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1)
-                and is_x1_dparray
-                and (axis is None)
-                and (dtype is None)
-                and (out is None)
-                and (keepdims is False)
-                and (initial is 1)
-                and (where is True)
-            ):
+    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
         return dpnp_prod(x1)
 
-    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.prod(input1, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return _origin_backend(numpy.prod, x1, **kwargs)
 
 
-def remainder(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
+def remainder(x1, x2, **kwargs):
     """
     Return element-wise remainder of division.
     """
@@ -700,10 +522,7 @@ def remainder(x1, x2, out=None, where=True, casting='same_kind', order='K', dtyp
     is_x1_dparray = isinstance(x1, dparray)
     is_x2_dparray = isinstance(x2, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and dtype is None):
-        if out is not None:
-            checker_throw_value_error("remainder", "out", out, None)
-
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
         if (x1.size != x2.size):
             checker_throw_value_error("remainder", "size", x1.size, x2.size)
 
@@ -712,25 +531,10 @@ def remainder(x1, x2, out=None, where=True, casting='same_kind', order='K', dtyp
 
         return dpnp_remainder(x1, x2)
 
-    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
-    input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.remainder(input1, input2, out=out, where=where, casting=casting,
-                                   order=order, dtype=dtype, subok=subok)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result_dtype = result_numpy.dtype
-        if (dtype is not None):
-            result_dtype = dtype
-        result = dparray(result_numpy.shape, dtype=result_dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return _origin_backend(numpy.remainder, x1, x2, **kwargs)
 
 
-def sign(x1, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
+def sign(x1, **kwargs):
     """
     Compute the absolute values element-wise.
 
@@ -740,26 +544,13 @@ def sign(x1, out=None, where=True, casting='same_kind', order='K', dtype=None, s
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray):
-        if out is not None:
-            checker_throw_value_error("sign", "out", out, None)
-
+    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
         return dpnp_sign(x1)
 
-    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.sign(input1, out=out, where=where, casting=casting, order=order, dtype=dtype, subok=subok)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return _origin_backend(numpy.sign, x1, **kwargs)
 
 
-def subtract(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
+def subtract(x1, x2, **kwargs):
     """
     Subtract arguments, element-wise.
 
@@ -782,34 +573,20 @@ def subtract(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype
     is_x1_dparray = isinstance(x1, dparray)
     is_x2_dparray = isinstance(x2, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and x1.dtype != numpy.bool and x2.dtype != numpy.bool):
-        if out is not None:
-            checker_throw_value_error("subtract", "out", out, None)
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
+        if (x1.dtype != numpy.bool) and (x2.dtype != numpy.bool):
+            if (x1.size != x2.size):
+                checker_throw_value_error("subtract", "size", x1.size, x2.size)
 
-        if (x1.size != x2.size):
-            checker_throw_value_error("subtract", "size", x1.size, x2.size)
+            if (x1.shape != x2.shape):
+                checker_throw_value_error("subtract", "shape", x1.shape, x2.shape)
 
-        if (x1.shape != x2.shape):
-            checker_throw_value_error("subtract", "shape", x1.shape, x2.shape)
+            return dpnp_subtract(x1, x2)
 
-        return dpnp_subtract(x1, x2)
-
-    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
-    input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.subtract(input1, input2, out=out, where=where, casting=casting,
-                                  order=order, dtype=dtype, subok=subok)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return _origin_backend(numpy.subtract, x1, x2, **kwargs)
 
 
-def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=0, where=True):
+def sum(x1, **kwargs):
     """
     Sum of array elements over a given axis.
 
@@ -819,28 +596,10 @@ def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=0, where=Tr
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1)
-                and is_x1_dparray
-                and (axis is None)
-                and (dtype is None)
-                and (out is None)
-                and (keepdims is False)
-                and (initial is 0)
-                and (where is True)
-            ):
+    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
         return dpnp_sum(x1)
 
-    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.sum(input1, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return _origin_backend(numpy.sum, x1, **kwargs)
 
 
 def true_divide(*args, **kwargs):
@@ -854,7 +613,7 @@ def true_divide(*args, **kwargs):
     return dpnp.divide(*args, **kwargs)
 
 
-def trunc(x1, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
+def trunc(x1, **kwargs):
     """
     Compute the truncated value of the input, element-wise.
 
@@ -864,20 +623,7 @@ def trunc(x1, out=None, where=True, casting='same_kind', order='K', dtype=None, 
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray):
-        if out is not None:
-            checker_throw_value_error("trunc", "out", out, None)
-
+    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
         return dpnp_trunc(x1)
 
-    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.trunc(input1, out=out, where=where, casting=casting, order=order, dtype=dtype, subok=subok)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return _origin_backend(numpy.trunc, x1, **kwargs)
