@@ -56,6 +56,7 @@ __all__ = [
     "divide",
     "fabs",
     "floor",
+    "floor_divide",
     "fmax",
     "fmin",
     "fmod",
@@ -332,6 +333,38 @@ def floor(x1, out=None, where=True, casting='same_kind', order='K', dtype=None, 
 
     # TODO need to put dparray memory into NumPy call
     result_numpy = numpy.floor(input1, out=out, where=where, casting=casting, order=order, dtype=dtype, subok=subok)
+    result = result_numpy
+    if isinstance(result, numpy.ndarray):
+        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_numpy.item(i))
+
+    return result
+
+
+def floor_divide(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
+    """
+    Compute the largest integer smaller or equal to the division of the inputs.
+
+    .. seealso:: :func:`numpy.floor_divide`
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+    is_x2_dparray = isinstance(x2, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and dtype is None):
+        if out is not None:
+            checker_throw_value_error("floor_divide", "out", out, None)
+
+        return dpnp_floor_divide(x1)
+
+    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
+    input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.floor_divide(input1, input2, out=out, where=where,
+                                      casting=casting, order=order, dtype=dtype, subok=subok)
     result = result_numpy
     if isinstance(result, numpy.ndarray):
         result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
@@ -636,14 +669,14 @@ def prod(x1, axis=None, dtype=None, out=None, keepdims=False, initial=1, where=T
     is_x1_dparray = isinstance(x1, dparray)
 
     if (not use_origin_backend(x1)
-            and is_x1_dparray
-            and (axis is None)
-            and (dtype is None)
-            and (out is None)
-            and (keepdims is False)
-            and (initial is 1)
-            and (where is True)
-        ):
+                and is_x1_dparray
+                and (axis is None)
+                and (dtype is None)
+                and (out is None)
+                and (keepdims is False)
+                and (initial is 1)
+                and (where is True)
+            ):
         return dpnp_prod(x1)
 
     input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
@@ -787,14 +820,14 @@ def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=0, where=Tr
     is_x1_dparray = isinstance(x1, dparray)
 
     if (not use_origin_backend(x1)
-            and is_x1_dparray
-            and (axis is None)
-            and (dtype is None)
-            and (out is None)
-            and (keepdims is False)
-            and (initial is 0)
-            and (where is True)
-        ):
+                and is_x1_dparray
+                and (axis is None)
+                and (dtype is None)
+                and (out is None)
+                and (keepdims is False)
+                and (initial is 0)
+                and (where is True)
+            ):
         return dpnp_sum(x1)
 
     input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
