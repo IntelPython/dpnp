@@ -44,10 +44,10 @@ import os
 import numpy
 
 from dpnp.backend import *
-from dpnp.random import *
-from dpnp.linalg import *
 from dpnp.dparray import dparray
-from dpnp.dpnp_utils import checker_throw_value_error, use_origin_backend
+from dpnp.dpnp_utils import *
+from dpnp.linalg import *
+from dpnp.random import *
 import collections
 
 __all__ = [

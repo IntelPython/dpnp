@@ -40,11 +40,12 @@ it contains:
 """
 
 
-from dpnp.dparray import dparray
-from dpnp.dpnp_utils import checker_throw_value_error, use_origin_backend
-from dpnp.linalg.linalg import *
 import dpnp
 import numpy
+
+from dpnp.dparray import dparray
+from dpnp.dpnp_utils import *
+from dpnp.linalg.linalg import *
 
 
 __all__ = [

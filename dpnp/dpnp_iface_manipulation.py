@@ -43,11 +43,10 @@ it contains:
 import collections.abc
 import numpy
 
-import dpnp
 from dpnp.backend import *
 from dpnp.dparray import dparray
-from dpnp.dpnp_utils import (checker_throw_value_error, use_origin_backend, normalize_axis,
-                             checker_throw_axis_error, dp2nd_array, nd2dp_array)
+from dpnp.dpnp_utils import *
+import dpnp
 
 
 __all__ = [
