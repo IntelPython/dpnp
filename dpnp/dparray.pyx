@@ -24,7 +24,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
-from builtins import None
+
 
 """Module DPArray
 
@@ -84,7 +84,7 @@ cdef class dparray:
             order = utils._normalize_order(order)
 
         if order != b'C' and order != b'F':
-            raise TypeError("Intel NumPy dparray::__init__(): Parameter is not understood. order={}".format(order))
+            raise TypeError(f"Intel DPNP::__init__(): Parameter is not understood. order={order}")
 
         # dtype
         self._dparray_dtype = numpy.dtype(dtype)
@@ -392,6 +392,82 @@ cdef class dparray:
     # -------------------------------------------------------------------------
     # Shape manipulation
     # -------------------------------------------------------------------------
+    def flatten(self, order='C'):
+        """
+        Return a copy of the array collapsed into one dimension.
+
+        Parameters
+        ----------
+        order: {'C', 'F', 'A', 'K'}, optional
+            'C' means to flatten in row-major (C-style) order.
+            'F' means to flatten in column-major (Fortran- style) order.
+            'A' means to flatten in column-major order if a is Fortran contiguous in memory, row-major order otherwise.
+            'K' means to flatten a in the order the elements occur in memory. The default is 'C'.
+
+        Returns
+        -------
+        out: ndarray
+            A copy of the input array, flattened to one dimension.
+
+        See Also
+        --------
+        ravel, flat
+
+        """
+
+        if not utils.use_origin_backend(self):
+            c_order, fortran_order, _ = self.flags
+
+            if order not in {'C', 'F', 'A', 'K'}:
+                pass
+            elif order == 'K' and not c_order and not fortran_order:
+                # skip dpnp backend if both C-style and Fortran-style order not found in flags
+                pass
+            else:
+                if order == 'K':
+                    # either C-style or Fortran-style found in flags
+                    order = 'C' if c_order else 'F'
+                elif order == 'A':
+                    order = 'F' if fortran_order else 'C'
+
+                if order == 'F':
+                    return self.transpose().reshape(self.size)
+
+                result = dparray(self.size, dtype=self.dtype)
+                for i in range(result.size):
+                    result[i] = self[i]
+
+                return result
+
+        result = utils.dp2nd_array(self).flatten(order=order)
+
+        return utils.nd2dp_array(result)
+
+    def ravel(self, order='C'):
+        """
+        Return a contiguous flattened array.
+
+        Parameters
+        ----------
+        order: {'C', 'F', 'A', 'K'}, optional
+            'C' means to flatten in row-major (C-style) order.
+            'F' means to flatten in column-major (Fortran- style) order.
+            'A' means to flatten in column-major order if a is Fortran contiguous in memory, row-major order otherwise.
+            'K' means to flatten a in the order the elements occur in memory. The default is 'C'.
+
+        Returns
+        -------
+        out: ndarray
+            A copy of the input array, flattened to one dimension.
+
+        See Also
+        --------
+        ravel, flat
+
+        """
+        # TODO: don't copy the input array
+        return self.flatten(order=order)
+
     def reshape(self, shape, order=b'C'):
         """Change the shape of the array.
 

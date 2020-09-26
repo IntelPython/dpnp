@@ -160,6 +160,39 @@ static func_map_t func_map_init()
     fmap[DPNPFuncName::DPNP_FN_ADD][eft_DBL][eft_FLT] = {eft_DBL, (void*)custom_elemwise_add_c<double, float, double>};
     fmap[DPNPFuncName::DPNP_FN_ADD][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_elemwise_add_c<double, double, double>};
 
+    fmap[DPNPFuncName::DPNP_FN_ARCTAN2][eft_INT][eft_INT] = {eft_DBL,
+                                                             (void*)custom_elemwise_arctan2_c<int, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_ARCTAN2][eft_INT][eft_LNG] = {eft_DBL,
+                                                             (void*)custom_elemwise_arctan2_c<int, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_ARCTAN2][eft_INT][eft_FLT] = {eft_DBL,
+                                                             (void*)custom_elemwise_arctan2_c<int, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_ARCTAN2][eft_INT][eft_DBL] = {eft_DBL,
+                                                             (void*)custom_elemwise_arctan2_c<int, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_ARCTAN2][eft_LNG][eft_INT] = {eft_DBL,
+                                                             (void*)custom_elemwise_arctan2_c<long, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_ARCTAN2][eft_LNG][eft_LNG] = {eft_DBL,
+                                                             (void*)custom_elemwise_arctan2_c<long, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_ARCTAN2][eft_LNG][eft_FLT] = {eft_DBL,
+                                                             (void*)custom_elemwise_arctan2_c<long, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_ARCTAN2][eft_LNG][eft_DBL] = {eft_DBL,
+                                                             (void*)custom_elemwise_arctan2_c<long, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_ARCTAN2][eft_FLT][eft_INT] = {eft_DBL,
+                                                             (void*)custom_elemwise_arctan2_c<float, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_ARCTAN2][eft_FLT][eft_LNG] = {eft_DBL,
+                                                             (void*)custom_elemwise_arctan2_c<float, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_ARCTAN2][eft_FLT][eft_FLT] = {eft_FLT,
+                                                             (void*)custom_elemwise_arctan2_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_ARCTAN2][eft_FLT][eft_DBL] = {eft_DBL,
+                                                             (void*)custom_elemwise_arctan2_c<float, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_ARCTAN2][eft_DBL][eft_INT] = {eft_DBL,
+                                                             (void*)custom_elemwise_arctan2_c<double, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_ARCTAN2][eft_DBL][eft_LNG] = {eft_DBL,
+                                                             (void*)custom_elemwise_arctan2_c<double, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_ARCTAN2][eft_DBL][eft_FLT] = {eft_DBL,
+                                                             (void*)custom_elemwise_arctan2_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_ARCTAN2][eft_DBL][eft_DBL] = {eft_DBL,
+                                                             (void*)custom_elemwise_arctan2_c<double, double, double>};
+
     fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_INT][eft_INT] = {eft_INT, (void*)custom_argmax_c<int, int>};
     fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_INT][eft_LNG] = {eft_LNG, (void*)custom_argmax_c<int, long>};
     fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_LNG][eft_INT] = {eft_INT, (void*)custom_argmax_c<long, int>};
@@ -194,6 +227,35 @@ static func_map_t func_map_init()
 
     fmap[DPNPFuncName::DPNP_FN_COV][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_cov_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_DIVIDE][eft_INT][eft_INT] = {eft_INT, (void*)custom_elemwise_divide_c<int, int, int>};
+    fmap[DPNPFuncName::DPNP_FN_DIVIDE][eft_INT][eft_LNG] = {eft_LNG, (void*)custom_elemwise_divide_c<int, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_DIVIDE][eft_INT][eft_FLT] = {eft_DBL,
+                                                            (void*)custom_elemwise_divide_c<int, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_DIVIDE][eft_INT][eft_DBL] = {eft_DBL,
+                                                            (void*)custom_elemwise_divide_c<int, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_DIVIDE][eft_LNG][eft_INT] = {eft_LNG, (void*)custom_elemwise_divide_c<long, int, long>};
+    fmap[DPNPFuncName::DPNP_FN_DIVIDE][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_elemwise_divide_c<long, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_DIVIDE][eft_LNG][eft_FLT] = {eft_DBL,
+                                                            (void*)custom_elemwise_divide_c<long, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_DIVIDE][eft_LNG][eft_DBL] = {eft_DBL,
+                                                            (void*)custom_elemwise_divide_c<long, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_DIVIDE][eft_FLT][eft_INT] = {eft_DBL,
+                                                            (void*)custom_elemwise_divide_c<float, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_DIVIDE][eft_FLT][eft_LNG] = {eft_DBL,
+                                                            (void*)custom_elemwise_divide_c<float, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_DIVIDE][eft_FLT][eft_FLT] = {eft_FLT,
+                                                            (void*)custom_elemwise_divide_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_DIVIDE][eft_FLT][eft_DBL] = {eft_DBL,
+                                                            (void*)custom_elemwise_divide_c<float, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_DIVIDE][eft_DBL][eft_INT] = {eft_DBL,
+                                                            (void*)custom_elemwise_divide_c<double, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_DIVIDE][eft_DBL][eft_LNG] = {eft_DBL,
+                                                            (void*)custom_elemwise_divide_c<double, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_DIVIDE][eft_DBL][eft_FLT] = {eft_DBL,
+                                                            (void*)custom_elemwise_divide_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_DIVIDE][eft_DBL][eft_DBL] = {eft_DBL,
+                                                            (void*)custom_elemwise_divide_c<double, double, double>};
+
     fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_INT] = {eft_INT, (void*)custom_blas_dot_c<int>};
     fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_blas_dot_c<long>};
     fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_FLT] = {eft_FLT, (void*)mkl_blas_dot_c<float>};
@@ -211,6 +273,53 @@ static func_map_t func_map_init()
     fmap[DPNPFuncName::DPNP_FN_FLOOR][eft_LNG][eft_LNG] = {eft_DBL, (void*)custom_elemwise_floor_c<long, double>};
     fmap[DPNPFuncName::DPNP_FN_FLOOR][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_elemwise_floor_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_FLOOR][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_elemwise_floor_c<double, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_FMOD][eft_INT][eft_INT] = {eft_INT, (void*)custom_elemwise_fmod_c<int, int, int>};
+    fmap[DPNPFuncName::DPNP_FN_FMOD][eft_INT][eft_LNG] = {eft_LNG, (void*)custom_elemwise_fmod_c<int, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_FMOD][eft_INT][eft_FLT] = {eft_DBL, (void*)custom_elemwise_fmod_c<int, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_FMOD][eft_INT][eft_DBL] = {eft_DBL, (void*)custom_elemwise_fmod_c<int, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_FMOD][eft_LNG][eft_INT] = {eft_LNG, (void*)custom_elemwise_fmod_c<long, int, long>};
+    fmap[DPNPFuncName::DPNP_FN_FMOD][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_elemwise_fmod_c<long, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_FMOD][eft_LNG][eft_FLT] = {eft_DBL, (void*)custom_elemwise_fmod_c<long, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_FMOD][eft_LNG][eft_DBL] = {eft_DBL, (void*)custom_elemwise_fmod_c<long, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_FMOD][eft_FLT][eft_INT] = {eft_DBL, (void*)custom_elemwise_fmod_c<float, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_FMOD][eft_FLT][eft_LNG] = {eft_DBL, (void*)custom_elemwise_fmod_c<float, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_FMOD][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_elemwise_fmod_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_FMOD][eft_FLT][eft_DBL] = {eft_DBL,
+                                                          (void*)custom_elemwise_fmod_c<float, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_FMOD][eft_DBL][eft_INT] = {eft_DBL, (void*)custom_elemwise_fmod_c<double, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_FMOD][eft_DBL][eft_LNG] = {eft_DBL, (void*)custom_elemwise_fmod_c<double, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_FMOD][eft_DBL][eft_FLT] = {eft_DBL,
+                                                          (void*)custom_elemwise_fmod_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_FMOD][eft_DBL][eft_DBL] = {eft_DBL,
+                                                          (void*)custom_elemwise_fmod_c<double, double, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_HYPOT][eft_INT][eft_INT] = {eft_DBL, (void*)custom_elemwise_hypot_c<int, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_HYPOT][eft_INT][eft_LNG] = {eft_DBL, (void*)custom_elemwise_hypot_c<int, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_HYPOT][eft_INT][eft_FLT] = {eft_DBL, (void*)custom_elemwise_hypot_c<int, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_HYPOT][eft_INT][eft_DBL] = {eft_DBL,
+                                                           (void*)custom_elemwise_hypot_c<int, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_HYPOT][eft_LNG][eft_INT] = {eft_DBL, (void*)custom_elemwise_hypot_c<long, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_HYPOT][eft_LNG][eft_LNG] = {eft_DBL, (void*)custom_elemwise_hypot_c<long, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_HYPOT][eft_LNG][eft_FLT] = {eft_DBL,
+                                                           (void*)custom_elemwise_hypot_c<long, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_HYPOT][eft_LNG][eft_DBL] = {eft_DBL,
+                                                           (void*)custom_elemwise_hypot_c<long, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_HYPOT][eft_FLT][eft_INT] = {eft_DBL, (void*)custom_elemwise_hypot_c<float, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_HYPOT][eft_FLT][eft_LNG] = {eft_DBL,
+                                                           (void*)custom_elemwise_hypot_c<float, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_HYPOT][eft_FLT][eft_FLT] = {eft_FLT,
+                                                           (void*)custom_elemwise_hypot_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_HYPOT][eft_FLT][eft_DBL] = {eft_DBL,
+                                                           (void*)custom_elemwise_hypot_c<float, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_HYPOT][eft_DBL][eft_INT] = {eft_DBL,
+                                                           (void*)custom_elemwise_hypot_c<double, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_HYPOT][eft_DBL][eft_LNG] = {eft_DBL,
+                                                           (void*)custom_elemwise_hypot_c<double, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_HYPOT][eft_DBL][eft_FLT] = {eft_DBL,
+                                                           (void*)custom_elemwise_hypot_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_HYPOT][eft_DBL][eft_DBL] = {eft_DBL,
+                                                           (void*)custom_elemwise_hypot_c<double, double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_INT][eft_INT] = {eft_INT, (void*)custom_blas_gemm_c<int>};
     fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_blas_gemm_c<long>};
@@ -281,6 +390,66 @@ static func_map_t func_map_init()
     fmap[DPNPFuncName::DPNP_FN_MINIMUM][eft_DBL][eft_DBL] = {eft_DBL,
                                                              (void*)custom_elemwise_minimum_c<double, double, double>};
 
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_INT][eft_INT] = {eft_INT,
+                                                              (void*)custom_elemwise_multiply_c<int, int, int>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_INT][eft_LNG] = {eft_LNG,
+                                                              (void*)custom_elemwise_multiply_c<int, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_INT][eft_FLT] = {eft_DBL,
+                                                              (void*)custom_elemwise_multiply_c<int, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_INT][eft_DBL] = {eft_DBL,
+                                                              (void*)custom_elemwise_multiply_c<int, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_LNG][eft_INT] = {eft_LNG,
+                                                              (void*)custom_elemwise_multiply_c<long, int, long>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_LNG][eft_LNG] = {eft_LNG,
+                                                              (void*)custom_elemwise_multiply_c<long, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_LNG][eft_FLT] = {eft_DBL,
+                                                              (void*)custom_elemwise_multiply_c<long, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_LNG][eft_DBL] = {eft_DBL,
+                                                              (void*)custom_elemwise_multiply_c<long, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_FLT][eft_INT] = {eft_DBL,
+                                                              (void*)custom_elemwise_multiply_c<float, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_FLT][eft_LNG] = {eft_DBL,
+                                                              (void*)custom_elemwise_multiply_c<float, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_FLT][eft_FLT] = {eft_FLT,
+                                                              (void*)custom_elemwise_multiply_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_FLT][eft_DBL] = {eft_DBL,
+                                                              (void*)custom_elemwise_multiply_c<float, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_DBL][eft_INT] = {eft_DBL,
+                                                              (void*)custom_elemwise_multiply_c<double, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_DBL][eft_LNG] = {eft_DBL,
+                                                              (void*)custom_elemwise_multiply_c<double, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_DBL][eft_FLT] = {eft_DBL,
+                                                              (void*)custom_elemwise_multiply_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_DBL][eft_DBL] = {
+        eft_DBL, (void*)custom_elemwise_multiply_c<double, double, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_POWER][eft_INT][eft_INT] = {eft_INT, (void*)custom_elemwise_power_c<int, int, int>};
+    fmap[DPNPFuncName::DPNP_FN_POWER][eft_INT][eft_LNG] = {eft_LNG, (void*)custom_elemwise_power_c<int, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_POWER][eft_INT][eft_FLT] = {eft_DBL, (void*)custom_elemwise_power_c<int, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_POWER][eft_INT][eft_DBL] = {eft_DBL,
+                                                           (void*)custom_elemwise_power_c<int, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_POWER][eft_LNG][eft_INT] = {eft_LNG, (void*)custom_elemwise_power_c<long, int, long>};
+    fmap[DPNPFuncName::DPNP_FN_POWER][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_elemwise_power_c<long, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_POWER][eft_LNG][eft_FLT] = {eft_DBL,
+                                                           (void*)custom_elemwise_power_c<long, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_POWER][eft_LNG][eft_DBL] = {eft_DBL,
+                                                           (void*)custom_elemwise_power_c<long, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_POWER][eft_FLT][eft_INT] = {eft_DBL, (void*)custom_elemwise_power_c<float, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_POWER][eft_FLT][eft_LNG] = {eft_DBL,
+                                                           (void*)custom_elemwise_power_c<float, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_POWER][eft_FLT][eft_FLT] = {eft_FLT,
+                                                           (void*)custom_elemwise_power_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_POWER][eft_FLT][eft_DBL] = {eft_DBL,
+                                                           (void*)custom_elemwise_power_c<float, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_POWER][eft_DBL][eft_INT] = {eft_DBL,
+                                                           (void*)custom_elemwise_power_c<double, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_POWER][eft_DBL][eft_LNG] = {eft_DBL,
+                                                           (void*)custom_elemwise_power_c<double, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_POWER][eft_DBL][eft_FLT] = {eft_DBL,
+                                                           (void*)custom_elemwise_power_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_POWER][eft_DBL][eft_DBL] = {eft_DBL,
+                                                           (void*)custom_elemwise_power_c<double, double, double>};
+
     fmap[DPNPFuncName::DPNP_FN_PROD][eft_INT][eft_INT] = {eft_INT, (void*)custom_prod_c<int>};
     fmap[DPNPFuncName::DPNP_FN_PROD][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_prod_c<long>};
     fmap[DPNPFuncName::DPNP_FN_PROD][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_prod_c<float>};
@@ -293,6 +462,39 @@ static func_map_t func_map_init()
     fmap[DPNPFuncName::DPNP_FN_SIGN][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_elemwise_sign_c<long>};
     fmap[DPNPFuncName::DPNP_FN_SIGN][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_elemwise_sign_c<float>};
     fmap[DPNPFuncName::DPNP_FN_SIGN][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_elemwise_sign_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_INT][eft_INT] = {eft_INT,
+                                                              (void*)custom_elemwise_subtract_c<int, int, int>};
+    fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_INT][eft_LNG] = {eft_LNG,
+                                                              (void*)custom_elemwise_subtract_c<int, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_INT][eft_FLT] = {eft_DBL,
+                                                              (void*)custom_elemwise_subtract_c<int, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_INT][eft_DBL] = {eft_DBL,
+                                                              (void*)custom_elemwise_subtract_c<int, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_LNG][eft_INT] = {eft_LNG,
+                                                              (void*)custom_elemwise_subtract_c<long, int, long>};
+    fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_LNG][eft_LNG] = {eft_LNG,
+                                                              (void*)custom_elemwise_subtract_c<long, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_LNG][eft_FLT] = {eft_DBL,
+                                                              (void*)custom_elemwise_subtract_c<long, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_LNG][eft_DBL] = {eft_DBL,
+                                                              (void*)custom_elemwise_subtract_c<long, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_FLT][eft_INT] = {eft_DBL,
+                                                              (void*)custom_elemwise_subtract_c<float, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_FLT][eft_LNG] = {eft_DBL,
+                                                              (void*)custom_elemwise_subtract_c<float, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_FLT][eft_FLT] = {eft_FLT,
+                                                              (void*)custom_elemwise_subtract_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_FLT][eft_DBL] = {eft_DBL,
+                                                              (void*)custom_elemwise_subtract_c<float, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_DBL][eft_INT] = {eft_DBL,
+                                                              (void*)custom_elemwise_subtract_c<double, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_DBL][eft_LNG] = {eft_DBL,
+                                                              (void*)custom_elemwise_subtract_c<double, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_DBL][eft_FLT] = {eft_DBL,
+                                                              (void*)custom_elemwise_subtract_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_DBL][eft_DBL] = {
+        eft_DBL, (void*)custom_elemwise_subtract_c<double, double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_SUM][eft_INT][eft_INT] = {eft_INT, (void*)custom_sum_c<int>};
     fmap[DPNPFuncName::DPNP_FN_SUM][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_sum_c<long>};

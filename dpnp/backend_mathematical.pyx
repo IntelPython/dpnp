@@ -49,6 +49,8 @@ __all__ += [
     "dpnp_divide",
     "dpnp_fabs",
     "dpnp_floor",
+    "dpnp_floor_divide",
+    "dpnp_fmod",
     'dpnp_hypot',
     "dpnp_maximum",
     "dpnp_minimum",
@@ -167,38 +169,17 @@ cpdef dparray dpnp_add(dparray array1, dparray array2):
     return result
 
 
-cdef string arctan2_name = "arctan2".encode()
-func_map[arctan2_name][float64_name][float64_name] = [float64_name, & custom_elemwise_arctan2_c[double, double, double]]
-func_map[arctan2_name][float64_name][float32_name] = [float64_name, & custom_elemwise_arctan2_c[double, float, double]]
-func_map[arctan2_name][float64_name][int64_name] = [float64_name, & custom_elemwise_arctan2_c[double, long, double]]
-func_map[arctan2_name][float64_name][int32_name] = [float64_name, & custom_elemwise_arctan2_c[double, int, double]]
-
-func_map[arctan2_name][float32_name][float64_name] = [float64_name, & custom_elemwise_arctan2_c[float, double, double]]
-func_map[arctan2_name][float32_name][float32_name] = [float32_name, & custom_elemwise_arctan2_c[float, float, float]]
-func_map[arctan2_name][float32_name][int64_name] = [float64_name, & custom_elemwise_arctan2_c[float, long, double]]
-func_map[arctan2_name][float32_name][int32_name] = [float64_name, & custom_elemwise_arctan2_c[float, int, double]]
-
-func_map[arctan2_name][int64_name][float64_name] = [float64_name, & custom_elemwise_arctan2_c[long, double, double]]
-func_map[arctan2_name][int64_name][float32_name] = [float64_name, & custom_elemwise_arctan2_c[long, float, double]]
-func_map[arctan2_name][int64_name][int64_name] = [float64_name, & custom_elemwise_arctan2_c[long, long, double]]
-func_map[arctan2_name][int64_name][int32_name] = [float64_name, & custom_elemwise_arctan2_c[long, int, double]]
-
-func_map[arctan2_name][int32_name][float64_name] = [float64_name, & custom_elemwise_arctan2_c[int, double, double]]
-func_map[arctan2_name][int32_name][float32_name] = [float64_name, & custom_elemwise_arctan2_c[int, float, double]]
-func_map[arctan2_name][int32_name][int64_name] = [float64_name, & custom_elemwise_arctan2_c[int, long, double]]
-func_map[arctan2_name][int32_name][int32_name] = [float64_name, & custom_elemwise_arctan2_c[int, int, double]]
-
 cpdef dparray dpnp_arctan2(dparray array1, dparray array2):
-    cdef dparray result
-    param1_type = array1.dtype
-    param2_type = array2.dtype
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(array2.dtype)
 
-    cdef custom_math_2in_1out_t kernel_data = _elementwise_2arg_3type(arctan2_name, param1_type.name.encode(), param2_type.name.encode())
-    if (< long > kernel_data.ptr == 0):
-        checker_throw_type_error("dpnp_arctan2", (param1_type, param2_type))
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ARCTAN2, param1_type, param2_type)
 
-    result = dparray(array1.shape, dtype=kernel_data.return_type)
-    kernel_data.ptr(array1.get_data(), array2.get_data(), result.get_data(), array1.size)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray(array1.shape, dtype=result_type)
+
+    cdef custom_math_2in_1out_func_ptr_t func = <custom_math_2in_1out_func_ptr_t > kernel_data.ptr
+    func(array1.get_data(), array2.get_data(), result.get_data(), array1.size)
 
     return result
 
@@ -217,38 +198,17 @@ cpdef dparray dpnp_ceil(dparray array1):
     return result
 
 
-cdef string divide_name = "divide".encode()
-func_map[divide_name][float64_name][float64_name] = [float64_name, & custom_elemwise_divide_c[double, double, double]]
-func_map[divide_name][float64_name][float32_name] = [float64_name, & custom_elemwise_divide_c[double, float, double]]
-func_map[divide_name][float64_name][int64_name] = [float64_name, & custom_elemwise_divide_c[double, long, double]]
-func_map[divide_name][float64_name][int32_name] = [float64_name, & custom_elemwise_divide_c[double, int, double]]
-
-func_map[divide_name][float32_name][float64_name] = [float64_name, & custom_elemwise_divide_c[float, double, double]]
-func_map[divide_name][float32_name][float32_name] = [float32_name, & custom_elemwise_divide_c[float, float, float]]
-func_map[divide_name][float32_name][int64_name] = [float64_name, & custom_elemwise_divide_c[float, long, double]]
-func_map[divide_name][float32_name][int32_name] = [float64_name, & custom_elemwise_divide_c[float, int, double]]
-
-func_map[divide_name][int64_name][float64_name] = [float64_name, & custom_elemwise_divide_c[long, double, double]]
-func_map[divide_name][int64_name][float32_name] = [float64_name, & custom_elemwise_divide_c[long, float, double]]
-func_map[divide_name][int64_name][int64_name] = [int64_name, & custom_elemwise_divide_c[long, long, long]]
-func_map[divide_name][int64_name][int32_name] = [int64_name, & custom_elemwise_divide_c[long, int, long]]
-
-func_map[divide_name][int32_name][float64_name] = [float64_name, & custom_elemwise_divide_c[int, double, double]]
-func_map[divide_name][int32_name][float32_name] = [float64_name, & custom_elemwise_divide_c[int, float, double]]
-func_map[divide_name][int32_name][int64_name] = [int64_name, & custom_elemwise_divide_c[int, long, long]]
-func_map[divide_name][int32_name][int32_name] = [int32_name, & custom_elemwise_divide_c[int, int, int]]
-
 cpdef dparray dpnp_divide(dparray array1, dparray array2):
-    cdef dparray result
-    param1_type = array1.dtype
-    param2_type = array2.dtype
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(array2.dtype)
 
-    cdef custom_math_2in_1out_t kernel_data = _elementwise_2arg_3type(divide_name, param1_type.name.encode(), param2_type.name.encode())
-    if (< long > kernel_data.ptr == 0):
-        checker_throw_type_error("dpnp_divide", (param1_type, param2_type))
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DIVIDE, param1_type, param2_type)
 
-    result = dparray(array1.shape, dtype=kernel_data.return_type)
-    kernel_data.ptr(array1.get_data(), array2.get_data(), result.get_data(), array1.size)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray(array1.shape, dtype=result_type)
+
+    cdef custom_math_2in_1out_func_ptr_t func = <custom_math_2in_1out_func_ptr_t > kernel_data.ptr
+    func(array1.get_data(), array2.get_data(), result.get_data(), array1.size)
 
     return result
 
@@ -281,38 +241,26 @@ cpdef dparray dpnp_floor(dparray array1):
     return result
 
 
-cdef string hypot_name = "hypot".encode()
-func_map[hypot_name][float64_name][float64_name] = [float64_name, & custom_elemwise_hypot_c[double, double, double]]
-func_map[hypot_name][float64_name][float32_name] = [float64_name, & custom_elemwise_hypot_c[double, float, double]]
-func_map[hypot_name][float64_name][int64_name] = [float64_name, & custom_elemwise_hypot_c[double, long, double]]
-func_map[hypot_name][float64_name][int32_name] = [float64_name, & custom_elemwise_hypot_c[double, int, double]]
+cpdef dparray dpnp_floor_divide(dparray array1, dparray array2):
+    cdef dparray result = dparray(array1.shape, dtype=array1.dtype)
 
-func_map[hypot_name][float32_name][float64_name] = [float64_name, & custom_elemwise_hypot_c[float, double, double]]
-func_map[hypot_name][float32_name][float32_name] = [float32_name, & custom_elemwise_hypot_c[float, float, float]]
-func_map[hypot_name][float32_name][int64_name] = [float64_name, & custom_elemwise_hypot_c[float, long, double]]
-func_map[hypot_name][float32_name][int32_name] = [float64_name, & custom_elemwise_hypot_c[float, int, double]]
+    for i in range(result.size):
+        result[i] = (array1[i] // array2[i])
 
-func_map[hypot_name][int64_name][float64_name] = [float64_name, & custom_elemwise_hypot_c[long, double, double]]
-func_map[hypot_name][int64_name][float32_name] = [float64_name, & custom_elemwise_hypot_c[long, float, double]]
-func_map[hypot_name][int64_name][int64_name] = [float64_name, & custom_elemwise_hypot_c[long, long, double]]
-func_map[hypot_name][int64_name][int32_name] = [float64_name, & custom_elemwise_hypot_c[long, int, double]]
+    return result
 
-func_map[hypot_name][int32_name][float64_name] = [float64_name, & custom_elemwise_hypot_c[int, double, double]]
-func_map[hypot_name][int32_name][float32_name] = [float64_name, & custom_elemwise_hypot_c[int, float, double]]
-func_map[hypot_name][int32_name][int64_name] = [float64_name, & custom_elemwise_hypot_c[int, long, double]]
-func_map[hypot_name][int32_name][int32_name] = [float64_name, & custom_elemwise_hypot_c[int, int, double]]
 
 cpdef dparray dpnp_hypot(dparray array1, dparray array2):
-    cdef dparray result
-    param1_type = array1.dtype
-    param2_type = array2.dtype
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(array2.dtype)
 
-    cdef custom_math_2in_1out_t kernel_data = _elementwise_2arg_3type(hypot_name, param1_type.name.encode(), param2_type.name.encode())
-    if (< long > kernel_data.ptr == 0):
-        checker_throw_type_error("dpnp_hypot", (param1_type, param2_type))
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_HYPOT, param1_type, param2_type)
 
-    result = dparray(array1.shape, dtype=kernel_data.return_type)
-    kernel_data.ptr(array1.get_data(), array2.get_data(), result.get_data(), array1.size)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray(array1.shape, dtype=result_type)
+
+    cdef custom_math_2in_1out_func_ptr_t func = <custom_math_2in_1out_func_ptr_t > kernel_data.ptr
+    func(array1.get_data(), array2.get_data(), result.get_data(), array1.size)
 
     return result
 
@@ -347,38 +295,17 @@ cpdef dparray dpnp_minimum(dparray array1, dparray array2):
     return result
 
 
-cdef string multiply_name = "multiply".encode()
-func_map[multiply_name][float64_name][float64_name] = [float64_name, & custom_elemwise_multiply_c[double, double, double]]
-func_map[multiply_name][float64_name][float32_name] = [float64_name, & custom_elemwise_multiply_c[double, float, double]]
-func_map[multiply_name][float64_name][int64_name] = [float64_name, & custom_elemwise_multiply_c[double, long, double]]
-func_map[multiply_name][float64_name][int32_name] = [float64_name, & custom_elemwise_multiply_c[double, int, double]]
-
-func_map[multiply_name][float32_name][float64_name] = [float64_name, & custom_elemwise_multiply_c[float, double, double]]
-func_map[multiply_name][float32_name][float32_name] = [float32_name, & custom_elemwise_multiply_c[float, float, float]]
-func_map[multiply_name][float32_name][int64_name] = [float64_name, & custom_elemwise_multiply_c[float, long, double]]
-func_map[multiply_name][float32_name][int32_name] = [float64_name, & custom_elemwise_multiply_c[float, int, double]]
-
-func_map[multiply_name][int64_name][float64_name] = [float64_name, & custom_elemwise_multiply_c[long, double, double]]
-func_map[multiply_name][int64_name][float32_name] = [float64_name, & custom_elemwise_multiply_c[long, float, double]]
-func_map[multiply_name][int64_name][int64_name] = [int64_name, & custom_elemwise_multiply_c[long, long, long]]
-func_map[multiply_name][int64_name][int32_name] = [int64_name, & custom_elemwise_multiply_c[long, int, long]]
-
-func_map[multiply_name][int32_name][float64_name] = [float64_name, & custom_elemwise_multiply_c[int, double, double]]
-func_map[multiply_name][int32_name][float32_name] = [float64_name, & custom_elemwise_multiply_c[int, float, double]]
-func_map[multiply_name][int32_name][int64_name] = [int64_name, & custom_elemwise_multiply_c[int, long, long]]
-func_map[multiply_name][int32_name][int32_name] = [int32_name, & custom_elemwise_multiply_c[int, int, int]]
-
 cpdef dparray dpnp_multiply(dparray array1, dparray array2):
-    cdef dparray result
-    param1_type = array1.dtype
-    param2_type = array2.dtype
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(array2.dtype)
 
-    cdef custom_math_2in_1out_t kernel_data = _elementwise_2arg_3type(multiply_name, param1_type.name.encode(), param2_type.name.encode())
-    if (< long > kernel_data.ptr == 0):
-        checker_throw_type_error("dpnp_multiply", (param1_type, param2_type))
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MULTIPLY, param1_type, param2_type)
 
-    result = dparray(array1.shape, dtype=kernel_data.return_type)
-    kernel_data.ptr(array1.get_data(), array2.get_data(), result.get_data(), array1.size)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray(array1.shape, dtype=result_type)
+
+    cdef custom_math_2in_1out_func_ptr_t func = <custom_math_2in_1out_func_ptr_t > kernel_data.ptr
+    func(array1.get_data(), array2.get_data(), result.get_data(), array1.size)
 
     return result
 
@@ -392,38 +319,32 @@ cpdef dparray dpnp_negative(dparray array1):
     return result
 
 
-cdef string power_name = "power".encode()
-func_map[power_name][float64_name][float64_name] = [float64_name, & custom_elemwise_power_c[double, double, double]]
-func_map[power_name][float64_name][float32_name] = [float64_name, & custom_elemwise_power_c[double, float, double]]
-func_map[power_name][float64_name][int64_name] = [float64_name, & custom_elemwise_power_c[double, long, double]]
-func_map[power_name][float64_name][int32_name] = [float64_name, & custom_elemwise_power_c[double, int, double]]
-
-func_map[power_name][float32_name][float64_name] = [float64_name, & custom_elemwise_power_c[float, double, double]]
-func_map[power_name][float32_name][float32_name] = [float32_name, & custom_elemwise_power_c[float, float, float]]
-func_map[power_name][float32_name][int64_name] = [float64_name, & custom_elemwise_power_c[float, long, double]]
-func_map[power_name][float32_name][int32_name] = [float64_name, & custom_elemwise_power_c[float, int, double]]
-
-func_map[power_name][int64_name][float64_name] = [float64_name, & custom_elemwise_power_c[long, double, double]]
-func_map[power_name][int64_name][float32_name] = [float64_name, & custom_elemwise_power_c[long, float, double]]
-func_map[power_name][int64_name][int64_name] = [int64_name, & custom_elemwise_power_c[long, long, long]]
-func_map[power_name][int64_name][int32_name] = [int64_name, & custom_elemwise_power_c[long, int, long]]
-
-func_map[power_name][int32_name][float64_name] = [float64_name, & custom_elemwise_power_c[int, double, double]]
-func_map[power_name][int32_name][float32_name] = [float64_name, & custom_elemwise_power_c[int, float, double]]
-func_map[power_name][int32_name][int64_name] = [int64_name, & custom_elemwise_power_c[int, long, long]]
-func_map[power_name][int32_name][int32_name] = [int32_name, & custom_elemwise_power_c[int, int, int]]
-
 cpdef dparray dpnp_power(dparray array1, dparray array2):
-    cdef dparray result
-    param1_type = array1.dtype
-    param2_type = array2.dtype
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(array2.dtype)
 
-    cdef custom_math_2in_1out_t kernel_data = _elementwise_2arg_3type(power_name, param1_type.name.encode(), param2_type.name.encode())
-    if (< long > kernel_data.ptr == 0):
-        checker_throw_type_error("dpnp_power", (param1_type, param2_type))
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_POWER, param1_type, param2_type)
 
-    result = dparray(array1.shape, dtype=kernel_data.return_type)
-    kernel_data.ptr(array1.get_data(), array2.get_data(), result.get_data(), array1.size)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray(array1.shape, dtype=result_type)
+
+    cdef custom_math_2in_1out_func_ptr_t func = <custom_math_2in_1out_func_ptr_t > kernel_data.ptr
+    func(array1.get_data(), array2.get_data(), result.get_data(), array1.size)
+
+    return result
+
+
+cpdef dparray dpnp_fmod(dparray array1, dparray array2):
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(array2.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FMOD, param1_type, param2_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray(array1.shape, dtype=result_type)
+
+    cdef custom_math_2in_1out_func_ptr_t func = <custom_math_2in_1out_func_ptr_t > kernel_data.ptr
+    func(array1.get_data(), array2.get_data(), result.get_data(), array1.size)
 
     return result
 
@@ -462,38 +383,17 @@ cpdef dparray dpnp_sign(dparray array1):
     return result
 
 
-cdef string subtract_name = "subtract".encode()
-func_map[subtract_name][float64_name][float64_name] = [float64_name, & custom_elemwise_subtract_c[double, double, double]]
-func_map[subtract_name][float64_name][float32_name] = [float64_name, & custom_elemwise_subtract_c[double, float, double]]
-func_map[subtract_name][float64_name][int64_name] = [float64_name, & custom_elemwise_subtract_c[double, long, double]]
-func_map[subtract_name][float64_name][int32_name] = [float64_name, & custom_elemwise_subtract_c[double, int, double]]
-
-func_map[subtract_name][float32_name][float64_name] = [float64_name, & custom_elemwise_subtract_c[float, double, double]]
-func_map[subtract_name][float32_name][float32_name] = [float32_name, & custom_elemwise_subtract_c[float, float, float]]
-func_map[subtract_name][float32_name][int64_name] = [float64_name, & custom_elemwise_subtract_c[float, long, double]]
-func_map[subtract_name][float32_name][int32_name] = [float64_name, & custom_elemwise_subtract_c[float, int, double]]
-
-func_map[subtract_name][int64_name][float64_name] = [float64_name, & custom_elemwise_subtract_c[long, double, double]]
-func_map[subtract_name][int64_name][float32_name] = [float64_name, & custom_elemwise_subtract_c[long, float, double]]
-func_map[subtract_name][int64_name][int64_name] = [int64_name, & custom_elemwise_subtract_c[long, long, long]]
-func_map[subtract_name][int64_name][int32_name] = [int64_name, & custom_elemwise_subtract_c[long, int, long]]
-
-func_map[subtract_name][int32_name][float64_name] = [float64_name, & custom_elemwise_subtract_c[int, double, double]]
-func_map[subtract_name][int32_name][float32_name] = [float64_name, & custom_elemwise_subtract_c[int, float, double]]
-func_map[subtract_name][int32_name][int64_name] = [int64_name, & custom_elemwise_subtract_c[int, long, long]]
-func_map[subtract_name][int32_name][int32_name] = [int32_name, & custom_elemwise_subtract_c[int, int, int]]
-
 cpdef dparray dpnp_subtract(dparray array1, dparray array2):
-    cdef dparray result
-    param1_type = array1.dtype
-    param2_type = array2.dtype
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(array2.dtype)
 
-    cdef custom_math_2in_1out_t kernel_data = _elementwise_2arg_3type(subtract_name, param1_type.name.encode(), param2_type.name.encode())
-    if (< long > kernel_data.ptr == 0):
-        checker_throw_type_error("dpnp_subtract", (param1_type, param2_type))
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_SUBTRACT, param1_type, param2_type)
 
-    result = dparray(array1.shape, dtype=kernel_data.return_type)
-    kernel_data.ptr(array1.get_data(), array2.get_data(), result.get_data(), array1.size)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray(array1.shape, dtype=result_type)
+
+    cdef custom_math_2in_1out_func_ptr_t func = <custom_math_2in_1out_func_ptr_t > kernel_data.ptr
+    func(array1.get_data(), array2.get_data(), result.get_data(), array1.size)
 
     return result
 

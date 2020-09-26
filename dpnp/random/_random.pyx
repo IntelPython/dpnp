@@ -34,13 +34,13 @@ Set of functions to implement NumPy random module API
 
 """
 
+
 import numpy
-from dpnp.dparray cimport dparray
-from dpnp.backend cimport *
 
 import dpnp.config as config
-from dpnp.dpnp_utils import (use_origin_backend, checker_throw_value_error,
-                             checker_throw_runtime_error, checker_throw_type_error)
+from dpnp.backend cimport *
+from dpnp.dparray cimport dparray
+from dpnp.dpnp_utils cimport *
 
 
 cpdef dparray dpnp_randn(dims):
