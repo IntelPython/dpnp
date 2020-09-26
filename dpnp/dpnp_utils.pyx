@@ -43,23 +43,55 @@ cimport numpy
 Python import functions
 """
 __all__ = [
+    "call_origin",
     "checker_throw_axis_error",
     "checker_throw_index_error",
     "checker_throw_runtime_error",
     "checker_throw_type_error",
     "checker_throw_value_error",
-    # "copy_values_to_dparray",
     "dp2nd_array",
     "_get_linear_index",
-    # "get_shape_dtype",
     "nd2dp_array",
     "normalize_axis",
-    # "_normalize_order",
     "_object_to_tuple",
     "use_origin_backend"
 ]
 
 cdef ERROR_PREFIX = "Intel NumPy error:"
+
+
+def call_origin(function, *args, **kwargs):
+    """
+    Call fallback function for unsupported cases
+    """
+
+    kwargs_out = kwargs.get("out", None)
+    if (kwargs_out is not None):
+        kwargs["out"] = dpnp.asnumpy(kwargs_out) if isinstance(kwargs_out, dparray) else kwargs_out
+
+    args_new = []
+    for arg in args:
+        argx = dpnp.asnumpy(arg) if isinstance(arg, dparray) else arg
+        args_new.append(argx)
+
+    # TODO need to put dparray memory into NumPy call
+    result_origin = function(*args_new, **kwargs)
+    result = result_origin
+    if isinstance(result, numpy.ndarray):
+        if (kwargs_out is None):
+            result_dtype = result_origin.dtype
+            kwargs_dtype = kwargs.get("dtype", None)
+            if (kwargs_dtype is not None):
+                result_dtype = kwargs_dtype
+
+            result = dparray(result_origin.shape, dtype=result_dtype)
+        else:
+            result = kwargs_out
+
+        for i in range(result.size):
+            result._setitem_scalar(i, result_origin.item(i))
+
+    return result
 
 
 cpdef checker_throw_axis_error(function_name, param_name, param, expected):

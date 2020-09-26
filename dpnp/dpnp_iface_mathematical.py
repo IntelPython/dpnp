@@ -76,33 +76,6 @@ __all__ = [
 ]
 
 
-def _origin_backend(function, *args, **kwargs):
-    """
-    Call fallback function for unsupported cases
-    """
-
-    args_new = []
-    for arg in args:
-        argx = dpnp.asnumpy(arg) if isinstance(arg, dparray) else arg
-        args_new.append(argx)
-
-    # TODO need to put dparray memory into NumPy call
-    result_origin = function(*args_new, **kwargs)
-    result = result_origin
-    if isinstance(result, numpy.ndarray):
-        result_dtype = result_origin.dtype
-
-        kwargs_dtype = kwargs.get("dtype", None)
-        if (kwargs_dtype is not None):
-            result_dtype = kwargs_dtype
-
-        result = dparray(result_origin.shape, dtype=result_dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_origin.item(i))
-
-    return result
-
-
 def abs(*args, **kwargs):
     """
     Calculate the absolute value element-wise.
@@ -140,7 +113,7 @@ def absolute(x1, **kwargs):
 
         return result
 
-    return _origin_backend(numpy.absolute, x1, **kwargs)
+    return call_origin(numpy.absolute, x1, **kwargs)
 
 
 def add(x1, x2, **kwargs):
@@ -175,7 +148,7 @@ def add(x1, x2, **kwargs):
 
         return dpnp_add(x1, x2)
 
-    return _origin_backend(numpy.add, x1, x2, **kwargs)
+    return call_origin(numpy.add, x1, x2, **kwargs)
 
 
 def ceil(x1, **kwargs):
@@ -191,7 +164,7 @@ def ceil(x1, **kwargs):
     if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
         return dpnp_ceil(x1)
 
-    return _origin_backend(numpy.ceil, x1, x2, **kwargs)
+    return call_origin(numpy.ceil, x1, x2, **kwargs)
 
 
 def divide(x1, x2, **kwargs):
@@ -226,7 +199,7 @@ def divide(x1, x2, **kwargs):
 
         return dpnp_divide(x1, x2)
 
-    return _origin_backend(numpy.divide, x1, x2, **kwargs)
+    return call_origin(numpy.divide, x1, x2, **kwargs)
 
 
 def fabs(x1, **kwargs):
@@ -242,7 +215,7 @@ def fabs(x1, **kwargs):
     if (not use_origin_backend(x1) and is_x1_dparray):
         return dpnp_fabs(x1)
 
-    return _origin_backend(numpy.fabs, x1, **kwargs)
+    return call_origin(numpy.fabs, x1, **kwargs)
 
 
 def floor(x1, **kwargs):
@@ -261,7 +234,7 @@ def floor(x1, **kwargs):
     if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
         return dpnp_floor(x1)
 
-    return _origin_backend(numpy.floor, x1, **kwargs)
+    return call_origin(numpy.floor, x1, **kwargs)
 
 
 def floor_divide(x1, x2, **kwargs):
@@ -278,7 +251,7 @@ def floor_divide(x1, x2, **kwargs):
     if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
         return dpnp_floor_divide(x1)
 
-    return _origin_backend(numpy.floor_divide, x1, x2, **kwargs)
+    return call_origin(numpy.floor_divide, x1, x2, **kwargs)
 
 
 def fmax(*args, **kwargs):
@@ -350,7 +323,7 @@ def fmod(x1, x2, **kwargs):
 
         return dpnp_fmod(x1, x2)
 
-    return _origin_backend(numpy.fmod, x1, x2, **kwargs)
+    return call_origin(numpy.fmod, x1, x2, **kwargs)
 
 
 def maximum(x1, x2, **kwargs):
@@ -373,7 +346,7 @@ def maximum(x1, x2, **kwargs):
 
         return dpnp_maximum(x1, x2)
 
-    return _origin_backend(numpy.maximum, x1, x2, **kwargs)
+    return call_origin(numpy.maximum, x1, x2, **kwargs)
 
 
 def minimum(x1, x2, **kwargs):
@@ -396,7 +369,7 @@ def minimum(x1, x2, **kwargs):
 
         return dpnp_minimum(x1, x2)
 
-    return _origin_backend(numpy.minimum, x1, x2, **kwargs)
+    return call_origin(numpy.minimum, x1, x2, **kwargs)
 
 
 def mod(*args, **kwargs):
@@ -444,7 +417,7 @@ def multiply(x1, x2, **kwargs):
 
         return dpnp_multiply(x1, x2)
 
-    return _origin_backend(numpy.multiply, x1, x2, **kwargs)
+    return call_origin(numpy.multiply, x1, x2, **kwargs)
 
 
 def negative(x1, **kwargs):
@@ -460,7 +433,7 @@ def negative(x1, **kwargs):
     if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
         return dpnp_negative(x1, x2)
 
-    return _origin_backend(numpy.negative, x1, **kwargs)
+    return call_origin(numpy.negative, x1, **kwargs)
 
 
 def power(x1, x2, **kwargs):
@@ -495,7 +468,7 @@ def power(x1, x2, **kwargs):
 
         return dpnp_power(x1, x2)
 
-    return _origin_backend(numpy.power, x1, x2, **kwargs)
+    return call_origin(numpy.power, x1, x2, **kwargs)
 
 
 def prod(x1, **kwargs):
@@ -511,7 +484,7 @@ def prod(x1, **kwargs):
     if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
         return dpnp_prod(x1)
 
-    return _origin_backend(numpy.prod, x1, **kwargs)
+    return call_origin(numpy.prod, x1, **kwargs)
 
 
 def remainder(x1, x2, **kwargs):
@@ -531,7 +504,7 @@ def remainder(x1, x2, **kwargs):
 
         return dpnp_remainder(x1, x2)
 
-    return _origin_backend(numpy.remainder, x1, x2, **kwargs)
+    return call_origin(numpy.remainder, x1, x2, **kwargs)
 
 
 def sign(x1, **kwargs):
@@ -547,7 +520,7 @@ def sign(x1, **kwargs):
     if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
         return dpnp_sign(x1)
 
-    return _origin_backend(numpy.sign, x1, **kwargs)
+    return call_origin(numpy.sign, x1, **kwargs)
 
 
 def subtract(x1, x2, **kwargs):
@@ -583,7 +556,7 @@ def subtract(x1, x2, **kwargs):
 
             return dpnp_subtract(x1, x2)
 
-    return _origin_backend(numpy.subtract, x1, x2, **kwargs)
+    return call_origin(numpy.subtract, x1, x2, **kwargs)
 
 
 def sum(x1, **kwargs):
@@ -599,7 +572,7 @@ def sum(x1, **kwargs):
     if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
         return dpnp_sum(x1)
 
-    return _origin_backend(numpy.sum, x1, **kwargs)
+    return call_origin(numpy.sum, x1, **kwargs)
 
 
 def true_divide(*args, **kwargs):
@@ -626,4 +599,4 @@ def trunc(x1, **kwargs):
     if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
         return dpnp_trunc(x1)
 
-    return _origin_backend(numpy.trunc, x1, **kwargs)
+    return call_origin(numpy.trunc, x1, **kwargs)

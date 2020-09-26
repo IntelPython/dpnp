@@ -60,7 +60,7 @@ __all__ = [
 ]
 
 
-def dot(in_array1, in_array2, out_array=None):
+def dot(x1, x2, **kwargs):
     """
     Dot product of two arrays. Specifically,
 
@@ -105,25 +105,26 @@ def dot(in_array1, in_array2, out_array=None):
 
     """
 
-    if (use_origin_backend()):
-        return numpy.matmul(in_array1, in_array2)
+    is_x1_dparray = isinstance(x1, dparray)
+    is_x2_dparray = isinstance(x2, dparray)
 
-    if out_array is not None:
-        checker_throw_value_error("dot", "out_array", type(out_array), None)
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
+        dim1 = x1.ndim
+        dim2 = x2.ndim
 
-    if (in_array1.dtype != in_array2.dtype):
-        checker_throw_value_error("dot", "types", in_array2.dtype, in_array1.dtype)
+        if not (dim1 >= 2 and dim2 == 1) and not (dim1 >= 2 and dim2 >= 2) and (x1.dtype == x2.dtype):
+            result = dpnp_dot(x1, x2)
 
-    result = dpnp_dot(in_array1, in_array2)
+            # scalar returned
+            if result.shape == (1,):
+                return result.dtype.type(result[0])
 
-    # scalar returned
-    if result.shape == (1,):
-        return result.dtype.type(result[0])
+            return result
 
-    return result
+    return call_origin(numpy.dot, x1, x2, **kwargs)
 
 
-def einsum(*operands, **kwargs):
+def einsum(*args, **kwargs):
     """
     einsum(subscripts, *operands, dtype=False)
 
@@ -138,19 +139,10 @@ def einsum(*operands, **kwargs):
 
     """
 
-    new_operands = []
-
-    for item in operands:
-        if isinstance(item, dparray):
-            dpnp_array = dpnp.asnumpy(item)
-            new_operands.append(dpnp_array)
-        else:
-            new_operands.append(item)
-
-    return numpy.einsum(*new_operands, **kwargs)
+    return call_origin(numpy.einsum, *args, **kwargs)
 
 
-def einsum_path(*operands, **kwargs):
+def einsum_path(*args, **kwargs):
     """
     einsum_path(subscripts, *operands, optimize='greedy')
 
@@ -163,19 +155,10 @@ def einsum_path(*operands, **kwargs):
 
     """
 
-    new_operands = []
-
-    for item in operands:
-        if isinstance(item, dparray):
-            dpnp_array = dpnp.asnumpy(item)
-            new_operands.append(dpnp_array)
-        else:
-            new_operands.append(item)
-
-    return numpy.einsum_path(*new_operands, **kwargs)
+    return call_origin(numpy.einsum_path, *args, **kwargs)
 
 
-def inner(x1, x2):
+def inner(x1, x2, **kwargs):
     """
     Returns the inner product of two vectors.
 
@@ -189,24 +172,13 @@ def inner(x1, x2):
     is_x1_dparray = isinstance(x1, dparray)
     is_x2_dparray = isinstance(x2, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray):
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
         return dpnp_inner(x1, x2)
 
-    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
-    input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.inner(input1, input2)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return call_origin(numpy.inner, x1, x2, **kwargs)
 
 
-def kron(input1, input2):
+def kron(x1, x2, **kwargs):
     """
     Returns the kronecker product of two arrays.
 
@@ -214,22 +186,10 @@ def kron(input1, input2):
 
     """
 
-    if isinstance(input1, dparray):
-        input1_n = dpnp.asnumpy(input1)
-    else:
-        input1_n = input1
-
-    if isinstance(input2, dparray):
-        input2_n = dpnp.asnumpy(input2)
-    else:
-        input2_n = input2
-
-    result = numpy.kron(input1_n, input2_n)
-
-    return result
+    return call_origin(numpy.kron, x1, x2, **kwargs)
 
 
-def outer(x1, x2, out=None):
+def outer(x1, x2, **kwargs):
     """
     Returns the outer product of two vectors.
 
@@ -243,21 +203,10 @@ def outer(x1, x2, out=None):
     is_x1_dparray = isinstance(x1, dparray)
     is_x2_dparray = isinstance(x2, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and (out is None)):
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
         return dpnp_outer(x1, x2)
 
-    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
-    input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.outer(input1, input2, out)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return call_origin(numpy.outer, x1, x2, **kwargs)
 
 
 def vdot(*args, **kwargs):

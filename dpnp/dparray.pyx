@@ -84,7 +84,7 @@ cdef class dparray:
             order = utils._normalize_order(order)
 
         if order != b'C' and order != b'F':
-            raise TypeError("Intel NumPy dparray::__init__(): Parameter is not understood. order={}".format(order))
+            raise TypeError(f"Intel DPNP::__init__(): Parameter is not understood. order={order}")
 
         # dtype
         self._dparray_dtype = numpy.dtype(dtype)

@@ -60,12 +60,6 @@ cpdef dparray dpnp_dot(dparray in_array1, dparray in_array2):
     if dim1 == 0 or dim2 == 0:
         return dpnp_multiply(in_array1, in_array2)
 
-    if dim1 >= 2 and dim2 == 1:
-        raise NotImplementedError
-
-    if dim1 >= 2 and dim2 >= 2:
-        raise NotImplementedError
-
     cdef size_t size1 = 0
     cdef size_t size2 = 0
     if not shape1.empty():
