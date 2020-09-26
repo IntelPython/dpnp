@@ -352,10 +352,7 @@ def floor_divide(x1, x2, out=None, where=True, casting='same_kind', order='K', d
 
     is_x1_dparray = isinstance(x1, dparray)
     is_x2_dparray = isinstance(x2, dparray)
-    print("========================")
-    print(f"x1={x1}")
-    print(f"x2={x2}")
-    print(f"is_x1_dparray={is_x1_dparray}")
+
     if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and dtype is None):
         if out is not None:
             checker_throw_value_error("floor_divide", "out", out, None)
@@ -369,8 +366,6 @@ def floor_divide(x1, x2, out=None, where=True, casting='same_kind', order='K', d
     result_numpy = numpy.floor_divide(input1, input2, out=out, where=where,
                                       casting=casting, order=order, dtype=dtype, subok=subok)
     result = result_numpy
-    print(f"result={result}")
-    print(f"isinstance(result, numpy.ndarray)={isinstance(result, numpy.ndarray)}")
     if isinstance(result, numpy.ndarray):
         result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
         for i in range(result.size):
