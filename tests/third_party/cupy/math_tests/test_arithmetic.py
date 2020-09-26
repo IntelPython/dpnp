@@ -147,11 +147,11 @@ class ArithmeticBinaryBase:
         # depending on the architecture.
         # As it is not possible for CuPy to replicate this behavior, we ignore
         # the difference here.
-        if self.name in ('floor_divide', 'remainder', 'mod'):
-            if y.dtype in (float_types + complex_types) and (np2 == 0).any():
-                y = xp.asarray(y)
-                y[y == numpy.inf] = numpy.nan
-                y[y == -numpy.inf] = numpy.nan
+        # if self.name in ('floor_divide', 'remainder', 'mod'):
+        #     if y.dtype in (float_types + complex_types) and (np2 == 0).any():
+        #         y = xp.asarray(y)
+        #         y[y == numpy.inf] = numpy.nan
+        #        y[y == -numpy.inf] = numpy.nan
 
         return y
 

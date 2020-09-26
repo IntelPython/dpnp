@@ -49,6 +49,7 @@ __all__ += [
     "dpnp_divide",
     "dpnp_fabs",
     "dpnp_floor",
+    "dpnp_floor_divide",
     "dpnp_fmod",
     'dpnp_hypot',
     "dpnp_maximum",
@@ -238,6 +239,16 @@ cpdef dparray dpnp_floor(dparray array1):
     func(array1.get_data(), result.get_data(), array1.size)
 
     return result
+
+
+cpdef dparray dpnp_floor_divide(dparray array1, dparray array2):
+    cdef dparray result = dparray(array1.shape, dtype=array1.dtype)
+
+    for i in range(result.size):
+        result[i] = (array1[i] // array2[i])
+
+    return result
+
 
 cpdef dparray dpnp_hypot(dparray array1, dparray array2):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
