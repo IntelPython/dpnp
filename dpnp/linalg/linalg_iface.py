@@ -49,7 +49,8 @@ import numpy
 
 __all__ = [
     "eig",
-    "matrix_power"
+    "matrix_power",
+    "multi_dot"
 ]
 
 
@@ -119,5 +120,41 @@ def matrix_power(input, count):
         result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
         for i in range(result.size):
             result._setitem_scalar(i, result_numpy.item(i))
+
+    return result
+
+
+def multi_dot(arrays, out=None):
+    """
+    Compute the dot product of two or more arrays in a single function call
+
+    Parameters
+    ----------
+    arrays : sequence of array_like
+        If the first argument is 1-D it is treated as row vector.
+        If the last argument is 1-D it is treated as column vector.
+        The other arguments must be 2-D.
+    out : ndarray, optional
+        unsupported
+
+    Returns
+    -------
+    output : ndarray
+        Returns the dot product of the supplied arrays.
+
+    See Also
+    --------
+    :meth:`numpy.multi_dot`
+
+    """
+
+    n = len(arrays)
+
+    if n < 2:
+        checker_throw_value_error("multi_dot", "arrays", n, ">1")
+
+    result = arrays[0]
+    for id in range(1, n):
+        result = dpnp.dot(result, arrays[id])
 
     return result

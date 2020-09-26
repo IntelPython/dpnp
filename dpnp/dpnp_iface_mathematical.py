@@ -75,11 +75,39 @@ __all__ = [
 ]
 
 
-def abs(x):
-    return dpnp.absolute(x)
+def _fallback(function, *args, **kwargs):
+    """
+    Call fallback function for unsupported cases
+    """
+
+    args_new = []
+    for arg in args:
+        argx = dpnp.asnumpy(arg) if isinstance(arg, dparray) else arg
+        args_new.append(argx)
+
+    # TODO need to put dparray memory into NumPy call
+    result_fallback = function(*args_new, **kwargs)
+    result = result_fallback
+    if isinstance(result, numpy.ndarray):
+        result = dparray(result_fallback.shape, dtype=result_fallback.dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_fallback.item(i))
+
+    return result
 
 
-def absolute(input):
+def abs(*args, **kwargs):
+    """
+    Calculate the absolute value element-wise.
+
+    .. seealso:: :func:`numpy.add`
+
+    """
+
+    return dpnp.absolute(*args, **kwargs)
+
+
+def absolute(input, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
     """
     Calculate the absolute value element-wise.
 
@@ -113,7 +141,7 @@ def absolute(input):
     input1 = dpnp.asnumpy(input) if is_input_dparray else input
 
     # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.abs(input1)
+    result_numpy = numpy.absolute(input1, out=out, where=where, casting=casting, order=order, dtype=dtype, subok=subok)
     result = result_numpy
     if isinstance(result, numpy.ndarray):
         result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
@@ -123,7 +151,7 @@ def absolute(input):
     return result
 
 
-def add(x1, x2, out=None):
+def add(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
     """
     Add arguments element-wise.
 
@@ -162,7 +190,8 @@ def add(x1, x2, out=None):
     input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
 
     # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.add(input1, input2, out=out)
+    result_numpy = numpy.add(input1, input2, out=out, where=where, casting=casting,
+                             order=order, dtype=dtype, subok=subok)
     result = result_numpy
     if isinstance(result, numpy.ndarray):
         result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
@@ -172,7 +201,7 @@ def add(x1, x2, out=None):
     return result
 
 
-def ceil(x1, out=None):
+def ceil(x1, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
     """
     Compute  the ceiling of the input, element-wise.
 
@@ -191,7 +220,7 @@ def ceil(x1, out=None):
     input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
 
     # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.ceil(input1, out=out)
+    result_numpy = numpy.ceil(input1, out=out, where=where, casting=casting, order=order, dtype=dtype, subok=subok)
     result = result_numpy
     if isinstance(result, numpy.ndarray):
         result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
@@ -201,7 +230,7 @@ def ceil(x1, out=None):
     return result
 
 
-def divide(x1, x2, out=None):
+def divide(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
     """
     Divide arguments element-wise.
 
@@ -240,7 +269,8 @@ def divide(x1, x2, out=None):
     input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
 
     # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.divide(input1, input2, out=out)
+    result_numpy = numpy.divide(input1, input2, out=out, where=where, casting=casting,
+                                order=order, dtype=dtype, subok=subok)
     result = result_numpy
     if isinstance(result, numpy.ndarray):
         result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
@@ -250,7 +280,7 @@ def divide(x1, x2, out=None):
     return result
 
 
-def fabs(x1, out=None):
+def fabs(x1, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
     """
     Compute the absolute values element-wise.
 
@@ -269,7 +299,7 @@ def fabs(x1, out=None):
     input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
 
     # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.fabs(input1, out=out)
+    result_numpy = numpy.fabs(input1, out=out, where=where, casting=casting, order=order, dtype=dtype, subok=subok)
     result = result_numpy
     if isinstance(result, numpy.ndarray):
         result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
@@ -279,7 +309,7 @@ def fabs(x1, out=None):
     return result
 
 
-def floor(x1, out=None):
+def floor(x1, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
     """
     Compute the floor of the input, element-wise.
 
@@ -301,7 +331,7 @@ def floor(x1, out=None):
     input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
 
     # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.floor(input1, out=out)
+    result_numpy = numpy.floor(input1, out=out, where=where, casting=casting, order=order, dtype=dtype, subok=subok)
     result = result_numpy
     if isinstance(result, numpy.ndarray):
         result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
@@ -311,7 +341,7 @@ def floor(x1, out=None):
     return result
 
 
-def fmax(x1, x2, out=None):
+def fmax(*args, **kwargs):
     """
     Element-wise maximum of array elements.
 
@@ -319,10 +349,10 @@ def fmax(x1, x2, out=None):
 
     """
 
-    return dpnp.maximum(x1, x2, out)
+    return dpnp.maximum(*args, **kwargs)
 
 
-def fmin(x1, x2, out=None):
+def fmin(*args, **kwargs):
     """
     Element-wise minimum of array elements.
 
@@ -330,7 +360,7 @@ def fmin(x1, x2, out=None):
 
     """
 
-    return dpnp.minimum(x1, x2, out)
+    return dpnp.minimum(*args, **kwargs)
 
 
 def fmod(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
@@ -401,7 +431,7 @@ def fmod(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=Non
     return result
 
 
-def maximum(x1, x2, out=None):
+def maximum(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
     """
     Element-wise maximum of array elements.
 
@@ -428,7 +458,8 @@ def maximum(x1, x2, out=None):
     input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
 
     # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.maximum(input1, input2, out=out)
+    result_numpy = numpy.maximum(input1, input2, out=out, where=where, casting=casting,
+                                 order=order, dtype=dtype, subok=subok)
     result = result_numpy
     if isinstance(result, numpy.ndarray):
         result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
@@ -438,7 +469,7 @@ def maximum(x1, x2, out=None):
     return result
 
 
-def minimum(x1, x2, out=None):
+def minimum(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
     """
     Element-wise minimum of array elements.
 
@@ -465,7 +496,8 @@ def minimum(x1, x2, out=None):
     input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
 
     # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.minimum(input1, input2, out=out)
+    result_numpy = numpy.minimum(input1, input2, out=out, where=where, casting=casting,
+                                 order=order, dtype=dtype, subok=subok)
     result = result_numpy
     if isinstance(result, numpy.ndarray):
         result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
@@ -488,7 +520,7 @@ def mod(*args, **kwargs):
     return dpnp.remainder(*args, **kwargs)
 
 
-def multiply(x1, x2, out=None):
+def multiply(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
     """
     Multiply arguments element-wise.
 
@@ -527,7 +559,8 @@ def multiply(x1, x2, out=None):
     input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
 
     # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.multiply(input1, input2, out=out)
+    result_numpy = numpy.multiply(input1, input2, out=out, where=where, casting=casting,
+                                  order=order, dtype=dtype, subok=subok)
     result = result_numpy
     if isinstance(result, numpy.ndarray):
         result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
@@ -537,7 +570,7 @@ def multiply(x1, x2, out=None):
     return result
 
 
-def negative(x1):
+def negative(x1, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
     """
     Negative element-wise.
 
@@ -546,15 +579,15 @@ def negative(x1):
     """
 
     if (use_origin_backend(x1)):
-        return numpy.negative(x1)
+        return numpy.negative(x1, out=out, where=where, casting=casting, order=order, dtype=dtype, subok=subok)
 
     if not isinstance(x1, dparray):
-        return numpy.negative(x1)
+        return numpy.negative(x1, out=out, where=where, casting=casting, order=order, dtype=dtype, subok=subok)
 
     return dpnp_negative(x1)
 
 
-def power(x1, x2, out=None, modulo=None):
+def power(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
     """
     First array elements raised to powers from second array, element-wise.
 
@@ -575,17 +608,13 @@ def power(x1, x2, out=None, modulo=None):
     """
 
     if (use_origin_backend(x1)):
-        return numpy.power(x1, x2, out=out)
+        return numpy.power(x1, x2, out=out, where=where, casting=casting, order=order, dtype=dtype, subok=subok)
 
     if not (isinstance(x1, dparray) or isinstance(x2, dparray)):
-        return numpy.power(x1, x2, out=out)
+        return numpy.power(x1, x2, out=out, where=where, casting=casting, order=order, dtype=dtype, subok=subok)
 
     if out is not None:
         checker_throw_value_error("power", "out", type(out), None)
-
-    # modulo parameter is not supported at now
-    if modulo is not None:
-        checker_throw_value_error("__pow__", "modulo", modulo, None)
 
     if (x1.size != x2.size):
         checker_throw_value_error("power", "size", x1.size, x2.size)
@@ -607,13 +636,13 @@ def prod(x1, axis=None, dtype=None, out=None, keepdims=False, initial=1, where=T
     is_x1_dparray = isinstance(x1, dparray)
 
     if (not use_origin_backend(x1)
-        and is_x1_dparray
-        and (axis is None)
-        and (dtype is None)
-        and (out is None)
-        and (keepdims is False)
-        and (initial is 1)
-        and (where is True)
+            and is_x1_dparray
+            and (axis is None)
+            and (dtype is None)
+            and (out is None)
+            and (keepdims is False)
+            and (initial is 1)
+            and (where is True)
         ):
         return dpnp_prod(x1)
 
@@ -638,7 +667,7 @@ def remainder(x1, x2, out=None, where=True, casting='same_kind', order='K', dtyp
     is_x1_dparray = isinstance(x1, dparray)
     is_x2_dparray = isinstance(x2, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray):
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and dtype is None):
         if out is not None:
             checker_throw_value_error("remainder", "out", out, None)
 
@@ -654,7 +683,8 @@ def remainder(x1, x2, out=None, where=True, casting='same_kind', order='K', dtyp
     input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
 
     # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.remainder(input1, input2, out=out)
+    result_numpy = numpy.remainder(input1, input2, out=out, where=where, casting=casting,
+                                   order=order, dtype=dtype, subok=subok)
     result = result_numpy
     if isinstance(result, numpy.ndarray):
         result_dtype = result_numpy.dtype
@@ -667,7 +697,7 @@ def remainder(x1, x2, out=None, where=True, casting='same_kind', order='K', dtyp
     return result
 
 
-def sign(x1, out=None):
+def sign(x1, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
     """
     Compute the absolute values element-wise.
 
@@ -686,7 +716,7 @@ def sign(x1, out=None):
     input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
 
     # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.sign(input1, out=out)
+    result_numpy = numpy.sign(input1, out=out, where=where, casting=casting, order=order, dtype=dtype, subok=subok)
     result = result_numpy
     if isinstance(result, numpy.ndarray):
         result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
@@ -696,7 +726,7 @@ def sign(x1, out=None):
     return result
 
 
-def subtract(x1, x2, out=None):
+def subtract(x1, x2, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
     """
     Subtract arguments, element-wise.
 
@@ -735,7 +765,8 @@ def subtract(x1, x2, out=None):
     input2 = dpnp.asnumpy(x2) if is_x2_dparray else x2
 
     # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.subtract(input1, input2, out=out)
+    result_numpy = numpy.subtract(input1, input2, out=out, where=where, casting=casting,
+                                  order=order, dtype=dtype, subok=subok)
     result = result_numpy
     if isinstance(result, numpy.ndarray):
         result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
@@ -756,13 +787,13 @@ def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=0, where=Tr
     is_x1_dparray = isinstance(x1, dparray)
 
     if (not use_origin_backend(x1)
-        and is_x1_dparray
-        and (axis is None)
-        and (dtype is None)
-        and (out is None)
-        and (keepdims is False)
-        and (initial is 0)
-        and (where is True)
+            and is_x1_dparray
+            and (axis is None)
+            and (dtype is None)
+            and (out is None)
+            and (keepdims is False)
+            and (initial is 0)
+            and (where is True)
         ):
         return dpnp_sum(x1)
 
@@ -779,7 +810,7 @@ def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=0, where=Tr
     return result
 
 
-def true_divide(x1, x2, out=None):
+def true_divide(*args, **kwargs):
     """
     Provide a true division of the inputs, element-wise.
 
@@ -787,10 +818,10 @@ def true_divide(x1, x2, out=None):
 
     """
 
-    return dpnp.divide(x1, x2, out)
+    return dpnp.divide(*args, **kwargs)
 
 
-def trunc(x1, out=None):
+def trunc(x1, out=None, where=True, casting='same_kind', order='K', dtype=None, subok=True):
     """
     Compute the truncated value of the input, element-wise.
 
@@ -809,7 +840,7 @@ def trunc(x1, out=None):
     input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
 
     # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.trunc(input1, out=out)
+    result_numpy = numpy.trunc(input1, out=out, where=where, casting=casting, order=order, dtype=dtype, subok=subok)
     result = result_numpy
     if isinstance(result, numpy.ndarray):
         result = dparray(result_numpy.shape, dtype=result_numpy.dtype)

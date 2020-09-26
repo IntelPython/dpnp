@@ -49,12 +49,11 @@ from dpnp.dpnp_utils import checker_throw_value_error, use_origin_backend
 import dpnp.config as config
 
 __all__ = [
-    'dot',
+    "dot",
     "einsum",
     "einsum_path",
     "inner",
     "kron",
-    "multi_dot",
     "outer",
     "vdot"
 ]
@@ -150,7 +149,7 @@ def einsum(*operands, **kwargs):
     return numpy.einsum(*new_operands, **kwargs)
 
 
-def einsum_path(*operands, optimize='greedy', einsum_call=False):
+def einsum_path(*operands, **kwargs):
     """
     einsum_path(subscripts, *operands, optimize='greedy')
 
@@ -172,7 +171,7 @@ def einsum_path(*operands, optimize='greedy', einsum_call=False):
         else:
             new_operands.append(item)
 
-    return numpy.einsum_path(*new_operands, optimize=optimize, einsum_call=einsum_call)
+    return numpy.einsum_path(*new_operands, **kwargs)
 
 
 def inner(x1, x2):
@@ -225,42 +224,6 @@ def kron(input1, input2):
         input2_n = input2
 
     result = numpy.kron(input1_n, input2_n)
-
-    return result
-
-
-def multi_dot(arrays, out=None):
-    """
-    Compute the dot product of two or more arrays in a single function call
-
-    Parameters
-    ----------
-    arrays : sequence of array_like
-        If the first argument is 1-D it is treated as row vector.
-        If the last argument is 1-D it is treated as column vector.
-        The other arguments must be 2-D.
-    out : ndarray, optional
-        unsupported
-
-    Returns
-    -------
-    output : ndarray
-        Returns the dot product of the supplied arrays.
-
-    See Also
-    --------
-    :meth:`numpy.multi_dot`
-
-    """
-
-    n = len(arrays)
-
-    if n < 2:
-        checker_throw_value_error("multi_dot", "arrays", n, ">1")
-
-    result = arrays[0]
-    for id in range(1, n):
-        result = dot(result, arrays[id])
 
     return result
 
