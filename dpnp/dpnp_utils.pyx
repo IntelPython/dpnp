@@ -38,11 +38,47 @@ cimport cpython
 cimport cython
 cimport numpy
 
+
+"""
+Python import functions
+"""
+__all__ = [
+    "checker_throw_axis_error",
+    "checker_throw_index_error",
+    "checker_throw_runtime_error",
+    "checker_throw_type_error",
+    "checker_throw_value_error",
+    # "copy_values_to_dparray",
+    "dp2nd_array",
+    "_get_linear_index",
+    # "get_shape_dtype",
+    "nd2dp_array",
+    "normalize_axis",
+    # "_normalize_order",
+    "_object_to_tuple",
+    "use_origin_backend"
+]
+
 cdef ERROR_PREFIX = "Intel NumPy error:"
+
+
+cpdef checker_throw_axis_error(function_name, param_name, param, expected):
+    err_msg = f"{ERROR_PREFIX} in function {function_name}()"
+    err_msg += f" axes '{param_name}' expected `{expected}`, but '{param}' provided"
+    raise numpy.AxisError(err_msg)
+
+
+cpdef checker_throw_index_error(function_name, index, size):
+    raise IndexError(
+        f"{ERROR_PREFIX} in function {function_name}() index {index} is out of bounds. dimension size `{size}`")
 
 
 cpdef checker_throw_runtime_error(function_name, message):
     raise RuntimeError(f"{ERROR_PREFIX} in function {function_name}(): '{message}'")
+
+
+cpdef checker_throw_type_error(function_name, given_type):
+    raise TypeError(f"{ERROR_PREFIX} in function {function_name}() type '{given_type}' is not supported")
 
 
 cpdef checker_throw_value_error(function_name, param_name, param, expected):
@@ -53,83 +89,50 @@ cpdef checker_throw_value_error(function_name, param_name, param, expected):
     raise ValueError(err_msg)
 
 
-cpdef checker_throw_axis_error(function_name, param_name, param, expected):
-    err_msg = f"{ERROR_PREFIX} in function {function_name}()"
-    err_msg += f" axes '{param_name}' expected `{expected}`, but '{param}' provided"
-    raise numpy.AxisError(err_msg)
+cdef long copy_values_to_dparray(dparray dst, input_obj, size_t dst_idx=0) except -1:
+    cdef elem_dtype = dst.dtype
 
-
-cpdef checker_throw_type_error(function_name, given_type):
-    raise TypeError(f"{ERROR_PREFIX} in function {function_name}() type '{given_type}' is not supported")
-
-
-cpdef checker_throw_index_error(function_name, index, size):
-    raise IndexError(
-        f"{ERROR_PREFIX} in function {function_name}() index {index} is out of bounds. dimension size `{size}`")
-
-
-@cython.profile(False)
-cpdef inline tuple _object_to_tuple(object obj):
-    """ Converts Python object into tuple
-
-    """
-
-    if obj is None:
-        return ()
-
-    if cpython.PySequence_Check(obj):
-        return tuple(obj)
-
-    if isinstance(obj, int):
-        return obj,
-
-    raise ValueError("Intel NumPy object_to_tuple(): 'obj' should be 'None', collections.abc.Sequence, or 'int'")
-
-
-@cython.profile(False)
-cdef inline int _normalize_order(order, cpp_bool allow_k=True) except? 0:
-    """ Converts memory order letters to some common view
-
-    """
-
-    cdef int order_type
-    order_type = b'C' if len(order) == 0 else ord(order[0])
-
-    if order_type == b'K' or order_type == b'k':
-        if not allow_k:
-            raise ValueError("Intel NumPy _normalize_order(): order \'K\' is not permitted")
-        order_type = b'K'
-    elif order_type == b'A' or order_type == b'a':
-        order_type = b'A'
-    elif order_type == b'C' or order_type == b'c':
-        order_type = b'C'
-    elif order_type == b'F' or order_type == b'f':
-        order_type = b'F'
-    else:
-        raise TypeError("Intel NumPy _normalize_order(): order is not understood")
-
-    return order_type
-
-
-cpdef dparray_shape_type normalize_axis(dparray_shape_type axis, size_t shape_size_inp):
-    """
-    Conversion of the transformation shape axis [-1, 0, 1] into [2, 0, 1] where numbers are `id`s of array shape axis
-    """
-
-    cdef ssize_t shape_size = shape_size_inp  # convert type for comparison with axis id
-
-    cdef size_t axis_size = axis.size()
-    cdef dparray_shape_type result = dparray_shape_type(axis_size, 0)
-    for i in range(axis_size):
-        if (axis[i] >= shape_size) or (axis[i] < -shape_size):
-            checker_throw_axis_error("normalize_axis", "axis", axis[i], shape_size - 1)
-
-        if (axis[i] < 0):
-            result[i] = shape_size + axis[i]
+    for elem_value in input_obj:
+        if isinstance(elem_value, (list, tuple)):
+            dst_idx = copy_values_to_dparray(dst, elem_value, dst_idx)
+        elif issubclass(type(elem_value), (numpy.ndarray, dparray)):
+            dst_idx = copy_values_to_dparray(dst, elem_value, dst_idx)
         else:
-            result[i] = axis[i]
+            if elem_dtype == numpy.float64:
+                ( < double * > dst.get_data())[dst_idx] = elem_value
+            elif elem_dtype == numpy.float32:
+                ( < float * > dst.get_data())[dst_idx] = elem_value
+            elif elem_dtype == numpy.int64:
+                ( < long * > dst.get_data())[dst_idx] = elem_value
+            elif elem_dtype == numpy.int32:
+                ( < int * > dst.get_data())[dst_idx] = elem_value
+            else:
+                checker_throw_type_error("copy_values_to_dparray", elem_dtype)
 
-    return result
+            dst_idx += 1
+
+    return dst_idx
+
+
+cpdef dp2nd_array(arr):
+    """Convert dparray to ndarray"""
+    return dpnp.asnumpy(arr) if isinstance(arr, dparray) else arr
+
+
+cpdef long _get_linear_index(key, tuple shape, int ndim):
+    """
+    Compute linear index of an element in memory from array indices
+    """
+
+    if isinstance(key, tuple):
+        li = 0
+        m = 1
+        for i in range(ndim - 1, -1, -1):
+            li += key[i] * m
+            m *= shape[i]
+    else:
+        li = key
+    return li
 
 
 cdef tuple get_shape_dtype(object input_obj):
@@ -161,29 +164,80 @@ cdef tuple get_shape_dtype(object input_obj):
     return (return_shape, numpy.dtype(type(input_obj)))
 
 
-cdef long copy_values_to_dparray(dparray dst, input_obj, size_t dst_idx=0) except -1:
-    cdef elem_dtype = dst.dtype
+cpdef nd2dp_array(arr):
+    """Convert ndarray to dparray"""
+    if not isinstance(arr, numpy.ndarray):
+        return arr
 
-    for elem_value in input_obj:
-        if isinstance(elem_value, (list, tuple)):
-            dst_idx = copy_values_to_dparray(dst, elem_value, dst_idx)
-        elif issubclass(type(elem_value), (numpy.ndarray, dparray)):
-            dst_idx = copy_values_to_dparray(dst, elem_value, dst_idx)
+    result = dparray(arr.shape, dtype=arr.dtype)
+    for i in range(result.size):
+        result._setitem_scalar(i, arr.item(i))
+
+    return result
+
+
+cpdef dparray_shape_type normalize_axis(dparray_shape_type axis, size_t shape_size_inp):
+    """
+    Conversion of the transformation shape axis [-1, 0, 1] into [2, 0, 1] where numbers are `id`s of array shape axis
+    """
+
+    cdef ssize_t shape_size = shape_size_inp  # convert type for comparison with axis id
+
+    cdef size_t axis_size = axis.size()
+    cdef dparray_shape_type result = dparray_shape_type(axis_size, 0)
+    for i in range(axis_size):
+        if (axis[i] >= shape_size) or (axis[i] < -shape_size):
+            checker_throw_axis_error("normalize_axis", "axis", axis[i], shape_size - 1)
+
+        if (axis[i] < 0):
+            result[i] = shape_size + axis[i]
         else:
-            if elem_dtype == numpy.float64:
-                ( < double * > dst.get_data())[dst_idx] = elem_value
-            elif elem_dtype == numpy.float32:
-                ( < float * > dst.get_data())[dst_idx] = elem_value
-            elif elem_dtype == numpy.int64:
-                ( < long * > dst.get_data())[dst_idx] = elem_value
-            elif elem_dtype == numpy.int32:
-                ( < int * > dst.get_data())[dst_idx] = elem_value
-            else:
-                checker_throw_type_error("copy_values_to_dparray", elem_dtype)
+            result[i] = axis[i]
 
-            dst_idx += 1
+    return result
 
-    return dst_idx
+
+@cython.profile(False)
+cdef inline int _normalize_order(order, cpp_bool allow_k=True) except? 0:
+    """ Converts memory order letters to some common view
+
+    """
+
+    cdef int order_type
+    order_type = b'C' if len(order) == 0 else ord(order[0])
+
+    if order_type == b'K' or order_type == b'k':
+        if not allow_k:
+            raise ValueError("Intel NumPy _normalize_order(): order \'K\' is not permitted")
+        order_type = b'K'
+    elif order_type == b'A' or order_type == b'a':
+        order_type = b'A'
+    elif order_type == b'C' or order_type == b'c':
+        order_type = b'C'
+    elif order_type == b'F' or order_type == b'f':
+        order_type = b'F'
+    else:
+        raise TypeError("Intel NumPy _normalize_order(): order is not understood")
+
+    return order_type
+
+
+@cython.profile(False)
+cpdef inline tuple _object_to_tuple(object obj):
+    """ Converts Python object into tuple
+
+    """
+
+    if obj is None:
+        return ()
+
+    if cpython.PySequence_Check(obj):
+        return tuple(obj)
+
+    if isinstance(obj, int):
+        return obj,
+
+    raise ValueError("Intel NumPy object_to_tuple(): 'obj' should be 'None', collections.abc.Sequence, or 'int'")
 
 
 cpdef cpp_bool use_origin_backend(input1=None, size_t compute_size=0):
@@ -201,36 +255,3 @@ cpdef cpp_bool use_origin_backend(input1=None, size_t compute_size=0):
         return True
 
     return False
-
-
-cpdef long _get_linear_index(key, tuple shape, int ndim):
-    """
-    Compute linear index of an element in memory from array indices
-    """
-
-    if isinstance(key, tuple):
-        li = 0
-        m = 1
-        for i in range(ndim - 1, -1, -1):
-            li += key[i] * m
-            m *= shape[i]
-    else:
-        li = key
-    return li
-
-
-cpdef dp2nd_array(arr):
-    """Convert dparray to ndarray"""
-    return dpnp.asnumpy(arr) if isinstance(arr, dparray) else arr
-
-
-cpdef nd2dp_array(arr):
-    """Convert ndarray to dparray"""
-    if not isinstance(arr, numpy.ndarray):
-        return arr
-
-    result = dparray(arr.shape, dtype=arr.dtype)
-    for i in range(result.size):
-        result._setitem_scalar(i, arr.item(i))
-
-    return result
