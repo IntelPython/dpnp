@@ -145,7 +145,9 @@ jobs:
       bash <(curl -s https://codecov.io/bash) -f coverage.xml
   - script: |
       export CODECOV_TOKEN="1158b545-b00a-4a84-a6f9-2bc2c4265d8b
-      bash <(curl -s https://codecov.io/bash)
+      curl -s https://codecov.io/bash > .codecov
+      chmod +x .codecov
+      ./.codecov
     displayName: 'Upload to codecov.io'
 
 - job: ubuntu2004
