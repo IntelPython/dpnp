@@ -140,15 +140,8 @@ jobs:
       ./0.build.sh
       echo ========================= run code coverage ===============================
       pytest --cov-report xml:coverage.xml --cov-report term-missing --cov=dpnp
-      export CODECOV_TOKEN="1158b545-b00a-4a84-a6f9-2bc2c4265d8b
-      echo ${SHELL}
+      export CODECOV_TOKEN="1158b545-b00a-4a84-a6f9-2bc2c4265d8b"
       bash <(curl -s https://codecov.io/bash) -f coverage.xml
-  - script: |
-      export CODECOV_TOKEN="1158b545-b00a-4a84-a6f9-2bc2c4265d8b
-      curl -s https://codecov.io/bash > .codecov
-      chmod +x .codecov
-      ./.codecov
-    displayName: 'Upload to codecov.io'
 
 - job: ubuntu2004
   displayName: testing on Ubuntu 20.04
