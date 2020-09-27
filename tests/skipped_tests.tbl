@@ -181,28 +181,15 @@ tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matri
 tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_large
 tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_of_two
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_dot_vec2
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_dot_vec3
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_multidim_vdot
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_inner
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_kron
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_outer
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_vdot
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_tensordot
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_tensordot_with_int_axes
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_tensordot_with_list_axes
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_tensordot_zero_dim
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_dot_with_out_f_contiguous
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_multidim_vdot
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_tensordot
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_tensordot_with_int_axes
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_tensordot_with_list_axes
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_zerodim_kron
-tests/third_party/cupy/linalg_tests/test_product.py::TestProductZeroLength_param_0_{params=((0, 0), 2)}::test_tensordot_zero_length
-tests/third_party/cupy/linalg_tests/test_product.py::TestProductZeroLength_param_1_{params=((0, 0), (1, 0))}::test_tensordot_zero_length
-tests/third_party/cupy/linalg_tests/test_product.py::TestProductZeroLength_param_2_{params=((0, 0, 0), 2)}::test_tensordot_zero_length
-tests/third_party/cupy/linalg_tests/test_product.py::TestProductZeroLength_param_3_{params=((0, 0, 0), 3)}::test_tensordot_zero_length
-tests/third_party/cupy/linalg_tests/test_product.py::TestProductZeroLength_param_4_{params=((0, 0, 0), ([2, 1], [0, 2]))}::test_tensordot_zero_length
-tests/third_party/cupy/linalg_tests/test_product.py::TestProductZeroLength_param_5_{params=((0, 0, 0), ([0, 2, 1], [1, 2, 0]))}::test_tensordot_zero_length
 tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_array_scalar
 tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_finite
 tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_infinite
