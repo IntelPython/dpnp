@@ -56,6 +56,7 @@ __all__ = [
     "inner",
     "kron",
     "outer",
+    "tensordot",
     "vdot"
 ]
 
@@ -207,6 +208,23 @@ def outer(x1, x2, **kwargs):
         return dpnp_outer(x1, x2)
 
     return call_origin(numpy.outer, x1, x2, **kwargs)
+
+
+def tensordot(x1, x2, axes=2):
+    """
+    Compute tensor dot product along specified axes.
+
+    .. seealso:: :func:`numpy.tensordot`
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+    is_x2_dparray = isinstance(x2, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and (axes == 1)):
+        return dpnp_tensordot(x1, x2)  # dpnp_matmul
+
+    return call_origin(numpy.tensordot, x1, x2, axes)
 
 
 def vdot(*args, **kwargs):
