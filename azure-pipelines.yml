@@ -80,23 +80,9 @@ jobs:
 
 - job: mycodecoverage
   displayName: Code coverage
-
   pool:
     vmImage: 'ubuntu-20.04'
-
-  strategy:
-    matrix:
-      Python37:
-        python.version: '3.7'
-      Python38:
-        python.version: '3.8'
-
   steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '$(python.version)'
-    displayName: 'Use Python $(python.version)'
-
   - bash: |
       echo ========================== current SHELL ===============================
       echo ${SHELL}
@@ -145,12 +131,19 @@ jobs:
 
 - job: ubuntu2004
   displayName: testing on Ubuntu 20.04
-
   pool:
     vmImage: 'ubuntu-20.04'
-
+  strategy:
+    matrix:
+      Python37:
+        python.version: '3.7'
+      Python38:
+        python.version: '3.8'
   steps:
-
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '$(python.version)'
+    displayName: 'Use Python $(python.version)'
   - bash: |
       echo ========================== current SHELL ===============================
       echo ${SHELL}
