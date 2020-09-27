@@ -128,10 +128,12 @@ jobs:
       echo ========================= build DPNP ===============================
       ./0.build.sh
       echo ========================= run code coverage ===============================
-      pytest --cov-report xml:dpnp_cov.xml --cov-report term-missing --cov=dpnp
+      pytest --cov-report xml:coverage.xml --cov-report term-missing --cov=dpnp
+      ls -l
+      ls -l dpnp
       echo ========================= upload code coverage report ===============================
       CODECOV_TOKEN="1158b545-b00a-4a84-a6f9-2bc2c4265d8b
-      bash <(curl -s https://codecov.io/bash) -v
+      bash <(curl -s https://codecov.io/bash) -f coverage.xml
       ls -l
 
 - job: ubuntu2004
