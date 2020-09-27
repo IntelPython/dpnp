@@ -129,14 +129,8 @@ jobs:
       ./0.build.sh
       echo ========================= run code coverage ===============================
       pytest --cov-report xml:coverage.xml --cov-report term-missing --cov=dpnp
-  - bash: |
-      ls -l
-      ls -l dpnp
-      echo ${SHELL}
-      echo ========================= upload code coverage report ===============================
       export CODECOV_TOKEN="1158b545-b00a-4a84-a6f9-2bc2c4265d8b
-      bash <(curl -s https://codecov.io/bash) -f coverage.xml
-      ls -l
+  - bash: bash <(curl -s https://codecov.io/bash) -f coverage.xml
       env:
         CODECOV_TOKEN: $(CODECOV_TOKEN)
       displayName: 'Publish code coverage report'
