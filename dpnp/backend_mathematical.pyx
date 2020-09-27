@@ -64,45 +64,10 @@ __all__ += [
     "dpnp_trunc"
 ]
 
-# binary names definition because they are unicode in Python
-cdef string float64_name = numpy.float64.__name__.encode()
-cdef string float32_name = numpy.float32.__name__.encode()
-cdef string int64_name = numpy.int64.__name__.encode()
-cdef string int32_name = numpy.int32.__name__.encode()
-
 # C function pointer to the C library template functions
 ctypedef void * void_ptr
 ctypedef void(*custom_math_2in_1out_func_ptr_t)(void_ptr, void_ptr, void_ptr, size_t)
 ctypedef void(*custom_math_1in_1out_func_ptr_t)(void_ptr, void_ptr, size_t)
-
-cdef struct custom_math_2in_1out:
-    string return_type  # return type identifier which expected by the `ptr` function
-    custom_math_2in_1out_func_ptr_t ptr  # C function pointer
-
-ctypedef custom_math_2in_1out custom_math_2in_1out_t
-
-
-IF 0:  # can't compile to make it more clear
-    pass
-    # ctypedef map[string, custom_math_2in_1out_t] 2param_map_t
-    # ctypedef map[string, 2param_map_t] 1param_map_t
-    # cdef map[string, 1param_map_t] func_map
-ELSE:
-    cdef map[string, map[string, map[string, custom_math_2in_1out_t]]] func_map
-
-
-cdef custom_math_2in_1out_t _elementwise_2arg_3type(string name1, string name2, string name3):
-    """
-    Returns C library kernel pointer and auxiliary data by corresponding type parameters
-    """
-
-    # cdef custom_math_2in_1out_t kernel_data = func_map.at(add_name).at(array1_typename).at(array2_typename)
-    cdef custom_math_2in_1out_t kernel_data = func_map[name1][name2][name3]
-    # TODO need to add a check for map::end()
-    # the exception will be ignored because C exception from cdef function
-
-    return kernel_data
-
 
 cpdef dparray dpnp_absolute(dparray input):
     cdef dparray_shape_type shape_input = input.shape
@@ -350,6 +315,15 @@ cpdef dparray dpnp_fmod(dparray array1, dparray array2):
 
 
 cpdef dpnp_prod(dparray array1):
+    """
+    input:float64   : outout:float64   : name:prod
+    input:float32   : outout:float32   : name:prod
+    input:int64     : outout:int64     : name:prod
+    input:int32     : outout:int64     : name:prod
+    input:bool      : outout:int64     : name:prod
+    input:complex64 : outout:complex64 : name:prod
+    input:complex128: outout:complex128: name:prod
+    """
     return_type = array1.dtype
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
@@ -399,6 +373,15 @@ cpdef dparray dpnp_subtract(dparray array1, dparray array2):
 
 
 cpdef dpnp_sum(dparray array):
+    """
+    input:float64   : outout:float64   : name:sum
+    input:float32   : outout:float32   : name:sum
+    input:int64     : outout:int64     : name:sum
+    input:int32     : outout:int64     : name:sum
+    input:bool      : outout:int64     : name:sum
+    input:complex64 : outout:complex64 : name:sum
+    input:complex128: outout:complex128: name:sum
+    """
     call_type = array.dtype
     return_type = call_type
     cdef dparray result = dparray((1), dtype=call_type)
