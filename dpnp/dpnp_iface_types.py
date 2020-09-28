@@ -46,6 +46,7 @@ __all__ = [
     "int",
     "int32",
     "int64",
+    "isscalar",
     "newaxis"
 ]
 
@@ -62,3 +63,10 @@ int32 = numpy.int32
 int64 = numpy.int64
 
 newaxis = None
+
+
+def isscalar(obj):
+    """
+    Returns True if the type of `obj` is a scalar type.
+    """
+    return numpy.isscalar(obj)

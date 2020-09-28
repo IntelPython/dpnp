@@ -32,10 +32,11 @@ and the rest of the library
 
 """
 
+from libcpp.string cimport string
 import cython
 import numpy
-from dpnp.dpnp_utils cimport checker_throw_type_error, normalize_axis
 
+from dpnp.dpnp_utils cimport *
 
 __all__ += [
     "dpnp_argmax",

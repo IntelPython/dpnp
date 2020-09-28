@@ -51,6 +51,6 @@ def test_multi_dot(type):
     c1 = numpy.arange(n, dtype=type).reshape((4, 4))
     d1 = numpy.arange(n, dtype=type).reshape((4, 4))
 
-    result = inp.multi_dot([a, b, c, d])
+    result = inp.linalg.multi_dot([a, b, c, d])
     expected = numpy.linalg.multi_dot([a1, b1, c1, d1])
     numpy.testing.assert_array_equal(expected, result)

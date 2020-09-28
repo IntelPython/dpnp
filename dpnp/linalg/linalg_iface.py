@@ -40,13 +40,18 @@ it contains:
 """
 
 
+import dpnp
 import numpy
+
+from dpnp.dparray import dparray
+from dpnp.dpnp_utils import *
 from dpnp.linalg.linalg import *
-from dpnp.dpnp_utils import checker_throw_value_error, use_origin_backend
 
 
 __all__ = [
-    'eig',
+    "eig",
+    "matrix_power",
+    "multi_dot"
 ]
 
 
@@ -77,3 +82,80 @@ def eig(in_array1):
         return numpy.linalg.eig(in_array1)
 
     return dpnp_eig(in_array1)
+
+
+def matrix_power(input, count):
+    """
+    Raise a square matrix to the (integer) power `count`.
+
+    Parameters
+    ----------
+    input : sequence of array_like
+
+    Returns
+    -------
+    output : dparray
+        Returns the dot product of the supplied arrays.
+
+    See Also
+    --------
+    :meth:`numpy.linalg.matrix_power`
+
+    """
+
+    is_input_dparray = isinstance(input, dparray)
+
+    if not use_origin_backend(input) and is_input_dparray and count > 0:
+        result = input
+        for id in range(count - 1):
+            result = dpnp.matmul(result, input)
+
+        return result
+
+    input1 = dpnp.asnumpy(input) if is_input_dparray else input
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.linalg.matrix_power(input1, count)
+    result = result_numpy
+    if isinstance(result, numpy.ndarray):
+        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_numpy.item(i))
+
+    return result
+
+
+def multi_dot(arrays, out=None):
+    """
+    Compute the dot product of two or more arrays in a single function call
+
+    Parameters
+    ----------
+    arrays : sequence of array_like
+        If the first argument is 1-D it is treated as row vector.
+        If the last argument is 1-D it is treated as column vector.
+        The other arguments must be 2-D.
+    out : ndarray, optional
+        unsupported
+
+    Returns
+    -------
+    output : ndarray
+        Returns the dot product of the supplied arrays.
+
+    See Also
+    --------
+    :meth:`numpy.multi_dot`
+
+    """
+
+    n = len(arrays)
+
+    if n < 2:
+        checker_throw_value_error("multi_dot", "arrays", n, ">1")
+
+    result = arrays[0]
+    for id in range(1, n):
+        result = dpnp.dot(result, arrays[id])
+
+    return result

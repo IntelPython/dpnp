@@ -43,7 +43,7 @@ for function in [numpy.sqrt, numpy.fabs, numpy.reciprocal, numpy.square, numpy.c
     for test_type in [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.bool]:
         data = numpy.array([1, 2, 3, 4], dtype=test_type)
         result = function(data)
-        print(f"input:{data.dtype.name:10}: outout:{result.dtype.name:10}: name:{function}")
+        print(f"input:{data.dtype.name:10}: outout:{result.dtype.name:10}: name:{function.__name__}")
 
 """
 Two arguments functions

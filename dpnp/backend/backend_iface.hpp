@@ -205,11 +205,13 @@ INP_DLLEXPORT void custom_sort_c(void* array, void* result, size_t size);
  *
  * @param [out] result      Output array.
  *
- * @param [in]  input_shape Shape of input array.
+ * @param [in]  nrows       Number of rows in input array.
+ *
+ * @param [in]  ncols       Number of columns in input array.
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_cov_c(void* array1_in, void* result1, const std::vector<long>& input_shape);
+INP_DLLEXPORT void custom_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols);
 
 /**
  * @ingroup BACKEND_API
@@ -316,18 +318,6 @@ INP_DLLEXPORT void mkl_rng_gaussian(void* result, size_t size);
  * @ingroup BACKEND_API
  * @brief MKL implementation of random number generator (uniform distribution)
  *
- * @param [in]  size   Number of elements in `result` array.
- *
- * @param [out] result Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void mkl_rng_uniform(void* result, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief MKL implementation of random number generator (uniform distribution)
- *
  * @param [in]  low    Left bound of array values.
  *
  * @param [in]  high   Right bound of array values.
@@ -338,6 +328,6 @@ INP_DLLEXPORT void mkl_rng_uniform(void* result, size_t size);
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void mkl_rng_uniform_mt19937(void* result, long low, long high, size_t size);
+INP_DLLEXPORT void mkl_rng_uniform(void* result, long low, long high, size_t size);
 
 #endif // BACKEND_IFACE_H

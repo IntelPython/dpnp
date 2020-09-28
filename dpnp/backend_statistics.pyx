@@ -36,7 +36,7 @@ and the rest of the library
 import dpnp
 import numpy
 import dpnp
-from dpnp.dpnp_utils cimport checker_throw_type_error, normalize_axis
+from dpnp.dpnp_utils cimport *
 from dpnp.backend cimport *
 
 
@@ -50,23 +50,13 @@ __all__ += [
 ]
 
 
-cpdef dpnp_average(dparray array):
-    call_type = array.dtype
-    return_type = numpy.float32 if call_type == numpy.float32 else numpy.float64
-    cdef dparray result = dparray((1), dtype=call_type)
+cpdef dpnp_average(dparray x1):
+    array_sum = dpnp_sum(x1)
 
-    if call_type == numpy.float64:
-        custom_sum_c[double](array.get_data(), result.get_data(), array.size)
-    elif call_type == numpy.float32:
-        custom_sum_c[float](array.get_data(), result.get_data(), array.size)
-    elif call_type == numpy.int64:
-        custom_sum_c[long](array.get_data(), result.get_data(), array.size)
-    elif call_type == numpy.int32:
-        custom_sum_c[int](array.get_data(), result.get_data(), array.size)
-    else:
-        checker_throw_type_error("dpnp_average", call_type)
+    """ Numpy interface inconsistency """
+    return_type = numpy.float32 if (x1.dtype == numpy.float32) else numpy.float64
 
-    return return_type(result[0] / array.size)
+    return (return_type(array_sum / x1.size))
 
 
 cpdef dparray dpnp_cov(dparray array1):
@@ -82,7 +72,7 @@ cpdef dparray dpnp_cov(dparray array1):
     cdef dparray result = dparray((input_shape[0], input_shape[0]), dtype=numpy.float64)
 
     if call_type in [numpy.float64, numpy.float32, numpy.int32, numpy.int64]:
-        custom_cov_c[double](in_array.get_data(), result.get_data(), input_shape)
+        custom_cov_c[double](in_array.get_data(), result.get_data(), input_shape[0], input_shape[1])
     else:
         checker_throw_type_error("dpnp_cov", call_type)
 

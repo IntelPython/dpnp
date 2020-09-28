@@ -33,7 +33,7 @@ and the rest of the library
 """
 
 
-from dpnp.dpnp_utils cimport checker_throw_type_error
+from dpnp.dpnp_utils cimport *
 
 
 __all__ += [
