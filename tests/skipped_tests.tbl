@@ -934,330 +934,165 @@ tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_sort_negative_
 tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_sort_non_contiguous
 tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_sort_two_or_more_dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_sort_zero_dim
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrcoef::test_corrcoef
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrcoef::test_corrcoef_diag_exception
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrcoef::test_corrcoef_rowvar
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrcoef::test_corrcoef_y
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateInvalid_param_0_{mode='valid'}::test_correlate_empty
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateInvalid_param_0_{mode='valid'}::test_correlate_ndim
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateInvalid_param_0_{mode='valid'}::test_correlate_zero_dim
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateInvalid_param_1_{mode='same'}::test_correlate_empty
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateInvalid_param_1_{mode='same'}::test_correlate_ndim
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateInvalid_param_1_{mode='same'}::test_correlate_zero_dim
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateInvalid_param_2_{mode='full'}::test_correlate_empty
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateInvalid_param_2_{mode='full'}::test_correlate_ndim
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateInvalid_param_2_{mode='full'}::test_correlate_zero_dim
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelate_param_0_{mode='valid'}::test_correlate_diff_types
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelate_param_0_{mode='valid'}::test_correlate_large_non_contiguous
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelate_param_0_{mode='valid'}::test_correlate_non_contiguous
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelate_param_1_{mode='full'}::test_correlate_diff_types
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelate_param_1_{mode='full'}::test_correlate_large_non_contiguous
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelate_param_1_{mode='full'}::test_correlate_non_contiguous
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelate_param_2_{mode='same'}::test_correlate_diff_types
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelate_param_2_{mode='same'}::test_correlate_large_non_contiguous
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelate_param_2_{mode='same'}::test_correlate_non_contiguous
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_0_{mode='valid', shape1=(5,), shape2=(5,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_10_{mode='valid', shape1=(20,), shape2=(20,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_11_{mode='valid', shape1=(20,), shape2=(21,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_12_{mode='valid', shape1=(21,), shape2=(5,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_13_{mode='valid', shape1=(21,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_14_{mode='valid', shape1=(21,), shape2=(20,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_15_{mode='valid', shape1=(21,), shape2=(21,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_16_{mode='same', shape1=(5,), shape2=(5,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_17_{mode='same', shape1=(5,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_18_{mode='same', shape1=(5,), shape2=(20,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_19_{mode='same', shape1=(5,), shape2=(21,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_1_{mode='valid', shape1=(5,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_20_{mode='same', shape1=(6,), shape2=(5,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_21_{mode='same', shape1=(6,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_22_{mode='same', shape1=(6,), shape2=(20,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_23_{mode='same', shape1=(6,), shape2=(21,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_24_{mode='same', shape1=(20,), shape2=(5,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_25_{mode='same', shape1=(20,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_26_{mode='same', shape1=(20,), shape2=(20,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_27_{mode='same', shape1=(20,), shape2=(21,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_28_{mode='same', shape1=(21,), shape2=(5,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_29_{mode='same', shape1=(21,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_2_{mode='valid', shape1=(5,), shape2=(20,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_30_{mode='same', shape1=(21,), shape2=(20,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_31_{mode='same', shape1=(21,), shape2=(21,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_32_{mode='full', shape1=(5,), shape2=(5,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_33_{mode='full', shape1=(5,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_34_{mode='full', shape1=(5,), shape2=(20,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_35_{mode='full', shape1=(5,), shape2=(21,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_36_{mode='full', shape1=(6,), shape2=(5,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_37_{mode='full', shape1=(6,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_38_{mode='full', shape1=(6,), shape2=(20,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_39_{mode='full', shape1=(6,), shape2=(21,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_3_{mode='valid', shape1=(5,), shape2=(21,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_40_{mode='full', shape1=(20,), shape2=(5,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_41_{mode='full', shape1=(20,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_42_{mode='full', shape1=(20,), shape2=(20,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_43_{mode='full', shape1=(20,), shape2=(21,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_44_{mode='full', shape1=(21,), shape2=(5,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_45_{mode='full', shape1=(21,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_46_{mode='full', shape1=(21,), shape2=(20,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_47_{mode='full', shape1=(21,), shape2=(21,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_4_{mode='valid', shape1=(6,), shape2=(5,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_5_{mode='valid', shape1=(6,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_6_{mode='valid', shape1=(6,), shape2=(20,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_7_{mode='valid', shape1=(6,), shape2=(21,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_8_{mode='valid', shape1=(20,), shape2=(5,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCorrelateShapeCombination_param_9_{mode='valid', shape1=(20,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCov::test_cov
-tests/third_party/cupy/statics_tests/test_correlation.py::TestCov::test_cov_warns
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitizeInvalid::test_digitize_complex
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitizeInvalid::test_digitize_nd_bins
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitizeNanInf_param_0_{right=True}::test_digitize_all_nan_bins
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitizeNanInf_param_0_{right=True}::test_digitize_nan
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitizeNanInf_param_0_{right=True}::test_digitize_nan_bins
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitizeNanInf_param_0_{right=True}::test_digitize_nan_bins_decreasing
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitizeNanInf_param_0_{right=True}::test_digitize_nan_bins_decreasing_repeated
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitizeNanInf_param_0_{right=True}::test_digitize_nan_bins_repeated
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitizeNanInf_param_0_{right=True}::test_searchsorted_inf
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitizeNanInf_param_0_{right=True}::test_searchsorted_minf
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitizeNanInf_param_1_{right=False}::test_digitize_all_nan_bins
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitizeNanInf_param_1_{right=False}::test_digitize_nan
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitizeNanInf_param_1_{right=False}::test_digitize_nan_bins
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitizeNanInf_param_1_{right=False}::test_digitize_nan_bins_decreasing
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitizeNanInf_param_1_{right=False}::test_digitize_nan_bins_decreasing_repeated
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitizeNanInf_param_1_{right=False}::test_digitize_nan_bins_repeated
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitizeNanInf_param_1_{right=False}::test_searchsorted_inf
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitizeNanInf_param_1_{right=False}::test_searchsorted_minf
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_0_{bins=[1.5, 2.5, 4.0, 6.0], increasing=True, right=True, shape=()}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_10_{bins=[1.5, 2.5, 4.0, 6.0], increasing=False, right=False, shape=(10,)}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_11_{bins=[1.5, 2.5, 4.0, 6.0], increasing=False, right=False, shape=(6, 3, 3)}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_12_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], increasing=True, right=True, shape=()}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_13_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], increasing=True, right=True, shape=(10,)}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_14_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], increasing=True, right=True, shape=(6, 3, 3)}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_15_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], increasing=True, right=False, shape=()}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_16_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], increasing=True, right=False, shape=(10,)}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_17_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], increasing=True, right=False, shape=(6, 3, 3)}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_18_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], increasing=False, right=True, shape=()}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_19_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], increasing=False, right=True, shape=(10,)}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_1_{bins=[1.5, 2.5, 4.0, 6.0], increasing=True, right=True, shape=(10,)}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_20_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], increasing=False, right=True, shape=(6, 3, 3)}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_21_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], increasing=False, right=False, shape=()}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_22_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], increasing=False, right=False, shape=(10,)}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_23_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], increasing=False, right=False, shape=(6, 3, 3)}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_24_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], increasing=True, right=True, shape=()}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_25_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], increasing=True, right=True, shape=(10,)}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_26_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], increasing=True, right=True, shape=(6, 3, 3)}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_27_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], increasing=True, right=False, shape=()}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_28_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], increasing=True, right=False, shape=(10,)}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_29_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], increasing=True, right=False, shape=(6, 3, 3)}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_2_{bins=[1.5, 2.5, 4.0, 6.0], increasing=True, right=True, shape=(6, 3, 3)}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_30_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], increasing=False, right=True, shape=()}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_31_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], increasing=False, right=True, shape=(10,)}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_32_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], increasing=False, right=True, shape=(6, 3, 3)}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_33_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], increasing=False, right=False, shape=()}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_34_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], increasing=False, right=False, shape=(10,)}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_35_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], increasing=False, right=False, shape=(6, 3, 3)}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_3_{bins=[1.5, 2.5, 4.0, 6.0], increasing=True, right=False, shape=()}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_4_{bins=[1.5, 2.5, 4.0, 6.0], increasing=True, right=False, shape=(10,)}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_5_{bins=[1.5, 2.5, 4.0, 6.0], increasing=True, right=False, shape=(6, 3, 3)}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_6_{bins=[1.5, 2.5, 4.0, 6.0], increasing=False, right=True, shape=()}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_7_{bins=[1.5, 2.5, 4.0, 6.0], increasing=False, right=True, shape=(10,)}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_8_{bins=[1.5, 2.5, 4.0, 6.0], increasing=False, right=True, shape=(6, 3, 3)}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestDigitize_param_9_{bins=[1.5, 2.5, 4.0, 6.0], increasing=False, right=False, shape=()}::test_digitize
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_bincount
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_bincount_duplicated_value
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_bincount_invalid_weight_length
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_bincount_negative
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_bincount_too_deep
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_bincount_too_small
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_bincount_too_small_minlength
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_bincount_with_minlength
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_bincount_with_weight
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_bincount_zero
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_array_bins
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_bins_not_ordered
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_density
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_empty
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_float_weights
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_float_weights_dtype
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_int_bins
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_int_weights
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_int_weights_dtype
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_int_weights_nonuniform_bins
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_int_weights_normalized
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_invalid_range
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_invalid_range2
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_list_bins
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_numpy_bins
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_range_lower_outliers
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_range_upper_outliers
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_range_with_density
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_range_with_weights_and_density
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_same_value
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_weights_basic
-tests/third_party/cupy/statics_tests/test_histogram.py::TestHistogram::test_histogram_weights_mismatch
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestAverage::test_average_axis
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestAverage::test_average_axis_weights
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestAverage::test_average_weights
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestAverage::test_returned
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_external_std_all
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_external_std_all_ddof
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_external_std_axis
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_external_std_axis_ddof
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_external_var_all
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_external_var_all_ddof
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_external_var_axis
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_external_var_axis_ddof
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_mean_all_complex_dtype
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_mean_all_float64_dtype
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_mean_all_int64_dtype
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_std_all
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_std_all_ddof
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_std_axis
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_std_axis_ddof
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_var_all
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_var_all_ddof
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_var_axis
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMeanVar::test_var_axis_ddof
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMedianAxis_param_0_{axis=(0, 1), keepdims=True, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMedianAxis_param_1_{axis=(0, 1), keepdims=False, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMedianAxis_param_2_{axis=(0, -1), keepdims=True, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMedianAxis_param_3_{axis=(0, -1), keepdims=False, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMedianAxis_param_4_{axis=(1, 2), keepdims=True, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMedianAxis_param_5_{axis=(1, 2), keepdims=False, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMedianAxis_param_6_{axis=(1,), keepdims=True, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMedianAxis_param_7_{axis=(1,), keepdims=False, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMedian::test_median_axis1
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMedian::test_median_axis2
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMedian::test_median_invalid_axis
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMedian::test_median_keepdims_axis1
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMedian::test_median_keepdims_noaxis
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMedian::test_median_noaxis
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestMedian::test_median_overwrite_input
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_all_nan
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_float16
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_huge
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_out
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMean_param_0_{axis=None, keepdims=True, shape=(3, 4)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMean_param_0_{axis=None, keepdims=True, shape=(3, 4)}::test_nanmean_without_nan
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMean_param_10_{axis=1, keepdims=False, shape=(3, 4)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMean_param_10_{axis=1, keepdims=False, shape=(3, 4)}::test_nanmean_without_nan
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMean_param_11_{axis=1, keepdims=False, shape=(30, 40, 50)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMean_param_11_{axis=1, keepdims=False, shape=(30, 40, 50)}::test_nanmean_without_nan
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMean_param_1_{axis=None, keepdims=True, shape=(30, 40, 50)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMean_param_1_{axis=None, keepdims=True, shape=(30, 40, 50)}::test_nanmean_without_nan
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMean_param_2_{axis=None, keepdims=False, shape=(3, 4)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMean_param_2_{axis=None, keepdims=False, shape=(3, 4)}::test_nanmean_without_nan
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMean_param_3_{axis=None, keepdims=False, shape=(30, 40, 50)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMean_param_3_{axis=None, keepdims=False, shape=(30, 40, 50)}::test_nanmean_without_nan
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMean_param_4_{axis=0, keepdims=True, shape=(3, 4)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMean_param_4_{axis=0, keepdims=True, shape=(3, 4)}::test_nanmean_without_nan
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMean_param_5_{axis=0, keepdims=True, shape=(30, 40, 50)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMean_param_5_{axis=0, keepdims=True, shape=(30, 40, 50)}::test_nanmean_without_nan
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMean_param_6_{axis=0, keepdims=False, shape=(3, 4)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMean_param_6_{axis=0, keepdims=False, shape=(3, 4)}::test_nanmean_without_nan
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMean_param_7_{axis=0, keepdims=False, shape=(30, 40, 50)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMean_param_7_{axis=0, keepdims=False, shape=(30, 40, 50)}::test_nanmean_without_nan
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMean_param_8_{axis=1, keepdims=True, shape=(3, 4)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMean_param_8_{axis=1, keepdims=True, shape=(3, 4)}::test_nanmean_without_nan
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMean_param_9_{axis=1, keepdims=True, shape=(30, 40, 50)}::test_nanmean_with_nan_float
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanMean_param_9_{axis=1, keepdims=True, shape=(30, 40, 50)}::test_nanmean_without_nan
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStdAdditional::test_nanstd_float16
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStdAdditional::test_nanstd_huge
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStdAdditional::test_nanstd_out
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStdAdditional::test_nanvar_float16
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStdAdditional::test_nanvar_huge
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStdAdditional::test_nanvar_out
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_0_{axis=None, ddof=0, keepdims=True, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_0_{axis=None, ddof=0, keepdims=True, shape=(3, 4)}::test_nanvar
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_10_{axis=0, ddof=0, keepdims=False, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_10_{axis=0, ddof=0, keepdims=False, shape=(3, 4)}::test_nanvar
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_11_{axis=0, ddof=0, keepdims=False, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_11_{axis=0, ddof=0, keepdims=False, shape=(4, 3, 5)}::test_nanvar
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_12_{axis=0, ddof=1, keepdims=True, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_12_{axis=0, ddof=1, keepdims=True, shape=(3, 4)}::test_nanvar
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_13_{axis=0, ddof=1, keepdims=True, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_13_{axis=0, ddof=1, keepdims=True, shape=(4, 3, 5)}::test_nanvar
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_14_{axis=0, ddof=1, keepdims=False, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_14_{axis=0, ddof=1, keepdims=False, shape=(3, 4)}::test_nanvar
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_15_{axis=0, ddof=1, keepdims=False, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_15_{axis=0, ddof=1, keepdims=False, shape=(4, 3, 5)}::test_nanvar
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_16_{axis=1, ddof=0, keepdims=True, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_16_{axis=1, ddof=0, keepdims=True, shape=(3, 4)}::test_nanvar
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_17_{axis=1, ddof=0, keepdims=True, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_17_{axis=1, ddof=0, keepdims=True, shape=(4, 3, 5)}::test_nanvar
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_18_{axis=1, ddof=0, keepdims=False, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_18_{axis=1, ddof=0, keepdims=False, shape=(3, 4)}::test_nanvar
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_19_{axis=1, ddof=0, keepdims=False, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_19_{axis=1, ddof=0, keepdims=False, shape=(4, 3, 5)}::test_nanvar
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_1_{axis=None, ddof=0, keepdims=True, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_1_{axis=None, ddof=0, keepdims=True, shape=(4, 3, 5)}::test_nanvar
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_20_{axis=1, ddof=1, keepdims=True, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_20_{axis=1, ddof=1, keepdims=True, shape=(3, 4)}::test_nanvar
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_21_{axis=1, ddof=1, keepdims=True, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_21_{axis=1, ddof=1, keepdims=True, shape=(4, 3, 5)}::test_nanvar
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_22_{axis=1, ddof=1, keepdims=False, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_22_{axis=1, ddof=1, keepdims=False, shape=(3, 4)}::test_nanvar
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_23_{axis=1, ddof=1, keepdims=False, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_23_{axis=1, ddof=1, keepdims=False, shape=(4, 3, 5)}::test_nanvar
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_2_{axis=None, ddof=0, keepdims=False, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_2_{axis=None, ddof=0, keepdims=False, shape=(3, 4)}::test_nanvar
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_3_{axis=None, ddof=0, keepdims=False, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_3_{axis=None, ddof=0, keepdims=False, shape=(4, 3, 5)}::test_nanvar
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_4_{axis=None, ddof=1, keepdims=True, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_4_{axis=None, ddof=1, keepdims=True, shape=(3, 4)}::test_nanvar
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_5_{axis=None, ddof=1, keepdims=True, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_5_{axis=None, ddof=1, keepdims=True, shape=(4, 3, 5)}::test_nanvar
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_6_{axis=None, ddof=1, keepdims=False, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_6_{axis=None, ddof=1, keepdims=False, shape=(3, 4)}::test_nanvar
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_7_{axis=None, ddof=1, keepdims=False, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_7_{axis=None, ddof=1, keepdims=False, shape=(4, 3, 5)}::test_nanvar
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_8_{axis=0, ddof=0, keepdims=True, shape=(3, 4)}::test_nanstd
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_8_{axis=0, ddof=0, keepdims=True, shape=(3, 4)}::test_nanvar
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_9_{axis=0, ddof=0, keepdims=True, shape=(4, 3, 5)}::test_nanstd
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestNanVarStd_param_9_{axis=0, ddof=0, keepdims=True, shape=(4, 3, 5)}::test_nanvar
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestProductZeroLength_param_10_{func='std', params=((0, 0, 0), None)}::test_external_mean_zero_len
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestProductZeroLength_param_11_{func='std', params=((0, 0, 0), (0, 2))}::test_external_mean_zero_len
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestProductZeroLength_param_12_{func='var', params=((), None)}::test_external_mean_zero_len
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestProductZeroLength_param_13_{func='var', params=((0,), None)}::test_external_mean_zero_len
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestProductZeroLength_param_14_{func='var', params=((0, 0), None)}::test_external_mean_zero_len
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestProductZeroLength_param_15_{func='var', params=((0, 0), 1)}::test_external_mean_zero_len
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestProductZeroLength_param_16_{func='var', params=((0, 0, 0), None)}::test_external_mean_zero_len
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestProductZeroLength_param_17_{func='var', params=((0, 0, 0), (0, 2))}::test_external_mean_zero_len
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestProductZeroLength_param_3_{func='mean', params=((0, 0), 1)}::test_external_mean_zero_len
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestProductZeroLength_param_5_{func='mean', params=((0, 0, 0), (0, 2))}::test_external_mean_zero_len
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestProductZeroLength_param_6_{func='std', params=((), None)}::test_external_mean_zero_len
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestProductZeroLength_param_7_{func='std', params=((0,), None)}::test_external_mean_zero_len
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestProductZeroLength_param_8_{func='std', params=((0, 0), None)}::test_external_mean_zero_len
-tests/third_party/cupy/statics_tests/test_meanvar.py::TestProductZeroLength_param_9_{func='std', params=((0, 0), 1)}::test_external_mean_zero_len
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_nanmax_all
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_nanmax_all_nan
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_nanmax_axis0
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_nanmax_axis1
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_nanmax_axis2
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_nanmax_axis_large
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_nanmax_nan
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_nanmin_all
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_nanmin_all_nan
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_nanmin_axis0
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_nanmin_axis1
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_nanmin_axis2
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_nanmin_axis_large
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_nanmin_nan
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_percentile_bad_q
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_percentile_defaults
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_percentile_keepdims
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_percentile_neg_axis
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_percentile_no_axis
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_percentile_out
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_percentile_q_list
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_percentile_scalar_q
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_percentile_tuple_axis
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_percentile_uxpected_interpolation
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_ptp_all
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_ptp_all_nan
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_ptp_axis0
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_ptp_axis1
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_ptp_axis2
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_ptp_axis_large
-tests/third_party/cupy/statics_tests/test_order.py::TestOrder::test_ptp_nan
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrcoef::test_corrcoef
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrcoef::test_corrcoef_diag_exception
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrcoef::test_corrcoef_rowvar
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrcoef::test_corrcoef_y
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateInvalid_param_0_{mode='valid'}::test_correlate_empty
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateInvalid_param_0_{mode='valid'}::test_correlate_ndim
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateInvalid_param_0_{mode='valid'}::test_correlate_zero_dim
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateInvalid_param_1_{mode='same'}::test_correlate_empty
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateInvalid_param_1_{mode='same'}::test_correlate_ndim
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateInvalid_param_1_{mode='same'}::test_correlate_zero_dim
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateInvalid_param_2_{mode='full'}::test_correlate_empty
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateInvalid_param_2_{mode='full'}::test_correlate_ndim
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateInvalid_param_2_{mode='full'}::test_correlate_zero_dim
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelate_param_0_{mode='valid'}::test_correlate_diff_types
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelate_param_0_{mode='valid'}::test_correlate_large_non_contiguous
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelate_param_0_{mode='valid'}::test_correlate_non_contiguous
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelate_param_1_{mode='full'}::test_correlate_diff_types
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelate_param_1_{mode='full'}::test_correlate_large_non_contiguous
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelate_param_1_{mode='full'}::test_correlate_non_contiguous
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelate_param_2_{mode='same'}::test_correlate_diff_types
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelate_param_2_{mode='same'}::test_correlate_large_non_contiguous
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelate_param_2_{mode='same'}::test_correlate_non_contiguous
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_0_{mode='valid', shape1=(5,), shape2=(5,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_10_{mode='valid', shape1=(20,), shape2=(20,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_11_{mode='valid', shape1=(20,), shape2=(21,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_12_{mode='valid', shape1=(21,), shape2=(5,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_13_{mode='valid', shape1=(21,), shape2=(6,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_14_{mode='valid', shape1=(21,), shape2=(20,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_15_{mode='valid', shape1=(21,), shape2=(21,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_16_{mode='same', shape1=(5,), shape2=(5,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_17_{mode='same', shape1=(5,), shape2=(6,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_18_{mode='same', shape1=(5,), shape2=(20,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_19_{mode='same', shape1=(5,), shape2=(21,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_1_{mode='valid', shape1=(5,), shape2=(6,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_20_{mode='same', shape1=(6,), shape2=(5,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_21_{mode='same', shape1=(6,), shape2=(6,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_22_{mode='same', shape1=(6,), shape2=(20,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_23_{mode='same', shape1=(6,), shape2=(21,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_24_{mode='same', shape1=(20,), shape2=(5,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_25_{mode='same', shape1=(20,), shape2=(6,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_26_{mode='same', shape1=(20,), shape2=(20,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_27_{mode='same', shape1=(20,), shape2=(21,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_28_{mode='same', shape1=(21,), shape2=(5,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_29_{mode='same', shape1=(21,), shape2=(6,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_2_{mode='valid', shape1=(5,), shape2=(20,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_30_{mode='same', shape1=(21,), shape2=(20,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_31_{mode='same', shape1=(21,), shape2=(21,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_32_{mode='full', shape1=(5,), shape2=(5,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_33_{mode='full', shape1=(5,), shape2=(6,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_34_{mode='full', shape1=(5,), shape2=(20,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_35_{mode='full', shape1=(5,), shape2=(21,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_36_{mode='full', shape1=(6,), shape2=(5,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_37_{mode='full', shape1=(6,), shape2=(6,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_38_{mode='full', shape1=(6,), shape2=(20,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_39_{mode='full', shape1=(6,), shape2=(21,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_3_{mode='valid', shape1=(5,), shape2=(21,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_40_{mode='full', shape1=(20,), shape2=(5,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_41_{mode='full', shape1=(20,), shape2=(6,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_42_{mode='full', shape1=(20,), shape2=(20,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_43_{mode='full', shape1=(20,), shape2=(21,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_44_{mode='full', shape1=(21,), shape2=(5,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_45_{mode='full', shape1=(21,), shape2=(6,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_46_{mode='full', shape1=(21,), shape2=(20,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_47_{mode='full', shape1=(21,), shape2=(21,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_4_{mode='valid', shape1=(6,), shape2=(5,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_5_{mode='valid', shape1=(6,), shape2=(6,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_6_{mode='valid', shape1=(6,), shape2=(20,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_7_{mode='valid', shape1=(6,), shape2=(21,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_8_{mode='valid', shape1=(20,), shape2=(5,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_9_{mode='valid', shape1=(20,), shape2=(6,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCov::test_cov
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCov::test_cov_warns
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeInvalid::test_digitize_complex
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeInvalid::test_digitize_nd_bins
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_0_{right=True}::test_digitize_all_nan_bins
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_0_{right=True}::test_digitize_nan
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_0_{right=True}::test_digitize_nan_bins
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_0_{right=True}::test_digitize_nan_bins_decreasing
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_0_{right=True}::test_digitize_nan_bins_decreasing_repeated
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_0_{right=True}::test_digitize_nan_bins_repeated
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_0_{right=True}::test_searchsorted_inf
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_0_{right=True}::test_searchsorted_minf
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_1_{right=False}::test_digitize_all_nan_bins
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_1_{right=False}::test_digitize_nan
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_1_{right=False}::test_digitize_nan_bins
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_1_{right=False}::test_digitize_nan_bins_decreasing
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_1_{right=False}::test_digitize_nan_bins_decreasing_repeated
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_1_{right=False}::test_digitize_nan_bins_repeated
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_1_{right=False}::test_searchsorted_inf
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_1_{right=False}::test_searchsorted_minf
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_0_{bins=[1.5, 2.5, 4.0, 6.0], increasing=True, right=True, shape=()}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_10_{bins=[1.5, 2.5, 4.0, 6.0], increasing=False, right=False, shape=(10,)}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_11_{bins=[1.5, 2.5, 4.0, 6.0], increasing=False, right=False, shape=(6, 3, 3)}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_12_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], increasing=True, right=True, shape=()}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_13_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], increasing=True, right=True, shape=(10,)}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_14_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], increasing=True, right=True, shape=(6, 3, 3)}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_15_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], increasing=True, right=False, shape=()}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_16_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], increasing=True, right=False, shape=(10,)}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_17_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], increasing=True, right=False, shape=(6, 3, 3)}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_18_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], increasing=False, right=True, shape=()}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_19_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], increasing=False, right=True, shape=(10,)}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_1_{bins=[1.5, 2.5, 4.0, 6.0], increasing=True, right=True, shape=(10,)}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_20_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], increasing=False, right=True, shape=(6, 3, 3)}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_21_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], increasing=False, right=False, shape=()}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_22_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], increasing=False, right=False, shape=(10,)}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_23_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], increasing=False, right=False, shape=(6, 3, 3)}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_24_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], increasing=True, right=True, shape=()}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_25_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], increasing=True, right=True, shape=(10,)}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_26_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], increasing=True, right=True, shape=(6, 3, 3)}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_27_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], increasing=True, right=False, shape=()}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_28_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], increasing=True, right=False, shape=(10,)}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_29_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], increasing=True, right=False, shape=(6, 3, 3)}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_2_{bins=[1.5, 2.5, 4.0, 6.0], increasing=True, right=True, shape=(6, 3, 3)}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_30_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], increasing=False, right=True, shape=()}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_31_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], increasing=False, right=True, shape=(10,)}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_32_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], increasing=False, right=True, shape=(6, 3, 3)}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_33_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], increasing=False, right=False, shape=()}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_34_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], increasing=False, right=False, shape=(10,)}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_35_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], increasing=False, right=False, shape=(6, 3, 3)}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_3_{bins=[1.5, 2.5, 4.0, 6.0], increasing=True, right=False, shape=()}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_4_{bins=[1.5, 2.5, 4.0, 6.0], increasing=True, right=False, shape=(10,)}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_5_{bins=[1.5, 2.5, 4.0, 6.0], increasing=True, right=False, shape=(6, 3, 3)}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_6_{bins=[1.5, 2.5, 4.0, 6.0], increasing=False, right=True, shape=()}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_7_{bins=[1.5, 2.5, 4.0, 6.0], increasing=False, right=True, shape=(10,)}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_8_{bins=[1.5, 2.5, 4.0, 6.0], increasing=False, right=True, shape=(6, 3, 3)}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_9_{bins=[1.5, 2.5, 4.0, 6.0], increasing=False, right=False, shape=()}::test_digitize
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_bincount
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_bincount_duplicated_value
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_bincount_invalid_weight_length
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_bincount_negative
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_bincount_too_deep
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_bincount_too_small
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_bincount_too_small_minlength
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_bincount_with_minlength
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_bincount_with_weight
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_bincount_zero
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_array_bins
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_bins_not_ordered
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_density
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_empty
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_float_weights
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_float_weights_dtype
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_int_bins
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_int_weights
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_int_weights_dtype
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_int_weights_nonuniform_bins
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_int_weights_normalized
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_invalid_range
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_invalid_range2
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_list_bins
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_numpy_bins
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_range_lower_outliers
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_range_upper_outliers
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_range_with_density
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_range_with_weights_and_density
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_same_value
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_weights_basic
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_weights_mismatch
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestAverage::test_average_axis
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestAverage::test_average_axis_weights
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestAverage::test_average_weights
@@ -1392,3 +1227,34 @@ tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_p
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_7_{func='std', params=((0,), None)}::test_external_mean_zero_len
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_8_{func='std', params=((0, 0), None)}::test_external_mean_zero_len
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_9_{func='std', params=((0, 0), 1)}::test_external_mean_zero_len
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmax_all
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmax_all_nan
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmax_axis0
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmax_axis1
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmax_axis2
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmax_axis_large
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmax_nan
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmin_all
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmin_all_nan
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmin_axis0
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmin_axis1
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmin_axis2
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmin_axis_large
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_nanmin_nan
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_bad_q
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_defaults
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_keepdims
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_neg_axis
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_no_axis
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_out
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_q_list
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_scalar_q
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_tuple_axis
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_uxpected_interpolation
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_all
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_all_nan
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_axis0
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_axis1
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_axis2
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_axis_large
+tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_nan
