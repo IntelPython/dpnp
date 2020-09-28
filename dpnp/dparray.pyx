@@ -40,6 +40,7 @@ from dpnp.dpnp_iface_types import *
 from dpnp.dpnp_iface import *
 from dpnp.backend cimport *
 from dpnp.dpnp_iface_statistics import min, max
+from dpnp.dpnp_iface_logic import all, any
 import numpy
 cimport numpy
 
@@ -1028,6 +1029,40 @@ cdef class dparray:
         """
 
         return argmin(self, axis, out)
+
+    """
+    -------------------------------------------------------------------------
+    Logic
+    -------------------------------------------------------------------------
+    """
+
+    def all(self, axis=None, out=None, keepdims=False):
+        """
+        Returns True if all elements evaluate to True.
+
+        Refer to `numpy.all` for full documentation.
+
+        See Also
+        --------
+        numpy.all : equivalent function
+
+        """
+
+        return all(self, axis, out, keepdims)
+
+    def any(self, axis=None, out=None, keepdims=False):
+        """
+        Returns True if any of the elements of `a` evaluate to True.
+
+        Refer to `numpy.any` for full documentation.
+
+        See Also
+        --------
+        numpy.any : equivalent function
+
+        """
+
+        return any(self, axis, out, keepdims)
 
     """
     -------------------------------------------------------------------------

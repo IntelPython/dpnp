@@ -37,6 +37,8 @@ from dpnp.dpnp_utils cimport *
 
 
 __all__ += [
+    "dpnp_all",
+    "dpnp_any",
     "dpnp_equal",
     "dpnp_greater",
     "dpnp_greater_equal",
@@ -52,6 +54,34 @@ __all__ += [
     "dpnp_logical_xor",
     "dpnp_not_equal"
 ]
+
+
+cpdef dparray dpnp_all(dparray array1):
+    cdef dparray result = dparray((1,), dtype=numpy.bool)
+
+    res = True
+    for i in range(array1.size):
+        if not numpy.bool(array1[i]):
+            res = False
+            break
+
+    result[0] = res
+
+    return result
+
+
+cpdef dparray dpnp_any(dparray array1):
+    cdef dparray result = dparray((1,), dtype=numpy.bool)
+
+    res = False
+    for i in range(array1.size):
+        if numpy.bool(array1[i]):
+            res = True
+            break
+
+    result[0] = res
+
+    return result
 
 
 cpdef dparray dpnp_equal(dparray array1, input2):

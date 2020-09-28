@@ -1,0 +1,71 @@
+import pytest
+
+import dpnp
+
+import numpy
+
+
+@pytest.mark.parametrize("type",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.bool, numpy.bool_],
+                         ids=['float64', 'float32', 'int64', 'int32', 'bool', 'bool_'])
+@pytest.mark.parametrize("shape",
+                         [(4,), (2, 3), (2, 2, 2)],
+                         ids=['(4,)', '(2,3)', '(2,2,2)'])
+def test_all(type, shape):
+    size = 1
+    for i in range(len(shape)):
+        size *= shape[i]
+
+    for i in range(2 ** size):
+        t = i
+
+        a = numpy.empty(size, dtype=type)
+
+        for j in range(size):
+            a[j] = 0 if t % 2 == 0 else j + 1
+            t = t >> 1
+
+        a = a.reshape(shape)
+
+        ia = dpnp.array(a)
+
+        np_res = numpy.all(a)
+        dpnp_res = dpnp.all(ia)
+        numpy.testing.assert_allclose(dpnp_res, np_res)
+
+        np_res = a.all()
+        dpnp_res = ia.all()
+        numpy.testing.assert_allclose(dpnp_res, np_res)
+
+
+@pytest.mark.parametrize("type",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.bool, numpy.bool_],
+                         ids=['float64', 'float32', 'int64', 'int32', 'bool', 'bool_'])
+@pytest.mark.parametrize("shape",
+                         [(4,), (2, 3), (2, 2, 2)],
+                         ids=['(4,)', '(2,3)', '(2,2,2)'])
+def test_any(type, shape):
+    size = 1
+    for i in range(len(shape)):
+        size *= shape[i]
+
+    for i in range(2 ** size):
+        t = i
+
+        a = numpy.empty(size, dtype=type)
+
+        for j in range(size):
+            a[j] = 0 if t % 2 == 0 else j + 1
+            t = t >> 1
+
+        a = a.reshape(shape)
+
+        ia = dpnp.array(a)
+
+        np_res = numpy.any(a)
+        dpnp_res = dpnp.any(ia)
+        numpy.testing.assert_allclose(dpnp_res, np_res)
+
+        np_res = a.any()
+        dpnp_res = ia.any()
+        numpy.testing.assert_allclose(dpnp_res, np_res)
