@@ -61,29 +61,54 @@ enum class DPNPFuncName : size_t
 {
     DPNP_FN_NONE,     /**< Very first element of the enumeration */
     DPNP_FN_ADD,      /**< Used in numpy.add() implementation  */
+    DPNP_FN_ARCCOS,   /**< Used in numpy.arccos() implementation  */
+    DPNP_FN_ARCCOSH,  /**< Used in numpy.arccosh() implementation  */
+    DPNP_FN_ARCSIN,   /**< Used in numpy.arcsin() implementation  */
+    DPNP_FN_ARCSINH,  /**< Used in numpy.arcsinh() implementation  */
+    DPNP_FN_ARCTAN,   /**< Used in numpy.arctan() implementation  */
     DPNP_FN_ARCTAN2,  /**< Used in numpy.arctan2() implementation  */
+    DPNP_FN_ARCTANH,  /**< Used in numpy.arctanh() implementation  */
     DPNP_FN_ARGMAX,   /**< Used in numpy.argmax() implementation  */
     DPNP_FN_ARGMIN,   /**< Used in numpy.argmin() implementation  */
     DPNP_FN_ARGSORT,  /**< Used in numpy.argsort() implementation  */
+    DPNP_FN_CBRT,     /**< Used in numpy.cbrt() implementation  */
     DPNP_FN_CEIL,     /**< Used in numpy.ceil() implementation  */
+    DPNP_FN_COS,      /**< Used in numpy.cos() implementation  */
+    DPNP_FN_COSH,     /**< Used in numpy.cosh() implementation  */
     DPNP_FN_COV,      /**< Used in numpy.cov() implementation  */
+    DPNP_FN_DEGREES,  /**< Used in numpy.degrees() implementation  */
     DPNP_FN_DIVIDE,   /**< Used in numpy.divide() implementation  */
     DPNP_FN_DOT,      /**< Used in numpy.dot() implementation  */
     DPNP_FN_EIG,      /**< Used in numpy.linalg.eig() implementation  */
+    DPNP_FN_EXP,      /**< Used in numpy.exp() implementation  */
+    DPNP_FN_EXP2,     /**< Used in numpy.exp2() implementation  */
+    DPNP_FN_EXPM1,    /**< Used in numpy.expm1() implementation  */
     DPNP_FN_FABS,     /**< Used in numpy.fabs() implementation  */
     DPNP_FN_FLOOR,    /**< Used in numpy.floor() implementation  */
     DPNP_FN_FMOD,     /**< Used in numpy.fmod() implementation  */
     DPNP_FN_HYPOT,    /**< Used in numpy.hypot() implementation  */
+    DPNP_FN_LOG,      /**< Used in numpy.log() implementation  */
+    DPNP_FN_LOG10,    /**< Used in numpy.log10() implementation  */
+    DPNP_FN_LOG2,     /**< Used in numpy.log2() implementation  */
+    DPNP_FN_LOG1P,    /**< Used in numpy.log1p() implementation  */
     DPNP_FN_MATMUL,   /**< Used in numpy.matmul() implementation  */
     DPNP_FN_MAXIMUM,  /**< Used in numpy.maximum() implementation  */
     DPNP_FN_MINIMUM,  /**< Used in numpy.minimum() implementation  */
     DPNP_FN_MULTIPLY, /**< Used in numpy.multiply() implementation  */
     DPNP_FN_POWER,    /**< Used in numpy.random.power() implementation  */
     DPNP_FN_PROD,     /**< Used in numpy.prod() implementation  */
+    DPNP_FN_RADIANS,  /**< Used in numpy.radians() implementation  */
+    DPNP_FN_RECIP,    /**< Used in numpy.recip() implementation  */
     DPNP_FN_RAND,     /**< Used in numpy.random.rand() implementation  */
     DPNP_FN_SIGN,     /**< Used in numpy.sign() implementation  */
+    DPNP_FN_SIN,      /**< Used in numpy.sin() implementation  */
+    DPNP_FN_SINH,     /**< Used in numpy.sinh() implementation  */
+    DPNP_FN_SQRT,     /**< Used in numpy.sqrt() implementation  */
+    DPNP_FN_SQUARE,    /**< Used in numpy.square() implementation  */
     DPNP_FN_SUBTRACT, /**< Used in numpy.subtract() implementation  */
     DPNP_FN_SUM,      /**< Used in numpy.sum() implementation  */
+    DPNP_FN_TAN,      /**< Used in numpy.tan() implementation  */
+    DPNP_FN_TANH,      /**< Used in numpy.tanh() implementation  */
     DPNP_FN_TRUNC,    /**< Used in numpy.trunc() implementation  */
     DPNP_FN_LAST      /**< The latest element of the enumeration */
 };

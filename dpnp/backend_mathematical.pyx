@@ -63,52 +63,6 @@ __all__ += [
 ]
 
 
-# C function pointer to the C library template functions
-# TODO later move to PXD
-ctypedef void(*fptr_1in_1out_t)(void *, void * , size_t)
-ctypedef void(*fptr_2in_1out_t)(void *, void*, void*, size_t)
-
-# TODO later move to PXD
-cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shape_type result_shape):
-
-    """ Convert string type names (dparray.dtype) to C enum DPNPFuncType """
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
-
-    """ get the FPTR data structure """
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, param1_type, param1_type)
-
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-    """ Create result array with type given by FPTR data """
-    cdef dparray result = dparray(result_shape, dtype=result_type)
-
-    cdef fptr_1in_1out_t func = <fptr_1in_1out_t > kernel_data.ptr
-    """ Call FPTR function """
-    func(x1.get_data(), result.get_data(), x1.size)
-
-    return result
-
-
-# TODO later move to PXD
-cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, dparray_shape_type result_shape):
-
-    """ Convert string type names (dparray.dtype) to C enum DPNPFuncType """
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
-    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(x2.dtype)
-
-    """ get the FPTR data structure """
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, param1_type, param2_type)
-
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-    """ Create result array with type given by FPTR data """
-    cdef dparray result = dparray(result_shape, dtype=result_type)
-
-    cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
-    """ Call FPTR function """
-    func(x1.get_data(), x2.get_data(), result.get_data(), x1.size)
-
-    return result
-
-
 cpdef dparray dpnp_absolute(dparray input):
     cdef dparray_shape_type shape_input = input.shape
     cdef long size_input = input.size
