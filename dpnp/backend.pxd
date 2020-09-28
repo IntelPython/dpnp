@@ -32,21 +32,28 @@ from dpnp.dparray cimport dparray, dparray_shape_type
 cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
     cdef enum DPNPFuncName "DPNPFuncName":
         DPNP_FN_ADD
+        DPNP_FN_ARCTAN2
         DPNP_FN_ARGMAX
         DPNP_FN_ARGMIN
         DPNP_FN_ARGSORT
         DPNP_FN_CEIL
         DPNP_FN_COV
+        DPNP_FN_DIVIDE
         DPNP_FN_DOT
         DPNP_FN_EIG
         DPNP_FN_FABS
         DPNP_FN_FLOOR
+        DPNP_FN_FMOD
+        DPNP_FN_HYPOT
         DPNP_FN_MATMUL
         DPNP_FN_MAXIMUM
         DPNP_FN_MINIMUM
+        DPNP_FN_MULTIPLY
+        DPNP_FN_POWER
         DPNP_FN_PROD
         DPNP_FN_RAND
         DPNP_FN_SIGN
+        DPNP_FN_SUBTRACT
         DPNP_FN_SUM
         DPNP_FN_TRUNC
 
@@ -113,16 +120,6 @@ cdef extern from "backend/backend_iface.hpp":
     void custom_elemwise_tan_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
     void custom_elemwise_tanh_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
 
-    # Mathematical part
-    void custom_elemwise_add_c[_DataType_input1, _DataType_input2, _DataType_output](void * array1, void * array2, void * result1, size_t size)
-    void custom_elemwise_arctan2_c[_DataType_input1, _DataType_input2, _DataType_output](void * array1, void * array2, void * result1, size_t size)
-    void custom_elemwise_divide_c[_DataType_input1, _DataType_input2, _DataType_output](void * array1, void * array2, void * result1, size_t size)
-    void custom_elemwise_hypot_c[_DataType_input1, _DataType_input2, _DataType_output](void * array1, void * array2, void * result1, size_t size)
-    void custom_elemwise_multiply_c[_DataType_input1, _DataType_input2, _DataType_output](void * array1, void * array2, void * result1, size_t size)
-    void custom_elemwise_power_c[_DataType_input1, _DataType_input2, _DataType_output](void * array1, void * array2, void * result1, size_t size)
-    void custom_elemwise_subtract_c[_DataType_input1, _DataType_input2, _DataType_output](void * array1, void * array2, void * result1, size_t size)
-    void custom_sum_c[_DataType](void * array, void * result, size_t size)
-
     # array manipulation routines
     void custom_elemwise_transpose_c[_DataType](void * array1_in, dparray_shape_type & input_shape, dparray_shape_type & result_shape, dparray_shape_type & permute_axes, void * result1, size_t size)
 
@@ -132,7 +129,7 @@ cdef extern from "backend/backend_iface.hpp":
     void mkl_rng_uniform_mt19937[_DataType](void * result, long low, long high, size_t size)
 
     # Statistics routines
-    void custom_cov_c[_DataType](void * array, void * result, dparray_shape_type & input_shape)
+    void custom_cov_c[_DataType](void * array, void * result, size_t nrows, size_t ncols)
 
     # Sorting routines
     void custom_argsort_c[_DataType, _idx_DataType](void * array, void * result, size_t size)

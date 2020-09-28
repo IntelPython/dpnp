@@ -41,6 +41,7 @@
 MACRO_CUSTOM_2ARG_3TYPES_OP(add, input_elem1 + input_elem2)
 MACRO_CUSTOM_2ARG_3TYPES_OP(arctan2, cl::sycl::atan2((double)input_elem1, (double)input_elem2))
 MACRO_CUSTOM_2ARG_3TYPES_OP(divide, input_elem1 / input_elem2)
+MACRO_CUSTOM_2ARG_3TYPES_OP(fmod, cl::sycl::fmod((double)input_elem1, (double)input_elem2))
 MACRO_CUSTOM_2ARG_3TYPES_OP(hypot, cl::sycl::hypot((double)input_elem1, (double)input_elem2))
 MACRO_CUSTOM_2ARG_3TYPES_OP(maximum, cl::sycl::max(input_elem1, input_elem2))
 MACRO_CUSTOM_2ARG_3TYPES_OP(minimum, cl::sycl::min(input_elem1, input_elem2))

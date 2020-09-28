@@ -42,6 +42,7 @@
 #pragma clang diagnostic ignored "-Wunused-local-typedef"
 #pragma clang diagnostic ignored "-Wunknown-pragmas"
 #pragma clang diagnostic ignored "-Wsign-compare"
+#pragma clang diagnostic ignored "-Wunused-variable"
 
 #include <oneapi/dpl/algorithm>
 #include <oneapi/dpl/execution>

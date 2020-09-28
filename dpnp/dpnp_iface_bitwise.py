@@ -42,11 +42,11 @@ it contains:
 
 import numpy
 
-import dpnp
+
 from dpnp.backend import *
 from dpnp.dparray import dparray
-from dpnp.dpnp_utils import checker_throw_type_error, checker_throw_value_error, use_origin_backend
-
+from dpnp.dpnp_utils import *
+import dpnp
 
 __all__ = [
     'bitwise_and',

@@ -311,6 +311,7 @@ dpnp_utils = Extension(
     include_dirs=[numpy.get_include()] + _project_backend_dir,
     extra_compile_args=[],
     extra_link_args=_project_extra_link_args,
+    define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
     language="c++"
 )
 
@@ -333,7 +334,9 @@ dpnp_cython_mods = cythonize([dpnp_backend, dpnp_dparray, dpnp_random, dpnp_util
                                                   "warn.unused_result": False,
                                                   "warn.maybe_uninitialized": False,
                                                   "warn.undeclared": False,
-                                                  "boundscheck": True},
+                                                  "boundscheck": True,
+                                                  "linetrace": True
+                                                  },
                              gdb_debug=False,
                              build_dir="build_cython",
                              annotate=False,
