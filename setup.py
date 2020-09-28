@@ -264,7 +264,7 @@ dpnp_backend_c = [
             ],
             "include_dirs": _mkl_include + _project_backend_dir + _dpctrl_include,
             "library_dirs": _mkl_libpath + _omp_libpath + _dpctrl_libpath,
-            "runtime_library_dirs": [] # _project_rpath + _mkl_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath,
+            "runtime_library_dirs": [], # _project_rpath + _mkl_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath,
             "extra_preargs": _project_cmplr_flag_sycl,
             "extra_link_postargs": _project_cmplr_flag_compatibility + _project_cmplr_flag_lib,
             "libraries": _mkl_libs + _dpctrl_lib,
