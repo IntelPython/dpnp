@@ -34,8 +34,7 @@ and the rest of the library
 
 import dpnp.config as config
 import numpy
-from dpnp.dpnp_utils cimport checker_throw_type_error, checker_throw_runtime_error, get_shape_dtype, copy_values_to_dparray
-from cython.operator cimport dereference, preincrement
+
 cimport cpython
 cimport dpnp.dpnp_utils as utils
 cimport numpy
