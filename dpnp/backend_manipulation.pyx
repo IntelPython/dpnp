@@ -37,9 +37,58 @@ from dpnp.dpnp_utils cimport checker_throw_type_error, normalize_axis
 
 
 __all__ += [
+    "dpnp_copyto",
     "dpnp_repeat",
     "dpnp_transpose"
 ]
+
+
+cpdef dparray dpnp_copyto(dparray dst, dparray src, where=True):
+    cdef dparray_shape_type shape_src = src.shape
+    cdef long size_src = src.size
+    output_shape = dparray(len(shape_src), dtype=numpy.int64)
+    for id, shape_ in enumerate(shape_src):
+        output_shape[id] = shape_
+    cdef long prod = 1
+    for i in range(len(output_shape)):
+        if output_shape[i] != 0:
+            prod *= output_shape[i]
+    result_array = [None] * prod
+    src_shape_offsets = [None] * len(shape_src)
+    acc = 1
+    for i in range(len(shape_src)):
+        ind = len(shape_src) - 1 - i
+        src_shape_offsets[ind] = acc
+        acc *= shape_src[ind]
+    output_shape_offsets = [None] * len(shape_src)
+    acc = 1
+    for i in range(len(output_shape)):
+        ind = len(output_shape) - 1 - i
+        output_shape_offsets[ind] = acc
+        acc *= output_shape[ind]
+        result_offsets = src_shape_offsets[:]  # need copy. not a reference
+
+    for source_idx in range(size_src):
+
+        # reconstruct x,y,z from linear source_idx
+        xyz = []
+        remainder = source_idx
+        for i in src_shape_offsets:
+            quotient, remainder = divmod(remainder, i)
+            xyz.append(quotient)
+
+        result_indexes = []
+        for idx, offset in enumerate(xyz):
+            result_indexes.append(offset)
+
+        result_offset = 0
+        for i, result_indexes_val in enumerate(result_indexes):
+            result_offset += (output_shape_offsets[i] * result_indexes_val)
+
+        src_elem = src.item(source_idx)
+        dst[source_idx] = src_elem
+
+    return dst
 
 
 cpdef dparray dpnp_repeat(dparray array1, repeats, axes=None):
