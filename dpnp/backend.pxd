@@ -26,7 +26,7 @@
 # *****************************************************************************
 
 from libcpp.vector cimport vector
-from libcpp cimport bool
+from libcpp cimport bool as cpp_bool
 from dpnp.dparray cimport dparray, dparray_shape_type
 
 cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
@@ -156,7 +156,7 @@ Logic functions
 cpdef dparray dpnp_equal(dparray array1, input2)
 cpdef dparray dpnp_greater(dparray input1, dparray input2)
 cpdef dparray dpnp_greater_equal(dparray input1, dparray input2)
-cpdef dparray dpnp_isclose(dparray input1, input2, double rtol=*, double atol=*, bool equal_nan=*)
+cpdef dparray dpnp_isclose(dparray input1, input2, double rtol=*, double atol=*, cpp_bool equal_nan=*)
 cpdef dparray dpnp_less(dparray input1, dparray input2)
 cpdef dparray dpnp_less_equal(dparray input1, dparray input2)
 cpdef dparray dpnp_logical_and(dparray input1, dparray input2)
