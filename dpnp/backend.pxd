@@ -120,16 +120,6 @@ cdef extern from "backend/backend_iface.hpp":
     void custom_elemwise_tan_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
     void custom_elemwise_tanh_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
 
-    # Mathematical part
-    void custom_elemwise_add_c[_DataType_input1, _DataType_input2, _DataType_output](void * array1, void * array2, void * result1, size_t size)
-    void custom_elemwise_arctan2_c[_DataType_input1, _DataType_input2, _DataType_output](void * array1, void * array2, void * result1, size_t size)
-    void custom_elemwise_divide_c[_DataType_input1, _DataType_input2, _DataType_output](void * array1, void * array2, void * result1, size_t size)
-    void custom_elemwise_hypot_c[_DataType_input1, _DataType_input2, _DataType_output](void * array1, void * array2, void * result1, size_t size)
-    void custom_elemwise_multiply_c[_DataType_input1, _DataType_input2, _DataType_output](void * array1, void * array2, void * result1, size_t size)
-    void custom_elemwise_power_c[_DataType_input1, _DataType_input2, _DataType_output](void * array1, void * array2, void * result1, size_t size)
-    void custom_elemwise_subtract_c[_DataType_input1, _DataType_input2, _DataType_output](void * array1, void * array2, void * result1, size_t size)
-    void custom_sum_c[_DataType](void * array, void * result, size_t size)
-
     # array manipulation routines
     void custom_elemwise_transpose_c[_DataType](void * array1_in, dparray_shape_type & input_shape, dparray_shape_type & result_shape, dparray_shape_type & permute_axes, void * result1, size_t size)
 
