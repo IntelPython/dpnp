@@ -217,7 +217,7 @@ elif IS_WIN:
 """
 Final set of arguments for extentions
 """
-_project_extra_link_args = _project_cmplr_flag_compatibility + ["-Wl,-rpath," + x for x in _project_rpath]
+_project_extra_link_args = _project_cmplr_flag_compatibility # + ["-Wl,-rpath," + x for x in _project_rpath]
 _project_dir = os.path.dirname(os.path.abspath(__file__))
 _project_main_module_dir = [os.path.join(_project_dir, "dpnp")]
 _project_backend_dir = [os.path.join(_project_dir, "dpnp", "backend")]
@@ -264,7 +264,7 @@ dpnp_backend_c = [
             ],
             "include_dirs": _mkl_include + _project_backend_dir + _dpctrl_include,
             "library_dirs": _mkl_libpath + _omp_libpath + _dpctrl_libpath,
-            "runtime_library_dirs": _project_rpath + _mkl_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath,
+            "runtime_library_dirs": [] # _project_rpath + _mkl_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath,
             "extra_preargs": _project_cmplr_flag_sycl,
             "extra_link_postargs": _project_cmplr_flag_compatibility + _project_cmplr_flag_lib,
             "libraries": _mkl_libs + _dpctrl_lib,
