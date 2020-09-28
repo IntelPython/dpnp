@@ -32,4 +32,4 @@ test:
 about:
     license: ISSL
     license_file: LICENSE.txt
-    summary: Subclass of numpy.ndarray that uses mkl_malloc
+    summary: NumPy-like API accelerated with SYCL
