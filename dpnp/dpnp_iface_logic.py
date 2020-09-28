@@ -124,7 +124,6 @@ def all(in_array1, axis=None, out=None, keepdims=False):
     """
 
     is_dparray1 = isinstance(in_array1, dparray)
-    is_dparray2 = isinstance(out, dparray)
 
     if (not use_origin_backend(in_array1) and is_dparray1):
         if axis is not None:
@@ -142,10 +141,7 @@ def all(in_array1, axis=None, out=None, keepdims=False):
 
         return result
 
-    input1 = dpnp.asnumpy(in_array1) if is_dparray1 else in_array1
-    output1 = dpnp.asnumpy(out) if is_dparray2 else out
-
-    return numpy.all(input1, axis, output1, keepdims)
+    return call_origin(numpy.all, axis, out, keepdims)
 
 
 def any(in_array1, axis=None, out=None, keepdims=False):
@@ -206,7 +202,6 @@ def any(in_array1, axis=None, out=None, keepdims=False):
     """
 
     is_dparray1 = isinstance(in_array1, dparray)
-    is_dparray2 = isinstance(out, dparray)
 
     if (not use_origin_backend(in_array1) and is_dparray1):
         if axis is not None:
@@ -224,10 +219,7 @@ def any(in_array1, axis=None, out=None, keepdims=False):
 
         return result
 
-    input1 = dpnp.asnumpy(in_array1) if is_dparray1 else in_array1
-    output1 = dpnp.asnumpy(out) if is_dparray2 else out
-
-    return numpy.any(input1, axis, output1, keepdims)
+    return call_origin(numpy.any, axis, out, keepdims)
 
 
 def equal(x1, x2):
