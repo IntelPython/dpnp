@@ -217,7 +217,7 @@ elif IS_WIN:
 """
 Final set of arguments for extentions
 """
-_project_extra_link_args = _project_cmplr_flag_compatibility # + ["-Wl,-rpath," + x for x in _project_rpath]
+_project_extra_link_args = _project_cmplr_flag_compatibility + ["-Wl,-rpath," + x for x in _project_rpath]
 _project_dir = os.path.dirname(os.path.abspath(__file__))
 _project_main_module_dir = [os.path.join(_project_dir, "dpnp")]
 _project_backend_dir = [os.path.join(_project_dir, "dpnp", "backend")]
