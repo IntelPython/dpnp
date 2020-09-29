@@ -158,7 +158,7 @@ cdef class RandomState:
         """
         pass
 
-    def rand(d0, *dn):
+    def rand(self, d0, *dn):
         """
         Create an array of the given shape and populate it
         with random samples from a uniform distribution over [0, 1).
