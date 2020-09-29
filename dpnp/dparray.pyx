@@ -392,6 +392,11 @@ cdef class dparray:
     # -------------------------------------------------------------------------
     # Shape manipulation
     # -------------------------------------------------------------------------
+
+    @property
+    def flat(self):
+        return self
+
     def flatten(self, order='C'):
         """
         Return a copy of the array collapsed into one dimension.
