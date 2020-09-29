@@ -164,7 +164,7 @@ def ceil(x1, **kwargs):
     if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
         return dpnp_ceil(x1)
 
-    return call_origin(numpy.ceil, x1, x2, **kwargs)
+    return call_origin(numpy.ceil, x1, **kwargs)
 
 
 def divide(x1, x2, **kwargs):

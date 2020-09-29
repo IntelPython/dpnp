@@ -264,7 +264,7 @@ dpnp_backend_c = [
             ],
             "include_dirs": _mkl_include + _project_backend_dir + _dpctrl_include,
             "library_dirs": _mkl_libpath + _omp_libpath + _dpctrl_libpath,
-            "runtime_library_dirs": _project_rpath + _mkl_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath,
+            "runtime_library_dirs": [], # _project_rpath + _mkl_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath,
             "extra_preargs": _project_cmplr_flag_sycl,
             "extra_link_postargs": _project_cmplr_flag_compatibility + _project_cmplr_flag_lib,
             "libraries": _mkl_libs + _dpctrl_lib,
@@ -311,6 +311,7 @@ dpnp_utils = Extension(
     include_dirs=[numpy.get_include()] + _project_backend_dir,
     extra_compile_args=[],
     extra_link_args=_project_extra_link_args,
+    define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
     language="c++"
 )
 
@@ -333,7 +334,9 @@ dpnp_cython_mods = cythonize([dpnp_backend, dpnp_dparray, dpnp_random, dpnp_util
                                                   "warn.unused_result": False,
                                                   "warn.maybe_uninitialized": False,
                                                   "warn.undeclared": False,
-                                                  "boundscheck": True},
+                                                  "boundscheck": True,
+                                                  "linetrace": True
+                                                  },
                              gdb_debug=False,
                              build_dir="build_cython",
                              annotate=False,

@@ -32,7 +32,7 @@ and the rest of the library
 
 """
 
-from dpnp.dpnp_utils cimport checker_throw_type_error, normalize_axis
+from dpnp.dpnp_utils cimport *
 cimport numpy
 
 

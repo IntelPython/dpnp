@@ -33,7 +33,7 @@ and the rest of the library
 """
 
 
-from dpnp.dpnp_utils cimport checker_throw_type_error
+from dpnp.dpnp_utils cimport *
 
 
 __all__ += [
@@ -66,590 +66,104 @@ __all__ += [
 ]
 
 
-cpdef dparray dpnp_arccos(dparray array1):
-    cdef dparray result
-    cdef size_t size = array1.size
-    call_type = array1.dtype
-
-    if call_type == numpy.float32:
-        result = dparray(array1.shape, dtype=call_type)
-    else:
-        result = dparray(array1.shape)
-
-    if call_type == numpy.float64:
-        custom_elemwise_acos_c[double, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_acos_c[float, float](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_elemwise_acos_c[long, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_elemwise_acos_c[int, double](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_arccos", call_type)
-
-    return result
-
-
-cpdef dparray dpnp_arccosh(dparray array1):
-    cdef dparray result
-    cdef size_t size = array1.size
-    call_type = array1.dtype
-
-    if call_type == numpy.float32:
-        result = dparray(array1.shape, dtype=call_type)
-    else:
-        result = dparray(array1.shape)
-
-    if call_type == numpy.float64:
-        custom_elemwise_acosh_c[double, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_acosh_c[float, float](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_elemwise_acosh_c[long, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_elemwise_acosh_c[int, double](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_arccosh", call_type)
-
-    return result
-
-
-cpdef dparray dpnp_arcsin(dparray array1):
-    cdef dparray result
-    cdef size_t size = array1.size
-    call_type = array1.dtype
-
-    if call_type == numpy.float32:
-        result = dparray(array1.shape, dtype=call_type)
-    else:
-        result = dparray(array1.shape)
-
-    if call_type == numpy.float64:
-        custom_elemwise_asin_c[double, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_asin_c[float, float](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_elemwise_asin_c[long, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_elemwise_asin_c[int, double](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_arcsin", call_type)
-
-    return result
-
-
-cpdef dparray dpnp_arcsinh(dparray array1):
-    cdef dparray result
-    cdef size_t size = array1.size
-    call_type = array1.dtype
-
-    if call_type == numpy.float32:
-        result = dparray(array1.shape, dtype=call_type)
-    else:
-        result = dparray(array1.shape)
-
-    if call_type == numpy.float64:
-        custom_elemwise_asinh_c[double, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_asinh_c[float, float](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_elemwise_asinh_c[long, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_elemwise_asinh_c[int, double](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_arcsinh", call_type)
-
-    return result
-
-
-cpdef dparray dpnp_arctan(dparray array1):
-    cdef dparray result
-    cdef size_t size = array1.size
-    call_type = array1.dtype
-
-    if call_type == numpy.float32:
-        result = dparray(array1.shape, dtype=call_type)
-    else:
-        result = dparray(array1.shape)
-
-    if call_type == numpy.float64:
-        custom_elemwise_atan_c[double, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_atan_c[float, float](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_elemwise_atan_c[long, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_elemwise_atan_c[int, double](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_arctan", call_type)
-
-    return result
-
-
-cpdef dparray dpnp_arctanh(dparray array1):
-    cdef dparray result
-    cdef size_t size = array1.size
-    call_type = array1.dtype
-
-    if call_type == numpy.float32:
-        result = dparray(array1.shape, dtype=call_type)
-    else:
-        result = dparray(array1.shape)
-
-    if call_type == numpy.float64:
-        custom_elemwise_atanh_c[double, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_atanh_c[float, float](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_elemwise_atanh_c[long, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_elemwise_atanh_c[int, double](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_arctanh", call_type)
-
-    return result
-
-
-cpdef dparray dpnp_cbrt(dparray array1):
-    cdef dparray result
-    cdef size_t size = array1.size
-    call_type = array1.dtype
-
-    if call_type == numpy.float32:
-        result = dparray(array1.shape, dtype=call_type)
-    else:
-        result = dparray(array1.shape)
-
-    if call_type == numpy.float64:
-        custom_elemwise_cbrt_c[double, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_cbrt_c[float, float](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_elemwise_cbrt_c[long, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_elemwise_cbrt_c[int, double](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_cbrt", call_type)
-
-    return result
-
-
-cpdef dparray dpnp_cos(dparray array1):
-    cdef dparray result
-    cdef size_t size = array1.size
-    call_type = array1.dtype
-
-    if call_type == numpy.float32:
-        result = dparray(array1.shape, dtype=call_type)
-    else:
-        result = dparray(array1.shape)
-
-    if call_type == numpy.float64:
-        custom_elemwise_cos_c[double, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_cos_c[float, float](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_elemwise_cos_c[long, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_elemwise_cos_c[int, double](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_cos", call_type)
-
-    return result
-
-
-cpdef dparray dpnp_cosh(dparray array1):
-    cdef dparray result
-    cdef size_t size = array1.size
-    call_type = array1.dtype
-
-    if call_type == numpy.float32:
-        result = dparray(array1.shape, dtype=call_type)
-    else:
-        result = dparray(array1.shape)
-
-    if call_type == numpy.float64:
-        custom_elemwise_cosh_c[double, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_cosh_c[float, float](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_elemwise_cosh_c[long, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_elemwise_cosh_c[int, double](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_cosh", call_type)
-
-    return result
-
-
-cpdef dparray dpnp_degrees(dparray array1):
-    cdef dparray result
-    cdef size_t size = array1.size
-    call_type = array1.dtype
-
-    if call_type == numpy.float32:
-        result = dparray(array1.shape, dtype=call_type)
-    else:
-        result = dparray(array1.shape)
-
-    if call_type == numpy.float64:
-        custom_elemwise_degrees_c[double, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_degrees_c[float, float](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_elemwise_degrees_c[long, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_elemwise_degrees_c[int, double](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_degrees", call_type)
-
-    return result
-
-
-cpdef dparray dpnp_exp(dparray array1):
-    cdef dparray result
-    cdef size_t size = array1.size
-    call_type = array1.dtype
-
-    if call_type == numpy.float32:
-        result = dparray(array1.shape, dtype=call_type)
-    else:
-        result = dparray(array1.shape)
-
-    if call_type == numpy.float64:
-        custom_elemwise_exp_c[double, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_exp_c[float, float](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_elemwise_exp_c[long, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_elemwise_exp_c[int, double](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_exp", call_type)
-
-    return result
-
-
-cpdef dparray dpnp_exp2(dparray array1):
-    cdef dparray result
-    cdef size_t size = array1.size
-    call_type = array1.dtype
-
-    if call_type == numpy.float32:
-        result = dparray(array1.shape, dtype=call_type)
-    else:
-        result = dparray(array1.shape)
-
-    if call_type == numpy.float64:
-        custom_elemwise_exp2_c[double, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_exp2_c[float, float](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_elemwise_exp2_c[long, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_elemwise_exp2_c[int, double](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_exp2", call_type)
-
-    return result
-
-
-cpdef dparray dpnp_expm1(dparray array1):
-    cdef dparray result
-    cdef size_t size = array1.size
-    call_type = array1.dtype
-
-    if call_type == numpy.float32:
-        result = dparray(array1.shape, dtype=call_type)
-    else:
-        result = dparray(array1.shape)
-
-    if call_type == numpy.float64:
-        custom_elemwise_expm1_c[double, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_expm1_c[float, float](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_elemwise_expm1_c[long, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_elemwise_expm1_c[int, double](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_expm1", call_type)
-
-    return result
-
-
-cpdef dparray dpnp_log(dparray array1):
-    cdef dparray result
-    cdef size_t size = array1.size
-    call_type = array1.dtype
-
-    if call_type == numpy.float32:
-        result = dparray(array1.shape, dtype=call_type)
-    else:
-        result = dparray(array1.shape)
-
-    if call_type == numpy.float64:
-        custom_elemwise_log_c[double, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_log_c[float, float](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_elemwise_log_c[long, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_elemwise_log_c[int, double](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_log", call_type)
-
-    return result
-
-
-cpdef dparray dpnp_log10(dparray array1):
-    cdef dparray result
-    cdef size_t size = array1.size
-    call_type = array1.dtype
-
-    if call_type == numpy.float32:
-        result = dparray(array1.shape, dtype=call_type)
-    else:
-        result = dparray(array1.shape)
-
-    if call_type == numpy.float64:
-        custom_elemwise_log10_c[double, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_log10_c[float, float](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_elemwise_log10_c[long, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_elemwise_log10_c[int, double](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_log10", call_type)
-
-    return result
-
-
-cpdef dparray dpnp_log1p(dparray array1):
-    cdef dparray result
-    cdef size_t size = array1.size
-    call_type = array1.dtype
-
-    if call_type == numpy.float32:
-        result = dparray(array1.shape, dtype=call_type)
-    else:
-        result = dparray(array1.shape)
-
-    if call_type == numpy.float64:
-        custom_elemwise_log1p_c[double, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_log1p_c[float, float](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_elemwise_log1p_c[long, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_elemwise_log1p_c[int, double](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_log1p", call_type)
-
-    return result
-
-
-cpdef dparray dpnp_log2(dparray array1):
-    cdef dparray result
-    cdef size_t size = array1.size
-    call_type = array1.dtype
-
-    if call_type == numpy.float32:
-        result = dparray(array1.shape, dtype=call_type)
-    else:
-        result = dparray(array1.shape)
-
-    if call_type == numpy.float64:
-        custom_elemwise_log2_c[double, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_log2_c[float, float](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_elemwise_log2_c[long, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_elemwise_log2_c[int, double](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_log2", call_type)
-
-    return result
-
-
-cpdef dparray dpnp_recip(dparray array1):
-    call_type = array1.dtype
-    cdef size_t size = array1.size
-    cdef dparray result = dparray(array1.shape, dtype=call_type)
-
-    if call_type == numpy.float64:
-        custom_elemwise_recip_c[double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_recip_c[float](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_recip", call_type)
-
-    return result
-
-
-cpdef dparray dpnp_radians(dparray array1):
-    cdef dparray result
-    cdef size_t size = array1.size
-    call_type = array1.dtype
-
-    if call_type == numpy.float32:
-        result = dparray(array1.shape, dtype=call_type)
-    else:
-        result = dparray(array1.shape)
-
-    if call_type == numpy.float64:
-        custom_elemwise_radians_c[double, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_radians_c[float, float](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_elemwise_radians_c[long, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_elemwise_radians_c[int, double](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_radians", call_type)
-
-    return result
-
-
-cpdef dparray dpnp_sin(dparray array1):
-    cdef dparray result
-    cdef size_t size = array1.size
-    call_type = array1.dtype
-
-    if call_type == numpy.float32:
-        result = dparray(array1.shape, dtype=call_type)
-    else:
-        result = dparray(array1.shape)
-
-    if call_type == numpy.float64:
-        custom_elemwise_sin_c[double, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_sin_c[float, float](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_elemwise_sin_c[long, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_elemwise_sin_c[int, double](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_sin", call_type)
-
-    return result
-
-
-cpdef dparray dpnp_sinh(dparray array1):
-    cdef dparray result
-    cdef size_t size = array1.size
-    call_type = array1.dtype
-
-    if call_type == numpy.float32:
-        result = dparray(array1.shape, dtype=call_type)
-    else:
-        result = dparray(array1.shape)
-
-    if call_type == numpy.float64:
-        custom_elemwise_sinh_c[double, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_sinh_c[float, float](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_elemwise_sinh_c[long, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_elemwise_sinh_c[int, double](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_sinh", call_type)
-
-    return result
-
-
-cpdef dparray dpnp_sqrt(dparray array1):
-    cdef dparray result
-    cdef size_t size = array1.size
-    call_type = array1.dtype
-
-    if call_type == numpy.float32:
-        result = dparray(array1.shape, dtype=call_type)
-    else:
-        result = dparray(array1.shape)
-
-    if call_type == numpy.float64:
-        custom_elemwise_sqrt_c[double, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_sqrt_c[float, float](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_elemwise_sqrt_c[long, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_elemwise_sqrt_c[int, double](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_sqrt", call_type)
-
-    return result
-
-
-cpdef dparray dpnp_square(dparray array1):
-    call_type = array1.dtype
-    cdef dparray result = dparray(array1.shape, dtype=call_type)
-    cdef size_t size = result.size
-
-    if call_type == numpy.float64:
-        custom_elemwise_square_c[double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_square_c[float](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_elemwise_square_c[long](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_elemwise_square_c[int](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_square", call_type)
-
-    return result
-
-
-cpdef dparray dpnp_tan(dparray array1):
-    cdef dparray result
-    cdef size_t size = array1.size
-    call_type = array1.dtype
-
-    if call_type == numpy.float32:
-        result = dparray(array1.shape, dtype=call_type)
-    else:
-        result = dparray(array1.shape)
-
-    if call_type == numpy.float64:
-        custom_elemwise_tan_c[double, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_tan_c[float, float](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_elemwise_tan_c[long, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_elemwise_tan_c[int, double](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_tan", call_type)
-
-    return result
-
-
-cpdef dparray dpnp_tanh(dparray array1):
-    cdef dparray result
-    cdef size_t size = array1.size
-    call_type = array1.dtype
-
-    if call_type == numpy.float32:
-        result = dparray(array1.shape, dtype=call_type)
-    else:
-        result = dparray(array1.shape)
-
-    if call_type == numpy.float64:
-        custom_elemwise_tanh_c[double, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_elemwise_tanh_c[float, float](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_elemwise_tanh_c[long, double](array1.get_data(), result.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_elemwise_tanh_c[int, double](array1.get_data(), result.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_tanh", call_type)
-
-    return result
+cpdef dparray dpnp_arccos(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_ARCCOS, x1, x1.shape)
+
+
+cpdef dparray dpnp_arccosh(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_ARCCOSH, x1, x1.shape)
+
+
+cpdef dparray dpnp_arcsin(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_ARCSIN, x1, x1.shape)
+
+
+cpdef dparray dpnp_arcsinh(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_ARCSINH, x1, x1.shape)
+
+
+cpdef dparray dpnp_arctan(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_ARCTAN, x1, x1.shape)
+
+
+cpdef dparray dpnp_arctanh(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_ARCTANH, x1, x1.shape)
+
+
+cpdef dparray dpnp_cbrt(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_CBRT, x1, x1.shape)
+
+
+cpdef dparray dpnp_cos(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_COS, x1, x1.shape)
+
+
+cpdef dparray dpnp_cosh(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_COSH, x1, x1.shape)
+
+
+cpdef dparray dpnp_degrees(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_DEGREES, x1, x1.shape)
+
+
+cpdef dparray dpnp_exp(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_EXP, x1, x1.shape)
+
+
+cpdef dparray dpnp_exp2(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_EXP2, x1, x1.shape)
+
+
+cpdef dparray dpnp_expm1(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_EXPM1, x1, x1.shape)
+
+
+cpdef dparray dpnp_log(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_LOG, x1, x1.shape)
+
+
+cpdef dparray dpnp_log10(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_LOG10, x1, x1.shape)
+
+
+cpdef dparray dpnp_log1p(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_LOG1P, x1, x1.shape)
+
+
+cpdef dparray dpnp_log2(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_LOG2, x1, x1.shape)
+
+
+cpdef dparray dpnp_recip(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_RECIP, x1, x1.shape)
+
+
+cpdef dparray dpnp_radians(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_RADIANS, x1, x1.shape)
+
+
+cpdef dparray dpnp_sin(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_SIN, x1, x1.shape)
+
+
+cpdef dparray dpnp_sinh(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_SINH, x1, x1.shape)
+
+
+cpdef dparray dpnp_sqrt(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_SQRT, x1, x1.shape)
+
+
+cpdef dparray dpnp_square(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_SQUARE, x1, x1.shape)
+
+
+cpdef dparray dpnp_tan(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_TAN, x1, x1.shape)
+
+
+cpdef dparray dpnp_tanh(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_TANH, x1, x1.shape)
 
 
 cpdef dparray dpnp_unwrap(dparray array1):

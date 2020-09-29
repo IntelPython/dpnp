@@ -27,9 +27,9 @@ test:
     requires:
       - pytest
     commands:
-      - python -c "import dpnp"
+      - source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh && python -c "import dpnp"
 
 about:
     license: ISSL
     license_file: LICENSE.txt
-    summary: Subclass of numpy.ndarray that uses mkl_malloc
+    summary: NumPy-like API accelerated with SYCL

@@ -1,5 +1,5 @@
 [![Build Status](https://dev.azure.com/IntelPython/dpnp/_apis/build/status/IntelPython.dpnp?branchName=master)](https://dev.azure.com/IntelPython/dpnp/_build/latest?definitionId=6&branchName=master)
-[![codecov](https://codecov.io/gh/shssf/inumpy/branch/master/graph/badge.svg?token=4RQYO6AFDN)](https://codecov.io/gh/shssf/inumpy)
+[![codecov](https://codecov.io/gh/IntelPython/dpnp/branch/master/graph/badge.svg)](https://codecov.io/gh/IntelPython/dpnp)
 
 # DPNP: NumPy-like API accelerated with SYCL
 

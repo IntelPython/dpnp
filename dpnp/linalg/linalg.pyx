@@ -32,7 +32,7 @@ and the rest of the library
 
 """
 
-from dpnp.dpnp_utils cimport checker_throw_type_error
+from dpnp.dpnp_utils cimport *
 from dpnp.backend cimport *
 from dpnp.dparray cimport dparray, dparray_shape_type
 import numpy
