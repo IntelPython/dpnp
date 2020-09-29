@@ -50,6 +50,10 @@ __all__ += [
 ]
 
 
+# C function pointer to the C library template functions
+ctypedef void(*fptr_custom_cov_1in_1out_t)(void *, void *, size_t, size_t)
+
+
 cpdef dpnp_average(dparray x1):
     array_sum = dpnp_sum(x1)
 
@@ -62,19 +66,23 @@ cpdef dpnp_average(dparray x1):
 cpdef dparray dpnp_cov(dparray array1):
     cdef dparray_shape_type input_shape = array1.shape
 
-    call_type = array1.dtype
-
     if array1.ndim == 1:
         input_shape.insert(input_shape.begin(), 1)
 
-    # numpy uses float64 for all input types
-    in_array = array1.astype(numpy.float64)
-    cdef dparray result = dparray((input_shape[0], input_shape[0]), dtype=numpy.float64)
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
 
-    if call_type in [numpy.float64, numpy.float32, numpy.int32, numpy.int64]:
-        custom_cov_c[double](in_array.get_data(), result.get_data(), input_shape[0], input_shape[1])
-    else:
-        checker_throw_type_error("dpnp_cov", call_type)
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_COV, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    in_array = array1.astype(result_type)
+    cdef dparray result = dparray((input_shape[0], input_shape[0]), dtype=result_type)
+
+    cdef fptr_custom_cov_1in_1out_t func = <fptr_custom_cov_1in_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(in_array.get_data(), result.get_data(), input_shape[0], input_shape[1])
 
     return result
 
@@ -258,22 +266,9 @@ cpdef dparray dpnp_mean(dparray input, axis):
     return dpnp_result_array / del_
 
 cpdef dparray dpnp_median(dparray array1):
-    call_type = array1.dtype
-
-    cdef dparray sorted = dparray(array1.shape, dtype=call_type)
+    cdef dparray sorted = call_fptr_1in_1out(DPNP_FN_SORT, array1, array1.shape)
 
     cdef size_t size = array1.size
-
-    if call_type == numpy.float64:
-        custom_sort_c[double](array1.get_data(), sorted.get_data(), size)
-    elif call_type == numpy.float32:
-        custom_sort_c[float](array1.get_data(), sorted.get_data(), size)
-    elif call_type == numpy.int64:
-        custom_sort_c[long](array1.get_data(), sorted.get_data(), size)
-    elif call_type == numpy.int32:
-        custom_sort_c[int](array1.get_data(), sorted.get_data(), size)
-    else:
-        checker_throw_type_error("dpnp_median", call_type)
 
     cdef dparray result = dparray((1,), dtype=numpy.float64)
 

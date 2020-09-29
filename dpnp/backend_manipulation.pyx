@@ -43,6 +43,11 @@ __all__ += [
 ]
 
 
+# C function pointer to the C library template functions
+ctypedef void(*fptr_custom_elemwise_transpose_1in_1out_t)(void *, dparray_shape_type &, dparray_shape_type &,
+                                                          dparray_shape_type &, void *, size_t)
+
+
 cpdef dparray dpnp_copyto(dparray dst, dparray src, where=True):
     cdef dparray_shape_type shape_src = src.shape
     cdef long size_src = src.size
@@ -103,8 +108,6 @@ cpdef dparray dpnp_repeat(dparray array1, repeats, axes=None):
 
 
 cpdef dparray dpnp_transpose(dparray array1, axes=None):
-    call_type = array1.dtype
-    cdef size_t data_size = array1.size
     cdef dparray_shape_type input_shape = array1.shape
     cdef size_t input_shape_size = array1.ndim
     cdef dparray_shape_type result_shape = dparray_shape_type(input_shape_size, 1)
@@ -130,41 +133,18 @@ cpdef dparray dpnp_transpose(dparray array1, axes=None):
         """ construct output shape """
         result_shape[i] = input_shape[permute_axes[i]]
 
-    cdef dparray result = dparray(result_shape, dtype=call_type)
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
 
-    if call_type == numpy.float64:
-        custom_elemwise_transpose_c[double](
-            array1.get_data(),
-            input_shape,
-            result_shape,
-            permute_axes,
-            result.get_data(),
-            data_size)
-    elif call_type == numpy.float32:
-        custom_elemwise_transpose_c[float](
-            array1.get_data(),
-            input_shape,
-            result_shape,
-            permute_axes,
-            result.get_data(),
-            data_size)
-    elif call_type == numpy.int64:
-        custom_elemwise_transpose_c[long](
-            array1.get_data(),
-            input_shape,
-            result_shape,
-            permute_axes,
-            result.get_data(),
-            data_size)
-    elif call_type == numpy.int32:
-        custom_elemwise_transpose_c[int](
-            array1.get_data(),
-            input_shape,
-            result_shape,
-            permute_axes,
-            result.get_data(),
-            data_size)
-    else:
-        checker_throw_type_error("dpnp_transpose", call_type)
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRANSPOSE, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray result = dparray(result_shape, dtype=result_type)
+
+    cdef fptr_custom_elemwise_transpose_1in_1out_t func = <fptr_custom_elemwise_transpose_1in_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(array1.get_data(), input_shape, result_shape, permute_axes, result.get_data(), array1.size)
 
     return result
