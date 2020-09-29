@@ -27,7 +27,7 @@ test:
     requires:
       - pytest
     commands:
-      - ./conda-recipe/dpnp_run_ci.sh
+      - conda-recipe/dpnp_run_ci.sh
 
 about:
     license: ISSL
