@@ -41,6 +41,7 @@ it contains:
 
 
 import numpy
+import dpnp
 
 from dpnp.backend import *
 from dpnp.dparray import dparray
@@ -48,6 +49,8 @@ from dpnp.dpnp_utils import *
 
 
 __all__ = [
+    "all",
+    "any",
     "equal",
     "greater",
     "greater_equal",
@@ -63,6 +66,160 @@ __all__ = [
     "logical_xor",
     "not_equal"
 ]
+
+
+def all(in_array1, axis=None, out=None, keepdims=False):
+    """
+    Test whether all array elements along a given axis evaluate to True.
+
+    Parameters
+    ----------
+    a : array_like
+        Input array or object that can be converted to an array.
+    axis : None or int or tuple of ints, optional
+        Axis or axes along which a logical AND reduction is performed.
+        The default (``axis=None``) is to perform a logical AND over all
+        the dimensions of the input array. `axis` may be negative, in
+        which case it counts from the last to the first axis.
+
+        .. versionadded:: 1.7.0
+
+        If this is a tuple of ints, a reduction is performed on multiple
+        axes, instead of a single axis or all the axes as before.
+    out : ndarray, optional
+        Alternate output array in which to place the result.
+        It must have the same shape as the expected output and its
+        type is preserved (e.g., if ``dtype(out)`` is float, the result
+        will consist of 0.0's and 1.0's). See `ufuncs-output-type` for more
+        details.
+
+    keepdims : bool, optional
+        If this is set to True, the axes which are reduced are left
+        in the result as dimensions with size one. With this option,
+        the result will broadcast correctly against the input array.
+
+        If the default value is passed, then `keepdims` will not be
+        passed through to the `all` method of sub-classes of
+        `ndarray`, however any non-default value will be.  If the
+        sub-class' method does not implement `keepdims` any
+        exceptions will be raised.
+
+    Returns
+    -------
+    all : ndarray, bool
+        A new boolean or array is returned unless `out` is specified,
+        in which case a reference to `out` is returned.
+
+    See Also
+    --------
+    ndarray.all : equivalent method
+
+    any : Test whether any element along a given axis evaluates to True.
+
+    Notes
+    -----
+    Not a Number (NaN), positive infinity and negative infinity
+    evaluate to `True` because these are not equal to zero.
+
+    """
+
+    is_dparray1 = isinstance(in_array1, dparray)
+
+    if (not use_origin_backend(in_array1) and is_dparray1):
+        if axis is not None:
+            checker_throw_value_error("all", "axis", type(axis), None)
+        if out is not None:
+            checker_throw_value_error("all", "out", type(out), None)
+        if keepdims is not False:
+            checker_throw_value_error("all", "keepdims", keepdims, False)
+
+        result = dpnp_all(in_array1)
+
+        # scalar returned
+        if result.shape == (1,):
+            return result.dtype.type(result[0])
+
+        return result
+
+    return call_origin(numpy.all, axis, out, keepdims)
+
+
+def any(in_array1, axis=None, out=None, keepdims=False):
+    """
+    Test whether any array element along a given axis evaluates to True.
+
+    Returns single boolean unless `axis` is not ``None``
+
+    Parameters
+    ----------
+    a : array_like
+        Input array or object that can be converted to an array.
+    axis : None or int or tuple of ints, optional
+        Axis or axes along which a logical OR reduction is performed.
+        The default (``axis=None``) is to perform a logical OR over all
+        the dimensions of the input array. `axis` may be negative, in
+        which case it counts from the last to the first axis.
+
+        .. versionadded:: 1.7.0
+
+        If this is a tuple of ints, a reduction is performed on multiple
+        axes, instead of a single axis or all the axes as before.
+    out : ndarray, optional
+        Alternate output array in which to place the result.  It must have
+        the same shape as the expected output and its type is preserved
+        (e.g., if it is of type float, then it will remain so, returning
+        1.0 for True and 0.0 for False, regardless of the type of `a`).
+        See `ufuncs-output-type` for more details.
+
+    keepdims : bool, optional
+        If this is set to True, the axes which are reduced are left
+        in the result as dimensions with size one. With this option,
+        the result will broadcast correctly against the input array.
+
+        If the default value is passed, then `keepdims` will not be
+        passed through to the `any` method of sub-classes of
+        `ndarray`, however any non-default value will be.  If the
+        sub-class' method does not implement `keepdims` any
+        exceptions will be raised.
+
+    Returns
+    -------
+    any : bool or ndarray
+        A new boolean or `ndarray` is returned unless `out` is specified,
+        in which case a reference to `out` is returned.
+
+    See Also
+    --------
+    ndarray.any : equivalent method
+
+    all : Test whether all elements along a given axis evaluate to True.
+
+    Notes
+    -----
+    Not a Number (NaN), positive infinity and negative infinity evaluate
+    to `True` because these are not equal to zero.
+
+    """
+
+    is_dparray1 = isinstance(in_array1, dparray)
+
+    if (not use_origin_backend(in_array1) and is_dparray1):
+        if axis is not None:
+            checker_throw_value_error("any", "axis", type(axis), None)
+        if out is not None:
+            checker_throw_value_error("any", "out", type(out), None)
+        if keepdims is not False:
+            checker_throw_value_error("any", "keepdims", keepdims, False)
+
+        result = dpnp_any(in_array1)
+
+        # scalar returned
+        if result.shape == (1,):
+            return result.dtype.type(result[0])
+
+        return result
+
+    return call_origin(numpy.any, axis, out, keepdims)
 
 
 def equal(x1, x2):

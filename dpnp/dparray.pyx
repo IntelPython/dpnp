@@ -34,12 +34,13 @@ using USB interface for an Intel GPU device.
 """
 
 
-from libcpp cimport bool
+from libcpp cimport bool as cpp_bool
 
 from dpnp.dpnp_iface_types import *
 from dpnp.dpnp_iface import *
 from dpnp.backend cimport *
 from dpnp.dpnp_iface_statistics import min, max
+from dpnp.dpnp_iface_logic import all, any
 import numpy
 cimport numpy
 
@@ -346,7 +347,7 @@ cdef class dparray:
         elif self.dtype == numpy.int32:
             return (< int * > self._dparray_data)[lin_idx]
         elif self.dtype == numpy.bool:
-            return (< bool * > self._dparray_data)[lin_idx]
+            return (< cpp_bool * > self._dparray_data)[lin_idx]
 
         utils.checker_throw_type_error("__getitem__", self.dtype)
 
@@ -371,7 +372,7 @@ cdef class dparray:
         elif self.dtype == numpy.int32:
             (< int * > self._dparray_data)[lin_idx] = <int > value
         elif self.dtype == numpy.bool:
-            (< bool * > self._dparray_data)[lin_idx] = <bool > value
+            (< cpp_bool * > self._dparray_data)[lin_idx] = < cpp_bool > value
         else:
             utils.checker_throw_type_error("__setitem__", self.dtype)
 
@@ -1033,6 +1034,40 @@ cdef class dparray:
         """
 
         return argmin(self, axis, out)
+
+    """
+    -------------------------------------------------------------------------
+    Logic
+    -------------------------------------------------------------------------
+    """
+
+    def all(self, axis=None, out=None, keepdims=False):
+        """
+        Returns True if all elements evaluate to True.
+
+        Refer to `numpy.all` for full documentation.
+
+        See Also
+        --------
+        numpy.all : equivalent function
+
+        """
+
+        return all(self, axis, out, keepdims)
+
+    def any(self, axis=None, out=None, keepdims=False):
+        """
+        Returns True if any of the elements of `a` evaluate to True.
+
+        Refer to `numpy.any` for full documentation.
+
+        See Also
+        --------
+        numpy.any : equivalent function
+
+        """
+
+        return any(self, axis, out, keepdims)
 
     """
     -------------------------------------------------------------------------

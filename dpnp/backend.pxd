@@ -26,35 +26,60 @@
 # *****************************************************************************
 
 from libcpp.vector cimport vector
-from libcpp cimport bool
+from libcpp cimport bool as cpp_bool
 from dpnp.dparray cimport dparray, dparray_shape_type
 
 cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
     cdef enum DPNPFuncName "DPNPFuncName":
         DPNP_FN_ADD
+        DPNP_FN_ARCCOS
+        DPNP_FN_ARCCOSH
+        DPNP_FN_ARCSIN
+        DPNP_FN_ARCSINH
+        DPNP_FN_ARCTAN
         DPNP_FN_ARCTAN2
+        DPNP_FN_ARCTANH
         DPNP_FN_ARGMAX
         DPNP_FN_ARGMIN
         DPNP_FN_ARGSORT
+        DPNP_FN_CBRT
         DPNP_FN_CEIL
+        DPNP_FN_COS
+        DPNP_FN_COSH
         DPNP_FN_COV
+        DPNP_FN_DEGREES
         DPNP_FN_DIVIDE
         DPNP_FN_DOT
         DPNP_FN_EIG
+        DPNP_FN_EXP
+        DPNP_FN_EXP2
+        DPNP_FN_EXPM1
         DPNP_FN_FABS
         DPNP_FN_FLOOR
         DPNP_FN_FMOD
         DPNP_FN_HYPOT
+        DPNP_FN_LOG
+        DPNP_FN_LOG10
+        DPNP_FN_LOG1P
+        DPNP_FN_LOG2
         DPNP_FN_MATMUL
         DPNP_FN_MAXIMUM
         DPNP_FN_MINIMUM
         DPNP_FN_MULTIPLY
         DPNP_FN_POWER
         DPNP_FN_PROD
+        DPNP_FN_RADIANS
         DPNP_FN_RAND
+        DPNP_FN_RECIP
         DPNP_FN_SIGN
+        DPNP_FN_SIN
+        DPNP_FN_SINH
+        DPNP_FN_SQRT
+        DPNP_FN_SQUARE
         DPNP_FN_SUBTRACT
         DPNP_FN_SUM
+        DPNP_FN_TAN
+        DPNP_FN_TANH
         DPNP_FN_TRUNC
 
 cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
@@ -93,33 +118,6 @@ cdef extern from "backend/backend_iface.hpp":
     void mkl_blas_dot_c[_DataType](void * array1, void * array2, void * result1, size_t size)
     void mkl_lapack_syevd_c[_DataType](void * array1, void * result1, size_t size)
 
-    # Trigonometric part
-    void custom_elemwise_acos_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
-    void custom_elemwise_acosh_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
-    void custom_elemwise_asin_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
-    void custom_elemwise_asinh_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
-    void custom_elemwise_atan_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
-    void custom_elemwise_atanh_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
-    void custom_elemwise_cbrt_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
-    void custom_elemwise_cos_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
-    void custom_elemwise_cosh_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
-    void custom_elemwise_degrees_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
-    void custom_elemwise_exp2_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
-    void custom_elemwise_exp_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
-    void custom_elemwise_expm1_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
-    void custom_elemwise_log10_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
-    void custom_elemwise_log1p_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
-    void custom_elemwise_log2_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
-    void custom_elemwise_log_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
-    void custom_elemwise_radians_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
-    void custom_elemwise_recip_c[_DataType](void * array1, void * result1, size_t size)
-    void custom_elemwise_sin_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
-    void custom_elemwise_sinh_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
-    void custom_elemwise_sqrt_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
-    void custom_elemwise_square_c[_DataType](void * array1, void * result1, size_t size)
-    void custom_elemwise_tan_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
-    void custom_elemwise_tanh_c[_DataType_input, _DataType_output](void * array1, void * result1, size_t size)
-
     # array manipulation routines
     void custom_elemwise_transpose_c[_DataType](void * array1_in, dparray_shape_type & input_shape, dparray_shape_type & result_shape, dparray_shape_type & permute_axes, void * result1, size_t size)
 
@@ -139,6 +137,15 @@ cdef extern from "backend/backend_iface.hpp":
     void custom_argmax_c[_DataType, _idx_DataType](void * array, void * result, size_t size)
     void custom_argmin_c[_DataType, _idx_DataType](void * array, void * result, size_t size)
 
+
+# C function pointer to the C library template functions
+ctypedef void(*fptr_1in_1out_t)(void *, void * , size_t)
+ctypedef void(*fptr_2in_1out_t)(void *, void*, void*, size_t)
+
+cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shape_type result_shape)
+cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, dparray_shape_type result_shape)
+
+
 cpdef dparray dpnp_remainder(dparray array1, int scalar)
 cpdef dparray dpnp_astype(dparray array1, dtype_target)
 
@@ -156,7 +163,7 @@ Logic functions
 cpdef dparray dpnp_equal(dparray array1, input2)
 cpdef dparray dpnp_greater(dparray input1, dparray input2)
 cpdef dparray dpnp_greater_equal(dparray input1, dparray input2)
-cpdef dparray dpnp_isclose(dparray input1, input2, double rtol=*, double atol=*, bool equal_nan=*)
+cpdef dparray dpnp_isclose(dparray input1, input2, double rtol=*, double atol=*, cpp_bool equal_nan=*)
 cpdef dparray dpnp_less(dparray input1, dparray input2)
 cpdef dparray dpnp_less_equal(dparray input1, dparray input2)
 cpdef dparray dpnp_logical_and(dparray input1, dparray input2)
@@ -223,3 +230,32 @@ Searching functions
 """
 cpdef dparray dpnp_argmax(dparray array1)
 cpdef dparray dpnp_argmin(dparray array1)
+
+"""
+Trigonometric functions
+"""
+cpdef dparray dpnp_arccos(dparray array1)
+cpdef dparray dpnp_arccosh(dparray array1)
+cpdef dparray dpnp_arcsin(dparray array1)
+cpdef dparray dpnp_arcsinh(dparray array1)
+cpdef dparray dpnp_arctan(dparray array1)
+cpdef dparray dpnp_arctanh(dparray array1)
+cpdef dparray dpnp_cbrt(dparray array1)
+cpdef dparray dpnp_cos(dparray array1)
+cpdef dparray dpnp_cosh(dparray array1)
+cpdef dparray dpnp_degrees(dparray array1)
+cpdef dparray dpnp_exp(dparray array1)
+cpdef dparray dpnp_exp2(dparray array1)
+cpdef dparray dpnp_expm1(dparray array1)
+cpdef dparray dpnp_log(dparray array1)
+cpdef dparray dpnp_log10(dparray array1)
+cpdef dparray dpnp_log1p(dparray array1)
+cpdef dparray dpnp_log2(dparray array1)
+cpdef dparray dpnp_radians(dparray array1)
+cpdef dparray dpnp_recip(dparray array1)
+cpdef dparray dpnp_sin(dparray array1)
+cpdef dparray dpnp_sinh(dparray array1)
+cpdef dparray dpnp_sqrt(dparray array1)
+cpdef dparray dpnp_square(dparray array1)
+cpdef dparray dpnp_tan(dparray array1)
+cpdef dparray dpnp_tanh(dparray array1)

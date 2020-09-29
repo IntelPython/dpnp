@@ -50,6 +50,7 @@ import dpnp
 
 
 __all__ = [
+    "copyto",
     "moveaxis",
     "ravel",
     "repeat",
@@ -57,6 +58,67 @@ __all__ = [
     "swapaxes",
     "transpose"
 ]
+
+
+def copyto(dst, src, casting='same_kind', where=True):
+    """
+    Copies values from one array to another, broadcasting as necessary.
+    Raises a TypeError if the casting rule is violated, and if where is provided,
+    it selects which elements to copy.
+
+    :param dst: ndarray
+            The array into which values are copied.
+    :param src: array_like
+            The array from which values are copied.
+    :param casting: {‘no’, ‘equiv’, ‘safe’, ‘same_kind’, ‘unsafe’}, optional
+            Controls what kind of data casting may occur when copying.
+
+                ‘no’ means the data types should not be cast at all.
+
+                ‘equiv’ means only byte-order changes are allowed.
+
+                ‘safe’ means only casts which can preserve values are allowed.
+
+                ‘same_kind’ means only safe casts or casts within a kind, like float64 to float32, are allowed.
+
+                ‘unsafe’ means any data conversions may be done.
+    :param where: array_like of bool, optional
+            A boolean array which is broadcasted to match the dimensions of dst,
+            and selects elements to copy from src to dst wherever it contains the value True.
+    """
+
+    is_input_dparray1 = isinstance(dst, dparray)
+    is_input_dparray2 = isinstance(src, dparray)
+
+    if not use_origin_backend(dst) and is_input_dparray1 and is_input_dparray2:
+        if casting != 'same_kind':
+            checker_throw_value_error("copyto", "casting", type(casting), 'same_kind')
+
+        if not isinstance(where, bool) and not isinstance(where, dparray):
+            checker_throw_type_error('copyto', type(where))
+
+        if where is not True:
+            checker_throw_value_error("copyto", "where", where, True)
+
+        if dst.shape != src.shape:
+            raise NotImplemented
+
+        result = dpnp_copyto(dst, src, where=where)
+
+        return result
+
+    input1 = dpnp.asnumpy(dst) if is_input_dparray1 else dst
+    input2 = dpnp.asnumpy(src) if is_input_dparray2 else src
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.copyto(dst, src, where=where)
+    result = result_numpy
+    if isinstance(result, numpy.ndarray):
+        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_numpy.item(i))
+
+    return result
 
 
 def moveaxis(x1, source, destination):
