@@ -27,7 +27,7 @@ test:
     requires:
       - pytest
     commands:
-      - pytest
+      - bash -c set
 
 about:
     license: ISSL
