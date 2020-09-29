@@ -44,6 +44,10 @@ from dpnp.dparray cimport dparray
 from dpnp.dpnp_utils cimport *
 
 
+ctypedef void(*fptr_mkl_rng_gaussian_1out_t)(void *, size_t)
+ctypedef void(*fptr_mkl_rng_uniform_1out_t)(void *, long, long, size_t)
+
+
 cpdef dparray dpnp_randn(dims):
     """
     Return a random matrix with data from the "standard normal" distribution.
@@ -53,10 +57,19 @@ cpdef dparray dpnp_randn(dims):
 
     """
 
-    cdef dparray result = dparray(dims, dtype=numpy.float64)
-    cdef size_t result_size = result.size
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
-    mkl_rng_gaussian[double](result.get_data(), result_size)
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_GAUSSIAN, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray result = dparray(dims, dtype=result_type)
+
+    cdef fptr_mkl_rng_gaussian_1out_t func = <fptr_mkl_rng_gaussian_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), result.size)
 
     return result
 
@@ -69,10 +82,20 @@ cpdef dparray dpnp_random(dims):
     """
     cdef long low = 0
     cdef long high = 1
-    cdef dparray result = dparray(dims, dtype=numpy.float64)
-    cdef size_t result_size = result.size
 
-    mkl_rng_uniform[double](result.get_data(), low, high, result_size)
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RANDOM, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray result = dparray(dims, dtype=result_type)
+
+    cdef fptr_mkl_rng_uniform_1out_t func = <fptr_mkl_rng_uniform_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), low, high, result.size)
 
     return result
 
@@ -86,18 +109,19 @@ cpdef dparray dpnp_uniform(long low, long high, size, dtype=numpy.int32):
     bounds.
 
     """
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
-    cdef dparray result = dparray(size, dtype=dtype)
-    cdef size_t result_size = result.size
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_UNIFORM, param1_type, param1_type)
 
-    # TODO:
-    # supported dtype int32
-    if dtype == numpy.int32:
-        mkl_rng_uniform[int](result.get_data(), low, high, result_size)
-    elif dtype == numpy.float32:
-        mkl_rng_uniform[float](result.get_data(), low, high, result_size)
-    elif dtype == numpy.float64:
-        mkl_rng_uniform[double](result.get_data(), low, high, result_size)
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray result = dparray(size, dtype=result_type)
+
+    cdef fptr_mkl_rng_uniform_1out_t func = <fptr_mkl_rng_uniform_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), low, high, result.size)
 
     return result
 
