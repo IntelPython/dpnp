@@ -24,6 +24,9 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+import os
+print("LD_LIBRARY_PATH", os.environ.get('LD_LIBRARY_PATH'))
+print("PATH", os.environ.get('PATH'))
 
 from dpnp.dparray import dparray as ndarray
 from dpnp.dpnp_iface import *

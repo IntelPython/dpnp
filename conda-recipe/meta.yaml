@@ -27,7 +27,7 @@ test:
     requires:
       - pytest
     commands:
-      - source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh && python -c "import dpnp"
+      - python -c "import dpnp"
 
 about:
     license: ISSL
