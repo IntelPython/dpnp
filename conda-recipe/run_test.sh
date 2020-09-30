@@ -31,7 +31,7 @@ echo =========env==============
 pwd
 echo ${SHELL}
 python --version
-clang++ varsion
+clang++ --version
 echo ${LD_LIBRARY_PATH}
 echo ${PATH}
 
