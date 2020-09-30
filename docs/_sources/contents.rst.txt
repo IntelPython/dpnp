@@ -8,4 +8,5 @@ Contents
    :caption: Contents:
 
    About dpnp <index>
-   Numpy API <numpy_api>
+   DPNP API <dpnp_api>
+   DPNP C++ backend API <dpnp_backend_api>

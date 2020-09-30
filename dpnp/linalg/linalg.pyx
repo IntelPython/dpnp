@@ -47,25 +47,24 @@ __all__ = [
 cpdef tuple dpnp_eig(dparray in_array1):
     cdef dparray_shape_type shape1 = in_array1.shape
 
-    call_type = in_array1.dtype
-    res_type = call_type
-    if res_type != numpy.float32:
-        res_type = numpy.float64
-
     cdef size_t size1 = 0
     if not shape1.empty():
         size1 = shape1.front()
 
-    cdef dparray res_val = dparray((size1,), dtype=res_type)
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(in_array1.dtype)
 
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_EIG, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     # this array is used as input for MKL and will be overwritten with eigen vectors
-    res_vec = in_array1.astype(res_type)
+    res_vec = in_array1.astype(result_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray res_val = dparray((size1,), dtype=result_type)
 
-    if call_type in [numpy.float64, numpy.int32, numpy.int64]:
-        mkl_lapack_syevd_c[double](res_vec.get_data(), res_val.get_data(), size1)
-    elif call_type == numpy.float32:
-        mkl_lapack_syevd_c[float](res_vec.get_data(), res_val.get_data(), size1)
-    else:
-        checker_throw_type_error("dpnp_eig", call_type)
+    cdef fptr_1in_1out_t func = <fptr_1in_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(res_vec.get_data(), res_val.get_data(), size1)
 
     return res_val, res_vec

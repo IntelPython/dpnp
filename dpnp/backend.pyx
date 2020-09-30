@@ -125,8 +125,6 @@ cpdef dparray dpnp_init_val(shape, dtype, value):
 cpdef dparray dpnp_matmul(dparray in_array1, dparray in_array2):
     cdef vector[Py_ssize_t] shape_result
 
-    call_type = in_array1.dtype
-
     cdef vector[Py_ssize_t] shape1 = in_array1.shape
     cdef vector[Py_ssize_t] shape2 = in_array2.shape
 
@@ -177,25 +175,22 @@ cpdef dparray dpnp_matmul(dparray in_array1, dparray in_array2):
         """
         shape_result = shape1[:-1] + shape2[1:]
 
-    cdef dparray result = dparray(shape_result, dtype=call_type)
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(in_array1.dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(in_array2.dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MATMUL, param1_type, param2_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray result = dparray(shape_result, dtype=result_type)
     if result.size == 0:
         return result
 
-    if call_type == numpy.float64:
-        dpnp_blas_gemm_c[double](in_array1.get_data(), in_array2.get_data(),
-                                 result.get_data(), size_m, size_n, size_k)
-    elif call_type == numpy.float32:
-        dpnp_blas_gemm_c[float](in_array1.get_data(), in_array2.get_data(),
-                                result.get_data(), size_m, size_n, size_k)
-    elif call_type == numpy.int64:
-        custom_blas_gemm_c[long](in_array1.get_data(), in_array2.get_data(),
-                                 result.get_data(), size_m, size_n, size_k)
-    elif call_type == numpy.int32:
-        custom_blas_gemm_c[int](in_array1.get_data(), in_array2.get_data(),
-                                result.get_data(), size_m, size_n, size_k)
-    else:
-        raise TypeError(
-            f"Intel NumPy {call_type} matmul({call_type} A, {call_type} B, {call_type} result) is not supported.")
+    cdef fptr_blas_gemm_2in_1out_t func = <fptr_blas_gemm_2in_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(in_array1.get_data(), in_array2.get_data(), result.get_data(), size_m, size_n, size_k)
 
     return result
 

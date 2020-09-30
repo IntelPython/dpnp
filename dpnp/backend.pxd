@@ -57,6 +57,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_FABS
         DPNP_FN_FLOOR
         DPNP_FN_FMOD
+        DPNP_FN_GAUSSIAN
         DPNP_FN_HYPOT
         DPNP_FN_LOG
         DPNP_FN_LOG10
@@ -68,18 +69,21 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_MULTIPLY
         DPNP_FN_POWER
         DPNP_FN_PROD
+        DPNP_FN_UNIFORM
         DPNP_FN_RADIANS
-        DPNP_FN_RAND
+        DPNP_FN_RANDOM
         DPNP_FN_RECIP
         DPNP_FN_SIGN
         DPNP_FN_SIN
         DPNP_FN_SINH
+        DPNP_FN_SORT
         DPNP_FN_SQRT
         DPNP_FN_SQUARE
         DPNP_FN_SUBTRACT
         DPNP_FN_SUM
         DPNP_FN_TAN
         DPNP_FN_TANH
+        DPNP_FN_TRANSPOSE
         DPNP_FN_TRUNC
 
 cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
@@ -110,37 +114,14 @@ cdef extern from "backend/backend_iface.hpp":
     void dpnp_memory_free_c(void * ptr)
     void dpnp_memory_memcpy_c(void * dst, const void * src, size_t size_in_bytes)
 
-    void dpnp_blas_gemm_c[_DataType](void * array1, void * array2, void * result1, size_t size_m, size_t size_n, size_t size_k)
-    void custom_blas_gemm_c[_DataType](void * array1, void * array2, void * result1, size_t size_m, size_t size_n, size_t size_k)
-
-    # Linear Algebra part
-    void custom_blas_dot_c[_DataType](void * array1, void * array2, void * result1, size_t size)
-    void mkl_blas_dot_c[_DataType](void * array1, void * array2, void * result1, size_t size)
-    void mkl_lapack_syevd_c[_DataType](void * array1, void * result1, size_t size)
-
-    # array manipulation routines
-    void custom_elemwise_transpose_c[_DataType](void * array1_in, dparray_shape_type & input_shape, dparray_shape_type & result_shape, dparray_shape_type & permute_axes, void * result1, size_t size)
-
     # Random module routines
-    void mkl_rng_gaussian[_DataType](void * result, size_t size)
-    void mkl_rng_uniform[_DataType](void * result, size_t size)
-    void mkl_rng_uniform_mt19937[_DataType](void * result, long low, long high, size_t size)
-
-    # Statistics routines
-    void custom_cov_c[_DataType](void * array, void * result, size_t nrows, size_t ncols)
-
-    # Sorting routines
-    void custom_argsort_c[_DataType, _idx_DataType](void * array, void * result, size_t size)
-    void custom_sort_c[_DataType](void * array, void * result, size_t size)
-
-    # Sorting routines
-    void custom_argmax_c[_DataType, _idx_DataType](void * array, void * result, size_t size)
-    void custom_argmin_c[_DataType, _idx_DataType](void * array, void * result, size_t size)
+    # void mkl_rng_uniform_mt19937[_DataType](void * result, long low, long high, size_t size)
 
 
 # C function pointer to the C library template functions
 ctypedef void(*fptr_1in_1out_t)(void *, void * , size_t)
 ctypedef void(*fptr_2in_1out_t)(void *, void*, void*, size_t)
+ctypedef void(*fptr_blas_gemm_2in_1out_t)(void *, void *, void *, size_t, size_t, size_t)
 
 cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shape_type result_shape)
 cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, dparray_shape_type result_shape)
@@ -176,6 +157,7 @@ cpdef dparray dpnp_not_equal(dparray input1, dparray input2)
 """
 Linear algebra
 """
+cpdef dparray dpnp_dot(dparray in_array1, dparray in_array2)
 cpdef dparray dpnp_matmul(dparray in_array1, dparray in_array2)
 
 

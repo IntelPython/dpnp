@@ -47,8 +47,6 @@ cpdef dparray dpnp_dot(dparray in_array1, dparray in_array2):
     cdef vector[Py_ssize_t] shape1 = in_array1.shape
     cdef vector[Py_ssize_t] shape2 = in_array2.shape
 
-    call_type = in_array1.dtype
-
     cdef size_t dim1 = in_array1.ndim
     cdef size_t dim2 = in_array2.ndim
 
@@ -72,17 +70,20 @@ cpdef dparray dpnp_dot(dparray in_array1, dparray in_array2):
     if size1 != size2:
         raise checker_throw_runtime_error("dpnp_dot", "input vectors must be of equal size")
 
-    cdef dparray result = dparray((1,), dtype=call_type)
-    if call_type == numpy.float64:
-        mkl_blas_dot_c[double](in_array1.get_data(), in_array2.get_data(), result.get_data(), size1)
-    elif call_type == numpy.float32:
-        mkl_blas_dot_c[float](in_array1.get_data(), in_array2.get_data(), result.get_data(), size1)
-    elif call_type == numpy.int64:
-        custom_blas_dot_c[long](in_array1.get_data(), in_array2.get_data(), result.get_data(), size1)
-    elif call_type == numpy.int32:
-        custom_blas_dot_c[int](in_array1.get_data(), in_array2.get_data(), result.get_data(), size1)
-    else:
-        checker_throw_type_error("dpnp_dot", call_type)
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(in_array1.dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(in_array2.dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DOT, param1_type, param2_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray result = dparray((1,), dtype=result_type)
+
+    cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(in_array1.get_data(), in_array2.get_data(), result.get_data(), size1)
 
     return result
 

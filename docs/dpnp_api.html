@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>DPNP Function &mdash; dpnp 0.0.1 documentation</title>
+  <title>DPNP API Functions &mdash; dpnp 0.0.1 documentation</title>
   
 
   
@@ -37,7 +37,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Intel DPNP" href="index.html" /> 
+    <link rel="next" title="DPNP C++ backend API Functions" href="dpnp_backend_api.html" />
+    <link rel="prev" title="DPNP" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -89,7 +90,8 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">About dpnp</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Numpy API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">DPNP API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dpnp_backend_api.html">DPNP C++ backend API</a></li>
 </ul>
 
             
@@ -136,13 +138,13 @@
     
       <li><a href="contents.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>DPNP Functions (85)</li>
+      <li>DPNP API Functions</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/numpy_api.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/dpnp_api.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -155,14 +157,24 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-dpnp">
-<span id="numpy-functions"></span><span id="numpy-api"></span><h1>DPNP Functions (85)<a class="headerlink" href="#module-dpnp" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-api-functions">
+<span id="dpnp-api"></span><h1>DPNP API Functions (122)<a class="headerlink" href="#dpnp-api-functions" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-dpnp"></span><dl class="py function">
+<dt id="dpnp.abs">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">abs</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#abs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.abs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the absolute value element-wise.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.add()</span></code></p>
+</div>
+</dd></dl>
+
 <dl class="py function">
 <dt id="dpnp.absolute">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">absolute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#absolute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.absolute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">absolute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#absolute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.absolute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the absolute value element-wise.</p>
 <dl class="simple">
-<dt>input<span class="classifier">array_like</span></dt><dd><p>Input array.</p>
+<dt>x1<span class="classifier">array_like</span></dt><dd><p>Input array.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -173,7 +185,7 @@
 
 <dl class="py function">
 <dt id="dpnp.add">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.add" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add arguments element-wise.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -192,6 +204,172 @@ This is a scalar if both x1 and x2 are scalars.</p>
 <p class="admonition-title">See also</p>
 <p><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.add()</span></code></p>
 </div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.all">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_array1</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keepdims</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_logic.html#all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test whether all array elements along a given axis evaluate to True.</p>
+<dl>
+<dt>a<span class="classifier">array_like</span></dt><dd><p>Input array or object that can be converted to an array.</p>
+</dd>
+<dt>axis<span class="classifier">None or int or tuple of ints, optional</span></dt><dd><p>Axis or axes along which a logical AND reduction is performed.
+The default (<code class="docutils literal notranslate"><span class="pre">axis=None</span></code>) is to perform a logical AND over all
+the dimensions of the input array. <cite>axis</cite> may be negative, in
+which case it counts from the last to the first axis.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.7.0.</span></p>
+</div>
+<p>If this is a tuple of ints, a reduction is performed on multiple
+axes, instead of a single axis or all the axes as before.</p>
+</dd>
+<dt>out<span class="classifier">ndarray, optional</span></dt><dd><p>Alternate output array in which to place the result.
+It must have the same shape as the expected output and its
+type is preserved (e.g., if <code class="docutils literal notranslate"><span class="pre">dtype(out)</span></code> is float, the result
+will consist of 0.0’s and 1.0’s). See <cite>ufuncs-output-type</cite> for more
+details.</p>
+</dd>
+<dt>keepdims<span class="classifier">bool, optional</span></dt><dd><p>If this is set to True, the axes which are reduced are left
+in the result as dimensions with size one. With this option,
+the result will broadcast correctly against the input array.</p>
+<p>If the default value is passed, then <cite>keepdims</cite> will not be
+passed through to the <cite>all</cite> method of sub-classes of
+<cite>ndarray</cite>, however any non-default value will be.  If the
+sub-class’ method does not implement <cite>keepdims</cite> any
+exceptions will be raised.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>all<span class="classifier">ndarray, bool</span></dt><dd><p>A new boolean or array is returned unless <cite>out</cite> is specified,
+in which case a reference to <cite>out</cite> is returned.</p>
+</dd>
+</dl>
+<p>ndarray.all : equivalent method</p>
+<p>any : Test whether any element along a given axis evaluates to True.</p>
+<p>Not a Number (NaN), positive infinity and negative infinity
+evaluate to <cite>True</cite> because these are not equal to zero.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.amax">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">amax</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_statistics.html#amax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.amax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the maximum of an array or maximum along an axis.
+Parameters
+———-
+input : array_like</p>
+<blockquote>
+<div><p>Input data.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>axis<span class="classifier">None or int or tuple of ints, optional</span></dt><dd><p>Axis or axes along which to operate.  By default, flattened input is
+used.
+.. versionadded:: 1.7.0
+If this is a tuple of ints, the maximum is selected over multiple axes,
+instead of a single axis or all the axes as before.</p>
+</dd>
+<dt>out<span class="classifier">ndarray, optional</span></dt><dd><p>Alternative output array in which to place the result.  Must
+be of the same shape and buffer length as the expected output.
+See <cite>ufuncs-output-type</cite> for more details.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>amax<span class="classifier">ndarray or scalar</span></dt><dd><p>Maximum of <cite>a</cite>. If <cite>axis</cite> is None, the result is a scalar value.
+If <cite>axis</cite> is given, the result is an array of dimension
+<code class="docutils literal notranslate"><span class="pre">a.ndim</span> <span class="pre">-</span> <span class="pre">1</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.amin">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">amin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_statistics.html#amin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.amin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the minimum of an array or minimum along an axis.
+Parameters
+———-
+input : array_like</p>
+<blockquote>
+<div><p>Input data.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>axis<span class="classifier">None or int or tuple of ints, optional</span></dt><dd><p>Axis or axes along which to operate.  By default, flattened input is
+used.
+.. versionadded:: 1.7.0
+If this is a tuple of ints, the minimum is selected over multiple axes,
+instead of a single axis or all the axes as before.</p>
+</dd>
+<dt>out<span class="classifier">ndarray, optional</span></dt><dd><p>Alternative output array in which to place the result.  Must
+be of the same shape and buffer length as the expected output.
+See <cite>ufuncs-output-type</cite> for more details.</p>
+</dd>
+<dt>keepdims<span class="classifier">bool, optional</span></dt><dd><p>If this is set to True, the axes which are reduced are left
+in the result as dimensions with size one. With this option,
+the result will broadcast correctly against the input array.
+If the default value is passed, then <cite>keepdims</cite> will not be
+passed through to the <cite>amin</cite> method of sub-classes of
+<cite>ndarray</cite>, however any non-default value will be.  If the
+sub-class’ method does not implement <cite>keepdims</cite> any
+exceptions will be raised.</p>
+</dd>
+<dt>initial<span class="classifier">scalar, optional</span></dt><dd><p>The maximum value of an output element. Must be present to allow
+computation on empty slice. See <cite>~numpy.ufunc.reduce</cite> for details.
+.. versionadded:: 1.15.0</p>
+</dd>
+<dt>where<span class="classifier">array_like of bool, optional</span></dt><dd><p>Elements to compare for the minimum. See <cite>~numpy.ufunc.reduce</cite>
+for details.
+.. versionadded:: 1.17.0</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>amin<span class="classifier">ndarray or scalar</span></dt><dd><p>Minimum of <cite>input</cite>. If <cite>axis</cite> is None, the result is a scalar value.
+If <cite>axis</cite> is given, the result is an array of dimension
+<code class="docutils literal notranslate"><span class="pre">input.ndim</span> <span class="pre">-</span> <span class="pre">1</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.any">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">any</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_array1</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keepdims</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_logic.html#any"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.any" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test whether any array element along a given axis evaluates to True.</p>
+<p>Returns single boolean unless <cite>axis</cite> is not <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<dl>
+<dt>a<span class="classifier">array_like</span></dt><dd><p>Input array or object that can be converted to an array.</p>
+</dd>
+<dt>axis<span class="classifier">None or int or tuple of ints, optional</span></dt><dd><p>Axis or axes along which a logical OR reduction is performed.
+The default (<code class="docutils literal notranslate"><span class="pre">axis=None</span></code>) is to perform a logical OR over all
+the dimensions of the input array. <cite>axis</cite> may be negative, in
+which case it counts from the last to the first axis.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.7.0.</span></p>
+</div>
+<p>If this is a tuple of ints, a reduction is performed on multiple
+axes, instead of a single axis or all the axes as before.</p>
+</dd>
+<dt>out<span class="classifier">ndarray, optional</span></dt><dd><p>Alternate output array in which to place the result.  It must have
+the same shape as the expected output and its type is preserved
+(e.g., if it is of type float, then it will remain so, returning
+1.0 for True and 0.0 for False, regardless of the type of <cite>a</cite>).
+See <cite>ufuncs-output-type</cite> for more details.</p>
+</dd>
+<dt>keepdims<span class="classifier">bool, optional</span></dt><dd><p>If this is set to True, the axes which are reduced are left
+in the result as dimensions with size one. With this option,
+the result will broadcast correctly against the input array.</p>
+<p>If the default value is passed, then <cite>keepdims</cite> will not be
+passed through to the <cite>any</cite> method of sub-classes of
+<cite>ndarray</cite>, however any non-default value will be.  If the
+sub-class’ method does not implement <cite>keepdims</cite> any
+exceptions will be raised.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>any<span class="classifier">bool or ndarray</span></dt><dd><p>A new boolean or <cite>ndarray</cite> is returned unless <cite>out</cite> is specified,
+in which case a reference to <cite>out</cite> is returned.</p>
+</dd>
+</dl>
+<p>ndarray.any : equivalent method</p>
+<p>all : Test whether all elements along a given axis evaluate to True.</p>
+<p>Not a Number (NaN), positive infinity and negative infinity evaluate
+to <cite>True</cite> because these are not equal to zero.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -592,9 +770,179 @@ Defaults to ‘C’.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="dpnp.average">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">average</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_array1</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">weights</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">returned</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_statistics.html#average"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.average" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the weighted average along the specified axis.</p>
+<dl>
+<dt>a<span class="classifier">array_like</span></dt><dd><p>Array containing data to be averaged. If <cite>a</cite> is not an array, a
+conversion is attempted.</p>
+</dd>
+<dt>axis<span class="classifier">None or int or tuple of ints, optional</span></dt><dd><p>Axis or axes along which to average <cite>a</cite>.  The default,
+axis=None, will average over all of the elements of the input array.
+If axis is negative it counts from the last to the first axis.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.7.0.</span></p>
+</div>
+<p>If axis is a tuple of ints, averaging is performed on all of the axes
+specified in the tuple instead of a single axis or all the axes as
+before.</p>
+</dd>
+<dt>weights<span class="classifier">array_like, optional</span></dt><dd><p>An array of weights associated with the values in <cite>a</cite>. Each value in
+<cite>a</cite> contributes to the average according to its associated weight.
+The weights array can either be 1-D (in which case its length must be
+the size of <cite>a</cite> along the given axis) or of the same shape as <cite>a</cite>.
+If <cite>weights=None</cite>, then all data in <cite>a</cite> are assumed to have a
+weight equal to one.  The 1-D calculation is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">avg</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">weights</span><span class="p">)</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The only constraint on <cite>weights</cite> is that <cite>sum(weights)</cite> must not be 0.</p>
+</dd>
+<dt>returned<span class="classifier">bool, optional</span></dt><dd><p>Default is <cite>False</cite>. If <cite>True</cite>, the tuple (<cite>average</cite>, <cite>sum_of_weights</cite>)
+is returned, otherwise only the average is returned.
+If <cite>weights=None</cite>, <cite>sum_of_weights</cite> is equivalent to the number of
+elements over which the average is taken.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>retval, [sum_of_weights]<span class="classifier">array_type or double</span></dt><dd><p>Return the average along the specified axis. When <cite>returned</cite> is <cite>True</cite>,
+return a tuple with the average as the first element and the sum
+of the weights as the second element. <cite>sum_of_weights</cite> is of the
+same type as <cite>retval</cite>. The result dtype follows a genereal pattern.
+If <cite>weights</cite> is None, the result dtype will be that of <cite>a</cite> , or <code class="docutils literal notranslate"><span class="pre">float64</span></code>
+if <cite>a</cite> is integral. Otherwise, if <cite>weights</cite> is not None and <cite>a</cite> is non-
+integral, the result type will be the type of lowest precision capable of
+representing values of both <cite>a</cite> and <cite>weights</cite>. If <cite>a</cite> happens to be
+integral, the previous rules still applies but the result dtype will
+at least be <code class="docutils literal notranslate"><span class="pre">float64</span></code>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>ZeroDivisionError</dt><dd><p>When all weights along axis are zero. See <cite>numpy.ma.average</cite> for a
+version robust to this type of error.</p>
+</dd>
+<dt>TypeError</dt><dd><p>When the length of 1D <cite>weights</cite> is not the same as the shape of <cite>a</cite>
+along axis.</p>
+</dd>
+</dl>
+<p>mean</p>
+<dl class="simple">
+<dt>ma.average<span class="classifier">average for masked arrays – useful if your data contains</span></dt><dd><p>“missing” values</p>
+</dd>
+<dt>numpy.result_type<span class="classifier">Returns the type that results from applying the</span></dt><dd><p>numpy type promotion rules to the arguments.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.bitwise_and">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">bitwise_and</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_bitwise.html#bitwise_and"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.bitwise_and" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the bit-wise AND of two arrays element-wise.</p>
+<p>Computes the bit-wise AND of the underlying binary representation of the integers in the input arrays.</p>
+<dl class="simple">
+<dt>x1, x2: array_like or scalar</dt><dd><p>Input arrays or scalars. Only integer and boolean types are handled.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>out: ndarray or scalar</dt><dd><p>Output array or scalar if both x1 and x2 are scalars.</p>
+</dd>
+</dl>
+<p>ogical_and, bitwise_or, bitwise_xor, binary_repr</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.bitwise_not">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">bitwise_not</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.bitwise_not" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute bit-wise inversion, or bit-wise NOT, element-wise.</p>
+<p>Computes the bit-wise NOT of the underlying binary representation of the integers in the input arrays.</p>
+<dl class="simple">
+<dt>x1, x2: array_like or scalar</dt><dd><p>Input arrays or scalars. Only integer and boolean types are handled.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>out: ndarray or scalar</dt><dd><p>Output array or scalar if both x1 and x2 are scalars.</p>
+</dd>
+</dl>
+<p>bitwise_and, bitwise_or, bitwise_xor, logical_not, binary_repr</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.bitwise_or">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">bitwise_or</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_bitwise.html#bitwise_or"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.bitwise_or" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the bit-wise OR of two arrays element-wise.</p>
+<p>Computes the bit-wise OR of the underlying binary representation of the integers in the input arrays.</p>
+<dl class="simple">
+<dt>x1, x2: array_like or scalar</dt><dd><p>Input arrays or scalars. Only integer and boolean types are handled.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>out: ndarray or scalar</dt><dd><p>Output array or scalar if both x1 and x2 are scalars.</p>
+</dd>
+</dl>
+<p>logical_or, bitwise_and, bitwise_xor, binary_repr</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.bitwise_xor">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">bitwise_xor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_bitwise.html#bitwise_xor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.bitwise_xor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the bit-wise XOR of two arrays element-wise.</p>
+<p>Computes the bit-wise XOR of the underlying binary representation of the integers in the input arrays.</p>
+<dl class="simple">
+<dt>x1, x2: array_like or scalar</dt><dd><p>Input arrays or scalars. Only integer and boolean types are handled.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>out: ndarray or scalar</dt><dd><p>Output array or scalar if both x1 and x2 are scalars.</p>
+</dd>
+</dl>
+<p>logical_xor, bitwise_and, bitwise_or, binary_repr</p>
+</dd></dl>
+
+<dl class="py function">
 <dt id="dpnp.cbrt">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">cbrt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_trigonometric.html#cbrt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.cbrt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the cube-root of an array, element-wise.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.ceil">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">ceil</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#ceil"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.ceil" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute  the ceiling of the input, element-wise.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.ceil()</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.copyto">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">copyto</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dst</span></em>, <em class="sig-param"><span class="n">src</span></em>, <em class="sig-param"><span class="n">casting</span><span class="o">=</span><span class="default_value">'same_kind'</span></em>, <em class="sig-param"><span class="n">where</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_manipulation.html#copyto"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.copyto" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copies values from one array to another, broadcasting as necessary.
+Raises a TypeError if the casting rule is violated, and if where is provided,
+it selects which elements to copy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dst</strong> – ndarray
+The array into which values are copied.</p></li>
+<li><p><strong>src</strong> – array_like
+The array from which values are copied.</p></li>
+<li><p><strong>casting</strong> – <p>{‘no’, ‘equiv’, ‘safe’, ‘same_kind’, ‘unsafe’}, optional
+Controls what kind of data casting may occur when copying.</p>
+<blockquote>
+<div><p>‘no’ means the data types should not be cast at all.</p>
+<p>‘equiv’ means only byte-order changes are allowed.</p>
+<p>‘safe’ means only casts which can preserve values are allowed.</p>
+<p>‘same_kind’ means only safe casts or casts within a kind, like float64 to float32, are allowed.</p>
+<p>‘unsafe’ means any data conversions may be done.</p>
+</div></blockquote>
+</p></li>
+<li><p><strong>where</strong> – array_like of bool, optional
+A boolean array which is broadcasted to match the dimensions of dst,
+and selects elements to copy from src to dst wherever it contains the value True.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -786,7 +1134,7 @@ matrix shows this clearly:</p>
 
 <dl class="py function">
 <dt id="dpnp.divide">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">divide</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#divide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.divide" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">divide</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#divide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.divide" title="Permalink to this definition">¶</a></dt>
 <dd><p>Divide arguments element-wise.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -809,7 +1157,7 @@ This is a scalar if both x1 and x2 are scalars.</p>
 
 <dl class="py function">
 <dt id="dpnp.dot">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">dot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_array1</span></em>, <em class="sig-param"><span class="n">in_array2</span></em>, <em class="sig-param"><span class="n">out_array</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_linearalgebra.html#dot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.dot" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">dot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_linearalgebra.html#dot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.dot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dot product of two arrays. Specifically,</p>
 <ul>
 <li><p>If both <cite>a</cite> and <cite>b</cite> are 1-D arrays, it is inner product of vectors
@@ -852,7 +1200,7 @@ If <cite>out</cite> is given, then it is returned.</p>
 <dl class="py function">
 <dt id="dpnp.dpnp_queue_initialize">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">dpnp_queue_initialize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dpnp_queue_initialize" title="Permalink to this definition">¶</a></dt>
-<dd><p>File: dpnp/backend.pyx (starting at line 203)
+<dd><p>File: dpnp/backend.pyx (starting at line 198)
 Initialize SYCL queue which will be used for any library operations</p>
 <blockquote>
 <div><p>It takes visible time and needs to be done in the module loading procedure</p>
@@ -1025,6 +1373,68 @@ behavior is provided for backward-compatibility with numarray.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="dpnp.fabs">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">fabs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#fabs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.fabs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the absolute values element-wise.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.fabs()</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.floor">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">floor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#floor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.floor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the floor of the input, element-wise.</p>
+<p>Some spreadsheet programs calculate the “floor-towards-zero”, in other words floor(-2.5) == -2.
+dpNP instead uses the definition of floor where floor(-2.5) == -3.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.floor()</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.floor_divide">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">floor_divide</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#floor_divide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.floor_divide" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the largest integer smaller or equal to the division of the inputs.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.floor_divide()</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.fmax">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">fmax</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#fmax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.fmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise maximum of array elements.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.fmax()</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.fmin">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">fmin</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#fmin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.fmin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise minimum of array elements.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.fmin()</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.fmod">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">fmod</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#fmod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.fmod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the element-wise remainder of division.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.fmod()</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt id="dpnp.full">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">full</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shape</span></em>, <em class="sig-param"><span class="n">fill_value</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">'C'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_arraycreation.html#full"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.full" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a new array of given shape and type, filled with <cite>fill_value</cite>.
@@ -1158,19 +1568,177 @@ array([0.1,  0.1,  0.1,  0.1,  0.1,  0.1])</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="dpnp.inner">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">inner</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_linearalgebra.html#inner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.inner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the inner product of two vectors.</p>
+<p>The input arrays are flattened into 1-D vectors and then it performs inner
+product of these vectors.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.inner()</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.invert">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">invert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_bitwise.html#invert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.invert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute bit-wise inversion, or bit-wise NOT, element-wise.</p>
+<p>Computes the bit-wise NOT of the underlying binary representation of the integers in the input arrays.</p>
+<dl class="simple">
+<dt>x1, x2: array_like or scalar</dt><dd><p>Input arrays or scalars. Only integer and boolean types are handled.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>out: ndarray or scalar</dt><dd><p>Output array or scalar if both x1 and x2 are scalars.</p>
+</dd>
+</dl>
+<p>bitwise_and, bitwise_or, bitwise_xor, logical_not, binary_repr</p>
+</dd></dl>
+
+<dl class="py function">
 <dt id="dpnp.isclose">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">isclose</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="n">rtol</span><span class="o">=</span><span class="default_value">1e-05</span></em>, <em class="sig-param"><span class="n">atol</span><span class="o">=</span><span class="default_value">1e-08</span></em>, <em class="sig-param"><span class="n">equal_nan</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_logic.html#isclose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.isclose" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a boolean array where two arrays are element-wise equal within a tolerance.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="dpnp.isfinite">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">isfinite</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_array1</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">where</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_logic.html#isfinite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.isfinite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test element-wise for finiteness (not infinity or not Not a Number).</p>
+<p>The result is returned as a boolean array.</p>
+<dl class="simple">
+<dt>x<span class="classifier">array_like</span></dt><dd><p>Input values.</p>
+</dd>
+<dt>out<span class="classifier">ndarray, None, or tuple of ndarray and None, optional</span></dt><dd><p>A location into which the result is stored. If provided, it must have
+a shape that the inputs broadcast to. If not provided or None,
+a freshly-allocated array is returned. A tuple (possible only as a
+keyword argument) must have length equal to the number of outputs.</p>
+</dd>
+<dt>where<span class="classifier">array_like, optional</span></dt><dd><p>This condition is broadcast over the input. At locations where the
+condition is True, the <cite>out</cite> array will be set to the ufunc result.
+Elsewhere, the <cite>out</cite> array will retain its original value.
+Note that if an uninitialized <cite>out</cite> array is created via the default
+<code class="docutils literal notranslate"><span class="pre">out=None</span></code>, locations within it where the condition is False will
+remain uninitialized.</p>
+</dd>
+<dt><a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs</dt><dd><p>For other keyword-only arguments, see the
+<span class="xref std std-ref">ufunc docs</span>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>y<span class="classifier">ndarray, bool</span></dt><dd><p>True where <code class="docutils literal notranslate"><span class="pre">x</span></code> is not positive infinity, negative infinity,
+or NaN; false otherwise.
+This is a scalar if <cite>x</cite> is a scalar.</p>
+</dd>
+</dl>
+<p>isinf, isneginf, isposinf, isnan</p>
+<p>Not a Number, positive infinity and negative infinity are considered
+to be non-finite.</p>
+<p>NumPy uses the IEEE Standard for Binary Floating-Point for Arithmetic
+(IEEE 754). This means that Not a Number is not equivalent to infinity.
+Also that positive infinity is not equivalent to negative infinity. But
+infinity is equivalent to positive infinity.  Errors result if the
+second argument is also supplied when <cite>x</cite> is a scalar input, or if
+first and second arguments have different shapes.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.isinf">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">isinf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_array1</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">where</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_logic.html#isinf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.isinf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test element-wise for positive or negative infinity.</p>
+<p>Returns a boolean array of the same shape as <cite>x</cite>, True where <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">==</span>
+<span class="pre">+/-inf</span></code>, otherwise False.</p>
+<dl class="simple">
+<dt>x<span class="classifier">array_like</span></dt><dd><p>Input values</p>
+</dd>
+<dt>out<span class="classifier">ndarray, None, or tuple of ndarray and None, optional</span></dt><dd><p>A location into which the result is stored. If provided, it must have
+a shape that the inputs broadcast to. If not provided or None,
+a freshly-allocated array is returned. A tuple (possible only as a
+keyword argument) must have length equal to the number of outputs.</p>
+</dd>
+<dt>where<span class="classifier">array_like, optional</span></dt><dd><p>This condition is broadcast over the input. At locations where the
+condition is True, the <cite>out</cite> array will be set to the ufunc result.
+Elsewhere, the <cite>out</cite> array will retain its original value.
+Note that if an uninitialized <cite>out</cite> array is created via the default
+<code class="docutils literal notranslate"><span class="pre">out=None</span></code>, locations within it where the condition is False will
+remain uninitialized.</p>
+</dd>
+<dt><a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs</dt><dd><p>For other keyword-only arguments, see the
+<span class="xref std std-ref">ufunc docs</span>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>y<span class="classifier">bool (scalar) or boolean ndarray</span></dt><dd><p>True where <code class="docutils literal notranslate"><span class="pre">x</span></code> is positive or negative infinity, false otherwise.
+This is a scalar if <cite>x</cite> is a scalar.</p>
+</dd>
+</dl>
+<p>isneginf, isposinf, isnan, isfinite</p>
+<p>NumPy uses the IEEE Standard for Binary Floating-Point for Arithmetic
+(IEEE 754).</p>
+<p>Errors result if the second argument is supplied when the first
+argument is a scalar, or if the first and second arguments have
+different shapes.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.isnan">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">isnan</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_array1</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">where</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_logic.html#isnan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.isnan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test element-wise for NaN and return result as a boolean array.</p>
+<dl class="simple">
+<dt>x<span class="classifier">array_like</span></dt><dd><p>Input array.</p>
+</dd>
+<dt>out<span class="classifier">ndarray, None, or tuple of ndarray and None, optional</span></dt><dd><p>A location into which the result is stored. If provided, it must have
+a shape that the inputs broadcast to. If not provided or None,
+a freshly-allocated array is returned. A tuple (possible only as a
+keyword argument) must have length equal to the number of outputs.</p>
+</dd>
+<dt>where<span class="classifier">array_like, optional</span></dt><dd><p>This condition is broadcast over the input. At locations where the
+condition is True, the <cite>out</cite> array will be set to the ufunc result.
+Elsewhere, the <cite>out</cite> array will retain its original value.
+Note that if an uninitialized <cite>out</cite> array is created via the default
+<code class="docutils literal notranslate"><span class="pre">out=None</span></code>, locations within it where the condition is False will
+remain uninitialized.</p>
+</dd>
+<dt><a href="#id5"><span class="problematic" id="id6">**</span></a>kwargs</dt><dd><p>For other keyword-only arguments, see the
+<span class="xref std std-ref">ufunc docs</span>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>y<span class="classifier">ndarray or bool</span></dt><dd><p>True where <code class="docutils literal notranslate"><span class="pre">x</span></code> is NaN, false otherwise.
+This is a scalar if <cite>x</cite> is a scalar.</p>
+</dd>
+</dl>
+<p>isinf, isneginf, isposinf, isfinite, isnat</p>
+<p>NumPy uses the IEEE Standard for Binary Floating-Point for Arithmetic
+(IEEE 754). This means that Not a Number is not equivalent to infinity.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt id="dpnp.kron">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">kron</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input1</span></em>, <em class="sig-param"><span class="n">input2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_linearalgebra.html#kron"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.kron" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">kron</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_linearalgebra.html#kron"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.kron" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the kronecker product of two arrays.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.kron()</span></code></p>
 </div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.left_shift">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">left_shift</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_bitwise.html#left_shift"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.left_shift" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shift the bits of an integer to the left.</p>
+<p>Bits are shifted to the left by appending x2 0s at the right of x1.</p>
+<dl class="simple">
+<dt>x1, x2: array_like or int</dt><dd><p>Input values.</p>
+</dd>
+<dt>x1, x2: array_like or int</dt><dd><p>Number of zeros to append to x1. Has to be non-negative.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>out: ndarray or int</dt><dd><p>Output array or scalar if both x1 and x2 are scalars.</p>
+</dd>
+</dl>
+<p>right_shift, binary_repr</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1211,26 +1779,133 @@ array([0.1,  0.1,  0.1,  0.1,  0.1,  0.1])</p>
 
 <dl class="py function">
 <dt id="dpnp.logical_and">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">logical_and</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_logic.html#logical_and"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.logical_and" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return (x1 AND x2) element-wise.</p>
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">logical_and</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">where</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_logic.html#logical_and"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.logical_and" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the truth value of x1 AND x2 element-wise.</p>
+<dl class="simple">
+<dt>x1, x2<span class="classifier">array_like</span></dt><dd><p>Input arrays. If <code class="docutils literal notranslate"><span class="pre">x1.shape</span> <span class="pre">!=</span> <span class="pre">x2.shape</span></code>, they must be broadcastable to a common shape (which becomes the shape of the output).</p>
+</dd>
+<dt>out<span class="classifier">ndarray, None, or tuple of ndarray and None, optional</span></dt><dd><p>A location into which the result is stored. If provided, it must have
+a shape that the inputs broadcast to. If not provided or None,
+a freshly-allocated array is returned. A tuple (possible only as a
+keyword argument) must have length equal to the number of outputs.</p>
+</dd>
+<dt>where<span class="classifier">array_like, optional</span></dt><dd><p>This condition is broadcast over the input. At locations where the
+condition is True, the <cite>out</cite> array will be set to the ufunc result.
+Elsewhere, the <cite>out</cite> array will retain its original value.
+Note that if an uninitialized <cite>out</cite> array is created via the default
+<code class="docutils literal notranslate"><span class="pre">out=None</span></code>, locations within it where the condition is False will
+remain uninitialized.</p>
+</dd>
+<dt><a href="#id7"><span class="problematic" id="id8">**</span></a>kwargs</dt><dd><p>For other keyword-only arguments, see the
+<span class="xref std std-ref">ufunc docs</span>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>y<span class="classifier">ndarray or bool</span></dt><dd><p>Boolean result of the logical AND operation applied to the elements
+of <cite>x1</cite> and <cite>x2</cite>; the shape is determined by broadcasting.
+This is a scalar if both <cite>x1</cite> and <cite>x2</cite> are scalars.</p>
+</dd>
+</dl>
+<p>logical_or, logical_not, logical_xor
+bitwise_and</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="dpnp.logical_not">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">logical_not</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_logic.html#logical_not"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.logical_not" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return (NOT x1) element-wise.</p>
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">logical_not</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">where</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_logic.html#logical_not"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.logical_not" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the truth value of NOT x element-wise.</p>
+<dl class="simple">
+<dt>x<span class="classifier">array_like</span></dt><dd><p>Logical NOT is applied to the elements of <cite>x</cite>.</p>
+</dd>
+<dt>out<span class="classifier">ndarray, None, or tuple of ndarray and None, optional</span></dt><dd><p>A location into which the result is stored. If provided, it must have
+a shape that the inputs broadcast to. If not provided or None,
+a freshly-allocated array is returned. A tuple (possible only as a
+keyword argument) must have length equal to the number of outputs.</p>
+</dd>
+<dt>where<span class="classifier">array_like, optional</span></dt><dd><p>This condition is broadcast over the input. At locations where the
+condition is True, the <cite>out</cite> array will be set to the ufunc result.
+Elsewhere, the <cite>out</cite> array will retain its original value.
+Note that if an uninitialized <cite>out</cite> array is created via the default
+<code class="docutils literal notranslate"><span class="pre">out=None</span></code>, locations within it where the condition is False will
+remain uninitialized.</p>
+</dd>
+<dt><a href="#id9"><span class="problematic" id="id10">**</span></a>kwargs</dt><dd><p>For other keyword-only arguments, see the
+<span class="xref std std-ref">ufunc docs</span>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>y<span class="classifier">bool or ndarray of bool</span></dt><dd><p>Boolean result with the same shape as <cite>x</cite> of the NOT operation
+on elements of <cite>x</cite>.
+This is a scalar if <cite>x</cite> is a scalar.</p>
+</dd>
+</dl>
+<p>logical_and, logical_or, logical_xor</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="dpnp.logical_or">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">logical_or</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_logic.html#logical_or"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.logical_or" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return (x1 OR x2) element-wise.</p>
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">logical_or</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">where</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_logic.html#logical_or"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.logical_or" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the truth value of x1 OR x2 element-wise.</p>
+<dl class="simple">
+<dt>x1, x2<span class="classifier">array_like</span></dt><dd><p>Logical OR is applied to the elements of <cite>x1</cite> and <cite>x2</cite>.
+If <code class="docutils literal notranslate"><span class="pre">x1.shape</span> <span class="pre">!=</span> <span class="pre">x2.shape</span></code>, they must be broadcastable to a common shape (which becomes the shape of the output).</p>
+</dd>
+<dt>out<span class="classifier">ndarray, None, or tuple of ndarray and None, optional</span></dt><dd><p>A location into which the result is stored. If provided, it must have
+a shape that the inputs broadcast to. If not provided or None,
+a freshly-allocated array is returned. A tuple (possible only as a
+keyword argument) must have length equal to the number of outputs.</p>
+</dd>
+<dt>where<span class="classifier">array_like, optional</span></dt><dd><p>This condition is broadcast over the input. At locations where the
+condition is True, the <cite>out</cite> array will be set to the ufunc result.
+Elsewhere, the <cite>out</cite> array will retain its original value.
+Note that if an uninitialized <cite>out</cite> array is created via the default
+<code class="docutils literal notranslate"><span class="pre">out=None</span></code>, locations within it where the condition is False will
+remain uninitialized.</p>
+</dd>
+<dt><a href="#id11"><span class="problematic" id="id12">**</span></a>kwargs</dt><dd><p>For other keyword-only arguments, see the
+<span class="xref std std-ref">ufunc docs</span>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>y<span class="classifier">ndarray or bool</span></dt><dd><p>Boolean result of the logical OR operation applied to the elements
+of <cite>x1</cite> and <cite>x2</cite>; the shape is determined by broadcasting.
+This is a scalar if both <cite>x1</cite> and <cite>x2</cite> are scalars.</p>
+</dd>
+</dl>
+<p>logical_and, logical_not, logical_xor
+bitwise_or</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="dpnp.logical_xor">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">logical_xor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_logic.html#logical_xor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.logical_xor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return (x1 XOR x2) element-wise.</p>
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">logical_xor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">where</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_logic.html#logical_xor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.logical_xor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the truth value of x1 XOR x2, element-wise.</p>
+<dl class="simple">
+<dt>x1, x2<span class="classifier">array_like</span></dt><dd><p>Logical XOR is applied to the elements of <cite>x1</cite> and <cite>x2</cite>. If <code class="docutils literal notranslate"><span class="pre">x1.shape</span> <span class="pre">!=</span> <span class="pre">x2.shape</span></code>, they must be broadcastable to a common shape (which becomes the shape of the output).</p>
+</dd>
+<dt>out<span class="classifier">ndarray, None, or tuple of ndarray and None, optional</span></dt><dd><p>A location into which the result is stored. If provided, it must have
+a shape that the inputs broadcast to. If not provided or None,
+a freshly-allocated array is returned. A tuple (possible only as a
+keyword argument) must have length equal to the number of outputs.</p>
+</dd>
+<dt>where<span class="classifier">array_like, optional</span></dt><dd><p>This condition is broadcast over the input. At locations where the
+condition is True, the <cite>out</cite> array will be set to the ufunc result.
+Elsewhere, the <cite>out</cite> array will retain its original value.
+Note that if an uninitialized <cite>out</cite> array is created via the default
+<code class="docutils literal notranslate"><span class="pre">out=None</span></code>, locations within it where the condition is False will
+remain uninitialized.</p>
+</dd>
+<dt><a href="#id13"><span class="problematic" id="id14">**</span></a>kwargs</dt><dd><p>For other keyword-only arguments, see the
+<span class="xref std std-ref">ufunc docs</span>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>y<span class="classifier">bool or ndarray of bool</span></dt><dd><p>Boolean result of the logical XOR operation applied to the elements
+of <cite>x1</cite> and <cite>x2</cite>; the shape is determined by broadcasting.
+This is a scalar if both <cite>x1</cite> and <cite>x2</cite> are scalars.</p>
+</dd>
+</dl>
+<p>logical_and, logical_or, logical_not, bitwise_xor</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1255,6 +1930,46 @@ out (dpnp.dparray): Output array.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.matmul()</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.max">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">max</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_statistics.html#max"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the maximum of an array or maximum along an axis.
+Parameters
+———-
+input : array_like</p>
+<blockquote>
+<div><p>Input data.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>axis<span class="classifier">None or int or tuple of ints, optional</span></dt><dd><p>Axis or axes along which to operate.  By default, flattened input is
+used.
+.. versionadded:: 1.7.0
+If this is a tuple of ints, the maximum is selected over multiple axes,
+instead of a single axis or all the axes as before.</p>
+</dd>
+<dt>out<span class="classifier">ndarray, optional</span></dt><dd><p>Alternative output array in which to place the result.  Must
+be of the same shape and buffer length as the expected output.
+See <cite>ufuncs-output-type</cite> for more details.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>amax<span class="classifier">ndarray or scalar</span></dt><dd><p>Maximum of <cite>a</cite>. If <cite>axis</cite> is None, the result is a scalar value.
+If <cite>axis</cite> is given, the result is an array of dimension
+<code class="docutils literal notranslate"><span class="pre">a.ndim</span> <span class="pre">-</span> <span class="pre">1</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.maximum">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">maximum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#maximum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.maximum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise maximum of array elements.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.maximum()</span></code></p>
 </div>
 </dd></dl>
 
@@ -1284,11 +1999,15 @@ otherwise a reference to the output array is returned.</p>
 <dl class="py function">
 <dt id="dpnp.median">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">median</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_array1</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">overwrite_input</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">keepdims</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_statistics.html#median"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.median" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the median along the specified axis.</p>
-<p>Returns the median of the array elements.</p>
-<dl>
-<dt>a<span class="classifier">array_like</span></dt><dd><p>Input array or object that can be converted to an array.</p>
-</dd>
+<dd><p>Compute the median along the specified axis.
+Returns the median of the array elements.
+Parameters
+———-
+a : array_like</p>
+<blockquote>
+<div><p>Input array or object that can be converted to an array.</p>
+</div></blockquote>
+<dl class="simple">
 <dt>axis<span class="classifier">{int, sequence of int, None}, optional</span></dt><dd><p>Axis or axes along which the medians are computed. The default
 is to compute the median along a flattened version of the array.
 A sequence of axes is supported since version 1.9.0.</p>
@@ -1307,10 +2026,8 @@ False. If <cite>overwrite_input</cite> is <code class="docutils literal notransl
 </dd>
 <dt>keepdims<span class="classifier">bool, optional</span></dt><dd><p>If this is set to True, the axes which are reduced are left
 in the result as dimensions with size one. With this option,
-the result will broadcast correctly against the original <cite>arr</cite>.</p>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 1.9.0.</span></p>
-</div>
+the result will broadcast correctly against the original <cite>arr</cite>.
+.. versionadded:: 1.9.0</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -1321,16 +2038,22 @@ same as that of the input. If <cite>out</cite> is specified, that array is
 returned instead.</p>
 </dd>
 </dl>
-<p>mean, percentile</p>
-<p>Given a vector <code class="docutils literal notranslate"><span class="pre">V</span></code> of length <code class="docutils literal notranslate"><span class="pre">N</span></code>, the median of <code class="docutils literal notranslate"><span class="pre">V</span></code> is the
+<p>mean, percentile
+Notes
+—–
+Given a vector <code class="docutils literal notranslate"><span class="pre">V</span></code> of length <code class="docutils literal notranslate"><span class="pre">N</span></code>, the median of <code class="docutils literal notranslate"><span class="pre">V</span></code> is the
 middle value of a sorted copy of <code class="docutils literal notranslate"><span class="pre">V</span></code>, <code class="docutils literal notranslate"><span class="pre">V_sorted</span></code> - i
 e., <code class="docutils literal notranslate"><span class="pre">V_sorted[(N-1)/2]</span></code>, when <code class="docutils literal notranslate"><span class="pre">N</span></code> is odd, and the average of the
-two middle values of <code class="docutils literal notranslate"><span class="pre">V_sorted</span></code> when <code class="docutils literal notranslate"><span class="pre">N</span></code> is even.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
-<span class="go">array([[10,  7,  4],</span>
-<span class="go">       [ 3,  2,  1]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+two middle values of <code class="docutils literal notranslate"><span class="pre">V_sorted</span></code> when <code class="docutils literal notranslate"><span class="pre">N</span></code> is even.
+Examples
+——–
+&gt;&gt;&gt; a = np.array([[10, 7, 4], [3, 2, 1]])
+&gt;&gt;&gt; a
+array([[10,  7,  4],</p>
+<blockquote>
+<div><p>[ 3,  2,  1]])</p>
+</div></blockquote>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 <span class="go">3.5</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="go">array([6.5, 4.5, 2.5])</span>
@@ -1355,33 +2078,63 @@ two middle values of <code class="docutils literal notranslate"><span class="pre
 </dd></dl>
 
 <dl class="py function">
+<dt id="dpnp.min">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">min</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_statistics.html#min"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.min" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the minimum along a given axis.
+Parameters
+———-
+input : array_like</p>
+<blockquote>
+<div><p>Input data.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>axis<span class="classifier">None or int or tuple of ints, optional</span></dt><dd><p>Axis or axes along which to operate. By default, flattened input is used.
+New in version 1.7.0.
+If this is a tuple of ints, the minimum is selected over multiple axes,
+instead of a single axis or all the axes as before.</p>
+</dd>
+<dt>out<span class="classifier">ndarray, optional</span></dt><dd><p>Alternative output array in which to place the result. Must be of the
+same shape and buffer length as the expected output.
+See ufuncs-output-type for more details.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>m<span class="classifier">ndarray, see dtype parameter above</span></dt><dd><p>Minimum of a. If axis is None, the result is a scalar value.
+If axis is given, the result is an array of dimension a.ndim - 1.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.minimum">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">minimum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#minimum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.minimum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Element-wise minimum of array elements.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.minimum()</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.mod">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">mod</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#mod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.mod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute element-wise remainder of division.</p>
+<p>Alias for <a class="reference internal" href="#dpnp.remainder" title="dpnp.remainder"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpnp.remainder()</span></code></a></p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.mod()</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt id="dpnp.moveaxis">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">moveaxis</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">source</span></em>, <em class="sig-param"><span class="n">destination</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_manipulation.html#moveaxis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.moveaxis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Move axes of an array to new positions. Other axes remain in their original order.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="dpnp.multi_dot">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">multi_dot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">arrays</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_linearalgebra.html#multi_dot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.multi_dot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the dot product of two or more arrays in a single function call</p>
-<dl class="simple">
-<dt>arrays<span class="classifier">sequence of array_like</span></dt><dd><p>If the first argument is 1-D it is treated as row vector.
-If the last argument is 1-D it is treated as column vector.
-The other arguments must be 2-D.</p>
-</dd>
-<dt>out<span class="classifier">ndarray, optional</span></dt><dd><p>unsupported</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>output<span class="classifier">ndarray</span></dt><dd><p>Returns the dot product of the supplied arrays.</p>
-</dd>
-</dl>
-<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.multi_dot()</span></code></p>
-</dd></dl>
-
-<dl class="py function">
 <dt id="dpnp.multiply">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">multiply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#multiply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.multiply" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">multiply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#multiply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.multiply" title="Permalink to this definition">¶</a></dt>
 <dd><p>Multiply arguments element-wise.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1404,7 +2157,7 @@ This is a scalar if both x1 and x2 are scalars.</p>
 
 <dl class="py function">
 <dt id="dpnp.negative">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">negative</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#negative"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.negative" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">negative</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#negative"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.negative" title="Permalink to this definition">¶</a></dt>
 <dd><p>Negative element-wise.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -1518,7 +2271,7 @@ array([[0, 1, 2],</p>
 
 <dl class="py function">
 <dt id="dpnp.outer">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">outer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_linearalgebra.html#outer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.outer" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">outer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_linearalgebra.html#outer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.outer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the outer product of two vectors.</p>
 <p>The input arrays are flattened into 1-D vectors and then it performs outer
 product of these vectors.</p>
@@ -1530,7 +2283,7 @@ product of these vectors.</p>
 
 <dl class="py function">
 <dt id="dpnp.power">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">power</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">modulo</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.power" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">power</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.power" title="Permalink to this definition">¶</a></dt>
 <dd><p>First array elements raised to powers from second array, element-wise.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1548,6 +2301,16 @@ This is a scalar if both x1 and x2 are scalars.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.power()</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.prod">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">prod</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#prod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.prod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate product of array elements over a given axis.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.prod()</span></code></p>
 </div>
 </dd></dl>
 
@@ -1571,6 +2334,23 @@ This is a scalar if both x1 and x2 are scalars.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="dpnp.ravel">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">ravel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">'C'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_manipulation.html#ravel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.ravel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a contiguous flattened array.</p>
+<dl class="simple">
+<dt>a: array_like</dt><dd><p>Input array.</p>
+</dd>
+<dt>order: {‘C’, ‘F’, ‘A’, ‘K’}, optional</dt><dd><p>The elements of a are read using this index order.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>out: ndarray</dt><dd><p>Output array.</p>
+</dd>
+</dl>
+<p>flat, flatten, reshape</p>
+</dd></dl>
+
+<dl class="py function">
 <dt id="dpnp.reciprocal">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">reciprocal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_trigonometric.html#reciprocal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.reciprocal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the reciprocal of the argument, element-wise.</p>
@@ -1578,66 +2358,62 @@ This is a scalar if both x1 and x2 are scalars.</p>
 
 <dl class="py function">
 <dt id="dpnp.remainder">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">remainder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface.html#remainder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.remainder" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">remainder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#remainder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.remainder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return element-wise remainder of division.</p>
-<p>Computes the remainder complementary to the <cite>floor_divide</cite> function.  It is
-equivalent to the Python modulus operator``x1 % x2`` and has the same sign
-as the divisor <cite>x2</cite>. The MATLAB function equivalent to <code class="docutils literal notranslate"><span class="pre">np.remainder</span></code>
-is <code class="docutils literal notranslate"><span class="pre">mod</span></code>.</p>
-<p>This should not be confused with:</p>
-<ul class="simple">
-<li><p>Python 3.7’s <cite>math.remainder</cite> and C’s <code class="docutils literal notranslate"><span class="pre">remainder</span></code>, which
-computes the IEEE remainder, which are the complement to
-<code class="docutils literal notranslate"><span class="pre">round(x1</span> <span class="pre">/</span> <span class="pre">x2)</span></code>.</p></li>
-<li><p>The MATLAB <code class="docutils literal notranslate"><span class="pre">rem</span></code> function and or the C <code class="docutils literal notranslate"><span class="pre">%</span></code> operator which is the
-complement to <code class="docutils literal notranslate"><span class="pre">int(x1</span> <span class="pre">/</span> <span class="pre">x2)</span></code>.</p></li>
-</ul>
-<dl class="simple">
-<dt>x1<span class="classifier">array_like</span></dt><dd><p>Dividend array.</p>
-</dd>
-<dt>x2<span class="classifier">array_like</span></dt><dd><p>Divisor array. If <code class="docutils literal notranslate"><span class="pre">x1.shape</span> <span class="pre">!=</span> <span class="pre">x2.shape</span></code>, they must be broadcastable
-to a common shape (which becomes the shape of the output).</p>
-</dd>
-<dt>out<span class="classifier">ndarray, None, or tuple of ndarray and None, optional</span></dt><dd><p>A location into which the result is stored. If provided, it must have
-a shape that the inputs broadcast to. If not provided or None,
-a freshly-allocated array is returned. A tuple (possible only as a
-keyword argument) must have length equal to the number of outputs.</p>
-</dd>
-<dt>where<span class="classifier">array_like, optional</span></dt><dd><p>This condition is broadcast over the input. At locations where the
-condition is True, the <cite>out</cite> array will be set to the ufunc result.
-Elsewhere, the <cite>out</cite> array will retain its original value.
-Note that if an uninitialized <cite>out</cite> array is created via the default
-<code class="docutils literal notranslate"><span class="pre">out=None</span></code>, locations within it where the condition is False will
-remain uninitialized.</p>
-</dd>
-<dt><a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs</dt><dd><p>For other keyword-only arguments, see the
-<span class="xref std std-ref">ufunc docs</span>.</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>y<span class="classifier">ndarray</span></dt><dd><p>The element-wise remainder of the quotient <code class="docutils literal notranslate"><span class="pre">floor_divide(x1,</span> <span class="pre">x2)</span></code>.
-This is a scalar if both <cite>x1</cite> and <cite>x2</cite> are scalars.</p>
-</dd>
-</dl>
-<p>floor_divide : Equivalent of Python <code class="docutils literal notranslate"><span class="pre">//</span></code> operator.
-divmod : Simultaneous floor division and remainder.
-fmod : Equivalent of the MATLAB <code class="docutils literal notranslate"><span class="pre">rem</span></code> function.
-divide, floor</p>
-<p>Returns 0 when <cite>x2</cite> is 0 and both <cite>x1</cite> and <cite>x2</cite> are (arrays of)
-integers.
-<code class="docutils literal notranslate"><span class="pre">mod</span></code> is an alias of <code class="docutils literal notranslate"><span class="pre">remainder</span></code>.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">remainder</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
-<span class="go">array([0, 1])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">remainder</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">7</span><span class="p">),</span> <span class="mi">5</span><span class="p">)</span>
-<span class="go">array([0, 1, 2, 3, 4, 0, 1])</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="py function">
 <dt id="dpnp.repeat">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">repeat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">repeats</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_manipulation.html#repeat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.repeat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Repeat elements of an array.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.right_shift">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">right_shift</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_bitwise.html#right_shift"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.right_shift" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shift the bits of an integer to the right.</p>
+<p>Bits are shifted to the right x2.</p>
+<dl class="simple">
+<dt>x1, x2: array_like or int</dt><dd><p>Input values.</p>
+</dd>
+<dt>x1, x2: array_like or int</dt><dd><p>Number of bits to remove at the right of x1.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>out: ndarray or int</dt><dd><p>Output array or scalar if both x1 and x2 are scalars.</p>
+</dd>
+</dl>
+<p>left_shift, binary_repr</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.rollaxis">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">rollaxis</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">axis</span></em>, <em class="sig-param"><span class="n">start</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_manipulation.html#rollaxis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.rollaxis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Roll the specified axis backwards, until it lies in a given position.</p>
+<dl class="simple">
+<dt>a: array_like</dt><dd><p>Input array.</p>
+</dd>
+<dt>axis: int</dt><dd><p>The axis to be rolled. The positions of the other axes do not change relative to one another.</p>
+</dd>
+<dt>start: int, optional</dt><dd><p>When start &lt;= axis, the axis is rolled back until it lies in this position.
+When start &gt; axis, the axis is rolled until it lies before this position.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>out: ndarray</dt><dd><p>Output array.</p>
+</dd>
+</dl>
+<p>moveaxis, roll</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.sign">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">sign</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#sign"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.sign" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the absolute values element-wise.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.sign()</span></code></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -1804,7 +2580,7 @@ array([[1, 4],</p>
 
 <dl class="py function">
 <dt id="dpnp.subtract">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">subtract</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#subtract"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.subtract" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">subtract</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#subtract"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.subtract" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subtract arguments, element-wise.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1827,7 +2603,7 @@ This is a scalar if both x1 and x2 are scalars.</p>
 
 <dl class="py function">
 <dt id="dpnp.sum">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">sum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keepdims</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">initial</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">where</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#sum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.sum" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">sum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#sum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.sum" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sum of array elements over a given axis.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -1857,9 +2633,39 @@ This is a scalar if both x1 and x2 are scalars.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="dpnp.tensordot">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">tensordot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="n">axes</span><span class="o">=</span><span class="default_value">2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_linearalgebra.html#tensordot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.tensordot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute tensor dot product along specified axes.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.tensordot()</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt id="dpnp.transpose">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">transpose</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">axes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_manipulation.html#transpose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.transpose" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reverse or permute the axes of an array; returns the modified array.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.true_divide">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">true_divide</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#true_divide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.true_divide" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provide a true division of the inputs, element-wise.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.true_divide()</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.trunc">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">trunc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_mathematical.html#trunc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.trunc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the truncated value of the input, element-wise.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.trunc()</span></code></p>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -1870,6 +2676,13 @@ This is a scalar if both x1 and x2 are scalars.</p>
 <p>x1 : Input array.</p>
 <p>out : Output array.</p>
 <p>rad2deg, deg2rad</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dpnp.vdot">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">vdot</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpnp/dpnp_iface_linearalgebra.html#vdot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.vdot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the dot product of two vectors.</p>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.vdot()</span></code></p>
 </dd></dl>
 
 <dl class="py function">
@@ -1991,8 +2804,10 @@ array([[0, 1, 2],</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="dpnp_backend_api.html" class="btn btn-neutral float-right" title="DPNP C++ backend API Functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-        <a href="index.html" class="btn btn-neutral float-left" title="Intel DPNP" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="DPNP" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

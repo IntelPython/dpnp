@@ -43,6 +43,11 @@ void custom_elemwise_transpose_c(void* array1_in,
                                  void* result1,
                                  size_t size)
 {
+    if (!size)
+    {
+        return;
+    }
+
     cl::sycl::event event;
     _DataType* array1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);

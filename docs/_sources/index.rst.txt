@@ -1,7 +1,6 @@
 .. _index:
 
 ###########
-Intel Numpy
+DPNP
 ###########
-Subclass of numpy.ndarray that uses mkl_malloc
-
+NumPy-like API accelerated with SYCL

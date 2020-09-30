@@ -88,7 +88,8 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../index.html">About dpnp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../numpy_api.html">Numpy API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dpnp_api.html">DPNP API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">DPNP C++ backend API</a></li>
 </ul>
 
             
@@ -199,10 +200,10 @@
 <span class="kn">import</span> <span class="nn">numpy</span>
 
 <span class="kn">from</span> <span class="nn">dpnp.backend</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.random</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.linalg</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dparray</span> <span class="kn">import</span> <span class="n">dparray</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="n">checker_throw_value_error</span><span class="p">,</span> <span class="n">use_origin_backend</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">dpnp.linalg</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">dpnp.random</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">import</span> <span class="nn">collections</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -210,11 +211,11 @@
     <span class="s2">&quot;asnumpy&quot;</span><span class="p">,</span>
     <span class="s2">&quot;dpnp_queue_initialize&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_include&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;matmul&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;remainder&quot;</span>
+    <span class="s2">&quot;matmul&quot;</span>
 <span class="p">]</span>
 
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_arraycreation</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_bitwise</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_counting</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_libmath</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_linearalgebra</span> <span class="kn">import</span> <span class="o">*</span>
@@ -227,6 +228,7 @@
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_trigonometric</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_arraycreation</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__arraycreation</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_bitwise</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__bitwise</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_counting</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__counting</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_libmath</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__libmath</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_linearalgebra</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__linearalgebra</span>
@@ -239,6 +241,7 @@
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_trigonometric</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__trigonometric</span>
 
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__arraycreation</span>
+<span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__bitwise</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__counting</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__libmath</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__linearalgebra</span>
@@ -251,7 +254,7 @@
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__trigonometric</span>
 
 
-<div class="viewcode-block" id="array_equal"><a class="viewcode-back" href="../../numpy_api.html#dpnp.array_equal">[docs]</a><span class="k">def</span> <span class="nf">array_equal</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="array_equal"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.array_equal">[docs]</a><span class="k">def</span> <span class="nf">array_equal</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;True if two arrays have the same shape and elements, False otherwise.</span>
 
 <span class="sd">    Parameters</span>
@@ -274,7 +277,7 @@
     <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="asnumpy"><a class="viewcode-back" href="../../numpy_api.html#dpnp.asnumpy">[docs]</a><span class="k">def</span> <span class="nf">asnumpy</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="asnumpy"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.asnumpy">[docs]</a><span class="k">def</span> <span class="nf">asnumpy</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Returns the NumPy array with input data.</span>
 
 <span class="sd">    Args:</span>
@@ -287,7 +290,7 @@
     <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_include"><a class="viewcode-back" href="../../numpy_api.html#dpnp.get_include">[docs]</a><span class="k">def</span> <span class="nf">get_include</span><span class="p">():</span>
+<div class="viewcode-block" id="get_include"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.get_include">[docs]</a><span class="k">def</span> <span class="nf">get_include</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the directory that contains the DPNP C++ backend \\*.h header files.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -297,7 +300,7 @@
     <span class="k">return</span> <span class="n">dpnp_path</span></div>
 
 
-<div class="viewcode-block" id="matmul"><a class="viewcode-back" href="../../numpy_api.html#dpnp.matmul">[docs]</a><span class="k">def</span> <span class="nf">matmul</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">in_array2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="matmul"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.matmul">[docs]</a><span class="k">def</span> <span class="nf">matmul</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">in_array2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the matrix product of two arrays and is the implementation of</span>
 <span class="sd">    the `@` operator introduced in Python 3.5 following PEP465.</span>
@@ -350,88 +353,6 @@
 
     <span class="c1"># TODO need to return dparray instead ndarray</span>
     <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">input1</span><span class="p">,</span> <span class="n">input2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="remainder"><a class="viewcode-back" href="../../numpy_api.html#dpnp.remainder">[docs]</a><span class="k">def</span> <span class="nf">remainder</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return element-wise remainder of division.</span>
-
-<span class="sd">    Computes the remainder complementary to the `floor_divide` function.  It is</span>
-<span class="sd">    equivalent to the Python modulus operator``x1 % x2`` and has the same sign</span>
-<span class="sd">    as the divisor `x2`. The MATLAB function equivalent to ``np.remainder``</span>
-<span class="sd">    is ``mod``.</span>
-
-<span class="sd">    .. warning::</span>
-
-<span class="sd">    This should not be confused with:</span>
-
-<span class="sd">    * Python 3.7&#39;s `math.remainder` and C&#39;s ``remainder``, which</span>
-<span class="sd">      computes the IEEE remainder, which are the complement to</span>
-<span class="sd">      ``round(x1 / x2)``.</span>
-<span class="sd">    * The MATLAB ``rem`` function and or the C ``%`` operator which is the</span>
-<span class="sd">      complement to ``int(x1 / x2)``.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    x1 : array_like</span>
-<span class="sd">        Dividend array.</span>
-<span class="sd">    x2 : array_like</span>
-<span class="sd">        Divisor array. If ``x1.shape != x2.shape``, they must be broadcastable</span>
-<span class="sd">        to a common shape (which becomes the shape of the output).</span>
-<span class="sd">    out : ndarray, None, or tuple of ndarray and None, optional</span>
-<span class="sd">        A location into which the result is stored. If provided, it must have</span>
-<span class="sd">        a shape that the inputs broadcast to. If not provided or None,</span>
-<span class="sd">        a freshly-allocated array is returned. A tuple (possible only as a</span>
-<span class="sd">        keyword argument) must have length equal to the number of outputs.</span>
-<span class="sd">    where : array_like, optional</span>
-<span class="sd">        This condition is broadcast over the input. At locations where the</span>
-<span class="sd">        condition is True, the `out` array will be set to the ufunc result.</span>
-<span class="sd">        Elsewhere, the `out` array will retain its original value.</span>
-<span class="sd">        Note that if an uninitialized `out` array is created via the default</span>
-<span class="sd">        ``out=None``, locations within it where the condition is False will</span>
-<span class="sd">        remain uninitialized.</span>
-<span class="sd">    **kwargs</span>
-<span class="sd">        For other keyword-only arguments, see the</span>
-<span class="sd">        :ref:`ufunc docs &lt;ufuncs.kwargs&gt;`.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    y : ndarray</span>
-<span class="sd">        The element-wise remainder of the quotient ``floor_divide(x1, x2)``.</span>
-<span class="sd">        This is a scalar if both `x1` and `x2` are scalars.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    floor_divide : Equivalent of Python ``//`` operator.</span>
-<span class="sd">    divmod : Simultaneous floor division and remainder.</span>
-<span class="sd">    fmod : Equivalent of the MATLAB ``rem`` function.</span>
-<span class="sd">    divide, floor</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    Returns 0 when `x2` is 0 and both `x1` and `x2` are (arrays of)</span>
-<span class="sd">    integers.</span>
-<span class="sd">    ``mod`` is an alias of ``remainder``.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; np.remainder([4, 7], [2, 3])</span>
-<span class="sd">    array([0, 1])</span>
-<span class="sd">    &gt;&gt;&gt; np.remainder(np.arange(7), 5)</span>
-<span class="sd">    array([0, 1, 2, 3, 4, 0, 1])</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">remainder</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Intel NumPy remainder(): Unsupported input1=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Intel NumPy remainder(): Unsupported input2=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_remainder</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

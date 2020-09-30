@@ -42,6 +42,11 @@ void custom_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols)
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
+    if (!nrows || !ncols)
+    {
+        return;
+    }
+
     auto policy = oneapi::dpl::execution::make_device_policy<class custom_cov_c_kernel<_DataType>>(DPNP_QUEUE);
 
     _DataType* mean = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(nrows * sizeof(_DataType)));
