@@ -112,8 +112,8 @@ else:
 Set compiler for the project
 """
 # default variables (for Linux)
-_project_compiler = "clang++"
-_project_linker = "clang++"
+_project_compiler = "dpcpp"
+_project_linker = "dpcpp"
 _project_cmplr_flag_sycl_devel = ["-fsycl-device-code-split=per_kernel"]
 _project_cmplr_flag_sycl = ["-fsycl"]
 _project_cmplr_flag_compatibility = ["-Wl,--enable-new-dtags", "-fPIC"]
