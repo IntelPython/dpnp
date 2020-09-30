@@ -14,6 +14,9 @@ if [ ! -z "${MKLROOT}" ]; then
 fi
 
 set -x
+
+##teamcity[testStarted name='dummyTestName' captureStandardOutput='true']
+
 # python setup.py clean
 # python setup.py build_clib
 
