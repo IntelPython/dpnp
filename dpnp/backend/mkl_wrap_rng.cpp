@@ -93,6 +93,33 @@ void mkl_rng_uniform(void* result, long low, long high, size_t size)
     }
 }
 
+// TODO:
+// draft
+template <typename _DataType, typename _Engine>
+void mkl_rng_uniform_1(void * result, long low, long high, size_t size, void * engine)
+{
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+    _Engine* engine1 = reinterpret_cast<_Engine*>(engine);
+
+    // set left bound of distribution
+    const _DataType a = (_DataType(low));
+    // set right bound of distribution
+    const _DataType b = (_DataType(high));
+
+    mkl_rng::uniform<_DataType> distribution(a, b);
+    try
+    {
+        // perform generation
+        mkl_rng::generate(distribution, * engine1, size, result1);
+        DPNP_QUEUE.wait_and_throw();
+    }
+    catch (cl::sycl::exception const& e)
+    {
+        std::cerr << "Caught synchronous SYCL exception during mkl_rng_uniform_mt19937():\n"
+                  << e.what() << "\nOpenCL status: " << e.get_cl_code() << std::endl;
+    }
+}
+
 template void mkl_rng_gaussian<double>(void* result, size_t size);
 template void mkl_rng_gaussian<float>(void* result, size_t size);
 
@@ -100,3 +127,10 @@ template void mkl_rng_gaussian<float>(void* result, size_t size);
 template void mkl_rng_uniform<int>(void* result, long low, long high, size_t size);
 template void mkl_rng_uniform<float>(void* result, long low, long high, size_t size);
 template void mkl_rng_uniform<double>(void* result, long low, long high, size_t size);
+
+template void mkl_rng_uniform_1<int, mkl_rng::mt19937>(void * result, long low, long high,
+                                                       size_t size, void * engine);
+template void mkl_rng_uniform_1<float, mkl_rng::mt19937>(void * result, long low, long high,
+                                                         size_t size, void * engine);
+template void mkl_rng_uniform_1<double, mkl_rng::mt19937>(void * result, long low, long high,
+                                                          size_t size, void * engine);

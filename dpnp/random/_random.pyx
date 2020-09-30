@@ -108,7 +108,7 @@ cdef class RandomState:
 
     def __init__(self, seed=None):
         # TODO:
-        bit_generator = seed
+        bit_generator = None
         seed = 1
 
     def __repr__(self):
