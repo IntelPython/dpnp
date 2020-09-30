@@ -31,7 +31,7 @@ PROJ_ROOT=".."
 echo
 echo =========env==============
 pwd
-sudo apt-get install -y clinfo
+apt install -y clinfo
 clinfo
 clinfo -l
 echo ${SHELL}
