@@ -26,8 +26,6 @@ build:
 test:
     requires:
       - pytest
-    commands:
-      - ./dpnp_run_ci.sh
 
 about:
     license: ISSL
