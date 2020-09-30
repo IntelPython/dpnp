@@ -4,6 +4,7 @@
 # DPNP: NumPy-like API accelerated with SYCL
 
 Full documentation: https://intelpython.github.io/dpnp/
+DPNP C++ backend documentation: https://intelpython.github.io/dpnp/backend_doc/
 
 The project contains:
 - Python interface with NumPy-like API
