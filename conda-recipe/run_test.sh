@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 #. $RECIPE_DIR/activate_env.sh
 
 if [ ! -z "${ONEAPI_ROOT}" ]; then
@@ -15,6 +13,7 @@ if [ ! -z "${MKLROOT}" ]; then
     conda remove mkl --force -y || true
 fi
 
+set -x
 # python setup.py clean
 # python setup.py build_clib
 
@@ -29,6 +28,10 @@ PROJ_ROOT=".."
 echo
 echo =========env==============
 pwd
+clinfo
+sudo apt-get install -y clinfo
+clinfo
+clinfo -l
 echo ${SHELL}
 python --version
 clang++ --version
