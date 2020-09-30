@@ -1,7 +1,7 @@
-.. _numpy_api:
+.. _dpnp_api:
 
 ###############
-Numpy Functions
+DPNP API Functions
 ###############
 
 .. automodule:: dpnp

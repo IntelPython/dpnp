@@ -88,7 +88,8 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../index.html">About dpnp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../numpy_api.html">Numpy API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dpnp_api.html">DPNP API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">DPNP C++ backend API</a></li>
 </ul>
 
             
@@ -197,23 +198,26 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span>
 
-<span class="kn">import</span> <span class="nn">dpnp</span>
 <span class="kn">from</span> <span class="nn">dpnp.backend</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dparray</span> <span class="kn">import</span> <span class="n">dparray</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="n">checker_throw_value_error</span><span class="p">,</span> <span class="n">use_origin_backend</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">dpnp</span>
 <span class="kn">import</span> <span class="nn">dpnp.config</span> <span class="k">as</span> <span class="nn">config</span>
 
+
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s1">&#39;dot&#39;</span><span class="p">,</span>
+    <span class="s2">&quot;dot&quot;</span><span class="p">,</span>
     <span class="s2">&quot;einsum&quot;</span><span class="p">,</span>
     <span class="s2">&quot;einsum_path&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;inner&quot;</span><span class="p">,</span>
     <span class="s2">&quot;kron&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;multi_dot&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;outer&quot;</span>
+    <span class="s2">&quot;outer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tensordot&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;vdot&quot;</span>
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="dot"><a class="viewcode-back" href="../../numpy_api.html#dpnp.dot">[docs]</a><span class="k">def</span> <span class="nf">dot</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">in_array2</span><span class="p">,</span> <span class="n">out_array</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="dot"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.dot">[docs]</a><span class="k">def</span> <span class="nf">dot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Dot product of two arrays. Specifically,</span>
 
@@ -258,25 +262,26 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">()):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">in_array2</span><span class="p">)</span>
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+    <span class="n">is_x2_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">out_array</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;dot&quot;</span><span class="p">,</span> <span class="s2">&quot;out_array&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">out_array</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="n">is_x2_dparray</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">dim1</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">ndim</span>
+        <span class="n">dim2</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">ndim</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">in_array1</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">in_array2</span><span class="o">.</span><span class="n">dtype</span><span class="p">):</span>
-        <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;dot&quot;</span><span class="p">,</span> <span class="s2">&quot;types&quot;</span><span class="p">,</span> <span class="n">in_array2</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">in_array1</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">dim1</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">dim2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">dim1</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">dim2</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span><span class="p">):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_dot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_dot</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">in_array2</span><span class="p">)</span>
+            <span class="c1"># scalar returned</span>
+            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,):</span>
+                <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
-    <span class="c1"># scalar returned</span>
-    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,):</span>
-        <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">result</span>
 
-    <span class="k">return</span> <span class="n">result</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">dot</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="einsum"><a class="viewcode-back" href="../../numpy_api.html#dpnp.einsum">[docs]</a><span class="k">def</span> <span class="nf">einsum</span><span class="p">(</span><span class="o">*</span><span class="n">operands</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="einsum"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.einsum">[docs]</a><span class="k">def</span> <span class="nf">einsum</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    einsum(subscripts, *operands, dtype=False)</span>
 
@@ -291,19 +296,10 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">new_operands</span> <span class="o">=</span> <span class="p">[]</span>
-
-    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">operands</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-            <span class="n">dpnp_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-            <span class="n">new_operands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dpnp_array</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">new_operands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="o">*</span><span class="n">new_operands</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">einsum</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="einsum_path"><a class="viewcode-back" href="../../numpy_api.html#dpnp.einsum_path">[docs]</a><span class="k">def</span> <span class="nf">einsum_path</span><span class="p">(</span><span class="o">*</span><span class="n">operands</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="s1">&#39;greedy&#39;</span><span class="p">,</span> <span class="n">einsum_call</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="einsum_path"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.einsum_path">[docs]</a><span class="k">def</span> <span class="nf">einsum_path</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    einsum_path(subscripts, *operands, optimize=&#39;greedy&#39;)</span>
 
@@ -316,19 +312,30 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">new_operands</span> <span class="o">=</span> <span class="p">[]</span>
-
-    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">operands</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-            <span class="n">dpnp_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-            <span class="n">new_operands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dpnp_array</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">new_operands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">einsum_path</span><span class="p">(</span><span class="o">*</span><span class="n">new_operands</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="n">optimize</span><span class="p">,</span> <span class="n">einsum_call</span><span class="o">=</span><span class="n">einsum_call</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">einsum_path</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="kron"><a class="viewcode-back" href="../../numpy_api.html#dpnp.kron">[docs]</a><span class="k">def</span> <span class="nf">kron</span><span class="p">(</span><span class="n">input1</span><span class="p">,</span> <span class="n">input2</span><span class="p">):</span>
+<div class="viewcode-block" id="inner"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.inner">[docs]</a><span class="k">def</span> <span class="nf">inner</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the inner product of two vectors.</span>
+
+<span class="sd">    The input arrays are flattened into 1-D vectors and then it performs inner</span>
+<span class="sd">    product of these vectors.</span>
+
+<span class="sd">    .. seealso:: :func:`numpy.inner`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+    <span class="n">is_x2_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="n">is_x2_dparray</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp_inner</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">inner</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="kron"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.kron">[docs]</a><span class="k">def</span> <span class="nf">kron</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the kronecker product of two arrays.</span>
 
@@ -336,58 +343,10 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="n">input1_n</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">input1</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">input1_n</span> <span class="o">=</span> <span class="n">input1</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="n">input2_n</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">input2</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">input2_n</span> <span class="o">=</span> <span class="n">input2</span>
-
-    <span class="n">result</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">input1_n</span><span class="p">,</span> <span class="n">input2_n</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">result</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">kron</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="multi_dot"><a class="viewcode-back" href="../../numpy_api.html#dpnp.multi_dot">[docs]</a><span class="k">def</span> <span class="nf">multi_dot</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the dot product of two or more arrays in a single function call</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    arrays : sequence of array_like</span>
-<span class="sd">        If the first argument is 1-D it is treated as row vector.</span>
-<span class="sd">        If the last argument is 1-D it is treated as column vector.</span>
-<span class="sd">        The other arguments must be 2-D.</span>
-<span class="sd">    out : ndarray, optional</span>
-<span class="sd">        unsupported</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    output : ndarray</span>
-<span class="sd">        Returns the dot product of the supplied arrays.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :meth:`numpy.multi_dot`</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrays</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;multi_dot&quot;</span><span class="p">,</span> <span class="s2">&quot;arrays&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="s2">&quot;&gt;1&quot;</span><span class="p">)</span>
-
-    <span class="n">result</span> <span class="o">=</span> <span class="n">arrays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">arrays</span><span class="p">[</span><span class="nb">id</span><span class="p">])</span>
-
-    <span class="k">return</span> <span class="n">result</span></div>
-
-
-<div class="viewcode-block" id="outer"><a class="viewcode-back" href="../../numpy_api.html#dpnp.outer">[docs]</a><span class="k">def</span> <span class="nf">outer</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="outer"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.outer">[docs]</a><span class="k">def</span> <span class="nf">outer</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the outer product of two vectors.</span>
 
@@ -401,21 +360,40 @@
     <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
     <span class="n">is_x2_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="n">is_x2_dparray</span> <span class="ow">and</span> <span class="p">(</span><span class="n">out</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="n">is_x2_dparray</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">dpnp_outer</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
 
-    <span class="n">input1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_x1_dparray</span> <span class="k">else</span> <span class="n">x1</span>
-    <span class="n">input2</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_x2_dparray</span> <span class="k">else</span> <span class="n">x2</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">outer</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-    <span class="c1"># TODO need to put dparray memory into NumPy call</span>
-    <span class="n">result_numpy</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">input1</span><span class="p">,</span> <span class="n">input2</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">result_numpy</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">dparray</span><span class="p">(</span><span class="n">result_numpy</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">result_numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">_setitem_scalar</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">result_numpy</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
 
-    <span class="k">return</span> <span class="n">result</span></div>
+<div class="viewcode-block" id="tensordot"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.tensordot">[docs]</a><span class="k">def</span> <span class="nf">tensordot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute tensor dot product along specified axes.</span>
+
+<span class="sd">    .. seealso:: :func:`numpy.tensordot`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+    <span class="n">is_x2_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="n">is_x2_dparray</span> <span class="ow">and</span> <span class="p">(</span><span class="n">axes</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">dpnp_tensordot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>  <span class="c1"># dpnp_matmul</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">tensordot</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="vdot"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.vdot">[docs]</a><span class="k">def</span> <span class="nf">vdot</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the dot product of two vectors.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :meth:`numpy.vdot`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
