@@ -552,8 +552,6 @@ static func_map_t func_map_init()
     fmap[DPNPFuncName::DPNP_FN_RADIANS][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_elemwise_radians_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_RADIANS][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_elemwise_radians_c<double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_RANDOM][eft_DBL][eft_DBL] = {eft_DBL, (void*)mkl_rng_uniform<double>};
-
     fmap[DPNPFuncName::DPNP_FN_RECIP][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_elemwise_recip_c<float>};
     fmap[DPNPFuncName::DPNP_FN_RECIP][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_elemwise_recip_c<double>};
 
