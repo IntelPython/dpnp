@@ -251,6 +251,7 @@ dpnp_backend_c = [
                 "dpnp/backend/custom_kernels.cpp",
                 "dpnp/backend/custom_kernels_elemwise.cpp",
                 "dpnp/backend/custom_kernels_manipulation.cpp",
+                "dpnp/backend/custom_kernels_mathematical.cpp",
                 "dpnp/backend/custom_kernels_reduction.cpp",
                 "dpnp/backend/custom_kernels_searching.cpp",
                 "dpnp/backend/custom_kernels_sorting.cpp",

@@ -97,6 +97,26 @@ template <typename _DataType>
 INP_DLLEXPORT void
     custom_blas_gemm_c(void* array1, void* array2, void* result1, size_t size_m, size_t size_n, size_t size_k);
 
+
+/**
+ * @ingroup BACKEND_API
+ * @brief absolute function.
+ *
+ * @param [in]  array1_in    Input array.
+ *
+ * @param [in]  input_shape  Input shape.
+ *
+ * @param [out] result1      Output array.
+ *
+ * @param [in]  size         Number of elements in input arrays.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_elemwise_absolute_c(void* array1_in,
+                                               const std::vector<long>& input_shape,
+                                               void* result1,
+                                               size_t size);
+
 /**
  * @ingroup BACKEND_API
  * @brief Custom implementation of dot function
