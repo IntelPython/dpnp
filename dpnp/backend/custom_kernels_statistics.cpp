@@ -144,10 +144,16 @@ template <typename _DataType>
 class custom_max_c_kernel;
 
 template <typename _DataType>
-void custom_max_c(void* array1_in, void* result1, size_t size)
+void custom_max_c(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis)
 {
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    size_t size = 1;
+    for (size_t i = 0; i < ndim; ++i)
+    {
+        size *= shape[i];
+    }
 
     auto policy = oneapi::dpl::execution::make_device_policy<class custom_max_c_kernel<_DataType>>(DPNP_QUEUE);
 
@@ -161,15 +167,24 @@ void custom_max_c(void* array1_in, void* result1, size_t size)
 #endif
 }
 
-template void custom_max_c<double>(void* array1_in, void* result1, size_t size);
-template void custom_max_c<float>(void* array1_in, void* result1, size_t size);
-template void custom_max_c<long>(void* array1_in, void* result1, size_t size);
-template void custom_max_c<int>(void* array1_in, void* result1, size_t size);
+template void
+    custom_max_c<double>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+template void
+    custom_max_c<float>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+template void
+    custom_max_c<long>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+template void custom_max_c<int>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
 
 template <typename _DataType, typename _ResultType>
-void custom_mean_c(void* array1_in, void* result1, size_t size)
+void custom_mean_c(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis)
 {
     _ResultType* result = reinterpret_cast<_ResultType*>(result1);
+
+    size_t size = 1;
+    for (size_t i = 0; i < ndim; ++i)
+    {
+        size *= shape[i];
+    }
 
     _DataType* sum = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(1 * sizeof(_DataType)));
 
@@ -184,15 +199,25 @@ void custom_mean_c(void* array1_in, void* result1, size_t size)
 #endif
 }
 
-template void custom_mean_c<double, double>(void* array1_in, void* result1, size_t size);
-template void custom_mean_c<float, float>(void* array1_in, void* result1, size_t size);
-template void custom_mean_c<long, double>(void* array1_in, void* result1, size_t size);
-template void custom_mean_c<int, double>(void* array1_in, void* result1, size_t size);
+template void custom_mean_c<double, double>(
+    void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+template void
+    custom_mean_c<float, float>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+template void
+    custom_mean_c<long, double>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+template void
+    custom_mean_c<int, double>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
 
 template <typename _DataType, typename _ResultType>
-void custom_median_c(void* array1_in, void* result1, size_t size)
+void custom_median_c(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis)
 {
     _ResultType* result = reinterpret_cast<_ResultType*>(result1);
+
+    size_t size = 1;
+    for (size_t i = 0; i < ndim; ++i)
+    {
+        size *= shape[i];
+    }
 
     _DataType* sorted = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
 
@@ -214,19 +239,29 @@ void custom_median_c(void* array1_in, void* result1, size_t size)
 #endif
 }
 
-template void custom_median_c<double, double>(void* array1_in, void* result1, size_t size);
-template void custom_median_c<float, double>(void* array1_in, void* result1, size_t size);
-template void custom_median_c<long, double>(void* array1_in, void* result1, size_t size);
-template void custom_median_c<int, double>(void* array1_in, void* result1, size_t size);
+template void custom_median_c<double, double>(
+    void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+template void custom_median_c<float, double>(
+    void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+template void custom_median_c<long, double>(
+    void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+template void custom_median_c<int, double>(
+    void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
 
 template <typename _DataType>
 class custom_min_c_kernel;
 
 template <typename _DataType>
-void custom_min_c(void* array1_in, void* result1, size_t size)
+void custom_min_c(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis)
 {
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    size_t size = 1;
+    for (size_t i = 0; i < ndim; ++i)
+    {
+        size *= shape[i];
+    }
 
     auto policy = oneapi::dpl::execution::make_device_policy<class custom_min_c_kernel<_DataType>>(DPNP_QUEUE);
 
@@ -240,7 +275,10 @@ void custom_min_c(void* array1_in, void* result1, size_t size)
 #endif
 }
 
-template void custom_min_c<double>(void* array1_in, void* result1, size_t size);
-template void custom_min_c<float>(void* array1_in, void* result1, size_t size);
-template void custom_min_c<long>(void* array1_in, void* result1, size_t size);
-template void custom_min_c<int>(void* array1_in, void* result1, size_t size);
+template void
+    custom_min_c<double>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+template void
+    custom_min_c<float>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+template void
+    custom_min_c<long>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+template void custom_min_c<int>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);

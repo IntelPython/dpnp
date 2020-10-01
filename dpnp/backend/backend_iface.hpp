@@ -221,11 +221,17 @@ INP_DLLEXPORT void custom_cov_c(void* array1_in, void* result1, size_t nrows, si
  *
  * @param [out] result  Output array.
  *
- * @param [in]  size    Number of elements in input array.
+ * @param [in]  shape   Shape of input array.
+ *
+ * @param [in]  ndim    Number of elements in shape.
+ *
+ * @param [in]  axis    Axis.
+ *
+ * @param [in]  naxis   Number of elements in axis.
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_max_c(void* array, void* result, size_t size);
+INP_DLLEXPORT void custom_max_c(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
@@ -235,11 +241,17 @@ INP_DLLEXPORT void custom_max_c(void* array, void* result, size_t size);
  *
  * @param [out] result  Output array.
  *
- * @param [in]  size    Number of elements in input array.
+ * @param [in]  shape   Shape of input array.
+ *
+ * @param [in]  ndim    Number of elements in shape.
+ *
+ * @param [in]  axis    Axis.
+ *
+ * @param [in]  naxis   Number of elements in axis.
  *
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void custom_mean_c(void* array, void* result, size_t size);
+INP_DLLEXPORT void custom_mean_c(void* array, void* result, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
@@ -249,11 +261,17 @@ INP_DLLEXPORT void custom_mean_c(void* array, void* result, size_t size);
  *
  * @param [out] result  Output array.
  *
- * @param [in]  size    Number of elements in input array.
+ * @param [in]  shape   Shape of input array.
+ *
+ * @param [in]  ndim    Number of elements in shape.
+ *
+ * @param [in]  axis    Axis.
+ *
+ * @param [in]  naxis   Number of elements in axis.
  *
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void custom_median_c(void* array, void* result, size_t size);
+INP_DLLEXPORT void custom_median_c(void* array, void* result, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
@@ -263,11 +281,17 @@ INP_DLLEXPORT void custom_median_c(void* array, void* result, size_t size);
  *
  * @param [out] result  Output array.
  *
- * @param [in]  size    Number of elements in input array.
+ * @param [in]  shape   Shape of input array.
+ *
+ * @param [in]  ndim    Number of elements in shape.
+ *
+ * @param [in]  axis    Axis.
+ *
+ * @param [in]  naxis   Number of elements in axis.
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_min_c(void* array, void* result, size_t size);
+INP_DLLEXPORT void custom_min_c(void* array, void* result, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
