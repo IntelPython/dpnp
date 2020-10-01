@@ -48,11 +48,6 @@ __all__ += [
 ctypedef void(*custom_search_1in_1out_func_ptr_t)(void * , void * , size_t)
 
 
-cdef struct custom_math_2in_1out:
-    string return_type  # return type identifier which expected by the `ptr` function
-    custom_search_1in_1out_func_ptr_t ptr  # C function pointer
-
-
 cpdef dparray dpnp_argmax(dparray in_array1):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(in_array1.dtype)
     cdef DPNPFuncType output_type = dpnp_dtype_to_DPNPFuncType(numpy.int64)
