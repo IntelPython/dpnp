@@ -38,8 +38,6 @@ void custom_argmax_c(void* array1_in, void* result1, size_t size)
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _idx_DataType* result = reinterpret_cast<_idx_DataType*>(result1);
 
-    auto queue = DPNP_QUEUE;
-
     auto policy =
         oneapi::dpl::execution::make_device_policy<class custom_argmax_c_kernel<_DataType, _idx_DataType>>(DPNP_QUEUE);
 
@@ -70,8 +68,6 @@ void custom_argmin_c(void* array1_in, void* result1, size_t size)
 {
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _idx_DataType* result = reinterpret_cast<_idx_DataType*>(result1);
-
-    auto queue = DPNP_QUEUE;
 
     auto policy =
         oneapi::dpl::execution::make_device_policy<class custom_argmin_c_kernel<_DataType, _idx_DataType>>(DPNP_QUEUE);
