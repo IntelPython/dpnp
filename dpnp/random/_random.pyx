@@ -86,7 +86,7 @@ cpdef dparray dpnp_random(dims):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RANDOM, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_UNIFORM, param1_type, param1_type)
 
     result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data

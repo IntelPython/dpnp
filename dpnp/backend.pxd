@@ -31,6 +31,7 @@ from dpnp.dparray cimport dparray, dparray_shape_type
 
 cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
     cdef enum DPNPFuncName "DPNPFuncName":
+        DPNP_FN_ABSOLUTE
         DPNP_FN_ADD
         DPNP_FN_ARCCOS
         DPNP_FN_ARCCOSH
@@ -64,14 +65,17 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_LOG1P
         DPNP_FN_LOG2
         DPNP_FN_MATMUL
+        DPNP_FN_MAX
         DPNP_FN_MAXIMUM
+        DPNP_FN_MEAN
+        DPNP_FN_MEDIAN
+        DPNP_FN_MIN
         DPNP_FN_MINIMUM
         DPNP_FN_MULTIPLY
         DPNP_FN_POWER
         DPNP_FN_PROD
         DPNP_FN_UNIFORM
         DPNP_FN_RADIANS
-        DPNP_FN_RANDOM
         DPNP_FN_RECIP
         DPNP_FN_SIGN
         DPNP_FN_SIN
@@ -119,9 +123,9 @@ cdef extern from "backend/backend_iface.hpp":
 
 
 # C function pointer to the C library template functions
-ctypedef void(*fptr_1in_1out_t)(void *, void * , size_t)
-ctypedef void(*fptr_2in_1out_t)(void *, void*, void*, size_t)
-ctypedef void(*fptr_blas_gemm_2in_1out_t)(void *, void *, void *, size_t, size_t, size_t)
+ctypedef void(*fptr_1in_1out_t)(void * , void * , size_t)
+ctypedef void(*fptr_2in_1out_t)(void * , void*, void*, size_t)
+ctypedef void(*fptr_blas_gemm_2in_1out_t)(void * , void * , void * , size_t, size_t, size_t)
 
 cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shape_type result_shape)
 cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, dparray_shape_type result_shape)

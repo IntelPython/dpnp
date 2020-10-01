@@ -97,6 +97,26 @@ template <typename _DataType>
 INP_DLLEXPORT void
     custom_blas_gemm_c(void* array1, void* array2, void* result1, size_t size_m, size_t size_n, size_t size_k);
 
+
+/**
+ * @ingroup BACKEND_API
+ * @brief absolute function.
+ *
+ * @param [in]  array1_in    Input array.
+ *
+ * @param [in]  input_shape  Input shape.
+ *
+ * @param [out] result1      Output array.
+ *
+ * @param [in]  size         Number of elements in input arrays.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_elemwise_absolute_c(void* array1_in,
+                                               const std::vector<long>& input_shape,
+                                               void* result1,
+                                               size_t size);
+
 /**
  * @ingroup BACKEND_API
  * @brief Custom implementation of dot function
@@ -212,6 +232,86 @@ INP_DLLEXPORT void custom_sort_c(void* array, void* result, size_t size);
  */
 template <typename _DataType>
 INP_DLLEXPORT void custom_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief MKL implementation of max function
+ *
+ * @param [in]  array   Input array with data.
+ *
+ * @param [out] result  Output array.
+ *
+ * @param [in]  shape   Shape of input array.
+ *
+ * @param [in]  ndim    Number of elements in shape.
+ *
+ * @param [in]  axis    Axis.
+ *
+ * @param [in]  naxis   Number of elements in axis.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_max_c(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief MKL implementation of mean function
+ *
+ * @param [in]  array   Input array with data.
+ *
+ * @param [out] result  Output array.
+ *
+ * @param [in]  shape   Shape of input array.
+ *
+ * @param [in]  ndim    Number of elements in shape.
+ *
+ * @param [in]  axis    Axis.
+ *
+ * @param [in]  naxis   Number of elements in axis.
+ *
+ */
+template <typename _DataType, typename _ResultType>
+INP_DLLEXPORT void custom_mean_c(void* array, void* result, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief MKL implementation of median function
+ *
+ * @param [in]  array   Input array with data.
+ *
+ * @param [out] result  Output array.
+ *
+ * @param [in]  shape   Shape of input array.
+ *
+ * @param [in]  ndim    Number of elements in shape.
+ *
+ * @param [in]  axis    Axis.
+ *
+ * @param [in]  naxis   Number of elements in axis.
+ *
+ */
+template <typename _DataType, typename _ResultType>
+INP_DLLEXPORT void custom_median_c(void* array, void* result, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief MKL implementation of min function
+ *
+ * @param [in]  array   Input array with data.
+ *
+ * @param [out] result  Output array.
+ *
+ * @param [in]  shape   Shape of input array.
+ *
+ * @param [in]  ndim    Number of elements in shape.
+ *
+ * @param [in]  axis    Axis.
+ *
+ * @param [in]  naxis   Number of elements in axis.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_min_c(void* array, void* result, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API

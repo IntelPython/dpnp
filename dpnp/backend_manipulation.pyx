@@ -44,8 +44,8 @@ __all__ += [
 
 
 # C function pointer to the C library template functions
-ctypedef void(*fptr_custom_elemwise_transpose_1in_1out_t)(void *, dparray_shape_type &, dparray_shape_type &,
-                                                          dparray_shape_type &, void *, size_t)
+ctypedef void(*fptr_custom_elemwise_transpose_1in_1out_t)(void * , dparray_shape_type & , dparray_shape_type & ,
+                                                          dparray_shape_type &, void * , size_t)
 
 
 cpdef dparray dpnp_copyto(dparray dst, dparray src, where=True):
@@ -139,7 +139,7 @@ cpdef dparray dpnp_transpose(dparray array1, axes=None):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRANSPOSE, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(result_shape, dtype=result_type)
 
