@@ -31,6 +31,7 @@ from dpnp.dparray cimport dparray, dparray_shape_type
 
 cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
     cdef enum DPNPFuncName "DPNPFuncName":
+        DPNP_FN_ABSOLUTE
         DPNP_FN_ADD
         DPNP_FN_ARCCOS
         DPNP_FN_ARCCOSH
