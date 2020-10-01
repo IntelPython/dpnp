@@ -75,7 +75,6 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_PROD
         DPNP_FN_UNIFORM
         DPNP_FN_RADIANS
-        DPNP_FN_RANDOM
         DPNP_FN_RECIP
         DPNP_FN_SIGN
         DPNP_FN_SIN
