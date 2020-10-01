@@ -139,3 +139,108 @@ void custom_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols)
 }
 
 template void custom_cov_c<double>(void* array1_in, void* result1, size_t nrows, size_t ncols);
+
+template <typename _DataType>
+class custom_max_c_kernel;
+
+template <typename _DataType>
+void custom_max_c(void* array1_in, void* result1, size_t size)
+{
+    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    auto policy = oneapi::dpl::execution::make_device_policy<class custom_max_c_kernel<_DataType>>(DPNP_QUEUE);
+
+    _DataType* res = std::max_element(policy, array_1, array_1 + size);
+    policy.queue().wait();
+
+    result[0] = *res;
+
+#if 0
+    std::cout << "max result " << result[0] << "\n";
+#endif
+}
+
+template void custom_max_c<double>(void* array1_in, void* result1, size_t size);
+template void custom_max_c<float>(void* array1_in, void* result1, size_t size);
+template void custom_max_c<long>(void* array1_in, void* result1, size_t size);
+template void custom_max_c<int>(void* array1_in, void* result1, size_t size);
+
+template <typename _DataType, typename _ResultType>
+void custom_mean_c(void* array1_in, void* result1, size_t size)
+{
+    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
+
+    _DataType* sum = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(1 * sizeof(_DataType)));
+
+    custom_sum_c<_DataType>(array1_in, sum, size);
+
+    result[0] = (_ResultType)(sum[0]) / size;
+
+    dpnp_memory_free_c(sum);
+
+#if 0
+    std::cout << "mean result " << result[0] << "\n";
+#endif
+}
+
+template void custom_mean_c<double, double>(void* array1_in, void* result1, size_t size);
+template void custom_mean_c<float, float>(void* array1_in, void* result1, size_t size);
+template void custom_mean_c<long, double>(void* array1_in, void* result1, size_t size);
+template void custom_mean_c<int, double>(void* array1_in, void* result1, size_t size);
+
+template <typename _DataType, typename _ResultType>
+void custom_median_c(void* array1_in, void* result1, size_t size)
+{
+    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
+
+    _DataType* sorted = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+
+    custom_sort_c<_DataType>(array1_in, sorted, size);
+
+    if (size % 2 == 0)
+    {
+        result[0] = (_ResultType)(sorted[size / 2] + sorted[size / 2 - 1]) / 2;
+    }
+    else
+    {
+        result[0] = sorted[(size - 1) / 2];
+    }
+
+    dpnp_memory_free_c(sorted);
+
+#if 0
+    std::cout << "median result " << result[0] << "\n";
+#endif
+}
+
+template void custom_median_c<double, double>(void* array1_in, void* result1, size_t size);
+template void custom_median_c<float, double>(void* array1_in, void* result1, size_t size);
+template void custom_median_c<long, double>(void* array1_in, void* result1, size_t size);
+template void custom_median_c<int, double>(void* array1_in, void* result1, size_t size);
+
+template <typename _DataType>
+class custom_min_c_kernel;
+
+template <typename _DataType>
+void custom_min_c(void* array1_in, void* result1, size_t size)
+{
+    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    auto policy = oneapi::dpl::execution::make_device_policy<class custom_min_c_kernel<_DataType>>(DPNP_QUEUE);
+
+    _DataType* res = std::min_element(policy, array_1, array_1 + size);
+    policy.queue().wait();
+
+    result[0] = *res;
+
+#if 0
+    std::cout << "min result " << result[0] << "\n";
+#endif
+}
+
+template void custom_min_c<double>(void* array1_in, void* result1, size_t size);
+template void custom_min_c<float>(void* array1_in, void* result1, size_t size);
+template void custom_min_c<long>(void* array1_in, void* result1, size_t size);
+template void custom_min_c<int>(void* array1_in, void* result1, size_t size);

@@ -215,6 +215,62 @@ INP_DLLEXPORT void custom_cov_c(void* array1_in, void* result1, size_t nrows, si
 
 /**
  * @ingroup BACKEND_API
+ * @brief MKL implementation of max function
+ *
+ * @param [in]  array   Input array with data.
+ *
+ * @param [out] result  Output array.
+ *
+ * @param [in]  size    Number of elements in input array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_max_c(void* array, void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief MKL implementation of mean function
+ *
+ * @param [in]  array   Input array with data.
+ *
+ * @param [out] result  Output array.
+ *
+ * @param [in]  size    Number of elements in input array.
+ *
+ */
+template <typename _DataType, typename _ResultType>
+INP_DLLEXPORT void custom_mean_c(void* array, void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief MKL implementation of median function
+ *
+ * @param [in]  array   Input array with data.
+ *
+ * @param [out] result  Output array.
+ *
+ * @param [in]  size    Number of elements in input array.
+ *
+ */
+template <typename _DataType, typename _ResultType>
+INP_DLLEXPORT void custom_median_c(void* array, void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief MKL implementation of min function
+ *
+ * @param [in]  array   Input array with data.
+ *
+ * @param [out] result  Output array.
+ *
+ * @param [in]  size    Number of elements in input array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_min_c(void* array, void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief MKL implementation of argmax function
  *
  * @param [in]  array   Input array with data.

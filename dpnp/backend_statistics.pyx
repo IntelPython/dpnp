@@ -51,7 +51,11 @@ __all__ += [
 
 
 # C function pointer to the C library template functions
-ctypedef void(*fptr_custom_cov_1in_1out_t)(void *, void *, size_t, size_t)
+ctypedef void(*fptr_custom_cov_1in_1out_t)(void * , void * , size_t, size_t)
+
+
+# C function pointer to the C library template functions
+ctypedef void(*custom_statistic_1in_1out_func_ptr_t)(void * , void * , size_t)
 
 
 cpdef dpnp_average(dparray x1):
@@ -87,7 +91,26 @@ cpdef dparray dpnp_cov(dparray array1):
     return result
 
 
+cpdef dparray _dpnp_max(dparray input):
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
+    cdef DPNPFuncType output_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MAX, param1_type, output_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    cdef dparray result = dparray((1,), dtype=result_type)
+
+    cdef custom_statistic_1in_1out_func_ptr_t func = <custom_statistic_1in_1out_func_ptr_t > kernel_data.ptr
+
+    func(input.get_data(), result.get_data(), input.size)
+
+    return result
+
+
 cpdef dparray dpnp_max(dparray input, axis):
+    if axis is None:
+        return _dpnp_max(input)
+
     cdef dparray_shape_type shape_input = input.shape
     cdef long size_input = input.size
     if isinstance(axis, int):
@@ -166,7 +189,26 @@ cpdef dparray dpnp_max(dparray input, axis):
     return dpnp_result_array
 
 
+cpdef dparray _dpnp_mean(dparray input):
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
+    cdef DPNPFuncType output_type = dpnp_dtype_to_DPNPFuncType(numpy.float64 if input.dtype != numpy.float32 else numpy.float32)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MEAN, param1_type, output_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    cdef dparray result = dparray((1,), dtype=result_type)
+
+    cdef custom_statistic_1in_1out_func_ptr_t func = <custom_statistic_1in_1out_func_ptr_t > kernel_data.ptr
+
+    func(input.get_data(), result.get_data(), input.size)
+
+    return result
+
+
 cpdef dparray dpnp_mean(dparray input, axis):
+    if axis is None:
+        return _dpnp_mean(input)
+
     cdef long size_input = input.size
     cdef dparray_shape_type shape_input = input.shape
 
@@ -265,22 +307,43 @@ cpdef dparray dpnp_mean(dparray input, axis):
     dpnp_result_array = dpnp_array.reshape(output_shape)
     return dpnp_result_array / del_
 
+
 cpdef dparray dpnp_median(dparray array1):
-    cdef dparray sorted = call_fptr_1in_1out(DPNP_FN_SORT, array1, array1.shape)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
+    cdef DPNPFuncType output_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
-    cdef size_t size = array1.size
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MEDIAN, param1_type, output_type)
 
-    cdef dparray result = dparray((1,), dtype=numpy.float64)
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    cdef dparray result = dparray((1,), dtype=result_type)
 
-    if size % 2 == 0:
-        result[0] = (sorted[size / 2] + sorted[size / 2 - 1]) / 2
-    else:
-        result[0] = sorted[(size - 1) / 2]
+    cdef custom_statistic_1in_1out_func_ptr_t func = <custom_statistic_1in_1out_func_ptr_t > kernel_data.ptr
+
+    func(array1.get_data(), result.get_data(), array1.size)
+
+    return result
+
+
+cpdef dparray _dpnp_min(dparray input):
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
+    cdef DPNPFuncType output_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MIN, param1_type, output_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    cdef dparray result = dparray((1,), dtype=result_type)
+
+    cdef custom_statistic_1in_1out_func_ptr_t func = <custom_statistic_1in_1out_func_ptr_t > kernel_data.ptr
+
+    func(input.get_data(), result.get_data(), input.size)
 
     return result
 
 
 cpdef dparray dpnp_min(dparray input, axis):
+    if axis is None:
+        return _dpnp_min(input)
+
     cdef dparray_shape_type shape_input = input.shape
     cdef long size_input = input.size
     if isinstance(axis, int):
