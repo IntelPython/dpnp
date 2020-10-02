@@ -341,6 +341,52 @@ INP_DLLEXPORT void custom_argmax_c(void* array, void* result, size_t size);
 template <typename _DataType, typename _idx_DataType>
 INP_DLLEXPORT void custom_argmin_c(void* array, void* result, size_t size);
 
+/**
+ * @ingroup BACKEND_API
+ * @brief MKL implementation of std function
+ *
+ * @param [in]  array   Input array with data.
+ *
+ * @param [out] result  Output array with indeces.
+ * 
+ * @param [in]  shape   Shape of input array.
+ *
+ * @param [in]  ndim    Number of elements in shape.
+ *
+ * @param [in]  axis    Axis.
+ *
+ * @param [in]  naxis   Number of elements in axis.
+ *
+ * @param [in]  ddof    Delta degrees of freedom.
+ *
+ */
+template <typename _DataType, typename _ResultType>
+INP_DLLEXPORT void custom_std_c(void* array, void* result, size_t* shape,
+                                size_t ndim, size_t* axis, size_t naxis, size_t ddof);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief MKL implementation of var function
+ *
+ * @param [in]  array   Input array with data.
+ *
+ * @param [out] result  Output array with indeces.
+ * 
+ * @param [in]  shape   Shape of input array.
+ *
+ * @param [in]  ndim    Number of elements in shape.
+ *
+ * @param [in]  axis    Axis.
+ *
+ * @param [in]  naxis   Number of elements in axis.
+ *
+ * @param [in]  ddof    Delta degrees of freedom.
+ *
+ */
+template <typename _DataType, typename _ResultType>
+INP_DLLEXPORT void custom_var_c(void* array, void* result, size_t* shape,
+                                size_t ndim, size_t* axis, size_t naxis, size_t ddof);
+
 #if 0 // Example for OpenCL kernel
 template <typename _DataType>
 void custom_dgemm_c_opencl(void* array_1, void* array_2, void* result_1, size_t size);

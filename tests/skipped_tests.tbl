@@ -1170,25 +1170,9 @@ tests/third_party/cupy/statistics_tests/test_meanvar.py::TestAverage::test_avera
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestAverage::test_average_axis_weights
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestAverage::test_average_weights
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestAverage::test_returned
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_std_all
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_std_all_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_std_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_std_axis_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_var_all
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_var_all_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_var_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_var_axis_ddof
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_mean_all_complex_dtype
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_mean_all_float64_dtype
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_mean_all_int64_dtype
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_std_all
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_std_all_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_std_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_std_axis_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_all
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_all_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_axis_ddof
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_0_{axis=(0, 1), keepdims=True, shape=(3, 4, 5)}::test_median_axis_sequence
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_1_{axis=(0, 1), keepdims=False, shape=(3, 4, 5)}::test_median_axis_sequence
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_2_{axis=(0, -1), keepdims=True, shape=(3, 4, 5)}::test_median_axis_sequence

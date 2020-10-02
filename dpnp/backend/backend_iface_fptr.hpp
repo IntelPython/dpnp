@@ -112,12 +112,14 @@ enum class DPNPFuncName : size_t
     DPNP_FN_SORT,      /**< Used in numpy.sort() implementation  */
     DPNP_FN_SQRT,      /**< Used in numpy.sqrt() implementation  */
     DPNP_FN_SQUARE,    /**< Used in numpy.square() implementation  */
+    DPNP_FN_STD,       /**< Used in numpy.std() implementation  */
     DPNP_FN_SUBTRACT,  /**< Used in numpy.subtract() implementation  */
     DPNP_FN_SUM,       /**< Used in numpy.sum() implementation  */
     DPNP_FN_TAN,       /**< Used in numpy.tan() implementation  */
     DPNP_FN_TANH,      /**< Used in numpy.tanh() implementation  */
     DPNP_FN_TRANSPOSE, /**< Used in numpy.transpose() implementation  */
     DPNP_FN_TRUNC,     /**< Used in numpy.trunc() implementation  */
+    DPNP_FN_VAR,       /**< Used in numpy.var() implementation  */
     DPNP_FN_LAST       /**< The latest element of the enumeration */
 };
 
