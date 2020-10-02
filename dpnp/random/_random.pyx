@@ -44,7 +44,7 @@ from dpnp.dpnp_utils cimport *
 
 
 ctypedef void(*fptr_mkl_rng_gaussian_1out_t)(void *, size_t)
-ctypedef void(*fptr_mkl_rng_uniform_1out_t)(void *, long, long, size_t)
+ctypedef void(*fptr_mkl_rng_uniform_1out_t)(void *, long, long, size_t, void *)
 
 
 cpdef dparray dpnp_randn(dims):
@@ -94,7 +94,8 @@ cpdef dparray dpnp_random(dims):
 
     cdef fptr_mkl_rng_uniform_1out_t func = <fptr_mkl_rng_uniform_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), low, high, result.size)
+    # ~~~~ last is result.get_data()
+    func(result.get_data(), low, high, result.size, result.get_data())
 
     return result
 
@@ -120,7 +121,8 @@ cpdef dparray dpnp_uniform(long low, long high, size, dtype=numpy.int32):
 
     cdef fptr_mkl_rng_uniform_1out_t func = <fptr_mkl_rng_uniform_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), low, high, result.size)
+    # ~~~~ last is result.get_data()
+    func(result.get_data(), low, high, result.size, result.get_data())
 
     return result
 
@@ -134,6 +136,9 @@ cdef class RandomState:
         # TODO:
         bit_generator = None
         seed = 1
+        cdef size_t seed_ = 1
+        cdef void * rng_engine = <void *>0
+        rng_engine_init(seed_, rng_engine)
 
     def __repr__(self):
         return self.__str__() + ' at 0x{:X}'.format(id(self))

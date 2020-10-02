@@ -414,6 +414,22 @@ INP_DLLEXPORT void custom_elemwise_transpose_c(void* array1_in,
 template <typename _DataType>
 INP_DLLEXPORT void mkl_rng_gaussian(void* result, size_t size);
 
+// /**
+//  * @ingroup BACKEND_API
+//  * @brief MKL implementation of random number generator (uniform distribution)
+//  *
+//  * @param [in]  low    Left bound of array values.
+//  *
+//  * @param [in]  high   Right bound of array values.
+//  *
+//  * @param [in]  size   Number of elements in `result` array.
+//  *
+//  * @param [out] result Output array.
+//  *
+//  */
+// template <typename _DataType>
+// INP_DLLEXPORT void mkl_rng_uniform(void* result, long low, long high, size_t size);
+
 /**
  * @ingroup BACKEND_API
  * @brief MKL implementation of random number generator (uniform distribution)
@@ -424,10 +440,20 @@ INP_DLLEXPORT void mkl_rng_gaussian(void* result, size_t size);
  *
  * @param [in]  size   Number of elements in `result` array.
  *
+ * @param [in]  engine Basic random number generator.
+ *
  * @param [out] result Output array.
  *
  */
-template <typename _DataType>
-INP_DLLEXPORT void mkl_rng_uniform(void* result, long low, long high, size_t size);
+template <typename _DataType, typename _Engine>
+INP_DLLEXPORT void mkl_rng_uniform(void * result, long low, long high, size_t size, void * engine);
+
+
+/**
+ * TODO~~~
+ *
+ */
+
+void rng_engine_init(size_t seed, void * engine);
 
 #endif // BACKEND_IFACE_H

@@ -23,56 +23,10 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#ifndef RNG_ENGINE_H
-#define RNG_ENGINE_H
+#include "rng_engine.hpp"
+#include <backend_iface.hpp>
 
-#include <mkl_sycl.hpp>
-
-#include "backend_utils.hpp"
-#include "queue_sycl.hpp"
-
-namespace mkl_rng = oneapi::mkl::rng;
-
-/**
- * This is 
- * TODO:
- *
- */
-
-class engine_rng
+void rng_engine_init(size_t seed, void * engine)
 {
-    static mkl_rng::mt19937* mt19937_engine;
-    static size_t seed;
-
-public:
-    engine_rng()
-    {
-        // TODO:
-        // choose engine as is in numpy
-        // seed number
-        size_t seed = std::time(nullptr);
-        mkl_rng::mt19937 engine(DPNP_QUEUE, seed);
-        mt19937_engine = &engine;
-        // mt19937_engine = new mkl_rng::mt19937 engine(DPNP_QUEUE, seed)
-    }
-
-    virtual ~engine_rng()
-    {
-        delete mt19937_engine;
-        mt19937_engine = nullptr;
-    }
-
-    /**
-     * Explicitly disallow copying
-     */
-    engine_rng(const engine_rng&) = delete;
-    engine_rng& operator=(const engine_rng&) = delete;
-
-    static mkl_rng::mt19937& get_engine()
-    {
-        return * mt19937_engine;
-    }
-    
-};
-
-#endif // RNG_ENGINE_H
+    engine = new engine_rng();
+}
