@@ -56,7 +56,9 @@ __all__ = [
     'max',
     'mean',
     'median',
-    'min'
+    'min',
+    'std',
+    'var',
 ]
 
 
@@ -616,3 +618,248 @@ def min(input, axis=None, out=None):
             result._setitem_scalar(i, result_numpy.item(i))
 
     return result
+
+def std(a, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue):
+    """
+    Compute the standard deviation along the specified axis.
+
+    Returns the standard deviation, a measure of the spread of a distribution,
+    of the array elements. The standard deviation is computed for the
+    flattened array by default, otherwise over the specified axis.
+
+    Parameters
+    ----------
+    a : array_like
+        Calculate the standard deviation of these values.
+    axis : None or int or tuple of ints, optional
+        Axis or axes along which the standard deviation is computed. The
+        default is to compute the standard deviation of the flattened array.
+
+        .. versionadded:: 1.7.0
+
+        If this is a tuple of ints, a standard deviation is performed over
+        multiple axes, instead of a single axis or all the axes as before.
+    dtype : dtype, optional
+        Type to use in computing the standard deviation. For arrays of
+        integer type the default is float64, for arrays of float types it is
+        the same as the array type.
+    out : ndarray, optional
+        Alternative output array in which to place the result. It must have
+        the same shape as the expected output but the type (of the calculated
+        values) will be cast if necessary.
+    ddof : int, optional
+        Means Delta Degrees of Freedom.  The divisor used in calculations
+        is ``N - ddof``, where ``N`` represents the number of elements.
+        By default `ddof` is zero.
+    keepdims : bool, optional
+        If this is set to True, the axes which are reduced are left
+        in the result as dimensions with size one. With this option,
+        the result will broadcast correctly against the input array.
+        If the default value is passed, then `keepdims` will not be
+        passed through to the `std` method of sub-classes of
+        `ndarray`, however any non-default value will be.  If the
+        sub-class' method does not implement `keepdims` any
+        exceptions will be raised.
+
+    Returns
+    -------
+    standard_deviation : ndarray, see dtype parameter above.
+        If `out` is None, return a new array containing the standard deviation,
+        otherwise return a reference to the output array.
+
+    See Also
+    --------
+    var, mean, nanmean, nanstd, nanvar
+    ufuncs-output-type
+
+    Notes
+    -----
+    The standard deviation is the square root of the average of the squared
+    deviations from the mean, i.e., ``std = sqrt(mean(abs(x - x.mean())**2))``.
+
+    The average squared deviation is normally calculated as
+    ``x.sum() / N``, where ``N = len(x)``.  If, however, `ddof` is specified,
+    the divisor ``N - ddof`` is used instead. In standard statistical
+    practice, ``ddof=1`` provides an unbiased estimator of the variance
+    of the infinite population. ``ddof=0`` provides a maximum likelihood
+    estimate of the variance for normally distributed variables. The
+    standard deviation computed in this function is the square root of
+    the estimated variance, so even with ``ddof=1``, it will not be an
+    unbiased estimate of the standard deviation per se.
+
+    Note that, for complex numbers, `std` takes the absolute
+    value before squaring, so that the result is always real and nonnegative.
+
+    For floating-point input, the *std* is computed using the same
+    precision the input has. Depending on the input data, this can cause
+    the results to be inaccurate, especially for float32 (see example below).
+    Specifying a higher-accuracy accumulator using the `dtype` keyword can
+    alleviate this issue.
+
+    Examples
+    --------
+    >>> a = np.array([[1, 2], [3, 4]])
+    >>> np.std(a)
+    1.1180339887498949 # may vary
+    >>> np.std(a, axis=0)
+    array([1.,  1.])
+    >>> np.std(a, axis=1)
+    array([0.5,  0.5])
+
+    In single precision, std() can be inaccurate:
+
+    >>> a = np.zeros((2, 512*512), dtype=np.float32)
+    >>> a[0, :] = 1.0
+    >>> a[1, :] = 0.1
+    >>> np.std(a)
+    0.45000005
+
+    Computing the standard deviation in float64 is more accurate:
+
+    >>> np.std(a, dtype=np.float64)
+    0.44999999925494177 # may vary
+
+    """
+
+    if not use_origin_backend(a):
+        if not isinstance(a, dparray):
+            pass
+        elif axis is not None:
+            pass
+        elif dtype is not None:
+            pass
+        elif out is not None:
+            pass
+        elif keepdims is not numpy._NoValue:
+            pass
+        else:
+            result = dpnp_std(a, ddof)
+            if result.shape == (1,):
+                return result.dtype.type(result[0])
+
+            return result
+
+    return call_origin(numpy.std, a, axis, dtype, out, ddof, keepdims)
+
+def var(a, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue):
+    """
+    Compute the variance along the specified axis.
+
+    Returns the variance of the array elements, a measure of the spread of a
+    distribution.  The variance is computed for the flattened array by
+    default, otherwise over the specified axis.
+
+    Parameters
+    ----------
+    a : array_like
+        Array containing numbers whose variance is desired.  If `a` is not an
+        array, a conversion is attempted.
+    axis : None or int or tuple of ints, optional
+        Axis or axes along which the variance is computed.  The default is to
+        compute the variance of the flattened array.
+
+        .. versionadded:: 1.7.0
+
+        If this is a tuple of ints, a variance is performed over multiple axes,
+        instead of a single axis or all the axes as before.
+    dtype : data-type, optional
+        Type to use in computing the variance.  For arrays of integer type
+        the default is `float64`; for arrays of float types it is the same as
+        the array type.
+    out : ndarray, optional
+        Alternate output array in which to place the result.  It must have
+        the same shape as the expected output, but the type is cast if
+        necessary.
+    ddof : int, optional
+        "Delta Degrees of Freedom": the divisor used in the calculation is
+        ``N - ddof``, where ``N`` represents the number of elements. By
+        default `ddof` is zero.
+    keepdims : bool, optional
+        If this is set to True, the axes which are reduced are left
+        in the result as dimensions with size one. With this option,
+        the result will broadcast correctly against the input array.
+
+        If the default value is passed, then `keepdims` will not be
+        passed through to the `var` method of sub-classes of
+        `ndarray`, however any non-default value will be.  If the
+        sub-class' method does not implement `keepdims` any
+        exceptions will be raised.
+
+    Returns
+    -------
+    variance : ndarray, see dtype parameter above
+        If ``out=None``, returns a new array containing the variance;
+        otherwise, a reference to the output array is returned.
+
+    See Also
+    --------
+    std, mean, nanmean, nanstd, nanvar
+    ufuncs-output-type
+
+    Notes
+    -----
+    The variance is the average of the squared deviations from the mean,
+    i.e.,  ``var = mean(abs(x - x.mean())**2)``.
+
+    The mean is normally calculated as ``x.sum() / N``, where ``N = len(x)``.
+    If, however, `ddof` is specified, the divisor ``N - ddof`` is used
+    instead.  In standard statistical practice, ``ddof=1`` provides an
+    unbiased estimator of the variance of a hypothetical infinite population.
+    ``ddof=0`` provides a maximum likelihood estimate of the variance for
+    normally distributed variables.
+
+    Note that for complex numbers, the absolute value is taken before
+    squaring, so that the result is always real and nonnegative.
+
+    For floating-point input, the variance is computed using the same
+    precision the input has.  Depending on the input data, this can cause
+    the results to be inaccurate, especially for `float32` (see example
+    below).  Specifying a higher-accuracy accumulator using the ``dtype``
+    keyword can alleviate this issue.
+
+    Examples
+    --------
+    >>> a = np.array([[1, 2], [3, 4]])
+    >>> np.var(a)
+    1.25
+    >>> np.var(a, axis=0)
+    array([1.,  1.])
+    >>> np.var(a, axis=1)
+    array([0.25,  0.25])
+
+    In single precision, var() can be inaccurate:
+
+    >>> a = np.zeros((2, 512*512), dtype=np.float32)
+    >>> a[0, :] = 1.0
+    >>> a[1, :] = 0.1
+    >>> np.var(a)
+    0.20250003
+
+    Computing the variance in float64 is more accurate:
+
+    >>> np.var(a, dtype=np.float64)
+    0.20249999932944759 # may vary
+    >>> ((1-0.55)**2 + (0.1-0.55)**2)/2
+    0.2025
+
+    """
+
+    if not use_origin_backend(a):
+        if not isinstance(a, dparray):
+            pass
+        elif axis is not None:
+            pass
+        elif dtype is not None:
+            pass
+        elif out is not None:
+            pass
+        elif keepdims is not numpy._NoValue:
+            pass
+        else:
+            result = dpnp_var(a, ddof)
+            if result.shape == (1,):
+                return result.dtype.type(result[0])
+
+            return result
+
+    return call_origin(numpy.var, a, axis, dtype, out, ddof, keepdims)
