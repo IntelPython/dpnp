@@ -41,8 +41,10 @@ namespace mkl_rng = oneapi::mkl::rng;
 
 class engine_rng
 {
-    static mkl_rng::mt19937* mt19937_engine;
-    static size_t seed;
+    // TODO:
+    // static
+    mkl_rng::mt19937* mt19937_engine;
+    size_t seed;
 
 public:
     engine_rng()
@@ -68,7 +70,7 @@ public:
     engine_rng(const engine_rng&) = delete;
     engine_rng& operator=(const engine_rng&) = delete;
 
-    static mkl_rng::mt19937& get_engine()
+    mkl_rng::mt19937& get_engine()
     {
         return * mt19937_engine;
     }

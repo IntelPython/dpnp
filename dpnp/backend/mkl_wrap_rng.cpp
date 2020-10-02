@@ -32,6 +32,7 @@
 #include <backend_iface.hpp>
 #include "backend_utils.hpp"
 #include "queue_sycl.hpp"
+#include "rng_engine.hpp"
 
 namespace mkl_rng = oneapi::mkl::rng;
 
@@ -98,6 +99,11 @@ void mkl_rng_uniform(void * result, long low, long high, size_t size, void * eng
         std::cerr << "Caught synchronous SYCL exception during mkl_rng_uniform_mt19937():\n"
                   << e.what() << "\nOpenCL status: " << e.get_cl_code() << std::endl;
     }
+}
+
+void rng_engine_init(size_t seed, void * engine)
+{
+    engine = new engine_rng();
 }
 
 template void mkl_rng_gaussian<double>(void* result, size_t size);
