@@ -140,7 +140,6 @@ void custom_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols)
 
 template void custom_cov_c<double>(void* array1_in, void* result1, size_t nrows, size_t ncols);
 
-
 template <typename _DataType>
 class custom_max_c_kernel;
 
@@ -284,7 +283,6 @@ template void
     custom_min_c<long>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
 template void custom_min_c<int>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
 
-
 template <typename _DataType, typename _ResultType>
 void custom_std_c(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis, size_t ddof)
 {
@@ -303,15 +301,14 @@ void custom_std_c(void* array1_in, void* result1, size_t* shape, size_t ndim, si
 #endif
 }
 
-template void custom_std_c<int, double>(void* array1_in, void* result1, size_t* shape,
-                                        size_t ndim, size_t* axis, size_t naxis, size_t ddof);
-template void custom_std_c<long, double>(void* array1_in, void* result1, size_t* shape,
-                                         size_t ndim, size_t* axis, size_t naxis, size_t ddof);
-template void custom_std_c<float, float>(void* array1_in, void* result1, size_t* shape,
-                                         size_t ndim, size_t* axis, size_t naxis, size_t ddof);
-template void custom_std_c<double, double>(void* array1_in, void* result1, size_t* shape,
-                                           size_t ndim, size_t* axis, size_t naxis, size_t ddof);
-
+template void custom_std_c<int, double>(
+    void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis, size_t ddof);
+template void custom_std_c<long, double>(
+    void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis, size_t ddof);
+template void custom_std_c<float, float>(
+    void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis, size_t ddof);
+template void custom_std_c<double, double>(
+    void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis, size_t ddof);
 
 template <typename _DataType, typename _ResultType>
 class custom_var_c_kernel;
@@ -328,7 +325,8 @@ void custom_var_c(void* array1_in, void* result1, size_t* shape, size_t ndim, si
     _ResultType mean_val = mean[0];
 
     size_t size = 1;
-    for (size_t i = 0; i < ndim; ++i) {
+    for (size_t i = 0; i < ndim; ++i)
+    {
         size *= shape[i];
     }
 
@@ -363,11 +361,11 @@ void custom_var_c(void* array1_in, void* result1, size_t* shape, size_t ndim, si
 #endif
 }
 
-template void custom_var_c<int, double>(void* array1_in, void* result1, size_t* shape,
-                                        size_t ndim, size_t* axis, size_t naxis, size_t ddof);
-template void custom_var_c<long, double>(void* array1_in, void* result1, size_t* shape,
-                                         size_t ndim, size_t* axis, size_t naxis, size_t ddof);
-template void custom_var_c<float, float>(void* array1_in, void* result1, size_t* shape,
-                                         size_t ndim, size_t* axis, size_t naxis, size_t ddof);
-template void custom_var_c<double, double>(void* array1_in, void* result1, size_t* shape,
-                                           size_t ndim, size_t* axis, size_t naxis, size_t ddof);
+template void custom_var_c<int, double>(
+    void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis, size_t ddof);
+template void custom_var_c<long, double>(
+    void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis, size_t ddof);
+template void custom_var_c<float, float>(
+    void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis, size_t ddof);
+template void custom_var_c<double, double>(
+    void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis, size_t ddof);

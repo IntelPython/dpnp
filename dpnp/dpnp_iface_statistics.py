@@ -619,6 +619,7 @@ def min(input, axis=None, out=None):
 
     return result
 
+
 def std(a, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue):
     """
     Compute the standard deviation along the specified axis.
@@ -740,6 +741,7 @@ def std(a, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue):
             return result
 
     return call_origin(numpy.std, a, axis, dtype, out, ddof, keepdims)
+
 
 def var(a, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue):
     """

@@ -63,8 +63,8 @@ __all__ += [
 ]
 
 
-ctypedef void(*fptr_custom_elemwise_absolute_1in_1out_t)(void *, dparray_shape_type &,
-                                                          void *, size_t)
+ctypedef void(*fptr_custom_elemwise_absolute_1in_1out_t)(void * , dparray_shape_type & ,
+                                                         void * , size_t)
 
 
 cpdef dparray dpnp_absolute(dparray input):

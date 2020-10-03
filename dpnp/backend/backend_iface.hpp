@@ -97,7 +97,6 @@ template <typename _DataType>
 INP_DLLEXPORT void
     custom_blas_gemm_c(void* array1, void* array2, void* result1, size_t size_m, size_t size_n, size_t size_k);
 
-
 /**
  * @ingroup BACKEND_API
  * @brief absolute function.
@@ -112,10 +111,8 @@ INP_DLLEXPORT void
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_elemwise_absolute_c(void* array1_in,
-                                               const std::vector<long>& input_shape,
-                                               void* result1,
-                                               size_t size);
+INP_DLLEXPORT void
+    custom_elemwise_absolute_c(void* array1_in, const std::vector<long>& input_shape, void* result1, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -348,7 +345,7 @@ INP_DLLEXPORT void custom_argmin_c(void* array, void* result, size_t size);
  * @param [in]  array   Input array with data.
  *
  * @param [out] result  Output array with indeces.
- * 
+ *
  * @param [in]  shape   Shape of input array.
  *
  * @param [in]  ndim    Number of elements in shape.
@@ -361,8 +358,8 @@ INP_DLLEXPORT void custom_argmin_c(void* array, void* result, size_t size);
  *
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void custom_std_c(void* array, void* result, size_t* shape,
-                                size_t ndim, size_t* axis, size_t naxis, size_t ddof);
+INP_DLLEXPORT void
+    custom_std_c(void* array, void* result, size_t* shape, size_t ndim, size_t* axis, size_t naxis, size_t ddof);
 
 /**
  * @ingroup BACKEND_API
@@ -371,7 +368,7 @@ INP_DLLEXPORT void custom_std_c(void* array, void* result, size_t* shape,
  * @param [in]  array   Input array with data.
  *
  * @param [out] result  Output array with indeces.
- * 
+ *
  * @param [in]  shape   Shape of input array.
  *
  * @param [in]  ndim    Number of elements in shape.
@@ -384,8 +381,8 @@ INP_DLLEXPORT void custom_std_c(void* array, void* result, size_t* shape,
  *
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void custom_var_c(void* array, void* result, size_t* shape,
-                                size_t ndim, size_t* axis, size_t naxis, size_t ddof);
+INP_DLLEXPORT void
+    custom_var_c(void* array, void* result, size_t* shape, size_t ndim, size_t* axis, size_t naxis, size_t ddof);
 
 #if 0 // Example for OpenCL kernel
 template <typename _DataType>
