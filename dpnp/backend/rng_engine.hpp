@@ -26,6 +26,7 @@
 #ifndef RNG_ENGINE_H
 #define RNG_ENGINE_H
 
+#include <ctime>
 #include <mkl_sycl.hpp>
 
 #include "backend_utils.hpp"
@@ -55,7 +56,7 @@ public:
         size_t seed = std::time(nullptr);
         mkl_rng::mt19937 engine(DPNP_QUEUE, seed);
         mt19937_engine = &engine;
-        // mt19937_engine = new mkl_rng::mt19937 engine(DPNP_QUEUE, seed)
+        //mt19937_engine = new mkl_rng::mt19937(DPNP_QUEUE, seed);
     }
 
     virtual ~engine_rng()
@@ -70,9 +71,9 @@ public:
     engine_rng(const engine_rng&) = delete;
     engine_rng& operator=(const engine_rng&) = delete;
 
-    mkl_rng::mt19937& get_engine()
+    void* get_engine()
     {
-        return * mt19937_engine;
+        return mt19937_engine;
     }
     
 };

@@ -47,7 +47,7 @@ ctypedef void(*fptr_mkl_rng_gaussian_1out_t)(void *, size_t)
 ctypedef void(*fptr_mkl_rng_uniform_1out_t)(void *, long, long, size_t, void *)
 
 
-cpdef dparray dpnp_randn(dims):
+cdef dparray dpnp_randn(dims):
     """
     Return a random matrix with data from the "standard normal" distribution.
 
@@ -73,7 +73,7 @@ cpdef dparray dpnp_randn(dims):
     return result
 
 
-cpdef dparray dpnp_random(dims, void * engine):
+cdef dparray dpnp_random(dims, void * engine):
     """
     Create an array of the given shape and populate it
     with random samples from a uniform distribution over [0, 1).
@@ -94,13 +94,12 @@ cpdef dparray dpnp_random(dims, void * engine):
 
     cdef fptr_mkl_rng_uniform_1out_t func = <fptr_mkl_rng_uniform_1out_t > kernel_data.ptr
     # call FPTR function
-    # ~~~~ last is result.get_data()
     func(result.get_data(), low, high, result.size, engine)
 
     return result
 
 
-cpdef dparray dpnp_uniform(long low, long high, size, void * engine, dtype=numpy.int32):
+cdef dparray dpnp_uniform(long low, long high, size, void * engine, dtype=numpy.int32):
     """
     Return a random matrix with data from the uniform distribution.
 
@@ -121,7 +120,6 @@ cpdef dparray dpnp_uniform(long low, long high, size, void * engine, dtype=numpy
 
     cdef fptr_mkl_rng_uniform_1out_t func = <fptr_mkl_rng_uniform_1out_t > kernel_data.ptr
     # call FPTR function
-    # ~~~~ last is result.get_data()
     func(result.get_data(), low, high, result.size, engine)
 
     return result
@@ -136,10 +134,10 @@ cdef class RandomState:
 
     def __init__(self, seed=None):
         # TODO:
-        self.bit_generator = None
-        self.seed = 1
-        seed_ = 1
-        rng_engine_init(seed_, self.rng_engine)
+        #self.bit_generator = None
+        #self.seed = 1
+        self.seed_ = 1
+        rng_engine_init(self.seed_, self.rng_engine)
 
     def __repr__(self):
         return self.__str__() + ' at 0x{:X}'.format(id(self))
@@ -463,74 +461,77 @@ random_sample = _rand.random_sample
 # set_state = _rand.set_state
 
 
-def sample(size):
-    """
-    Return random floats in the half-open interval [0.0, 1.0).
-    This is an alias of random_sample.
-    Parameters
-    ----------
-    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
-    Returns
-    -------
-    out : Array of random floats of shape size.
-    See Also
-    --------
-    random
-    """
+# TODO:
+# update ~~ + __init__
 
-    if (use_origin_backend(size)):
-        return numpy.random.sample(size)
-
-    for dim in size:
-        if not isinstance(dim, int):
-            checker_throw_value_error("randint", "type(dim)", type(dim), int)
-
-    return dpnp_random(size, self.rng_engine)
-
-
-def uniform(low=0.0, high=1.0, size=None):
-    """
-    uniform(low=0.0, high=1.0, size=None)
-    Draw samples from a uniform distribution.
-    Samples are uniformly distributed over the half-open interval
-    ``[low, high)`` (includes low, but excludes high).  In other words,
-    any value within the given interval is equally likely to be drawn
-    by `uniform`.
-    Parameters
-    ----------
-    low : float, optional
-        Lower boundary of the output interval.  All values generated will be
-        greater than or equal to low.  The default value is 0.
-    high : float
-        Upper boundary of the output interval.  All values generated will be
-        less than high.  The default value is 1.0.
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
-        a single value is returned if ``low`` and ``high`` are both scalars.
-    Returns
-    -------
-    out : array or scalar
-        Drawn samples from the parameterized uniform distribution.
-    See Also
-    --------
-    random : Floats uniformly distributed over ``[0, 1)``.
-    """
-
-    if (use_origin_backend(low)):
-        return numpy.random.uniform(low, high, size)
-
-    if size is None:
-        size = 1
-
-    if low == high:
-        # TODO:
-        # currently dparray.full is not implemented
-        # return dpnp.dparray.dparray.full(size, low, dtype=numpy.float64)
-        message = "`low` equal to `high`, should return an array, filled with `low` value."
-        message += "  Currently not supported. See: numpy.full TODO"
-        checker_throw_runtime_error("uniform", message)
-    elif low > high:
-        low, high = high, low
-
-    return dpnp_uniform(low, high, size, self.rng_engine, dtype=numpy.float64)
+#def sample(size):
+#    """
+#    Return random floats in the half-open interval [0.0, 1.0).
+#    This is an alias of random_sample.
+#    Parameters
+#    ----------
+#    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
+#    Returns
+#    -------
+#    out : Array of random floats of shape size.
+#    See Also
+#    --------
+#    random
+#    """
+#
+#    if (use_origin_backend(size)):
+#        return numpy.random.sample(size)
+#
+#    for dim in size:
+#        if not isinstance(dim, int):
+#            checker_throw_value_error("randint", "type(dim)", type(dim), int)
+#
+#    return dpnp_random(size, rng_engine)
+#
+#
+#def uniform(low=0.0, high=1.0, size=None):
+#    """
+#    uniform(low=0.0, high=1.0, size=None)
+#    Draw samples from a uniform distribution.
+#    Samples are uniformly distributed over the half-open interval
+#    ``[low, high)`` (includes low, but excludes high).  In other words,
+#    any value within the given interval is equally likely to be drawn
+#    by `uniform`.
+#    Parameters
+#    ----------
+#    low : float, optional
+#        Lower boundary of the output interval.  All values generated will be
+#        greater than or equal to low.  The default value is 0.
+#    high : float
+#        Upper boundary of the output interval.  All values generated will be
+#        less than high.  The default value is 1.0.
+#    size : int or tuple of ints, optional
+#        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+#        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
+#        a single value is returned if ``low`` and ``high`` are both scalars.
+#    Returns
+#    -------
+#    out : array or scalar
+#        Drawn samples from the parameterized uniform distribution.
+#    See Also
+#    --------
+#    random : Floats uniformly distributed over ``[0, 1)``.
+#    """
+#
+#    if (use_origin_backend(low)):
+#        return numpy.random.uniform(low, high, size)
+#
+#    if size is None:
+#        size = 1
+#
+#    if low == high:
+#        # TODO:
+#        # currently dparray.full is not implemented
+#        # return dpnp.dparray.dparray.full(size, low, dtype=numpy.float64)
+#        message = "`low` equal to `high`, should return an array, filled with `low` value."
+#        message += "  Currently not supported. See: numpy.full TODO"
+#        checker_throw_runtime_error("uniform", message)
+#    elif low > high:
+#        low, high = high, low
+#
+#    return dpnp_uniform(low, high, size, rng_engine, dtype=numpy.float64)

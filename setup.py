@@ -306,16 +306,6 @@ dpnp_random = Extension(
     language="c++"
 )
 
-#dpnp_random = Extension(
-#    name="dpnp.random._random",
-#    sources=["dpnp/random/_random.pyx"],
-#    include_dirs=[numpy.get_include()] + _project_backend_dir + _mkl_include + _dpctrl_include,
-#    library_dirs=_mkl_libpath + _omp_libpath + _dpctrl_libpath,
-#    extra_link_args=_project_extra_link_args,
-#    define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-#    language="c++"
-#)
-
 dpnp_utils = Extension(
     name="dpnp.dpnp_utils",
     sources=["dpnp/dpnp_utils.pyx"],
