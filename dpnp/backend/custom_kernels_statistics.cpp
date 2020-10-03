@@ -181,6 +181,8 @@ template void custom_max_c<int>(
 template <typename _DataType, typename _ResultType>
 void custom_mean_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
 {
+    __attribute__((unused)) void* tmp = (void*)(axis + naxis);
+
     _ResultType* result = reinterpret_cast<_ResultType*>(result1);
 
     size_t size = 1;
@@ -214,6 +216,8 @@ template void custom_mean_c<int, double>(
 template <typename _DataType, typename _ResultType>
 void custom_median_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
 {
+    __attribute__((unused)) void* tmp = (void*)(axis + naxis);
+
     _ResultType* result = reinterpret_cast<_ResultType*>(result1);
 
     size_t size = 1;
@@ -257,6 +261,8 @@ class custom_min_c_kernel;
 template <typename _DataType>
 void custom_min_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
 {
+    __attribute__((unused)) void* tmp = (void*)(axis + naxis);
+
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
