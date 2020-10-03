@@ -80,6 +80,7 @@ class custom_build_clib(build_clib.build_clib):
             runtime_library_dirs = build_info.get("runtime_library_dirs")
             extra_preargs = build_info.get("extra_preargs")
             extra_link_postargs = build_info.get("extra_link_postargs")
+            extra_link_preargs = build_info.get("extra_link_preargs")
             force_build = build_info.get("force_build")
             compiler = build_info.get("compiler")
             linker = build_info.get("linker")
@@ -121,7 +122,7 @@ class custom_build_clib(build_clib.build_clib):
                                               libraries=libraries,
                                               library_dirs=library_dirs,
                                               runtime_library_dirs=runtime_library_dirs,
-                                              extra_preargs=extra_preargs,
+                                              extra_preargs=extra_preargs + extra_link_preargs,
                                               extra_postargs=extra_link_postargs,
                                               debug=self.debug,
                                               build_temp=self.build_temp,

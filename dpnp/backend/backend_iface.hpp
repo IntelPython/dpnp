@@ -248,7 +248,8 @@ INP_DLLEXPORT void custom_cov_c(void* array1_in, void* result1, size_t nrows, si
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_max_c(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+INP_DLLEXPORT void
+    custom_max_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
@@ -268,7 +269,8 @@ INP_DLLEXPORT void custom_max_c(void* array1_in, void* result1, size_t* shape, s
  *
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void custom_mean_c(void* array, void* result, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+INP_DLLEXPORT void
+    custom_mean_c(void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
@@ -288,7 +290,8 @@ INP_DLLEXPORT void custom_mean_c(void* array, void* result, size_t* shape, size_
  *
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void custom_median_c(void* array, void* result, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+INP_DLLEXPORT void
+    custom_median_c(void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
@@ -308,7 +311,8 @@ INP_DLLEXPORT void custom_median_c(void* array, void* result, size_t* shape, siz
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_min_c(void* array, void* result, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+INP_DLLEXPORT void
+    custom_min_c(void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
@@ -358,8 +362,8 @@ INP_DLLEXPORT void custom_argmin_c(void* array, void* result, size_t size);
  *
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void
-    custom_std_c(void* array, void* result, size_t* shape, size_t ndim, size_t* axis, size_t naxis, size_t ddof);
+INP_DLLEXPORT void custom_std_c(
+    void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
 
 /**
  * @ingroup BACKEND_API
@@ -381,8 +385,8 @@ INP_DLLEXPORT void
  *
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void
-    custom_var_c(void* array, void* result, size_t* shape, size_t ndim, size_t* axis, size_t naxis, size_t ddof);
+INP_DLLEXPORT void custom_var_c(
+    void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
 
 #if 0 // Example for OpenCL kernel
 template <typename _DataType>
