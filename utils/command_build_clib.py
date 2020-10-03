@@ -35,6 +35,9 @@ This modification add:
  - extra option 'extra_preargs'
  - extra option 'extra_link_postargs'
  - extra option 'force_build'
+ - extra option 'compiler'
+ - extra option 'linker'
+ - extra option 'default_flags'
  - extra option 'language'
  - a check if source needs to be rebuilt based on time stamp
  - a check if librayr needs to be rebuilt based on time stamp
@@ -70,10 +73,6 @@ class custom_build_clib(build_clib.build_clib):
 
             log.info("DPNP: building '%s' library", lib_name)
 
-            # set compiler and options
-            # -Wsign-compare -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes -fPIC
-            # self.compiler.compiler_so = ["clang++", "-fPIC"]
-
             macros = build_info.get('macros')
             include_dirs = build_info.get('include_dirs')
             libraries = build_info.get("libraries")
@@ -82,7 +81,14 @@ class custom_build_clib(build_clib.build_clib):
             extra_preargs = build_info.get("extra_preargs")
             extra_link_postargs = build_info.get("extra_link_postargs")
             force_build = build_info.get("force_build")
+            compiler = build_info.get("compiler")
+            linker = build_info.get("linker")
+            default_flags = build_info.get("default_flags")
             language = build_info.get("language")
+
+            # set compiler and options
+            self.compiler.compiler_so = compiler + default_flags
+            self.compiler.linker_so = linker + default_flags
 
             objects = []
             """
