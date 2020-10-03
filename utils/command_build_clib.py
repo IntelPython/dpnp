@@ -34,14 +34,17 @@ This modification add:
  - extra option 'runtime_library_dirs'
  - extra option 'extra_preargs'
  - extra option 'extra_link_postargs'
+ - extra option 'force_build'
  - extra option 'language'
-
+ - a check if source needs to be rebuilt based on time stamp
+ - a check if librayr needs to be rebuilt based on time stamp
 """
 
-
 import os
+
 from setuptools.command import build_clib
 from distutils import log
+from distutils.dep_util import newer_group
 from distutils.file_util import copy_file
 
 
@@ -51,7 +54,12 @@ class custom_build_clib(build_clib.build_clib):
         """
         This function is overloaded to the original function in build_clib.py file
         """
+
         for (lib_name, build_info) in libraries:
+            c_library_name = self.compiler.library_filename(lib_name, lib_type='shared')
+            c_library_filename = os.path.join(self.build_clib, c_library_name)
+            dest_filename = "dpnp"  # TODO need to fix destination directory
+
             sources = build_info.get('sources')
             if sources is None or not isinstance(sources, (list, tuple)):
                 err_msg = f"in 'libraries' option (library '{lib_name}'),"
@@ -60,7 +68,11 @@ class custom_build_clib(build_clib.build_clib):
 
             sources = list(sources)
 
-            log.info("building '%s' library", lib_name)
+            log.info("DPNP: building '%s' library", lib_name)
+
+            # set compiler and options
+            # -Wsign-compare -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes -fPIC
+            # self.compiler.compiler_so = ["clang++", "-fPIC"]
 
             macros = build_info.get('macros')
             include_dirs = build_info.get('include_dirs')
@@ -69,29 +81,49 @@ class custom_build_clib(build_clib.build_clib):
             runtime_library_dirs = build_info.get("runtime_library_dirs")
             extra_preargs = build_info.get("extra_preargs")
             extra_link_postargs = build_info.get("extra_link_postargs")
+            force_build = build_info.get("force_build")
             language = build_info.get("language")
 
-            objects = self.compiler.compile(sources,
-                                            output_dir=self.build_temp,
-                                            macros=macros,
-                                            include_dirs=include_dirs,
-                                            extra_preargs=extra_preargs,
-                                            debug=self.debug)
+            objects = []
+            """
+            Build object files from sources
+            """
+            for source_it in sources:
+                obj_file_list = self.compiler.object_filenames([source_it], strip_dir=0, output_dir=self.build_temp)
+                obj_file = "".join(obj_file_list)  # convert from list to file name
 
-            self.compiler.link_shared_lib(objects,
-                                          lib_name,
-                                          output_dir=self.build_clib,
-                                          libraries=libraries,
-                                          library_dirs=library_dirs,
-                                          runtime_library_dirs=runtime_library_dirs,
-                                          extra_preargs=extra_preargs,
-                                          extra_postargs=extra_link_postargs,
-                                          debug=self.debug,
-                                          build_temp=self.build_temp,
-                                          target_lang=language)
+                newer_than_obj = newer_group([source_it], obj_file, missing="newer")
+                if force_build or newer_than_obj:
+                    obj_file_list = self.compiler.compile([source_it],
+                                                          output_dir=self.build_temp,
+                                                          macros=macros,
+                                                          include_dirs=include_dirs,
+                                                          extra_preargs=extra_preargs,
+                                                          debug=self.debug)
+                    objects.extend(obj_file_list)
+                else:
+                    objects.append(obj_file)
 
-            dest_filename = "dpnp"  # TODO need to fix destination directory
-            c_library_name = self.compiler.library_filename(lib_name, lib_type='shared')
-            c_library_filename = os.path.join(self.build_clib, c_library_name)
+            """
+            Build library file from objects
+            """
+            newer_than_lib = newer_group(objects, c_library_filename, missing="newer")
+            if force_build or newer_than_lib:
+                self.compiler.link_shared_lib(objects,
+                                              lib_name,
+                                              output_dir=self.build_clib,
+                                              libraries=libraries,
+                                              library_dirs=library_dirs,
+                                              runtime_library_dirs=runtime_library_dirs,
+                                              extra_preargs=extra_preargs,
+                                              extra_postargs=extra_link_postargs,
+                                              debug=self.debug,
+                                              build_temp=self.build_temp,
+                                              target_lang=language)
 
+            """
+            Copy library to the destination path
+            """
             copy_file(c_library_filename, dest_filename, verbose=self.verbose, dry_run=self.dry_run)
+
+            log.info("DPNP: building '%s' library finished", lib_name)

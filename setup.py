@@ -119,6 +119,7 @@ _project_cmplr_flag_sycl = ["-fsycl"]
 _project_cmplr_flag_compatibility = ["-Wl,--enable-new-dtags", "-fPIC"]
 _project_cmplr_flag_lib = []
 _project_cmplr_macro = []
+_project_force_build = False
 _project_sycl_queue_control_macro = [("DPNP_LOCAL_QUEUE", "1")]
 _project_rpath = ["$ORIGIN"]
 _dpctrl_include = []
@@ -270,6 +271,7 @@ dpnp_backend_c = [
             "extra_link_postargs": _project_cmplr_flag_compatibility + _project_cmplr_flag_lib,
             "libraries": _mkl_libs + _dpctrl_lib,
             "macros": _project_cmplr_macro,
+            "force_build": _project_force_build,
             "language": "c++"
         }
      ]
