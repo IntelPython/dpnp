@@ -191,11 +191,16 @@ void custom_mean_c(void* array1_in, void* result1, const size_t* shape, size_t n
         size *= shape[i];
     }
 
+    if (!size)
+    {
+        return;
+    }
+
     _DataType* sum = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(1 * sizeof(_DataType)));
 
     custom_sum_c<_DataType>(array1_in, sum, size);
 
-    result[0] = (_ResultType)(sum[0]) / size;
+    result[0] = static_cast<_ResultType>(sum[0]) / static_cast<_ResultType>(size);
 
     dpnp_memory_free_c(sum);
 
@@ -232,7 +237,7 @@ void custom_median_c(void* array1_in, void* result1, const size_t* shape, size_t
 
     if (size % 2 == 0)
     {
-        result[0] = (_ResultType)(sorted[size / 2] + sorted[size / 2 - 1]) / 2;
+        result[0] = static_cast<_ResultType>(sorted[size / 2] + sorted[size / 2 - 1]) / 2;
     }
     else
     {
@@ -352,7 +357,7 @@ void custom_var_c(
         {
             size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/
             {
-                _ResultType deviation = (_ResultType)array1[i] - mean_val;
+                _ResultType deviation = static_cast<_ResultType>(array1[i]) - mean_val;
                 squared_deviations[i] = deviation * deviation;
             }
         }); /* parallel_for */
@@ -363,7 +368,7 @@ void custom_var_c(
     custom_mean_c<_ResultType, _ResultType>(squared_deviations, mean, shape, ndim, axis, naxis);
     mean_val = mean[0];
 
-    result[0] = mean_val * size / (size - ddof);
+    result[0] = mean_val * size / static_cast<_ResultType>(size - ddof);
 
     dpnp_memory_free_c(mean);
     dpnp_memory_free_c(squared_deviations);

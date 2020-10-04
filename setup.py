@@ -155,7 +155,7 @@ if IS_WIN:
     _project_cmplr_flag_sycl = []
     _project_cmplr_flag_compatibility = []
     _project_cmplr_flag_lib = ['/DLL']
-    _project_cmplr_macro = [("_WIN", "1"), ("MKL_ILP64", "1")]
+    _project_cmplr_macro = [("_WIN", "1")]
     _project_rpath = []
     # TODO obtain setuptools.compiler.buildline options line and replace /MD with /MT instead adding it
     os.environ["CFLAGS"] = "/MT"
@@ -205,7 +205,8 @@ _mkl_root = os.environ.get('MKLROOT', None)
 if _mkl_root is None:
     raise EnvironmentError("Intel NumPy: Please install Intel OneAPI environment. MKLROOT is empty")
 _mkl_include = [os.path.join(_mkl_root, 'include')]
-_mkl_libs = ['mkl_sycl', 'mkl_intel_lp64', "mkl_sequential", 'mkl_core', 'iomp5']
+_mkl_libs = ["mkl_rt", "mkl_sycl", "mkl_intel_ilp64", "mkl_sequential", "mkl_core", "sycl", "OpenCL", "pthread", "m", "dl"]
+_project_cmplr_macro += [("MKL_ILP64", "1")] # using 64bit integers in MKL interface (long) 
 
 _mkl_libpath = [os.path.join(_mkl_root, 'lib', 'intel64')]
 if IS_LIN:

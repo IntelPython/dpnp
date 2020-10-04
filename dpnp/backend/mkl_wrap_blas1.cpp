@@ -35,32 +35,25 @@ namespace mkl_blas = oneapi::mkl::blas;
 template <typename _DataType>
 void mkl_blas_dot_c(void* array1_in, void* array2_in, void* result1, size_t size)
 {
+    if (!size)
+    {
+        return;
+    }
+
     cl::sycl::event status;
 
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* array_2 = reinterpret_cast<_DataType*>(array2_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    try
-    {
-        status = mkl_blas::dot(DPNP_QUEUE,
-                               size,
-                               array_1,
-                               1, // array_1 stride
-                               array_2,
-                               1, // array_2 stride
-                               result);
-    }
-    catch (cl::sycl::exception const& e)
-    {
-        std::cerr << "Caught synchronous SYCL exception during mkl_blas_dot_c():\n"
-                  << e.what() << "\nOpenCL status: " << e.get_cl_code() << std::endl;
-    }
-
+    status = mkl_blas::dot(DPNP_QUEUE,
+                           size,
+                           array_1,
+                           1, // array_1 stride
+                           array_2,
+                           1, // array_2 stride
+                           result);
     status.wait();
-#if 0
-    std::cout << "mkl_blas_dot_c res = " << result[0] << std::endl;
-#endif
 }
 
 template void mkl_blas_dot_c<float>(void* array1_in, void* array2_in, void* result1, size_t size);
