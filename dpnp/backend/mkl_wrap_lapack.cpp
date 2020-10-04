@@ -35,6 +35,11 @@ namespace mkl_lapack = oneapi::mkl::lapack;
 template <typename _DataType>
 void mkl_lapack_syevd_c(void* array_in, void* result1, size_t size)
 {
+    if (!size)
+    {
+        return;
+    }
+
     cl::sycl::event status;
 
     _DataType* array = reinterpret_cast<_DataType*>(array_in);
