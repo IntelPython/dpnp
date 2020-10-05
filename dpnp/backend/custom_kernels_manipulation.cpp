@@ -73,29 +73,29 @@ void custom_elemwise_transpose_c(void* array1_in,
     }
 
     cl::sycl::range<1> gws(size);
-    event = DPNP_QUEUE.submit([&](cl::sycl::handler& cgh) {
-            cgh.parallel_for<class custom_elemwise_transpose_c_kernel<_DataType> >(
-                gws,
-                [=](cl::sycl::id<1> global_id)
-            {
-                const size_t idx = global_id[0];
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        const size_t idx = global_id[0];
 
-                size_t output_index = 0;
-                size_t reminder = idx;
-                for (size_t axis = 0; axis < input_shape_size; ++axis)
-                {
-                    /* reconstruct [x][y][z] from given linear idx */
-                    size_t xyz_id = reminder / input_offset_shape[axis];
-                    reminder = reminder % input_offset_shape[axis];
+        size_t output_index = 0;
+        size_t reminder = idx;
+        for (size_t axis = 0; axis < input_shape_size; ++axis)
+        {
+            /* reconstruct [x][y][z] from given linear idx */
+            size_t xyz_id = reminder / input_offset_shape[axis];
+            reminder = reminder % input_offset_shape[axis];
 
-                    /* calculate destination index based on reconstructed [x][y][z] */
-                    output_index += (xyz_id * result_offset_shape[axis]);
-                }
+            /* calculate destination index based on reconstructed [x][y][z] */
+            output_index += (xyz_id * result_offset_shape[axis]);
+        }
 
-                result[output_index] = array1[idx];
+        result[output_index] = array1[idx];
+    };
 
-            }); // parallel_for
-    });         // queue.submit
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class custom_elemwise_transpose_c_kernel<_DataType> >(gws, kernel_parallel_for_func);
+    };
+
+    event = DPNP_QUEUE.submit(kernel_func);
 
     event.wait();
 
