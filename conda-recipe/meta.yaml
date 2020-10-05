@@ -15,8 +15,11 @@ requirements:
       - numpy-devel >=1.18
       - cython
       - dpctl =0.3.3
+      - mkl-devel ==2021.1b10
+      - tbb-devel ==2021.1b10
     run:
       - python
+      - dpcpp_cpp_rt
 
 build:
     number: {{buildnumber}}
@@ -37,6 +40,15 @@ test:
       - pytest
 
 about:
-    license: ISSL
+    home: https://github.com/IntelPython/dpnp
+    license: BSD-2-Clause
     license_file: LICENSE.txt
-    summary: NumPy-like API accelerated with SYCL
+    description: |
+         <strong>LEGAL NOTICE: Use of this software package is subject to the
+         software license agreement (as set forth above, in the license section of
+         the installed Conda package and/or the README file) and all notices,
+         disclaimers or license terms for third party or open source software
+         included in or with the software.</strong>
+         <br/><br/>
+         EULA: <a href="https://opensource.org/licenses/BSD-2-Clause" target="_blank">BSD-2-Clause</a>
+         <br/><br/>
