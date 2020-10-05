@@ -4,7 +4,7 @@ THEDIR=$(dirname $(readlink -e ${BASH_SOURCE[0]}))
 . ${THEDIR}/0.env.sh
 cd ${THEDIR}
 
-export DEBUG=1
+export DPNP_DEBUG=1
 
 python setup.py clean
 python setup.py build_clib

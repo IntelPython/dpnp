@@ -83,12 +83,14 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_SORT
         DPNP_FN_SQRT
         DPNP_FN_SQUARE
+        DPNP_FN_STD
         DPNP_FN_SUBTRACT
         DPNP_FN_SUM
         DPNP_FN_TAN
         DPNP_FN_TANH
         DPNP_FN_TRANSPOSE
         DPNP_FN_TRUNC
+        DPNP_FN_VAR
 
 cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
     cdef enum DPNPFuncType "DPNPFuncType":

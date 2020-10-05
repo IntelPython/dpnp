@@ -37,6 +37,11 @@ class custom_sum_c_kernel;
 template <typename _DataType>
 void custom_sum_c(void* array1_in, void* result1, size_t size)
 {
+    if (!size)
+    {
+        return;
+    }
+
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
@@ -170,6 +175,11 @@ class custom_prod_c_kernel;
 template <typename _DataType>
 void custom_prod_c(void* array1_in, void* result1, size_t size)
 {
+    if (!size)
+    {
+        return;
+    }
+
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 

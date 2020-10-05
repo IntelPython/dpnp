@@ -46,16 +46,43 @@ __all__ += [
     "dpnp_max",
     "dpnp_mean",
     "dpnp_median",
-    "dpnp_min"
+    "dpnp_min",
+    "dpnp_std",
+    "dpnp_var",
 ]
 
 
 # C function pointer to the C library template functions
 ctypedef void(*fptr_custom_cov_1in_1out_t)(void * , void * , size_t, size_t)
-
+ctypedef void(*fptr_custom_std_var_1in_1out_t)(void * , void * , size_t * , size_t, size_t * , size_t, size_t)
 
 # C function pointer to the C library template functions
 ctypedef void(*custom_statistic_1in_1out_func_ptr_t)(void * , void * , size_t * , size_t, size_t * , size_t)
+
+
+cdef dparray call_fptr_custom_std_var_1in_1out(DPNPFuncName fptr_name, dparray a, ddof):
+
+    """ Convert string type names (dparray.dtype) to C enum DPNPFuncType """
+    cdef DPNPFuncType param_type = dpnp_dtype_to_DPNPFuncType(a.dtype)
+
+    """ get the FPTR data structure """
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, param_type, DPNP_FT_NONE)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    """ Create result array with type given by FPTR data """
+    cdef dparray result = dparray((1,), dtype=result_type)
+
+    cdef fptr_custom_std_var_1in_1out_t func = <fptr_custom_std_var_1in_1out_t > kernel_data.ptr
+
+    # stub for interface support
+    cdef dparray_shape_type axis
+    cdef Py_ssize_t axis_size = 0
+
+    """ Call FPTR function """
+    func(a.get_data(), result.get_data(), < size_t * > a._dparray_shape.data(),
+         a.ndim, < size_t * > axis.data(), axis_size, ddof)
+
+    return result
 
 
 cpdef dpnp_average(dparray x1):
@@ -432,3 +459,11 @@ cpdef dparray dpnp_min(dparray input, axis):
     dpnp_array = dpnp.array(result_array, dtype=input.dtype)
     dpnp_result_array = dpnp_array.reshape(output_shape)
     return dpnp_result_array
+
+
+cpdef dparray dpnp_std(dparray a, size_t ddof):
+    return call_fptr_custom_std_var_1in_1out(DPNP_FN_STD, a, ddof)
+
+
+cpdef dparray dpnp_var(dparray a, size_t ddof):
+    return call_fptr_custom_std_var_1in_1out(DPNP_FN_VAR, a, ddof)

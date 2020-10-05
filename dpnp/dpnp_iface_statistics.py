@@ -56,7 +56,9 @@ __all__ = [
     'max',
     'mean',
     'median',
-    'min'
+    'min',
+    'std',
+    'var',
 ]
 
 
@@ -446,13 +448,14 @@ def mean(input, axis=None):
     is_input_dparray = isinstance(input, dparray)
 
     if not use_origin_backend(input) and is_input_dparray:
-        result = dpnp_mean(input, axis=axis)
+        if input.size > 0:
+            result = dpnp_mean(input, axis=axis)
 
-        # scalar returned
-        if result.shape == (1,):
-            return result.dtype.type(result[0])
+            # scalar returned
+            if result.shape == (1,):
+                return result.dtype.type(result[0])
 
-        return result
+            return result
 
     input1 = dpnp.asnumpy(input) if is_input_dparray else input
 
@@ -616,3 +619,79 @@ def min(input, axis=None, out=None):
             result._setitem_scalar(i, result_numpy.item(i))
 
     return result
+
+
+def std(a, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue):
+    """
+    Compute the standard deviation along the specified axis.
+
+    Returns the standard deviation, a measure of the spread of a distribution,
+    of the array elements. The standard deviation is computed for the
+    flattened array by default, otherwise over the specified axis.
+
+    See Also
+    --------
+    var, mean, nanmean, nanstd, nanvar
+    ufuncs-output-type
+
+    """
+
+    if not use_origin_backend(a):
+        if not isinstance(a, dparray):
+            pass
+        elif a.size == 0:
+            pass
+        elif axis is not None:
+            pass
+        elif dtype is not None:
+            pass
+        elif out is not None:
+            pass
+        elif keepdims is not numpy._NoValue:
+            pass
+        else:
+            result = dpnp_std(a, ddof)
+            if result.shape == (1,):
+                return result.dtype.type(result[0])
+
+            return result
+
+    return call_origin(numpy.std, a, axis, dtype, out, ddof, keepdims)
+
+
+def var(a, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue):
+    """
+    Compute the variance along the specified axis.
+
+    Returns the variance of the array elements, a measure of the spread of a
+    distribution.  The variance is computed for the flattened array by
+    default, otherwise over the specified axis.
+
+    See Also
+    --------
+    std, mean, nanmean, nanstd, nanvar
+    ufuncs-output-type
+
+    """
+
+    if not use_origin_backend(a):
+        if not isinstance(a, dparray):
+            pass
+        elif a.size == 0:
+            pass
+        elif axis is not None:
+            pass
+        elif dtype is not None:
+            pass
+        elif out is not None:
+            pass
+        elif keepdims is not numpy._NoValue:
+            pass
+        else:
+            result = dpnp_var(a, ddof)
+            if result.shape == (1,):
+                return result.dtype.type(result[0])
+
+            return result
+
+    return call_origin(numpy.var, a, axis, dtype, out, ddof, keepdims)

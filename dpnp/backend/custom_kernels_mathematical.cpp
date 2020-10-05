@@ -36,10 +36,7 @@ template <typename _KernelNameSpecialization>
 class custom_elemwise_absolute_c_kernel;
 
 template <typename _DataType>
-void custom_elemwise_absolute_c(void* array1_in,
-                                 const std::vector<long>& input_shape,
-                                 void* result1,
-                                 size_t size)
+void custom_elemwise_absolute_c(void* array1_in, const std::vector<long>& input_shape, void* result1, size_t size)
 {
     if (!size)
     {
@@ -62,10 +59,12 @@ void custom_elemwise_absolute_c(void* array1_in,
             {
                 const size_t idx = global_id[0];
 
-                if (array1[idx] >= 0) {
+                if (array1[idx] >= 0)
+                {
                     result[idx] = array1[idx];
                 }
-                else{
+                else
+                {
                     result[idx] = -1 * array1[idx];
                 }
 
@@ -76,22 +75,17 @@ void custom_elemwise_absolute_c(void* array1_in,
 
     free(input_offset_shape, DPNP_QUEUE);
     free(result_offset_shape, DPNP_QUEUE);
-
 }
 
 template void custom_elemwise_absolute_c<double>(void* array1_in,
-                                                  const std::vector<long>& input_shape,
-                                                  void* result1,
-                                                  size_t size);
-template void custom_elemwise_absolute_c<float>(void* array1_in,
                                                  const std::vector<long>& input_shape,
                                                  void* result1,
                                                  size_t size);
-template void custom_elemwise_absolute_c<long>(void* array1_in,
+template void custom_elemwise_absolute_c<float>(void* array1_in,
                                                 const std::vector<long>& input_shape,
                                                 void* result1,
                                                 size_t size);
-template void custom_elemwise_absolute_c<int>(void* array1_in,
-                                               const std::vector<long>& input_shape,
-                                               void* result1,
-                                               size_t size);
+template void
+    custom_elemwise_absolute_c<long>(void* array1_in, const std::vector<long>& input_shape, void* result1, size_t size);
+template void
+    custom_elemwise_absolute_c<int>(void* array1_in, const std::vector<long>& input_shape, void* result1, size_t size);

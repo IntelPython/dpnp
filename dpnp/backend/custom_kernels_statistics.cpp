@@ -144,8 +144,10 @@ template <typename _DataType>
 class custom_max_c_kernel;
 
 template <typename _DataType>
-void custom_max_c(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis)
+void custom_max_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
 {
+    __attribute__((unused)) void* tmp = (void*)(axis + naxis);
+
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
@@ -167,17 +169,20 @@ void custom_max_c(void* array1_in, void* result1, size_t* shape, size_t ndim, si
 #endif
 }
 
-template void
-    custom_max_c<double>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
-template void
-    custom_max_c<float>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
-template void
-    custom_max_c<long>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
-template void custom_max_c<int>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+template void custom_max_c<double>(
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
+template void custom_max_c<float>(
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
+template void custom_max_c<long>(
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
+template void custom_max_c<int>(
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 
 template <typename _DataType, typename _ResultType>
-void custom_mean_c(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis)
+void custom_mean_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
 {
+    __attribute__((unused)) void* tmp = (void*)(axis + naxis);
+
     _ResultType* result = reinterpret_cast<_ResultType*>(result1);
 
     size_t size = 1;
@@ -186,11 +191,16 @@ void custom_mean_c(void* array1_in, void* result1, size_t* shape, size_t ndim, s
         size *= shape[i];
     }
 
+    if (!size)
+    {
+        return;
+    }
+
     _DataType* sum = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(1 * sizeof(_DataType)));
 
     custom_sum_c<_DataType>(array1_in, sum, size);
 
-    result[0] = (_ResultType)(sum[0]) / size;
+    result[0] = static_cast<_ResultType>(sum[0]) / static_cast<_ResultType>(size);
 
     dpnp_memory_free_c(sum);
 
@@ -200,17 +210,19 @@ void custom_mean_c(void* array1_in, void* result1, size_t* shape, size_t ndim, s
 }
 
 template void custom_mean_c<double, double>(
-    void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
-template void
-    custom_mean_c<float, float>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
-template void
-    custom_mean_c<long, double>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
-template void
-    custom_mean_c<int, double>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
+template void custom_mean_c<float, float>(
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
+template void custom_mean_c<long, double>(
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
+template void custom_mean_c<int, double>(
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 
 template <typename _DataType, typename _ResultType>
-void custom_median_c(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis)
+void custom_median_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
 {
+    __attribute__((unused)) void* tmp = (void*)(axis + naxis);
+
     _ResultType* result = reinterpret_cast<_ResultType*>(result1);
 
     size_t size = 1;
@@ -225,7 +237,7 @@ void custom_median_c(void* array1_in, void* result1, size_t* shape, size_t ndim,
 
     if (size % 2 == 0)
     {
-        result[0] = (_ResultType)(sorted[size / 2] + sorted[size / 2 - 1]) / 2;
+        result[0] = static_cast<_ResultType>(sorted[size / 2] + sorted[size / 2 - 1]) / 2;
     }
     else
     {
@@ -240,20 +252,22 @@ void custom_median_c(void* array1_in, void* result1, size_t* shape, size_t ndim,
 }
 
 template void custom_median_c<double, double>(
-    void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 template void custom_median_c<float, double>(
-    void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 template void custom_median_c<long, double>(
-    void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 template void custom_median_c<int, double>(
-    void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 
 template <typename _DataType>
 class custom_min_c_kernel;
 
 template <typename _DataType>
-void custom_min_c(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis)
+void custom_min_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
 {
+    __attribute__((unused)) void* tmp = (void*)(axis + naxis);
+
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
@@ -275,10 +289,100 @@ void custom_min_c(void* array1_in, void* result1, size_t* shape, size_t ndim, si
 #endif
 }
 
-template void
-    custom_min_c<double>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
-template void
-    custom_min_c<float>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
-template void
-    custom_min_c<long>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
-template void custom_min_c<int>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+template void custom_min_c<double>(
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
+template void custom_min_c<float>(
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
+template void custom_min_c<long>(
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
+template void custom_min_c<int>(
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
+
+template <typename _DataType, typename _ResultType>
+void custom_std_c(
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof)
+{
+    _DataType* array1 = reinterpret_cast<_DataType*>(array1_in);
+    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
+
+    _ResultType* var = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(1 * sizeof(_ResultType)));
+    custom_var_c<_DataType, _ResultType>(array1, var, shape, ndim, axis, naxis, ddof);
+
+    custom_elemwise_sqrt_c<_ResultType, _ResultType>(var, result, 1);
+
+    dpnp_memory_free_c(var);
+
+#if 0
+    std::cout << "std result " << res[0] << "\n";
+#endif
+}
+
+template void custom_std_c<int, double>(
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
+template void custom_std_c<long, double>(
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
+template void custom_std_c<float, float>(
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
+template void custom_std_c<double, double>(
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
+
+template <typename _DataType, typename _ResultType>
+class custom_var_c_kernel;
+
+template <typename _DataType, typename _ResultType>
+void custom_var_c(
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof)
+{
+    cl::sycl::event event;
+    _DataType* array1 = reinterpret_cast<_DataType*>(array1_in);
+    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
+
+    _ResultType* mean = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(1 * sizeof(_ResultType)));
+    custom_mean_c<_DataType, _ResultType>(array1, mean, shape, ndim, axis, naxis);
+    _ResultType mean_val = mean[0];
+
+    size_t size = 1;
+    for (size_t i = 0; i < ndim; ++i)
+    {
+        size *= shape[i];
+    }
+
+    _ResultType* squared_deviations = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(size * sizeof(_ResultType)));
+
+    cl::sycl::range<1> gws(size);
+    event = DPNP_QUEUE.submit([&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class custom_var_c_kernel<_DataType, _ResultType> >(
+            gws,
+            [=](cl::sycl::id<1> global_id)
+        {
+            size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/
+            {
+                _ResultType deviation = static_cast<_ResultType>(array1[i]) - mean_val;
+                squared_deviations[i] = deviation * deviation;
+            }
+        }); /* parallel_for */
+    });     /* queue.submit */
+
+    event.wait();
+
+    custom_mean_c<_ResultType, _ResultType>(squared_deviations, mean, shape, ndim, axis, naxis);
+    mean_val = mean[0];
+
+    result[0] = mean_val * size / static_cast<_ResultType>(size - ddof);
+
+    dpnp_memory_free_c(mean);
+    dpnp_memory_free_c(squared_deviations);
+
+#if 0
+    std::cout << "var result " << res[0] << "\n";
+#endif
+}
+
+template void custom_var_c<int, double>(
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
+template void custom_var_c<long, double>(
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
+template void custom_var_c<float, float>(
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
+template void custom_var_c<double, double>(
+    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);

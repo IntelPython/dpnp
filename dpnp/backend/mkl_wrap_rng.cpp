@@ -39,6 +39,11 @@ namespace mkl_rng = oneapi::mkl::rng;
 template <typename _DataType>
 void mkl_rng_gaussian(void* result, size_t size)
 {
+    if (!size)
+    {
+        return;
+    }
+
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
     // TODO:
@@ -51,17 +56,10 @@ void mkl_rng_gaussian(void* result, size_t size)
     const _DataType stddev = _DataType(1.0);
 
     mkl_rng::gaussian<_DataType> distribution(mean, stddev);
-    try
-    {
-        // perform generation
-        mkl_rng::generate(distribution, engine, size, result1);
-        DPNP_QUEUE.wait_and_throw();
-    }
-    catch (cl::sycl::exception const& e)
-    {
-        std::cerr << "Caught synchronous SYCL exception during mkl_rng_gaussian():\n"
-                  << e.what() << "\nOpenCL status: " << e.get_cl_code() << std::endl;
-    }
+    // perform generation
+    mkl_rng::generate(distribution, engine, size, result1);
+
+    DPNP_QUEUE.wait();
 }
 
 // TODO:
@@ -70,6 +68,10 @@ template <typename _DataType, typename _Engine>
 void mkl_rng_uniform(void * result, long low, long high, size_t size, void * engine)
 {
     engine_rng* engn_rng = reinterpret_cast<engine_rng*>(engine);
+    if (!size)
+    {
+        return;
+    }
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
     _Engine* engine1 = reinterpret_cast<_Engine*>(engn_rng->get_engine());
 
