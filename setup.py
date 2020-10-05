@@ -272,7 +272,6 @@ dpnp_backend_c = [
                 "dpnp/backend/custom_kernels_sorting.cpp",
                 "dpnp/backend/custom_kernels_statistics.cpp",
                 "dpnp/backend/memory_sycl.cpp",
-                "dpnp/backend/mkl_wrap_blas1.cpp",
                 "dpnp/backend/mkl_wrap_lapack.cpp",
                 "dpnp/backend/mkl_wrap_rng.cpp",
                 "dpnp/backend/queue_sycl.cpp"

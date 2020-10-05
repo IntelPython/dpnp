@@ -173,22 +173,6 @@ INP_DLLEXPORT void custom_prod_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
- * @brief MKL implementation of dot function
- *
- * @param [in]  array1  Input array.
- *
- * @param [in]  array2  Input array.
- *
- * @param [out] result1 Output array.
- *
- * @param [in]  size    Number of elements in input arrays.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void mkl_blas_dot_c(void* array1, void* array2, void* result1, size_t size);
-
-/**
- * @ingroup BACKEND_API
  * @brief MKL implementation of eig function
  *
  * @param [in]  array1  Input array.
