@@ -18,10 +18,9 @@ def test_random_input_size(func):
 @pytest.mark.parametrize("func",
                          [dpnp.random.random,
                           dpnp.random.random_sample,
-                          dpnp.random.randf,
-                          dpnp.random.sample],
+                          dpnp.random.randf],
                          ids=['random', 'random_sample',
-                              'randf', 'sample'])
+                              'randf'])
 def test_random_input_shape(func):
     shape = (10, 5)
     res = func(shape)
@@ -32,11 +31,9 @@ def test_random_input_shape(func):
                          [dpnp.random.random,
                           dpnp.random.random_sample,
                           dpnp.random.randf,
-                          dpnp.random.sample,
                           dpnp.random.rand],
                          ids=['random', 'random_sample',
-                              'randf', 'sample',
-                              'rand'])
+                              'randf', 'rand'])
 def test_random_check_otput(func):
     shape = (10, 5)
     size = 10 * 5
@@ -49,3 +46,4 @@ def test_random_check_otput(func):
     for i in range(res.size):
         assert res[i] >= 0.0
         assert res[i] < 1.0
+
