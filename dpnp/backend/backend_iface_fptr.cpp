@@ -91,11 +91,11 @@ void* get_backend_function_name(const char* func_name, const char* type_name)
     {
         if (!strncmp(type_name, supported_type1_name, strlen(supported_type1_name)))
         {
-            return reinterpret_cast<void*>(mkl_blas_dot_c<double>);
+            return reinterpret_cast<void*>(custom_blas_dot_c<double>);
         }
         else if (!strncmp(type_name, supported_type2_name, strlen(supported_type2_name)))
         {
-            return reinterpret_cast<void*>(mkl_blas_dot_c<float>);
+            return reinterpret_cast<void*>(custom_blas_dot_c<float>);
         }
         else if (!strncmp(type_name, supported_type3_name, strlen(supported_type3_name)))
         {
@@ -312,8 +312,8 @@ static func_map_t func_map_init()
 
     fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_INT] = {eft_INT, (void*)custom_blas_dot_c<int>};
     fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_blas_dot_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_FLT] = {eft_FLT, (void*)mkl_blas_dot_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_DBL] = {eft_DBL, (void*)mkl_blas_dot_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_blas_dot_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_blas_dot_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_EIG][eft_INT][eft_INT] = {eft_DBL, (void*)mkl_lapack_syevd_c<double>};
     fmap[DPNPFuncName::DPNP_FN_EIG][eft_LNG][eft_LNG] = {eft_DBL, (void*)mkl_lapack_syevd_c<double>};
