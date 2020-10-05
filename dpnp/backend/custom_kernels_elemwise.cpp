@@ -43,18 +43,20 @@
         _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);                                       \
                                                                                                                        \
         cl::sycl::range<1> gws(size);                                                                                  \
-        event = DPNP_QUEUE.submit([&](cl::sycl::handler& cgh) {                                                        \
-            cgh.parallel_for<class custom_elemwise_##__name__##_c_kernel<_DataType_input> >(                           \
-                gws,                                                                                                   \
-                [=](cl::sycl::id<1> global_id)                                                                         \
+        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                               \
+            size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/                                             \
             {                                                                                                          \
-                size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/                                         \
-                {                                                                                                      \
-                    _DataType_output input_elem = array1[i];                                                           \
-                    result[i] = __operation__;                                                                         \
-                }                                                                                                      \
-            }); /* parallel_for */                                                                                     \
-        });     /* queue.submit */                                                                                     \
+                _DataType_output input_elem = array1[i];                                                               \
+                result[i] = __operation__;                                                                             \
+            }                                                                                                          \
+        };                                                                                                             \
+                                                                                                                       \
+        auto kernel_func = [&](cl::sycl::handler& cgh) {                                                               \
+            cgh.parallel_for<class custom_elemwise_##__name__##_c_kernel<_DataType_input> >(                           \
+                gws, kernel_parallel_for_func);                                                                        \
+        };                                                                                                             \
+                                                                                                                       \
+        event = DPNP_QUEUE.submit(kernel_func);                                                                        \
                                                                                                                        \
         event.wait();                                                                                                  \
     }                                                                                                                  \
@@ -79,18 +81,19 @@
         _DataType* result = reinterpret_cast<_DataType*>(result1);                                                     \
                                                                                                                        \
         cl::sycl::range<1> gws(size);                                                                                  \
-        event = DPNP_QUEUE.submit([&](cl::sycl::handler& cgh) {                                                        \
-            cgh.parallel_for<class custom_elemwise_##__name__##_c_kernel<_DataType> >(                                 \
-                gws,                                                                                                   \
-                [=](cl::sycl::id<1> global_id)                                                                         \
+        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                               \
+            size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/                                             \
             {                                                                                                          \
-                size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/                                         \
-                {                                                                                                      \
-                    _DataType input_elem = array1[i];                                                                  \
-                    result[i] = __operation__;                                                                         \
-                }                                                                                                      \
-            }); /* parallel_for */                                                                                     \
-        });     /* queue.submit */                                                                                     \
+                _DataType input_elem = array1[i];                                                                      \
+                result[i] = __operation__;                                                                             \
+            }                                                                                                          \
+        };                                                                                                             \
+                                                                                                                       \
+        auto kernel_func = [&](cl::sycl::handler& cgh) {                                                               \
+            cgh.parallel_for<class custom_elemwise_##__name__##_c_kernel<_DataType> >(gws, kernel_parallel_for_func);  \
+        };                                                                                                             \
+                                                                                                                       \
+        event = DPNP_QUEUE.submit(kernel_func);                                                                        \
                                                                                                                        \
         event.wait();                                                                                                  \
     }                                                                                                                  \
@@ -118,19 +121,21 @@
         _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);                                                  \
                                                                                                                                   \
         cl::sycl::range<1> gws(size);                                                                                             \
-        event = DPNP_QUEUE.submit([&](cl::sycl::handler& cgh) {                                                                   \
-            cgh.parallel_for<class custom_elemwise_##__name__##_c_kernel<_DataType_input1, _DataType_input2, _DataType_output> >( \
-                gws,                                                                                                              \
-                [=](cl::sycl::id<1> global_id)                                                                                    \
+        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                                          \
+            size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/                                                        \
             {                                                                                                                     \
-                size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/                                                    \
-                {                                                                                                                 \
-                    _DataType_output input_elem1 = array1[i];                                                                     \
-                    _DataType_output input_elem2 = array2[i];                                                                     \
-                    result[i] = __operation__;                                                                                    \
-                }                                                                                                                 \
-            }); /* parallel_for */                                                                                                \
-        });     /* queue.submit */                                                                                                \
+                _DataType_output input_elem1 = array1[i];                                                                         \
+                _DataType_output input_elem2 = array2[i];                                                                         \
+                result[i] = __operation__;                                                                                        \
+            }                                                                                                                     \
+        };                                                                                                                        \
+                                                                                                                                  \
+        auto kernel_func = [&](cl::sycl::handler& cgh) {                                                                          \
+            cgh.parallel_for<class custom_elemwise_##__name__##_c_kernel<_DataType_input1, _DataType_input2, _DataType_output> >( \
+                gws, kernel_parallel_for_func);                                                                                   \
+        };                                                                                                                        \
+                                                                                                                                  \
+        event = DPNP_QUEUE.submit(kernel_func);                                                                                   \
                                                                                                                                   \
         event.wait();                                                                                                             \
     }                                                                                                                             \
