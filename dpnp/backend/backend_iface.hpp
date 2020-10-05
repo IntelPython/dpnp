@@ -93,6 +93,21 @@ INP_DLLEXPORT char* dpnp_memory_alloc_c(size_t size_in_bytes);
 INP_DLLEXPORT void dpnp_memory_free_c(void* ptr);
 void dpnp_memory_memcpy_c(void* dst, const void* src, size_t size_in_bytes);
 
+/**
+ * @ingroup BACKEND_API
+ * @brief Matrix multiplication.
+ *
+ * Matrix multiplication procedure. Works with 2-D matrices
+ *
+ * @param [in]  array1    Input array.
+ *
+ * @param [in]  array2    Input array.
+ *
+ * @param [out] result1   Output array.
+ *
+ * @param [in]  size      Number of elements in input arrays.
+ *
+ */
 template <typename _DataType>
 INP_DLLEXPORT void
     custom_blas_gemm_c(void* array1, void* array2, void* result1, size_t size_m, size_t size_n, size_t size_k);
@@ -387,15 +402,6 @@ INP_DLLEXPORT void custom_std_c(
 template <typename _DataType, typename _ResultType>
 INP_DLLEXPORT void custom_var_c(
     void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
-
-#if 0 // Example for OpenCL kernel
-template <typename _DataType>
-void custom_dgemm_c_opencl(void* array_1, void* array_2, void* result_1, size_t size);
-#endif
-
-template <typename _DataType>
-INP_DLLEXPORT void
-    dpnp_blas_gemm_c(void* array1, void* array2, void* result1, size_t size_m, size_t size_n, size_t size_k);
 
 /**
  * @ingroup BACKEND_API
