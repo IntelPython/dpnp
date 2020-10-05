@@ -173,17 +173,19 @@ INP_DLLEXPORT void custom_prod_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
- * @brief math library implementation of eig function
+ * @brief Compute the eigenvalues and right eigenvectors of a square array.
  *
- * @param [in]  array1  Input array.
+ * @param [in]  array_in  Input array[size][size]
  *
- * @param [out] result1 Output array.
+ * @param [out] result1   The eigenvalues, each repeated according to its multiplicity
  *
- * @param [in]  size    Number of elements in input arrays.
+ * @param [out] result2   The normalized (unit “length”) eigenvectors
+ *
+ * @param [in]  size      One dimension of square [size][size] array
  *
  */
-template <typename _DataType>
-INP_DLLEXPORT void mkl_lapack_syevd_c(void* array1, void* result1, size_t size);
+template <typename _DataType, typename _ResultType>
+INP_DLLEXPORT void custom_lapack_eig_c(const void* array_in, void* result1, void* result2, size_t size);
 
 /**
  * @ingroup BACKEND_API
