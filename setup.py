@@ -205,8 +205,9 @@ _mkl_root = os.environ.get('MKLROOT', None)
 if _mkl_root is None:
     raise EnvironmentError("Intel NumPy: Please install Intel OneAPI environment. MKLROOT is empty")
 _mkl_include = [os.path.join(_mkl_root, 'include')]
-_mkl_libs = ["mkl_rt", "mkl_sycl", "mkl_intel_ilp64", "mkl_sequential", "mkl_core", "sycl", "OpenCL", "pthread", "m", "dl"]
-_project_cmplr_macro += [("MKL_ILP64", "1")] # using 64bit integers in MKL interface (long) 
+_mkl_libs = ["mkl_rt", "mkl_sycl", "mkl_intel_ilp64", "mkl_sequential",
+             "mkl_core", "sycl", "OpenCL", "pthread", "m", "dl"]
+_project_cmplr_macro += [("MKL_ILP64", "1")]  # using 64bit integers in MKL interface (long)
 
 _mkl_libpath = [os.path.join(_mkl_root, 'lib', 'intel64')]
 if IS_LIN:
@@ -272,7 +273,6 @@ dpnp_backend_c = [
                 "dpnp/backend/custom_kernels_statistics.cpp",
                 "dpnp/backend/memory_sycl.cpp",
                 "dpnp/backend/mkl_wrap_blas1.cpp",
-                "dpnp/backend/mkl_wrap_blas3.cpp",
                 "dpnp/backend/mkl_wrap_lapack.cpp",
                 "dpnp/backend/mkl_wrap_rng.cpp",
                 "dpnp/backend/queue_sycl.cpp"
