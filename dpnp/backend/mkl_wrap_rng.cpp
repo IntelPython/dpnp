@@ -67,13 +67,19 @@ void mkl_rng_gaussian(void* result, size_t size)
 template <typename _DataType, typename _Engine>
 void mkl_rng_uniform(void * result, long low, long high, size_t size, void * engine)
 {
-    engine_rng* engn_rng = reinterpret_cast<engine_rng*>(engine);
     if (!size)
     {
         return;
     }
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    // doesn't work
+    engine_rng* engn_rng = reinterpret_cast<engine_rng*>(engine);
     _Engine* engine1 = reinterpret_cast<_Engine*>(engn_rng->get_engine());
+
+    // works
+    //size_t seed = std::time(nullptr);
+    //mkl_rng::mt19937* mt19937_engine = new mkl_rng::mt19937(DPNP_QUEUE, seed);
 
     // set left bound of distribution
     const _DataType a = (_DataType(low));
@@ -84,7 +90,11 @@ void mkl_rng_uniform(void * result, long low, long high, size_t size, void * eng
     try
     {
         // perform generation
+        // doesn't work
         mkl_rng::generate(distribution, * engine1, size, result1);
+
+        // works
+        //mkl_rng::generate(distribution, * mt19937_engine, size, result1);
         DPNP_QUEUE.wait_and_throw();
     }
     catch (cl::sycl::exception const& e)
