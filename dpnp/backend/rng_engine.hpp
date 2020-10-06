@@ -49,6 +49,12 @@ class engine_rng
     mkl_rng::mt19937* mt19937_engine;
     size_t seed;
 
+    void destroy()
+    {
+        delete mt19937_engine;
+        mt19937_engine = nullptr;
+    }
+
 public:
     engine_rng()
     {
@@ -63,8 +69,7 @@ public:
 
     ~engine_rng()
     {
-        delete mt19937_engine;
-        mt19937_engine = nullptr;
+        engine_rng::destroy();
     }
 
     /**

@@ -34,16 +34,5 @@ __all__ = [
     'random',
     'random_integers',
     'random_sample',
+    'RandomState'
 ]
-
-#__all__ = [
-#    'rand',
-#    'randf',
-#    'randint',
-#    'randn',
-#    'random',
-#    'random_integers',
-#    'random_sample',
-#    'sample',
-#    'uniform'
-#]
