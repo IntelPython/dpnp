@@ -488,7 +488,10 @@ template <typename _DataType, typename _Engine>
 INP_DLLEXPORT void mkl_rng_uniform(void * result, long low, long high, size_t size, void * engine);
 
 /**
- * TODO~~~
+ * @ingroup BACKEND_API
+ * @brief initialize rng_engine.
+ *
+ * @param [in]  seed   Initial conditions of the generator state or engine state.
  *
  */
 

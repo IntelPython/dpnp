@@ -49,12 +49,6 @@ void mkl_rng_gaussian(void * result, size_t size, void * engine)
     engine_rng* engn_rng = reinterpret_cast<engine_rng*>(engine);
     _Engine* engine1 = reinterpret_cast<_Engine*>(engn_rng->get_engine());
 
-    // TODO:
-    // choose engine as is in numpy
-    // seed number
-    //size_t seed = std::time(nullptr);
-    //mkl_rng::philox4x32x10 engine(DPNP_QUEUE, seed);
-
     const _DataType mean = _DataType(0.0);
     const _DataType stddev = _DataType(1.0);
 
@@ -65,8 +59,6 @@ void mkl_rng_gaussian(void * result, size_t size, void * engine)
     DPNP_QUEUE.wait();
 }
 
-// TODO:
-// draft
 template <typename _DataType, typename _Engine>
 void mkl_rng_uniform(void * result, long low, long high, size_t size, void * engine)
 {
