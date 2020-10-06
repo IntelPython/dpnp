@@ -30,7 +30,7 @@
 #include <CL/sycl.hpp>
 
 #if !defined(DPNP_LOCAL_QUEUE)
-#include <dppl_sycl_queue_interface.h>
+#include <dppl_sycl_queue_manager.h>
 #endif
 
 #define DPNP_QUEUE backend_sycl::get_queue()
@@ -92,7 +92,7 @@ public:
         return *queue;
 #else
         // temporal solution. Started from Sept-2020
-        DPPLSyclQueueRef DPCtrl_queue = DPPLGetCurrentQueue();
+        DPPLSyclQueueRef DPCtrl_queue = DPPLQueueMgr_GetCurrentQueue();
         return *(reinterpret_cast<cl::sycl::queue*>(DPCtrl_queue));
 #endif
     }
