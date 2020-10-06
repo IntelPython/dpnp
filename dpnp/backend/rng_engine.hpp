@@ -37,7 +37,7 @@
 namespace mkl_rng = oneapi::mkl::rng;
 
 /**
- * This is 
+ * This is
  * TODO:
  *
  */
@@ -84,7 +84,7 @@ public:
 
     void* get_engine()
     {
-        void * engine_ptr = reinterpret_cast<void*>(this->mt19937_engine);
+        void* engine_ptr = reinterpret_cast<void*>(this->mt19937_engine);
         return engine_ptr;
     }
 

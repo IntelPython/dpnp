@@ -39,7 +39,7 @@ namespace mkl_rng = oneapi::mkl::rng;
 // TODO:
 // add mean and std params ?
 template <typename _DataType, typename _Engine>
-void mkl_rng_gaussian(void * result, size_t size, void * engine)
+void mkl_rng_gaussian(void* result, size_t size, void* engine)
 {
     if (!size)
     {
@@ -54,13 +54,13 @@ void mkl_rng_gaussian(void * result, size_t size, void * engine)
 
     mkl_rng::gaussian<_DataType> distribution(mean, stddev);
     // perform generation
-    mkl_rng::generate(distribution, * engine1, size, result1);
+    mkl_rng::generate(distribution, *engine1, size, result1);
 
     DPNP_QUEUE.wait();
 }
 
 template <typename _DataType, typename _Engine>
-void mkl_rng_uniform(void * result, long low, long high, size_t size, void * engine)
+void mkl_rng_uniform(void* result, long low, long high, size_t size, void* engine)
 {
     if (!size)
     {
@@ -79,7 +79,7 @@ void mkl_rng_uniform(void * result, long low, long high, size_t size, void * eng
     try
     {
         // perform generation
-        mkl_rng::generate(distribution, * engine1, size, result1);
+        mkl_rng::generate(distribution, *engine1, size, result1);
         DPNP_QUEUE.wait_and_throw();
     }
     catch (cl::sycl::exception const& e)
@@ -99,7 +99,7 @@ void* rng_engine_init(size_t seed)
     return new engine_rng(seed);
 }
 
-void* rng_engine_set_seed(size_t seed, void * engine)
+void* rng_engine_set_seed(size_t seed, void* engine)
 {
     engine_rng* engine_ptr = reinterpret_cast<engine_rng*>(engine);
     engine_ptr->set_seed(seed);
@@ -107,21 +107,18 @@ void* rng_engine_set_seed(size_t seed, void * engine)
     return engine_ptr;
 }
 
-template void mkl_rng_gaussian<double, mkl_rng::mt19937>(void* result, size_t size, void * engine);
-template void mkl_rng_gaussian<float, mkl_rng::mt19937>(void* result, size_t size, void * engine);
-template void mkl_rng_gaussian<double, mkl_rng::philox4x32x10>(void* result, size_t size, void * engine);
-template void mkl_rng_gaussian<float, mkl_rng::philox4x32x10>(void* result, size_t size, void * engine);
+template void mkl_rng_gaussian<double, mkl_rng::mt19937>(void* result, size_t size, void* engine);
+template void mkl_rng_gaussian<float, mkl_rng::mt19937>(void* result, size_t size, void* engine);
+template void mkl_rng_gaussian<double, mkl_rng::philox4x32x10>(void* result, size_t size, void* engine);
+template void mkl_rng_gaussian<float, mkl_rng::philox4x32x10>(void* result, size_t size, void* engine);
 
-template void mkl_rng_uniform<int, mkl_rng::mt19937>(void * result, long low, long high,
-                                                     size_t size, void * engine);
-template void mkl_rng_uniform<float, mkl_rng::mt19937>(void * result, long low, long high,
-                                                       size_t size, void * engine);
-template void mkl_rng_uniform<double, mkl_rng::mt19937>(void * result, long low, long high,
-                                                        size_t size, void * engine);
+template void mkl_rng_uniform<int, mkl_rng::mt19937>(void* result, long low, long high, size_t size, void* engine);
+template void mkl_rng_uniform<float, mkl_rng::mt19937>(void* result, long low, long high, size_t size, void* engine);
+template void mkl_rng_uniform<double, mkl_rng::mt19937>(void* result, long low, long high, size_t size, void* engine);
 
-template void mkl_rng_uniform<int, mkl_rng::philox4x32x10>(void * result, long low, long high,
-                                                           size_t size, void * engine);
-template void mkl_rng_uniform<float, mkl_rng::philox4x32x10>(void * result, long low, long high,
-                                                             size_t size, void * engine);
-template void mkl_rng_uniform<double, mkl_rng::philox4x32x10>(void * result, long low, long high,
-                                                              size_t size, void * engine);
+template void
+    mkl_rng_uniform<int, mkl_rng::philox4x32x10>(void* result, long low, long high, size_t size, void* engine);
+template void
+    mkl_rng_uniform<float, mkl_rng::philox4x32x10>(void* result, long low, long high, size_t size, void* engine);
+template void
+    mkl_rng_uniform<double, mkl_rng::philox4x32x10>(void* result, long low, long high, size_t size, void* engine);

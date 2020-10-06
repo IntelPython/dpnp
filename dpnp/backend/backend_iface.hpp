@@ -467,7 +467,7 @@ INP_DLLEXPORT void custom_elemwise_transpose_c(void* array1_in,
  *
  */
 template <typename _DataType, typename _Engine>
-INP_DLLEXPORT void mkl_rng_gaussian(void * result, size_t size, void * engine);
+INP_DLLEXPORT void mkl_rng_gaussian(void* result, size_t size, void* engine);
 
 /**
  * @ingroup BACKEND_API
@@ -485,7 +485,7 @@ INP_DLLEXPORT void mkl_rng_gaussian(void * result, size_t size, void * engine);
  *
  */
 template <typename _DataType, typename _Engine>
-INP_DLLEXPORT void mkl_rng_uniform(void * result, long low, long high, size_t size, void * engine);
+INP_DLLEXPORT void mkl_rng_uniform(void* result, long low, long high, size_t size, void* engine);
 
 /**
  * @ingroup BACKEND_API
@@ -493,7 +493,7 @@ INP_DLLEXPORT void mkl_rng_uniform(void * result, long low, long high, size_t si
  * TODO
  *
  */
-INP_DLLEXPORT void * rng_engine_init();
+INP_DLLEXPORT void* rng_engine_init();
 
 /**
  * @ingroup BACKEND_API
@@ -503,7 +503,7 @@ INP_DLLEXPORT void * rng_engine_init();
  * @param [in]  seed   Initial conditions of the generator state or engine state.
  *
  */
-INP_DLLEXPORT void * rng_engine_init(size_t seed);
+INP_DLLEXPORT void* rng_engine_init(size_t seed);
 
 /**
  * @ingroup BACKEND_API
@@ -514,5 +514,5 @@ INP_DLLEXPORT void * rng_engine_init(size_t seed);
  * @param [in]  engine Basic random number generator.
  *
  */
-INP_DLLEXPORT void * rng_engine_set_seed(size_t seed, void * engine);
+INP_DLLEXPORT void* rng_engine_set_seed(size_t seed, void* engine);
 #endif // BACKEND_IFACE_H
