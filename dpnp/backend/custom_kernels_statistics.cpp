@@ -222,6 +222,7 @@ void custom_mean_c(void* array1_in, void* result1, const size_t* shape, size_t n
 
         dpnp_memory_free_c(sum);
     }
+}
 
 template void custom_mean_c<double, double>(
     void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
