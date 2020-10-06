@@ -14,7 +14,7 @@ requirements:
       - setuptools
       - numpy-devel >=1.18
       - cython
-      - dpctl >=0.3.3
+      - dpctl =0.3.3
     run:
       - python
 
@@ -27,7 +27,7 @@ build:
 test:
     requires:
       - pytest
-      - dpctl >=0.3.3
+      - dpctl =0.3.3
     source_files:
         - examples
         - tests
