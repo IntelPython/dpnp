@@ -27,6 +27,7 @@ build:
 test:
     requires:
       - pytest
+      - setuptools
       - dpctl =0.3.3
     source_files:
         - examples
