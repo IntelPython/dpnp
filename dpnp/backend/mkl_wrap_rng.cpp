@@ -57,14 +57,13 @@ void mkl_rng_gaussian(void * result, size_t size, void * engine)
     try
     {
         mkl_rng::generate(distribution, * engine1, size, result1);
+        DPNP_QUEUE.wait_and_throw();
     }
     catch (cl::sycl::exception const& e)
     {
         std::cerr << "Caught synchronous SYCL exception during mkl_rng_uniform_mt19937():\n"
                   << e.what() << "\nOpenCL status: " << e.get_cl_code() << std::endl;
     }
-
-    DPNP_QUEUE.wait_and_throw();
 }
 
 template <typename _DataType, typename _Engine>
@@ -88,14 +87,13 @@ void mkl_rng_uniform(void * result, long low, long high, size_t size, void * eng
     {
         // perform generation
         auto event_out = mkl_rng::generate(distribution, * engine1, size, result1);
+        DPNP_QUEUE.wait_and_throw();
     }
     catch (cl::sycl::exception const& e)
     {
         std::cerr << "Caught synchronous SYCL exception during mkl_rng_uniform_mt19937():\n"
                   << e.what() << "\nOpenCL status: " << e.get_cl_code() << std::endl;
     }
-
-    DPNP_QUEUE.wait_and_throw();
 }
 
 void* rng_engine_init()
