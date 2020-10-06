@@ -14,6 +14,7 @@ requirements:
       - setuptools
       - numpy-devel >=1.18
       - cython
+      - dpctl >=0.3.3
     run:
       - python
 
@@ -26,8 +27,13 @@ build:
 test:
     requires:
       - pytest
+      - dpctl >=0.3.3
+    source_files:
+        - examples
+        - tests
     commands:
-      - source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh && python -c "import dpnp"
+      - python -c "import dpnp"
+      - pytest
 
 about:
     license: ISSL
