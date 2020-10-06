@@ -47,7 +47,6 @@ class engine_rng
     // TODO:
     // static
     mkl_rng::mt19937* mt19937_engine;
-    size_t seed;
 
     void destroy()
     {
@@ -63,7 +62,12 @@ public:
         // seed number
         // TODO:
         // mem leak
-        this->seed = std::time(nullptr);
+        size_t seed = std::time(nullptr);
+        this->mt19937_engine = new mkl_rng::mt19937(DPNP_QUEUE, seed);
+    }
+
+    engine_rng(size_t seed)
+    {
         this->mt19937_engine = new mkl_rng::mt19937(DPNP_QUEUE, seed);
     }
 
@@ -82,6 +86,15 @@ public:
     {
         void * engine_ptr = reinterpret_cast<void*>(this->mt19937_engine);
         return engine_ptr;
+    }
+
+    void set_seed(size_t seed)
+    {
+        if (mt19937_engine != nullptr)
+        {
+            engine_rng::destroy();
+        }
+        this->mt19937_engine = new mkl_rng::mt19937(DPNP_QUEUE, seed);
     }
 };
 

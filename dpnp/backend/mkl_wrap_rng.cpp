@@ -89,10 +89,23 @@ void mkl_rng_uniform(void * result, long low, long high, size_t size, void * eng
     }
 }
 
-void*  rng_engine_init(size_t seed)
+void* rng_engine_init()
 {
     return new engine_rng();
-}  
+}
+
+void* rng_engine_init(size_t seed)
+{
+    return new engine_rng(seed);
+}
+
+void* rng_engine_set_seed(size_t seed, void * engine)
+{
+    engine_rng* engine_ptr = reinterpret_cast<engine_rng*>(engine);
+    engine_ptr->set_seed(seed);
+
+    return engine_ptr;
+}
 
 template void mkl_rng_gaussian<double, mkl_rng::mt19937>(void* result, size_t size, void * engine);
 template void mkl_rng_gaussian<float, mkl_rng::mt19937>(void* result, size_t size, void * engine);

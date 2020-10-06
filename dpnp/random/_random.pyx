@@ -129,15 +129,19 @@ cdef class RandomState:
     TODO:
     description
     """
-    cdef size_t seed_
     cdef void * rng_engine
 
     def __init__(self, seed=None):
         # TODO:
-        #self.bit_generator = None
-        #self.seed = 1
-        self.seed_ = 1
-        self.rng_engine = rng_engine_init(self.seed_)
+        # self.bit_generator = None ?
+        cdef size_t seed_
+        if seed is None:
+            self.rng_engine = rng_engine_init()
+        elif not isinstance(seed, int):
+            checker_throw_value_error("seed", "type(seed)", type(seed), int)
+        else:
+            seed_ = seed
+            self.rng_engine = rng_engine_init(seed_)
 
     def __repr__(self):
         return self.__str__() + ' at 0x{:X}'.format(id(self))
@@ -170,7 +174,17 @@ cdef class RandomState:
         The best practice is to **not** reseed a BitGenerator, rather to
         recreate a new one. This method is here for legacy reasons.
         """
-        pass
+
+        # TODO:
+        # seed default value as is in numpy
+        cdef size_t seed_ = 1
+        if seed is None:
+            seed_ = 1
+        elif not isinstance(seed, int):
+            checker_throw_value_error("seed", "type(seed)", type(seed), int)
+        else:
+            seed_ = seed
+        self.rng_engine = rng_engine_set_seed(seed_, self.rng_engine)
 
     def get_state(self, legacy=True):
         """
@@ -456,13 +470,13 @@ randn = _rand.randn
 random = _rand.random
 random_integers = _rand.random_integers
 random_sample = _rand.random_sample
-# TODO
-# seed = _rand.seed
+seed = _rand.seed
 # set_state = _rand.set_state
+# get_state = _rand.get_state
 
 
 # TODO:
-# update ~~ + __init__
+# will be moved into random/_distribuition.pyx
 
 #def sample(size):
 #    """

@@ -490,11 +490,29 @@ INP_DLLEXPORT void mkl_rng_uniform(void * result, long low, long high, size_t si
 /**
  * @ingroup BACKEND_API
  * @brief initialize rng_engine.
+ * TODO
+ *
+ */
+INP_DLLEXPORT void * rng_engine_init();
+
+/**
+ * @ingroup BACKEND_API
+ * @brief initialize rng_engine.
+ * TODO
  *
  * @param [in]  seed   Initial conditions of the generator state or engine state.
  *
  */
-
 INP_DLLEXPORT void * rng_engine_init(size_t seed);
 
+/**
+ * @ingroup BACKEND_API
+ * @brief reseed a legacy rng_engine.
+ *
+ * @param [in]  seed   Initial conditions of the generator state or engine state.
+ *
+ * @param [in]  engine Basic random number generator.
+ *
+ */
+INP_DLLEXPORT void * rng_engine_set_seed(size_t seed, void * engine);
 #endif // BACKEND_IFACE_H
