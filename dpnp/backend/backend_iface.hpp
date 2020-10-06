@@ -486,11 +486,15 @@ template <typename _DataType, typename _Engine>
 INP_DLLEXPORT void mkl_rng_uniform(void * result, long low, long high, size_t size, void * engine);
 
 
+template <typename _DataType>
+INP_DLLEXPORT void mkl_rng_uniform_1(void * result, long low, long high, size_t size, void * engine);
+
+
 /**
  * TODO~~~
  *
  */
 
-void rng_engine_init(size_t seed, void * engine);
+INP_DLLEXPORT void * rng_engine_init(size_t seed);
 
 #endif // BACKEND_IFACE_H

@@ -137,7 +137,7 @@ cdef class RandomState:
         #self.bit_generator = None
         #self.seed = 1
         self.seed_ = 1
-        rng_engine_init(self.seed_, self.rng_engine)
+        self.rng_engine = rng_engine_init(self.seed_)
 
     def __repr__(self):
         return self.__str__() + ' at 0x{:X}'.format(id(self))

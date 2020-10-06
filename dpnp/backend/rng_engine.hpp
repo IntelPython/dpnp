@@ -26,6 +26,8 @@
 #ifndef RNG_ENGINE_H
 #define RNG_ENGINE_H
 
+#include <iostream>
+
 #include <ctime>
 #include <mkl_sycl.hpp>
 
@@ -53,13 +55,13 @@ public:
         // TODO:
         // choose engine as is in numpy
         // seed number
-        size_t seed = std::time(nullptr);
-        mkl_rng::mt19937 engine(DPNP_QUEUE, seed);
-        mt19937_engine = &engine;
-        //mt19937_engine = new mkl_rng::mt19937(DPNP_QUEUE, seed);
+        // TODO:
+        // mem leak
+        this->seed = std::time(nullptr);
+        this->mt19937_engine = new mkl_rng::mt19937(DPNP_QUEUE, seed);
     }
 
-    virtual ~engine_rng()
+    ~engine_rng()
     {
         delete mt19937_engine;
         mt19937_engine = nullptr;
@@ -73,9 +75,9 @@ public:
 
     void* get_engine()
     {
-        return mt19937_engine;
+        void * engine_ptr = reinterpret_cast<void*>(this->mt19937_engine);
+        return engine_ptr;
     }
-    
 };
 
 #endif // RNG_ENGINE_H
