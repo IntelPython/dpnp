@@ -25,6 +25,7 @@
 
 #include <iostream>
 #include <mkl_blas_sycl.hpp>
+#include <mkl_stats_sycl.hpp>
 
 #include <backend_iface.hpp>
 #include "backend_pstl.hpp"
@@ -32,6 +33,7 @@
 #include "queue_sycl.hpp"
 
 namespace mkl_blas = oneapi::mkl::blas::row_major;
+namespace mkl_stats = oneapi::mkl::stats;
 
 template <typename _DataType>
 class custom_cov_c_kernel;
@@ -198,13 +200,25 @@ void custom_mean_c(void* array1_in, void* result1, const size_t* shape, size_t n
         return;
     }
 
-    _DataType* sum = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(1 * sizeof(_DataType)));
+    if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
+    {
+        _ResultType* array = reinterpret_cast<_DataType*>(array1_in);
+        auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, size, array);
 
-    custom_sum_c<_DataType>(array1_in, sum, size);
+        cl::sycl::event event = mkl_stats::mean(DPNP_QUEUE, dataset, result);
 
-    result[0] = static_cast<_ResultType>(sum[0]) / static_cast<_ResultType>(size);
+        event.wait();
+    }
+    else
+    {
+        _DataType* sum = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(1 * sizeof(_DataType)));
 
-    dpnp_memory_free_c(sum);
+        custom_sum_c<_DataType>(array1_in, sum, size);
+
+        result[0] = static_cast<_ResultType>(sum[0]) / static_cast<_ResultType>(size);
+
+        dpnp_memory_free_c(sum);
+    }
 
 #if 0
     std::cout << "mean result " << result[0] << "\n";
