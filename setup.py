@@ -45,7 +45,6 @@ import numpy
 from setuptools import setup, Extension
 from Cython.Build import cythonize
 from Cython.Compiler import Options as cython_options
-from distutils import log
 
 from utils.command_style import source_style
 from utils.command_clean import source_clean
