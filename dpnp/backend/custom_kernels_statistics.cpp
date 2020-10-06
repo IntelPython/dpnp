@@ -25,6 +25,7 @@
 
 #include <iostream>
 #include <mkl_blas_sycl.hpp>
+#include <mkl_stats_sycl.hpp>
 
 #include <backend_iface.hpp>
 #include "backend_pstl.hpp"
@@ -32,6 +33,7 @@
 #include "queue_sycl.hpp"
 
 namespace mkl_blas = oneapi::mkl::blas::row_major;
+namespace mkl_stats = oneapi::mkl::stats;
 
 template <typename _DataType>
 class custom_cov_c_kernel;
@@ -118,20 +120,22 @@ void custom_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols)
     // fill lower elements
     cl::sycl::event event;
     cl::sycl::range<1> gws(nrows * nrows);
-    event = DPNP_QUEUE.submit([&](cl::sycl::handler& cgh) {
-            cgh.parallel_for<class custom_cov_c_kernel<_DataType> >(
-                gws,
-                [=](cl::sycl::id<1> global_id)
-            {
-                const size_t idx = global_id[0];
-                const size_t row_idx = idx / nrows;
-                const size_t col_idx = idx - row_idx * nrows;
-                if (col_idx < row_idx)
-                {
-                    result[idx] = result[col_idx * nrows + row_idx];
-                }
-            }); // parallel_for
-    });         // queue.submit
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        const size_t idx = global_id[0];
+        const size_t row_idx = idx / nrows;
+        const size_t col_idx = idx - row_idx * nrows;
+        if (col_idx < row_idx)
+        {
+            result[idx] = result[col_idx * nrows + row_idx];
+        }
+    };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class custom_cov_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+    };
+
+    event = DPNP_QUEUE.submit(kernel_func);
+
     event.wait();
 
     dpnp_memory_free_c(mean);
@@ -196,17 +200,28 @@ void custom_mean_c(void* array1_in, void* result1, const size_t* shape, size_t n
         return;
     }
 
-    _DataType* sum = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(1 * sizeof(_DataType)));
+    if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
+    {
+        _ResultType* array = reinterpret_cast<_DataType*>(array1_in);
 
-    custom_sum_c<_DataType>(array1_in, sum, size);
+        // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-make_dataset.html
+        auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, size, array);
 
-    result[0] = static_cast<_ResultType>(sum[0]) / static_cast<_ResultType>(size);
+        // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-mean.html
+        cl::sycl::event event = mkl_stats::mean(DPNP_QUEUE, dataset, result);
 
-    dpnp_memory_free_c(sum);
+        event.wait();
+    }
+    else
+    {
+        _DataType* sum = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(1 * sizeof(_DataType)));
 
-#if 0
-    std::cout << "mean result " << result[0] << "\n";
-#endif
+        custom_sum_c<_DataType>(array1_in, sum, size);
+
+        result[0] = static_cast<_ResultType>(sum[0]) / static_cast<_ResultType>(size);
+
+        dpnp_memory_free_c(sum);
+    }
 }
 
 template void custom_mean_c<double, double>(
@@ -350,18 +365,19 @@ void custom_var_c(
     _ResultType* squared_deviations = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(size * sizeof(_ResultType)));
 
     cl::sycl::range<1> gws(size);
-    event = DPNP_QUEUE.submit([&](cl::sycl::handler& cgh) {
-        cgh.parallel_for<class custom_var_c_kernel<_DataType, _ResultType> >(
-            gws,
-            [=](cl::sycl::id<1> global_id)
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/
         {
-            size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/
-            {
-                _ResultType deviation = static_cast<_ResultType>(array1[i]) - mean_val;
-                squared_deviations[i] = deviation * deviation;
-            }
-        }); /* parallel_for */
-    });     /* queue.submit */
+            _ResultType deviation = static_cast<_ResultType>(array1[i]) - mean_val;
+            squared_deviations[i] = deviation * deviation;
+        }
+    };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class custom_var_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
+    };
+
+    event = DPNP_QUEUE.submit(kernel_func);
 
     event.wait();
 

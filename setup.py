@@ -134,13 +134,12 @@ try:
     """
     Detect external SYCL queue handling library
     """
-    import dpctrl
+    import dpctl
 
-    # TODO this will not work with no Conda environment
-    _conda_root = os.environ.get('CONDA_PREFIX', "conda_include_error")
-    _dpctrl_include += [os.path.join(_conda_root, 'include')]
-    _dpctrl_libpath += [os.path.join(_conda_root, 'lib')]
-    _dpctrl_lib += ["dpctrlsyclinterface"]
+    _dpctrl_include += [dpctl.get_include()]
+    # _dpctrl_libpath = for package build + for local build
+    _dpctrl_libpath += ["$ORIGIN/../dpctl"] + [os.path.join(dpctl.get_include(), '..')]
+    _dpctrl_lib += ["DPPLSyclInterface"]
 except ImportError:
     """
     Set local SYCL queue handler
@@ -194,7 +193,7 @@ else:
 
 
 """
-Search and set MKL environemnt
+Search and set math library environemnt
 """
 _mkl_rpath = []
 _cmplr_rpath = []
@@ -272,7 +271,6 @@ dpnp_backend_c = [
                 "dpnp/backend/custom_kernels_sorting.cpp",
                 "dpnp/backend/custom_kernels_statistics.cpp",
                 "dpnp/backend/memory_sycl.cpp",
-                "dpnp/backend/mkl_wrap_blas1.cpp",
                 "dpnp/backend/mkl_wrap_lapack.cpp",
                 "dpnp/backend/mkl_wrap_rng.cpp",
                 "dpnp/backend/queue_sycl.cpp"

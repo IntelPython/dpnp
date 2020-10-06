@@ -58,7 +58,7 @@ cpdef tuple dpnp_eig(dparray in_array1):
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_EIG, param1_type, param1_type)
 
     result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-    # this array is used as input for MKL and will be overwritten with eigen vectors
+    # this array is used as input for math library and will be overwritten with eigen vectors
     res_vec = in_array1.astype(result_type)
     # ceate result array with type given by FPTR data
     cdef dparray res_val = dparray((size1,), dtype=result_type)

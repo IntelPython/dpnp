@@ -53,7 +53,7 @@ void custom_blas_gemm_c(void* array1_in, void* array2_in, void* result1, size_t 
 
     if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
     {
-        // using std::max for these ldx variables is required by MKL
+        // using std::max for these ldx variables is required by math library
         const std::int64_t lda = std::max<size_t>(1UL, size_k); // First dimensions of array_1
         const std::int64_t ldb = std::max<size_t>(1UL, size_n); // First dimensions of array_2
         const std::int64_t ldc = std::max<size_t>(1UL, size_n); // Fast dimensions of result
@@ -131,35 +131,58 @@ void custom_blas_dot_c(void* array1_in, void* array2_in, void* result1, size_t s
     _DataType* array_2 = reinterpret_cast<_DataType*>(array2_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    _DataType* local_mem = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+    if (!size)
+    {
+        return;
+    }
 
-    // what about reduction??
-    cl::sycl::range<1> gws(size);
-    event = DPNP_QUEUE.submit([&](cl::sycl::handler& cgh) {
-            cgh.parallel_for<class custom_blas_dot_c_kernel<_DataType> >(gws, [=](cl::sycl::id<1> global_id)
-            {
-                const size_t index = global_id[0];
-                local_mem[index] = array_1[index] * array_2[index];
-            }     // kernel lambda
-            );    // parallel_for
-    }             // task lambda
-    );            // queue.submit
+    if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
+    {
+        event = mkl_blas::dot(DPNP_QUEUE,
+                              size,
+                              array_1,
+                              1, // array_1 stride
+                              array_2,
+                              1, // array_2 stride
+                              result);
+        event.wait();
+    }
+    else
+    {
+        _DataType* local_mem = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
 
-    event.wait();
+        // what about reduction??
+        cl::sycl::range<1> gws(size);
 
-    auto policy = oneapi::dpl::execution::make_device_policy<class custom_blas_dot_c_kernel<_DataType>>(DPNP_QUEUE);
+        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+            const size_t index = global_id[0];
+            local_mem[index] = array_1[index] * array_2[index];
+        };
 
-    _DataType accumulator = 0;
-    accumulator = std::reduce(policy, local_mem, local_mem + size, _DataType(0), std::plus<_DataType>());
-    policy.queue().wait();
+        auto kernel_func = [&](cl::sycl::handler& cgh) {
+            cgh.parallel_for<class custom_blas_dot_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+        };
 
-    result[0] = accumulator;
+        event = DPNP_QUEUE.submit(kernel_func);
 
-    free(local_mem, DPNP_QUEUE);
+        event.wait();
+
+        auto policy = oneapi::dpl::execution::make_device_policy<class custom_blas_dot_c_kernel<_DataType>>(DPNP_QUEUE);
+
+        _DataType accumulator = 0;
+        accumulator = std::reduce(policy, local_mem, local_mem + size, _DataType(0), std::plus<_DataType>());
+        policy.queue().wait();
+
+        result[0] = accumulator;
+
+        free(local_mem, DPNP_QUEUE);
+    }
 }
 
-template void custom_blas_dot_c<long>(void* array1_in, void* array2_in, void* result1, size_t size);
 template void custom_blas_dot_c<int>(void* array1_in, void* array2_in, void* result1, size_t size);
+template void custom_blas_dot_c<long>(void* array1_in, void* array2_in, void* result1, size_t size);
+template void custom_blas_dot_c<float>(void* array1_in, void* array2_in, void* result1, size_t size);
+template void custom_blas_dot_c<double>(void* array1_in, void* array2_in, void* result1, size_t size);
 
 #if 0 // Example for OpenCL kernel
 #include <map>

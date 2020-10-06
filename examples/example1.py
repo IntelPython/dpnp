@@ -77,8 +77,8 @@ if __name__ == '__main__':
         print(f"...Test data type is {test_type}, each test repetitions {test_repetition}")
 
         for size in [16, 32, 64, 128]:  # , 256, 512, 1024, 2048, 4096]:
-            times_python, result_python = run_dgemm(numpy, "    <NumPy>", size, test_type, test_repetition)
-            times_sycl, result_mkl = run_dgemm(dpnp, "<Intel MKL>", size, test_type, test_repetition)
+            times_python, result_python = run_dgemm(numpy, "<NumPy>", size, test_type, test_repetition)
+            times_sycl, result_mkl = run_dgemm(dpnp, " <DPNP>", size, test_type, test_repetition)
 
             verification = False
             if result_mkl == result_python:
