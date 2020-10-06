@@ -461,11 +461,13 @@ INP_DLLEXPORT void custom_elemwise_transpose_c(void* array1_in,
  *
  * @param [in]  size   Number of elements in `result` arrays.
  *
+ * @param [in]  engine Basic random number generator.
+ *
  * @param [out] result Output array.
  *
  */
-template <typename _DataType>
-INP_DLLEXPORT void mkl_rng_gaussian(void* result, size_t size);
+template <typename _DataType, typename _Engine>
+INP_DLLEXPORT void mkl_rng_gaussian(void * result, size_t size, void * engine);
 
 /**
  * @ingroup BACKEND_API
@@ -484,11 +486,6 @@ INP_DLLEXPORT void mkl_rng_gaussian(void* result, size_t size);
  */
 template <typename _DataType, typename _Engine>
 INP_DLLEXPORT void mkl_rng_uniform(void * result, long low, long high, size_t size, void * engine);
-
-
-template <typename _DataType>
-INP_DLLEXPORT void mkl_rng_uniform_1(void * result, long low, long high, size_t size, void * engine);
-
 
 /**
  * TODO~~~

@@ -369,7 +369,11 @@ static func_map_t func_map_init()
     fmap[DPNPFuncName::DPNP_FN_FMOD][eft_DBL][eft_DBL] = {eft_DBL,
                                                           (void*)custom_elemwise_fmod_c<double, double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)mkl_rng_gaussian<double>};
+    // fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_FLT][eft_FLT] = {eft_FLT, (void*)mkl_rng_gaussian<float, mkl_rng::mt19937>};
+    fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)mkl_rng_gaussian<double, mkl_rng::mt19937>};
+
+    // fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_FLT][eft_FLT] = {eft_FLT, (void*)mkl_rng_gaussian<float, mkl_rng::philox4x32x10>};
+    fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)mkl_rng_gaussian<double, mkl_rng::philox4x32x10>};
 
     fmap[DPNPFuncName::DPNP_FN_HYPOT][eft_INT][eft_INT] = {eft_DBL, (void*)custom_elemwise_hypot_c<int, int, double>};
     fmap[DPNPFuncName::DPNP_FN_HYPOT][eft_INT][eft_LNG] = {eft_DBL, (void*)custom_elemwise_hypot_c<int, long, double>};
@@ -575,6 +579,10 @@ static func_map_t func_map_init()
     fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_INT][eft_INT] = {eft_INT, (void*)mkl_rng_uniform<int, mkl_rng::mt19937>};
     fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_FLT][eft_FLT] = {eft_FLT, (void*)mkl_rng_uniform<float, mkl_rng::mt19937>};
     fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_DBL][eft_DBL] = {eft_DBL, (void*)mkl_rng_uniform<double, mkl_rng::mt19937>};
+
+    fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_INT][eft_INT] = {eft_INT, (void*)mkl_rng_uniform<int, mkl_rng::philox4x32x10>};
+    fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_FLT][eft_FLT] = {eft_FLT, (void*)mkl_rng_uniform<float, mkl_rng::philox4x32x10>};
+    fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_DBL][eft_DBL] = {eft_DBL, (void*)mkl_rng_uniform<double, mkl_rng::philox4x32x10>};
 
     fmap[DPNPFuncName::DPNP_FN_RADIANS][eft_INT][eft_INT] = {eft_DBL, (void*)custom_elemwise_radians_c<int, double>};
     fmap[DPNPFuncName::DPNP_FN_RADIANS][eft_LNG][eft_LNG] = {eft_DBL, (void*)custom_elemwise_radians_c<long, double>};

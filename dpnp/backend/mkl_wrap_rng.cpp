@@ -36,28 +36,31 @@
 
 namespace mkl_rng = oneapi::mkl::rng;
 
-template <typename _DataType>
-void mkl_rng_gaussian(void* result, size_t size)
+// TODO:
+// add mean and std params ?
+template <typename _DataType, typename _Engine>
+void mkl_rng_gaussian(void * result, size_t size, void * engine)
 {
     if (!size)
     {
         return;
     }
-
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
+    engine_rng* engn_rng = reinterpret_cast<engine_rng*>(engine);
+    _Engine* engine1 = reinterpret_cast<_Engine*>(engn_rng->get_engine());
 
     // TODO:
     // choose engine as is in numpy
     // seed number
-    size_t seed = std::time(nullptr);
-    mkl_rng::philox4x32x10 engine(DPNP_QUEUE, seed);
+    //size_t seed = std::time(nullptr);
+    //mkl_rng::philox4x32x10 engine(DPNP_QUEUE, seed);
 
     const _DataType mean = _DataType(0.0);
     const _DataType stddev = _DataType(1.0);
 
     mkl_rng::gaussian<_DataType> distribution(mean, stddev);
     // perform generation
-    mkl_rng::generate(distribution, engine, size, result1);
+    mkl_rng::generate(distribution, * engine1, size, result1);
 
     DPNP_QUEUE.wait();
 }
@@ -99,8 +102,10 @@ void*  rng_engine_init(size_t seed)
     return new engine_rng();
 }  
 
-template void mkl_rng_gaussian<double>(void* result, size_t size);
-template void mkl_rng_gaussian<float>(void* result, size_t size);
+template void mkl_rng_gaussian<double, mkl_rng::mt19937>(void* result, size_t size, void * engine);
+template void mkl_rng_gaussian<float, mkl_rng::mt19937>(void* result, size_t size, void * engine);
+template void mkl_rng_gaussian<double, mkl_rng::philox4x32x10>(void* result, size_t size, void * engine);
+template void mkl_rng_gaussian<float, mkl_rng::philox4x32x10>(void* result, size_t size, void * engine);
 
 template void mkl_rng_uniform<int, mkl_rng::mt19937>(void * result, long low, long high,
                                                      size_t size, void * engine);

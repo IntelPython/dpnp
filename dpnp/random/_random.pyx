@@ -43,11 +43,11 @@ from dpnp.dparray cimport dparray
 from dpnp.dpnp_utils cimport *
 
 
-ctypedef void(*fptr_mkl_rng_gaussian_1out_t)(void *, size_t)
+ctypedef void(*fptr_mkl_rng_gaussian_1out_t)(void *, size_t, void *)
 ctypedef void(*fptr_mkl_rng_uniform_1out_t)(void *, long, long, size_t, void *)
 
 
-cdef dparray dpnp_randn(dims):
+cdef dparray dpnp_randn(dims, void * engine):
     """
     Return a random matrix with data from the "standard normal" distribution.
 
@@ -68,7 +68,7 @@ cdef dparray dpnp_randn(dims):
 
     cdef fptr_mkl_rng_gaussian_1out_t func = <fptr_mkl_rng_gaussian_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), result.size)
+    func(result.get_data(), result.size, engine)
 
     return result
 
@@ -345,7 +345,7 @@ cdef class RandomState:
             if not isinstance(dim, int):
                 checker_throw_value_error("randint", "type(dim)", type(dim), int)
 
-        return dpnp_randn(dims)
+        return dpnp_randn(dims, self.rng_engine)
 
     def random(self, size):
         """
