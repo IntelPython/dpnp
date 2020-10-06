@@ -203,8 +203,11 @@ void custom_mean_c(void* array1_in, void* result1, const size_t* shape, size_t n
     if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
     {
         _ResultType* array = reinterpret_cast<_DataType*>(array1_in);
+
+        // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-make_dataset.html
         auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, size, array);
 
+        // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-mean.html
         cl::sycl::event event = mkl_stats::mean(DPNP_QUEUE, dataset, result);
 
         event.wait();
@@ -219,11 +222,6 @@ void custom_mean_c(void* array1_in, void* result1, const size_t* shape, size_t n
 
         dpnp_memory_free_c(sum);
     }
-
-#if 0
-    std::cout << "mean result " << result[0] << "\n";
-#endif
-}
 
 template void custom_mean_c<double, double>(
     void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
