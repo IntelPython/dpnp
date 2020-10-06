@@ -66,7 +66,7 @@ void custom_elemwise_absolute_c(void* array1_in, const std::vector<long>& input_
     };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
-        cgh.parallel_for<class custom_elemwise_absolute_c_kernel<_DataType> >(gws, kernel_parallel_for_func);
+        cgh.parallel_for<class custom_elemwise_absolute_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
 
     event = DPNP_QUEUE.submit(kernel_func);

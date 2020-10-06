@@ -129,7 +129,7 @@ void custom_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols)
     };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
-        cgh.parallel_for<class custom_cov_c_kernel<_DataType> >(gws, kernel_parallel_for_func);
+        cgh.parallel_for<class custom_cov_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
 
     event = DPNP_QUEUE.submit(kernel_func);
@@ -361,7 +361,7 @@ void custom_var_c(
     };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
-        cgh.parallel_for<class custom_var_c_kernel<_DataType, _ResultType> >(gws, kernel_parallel_for_func);
+        cgh.parallel_for<class custom_var_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
     };
 
     event = DPNP_QUEUE.submit(kernel_func);

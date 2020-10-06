@@ -92,7 +92,7 @@ void custom_elemwise_transpose_c(void* array1_in,
     };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
-        cgh.parallel_for<class custom_elemwise_transpose_c_kernel<_DataType> >(gws, kernel_parallel_for_func);
+        cgh.parallel_for<class custom_elemwise_transpose_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
 
     event = DPNP_QUEUE.submit(kernel_func);
