@@ -193,7 +193,7 @@ else:
 
 
 """
-Search and set MKL environemnt
+Search and set math library environemnt
 """
 _mkl_rpath = []
 _cmplr_rpath = []
