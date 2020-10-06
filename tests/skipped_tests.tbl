@@ -19,17 +19,6 @@ tests/test_linalg.py::test_eig_arange[300-float64]
 tests/test_linalg.py::test_eig_arange[300-float32]
 tests/test_linalg.py::test_eig_arange[300-int64]
 tests/test_linalg.py::test_eig_arange[300-int32]
-tests/test_random.py::test_random_input_size[rand]
-tests/test_random.py::test_random_input_size[randn]
-tests/test_random.py::test_random_input_shape[random]
-tests/test_random.py::test_random_input_shape[random_sample]
-tests/test_random.py::test_random_input_shape[randf]
-tests/test_random.py::test_random_input_shape[sample]
-tests/test_random.py::test_random_check_otput[random]
-tests/test_random.py::test_random_check_otput[random_sample]
-tests/test_random.py::test_random_check_otput[randf]
-tests/test_random.py::test_random_check_otput[sample]
-tests/test_random.py::test_random_check_otput[rand]
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_and
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_or
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_xor
