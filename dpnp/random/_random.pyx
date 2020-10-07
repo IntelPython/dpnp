@@ -150,13 +150,13 @@ cdef class RandomState:
     """
     def __init__(self, seed=None):
         if seed is None:
-            dpnp_engine_rng_initialize()
+            dpnp_srand()
         elif not isinstance(seed, int):
             checker_throw_value_error("RandomState.__init__", "type(seed)", type(seed), int)
         elif seed < 0:
             checker_throw_value_error("RandomState.__init__", "seed", seed, "non-negative")
         else:
-            dpnp_engine_rng_initialize(seed)
+            dpnp_srand(seed)
 
     def __repr__(self):
         return self.__str__() + ' at 0x{:X}'.format(id(self))
@@ -202,7 +202,7 @@ cdef class RandomState:
         elif seed < 0:
             checker_throw_value_error("seed", "seed", seed, "non-negative")
 
-        dpnp_engine_rng_initialize(seed)
+        dpnp_srand(seed)
 
     def get_state(self, legacy=True):
         """

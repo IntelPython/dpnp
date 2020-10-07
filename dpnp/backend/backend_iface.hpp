@@ -505,4 +505,6 @@ INP_DLLEXPORT void dpnp_engine_rng_initialize();
  */
 INP_DLLEXPORT void dpnp_engine_rng_initialize(size_t seed);
 
+#define dpnp_srand(x) dpnp_engine_rng_initialize(x)
+
 #endif // BACKEND_IFACE_H
