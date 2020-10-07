@@ -28,8 +28,6 @@
 #include <mkl_stats_sycl.hpp>
 
 #include <backend_iface.hpp>
-
-#include "backend_pstl.hpp"
 #include "queue_sycl.hpp"
 
 namespace mkl_stats = oneapi::mkl::stats;

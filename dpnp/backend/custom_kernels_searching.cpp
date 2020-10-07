@@ -26,7 +26,6 @@
 #include <iostream>
 
 #include <backend_iface.hpp>
-#include "backend_pstl.hpp"
 #include "queue_sycl.hpp"
 
 template <typename _DataType, typename _idx_DataType>

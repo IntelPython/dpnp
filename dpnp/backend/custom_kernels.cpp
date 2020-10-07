@@ -25,11 +25,9 @@
 
 #include <cmath>
 #include <iostream>
-#include <mkl_blas_sycl.hpp>
 #include <type_traits>
 
 #include <backend_iface.hpp>
-#include "backend_pstl.hpp"
 #include "backend_utils.hpp"
 #include "queue_sycl.hpp"
 
