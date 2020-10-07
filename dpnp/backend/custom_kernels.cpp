@@ -25,7 +25,7 @@
 
 #include <cmath>
 #include <iostream>
-#include <mkl_blas_sycl.hpp>
+#include <oneapi/mkl.hpp>
 #include <type_traits>
 
 #include <backend_iface.hpp>

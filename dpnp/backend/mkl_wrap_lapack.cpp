@@ -25,7 +25,7 @@
 
 #include <algorithm>
 #include <iostream>
-#include <mkl_lapack_sycl.hpp>
+#include <oneapi/mkl.hpp>
 
 #include <backend_iface.hpp>
 #include "queue_sycl.hpp"

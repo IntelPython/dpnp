@@ -27,7 +27,7 @@
 #include <iostream>
 #include <vector>
 
-#include <mkl_sycl.hpp>
+#include <oneapi/mkl.hpp>
 
 #include <backend_iface.hpp>
 #include "backend_utils.hpp"

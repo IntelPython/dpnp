@@ -24,8 +24,7 @@
 //*****************************************************************************
 
 #include <iostream>
-#include <mkl_blas_sycl.hpp>
-#include <mkl_stats_sycl.hpp>
+#include <oneapi/mkl.hpp>
 
 #include <backend_iface.hpp>
 #include "backend_pstl.hpp"
