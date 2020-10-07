@@ -2,6 +2,16 @@
 
 #include <backend_iface.hpp>
 
+void print_dpnp_array(double * arr, size_t size)
+{
+    std::cout << std::endl;
+    for (size_t i = 0; i < size; ++i)
+    {
+        std::cout << arr[i] << ", ";
+    }
+    std::cout << std::endl;
+}
+
 int main(int, char**)
 {
     const size_t size = 256;
@@ -10,18 +20,28 @@ int main(int, char**)
 
     double* result = (double*)dpnp_memory_alloc_c(size * sizeof(double));
 
-    //for (size_t i = 0; i < 10; ++i)
-    //{
-    //    result[i] = 0;
-    //}
-    //std::cout << std::endl;
-    mkl_rng_gaussian<double>(result, size);
+    size_t seed = 10;
+    long low = 1;
+    long high = 120;
 
-    for (size_t i = 0; i < 10; ++i)
+    std::cout << "Uniform distr. params:\nlow is " << low << ", high is " << high << std::endl;  
+    
+
+    std::cout << "Results, when seed is the same (10) for all random number generations:";
+    for (size_t i = 0; i < 4; ++i)
     {
-        std::cout << result[i] << ", ";
+        dpnp_engine_rng_initialize(seed);
+        mkl_rng_uniform<double>(result, low, high, size);
+        print_dpnp_array(result, 10);
     }
-    std::cout << std::endl;
+
+    std::cout << std::endl << "Results, when seed is random:";
+    dpnp_engine_rng_initialize();
+    for (size_t i = 0; i < 4; ++i)
+    {
+        mkl_rng_uniform<double>(result, low, high, size);
+        print_dpnp_array(result, 10);
+    }
 
     dpnp_memory_free_c(result);
 
