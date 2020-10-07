@@ -28,10 +28,14 @@
 #define QUEUE_SYCL_H
 
 #include <CL/sycl.hpp>
+#include <mkl_sycl.hpp>
 
 #if !defined(DPNP_LOCAL_QUEUE)
 #include <dppl_sycl_queue_manager.h>
 #endif
+
+#include "backend_pstl.hpp" // this header must be included after <mkl_sycl.hpp>
+
 
 #define DPNP_QUEUE backend_sycl::get_queue()
 
