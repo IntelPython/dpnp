@@ -205,8 +205,14 @@ Get the math library environemnt
 """
 _mkl_include = None
 _mkl_libpath = None
+
+IS_CONDA_BUILD = True if os.environ.get("CONDA_BUILD", None) == "1" else False
+if IS_CONDA_BUILD:
+    _conda_root = os.environ.get("PREFIX", None)
+else:
+    _conda_root = os.environ.get("CONDA_PREFIX", None)
 # TODO make it as a function in utils
-_conda_root = os.environ.get("CONDA_PREFIX", None)
+# _conda_root = os.environ.get("CONDA_PREFIX", None)
 if _mkl_include is None and _mkl_libpath is None and _conda_root is not None:
     _mkl_include_find = os.path.join(_conda_root, "include")
     _mkl_libpath_find = os.path.join(_conda_root, "lib")
