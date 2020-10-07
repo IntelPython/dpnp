@@ -43,11 +43,11 @@ from dpnp.dparray cimport dparray
 from dpnp.dpnp_utils cimport *
 
 
-ctypedef void(*fptr_mkl_rng_gaussian_1out_t)(void *, size_t, void *)
-ctypedef void(*fptr_mkl_rng_uniform_1out_t)(void *, long, long, size_t, void *)
+ctypedef void(*fptr_mkl_rng_gaussian_1out_t)(void *, size_t)
+ctypedef void(*fptr_mkl_rng_uniform_1out_t)(void *, long, long, size_t)
 
 
-cdef dparray dpnp_randn(dims, void * engine):
+cdef dparray dpnp_randn(dims):
     """
     Return a random matrix with data from the "standard normal" distribution.
 
@@ -68,12 +68,12 @@ cdef dparray dpnp_randn(dims, void * engine):
 
     cdef fptr_mkl_rng_gaussian_1out_t func = <fptr_mkl_rng_gaussian_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), result.size, engine)
+    func(result.get_data(), result.size)
 
     return result
 
 
-cdef dparray dpnp_random(dims, void * engine):
+cdef dparray dpnp_random(dims):
     """
     Create an array of the given shape and populate it
     with random samples from a uniform distribution over [0, 1).
@@ -94,12 +94,12 @@ cdef dparray dpnp_random(dims, void * engine):
 
     cdef fptr_mkl_rng_uniform_1out_t func = <fptr_mkl_rng_uniform_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), low, high, result.size, engine)
+    func(result.get_data(), low, high, result.size)
 
     return result
 
 
-cdef dparray dpnp_uniform(long low, long high, size, void * engine, dtype=numpy.int32):
+cdef dparray dpnp_uniform(long low, long high, size, dtype=numpy.int32):
     """
     Return a random matrix with data from the uniform distribution.
 
@@ -120,7 +120,7 @@ cdef dparray dpnp_uniform(long low, long high, size, void * engine, dtype=numpy.
 
     cdef fptr_mkl_rng_uniform_1out_t func = <fptr_mkl_rng_uniform_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), low, high, result.size, engine)
+    func(result.get_data(), low, high, result.size)
 
     return result
 
@@ -129,19 +129,20 @@ cdef class RandomState:
     TODO:
     description
     """
-    cdef void * rng_engine
+    #cdef void * rng_engine
 
     def __init__(self, seed=None):
         # TODO:
         # self.bit_generator = None ?
         cdef size_t seed_
         if seed is None:
-            self.rng_engine = rng_engine_init()
+            dpnp_engine_rng_initialize()
         elif not isinstance(seed, int):
             checker_throw_value_error("seed", "type(seed)", type(seed), int)
         else:
             seed_ = seed
-            self.rng_engine = rng_engine_init(seed_)
+            dpnp_engine_rng_initialize(seed_)
+
 
     def __repr__(self):
         return self.__str__() + ' at 0x{:X}'.format(id(self))
@@ -174,6 +175,7 @@ cdef class RandomState:
         The best practice is to **not** reseed a BitGenerator, rather to
         recreate a new one. This method is here for legacy reasons.
         """
+        pass
 
         # TODO:
         # seed default value as is in numpy
@@ -184,7 +186,7 @@ cdef class RandomState:
             checker_throw_value_error("seed", "type(seed)", type(seed), int)
         else:
             seed_ = seed
-        self.rng_engine = rng_engine_set_seed(seed_, self.rng_engine)
+        dpnp_engine_rng_initialize(seed_)
 
     def get_state(self, legacy=True):
         """
@@ -228,7 +230,7 @@ cdef class RandomState:
             if not isinstance(dim, int):
                 checker_throw_value_error("randint", "type(dim)", type(dim), int)
 
-        return dpnp_random(dims, self.rng_engine)
+        return dpnp_random(dims)
 
     def randf(self, size):
         """
@@ -256,7 +258,7 @@ cdef class RandomState:
             if not isinstance(dim, int):
                 checker_throw_value_error("randint", "type(dim)", type(dim), int)
 
-        return dpnp_random(size, self.rng_engine)
+        return dpnp_random(size)
 
     def randint(self, low, high=None, size=None, dtype=int):
         """
@@ -328,7 +330,7 @@ cdef class RandomState:
         else:
             checker_throw_type_error("randint", dtype)
 
-        return dpnp_uniform(low, high, size, self.rng_engine, _dtype)
+        return dpnp_uniform(low, high, size, _dtype)
 
     def randn(self, d0, *dn):
         """
@@ -359,7 +361,7 @@ cdef class RandomState:
             if not isinstance(dim, int):
                 checker_throw_value_error("randint", "type(dim)", type(dim), int)
 
-        return dpnp_randn(dims, self.rng_engine)
+        return dpnp_randn(dims)
 
     def random(self, size):
         """
@@ -387,7 +389,7 @@ cdef class RandomState:
             if not isinstance(dim, int):
                 checker_throw_value_error("randint", "type(dim)", type(dim), int)
 
-        return dpnp_random(size, self.rng_engine)
+        return dpnp_random(size)
 
     def random_integers(self, low, high=None, size=None):
         """
@@ -456,7 +458,7 @@ cdef class RandomState:
             if not isinstance(dim, int):
                 checker_throw_value_error("randint", "type(dim)", type(dim), int)
 
-        return dpnp_random(size, self.rng_engine)
+        return dpnp_random(size)
 
 
 _rand = RandomState()

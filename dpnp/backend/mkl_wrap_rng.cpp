@@ -38,16 +38,14 @@ namespace mkl_rng = oneapi::mkl::rng;
 
 // TODO:
 // add mean and std params ?
-template <typename _DataType, typename _Engine>
-void mkl_rng_gaussian(void * result, size_t size, void * engine)
+template <typename _DataType>
+void mkl_rng_gaussian(void * result, size_t size)
 {
     if (!size)
     {
         return;
     }
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
-    engine_rng* engn_rng = reinterpret_cast<engine_rng*>(engine);
-    _Engine* engine1 = reinterpret_cast<_Engine*>(engn_rng->get_engine());
 
     const _DataType mean = _DataType(0.0);
     const _DataType stddev = _DataType(1.0);
@@ -56,7 +54,7 @@ void mkl_rng_gaussian(void * result, size_t size, void * engine)
     // perform generation
     try
     {
-        mkl_rng::generate(distribution, * engine1, size, result1);
+        mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
         DPNP_QUEUE.wait_and_throw();
     }
     catch (cl::sycl::exception const& e)
@@ -66,16 +64,14 @@ void mkl_rng_gaussian(void * result, size_t size, void * engine)
     }
 }
 
-template <typename _DataType, typename _Engine>
-void mkl_rng_uniform(void * result, long low, long high, size_t size, void * engine)
+template <typename _DataType>
+void mkl_rng_uniform(void * result, long low, long high, size_t size)
 {
     if (!size)
     {
         return;
     }
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
-    engine_rng* engn_rng = reinterpret_cast<engine_rng*>(engine);
-    _Engine* engine1 = reinterpret_cast<_Engine*>(engn_rng->get_engine());
 
     // set left bound of distribution
     const _DataType a = (_DataType(low));
@@ -86,7 +82,7 @@ void mkl_rng_uniform(void * result, long low, long high, size_t size, void * eng
     try
     {
         // perform generation
-        auto event_out = mkl_rng::generate(distribution, * engine1, size, result1);
+        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
         DPNP_QUEUE.wait_and_throw();
     }
     catch (cl::sycl::exception const& e)
@@ -96,39 +92,9 @@ void mkl_rng_uniform(void * result, long low, long high, size_t size, void * eng
     }
 }
 
-void* rng_engine_init()
-{
-    return new engine_rng();
-}
+template void mkl_rng_gaussian<double>(void* result, size_t size);
+template void mkl_rng_gaussian<float>(void* result, size_t size);
 
-void* rng_engine_init(size_t seed)
-{
-    return new engine_rng(seed);
-}
-
-void* rng_engine_set_seed(size_t seed, void * engine)
-{
-    engine_rng* engine_ptr = reinterpret_cast<engine_rng*>(engine);
-    engine_ptr->set_seed(seed);
-
-    return engine_ptr;
-}
-
-template void mkl_rng_gaussian<double, mkl_rng::mt19937>(void* result, size_t size, void * engine);
-template void mkl_rng_gaussian<float, mkl_rng::mt19937>(void* result, size_t size, void * engine);
-template void mkl_rng_gaussian<double, mkl_rng::philox4x32x10>(void* result, size_t size, void * engine);
-template void mkl_rng_gaussian<float, mkl_rng::philox4x32x10>(void* result, size_t size, void * engine);
-
-template void mkl_rng_uniform<int, mkl_rng::mt19937>(void * result, long low, long high,
-                                                     size_t size, void * engine);
-template void mkl_rng_uniform<float, mkl_rng::mt19937>(void * result, long low, long high,
-                                                       size_t size, void * engine);
-template void mkl_rng_uniform<double, mkl_rng::mt19937>(void * result, long low, long high,
-                                                        size_t size, void * engine);
-
-template void mkl_rng_uniform<int, mkl_rng::philox4x32x10>(void * result, long low, long high,
-                                                           size_t size, void * engine);
-template void mkl_rng_uniform<float, mkl_rng::philox4x32x10>(void * result, long low, long high,
-                                                             size_t size, void * engine);
-template void mkl_rng_uniform<double, mkl_rng::philox4x32x10>(void * result, long low, long high,
-                                                              size_t size, void * engine);
+template void mkl_rng_uniform<int>(void * result, long low, long high, size_t size);
+template void mkl_rng_uniform<float>(void * result, long low, long high, size_t size);
+template void mkl_rng_uniform<double>(void * result, long low, long high, size_t size);

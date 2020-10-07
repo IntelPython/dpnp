@@ -273,6 +273,7 @@ dpnp_backend_c = [
                 "dpnp/backend/memory_sycl.cpp",
                 "dpnp/backend/mkl_wrap_lapack.cpp",
                 "dpnp/backend/mkl_wrap_rng.cpp",
+                "dpnp/backend/rng_engine.cpp",
                 "dpnp/backend/queue_sycl.cpp"
             ],
             "include_dirs": _mkl_include + _project_backend_dir + _dpctrl_include,

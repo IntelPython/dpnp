@@ -25,7 +25,7 @@
 
 /*
  * This header file is for interface Cython with C++.
- * It should not contains any backend specific headers (like SYCL or math library) because
+ * It should not contains any backend specific headers (like SYCL or MKL) because
  * all included headers will be exposed in Cython compilation procedure
  *
  * We would like to avoid backend specific things in higher level Cython modules.
@@ -173,7 +173,23 @@ INP_DLLEXPORT void custom_prod_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
- * @brief math library implementation of eig function
+ * @brief MKL implementation of dot function
+ *
+ * @param [in]  array1  Input array.
+ *
+ * @param [in]  array2  Input array.
+ *
+ * @param [out] result1 Output array.
+ *
+ * @param [in]  size    Number of elements in input arrays.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void mkl_blas_dot_c(void* array1, void* array2, void* result1, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief MKL implementation of eig function
  *
  * @param [in]  array1  Input array.
  *
@@ -187,7 +203,7 @@ INP_DLLEXPORT void mkl_lapack_syevd_c(void* array1, void* result1, size_t size);
 
 /**
  * @ingroup BACKEND_API
- * @brief math library implementation of argsort function
+ * @brief MKL implementation of argsort function
  *
  * @param [in]  array   Input array with data.
  *
@@ -201,7 +217,7 @@ INP_DLLEXPORT void custom_argsort_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
- * @brief math library implementation of sort function
+ * @brief MKL implementation of sort function
  *
  * @param [in]  array   Input array with data.
  *
@@ -215,7 +231,7 @@ INP_DLLEXPORT void custom_sort_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
- * @brief Custom implementation of cov function with math library and PSTL
+ * @brief Custom implementation of cov function with MKL and PSTL
  *
  * @param [in]  array       Input array.
  *
@@ -231,7 +247,7 @@ INP_DLLEXPORT void custom_cov_c(void* array1_in, void* result1, size_t nrows, si
 
 /**
  * @ingroup BACKEND_API
- * @brief math library implementation of max function
+ * @brief MKL implementation of max function
  *
  * @param [in]  array   Input array with data.
  *
@@ -252,7 +268,7 @@ INP_DLLEXPORT void
 
 /**
  * @ingroup BACKEND_API
- * @brief math library implementation of mean function
+ * @brief MKL implementation of mean function
  *
  * @param [in]  array   Input array with data.
  *
@@ -273,7 +289,7 @@ INP_DLLEXPORT void
 
 /**
  * @ingroup BACKEND_API
- * @brief math library implementation of median function
+ * @brief MKL implementation of median function
  *
  * @param [in]  array   Input array with data.
  *
@@ -294,7 +310,7 @@ INP_DLLEXPORT void
 
 /**
  * @ingroup BACKEND_API
- * @brief math library implementation of min function
+ * @brief MKL implementation of min function
  *
  * @param [in]  array   Input array with data.
  *
@@ -315,7 +331,7 @@ INP_DLLEXPORT void
 
 /**
  * @ingroup BACKEND_API
- * @brief math library implementation of argmax function
+ * @brief MKL implementation of argmax function
  *
  * @param [in]  array   Input array with data.
  *
@@ -329,7 +345,7 @@ INP_DLLEXPORT void custom_argmax_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
- * @brief math library implementation of argmin function
+ * @brief MKL implementation of argmin function
  *
  * @param [in]  array   Input array with data.
  *
@@ -343,7 +359,7 @@ INP_DLLEXPORT void custom_argmin_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
- * @brief math library implementation of std function
+ * @brief MKL implementation of std function
  *
  * @param [in]  array   Input array with data.
  *
@@ -366,7 +382,7 @@ INP_DLLEXPORT void custom_std_c(
 
 /**
  * @ingroup BACKEND_API
- * @brief math library implementation of var function
+ * @brief MKL implementation of var function
  *
  * @param [in]  array   Input array with data.
  *
@@ -441,21 +457,19 @@ INP_DLLEXPORT void custom_elemwise_transpose_c(void* array1_in,
 
 /**
  * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (gaussian continious distribution)
+ * @brief MKL implementation of random number generator (gaussian continious distribution)
  *
  * @param [in]  size   Number of elements in `result` arrays.
- *
- * @param [in]  engine Basic random number generator.
  *
  * @param [out] result Output array.
  *
  */
-template <typename _DataType, typename _Engine>
-INP_DLLEXPORT void mkl_rng_gaussian(void* result, size_t size, void* engine);
+template <typename _DataType>
+INP_DLLEXPORT void mkl_rng_gaussian(void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (uniform distribution)
+ * @brief MKL implementation of random number generator (uniform distribution)
  *
  * @param [in]  low    Left bound of array values.
  *
@@ -463,40 +477,26 @@ INP_DLLEXPORT void mkl_rng_gaussian(void* result, size_t size, void* engine);
  *
  * @param [in]  size   Number of elements in `result` array.
  *
- * @param [in]  engine Basic random number generator.
- *
  * @param [out] result Output array.
  *
  */
-template <typename _DataType, typename _Engine>
-INP_DLLEXPORT void mkl_rng_uniform(void* result, long low, long high, size_t size, void* engine);
+template <typename _DataType>
+INP_DLLEXPORT void mkl_rng_uniform(void* result, long low, long high, size_t size);
 
 /**
  * @ingroup BACKEND_API
- * @brief initialize rng_engine.
- * TODO
+ * @brief initializer for basic random number generator.
  *
  */
-INP_DLLEXPORT void* rng_engine_init();
+INP_DLLEXPORT void dpnp_engine_rng_initialize();
 
 /**
  * @ingroup BACKEND_API
- * @brief initialize rng_engine.
- * TODO
+ * @brief initializer for basic random number generator.
  *
- * @param [in]  seed   Initial conditions of the generator state or engine state.
+ * @param [in]  low    Left bound of array values.
  *
  */
-INP_DLLEXPORT void* rng_engine_init(size_t seed);
+INP_DLLEXPORT void dpnp_engine_rng_initialize(size_t seed);
 
-/**
- * @ingroup BACKEND_API
- * @brief reseed a legacy rng_engine.
- *
- * @param [in]  seed   Initial conditions of the generator state or engine state.
- *
- * @param [in]  engine Basic random number generator.
- *
- */
-INP_DLLEXPORT void* rng_engine_set_seed(size_t seed, void* engine);
 #endif // BACKEND_IFACE_H

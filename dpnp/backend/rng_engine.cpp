@@ -23,68 +23,50 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#pragma once
-#ifndef RNG_ENGINE_H
-#define RNG_ENGINE_H
-
 #include <iostream>
 
 #include <ctime>
 #include <mkl_sycl.hpp>
 
-#include "backend_utils.hpp"
+#include <backend_iface.hpp>
 #include "queue_sycl.hpp"
+
+#include "rng_engine.hpp"
 
 namespace mkl_rng = oneapi::mkl::rng;
 
-#define DPNP_RNG_ENGINE engine_rng::get_engine()
+mkl_rng::mt19937* engine_rng::mt19937_engine = nullptr;
 
-/**
- * This is
- * TODO:
- * add docs
- */
-
-class engine_rng
+void engine_rng::engine_rng_init()
 {
-    // TODO:
-    // static
-    static mkl_rng::mt19937* mt19937_engine;
-
-    static void destroy()
-    {
-        delete mt19937_engine;
-        mt19937_engine = nullptr;
-    }
-
-public:
-    engine_rng()
-    {
-        mt19937_engine = nullptr;
-    }
-
-    ~engine_rng()
+    if(mt19937_engine)
     {
         engine_rng::destroy();
     }
+    // TODO:
+    // choose engine as is in numpy
+    // seed number
+    // TODO:
+    // mem leak
+    size_t seed = std::time(nullptr);
+    mt19937_engine = new mkl_rng::mt19937(DPNP_QUEUE, seed);
+}
 
-    /**
-     * Explicitly disallow copying
-     */
-    engine_rng(const engine_rng&) = delete;
-    engine_rng& operator=(const engine_rng&) = delete;
-
-    static void engine_rng_init();
-    static void engine_rng_init(size_t seed);
-
-    static mkl_rng::mt19937& get_engine()
+void engine_rng::engine_rng_init(size_t seed)
+{
+    if(mt19937_engine)
     {
-        if(!mt19937_engine)
-        {
-            engine_rng_init();
-        }
-        return *mt19937_engine;
+        engine_rng::destroy();
     }
-};
+    mt19937_engine = new mkl_rng::mt19937(DPNP_QUEUE, seed);
+}
 
-#endif // RNG_ENGINE_H
+void dpnp_engine_rng_initialize()
+{
+    engine_rng::engine_rng_init();
+}
+
+void dpnp_engine_rng_initialize(size_t seed)
+{
+    engine_rng::engine_rng_init(seed);
+}
