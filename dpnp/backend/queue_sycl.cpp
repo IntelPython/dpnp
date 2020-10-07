@@ -33,6 +33,7 @@
 #if defined(DPNP_LOCAL_QUEUE)
 cl::sycl::queue* backend_sycl::queue = nullptr;
 #endif
+mkl_rng::mt19937* backend_sycl::mt19937_engine = nullptr;
 
 /**
  * Function push the SYCL kernels to be linked (final stage of the compilation) for the current queue
@@ -83,7 +84,7 @@ void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
 
     if (queue)
     {
-        backend_sycl::destroy();
+        backend_sycl::destroy_queue();
     }
 
     cl::sycl::device dev;
@@ -118,7 +119,41 @@ void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
     std::cout << "SYCL kernels link time: " << time_kernels_link.count() << " (sec.)\n" << std::endl;
 }
 
+void backend_sycl::backend_sycl_rng_engine_init()
+{
+    if (mt19937_engine)
+    {
+        backend_sycl::destroy_rng_engine();
+    }
+    // TODO:
+    // choose engine as is in numpy
+    // seed number
+    // TODO:
+    // mem leak
+    size_t seed = std::time(nullptr);
+    mt19937_engine = new mkl_rng::mt19937(DPNP_QUEUE, seed);
+}
+
+void backend_sycl::backend_sycl_rng_engine_init(size_t seed)
+{
+    if (mt19937_engine)
+    {
+        backend_sycl::destroy_rng_engine();
+    }
+    mt19937_engine = new mkl_rng::mt19937(DPNP_QUEUE, seed);
+}
+
 void dpnp_queue_initialize_c(QueueOptions selector)
 {
     backend_sycl::backend_sycl_queue_init(selector);
+}
+
+void dpnp_engine_rng_initialize()
+{
+    backend_sycl::backend_sycl_rng_engine_init();
+}
+
+void dpnp_engine_rng_initialize(size_t seed)
+{
+    backend_sycl::backend_sycl_rng_engine_init(seed);
 }

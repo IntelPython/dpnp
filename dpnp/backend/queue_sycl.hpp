@@ -29,11 +29,18 @@
 
 #include <CL/sycl.hpp>
 
+#include <ctime>
+#include <mkl_sycl.hpp>
+
 #if !defined(DPNP_LOCAL_QUEUE)
 #include <dppl_sycl_queue_manager.h>
 #endif
 
+namespace mkl_rng = oneapi::mkl::rng;
+
 #define DPNP_QUEUE backend_sycl::get_queue()
+
+#define DPNP_RNG_ENGINE backend_sycl::get_engine()
 
 /**
  * This is container for the SYCL queue and related functions like queue initialization and maintenance
@@ -45,13 +52,20 @@ class backend_sycl
 #if defined(DPNP_LOCAL_QUEUE)
     static cl::sycl::queue* queue; /**< contains SYCL queue pointer initialized in @ref backend_sycl_queue_init */
 #endif
+    static mkl_rng::mt19937* mt19937_engine;
 
-    static void destroy()
+    static void destroy_queue()
     {
 #if defined(DPNP_LOCAL_QUEUE)
         delete queue;
         queue = nullptr;
 #endif
+    }
+
+    static void destroy_rng_engine()
+    {
+        delete mt19937_engine;
+        mt19937_engine = nullptr;
     }
 
 public:
@@ -60,11 +74,13 @@ public:
 #if defined(DPNP_LOCAL_QUEUE)
         queue = nullptr;
 #endif
+        mt19937_engine = nullptr;
     }
 
     virtual ~backend_sycl()
     {
-        backend_sycl::destroy();
+        backend_sycl::destroy_queue();
+        backend_sycl::destroy_rng_engine();
     }
 
     /**
@@ -78,6 +94,8 @@ public:
      */
     static void backend_sycl_queue_init(QueueOptions selector = QueueOptions::CPU_SELECTOR);
 
+    static void backend_sycl_rng_engine_init();
+    static void backend_sycl_rng_engine_init(size_t seed);
     /**
      * Return the @ref queue to the user
      */
@@ -95,6 +113,14 @@ public:
         DPPLSyclQueueRef DPCtrl_queue = DPPLQueueMgr_GetCurrentQueue();
         return *(reinterpret_cast<cl::sycl::queue*>(DPCtrl_queue));
 #endif
+    }
+    static mkl_rng::mt19937& get_engine()
+    {
+        if (!mt19937_engine)
+        {
+            backend_sycl_rng_engine_init();
+        }
+        return *mt19937_engine;
     }
 };
 
