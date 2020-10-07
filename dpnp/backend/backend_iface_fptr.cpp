@@ -25,7 +25,7 @@
 
 /*
  * This header file is for interface Cython with C++.
- * It should not contains any backend specific headers (like SYCL or MKL) because
+ * It should not contains any backend specific headers (like SYCL or math library) because
  * all included headers will be exposed in Cython compilation procedure
  *
  * Also, this file should contains documentation on functions and types

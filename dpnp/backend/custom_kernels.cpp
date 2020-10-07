@@ -25,11 +25,9 @@
 
 #include <cmath>
 #include <iostream>
-#include <mkl_blas_sycl.hpp>
 #include <type_traits>
 
 #include <backend_iface.hpp>
-#include "backend_pstl.hpp"
 #include "backend_utils.hpp"
 #include "queue_sycl.hpp"
 
@@ -53,7 +51,7 @@ void custom_blas_gemm_c(void* array1_in, void* array2_in, void* result1, size_t 
 
     if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
     {
-        // using std::max for these ldx variables is required by MKL
+        // using std::max for these ldx variables is required by math library
         const std::int64_t lda = std::max<size_t>(1UL, size_k); // First dimensions of array_1
         const std::int64_t ldb = std::max<size_t>(1UL, size_n); // First dimensions of array_2
         const std::int64_t ldc = std::max<size_t>(1UL, size_n); // Fast dimensions of result
