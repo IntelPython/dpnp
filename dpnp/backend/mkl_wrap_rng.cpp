@@ -23,12 +23,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include <ctime>
-#include <iostream>
-#include <vector>
-
-#include <mkl_sycl.hpp>
-
 #include <backend_iface.hpp>
 #include "backend_utils.hpp"
 #include "queue_sycl.hpp"
