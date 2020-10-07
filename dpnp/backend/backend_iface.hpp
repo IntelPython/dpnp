@@ -441,6 +441,28 @@ INP_DLLEXPORT void custom_elemwise_transpose_c(void* array1_in,
 
 /**
  * @ingroup BACKEND_API
+ * @brief SYCL backend rng engine initialization selector.
+ *
+ */
+enum class EngineOptions : uint32_t
+{
+    MRG32K3A,
+    PHILOX4X32X10,
+    MCG32M1,
+    R250,
+    MCG59,
+    WICHMANN_HILL,
+    MT19937, /**< MT19937 */
+    MT2203,
+    SFMT19937,
+    SOBOL,
+    NIEDERREITER,
+    ARS5,
+    NONDETERMINISTIC,
+};
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of random number generator (gaussian continious distribution)
  *
  * @param [in]  size   Number of elements in `result` arrays.
