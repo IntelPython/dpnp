@@ -34,5 +34,7 @@ __all__ = [
     'random',
     'random_integers',
     'random_sample',
-    'RandomState'
+    'RandomState',
+    'sample',
+    'uniform'
 ]
