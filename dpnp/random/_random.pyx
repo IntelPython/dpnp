@@ -129,8 +129,6 @@ cdef class RandomState:
     TODO:
     description
     """
-    #cdef void * rng_engine
-
     def __init__(self, seed=None):
         # TODO:
         # self.bit_generator = None ?
@@ -142,7 +140,6 @@ cdef class RandomState:
         else:
             seed_ = seed
             dpnp_engine_rng_initialize(seed_)
-
 
     def __repr__(self):
         return self.__str__() + ' at 0x{:X}'.format(id(self))

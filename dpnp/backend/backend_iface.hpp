@@ -441,7 +441,7 @@ INP_DLLEXPORT void custom_elemwise_transpose_c(void* array1_in,
 
 /**
  * @ingroup BACKEND_API
- * @brief MKL implementation of random number generator (gaussian continious distribution)
+ * @brief math library implementation of random number generator (gaussian continious distribution)
  *
  * @param [in]  size   Number of elements in `result` arrays.
  *
@@ -453,7 +453,7 @@ INP_DLLEXPORT void mkl_rng_gaussian(void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
- * @brief MKL implementation of random number generator (uniform distribution)
+ * @brief math library implementation of random number generator (uniform distribution)
  *
  * @param [in]  low    Left bound of array values.
  *

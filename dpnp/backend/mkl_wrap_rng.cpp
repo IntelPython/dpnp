@@ -39,7 +39,7 @@ namespace mkl_rng = oneapi::mkl::rng;
 // TODO:
 // add mean and std params ?
 template <typename _DataType>
-void mkl_rng_gaussian(void * result, size_t size)
+void mkl_rng_gaussian(void* result, size_t size)
 {
     if (!size)
     {
@@ -65,7 +65,7 @@ void mkl_rng_gaussian(void * result, size_t size)
 }
 
 template <typename _DataType>
-void mkl_rng_uniform(void * result, long low, long high, size_t size)
+void mkl_rng_uniform(void* result, long low, long high, size_t size)
 {
     if (!size)
     {
@@ -95,6 +95,6 @@ void mkl_rng_uniform(void * result, long low, long high, size_t size)
 template void mkl_rng_gaussian<double>(void* result, size_t size);
 template void mkl_rng_gaussian<float>(void* result, size_t size);
 
-template void mkl_rng_uniform<int>(void * result, long low, long high, size_t size);
-template void mkl_rng_uniform<float>(void * result, long low, long high, size_t size);
-template void mkl_rng_uniform<double>(void * result, long low, long high, size_t size);
+template void mkl_rng_uniform<int>(void* result, long low, long high, size_t size);
+template void mkl_rng_uniform<float>(void* result, long low, long high, size_t size);
+template void mkl_rng_uniform<double>(void* result, long low, long high, size_t size);

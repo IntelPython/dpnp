@@ -2,7 +2,7 @@
 
 #include <backend_iface.hpp>
 
-void print_dpnp_array(double * arr, size_t size)
+void print_dpnp_array(double* arr, size_t size)
 {
     std::cout << std::endl;
     for (size_t i = 0; i < size; ++i)
@@ -24,8 +24,7 @@ int main(int, char**)
     long low = 1;
     long high = 120;
 
-    std::cout << "Uniform distr. params:\nlow is " << low << ", high is " << high << std::endl;  
-    
+    std::cout << "Uniform distr. params:\nlow is " << low << ", high is " << high << std::endl;
 
     std::cout << "Results, when seed is the same (10) for all random number generations:";
     for (size_t i = 0; i < 4; ++i)

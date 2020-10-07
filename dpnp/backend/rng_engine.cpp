@@ -39,7 +39,7 @@ mkl_rng::mt19937* engine_rng::mt19937_engine = nullptr;
 
 void engine_rng::engine_rng_init()
 {
-    if(mt19937_engine)
+    if (mt19937_engine)
     {
         engine_rng::destroy();
     }
@@ -54,7 +54,7 @@ void engine_rng::engine_rng_init()
 
 void engine_rng::engine_rng_init(size_t seed)
 {
-    if(mt19937_engine)
+    if (mt19937_engine)
     {
         engine_rng::destroy();
     }

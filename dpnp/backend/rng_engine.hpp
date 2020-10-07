@@ -79,7 +79,7 @@ public:
 
     static mkl_rng::mt19937& get_engine()
     {
-        if(!mt19937_engine)
+        if (!mt19937_engine)
         {
             engine_rng_init();
         }
