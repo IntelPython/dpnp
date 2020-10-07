@@ -28,6 +28,7 @@
 #define QUEUE_SYCL_H
 
 #include <CL/sycl.hpp>
+#include <mkl_sycl.hpp>
 
 #include <ctime>
 #include <mkl_sycl.hpp>
@@ -37,6 +38,8 @@
 #endif
 
 namespace mkl_rng = oneapi::mkl::rng;
+
+#include "backend_pstl.hpp" // this header must be included after <mkl_sycl.hpp>
 
 #define DPNP_QUEUE backend_sycl::get_queue()
 

@@ -25,7 +25,6 @@
 
 #include <cmath>
 #include <iostream>
-#include <mkl_blas_sycl.hpp>
 #include <vector>
 
 #include <backend_iface.hpp>

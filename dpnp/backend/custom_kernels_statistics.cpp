@@ -24,11 +24,8 @@
 //*****************************************************************************
 
 #include <iostream>
-#include <mkl_blas_sycl.hpp>
-#include <mkl_stats_sycl.hpp>
 
 #include <backend_iface.hpp>
-#include "backend_pstl.hpp"
 #include "backend_utils.hpp"
 #include "queue_sycl.hpp"
 
