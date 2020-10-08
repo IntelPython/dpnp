@@ -46,7 +46,7 @@ void mkl_rng_gaussian(void* result, size_t size)
     mkl_rng::gaussian<_DataType> distribution(mean, stddev);
     // perform generation
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    DPNP_QUEUE.wait();
+    event_out.wait();
 }
 
 template <typename _DataType>
@@ -66,7 +66,7 @@ void mkl_rng_uniform(void* result, long low, long high, size_t size)
     mkl_rng::uniform<_DataType> distribution(a, b);
     // perform generation
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    DPNP_QUEUE.wait();
+    event_out.wait();
 
 }
 

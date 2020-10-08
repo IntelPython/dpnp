@@ -494,7 +494,7 @@ INP_DLLEXPORT void mkl_rng_uniform(void* result, long low, long high, size_t siz
  * @brief initializer for basic random number generator.
  *
  */
-INP_DLLEXPORT void dpnp_engine_rng_initialize();
+INP_DLLEXPORT void dpnp_srand();
 
 /**
  * @ingroup BACKEND_API
@@ -503,8 +503,6 @@ INP_DLLEXPORT void dpnp_engine_rng_initialize();
  * @param [in]  low    Left bound of array values.
  *
  */
-INP_DLLEXPORT void dpnp_engine_rng_initialize(size_t seed);
-
-#define dpnp_srand(x) dpnp_engine_rng_initialize(x)
+INP_DLLEXPORT void dpnp_srand(size_t seed);
 
 #endif // BACKEND_IFACE_H

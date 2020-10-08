@@ -148,12 +148,12 @@ void dpnp_queue_initialize_c(QueueOptions selector)
     backend_sycl::backend_sycl_queue_init(selector);
 }
 
-void dpnp_engine_rng_initialize()
+void dpnp_srand()
 {
     backend_sycl::backend_sycl_rng_engine_init();
 }
 
-void dpnp_engine_rng_initialize(size_t seed)
+void dpnp_srand(size_t seed)
 {
     backend_sycl::backend_sycl_rng_engine_init(seed);
 }
