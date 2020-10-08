@@ -239,8 +239,10 @@ if _mkl_include is None and _mkl_libpath is None and _mkl_root is not None:
         _mkl_include = [_mkl_include_find]
         _mkl_libpath = [_mkl_libpath_find]
 
-if _mkl_include is None and _mkl_libpath is None:
-    raise EnvironmentError("Intel DPNP: Please install Intel OneAPI environment. MKLROOT is empty")
+if _mkl_include is None or _mkl_libpath is None:
+    raise EnvironmentError("Intel DPNP: Unable to find math library")
+#if _mkl_include is None and _mkl_libpath is None:
+#    raise EnvironmentError("Intel DPNP: Please install Intel OneAPI environment. MKLROOT is empty")
 
 _project_cmplr_macro += [("MKL_ILP64", "1")]  # using 64bit integers in MKL interface (long)
 _mkl_libs = ["mkl_rt", "mkl_sycl", "mkl_intel_ilp64", "mkl_sequential",
