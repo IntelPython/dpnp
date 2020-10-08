@@ -98,6 +98,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_MEAN,      /**< Used in numpy.mean() implementation  */
     DPNP_FN_MEDIAN,    /**< Used in numpy.median() implementation  */
     DPNP_FN_MIN,       /**< Used in numpy.min() implementation  */
+    DPNP_FN_MIN_AXIS,  /**< Used in numpy.min() implementation  */
     DPNP_FN_MINIMUM,   /**< Used in numpy.minimum() implementation  */
     DPNP_FN_MULTIPLY,  /**< Used in numpy.multiply() implementation  */
     DPNP_FN_POWER,     /**< Used in numpy.random.power() implementation  */

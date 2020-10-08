@@ -466,6 +466,11 @@ static func_map_t func_map_init()
     fmap[DPNPFuncName::DPNP_FN_MIN][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_min_c<float>};
     fmap[DPNPFuncName::DPNP_FN_MIN][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_min_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_MIN_AXIS][eft_INT][eft_INT] = {eft_INT, (void*)custom_min_axis_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_MIN_AXIS][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_min_axis_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_MIN_AXIS][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_min_axis_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_MIN_AXIS][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_min_axis_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_MINIMUM][eft_INT][eft_INT] = {eft_INT, (void*)custom_elemwise_minimum_c<int, int, int>};
     fmap[DPNPFuncName::DPNP_FN_MINIMUM][eft_INT][eft_LNG] = {eft_LNG,
                                                              (void*)custom_elemwise_minimum_c<int, long, long>};

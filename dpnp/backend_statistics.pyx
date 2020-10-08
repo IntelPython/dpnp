@@ -58,6 +58,10 @@ ctypedef void(*fptr_custom_cov_1in_1out_t)(void * , void * , size_t, size_t)
 ctypedef void(*custom_statistic_1in_1out_func_ptr_t)(void * , void * , size_t * , size_t, size_t * , size_t)
 
 
+# C function pointer to the C library template functions
+ctypedef void(*custom_statistic_1in_1out_func_axis_ptr_t)(void * , void * , size_t * , size_t * , size_t, size_t, size_t * , size_t , size_t)
+
+
 cpdef dpnp_average(dparray x1):
     array_sum = dpnp_sum(x1)
 
@@ -352,83 +356,45 @@ cpdef dparray _dpnp_min(dparray input):
     return result
 
 
+cpdef dparray _dpnp_min_(dparray input, axis, output_shape):
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MIN_AXIS, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    cdef dparray result = dparray(output_shape, dtype=result_type)
+
+    cdef custom_statistic_1in_1out_func_axis_ptr_t func = <custom_statistic_1in_1out_func_axis_ptr_t > kernel_data.ptr
+
+    cdef dparray_shape_type axis_
+    axis_.reserve(len(axis))
+    for shape_it in axis:
+        if shape_it < 0:
+            raise ValueError("Intel NumPy dparray::__init__(): Negative values in 'shape' are not allowed")
+        axis_.push_back(shape_it)
+    cdef Py_ssize_t axis_size = len(axis)
+    cdef Py_ssize_t ind = len(output_shape)
+
+    func(input.get_data(), result.get_data(), < size_t * > input._dparray_shape.data(), < size_t * > result._dparray_shape.data(), input.ndim, result.ndim, < size_t * > axis_.data(), axis_size, ind)
+
+    dpnp_array = dpnp.array(result, dtype=input.dtype)
+    dpnp_result_array = dpnp_array.reshape(output_shape)
+    return dpnp_result_array
+
+
 cpdef dparray dpnp_min(dparray input, axis):
+    cdef dparray_shape_type shape_input = input.shape
     if axis is None:
         return _dpnp_min(input)
-
-    cdef dparray_shape_type shape_input = input.shape
-    cdef long size_input = input.size
-    if isinstance(axis, int):
-        axis_ = tuple([axis])
     else:
-        axis_ = axis
-    if axis_ is None:
-        output_shape = dparray(1, dtype=numpy.int64)
-        output_shape[0] = 1
-    else:
+        if isinstance(axis, int):
+            axis_ = tuple([axis])
+        else:
+            axis_ = axis
         output_shape = dparray(len(shape_input) - len(axis_), dtype=numpy.int64)
         ind = 0
         for id, shape_axis in enumerate(shape_input):
             if id not in axis_:
                 output_shape[ind] = shape_axis
                 ind += 1
-    cdef long prod = 1
-    for i in range(len(output_shape)):
-        if output_shape[i] != 0:
-            prod *= output_shape[i]
-    result_array = [None] * prod
-    input_shape_offsets = [None] * len(shape_input)
-    acc = 1
-    for i in range(len(shape_input)):
-        ind = len(shape_input) - 1 - i
-        input_shape_offsets[ind] = acc
-        acc *= shape_input[ind]
-    output_shape_offsets = [None] * len(shape_input)
-    acc = 1
-    if axis_ is not None:
-        for i in range(len(output_shape)):
-            ind = len(output_shape) - 1 - i
-            output_shape_offsets[ind] = acc
-            acc *= output_shape[ind]
-            result_offsets = input_shape_offsets[:]  # need copy. not a reference
-        for i in axis_:
-            result_offsets[i] = 0
-
-    for source_idx in range(size_input):
-
-        # reconstruct x,y,z from linear source_idx
-        xyz = []
-        remainder = source_idx
-        for i in input_shape_offsets:
-            quotient, remainder = divmod(remainder, i)
-            xyz.append(quotient)
-
-        # extract result axis
-        result_axis = []
-        if axis_ is None:
-            result_axis = xyz
-        else:
-            for idx, offset in enumerate(xyz):
-                if idx not in axis_:
-                    result_axis.append(offset)
-
-        # Construct result offset
-        result_offset = 0
-        if axis_ is not None:
-            for i, result_axis_val in enumerate(result_axis):
-                result_offset += (output_shape_offsets[i] * result_axis_val)
-
-        input_elem = input.item(source_idx)
-        if axis_ is None:
-            if result_array[0] is None:
-                result_array[0] = input_elem
-            else:
-                result_array[0] = min(result_array[0], input_elem)
-        else:
-            if result_array[result_offset] is None:
-                result_array[result_offset] = input_elem
-            else:
-                result_array[result_offset] = min(result_array[result_offset], input_elem)
-    dpnp_array = dpnp.array(result_array, dtype=input.dtype)
-    dpnp_result_array = dpnp_array.reshape(output_shape)
-    return dpnp_result_array
+        return _dpnp_min_(input, axis_, output_shape)
