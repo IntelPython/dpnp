@@ -29,13 +29,13 @@ int main(int, char**)
     std::cout << "Results, when seed is the same (10) for all random number generations:";
     for (size_t i = 0; i < 4; ++i)
     {
-        dpnp_engine_rng_initialize(seed);
+        dpnp_srand(seed);
         mkl_rng_uniform<double>(result, low, high, size);
         print_dpnp_array(result, 10);
     }
 
     std::cout << std::endl << "Results, when seed is random:";
-    dpnp_engine_rng_initialize();
+    dpnp_srand();
     for (size_t i = 0; i < 4; ++i)
     {
         mkl_rng_uniform<double>(result, low, high, size);
