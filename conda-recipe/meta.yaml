@@ -46,3 +46,5 @@ about:
     license: ISSL
     license_file: LICENSE.txt
     summary: NumPy-like API accelerated with SYCL
+    description: |
+      NumPy-like API accelerated with SYCL
