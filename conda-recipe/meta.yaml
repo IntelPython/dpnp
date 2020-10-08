@@ -43,9 +43,9 @@ test:
       - pytest
 
 about:
-    license: ISSL
-    license_file: ISSL.txt
-    summary: NumPy-like API accelerated with SYCL
+    home: https://github.com/IntelPython/dpnp
+    license: BSD-2-Clause
+    license_file: LICENSE.txt
     description: |
         <strong>LEGAL NOTICE: Use of this software package is subject to the
         software license agreement (as set forth above, in the license section of
@@ -53,5 +53,5 @@ about:
         disclaimers or license terms for third party or open source software
         included in or with the software.</strong>
         <br/><br/>
-        EULA: <a href=".*" target="_blank">ISSL</a>
+        EULA: <a href="https://opensource.org/licenses/BSD-2-Clause" target="_blank">BSD-2-Clause</a>
         <br/><br/>
