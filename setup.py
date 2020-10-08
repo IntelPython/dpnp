@@ -214,7 +214,6 @@ if IS_CONDA_BUILD:
 else:
     _conda_root = os.environ.get("CONDA_PREFIX", None)
 if _conda_root is not None:
-    print(f"Intel DPNP: trying to use math library from environment: {_conda_root}")
     _mkl_include_find = os.path.join(_conda_root, "include")
     _mkl_libpath_find = os.path.join(_conda_root, "lib")
     _required_header = os.path.join(_mkl_include_find, "oneapi", "mkl.hpp")
@@ -228,20 +227,18 @@ if _conda_root is not None:
 
 _mkl_root = os.environ.get("MKLROOT", None)
 if ((_mkl_include is None or _mkl_libpath is None) and (_mkl_root is not None)):  # if MKLROOT was specified then use it
-    print(f"Intel DPNP: trying to use math library from $MKLROOT: {_mkl_root}")
     # TODO change paths and file names for new version
     # paths and file names are aligned to beta09 at this moment
-    if _mkl_include is None and _mkl_libpath is None and _mkl_root is not None:
-        _mkl_include_find = os.path.join(_mkl_root, "include")
-        _mkl_libpath_find = os.path.join(_mkl_root, "lib", "intel64")
-        _required_header = os.path.join(_mkl_include_find, "mkl_blas_sycl.hpp")
-        _required_library = os.path.join(_mkl_libpath_find, "libmkl_sycl.so")
+    _mkl_include_find = os.path.join(_mkl_root, "include")
+    _mkl_libpath_find = os.path.join(_mkl_root, "lib", "intel64")
+    _required_header = os.path.join(_mkl_include_find, "mkl_blas_sycl.hpp")
+    _required_library = os.path.join(_mkl_libpath_find, "libmkl_sycl.so")
 
-        if (os.path.exists(_required_header) and os.path.exists(_required_library)):
-            print(
-                f"Intel DPNP: using $MKLROOT based math library. include={_mkl_include_find}, libpath={_mkl_libpath_find}")
-            _mkl_include = [_mkl_include_find]
-            _mkl_libpath = [_mkl_libpath_find]
+    if (os.path.exists(_required_header) and os.path.exists(_required_library)):
+        print(
+            f"Intel DPNP: using $MKLROOT based math library. include={_mkl_include_find}, libpath={_mkl_libpath_find}")
+        _mkl_include = [_mkl_include_find]
+        _mkl_libpath = [_mkl_libpath_find]
 
 if _mkl_include is None or _mkl_libpath is None:
     raise EnvironmentError("Intel DPNP: Unable to find math library")

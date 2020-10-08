@@ -44,7 +44,7 @@ test:
 
 about:
     license: ISSL
-    license_file: LICENSE.txt
+    license_file: ISSL.txt
     summary: NumPy-like API accelerated with SYCL
     description: |
         <strong>LEGAL NOTICE: Use of this software package is subject to the
