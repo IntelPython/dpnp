@@ -28,7 +28,7 @@
 #define QUEUE_SYCL_H
 
 #include <CL/sycl.hpp>
-#include <mkl_sycl.hpp>
+#include <oneapi/mkl.hpp>
 
 #if !defined(DPNP_LOCAL_QUEUE)
 #include <dppl_sycl_queue_manager.h>
