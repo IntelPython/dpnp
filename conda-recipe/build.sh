@@ -1,13 +1,29 @@
 #!/bin/bash
 
-#. $RECIPE_DIR/activate_env.sh
-
+# if ONEAPI_ROOT is specified (use all from it)
 if [ ! -z "${ONEAPI_ROOT}" ]; then
-    . ${ONEAPI_ROOT}/mkl/latest/env/vars.sh
-    . ${ONEAPI_ROOT}/compiler/2021.1-beta09/env/vars.sh
-    . ${ONEAPI_ROOT}/tbb/latest/env/vars.sh
+    export DPCPPROOT=${ONEAPI_ROOT}/compiler/latest
+    # TODO uncomment when CI will be changed
+    # export MKLROOT=${ONEAPI_ROOT}/mkl/latest
+    export TBBROOT=${ONEAPI_ROOT}/tbb/latest
+fi
+
+# if DPCPPROOT is specified (work with custom DPCPP)
+if [ ! -z "${DPCPPROOT}" ]; then
+    . ${DPCPPROOT}/env/vars.sh
+fi
+
+# if MKLROOT is specified (work with custom math library)
+if [ ! -z "${MKLROOT}" ]; then
+    . ${MKLROOT}/env/vars.sh
+    conda remove mkl --force -y || true
+fi
+
+# have to activate while SYCL CPU device/driver needs paths
+# if TBBROOT is specified
+if [ ! -z "${TBBROOT}" ]; then
+    . ${TBBROOT}/env/vars.sh
 fi
 
 $PYTHON setup.py build_clib
-#cp $SRC_DIR/dpnp/libdpnp_backend_c.so $SP_DIR/libdpnp_backend_c.so
 $PYTHON setup.py build_ext install

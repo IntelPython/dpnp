@@ -95,6 +95,8 @@ Operating System :: Unix
 Operating System :: MacOS
 """
 
+IS_CONDA_BUILD = True if os.environ.get("CONDA_BUILD", None) == "1" else False
+
 IS_WIN = False
 IS_MAC = False
 IS_LIN = False
@@ -205,12 +207,17 @@ Get the math library environemnt
 """
 _mkl_include = None
 _mkl_libpath = None
-# TODO make it as a function in utils
-_conda_root = os.environ.get("CONDA_PREFIX", None)
-if _mkl_include is None and _mkl_libpath is None and _conda_root is not None:
+
+# try to find math library in environment
+if IS_CONDA_BUILD:
+    _conda_root = os.environ.get("PREFIX", None)
+else:
+    _conda_root = os.environ.get("CONDA_PREFIX", None)
+if _conda_root is not None:
+    print(f"Intel DPNP: trying to use math library from environment: {_conda_root}")
     _mkl_include_find = os.path.join(_conda_root, "include")
     _mkl_libpath_find = os.path.join(_conda_root, "lib")
-    _required_header = os.path.join(_mkl_include_find, "mkl_blas_sycl.hpp")
+    _required_header = os.path.join(_mkl_include_find, "oneapi", "mkl.hpp")
     _required_library = os.path.join(_mkl_libpath_find, "libmkl_sycl.so")
 
     if (os.path.exists(_required_header) and os.path.exists(_required_library)):
@@ -219,22 +226,25 @@ if _mkl_include is None and _mkl_libpath is None and _conda_root is not None:
         _mkl_include = [_mkl_include_find]
         _mkl_libpath = [_mkl_libpath_find]
 
-
 _mkl_root = os.environ.get("MKLROOT", None)
-if _mkl_include is None and _mkl_libpath is None and _mkl_root is not None:
-    _mkl_include_find = os.path.join(_mkl_root, "include")
-    _mkl_libpath_find = os.path.join(_mkl_root, "lib", "intel64")
-    _required_header = os.path.join(_mkl_include_find, "mkl_blas_sycl.hpp")
-    _required_library = os.path.join(_mkl_libpath_find, "libmkl_sycl.so")
+if ((_mkl_include is None or _mkl_libpath is None) and (_mkl_root is not None)):  # if MKLROOT was specified then use it
+    print(f"Intel DPNP: trying to use math library from $MKLROOT: {_mkl_root}")
+    # TODO change paths and file names for new version
+    # paths and file names are aligned to beta09 at this moment
+    if _mkl_include is None and _mkl_libpath is None and _mkl_root is not None:
+        _mkl_include_find = os.path.join(_mkl_root, "include")
+        _mkl_libpath_find = os.path.join(_mkl_root, "lib", "intel64")
+        _required_header = os.path.join(_mkl_include_find, "mkl_blas_sycl.hpp")
+        _required_library = os.path.join(_mkl_libpath_find, "libmkl_sycl.so")
 
-    if (os.path.exists(_required_header) and os.path.exists(_required_library)):
-        print(
-            f"Intel DPNP: using $MKLROOT based math library. include={_mkl_include_find}, libpath={_mkl_libpath_find}")
-        _mkl_include = [_mkl_include_find]
-        _mkl_libpath = [_mkl_libpath_find]
+        if (os.path.exists(_required_header) and os.path.exists(_required_library)):
+            print(
+                f"Intel DPNP: using $MKLROOT based math library. include={_mkl_include_find}, libpath={_mkl_libpath_find}")
+            _mkl_include = [_mkl_include_find]
+            _mkl_libpath = [_mkl_libpath_find]
 
-if _mkl_include is None and _mkl_libpath is None:
-    raise EnvironmentError("Intel DPNP: Please install Intel OneAPI environment. MKLROOT is empty")
+if _mkl_include is None or _mkl_libpath is None:
+    raise EnvironmentError("Intel DPNP: Unable to find math library")
 
 _project_cmplr_macro += [("MKL_ILP64", "1")]  # using 64bit integers in MKL interface (long)
 _mkl_libs = ["mkl_rt", "mkl_sycl", "mkl_intel_ilp64", "mkl_sequential",
@@ -248,18 +258,18 @@ elif IS_WIN:
 """
 Get the compiler environemnt
 """
-_cmplr_root = os.environ.get('ONEAPI_ROOT', None)
+_cmplr_root = os.environ.get('DPCPPROOT', None)
 if _cmplr_root is None:
-    raise EnvironmentError("Please install Intel OneAPI environment. ONEAPI_ROOT is empty")
+    raise EnvironmentError("Please install Intel OneAPI environment. DPCPPROOT is empty")
 
 if IS_LIN:
-    _cmplr_libpath = [os.path.join(_cmplr_root, 'compiler', 'latest', 'linux', 'lib')]
-    _omp_libpath = [os.path.join(_cmplr_root, 'compiler', 'latest', 'linux', 'compiler', 'lib', 'intel64')]
+    _cmplr_libpath = [os.path.join(_cmplr_root, 'linux', 'lib')]
+    _omp_libpath = [os.path.join(_cmplr_root, 'linux', 'compiler', 'lib', 'intel64')]
     _cmplr_rpath = _cmplr_libpath
     _omp_rpath = _omp_libpath
 elif IS_WIN:
-    _cmplr_libpath = [os.path.join(_cmplr_root, 'compiler', 'latest', 'windows', 'lib')]
-    _omp_libpath = [os.path.join(_cmplr_root, 'compiler', 'latest', 'windows', 'compiler', 'lib', 'intel64_win')]
+    _cmplr_libpath = [os.path.join(_cmplr_root, 'windows', 'lib')]
+    _omp_libpath = [os.path.join(_cmplr_root, 'windows', 'compiler', 'lib', 'intel64_win')]
 
 
 """
