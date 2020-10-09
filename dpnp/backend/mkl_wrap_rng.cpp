@@ -29,6 +29,10 @@
 
 namespace mkl_rng = oneapi::mkl::rng;
 
+// TODO ?
+//template <typename _Distribution>
+//sycl::event mkl_rng_generate_custom(_Distribution, void * engine, size_t size, )
+
 // TODO:
 // add mean and std params ?
 template <typename _DataType>
@@ -38,14 +42,97 @@ void mkl_rng_gaussian(void* result, size_t size)
     {
         return;
     }
+    sycl::event event_out;
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
     const _DataType mean = _DataType(0.0);
     const _DataType stddev = _DataType(1.0);
 
+    EngineOptions engine_type = DPNP_RNG_ENGINE_TYPE;
+
     mkl_rng::gaussian<_DataType> distribution(mean, stddev);
-    // perform generation
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+
+    switch(engine_type)
+    {
+        case EngineOptions::ARS5:
+        {
+            mkl_rng::ars5 * engine_ptr = reinterpret_cast<mkl_rng::ars5 *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+        case EngineOptions::MCG32M1:
+        {
+            mkl_rng::mcg31m1 * engine_ptr = reinterpret_cast<mkl_rng::mcg31m1 *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+        case EngineOptions::MCG59:
+        {
+            mkl_rng::mcg59 * engine_ptr = reinterpret_cast<mkl_rng::mcg59 *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+        case EngineOptions::MRG32K3A:
+        {
+            mkl_rng::mrg32k3a * engine_ptr = reinterpret_cast<mkl_rng::mrg32k3a *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+        case EngineOptions::MT19937:
+        {
+            mkl_rng::mt19937 * engine_ptr = reinterpret_cast<mkl_rng::mt19937 *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+        case EngineOptions::MT2203:
+        {
+            mkl_rng::mt2203 * engine_ptr = reinterpret_cast<mkl_rng::mt2203 *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+        case EngineOptions::NIEDERREITER:
+        {
+            mkl_rng::niederreiter * engine_ptr = reinterpret_cast<mkl_rng::niederreiter *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+        case EngineOptions::NONDETERMINISTIC:
+        {
+            mkl_rng::nondeterministic * engine_ptr = reinterpret_cast<mkl_rng::nondeterministic *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+        case EngineOptions::PHILOX4X32X10:
+        {
+            mkl_rng::philox4x32x10 * engine_ptr = reinterpret_cast<mkl_rng::philox4x32x10 *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+        case EngineOptions::R250:
+        {
+            mkl_rng::r250 * engine_ptr = reinterpret_cast<mkl_rng::r250 *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+        case EngineOptions::SFMT19937:
+        {
+            mkl_rng::sfmt19937 * engine_ptr = reinterpret_cast<mkl_rng::sfmt19937 *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+        case EngineOptions::SOBOL:
+        {
+            mkl_rng::sobol * engine_ptr = reinterpret_cast<mkl_rng::sobol *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+        case EngineOptions::WICHMANN_HILL:
+        {
+            mkl_rng::wichmann_hill * engine_ptr = reinterpret_cast<mkl_rng::wichmann_hill *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+    }
     event_out.wait();
 }
 
@@ -56,6 +143,7 @@ void mkl_rng_uniform(void* result, long low, long high, size_t size)
     {
         return;
     }
+    sycl::event event_out;
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
     // set left bound of distribution
@@ -63,9 +151,91 @@ void mkl_rng_uniform(void* result, long low, long high, size_t size)
     // set right bound of distribution
     const _DataType b = (_DataType(high));
 
+    EngineOptions engine_type = DPNP_RNG_ENGINE_TYPE;
+
     mkl_rng::uniform<_DataType> distribution(a, b);
-    // perform generation
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+
+    switch(engine_type)
+    {
+        case EngineOptions::ARS5:
+        {
+            mkl_rng::ars5 * engine_ptr = reinterpret_cast<mkl_rng::ars5 *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+        case EngineOptions::MCG32M1:
+        {
+            mkl_rng::mcg31m1 * engine_ptr = reinterpret_cast<mkl_rng::mcg31m1 *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+        case EngineOptions::MCG59:
+        {
+            mkl_rng::mcg59 * engine_ptr = reinterpret_cast<mkl_rng::mcg59 *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+        case EngineOptions::MRG32K3A:
+        {
+            mkl_rng::mrg32k3a * engine_ptr = reinterpret_cast<mkl_rng::mrg32k3a *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+        case EngineOptions::MT19937:
+        {
+            mkl_rng::mt19937 * engine_ptr = reinterpret_cast<mkl_rng::mt19937 *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+        case EngineOptions::MT2203:
+        {
+            mkl_rng::mt2203 * engine_ptr = reinterpret_cast<mkl_rng::mt2203 *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+        case EngineOptions::NIEDERREITER:
+        {
+            mkl_rng::niederreiter * engine_ptr = reinterpret_cast<mkl_rng::niederreiter *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+        case EngineOptions::NONDETERMINISTIC:
+        {
+            mkl_rng::nondeterministic * engine_ptr = reinterpret_cast<mkl_rng::nondeterministic *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+        case EngineOptions::PHILOX4X32X10:
+        {
+            mkl_rng::philox4x32x10 * engine_ptr = reinterpret_cast<mkl_rng::philox4x32x10 *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+        case EngineOptions::R250:
+        {
+            mkl_rng::r250 * engine_ptr = reinterpret_cast<mkl_rng::r250 *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+        case EngineOptions::SFMT19937:
+        {
+            mkl_rng::sfmt19937 * engine_ptr = reinterpret_cast<mkl_rng::sfmt19937 *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+        case EngineOptions::SOBOL:
+        {
+            mkl_rng::sobol * engine_ptr = reinterpret_cast<mkl_rng::sobol *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+        case EngineOptions::WICHMANN_HILL:
+        {
+            mkl_rng::wichmann_hill * engine_ptr = reinterpret_cast<mkl_rng::wichmann_hill *>(DPNP_RNG_ENGINE);
+            event_out = mkl_rng::generate(distribution, *engine_ptr, size, result1);
+            break;
+        }
+    }
     event_out.wait();
 
 }

@@ -444,22 +444,24 @@ INP_DLLEXPORT void custom_elemwise_transpose_c(void* array1_in,
  * @brief SYCL backend rng engine initialization selector.
  *
  */
-enum class EngineOptions : uint32_t
+enum EngineOptions
 {
-    MRG32K3A,
-    PHILOX4X32X10,
+    ARS5 = 0,
     MCG32M1,
-    R250,
     MCG59,
-    WICHMANN_HILL,
+    MRG32K3A,
     MT19937, /**< MT19937 */
     MT2203,
+    NIEDERREITER,
+    NONDETERMINISTIC,
+    PHILOX4X32X10,
+    R250,
     SFMT19937,
     SOBOL,
-    NIEDERREITER,
-    ARS5,
-    NONDETERMINISTIC,
+    WICHMANN_HILL,
 };
+
+#define ENGINE_OPTIONS_NUMBER 13
 
 /**
  * @ingroup BACKEND_API
@@ -488,6 +490,15 @@ INP_DLLEXPORT void mkl_rng_gaussian(void* result, size_t size);
  */
 template <typename _DataType>
 INP_DLLEXPORT void mkl_rng_uniform(void* result, long low, long high, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief initializer for basic random number generator.
+ *
+ * @param [in]  engine_type    TODO:
+ *
+ */
+INP_DLLEXPORT void dpnp_set_rng(EngineOptions engine_type);
 
 /**
  * @ingroup BACKEND_API

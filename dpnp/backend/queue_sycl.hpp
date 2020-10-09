@@ -31,6 +31,11 @@
 #include <mkl_sycl.hpp>
 
 #include <ctime>
+#include <vector>
+#include <array>
+#include <map>
+#include <utility>
+#include <variant>
 #include <mkl_sycl.hpp>
 
 #if !defined(DPNP_LOCAL_QUEUE)
@@ -43,6 +48,7 @@ namespace mkl_rng = oneapi::mkl::rng;
 
 #define DPNP_QUEUE backend_sycl::get_queue()
 #define DPNP_RNG_ENGINE backend_sycl::get_engine()
+#define DPNP_RNG_ENGINE_TYPE backend_sycl::get_engine_type()
 
 /**
  * This is container for the SYCL queue and related functions like queue initialization and maintenance
@@ -54,7 +60,11 @@ class backend_sycl
 #if defined(DPNP_LOCAL_QUEUE)
     static cl::sycl::queue* queue; /**< contains SYCL queue pointer initialized in @ref backend_sycl_queue_init */
 #endif
-    static mkl_rng::mt19937* mt19937_engine;
+    static EngineOptions engine_type;
+    // will be in pair
+    static size_t reseed_val;
+    static bool reseed;
+    static std::array<void*, ENGINE_OPTIONS_NUMBER> engines;
 
     static void destroy_queue()
     {
@@ -66,8 +76,75 @@ class backend_sycl
 
     static void destroy_rng_engine()
     {
-        delete mt19937_engine;
-        mt19937_engine = nullptr;
+        switch(engine_type)
+        {
+            case EngineOptions::ARS5:
+            {
+                delete reinterpret_cast<mkl_rng::ars5*>(engines[engine_type]);
+                break;
+            }
+            case EngineOptions::MCG32M1:
+            {
+                delete reinterpret_cast<mkl_rng::mcg31m1*>(engines[engine_type]);
+                break;
+            }
+            case EngineOptions::MCG59:
+            {
+                delete reinterpret_cast<mkl_rng::mcg59*>(engines[engine_type]);
+                break;
+            }
+            case EngineOptions::MRG32K3A:
+            {
+                delete reinterpret_cast<mkl_rng::mrg32k3a*>(engines[engine_type]);
+                break;
+            }
+            case EngineOptions::MT19937:
+            {
+                delete reinterpret_cast<mkl_rng::mt19937*>(engines[engine_type]);
+                break;
+            }
+            case EngineOptions::MT2203:
+            {
+                delete reinterpret_cast<mkl_rng::mt2203*>(engines[engine_type]);
+                break;
+            }
+            case EngineOptions::NIEDERREITER:
+            {
+                delete reinterpret_cast<mkl_rng::niederreiter*>(engines[engine_type]);
+                break;
+            }
+            case EngineOptions::NONDETERMINISTIC:
+            {
+                delete reinterpret_cast<mkl_rng::nondeterministic*>(engines[engine_type]);
+                break;
+            }
+            case EngineOptions::PHILOX4X32X10:
+            {
+                delete reinterpret_cast<mkl_rng::philox4x32x10*>(engines[engine_type]);
+                break;
+            }
+            case EngineOptions::R250:
+            {
+                delete reinterpret_cast<mkl_rng::r250*>(engines[engine_type]);
+                break;
+            }
+            case EngineOptions::SFMT19937:
+            {
+                delete reinterpret_cast<mkl_rng::sfmt19937*>(engines[engine_type]);
+                break;
+            }
+            case EngineOptions::SOBOL:
+            {
+                delete reinterpret_cast<mkl_rng::sobol*>(engines[engine_type]);
+                break;
+            }
+            case EngineOptions::WICHMANN_HILL:
+            {
+                delete reinterpret_cast<mkl_rng::wichmann_hill*>(engines[engine_type]);
+                break;
+            }
+        }
+        engines[engine_type] = nullptr;
     }
 
 public:
@@ -76,12 +153,23 @@ public:
 #if defined(DPNP_LOCAL_QUEUE)
         queue = nullptr;
 #endif
-        mt19937_engine = nullptr;
+        engine_type = EngineOptions::MT19937;
+        engines.fill(nullptr);
+        reseed = false;
     }
 
     virtual ~backend_sycl()
     {
+        // TODO:
+        // delete for all ptrs
         backend_sycl::destroy_queue();
+        // will use iterator for enum class
+        //for(int i = EngineOptions::ARS5; i <= EngineOptions::WICHMANN_HILL; ++i)
+        //{
+        //    engine_type = i;
+        //    backend_sycl::destroy_rng_engine();
+        //}
+
         backend_sycl::destroy_rng_engine();
     }
 
@@ -97,7 +185,6 @@ public:
     static void backend_sycl_queue_init(QueueOptions selector = QueueOptions::CPU_SELECTOR);
 
     static void backend_sycl_rng_engine_init();
-    static void backend_sycl_rng_engine_init(size_t seed);
     /**
      * Return the @ref queue to the user
      */
@@ -116,13 +203,29 @@ public:
         return *(reinterpret_cast<cl::sycl::queue*>(DPCtrl_queue));
 #endif
     }
-    static mkl_rng::mt19937& get_engine()
+    static void * get_engine()
     {
-        if (!mt19937_engine)
+        if (!engines[engine_type] || reseed)
         {
             backend_sycl_rng_engine_init();
         }
-        return *mt19937_engine;
+        return engines[engine_type];
+    }
+
+    static EngineOptions& get_engine_type()
+    {
+        return engine_type;
+    }
+
+    static void set_engine_type(EngineOptions engine_type_)
+    {
+        engine_type = engine_type_;
+    }
+
+    static void set_seed(size_t value)
+    {
+        reseed = true;
+        reseed_val = value;
     }
 };
 

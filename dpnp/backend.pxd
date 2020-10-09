@@ -114,11 +114,29 @@ cdef extern from "backend/backend_iface.hpp" namespace "QueueOptions":  # need t
         GPU_SELECTOR
 
 cdef extern from "backend/backend_iface.hpp":
+    cdef enum EngineOptions:
+            ARS5 = 0
+            MCG32M1 = 1
+            MCG59 = 2
+            MRG32K3A = 3
+            MT19937 = 4
+            MT2203 = 5
+            NIEDERREITER = 6
+            NONDETERMINISTIC = 7
+            PHILOX4X32X10 = 8
+            R250 = 9
+            SFMT19937 = 10
+            SOBOL = 11
+            WICHMANN_HILL = 11
+
+
+cdef extern from "backend/backend_iface.hpp":
     void dpnp_queue_initialize_c(QueueOptions selector)
 
     char * dpnp_memory_alloc_c(size_t size_in_bytes)
     void dpnp_memory_free_c(void * ptr)
     void dpnp_memory_memcpy_c(void * dst, const void * src, size_t size_in_bytes)
+    void dpnp_set_rng(EngineOptions engine_type)
     void dpnp_srand()
     void dpnp_srand(size_t seed)
 

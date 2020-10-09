@@ -33,8 +33,11 @@
 #if defined(DPNP_LOCAL_QUEUE)
 cl::sycl::queue* backend_sycl::queue = nullptr;
 #endif
-mkl_rng::mt19937* backend_sycl::mt19937_engine = nullptr;
-
+//mkl_rng::mt19937* backend_sycl::mt19937_engine = nullptr;
+EngineOptions backend_sycl::engine_type = EngineOptions::MT19937;
+bool backend_sycl::reseed = false;
+size_t backend_sycl::reseed_val;
+std::array<void*, ENGINE_OPTIONS_NUMBER> backend_sycl::engines;
 /**
  * Function push the SYCL kernels to be linked (final stage of the compilation) for the current queue
  *
@@ -121,31 +124,105 @@ void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
 
 void backend_sycl::backend_sycl_rng_engine_init()
 {
-    if (mt19937_engine)
-    {
-        backend_sycl::destroy_rng_engine();
-    }
-    // TODO:
-    // choose engine as is in numpy
-    // seed number
-    // TODO:
-    // mem leak
-    size_t seed = std::time(nullptr);
-    mt19937_engine = new mkl_rng::mt19937(DPNP_QUEUE, seed);
-}
+    size_t seed;
 
-void backend_sycl::backend_sycl_rng_engine_init(size_t seed)
-{
-    if (mt19937_engine)
+    if (engines[engine_type])
     {
         backend_sycl::destroy_rng_engine();
     }
-    mt19937_engine = new mkl_rng::mt19937(DPNP_QUEUE, seed);
+
+    if(reseed)
+    {
+        seed = reseed_val;
+        reseed = false;
+    }
+    else
+    {
+        // TODO:
+        // choose engine as is in numpy
+        // seed number
+        // TODO:
+        // mem leak
+        seed = std::time(nullptr);
+    }
+    switch(engine_type)
+    {
+        case EngineOptions::ARS5:
+        {
+            engines[engine_type] = new mkl_rng::ars5(DPNP_QUEUE, seed);
+            break;
+        }
+        case EngineOptions::MCG32M1:
+        {
+            engines[engine_type] = new mkl_rng::mcg31m1(DPNP_QUEUE, seed);
+            break;
+        }
+        case EngineOptions::MCG59:
+        {
+            engines[engine_type] = new mkl_rng::mcg59(DPNP_QUEUE, seed);
+            break;
+        }
+        case EngineOptions::MRG32K3A:
+        {
+            engines[engine_type] = new mkl_rng::mrg32k3a(DPNP_QUEUE, seed);
+            break;
+        }
+        case EngineOptions::MT19937:
+        {
+            engines[engine_type] = new mkl_rng::mt19937(DPNP_QUEUE, seed);
+            break;
+        }
+        case EngineOptions::MT2203:
+        {
+            engines[engine_type] = new mkl_rng::mt2203(DPNP_QUEUE, seed);
+            break;
+        }
+        case EngineOptions::NIEDERREITER:
+        {
+            engines[engine_type] = new mkl_rng::niederreiter(DPNP_QUEUE, seed);
+            break;
+        }
+        case EngineOptions::NONDETERMINISTIC:
+        {
+            engines[engine_type] = new mkl_rng::nondeterministic(DPNP_QUEUE);
+            break;
+        }
+        case EngineOptions::PHILOX4X32X10:
+        {
+            engines[engine_type] = new mkl_rng::philox4x32x10(DPNP_QUEUE, seed);
+            break;
+        }
+        case EngineOptions::R250:
+        {
+            engines[engine_type] = new mkl_rng::r250(DPNP_QUEUE, seed);
+            break;
+        }
+        case EngineOptions::SFMT19937:
+        {
+            engines[engine_type] = new mkl_rng::sfmt19937(DPNP_QUEUE, seed);
+            break;
+        }
+        case EngineOptions::SOBOL:
+        {
+            engines[engine_type] = new mkl_rng::sobol(DPNP_QUEUE, seed);
+            break;
+        }
+        case EngineOptions::WICHMANN_HILL:
+        {
+            engines[engine_type] = new mkl_rng::wichmann_hill(DPNP_QUEUE, seed);
+            break;
+        }
+    }
 }
 
 void dpnp_queue_initialize_c(QueueOptions selector)
 {
     backend_sycl::backend_sycl_queue_init(selector);
+}
+
+void dpnp_set_rng(EngineOptions engine_type)
+{
+    backend_sycl::set_engine_type(engine_type);
 }
 
 void dpnp_srand()
@@ -155,5 +232,6 @@ void dpnp_srand()
 
 void dpnp_srand(size_t seed)
 {
-    backend_sycl::backend_sycl_rng_engine_init(seed);
+    backend_sycl::set_seed(seed);
+    backend_sycl::backend_sycl_rng_engine_init();
 }
