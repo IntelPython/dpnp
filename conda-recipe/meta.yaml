@@ -1,4 +1,4 @@
-{% set version = "0.2" %}
+{% set version = "0.3.0" %}
 {% set buildnumber = 0 %}
 
 package:
@@ -19,7 +19,7 @@ requirements:
     run:
       - python
       - dpctl >=0.3.7
-      - dpcpp_cpp_rt =2021.1b10
+      - dpcpp_cpp_rt >=2021.1b10
       - mkl >=2021.1b10
 
 build:
