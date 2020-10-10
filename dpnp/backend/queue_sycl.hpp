@@ -68,6 +68,12 @@ class backend_sycl
 
     static void destroy_queue()
     {
+        // will use iterator for enum class
+        for (int i = 0; i < ENGINE_OPTIONS_NUMBER; i++)
+        {
+            engine_type = static_cast<EngineOptions>(i);
+            backend_sycl::destroy_rng_engine();
+        }
 #if defined(DPNP_LOCAL_QUEUE)
         delete queue;
         queue = nullptr;
@@ -160,17 +166,7 @@ public:
 
     virtual ~backend_sycl()
     {
-        // TODO:
-        // delete for all ptrs
         backend_sycl::destroy_queue();
-        // will use iterator for enum class
-        //for(int i = EngineOptions::ARS5; i <= EngineOptions::WICHMANN_HILL; ++i)
-        //{
-        //    engine_type = i;
-        //    backend_sycl::destroy_rng_engine();
-        //}
-
-        backend_sycl::destroy_rng_engine();
     }
 
     /**
