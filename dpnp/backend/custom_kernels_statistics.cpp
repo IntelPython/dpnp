@@ -158,16 +158,28 @@ void custom_max_c(void* array1_in, void* result1, const size_t* shape, size_t nd
         size *= shape[i];
     }
 
-    auto policy = oneapi::dpl::execution::make_device_policy<class custom_max_c_kernel<_DataType>>(DPNP_QUEUE);
+    if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
+    {
+        // Required initializing the result before call the function
+        result[0] = array_1[0];
 
-    _DataType* res = std::max_element(policy, array_1, array_1 + size);
-    policy.queue().wait();
+        // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-make_dataset.html
+        auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, size, array_1);
 
-    result[0] = *res;
+        // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-max.html
+        cl::sycl::event event = mkl_stats::max(DPNP_QUEUE, dataset, result);
 
-#if 0
-    std::cout << "max result " << result[0] << "\n";
-#endif
+        event.wait();
+    }
+    else
+    {
+        auto policy = oneapi::dpl::execution::make_device_policy<class custom_max_c_kernel<_DataType>>(DPNP_QUEUE);
+
+        _DataType* res = std::max_element(policy, array_1, array_1 + size);
+        policy.queue().wait();
+
+        result[0] = *res;
+    }
 }
 
 template void custom_max_c<double>(
@@ -288,17 +300,28 @@ void custom_min_c(void* array1_in, void* result1, const size_t* shape, size_t nd
     {
         size *= shape[i];
     }
+    if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
+    {
+        // Required initializing the result before call the function
+        result[0] = array_1[0];
 
-    auto policy = oneapi::dpl::execution::make_device_policy<class custom_min_c_kernel<_DataType>>(DPNP_QUEUE);
+        // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-make_dataset.html
+        auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, size, array_1);
 
-    _DataType* res = std::min_element(policy, array_1, array_1 + size);
-    policy.queue().wait();
+        // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-min.html
+        cl::sycl::event event = mkl_stats::min(DPNP_QUEUE, dataset, result);
 
-    result[0] = *res;
+        event.wait();
+    }
+    else
+    {
+        auto policy = oneapi::dpl::execution::make_device_policy<class custom_min_c_kernel<_DataType>>(DPNP_QUEUE);
 
-#if 0
-    std::cout << "min result " << result[0] << "\n";
-#endif
+        _DataType* res = std::min_element(policy, array_1, array_1 + size);
+        policy.queue().wait();
+
+        result[0] = *res;
+    }
 }
 
 template void custom_min_c<double>(
