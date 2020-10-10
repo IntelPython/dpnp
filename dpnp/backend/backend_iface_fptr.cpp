@@ -33,14 +33,10 @@
  */
 
 #include <cstring>
-#include <map>
 #include <stdexcept>
 
-#include <backend_iface_fptr.hpp>
+#include "backend_fptr.hpp"
 
-typedef std::map<DPNPFuncType, DPNPFuncData_t> map_2p_t;
-typedef std::map<DPNPFuncType, map_2p_t> map_1p_t;
-typedef std::map<DPNPFuncName, map_1p_t> func_map_t;
 
 static func_map_t func_map_init();
 
@@ -137,11 +133,9 @@ void* get_dpnp_function_ptr1(DPNPFuncType& result_type,
 
 static func_map_t func_map_init()
 {
-    const DPNPFuncType eft_INT = DPNPFuncType::DPNP_FT_INT;
-    const DPNPFuncType eft_LNG = DPNPFuncType::DPNP_FT_LONG;
-    const DPNPFuncType eft_FLT = DPNPFuncType::DPNP_FT_FLOAT;
-    const DPNPFuncType eft_DBL = DPNPFuncType::DPNP_FT_DOUBLE;
     func_map_t fmap;
+
+    func_map_init_manipulation(fmap);
 
     fmap[DPNPFuncName::DPNP_FN_ABSOLUTE][eft_INT][eft_INT] = {eft_INT, (void*)custom_elemwise_absolute_c<int>};
     fmap[DPNPFuncName::DPNP_FN_ABSOLUTE][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_elemwise_absolute_c<long>};
@@ -662,11 +656,6 @@ static func_map_t func_map_init()
     fmap[DPNPFuncName::DPNP_FN_TANH][eft_LNG][eft_LNG] = {eft_DBL, (void*)custom_elemwise_tanh_c<long, double>};
     fmap[DPNPFuncName::DPNP_FN_TANH][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_elemwise_tanh_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_TANH][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_elemwise_tanh_c<double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_INT][eft_INT] = {eft_INT, (void*)custom_elemwise_transpose_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_elemwise_transpose_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_elemwise_transpose_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_elemwise_transpose_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_TRUNC][eft_INT][eft_INT] = {eft_DBL, (void*)custom_elemwise_trunc_c<int, double>};
     fmap[DPNPFuncName::DPNP_FN_TRUNC][eft_LNG][eft_LNG] = {eft_DBL, (void*)custom_elemwise_trunc_c<long, double>};
