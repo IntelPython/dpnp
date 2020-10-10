@@ -33,11 +33,12 @@
 #if defined(DPNP_LOCAL_QUEUE)
 cl::sycl::queue* backend_sycl::queue = nullptr;
 #endif
-//mkl_rng::mt19937* backend_sycl::mt19937_engine = nullptr;
+
 EngineOptions backend_sycl::engine_type = EngineOptions::MT19937;
 bool backend_sycl::reseed = false;
 size_t backend_sycl::reseed_val;
 std::array<void*, ENGINE_OPTIONS_NUMBER> backend_sycl::engines;
+
 /**
  * Function push the SYCL kernels to be linked (final stage of the compilation) for the current queue
  *
