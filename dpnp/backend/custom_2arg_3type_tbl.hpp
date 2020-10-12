@@ -31,6 +31,7 @@
  * Parameters:
  * - public name of the function and kernel name
  * - operation used to calculate the result
+ * - mkl operation used to calculate the result
  *
  */
 

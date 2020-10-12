@@ -105,7 +105,7 @@
 #include <custom_1arg_1type_tbl.hpp>
 
 /* ========================================================================== */
-#define MACRO_CUSTOM_2ARG_3TYPES_OP(__name__, __operation__, __mkl_operation__)                                        \
+#define MACRO_CUSTOM_2ARG_3TYPES_OP(__name__, __operation1__, __operation2__)                                          \
     template <typename _KernelNameSpecialization1,                                                                     \
               typename _KernelNameSpecialization2,                                                                     \
               typename _KernelNameSpecialization3>                                                                     \
@@ -122,7 +122,7 @@
         if constexpr ((std::is_same<_DataType_input1, double>::value || std::is_same<_DataType_input1, float>::value)  \
                     && std::is_same<_DataType_input2, _DataType_input1>::value)                                        \
         {                                                                                                              \
-            event = __mkl_operation__(DPNP_QUEUE, size, array1, array2, result);                                       \
+            event = __operation2__(DPNP_QUEUE, size, array1, array2, result);                                          \
         }                                                                                                              \
         else                                                                                                           \
         {                                                                                                              \
@@ -132,7 +132,7 @@
                 {                                                                                                      \
                     _DataType_output input_elem1 = array1[i];                                                          \
                     _DataType_output input_elem2 = array2[i];                                                          \
-                    result[i] = __operation__;                                                                         \
+                    result[i] = __operation1__;                                                                        \
                 }                                                                                                      \
             };                                                                                                         \
                                                                                                                        \
