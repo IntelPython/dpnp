@@ -46,7 +46,7 @@
             size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/                                             \
             {                                                                                                          \
                 _DataType_output input_elem = array1[i];                                                               \
-                result[i] = __operation__(input_elem);                                                                 \
+                result[i] = __operation__;                                                                             \
             }                                                                                                          \
         };                                                                                                             \
                                                                                                                        \
@@ -65,9 +65,7 @@
     template void custom_elemwise_##__name__##_c<long, double>(void* array1_in, void* result1, size_t size);           \
     template void custom_elemwise_##__name__##_c<int, double>(void* array1_in, void* result1, size_t size);
 
-#include <custom_1arg_2type_tbl.hpp>
-
-#define MACRO_CUSTOM_1ARG_2TYPES_MKL_OP(__name__, __operation__, __mkl_operation__)                                    \
+#define MACRO_CUSTOM_1ARG_2TYPES_2OPS(__name__, __operation1__, __operation2__)                                        \
     template <typename _KernelNameSpecialization>                                                                      \
     class custom_elemwise_##__name__##_c_kernel;                                                                       \
                                                                                                                        \
@@ -80,7 +78,7 @@
                                                                                                                        \
         if constexpr (std::is_same<_DataType_input, double>::value || std::is_same<_DataType_input, float>::value)     \
         {                                                                                                              \
-            event = __mkl_operation__(DPNP_QUEUE, size, array1, result);                                               \
+            event = __operation2__(DPNP_QUEUE, size, array1, result);                                                  \
         }                                                                                                              \
         else                                                                                                           \
         {                                                                                                              \
@@ -89,7 +87,7 @@
                 size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/                                         \
                 {                                                                                                      \
                     _DataType_output input_elem = array1[i];                                                           \
-                    result[i] = __operation__(input_elem);                                                             \
+                    result[i] = __operation1__;                                                                        \
                 }                                                                                                      \
             };                                                                                                         \
                                                                                                                        \
@@ -109,7 +107,7 @@
     template void custom_elemwise_##__name__##_c<long, double>(void* array1_in, void* result1, size_t size);           \
     template void custom_elemwise_##__name__##_c<int, double>(void* array1_in, void* result1, size_t size);
 
-#include <custom_1arg_2type_mkl_tbl.hpp>
+#include <custom_1arg_2type_tbl.hpp>
 
 /* ========================================================================== */
 #define MACRO_CUSTOM_1ARG_1TYPE_OP(__name__, __operation__)                                                            \
