@@ -105,7 +105,7 @@
 #include <custom_1arg_1type_tbl.hpp>
 
 /* ========================================================================== */
-#define MACRO_CUSTOM_2ARG_3TYPES_OP(__name__, __operation__)                                                           \
+#define MACRO_CUSTOM_2ARG_3TYPES_OP(__name__, __operation1__, __operation2__)                                          \
     template <typename _KernelNameSpecialization1,                                                                     \
               typename _KernelNameSpecialization2,                                                                     \
               typename _KernelNameSpecialization3>                                                                     \
@@ -119,23 +119,31 @@
         _DataType_input2* array2 = reinterpret_cast<_DataType_input2*>(array2_in);                                     \
         _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);                                       \
                                                                                                                        \
-        cl::sycl::range<1> gws(size);                                                                                  \
-        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                               \
-            size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/                                             \
-            {                                                                                                          \
-                _DataType_output input_elem1 = array1[i];                                                              \
-                _DataType_output input_elem2 = array2[i];                                                              \
-                result[i] = __operation__;                                                                             \
-            }                                                                                                          \
-        };                                                                                                             \
+        if constexpr ((std::is_same<_DataType_input1, double>::value || std::is_same<_DataType_input1, float>::value)  \
+                    && std::is_same<_DataType_input2, _DataType_input1>::value)                                        \
+        {                                                                                                              \
+            event = __operation2__(DPNP_QUEUE, size, array1, array2, result);                                          \
+        }                                                                                                              \
+        else                                                                                                           \
+        {                                                                                                              \
+            cl::sycl::range<1> gws(size);                                                                              \
+            auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                           \
+                size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/                                         \
+                {                                                                                                      \
+                    _DataType_output input_elem1 = array1[i];                                                          \
+                    _DataType_output input_elem2 = array2[i];                                                          \
+                    result[i] = __operation1__;                                                                        \
+                }                                                                                                      \
+            };                                                                                                         \
                                                                                                                        \
-        auto kernel_func = [&](cl::sycl::handler& cgh) {                                                               \
-            cgh.parallel_for<                                                                                          \
-                class custom_elemwise_##__name__##_c_kernel<_DataType_input1, _DataType_input2, _DataType_output>>(    \
-                gws, kernel_parallel_for_func);                                                                        \
-        };                                                                                                             \
+            auto kernel_func = [&](cl::sycl::handler& cgh) {                                                           \
+                cgh.parallel_for<class custom_elemwise_##__name__##_c_kernel<_DataType_input1, _DataType_input2,       \
+                                                                             _DataType_output>>(                       \
+                                                                                 gws, kernel_parallel_for_func);       \
+            };                                                                                                         \
                                                                                                                        \
-        event = DPNP_QUEUE.submit(kernel_func);                                                                        \
+            event = DPNP_QUEUE.submit(kernel_func);                                                                    \
+        }                                                                                                              \
                                                                                                                        \
         event.wait();                                                                                                  \
     }                                                                                                                  \
