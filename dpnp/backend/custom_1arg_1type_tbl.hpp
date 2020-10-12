@@ -26,11 +26,12 @@
 /*
  * This header file contains single argument element wise functions definitions
  *
- * Macro `MACRO_CUSTOM_1ARG_1TYPE_OP` must be defined before usage
+ * Macro `MACRO_CUSTOM_1ARG_1TYPE_OP` and `MACRO_CUSTOM_1ARG_1TYPE_2OPS` must be defined before usage
  *
  * Parameters:
  * - public name of the function and kernel name
  * - operation used to calculate the result
+ * - mkl operation used to calculate the result
  *
  */
 
@@ -40,6 +41,14 @@
 
 MACRO_CUSTOM_1ARG_1TYPE_OP(recip, _DataType(1) / input_elem) // error: no member named 'recip' in namespace 'cl::sycl'
 MACRO_CUSTOM_1ARG_1TYPE_OP(sign, cl::sycl::sign((double)input_elem)) // no sycl::sign for int and long
-MACRO_CUSTOM_1ARG_1TYPE_OP(square, input_elem* input_elem)
 
 #undef MACRO_CUSTOM_1ARG_1TYPE_OP
+
+
+#ifndef MACRO_CUSTOM_1ARG_1TYPE_2OPS
+#error "MACRO_CUSTOM_1ARG_1TYPE_2OPS is not defined"
+#endif
+
+MACRO_CUSTOM_1ARG_1TYPE_2OPS(square, input_elem* input_elem, oneapi::mkl::vm::sqr)
+
+#undef MACRO_CUSTOM_1ARG_1TYPE_2OPS
