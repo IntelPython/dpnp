@@ -29,6 +29,8 @@
 #include <backend_iface.hpp>
 #include "queue_sycl.hpp"
 
+namespace mkl_stats = oneapi::mkl::stats;
+
 template <typename _KernelNameSpecialization>
 class custom_sum_c_kernel;
 
@@ -44,28 +46,32 @@ void custom_sum_c(void* array1_in, void* result1, size_t size)
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
 #if 1 // naive algorithm
-    // cl::sycl::range<1> gws(size);
-    auto policy = oneapi::dpl::execution::make_device_policy<custom_sum_c_kernel<_DataType>>(DPNP_QUEUE);
-
-    // sycl::buffer<_DataType, 1> array_1_buf(array_1, gws);
-    // auto it_begin = oneapi::dpl::begin(array_1_buf);
-    // auto it_end = oneapi::dpl::end(array_1_buf);
-
-    _DataType accumulator = 0;
-    accumulator = std::reduce(policy, array_1, array_1 + size, _DataType(0), std::plus<_DataType>());
-
-    policy.queue().wait();
-
-#if 0 // verification
-    accumulator = 0;
-    for (size_t i = 0; i < size; ++i)
+    if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
     {
-        accumulator += array_1[i];
-    }
-    // std::cout << "result: " << accumulator << std::endl;
-#endif
+        // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-make_dataset.html
+        auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, size, array_1);
 
-    result[0] = accumulator;
+        // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-raw_sum.html
+        cl::sycl::event event = mkl_stats::raw_sum(DPNP_QUEUE, dataset, result);
+
+        event.wait();
+    }
+    else
+    {
+        // cl::sycl::range<1> gws(size);
+        auto policy = oneapi::dpl::execution::make_device_policy<custom_sum_c_kernel<_DataType>>(DPNP_QUEUE);
+
+        // sycl::buffer<_DataType, 1> array_1_buf(array_1, gws);
+        // auto it_begin = oneapi::dpl::begin(array_1_buf);
+        // auto it_end = oneapi::dpl::end(array_1_buf);
+
+        _DataType accumulator = 0;
+        accumulator = std::reduce(policy, array_1, array_1 + size, _DataType(0), std::plus<_DataType>());
+
+        policy.queue().wait();
+
+        result[0] = accumulator;
+    }
 
     return;
 

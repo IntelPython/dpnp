@@ -46,25 +46,33 @@ void custom_elemwise_absolute_c(void* array1_in, void* result1, size_t size)
     _DataType* array1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    cl::sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
-        const size_t idx = global_id[0];
+    if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
+    {
+        // https://docs.oneapi.com/versions/latest/onemkl/abs.html
+        event = oneapi::mkl::vm::abs(DPNP_QUEUE, size, array1, result);
+    }
+    else
+    {
+        cl::sycl::range<1> gws(size);
+        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+            const size_t idx = global_id[0];
 
-        if (array1[idx] >= 0)
-        {
-            result[idx] = array1[idx];
-        }
-        else
-        {
-            result[idx] = -1 * array1[idx];
-        }
-    };
+            if (array1[idx] >= 0)
+            {
+                result[idx] = array1[idx];
+            }
+            else
+            {
+                result[idx] = -1 * array1[idx];
+            }
+        };
 
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
-        cgh.parallel_for<class custom_elemwise_absolute_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
-    };
+        auto kernel_func = [&](cl::sycl::handler& cgh) {
+            cgh.parallel_for<class custom_elemwise_absolute_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+        };
 
-    event = DPNP_QUEUE.submit(kernel_func);
+        event = DPNP_QUEUE.submit(kernel_func);
+    }
 
     event.wait();
 }

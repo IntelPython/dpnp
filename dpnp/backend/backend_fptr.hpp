@@ -23,58 +23,48 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-/**
- * Example 7.
- *
- * This example shows simple usage of the DPNP C++ Backend library
- * to calculate eigenvalues and eigenvectors of a symmetric matrix
- *
- * Possible compile line:
- * clang++ -g -fPIC examples/example7.cpp -Idpnp -Idpnp/backend -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example7
- *
+/*
+ * This header file contains internal function declarations related to FPTR interface.
+ * It should not contains public declarations
  */
 
-#include <iostream>
+#pragma once
+#ifndef BACKEND_FPTR_H // Cython compatibility
+#define BACKEND_FPTR_H
 
-#include "backend_iface.hpp"
+#include <map>
 
-int main(int, char**)
-{
-    const size_t size = 2;
-    size_t len = size * size;
+#include <backend_iface_fptr.hpp>
 
-    dpnp_queue_initialize_c(QueueOptions::CPU_SELECTOR);
 
-    float* array = (float*)dpnp_memory_alloc_c(len * sizeof(float));
-    float* result1 = (float*)dpnp_memory_alloc_c(size * sizeof(float));
-    float* result2 = (float*)dpnp_memory_alloc_c(len * sizeof(float));
+/**
+ * Data storage type of the FPTR interface
+ * 
+ * map[FunctionName][InputType2][InputType2]
+ * 
+ * Function name is enum DPNPFuncName
+ * InputTypes are presented as enum DPNPFuncType
+ * 
+ * contains structure with kernel information
+ * 
+ * if the kernel requires only one input type - use same type for both parameters
+ * 
+ */
+typedef std::map<DPNPFuncType, DPNPFuncData_t> map_2p_t;
+typedef std::map<DPNPFuncType, map_2p_t> map_1p_t;
+typedef std::map<DPNPFuncName, map_1p_t> func_map_t;
 
-    /* init input diagonal array like:
-    1, 0, 0,
-    0, 2, 0,
-    0, 0, 3
-    */
-    for (size_t i = 0; i < len; ++i)
-    {
-        array[i] = 0;
-    }
-    for (size_t i = 0; i < size; ++i)
-    {
-        array[size * i + i] = i + 1;
-    }
+/**
+ * Internal shortcuts for Data type enum values
+  */
+const DPNPFuncType eft_INT = DPNPFuncType::DPNP_FT_INT;
+const DPNPFuncType eft_LNG = DPNPFuncType::DPNP_FT_LONG;
+const DPNPFuncType eft_FLT = DPNPFuncType::DPNP_FT_FLOAT;
+const DPNPFuncType eft_DBL = DPNPFuncType::DPNP_FT_DOUBLE;
 
-    custom_lapack_eig_c<float, float>(array, result1, result2, size);
+/**
+ * FPTR interface initialization functions
+ */
+void func_map_init_manipulation(func_map_t &fmap);
 
-    std::cout << "eigen values" << std::endl;
-    for (size_t i = 0; i < size; ++i)
-    {
-        std::cout << result1[i] << ", ";
-    }
-    std::cout << std::endl;
-
-    dpnp_memory_free_c(result2);
-    dpnp_memory_free_c(result1);
-    dpnp_memory_free_c(array);
-
-    return 0;
-}
+#endif // BACKEND_FPTR_H

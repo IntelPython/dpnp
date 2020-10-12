@@ -44,27 +44,21 @@ __all__ = [
 ]
 
 
-cpdef tuple dpnp_eig(dparray in_array1):
-    cdef dparray_shape_type shape1 = in_array1.shape
+cpdef tuple dpnp_eig(dparray x1):
+    cdef dparray_shape_type x1_shape = x1.shape
 
-    cdef size_t size1 = 0
-    if not shape1.empty():
-        size1 = shape1.front()
+    cdef size_t size = 0 if x1_shape.empty() else x1_shape.front()
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(in_array1.dtype)
-
-    # get the FPTR data structure
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_EIG, param1_type, param1_type)
 
     result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-    # this array is used as input for math library and will be overwritten with eigen vectors
-    res_vec = in_array1.astype(result_type)
-    # ceate result array with type given by FPTR data
-    cdef dparray res_val = dparray((size1,), dtype=result_type)
 
-    cdef fptr_1in_1out_t func = <fptr_1in_1out_t > kernel_data.ptr
+    cdef dparray res_val = dparray((size,), dtype=result_type)
+    cdef dparray res_vec = dparray(x1_shape, dtype=result_type)
+
+    cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
     # call FPTR function
-    func(res_vec.get_data(), res_val.get_data(), size1)
+    func(x1.get_data(), res_val.get_data(), res_vec.get_data(), size)
 
-    return res_val, res_vec
+    return (res_val, res_vec)
