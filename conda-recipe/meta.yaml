@@ -1,4 +1,4 @@
-{% set version = "0.3.0" %}
+{% set version = "0.2" %}
 {% set buildnumber = 0 %}
 
 package:
@@ -14,13 +14,10 @@ requirements:
       - setuptools
       - numpy-devel >=1.18
       - cython
-      - dpctl >=0.3.7
-      - mkl-devel >=2021.1b10
+      - mkl-devel >=2020.2
     run:
       - python
-      - dpctl >=0.3.7
-      - dpcpp_cpp_rt >=2021.1b10
-      - mkl >=2021.1b10
+      - mkl >=2020.2
 
 build:
     number: {{buildnumber}}
