@@ -31,101 +31,114 @@ import os
 IS_CONDA_BUILD = os.environ.get("CONDA_BUILD") == "1"
 
 
-def _find_mkl_by_var(name, rel_include_path="include", rel_libdir_path="lib",
-                     rel_header_path="mkl_blas_sycl.hpp", rel_lib_path="libmkl_sycl.so", verbose=False):
+def find_library(var_name, rel_header_paths, rel_lib_paths,
+                 rel_include_path="include", rel_libdir_path="lib", verbose=False):
     """
-    Find MKL in the directory from the environment variable.
+    Find specified libraries/headers in the directory from the environment variable.
+
     Parameters
     ----------
-    name : str
-        the name of the environemnt variable
+    var_name : str
+        the name of the environment variable
+    rel_header_paths : list(str)
+        relative paths to required headers
+    rel_lib_paths : list(str)
+        relative paths to required libraries
     rel_include_path : str
         relative path to the include directory
     rel_libdir_path : str
         relative path to the library directory
-    rel_header_path : str
-        relative path to the header
-    rel_lib_path : str
-        relative path to the library
     verbose : bool
         to print paths to include and library directories
+
     Returns
     -------
     tuple(list(str), list(str))
         path to include directory, path to library directory
     """
-    root_dir = os.environ.get(name)
+    root_dir = os.environ.get(var_name)
     if root_dir is None:
         return [], []
 
-    mkl_include_find = os.path.join(root_dir, rel_include_path)
-    mkl_libpath_find = os.path.join(root_dir, rel_libdir_path)
-    required_header = os.path.join(mkl_include_find, rel_header_path)
-    required_library = os.path.join(mkl_libpath_find, rel_lib_path)
+    include_find = os.path.join(root_dir, rel_include_path)
+    libpath_find = os.path.join(root_dir, rel_libdir_path)
+    required_headers = [os.path.join(include_find, rel_path) for rel_path in rel_header_paths]
+    required_libs = [os.path.join(libpath_find, rel_path) for rel_path in rel_lib_paths]
 
-    for required_file in [required_header, required_library]:
+    for required_file in required_headers + required_libs:
         if not os.path.exists(required_file):
             return [], []
 
     if verbose:
-        msg_template = "Intel DPNP: using ${} based math library. include={}, libpath={}"
-        print(msg_template.format(name, mkl_include_find, mkl_libpath_find))
+        msg_template = "Intel DPNP: using ${} based library. include={}, libpath={}"
+        print(msg_template.format(var_name, include_find, libpath_find))
 
-    return [mkl_include_find], [mkl_libpath_find]
+    return [include_find], [libpath_find]
 
 
-def _find_mkl_in_conda_root(verbose=False):
+def _find_mathlib_in_conda_root(verbose=False):
     """
-    Find MKL in conda root using $CONDA_PREFIX or $PREFIX.
+    Find mathlib in conda root using $CONDA_PREFIX or $PREFIX.
+
     Parameters
     ----------
     verbose : bool
         to print paths to include and library directories
+
     Returns
     -------
     tuple(list(str), list(str))
         path to include directory, path to library directory
     """
-    _conda_root_var = "PREFIX" if IS_CONDA_BUILD else "CONDA_PREFIX"
-    rel_header_path = os.path.join("oneapi", "mkl.hpp")
-    return _find_mkl_by_var(_conda_root_var, rel_header_path=rel_header_path, verbose=verbose)
+    conda_root_var = "PREFIX" if IS_CONDA_BUILD else "CONDA_PREFIX"
+    rel_header_paths = [os.path.join("oneapi", "mkl.hpp")]
+    rel_lib_paths = ["libmkl_sycl.so"]
+
+    return find_library(conda_root_var, rel_header_paths, rel_lib_paths, verbose=verbose)
 
 
-def _find_mkl_in_mkl_root(verbose=False):
+def _find_mathlib_in_mathlib_root(verbose=False):
     """
-    Find MKL in MKL root using $MKLROOT.
+    Find mathlib in mathlib root using $MKLROOT.
+
     Parameters
     ----------
     verbose : bool
         to print paths to include and library directories
+
     Returns
     -------
     tuple(list(str), list(str))
         path to include directory, path to library directory
     """
+    rel_header_paths = ["mkl_blas_sycl.hpp"]
+    rel_lib_paths = ["libmkl_sycl.so"]
     rel_libdir_path = os.path.join("lib", "intel64")
-    return _find_mkl_by_var("MKLROOT", rel_libdir_path=rel_libdir_path, verbose=verbose)
+
+    return find_library("MKLROOT", rel_header_paths, rel_lib_paths, rel_libdir_path=rel_libdir_path, verbose=verbose)
 
 
-def find_mkl(verbose=False):
+def find_mathlib(verbose=False):
     """
-    Find MKL in conda root then in MKL root.
+    Find mathlib in conda root then in mathlib root.
+
     Parameters
     ----------
     verbose : bool
         to print paths to include and library directories
+
     Returns
     -------
     tuple(list(str), list(str))
         path to include directory, path to library directory
     """
 
-    _mkl_include, _mkl_libpath = _find_mkl_in_conda_root(verbose=verbose)
+    mathlib_include, mathlib_libpath = _find_mathlib_in_conda_root(verbose=verbose)
 
-    if not _mkl_include or not _mkl_libpath:
-        _mkl_include, _mkl_libpath = _find_mkl_in_mkl_root(verbose=verbose)
+    if not mathlib_include or not mathlib_libpath:
+        mathlib_include, mathlib_libpath = _find_mathlib_in_mathlib_root(verbose=verbose)
 
-    if not _mkl_include or not _mkl_libpath:
+    if not mathlib_include or not mathlib_libpath:
         raise EnvironmentError("Intel DPNP: Unable to find math library")
 
-    return _mkl_include, _mkl_libpath
+    return mathlib_include, mathlib_libpath

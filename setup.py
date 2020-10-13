@@ -49,7 +49,7 @@ from Cython.Compiler import Options as cython_options
 from utils.command_style import source_style
 from utils.command_clean import source_clean
 from utils.command_build_clib import custom_build_clib
-from utils.dpnp_build_utils import find_mkl
+from utils.dpnp_build_utils import find_mathlib
 
 
 """
@@ -204,7 +204,7 @@ _omp_rpath = []
 """
 Get the math library environemnt
 """
-_mkl_include, _mkl_libpath = find_mkl(verbose=True)
+_mkl_include, _mkl_libpath = find_mathlib(verbose=True)
 
 _project_cmplr_macro += [("MKL_ILP64", "1")]  # using 64bit integers in MKL interface (long)
 _mkl_libs = ["mkl_rt", "mkl_sycl", "mkl_intel_ilp64", "mkl_sequential",
