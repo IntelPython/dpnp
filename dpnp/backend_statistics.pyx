@@ -388,9 +388,19 @@ cpdef dparray dpnp_min(dparray input, axis):
         return _dpnp_min(input)
     else:
         if isinstance(axis, int):
-            axis_ = tuple([axis])
+            if axis < 0:
+                axis_ = tuple([-1 * axis])
+            else:
+                axis_ = tuple([axis])
         else:
-            axis_ = axis
+            _axis_ = []
+            for i in range(len(axis)):
+                if axis[i] < 0:
+                    _axis_.append(-1 * axis[i])
+                else:
+                    _axis_.append(axis[i])
+            axis_ = tuple(_axis_)
+
         output_shape = dparray(len(shape_input) - len(axis_), dtype=numpy.int64)
         ind = 0
         for id, shape_axis in enumerate(shape_input):

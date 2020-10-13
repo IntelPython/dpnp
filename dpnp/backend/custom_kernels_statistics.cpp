@@ -316,7 +316,7 @@ void custom_min_axis_c(void* array1_in, void* result1, size_t* shape, size_t* re
     }
 
     float result_array[prod];
-    float input_shape_offsets[ndim];
+    size_t input_shape_offsets[ndim];
     int acc = 1;
     int ind_;
     for (size_t i = 0; i < ndim; i++)
@@ -325,7 +325,7 @@ void custom_min_axis_c(void* array1_in, void* result1, size_t* shape, size_t* re
         input_shape_offsets[ind_] = acc;
         acc *= shape[ind_];
     }
-    float output_shape_offsets[ndim];
+    size_t output_shape_offsets[ndim];
     acc = 1;
     for (size_t i = 0; i < res_ndim; i++)
     {
@@ -333,7 +333,7 @@ void custom_min_axis_c(void* array1_in, void* result1, size_t* shape, size_t* re
         output_shape_offsets[ind_] = acc;
         acc *= output_shape[ind_];
     }
-    float result_offsets[ndim];
+    size_t result_offsets[ndim];
     for (size_t i = 0; i < ndim; i++)
     {
         result_offsets[i] = input_shape_offsets[i];
@@ -348,7 +348,7 @@ void custom_min_axis_c(void* array1_in, void* result1, size_t* shape, size_t* re
      for (size_t source_idx = 0; source_idx < size_input; source_idx++)
      {
         // reconstruct x,y,z from linear source_idx
-        float xyz[ndim];
+        size_t xyz[ndim];
         size_t remainder = source_idx;
         for (size_t i = 0; i < ndim; i++)
         {
@@ -358,11 +358,11 @@ void custom_min_axis_c(void* array1_in, void* result1, size_t* shape, size_t* re
             quotient = quotient - remainder;
             xyz[i] = quotient;
         }
-        float result_axis[res_ndim];
+        size_t result_axis[res_ndim];
         int ind_ = 0;
         for (size_t idx = 0; idx < ndim; idx++)
         {
-            float offset = xyz[idx];
+            size_t offset = xyz[idx];
             int is_idx = 0;
             for (size_t i = 0; i < ndim-res_ndim; i++)
             {
@@ -387,10 +387,17 @@ void custom_min_axis_c(void* array1_in, void* result1, size_t* shape, size_t* re
         }
 
         float input_elem = array_1[source_idx];
-        if (result_array[result_offset] > input_elem)
-        {
-            result_array[result_offset] = input_elem;
-        }
+//        if (result_array[result_offset] < 0)
+//        {
+//            result_array[result_offset] = input_elem;
+//        }
+//        else
+//        {
+//            if (result_array[result_offset] > input_elem)
+//            {
+//                result_array[result_offset] = input_elem;
+//            }
+//        }
      }
 
 #if 0
