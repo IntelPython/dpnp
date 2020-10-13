@@ -104,10 +104,12 @@ void custom_elemwise_transpose_c(void* array1_in,
     free(result_offset_shape, DPNP_QUEUE);
 }
 
-void func_map_init_manipulation(func_map_t &fmap)
+void func_map_init_manipulation(func_map_t& fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_INT][eft_INT] = {eft_INT, (void*)custom_elemwise_transpose_c<int>};
     fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_elemwise_transpose_c<long>};
     fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_elemwise_transpose_c<float>};
     fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_elemwise_transpose_c<double>};
+
+    return;
 }
