@@ -396,11 +396,7 @@ INP_DLLEXPORT void custom_var_c(
  * @param [in]  size  Number of elements in the input array.
  *
  */
-#define MACRO_CUSTOM_1ARG_2TYPES_OP(__name__, __operation__)                                                           \
-    template <typename _DataType_input, typename _DataType_output>                                                     \
-    INP_DLLEXPORT void custom_elemwise_##__name__##_c(void* array1, void* result1, size_t size);
-
-#define MACRO_CUSTOM_1ARG_2TYPES_2OPS(__name__, __operation1__, __operation2__)                                        \
+#define MACRO_CUSTOM_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)                                          \
     template <typename _DataType_input, typename _DataType_output>                                                     \
     INP_DLLEXPORT void custom_elemwise_##__name__##_c(void* array1, void* result1, size_t size);
 

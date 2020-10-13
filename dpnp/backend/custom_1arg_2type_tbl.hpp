@@ -26,7 +26,7 @@
 /*
  * This header file contains single argument element wise functions definitions
  *
- * Macros `MACRO_CUSTOM_1ARG_2TYPES_OP` and `MACRO_CUSTOM_1ARG_2TYPES_2OPS` must be defined before usage
+ * Macro `MACRO_CUSTOM_1ARG_2TYPES_OP`must be defined before usage
  *
  * Parameters:
  * - public name of the function and kernel name
@@ -39,40 +39,40 @@
 #error "MACRO_CUSTOM_1ARG_2TYPES_OP is not defined"
 #endif
 
-MACRO_CUSTOM_1ARG_2TYPES_OP(degrees, cl::sycl::degrees(input_elem))
-MACRO_CUSTOM_1ARG_2TYPES_OP(radians, cl::sycl::radians(input_elem))
+MACRO_CUSTOM_1ARG_2TYPES_OP(acos, cl::sycl::acos(input_elem), oneapi::mkl::vm::acos(DPNP_QUEUE, size, array1, result))
+MACRO_CUSTOM_1ARG_2TYPES_OP(acosh, cl::sycl::acosh(input_elem),
+                            oneapi::mkl::vm::acosh(DPNP_QUEUE, size, array1, result))
+MACRO_CUSTOM_1ARG_2TYPES_OP(asin, cl::sycl::asin(input_elem), oneapi::mkl::vm::asin(DPNP_QUEUE, size, array1, result))
+MACRO_CUSTOM_1ARG_2TYPES_OP(asinh, cl::sycl::asinh(input_elem),
+                            oneapi::mkl::vm::asinh(DPNP_QUEUE, size, array1, result))
+MACRO_CUSTOM_1ARG_2TYPES_OP(atan, cl::sycl::atan(input_elem), oneapi::mkl::vm::atan(DPNP_QUEUE, size, array1, result))
+MACRO_CUSTOM_1ARG_2TYPES_OP(atanh, cl::sycl::atanh(input_elem),
+                            oneapi::mkl::vm::atanh(DPNP_QUEUE, size, array1, result))
+MACRO_CUSTOM_1ARG_2TYPES_OP(cbrt, cl::sycl::cbrt(input_elem), oneapi::mkl::vm::cbrt(DPNP_QUEUE, size, array1, result))
+MACRO_CUSTOM_1ARG_2TYPES_OP(ceil, cl::sycl::ceil(input_elem), oneapi::mkl::vm::ceil(DPNP_QUEUE, size, array1, result))
+MACRO_CUSTOM_1ARG_2TYPES_OP(cos, cl::sycl::cos(input_elem), oneapi::mkl::vm::cos(DPNP_QUEUE, size, array1, result))
+MACRO_CUSTOM_1ARG_2TYPES_OP(cosh, cl::sycl::cosh(input_elem), oneapi::mkl::vm::cosh(DPNP_QUEUE, size, array1, result))
+MACRO_CUSTOM_1ARG_2TYPES_OP(degrees, cl::sycl::degrees(input_elem), DPNP_QUEUE.submit(kernel_func))
+MACRO_CUSTOM_1ARG_2TYPES_OP(exp2, cl::sycl::exp2(input_elem), oneapi::mkl::vm::exp2(DPNP_QUEUE, size, array1, result))
+MACRO_CUSTOM_1ARG_2TYPES_OP(exp, cl::sycl::exp(input_elem), oneapi::mkl::vm::exp(DPNP_QUEUE, size, array1, result))
+MACRO_CUSTOM_1ARG_2TYPES_OP(expm1, cl::sycl::expm1(input_elem),
+                            oneapi::mkl::vm::expm1(DPNP_QUEUE, size, array1, result))
+MACRO_CUSTOM_1ARG_2TYPES_OP(fabs, cl::sycl::fabs(input_elem), oneapi::mkl::vm::abs(DPNP_QUEUE, size, array1, result))
+MACRO_CUSTOM_1ARG_2TYPES_OP(floor, cl::sycl::floor(input_elem),
+                            oneapi::mkl::vm::floor(DPNP_QUEUE, size, array1, result))
+MACRO_CUSTOM_1ARG_2TYPES_OP(log10, cl::sycl::log10(input_elem),
+                            oneapi::mkl::vm::log10(DPNP_QUEUE, size, array1, result))
+MACRO_CUSTOM_1ARG_2TYPES_OP(log1p, cl::sycl::log1p(input_elem),
+                            oneapi::mkl::vm::log1p(DPNP_QUEUE, size, array1, result))
+MACRO_CUSTOM_1ARG_2TYPES_OP(log2, cl::sycl::log2(input_elem), oneapi::mkl::vm::log2(DPNP_QUEUE, size, array1, result))
+MACRO_CUSTOM_1ARG_2TYPES_OP(log, cl::sycl::log(input_elem), oneapi::mkl::vm::ln(DPNP_QUEUE, size, array1, result))
+MACRO_CUSTOM_1ARG_2TYPES_OP(radians, cl::sycl::radians(input_elem), DPNP_QUEUE.submit(kernel_func))
+MACRO_CUSTOM_1ARG_2TYPES_OP(sin, cl::sycl::sin(input_elem), oneapi::mkl::vm::sin(DPNP_QUEUE, size, array1, result))
+MACRO_CUSTOM_1ARG_2TYPES_OP(sinh, cl::sycl::sinh(input_elem), oneapi::mkl::vm::sinh(DPNP_QUEUE, size, array1, result))
+MACRO_CUSTOM_1ARG_2TYPES_OP(sqrt, cl::sycl::sqrt(input_elem), oneapi::mkl::vm::sqrt(DPNP_QUEUE, size, array1, result))
+MACRO_CUSTOM_1ARG_2TYPES_OP(tan, cl::sycl::tan(input_elem), oneapi::mkl::vm::tan(DPNP_QUEUE, size, array1, result))
+MACRO_CUSTOM_1ARG_2TYPES_OP(tanh, cl::sycl::tanh(input_elem), oneapi::mkl::vm::tanh(DPNP_QUEUE, size, array1, result))
+MACRO_CUSTOM_1ARG_2TYPES_OP(trunc, cl::sycl::trunc(input_elem),
+                            oneapi::mkl::vm::trunc(DPNP_QUEUE, size, array1, result))
 
 #undef MACRO_CUSTOM_1ARG_2TYPES_OP
-
-
-#ifndef MACRO_CUSTOM_1ARG_2TYPES_2OPS
-#error "MACRO_CUSTOM_1ARG_2TYPES_2OPS is not defined"
-#endif
-
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(acos, cl::sycl::acos(input_elem), oneapi::mkl::vm::acos)
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(acosh, cl::sycl::acosh(input_elem), oneapi::mkl::vm::acosh)
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(asin, cl::sycl::asin(input_elem), oneapi::mkl::vm::asin)
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(asinh, cl::sycl::asinh(input_elem), oneapi::mkl::vm::asinh)
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(atan, cl::sycl::atan(input_elem), oneapi::mkl::vm::atan)
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(atanh, cl::sycl::atanh(input_elem), oneapi::mkl::vm::atanh)
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(cbrt, cl::sycl::cbrt(input_elem), oneapi::mkl::vm::cbrt)
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(ceil, cl::sycl::ceil(input_elem), oneapi::mkl::vm::ceil)
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(cos, cl::sycl::cos(input_elem), oneapi::mkl::vm::cos)
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(cosh, cl::sycl::cosh(input_elem), oneapi::mkl::vm::cosh)
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(exp2, cl::sycl::exp2(input_elem), oneapi::mkl::vm::exp2)
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(exp, cl::sycl::exp(input_elem), oneapi::mkl::vm::exp)
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(expm1, cl::sycl::expm1(input_elem), oneapi::mkl::vm::expm1)
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(fabs, cl::sycl::fabs(input_elem), oneapi::mkl::vm::abs)
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(floor, cl::sycl::floor(input_elem), oneapi::mkl::vm::floor)
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(log10, cl::sycl::log10(input_elem), oneapi::mkl::vm::log10)
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(log1p, cl::sycl::log1p(input_elem), oneapi::mkl::vm::log1p)
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(log2, cl::sycl::log2(input_elem), oneapi::mkl::vm::log2)
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(log, cl::sycl::log(input_elem), oneapi::mkl::vm::ln)
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(sin, cl::sycl::sin(input_elem), oneapi::mkl::vm::sin)
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(sinh, cl::sycl::sinh(input_elem), oneapi::mkl::vm::sinh)
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(sqrt, cl::sycl::sqrt(input_elem), oneapi::mkl::vm::sqrt)
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(tan, cl::sycl::tan(input_elem), oneapi::mkl::vm::tan)
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(tanh, cl::sycl::tanh(input_elem), oneapi::mkl::vm::tanh)
-MACRO_CUSTOM_1ARG_2TYPES_2OPS(trunc, cl::sycl::trunc(input_elem), oneapi::mkl::vm::trunc)
-
-#undef MACRO_CUSTOM_1ARG_2TYPES_2OPS
