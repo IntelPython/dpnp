@@ -196,7 +196,7 @@ else:
 """
 Search and set math library environemnt
 """
-_mkl_rpath = []
+_mathlib_rpath = []
 _cmplr_rpath = []
 _omp_rpath = []
 
@@ -204,16 +204,16 @@ _omp_rpath = []
 """
 Get the math library environemnt
 """
-_mkl_include, _mkl_libpath = find_mathlib(verbose=True)
+_mathlib_include, _mathlib_path = find_mathlib(verbose=True)
 
 _project_cmplr_macro += [("MKL_ILP64", "1")]  # using 64bit integers in MKL interface (long)
-_mkl_libs = ["mkl_rt", "mkl_sycl", "mkl_intel_ilp64", "mkl_sequential",
+_mathlibs = ["mkl_rt", "mkl_sycl", "mkl_intel_ilp64", "mkl_sequential",
              "mkl_core", "sycl", "OpenCL", "pthread", "m", "dl"]
 
 if IS_LIN:
-    _mkl_rpath = _mkl_libpath
+    _mathlib_rpath = _mathlib_path
 elif IS_WIN:
-    _mkl_libs = ["mkl_sycl", "mkl_intel_ilp64", "mkl_tbb_thread", "mkl_core", "sycl", "OpenCL", "tbb"]
+    _mathlibs = ["mkl_sycl", "mkl_intel_ilp64", "mkl_tbb_thread", "mkl_core", "sycl", "OpenCL", "tbb"]
 
 """
 Get the compiler environemnt
@@ -278,13 +278,13 @@ dpnp_backend_c = [
                 "dpnp/backend/mkl_wrap_rng.cpp",
                 "dpnp/backend/queue_sycl.cpp"
             ],
-            "include_dirs": _mkl_include + _project_backend_dir + _dpctrl_include,
-            "library_dirs": _mkl_libpath + _omp_libpath + _dpctrl_libpath,
-            "runtime_library_dirs": _project_rpath + _mkl_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath,
+            "include_dirs": _mathlib_include + _project_backend_dir + _dpctrl_include,
+            "library_dirs": _mathlib_path + _omp_libpath + _dpctrl_libpath,
+            "runtime_library_dirs": _project_rpath + _mathlib_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath,
             "extra_preargs": _project_cmplr_flag_sycl,
             "extra_link_preargs": _project_cmplr_flag_compatibility,
             "extra_link_postargs": [],
-            "libraries": _mkl_libs + _dpctrl_lib,
+            "libraries": _mathlibs + _dpctrl_lib,
             "macros": _project_cmplr_macro,
             "force_build": _project_force_build,
             "compiler": [_project_compiler],

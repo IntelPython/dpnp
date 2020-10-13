@@ -133,12 +133,12 @@ def find_mathlib(verbose=False):
         path to include directory, path to library directory
     """
 
-    mathlib_include, mathlib_libpath = _find_mathlib_in_conda_root(verbose=verbose)
+    mathlib_include, mathlib_path = _find_mathlib_in_conda_root(verbose=verbose)
 
-    if not mathlib_include or not mathlib_libpath:
-        mathlib_include, mathlib_libpath = _find_mathlib_in_mathlib_root(verbose=verbose)
+    if not mathlib_include or not mathlib_path:
+        mathlib_include, mathlib_path = _find_mathlib_in_mathlib_root(verbose=verbose)
 
-    if not mathlib_include or not mathlib_libpath:
+    if not mathlib_include or not mathlib_path:
         raise EnvironmentError("Intel DPNP: Unable to find math library")
 
-    return mathlib_include, mathlib_libpath
+    return mathlib_include, mathlib_path
