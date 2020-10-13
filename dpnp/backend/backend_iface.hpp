@@ -398,21 +398,21 @@ INP_DLLEXPORT void custom_var_c(
  * @param [in]  size  Number of elements in the input array.
  *
  */
-#define MACRO_CUSTOM_1ARG_2TYPES_OP(__name__, __operation__)                                                           \
-    template <typename _DataType_input, typename _DataType_output>                                                     \
-    INP_DLLEXPORT void custom_elemwise_##__name__##_c(void* array1, void* result1, size_t size);
-
-#include <custom_1arg_2type_tbl.hpp>
-
 #define MACRO_CUSTOM_1ARG_1TYPE_OP(__name__, __operation__)                                                            \
     template <typename _DataType>                                                                                      \
-    INP_DLLEXPORT void custom_elemwise_##__name__##_c(void* array1, void* result1, size_t size);
+    INP_DLLEXPORT void __name__(void* array1, void* result1, size_t size);
 
 #include <custom_1arg_1type_tbl.hpp>
 
+#define MACRO_CUSTOM_1ARG_2TYPES_OP(__name__, __operation__)                                                           \
+    template <typename _DataType_input, typename _DataType_output>                                                     \
+    INP_DLLEXPORT void __name__(void* array1, void* result1, size_t size);
+
+#include <custom_1arg_2type_tbl.hpp>
+
 #define MACRO_CUSTOM_2ARG_3TYPES_OP(__name__, __operation1__, __operation2__)                                          \
     template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>                         \
-    INP_DLLEXPORT void custom_elemwise_##__name__##_c(void* array1, void* array2, void* result1, size_t size);
+    INP_DLLEXPORT void __name__(void* array1, void* array2, void* result1, size_t size);
 
 #include <custom_2arg_3type_tbl.hpp>
 
