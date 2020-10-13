@@ -110,7 +110,7 @@ void dpnp_memory_memcpy_c(void* dst, const void* src, size_t size_in_bytes);
  */
 template <typename _DataType>
 INP_DLLEXPORT void
-    custom_blas_gemm_c(void* array1, void* array2, void* result1, size_t size_m, size_t size_n, size_t size_k);
+    dpnp_matmul_c(void* array1, void* array2, void* result1, size_t size_m, size_t size_n, size_t size_k);
 
 /**
  * @ingroup BACKEND_API
@@ -143,7 +143,7 @@ INP_DLLEXPORT void
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_blas_dot_c(void* array1, void* array2, void* result1, size_t size);
+INP_DLLEXPORT void dpnp_dot_c(void* array1, void* array2, void* result1, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -185,7 +185,7 @@ INP_DLLEXPORT void custom_prod_c(void* array, void* result, size_t size);
  *
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void custom_lapack_eig_c(const void* array_in, void* result1, void* result2, size_t size);
+INP_DLLEXPORT void dpnp_eig_c(const void* array_in, void* result1, void* result2, size_t size);
 
 /**
  * @ingroup BACKEND_API

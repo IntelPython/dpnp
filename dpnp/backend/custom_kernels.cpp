@@ -28,6 +28,7 @@
 #include <type_traits>
 
 #include <backend_iface.hpp>
+#include "backend_fptr.hpp"
 #include "backend_utils.hpp"
 #include "queue_sycl.hpp"
 
@@ -35,10 +36,10 @@ namespace mkl_blas = oneapi::mkl::blas;
 namespace mkl_lapack = oneapi::mkl::lapack;
 
 template <typename _KernelNameSpecialization>
-class custom_blas_gemm_c_kernel;
+class dpnp_matmul_c_kernel;
 
 template <typename _DataType>
-void custom_blas_gemm_c(void* array1_in, void* array2_in, void* result1, size_t size_m, size_t size_n, size_t size_k)
+void dpnp_matmul_c(void* array1_in, void* array2_in, void* result1, size_t size_m, size_t size_n, size_t size_k)
 {
     cl::sycl::event event;
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
@@ -102,7 +103,7 @@ void custom_blas_gemm_c(void* array1_in, void* array2_in, void* result1, size_t 
         };
 
         auto kernel_func = [&](cl::sycl::handler& cgh) {
-            cgh.parallel_for<class custom_blas_gemm_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+            cgh.parallel_for<class dpnp_matmul_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
         };
 
         event = DPNP_QUEUE.submit(kernel_func);
@@ -110,20 +111,11 @@ void custom_blas_gemm_c(void* array1_in, void* array2_in, void* result1, size_t 
     event.wait();
 }
 
-template void custom_blas_gemm_c<int>(
-    void* array1_in, void* array2_in, void* result1, size_t size_m, size_t size_n, size_t size_k);
-template void custom_blas_gemm_c<long>(
-    void* array1_in, void* array2_in, void* result1, size_t size_m, size_t size_n, size_t size_k);
-template void custom_blas_gemm_c<float>(
-    void* array1_in, void* array2_in, void* result1, size_t size_m, size_t size_n, size_t size_k);
-template void custom_blas_gemm_c<double>(
-    void* array1_in, void* array2_in, void* result1, size_t size_m, size_t size_n, size_t size_k);
-
 template <typename _KernelNameSpecialization>
-class custom_blas_dot_c_kernel;
+class dpnp_dot_c_kernel;
 
 template <typename _DataType>
-void custom_blas_dot_c(void* array1_in, void* array2_in, void* result1, size_t size)
+void dpnp_dot_c(void* array1_in, void* array2_in, void* result1, size_t size)
 {
     cl::sycl::event event;
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
@@ -159,14 +151,14 @@ void custom_blas_dot_c(void* array1_in, void* array2_in, void* result1, size_t s
         };
 
         auto kernel_func = [&](cl::sycl::handler& cgh) {
-            cgh.parallel_for<class custom_blas_dot_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+            cgh.parallel_for<class dpnp_dot_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
         };
 
         event = DPNP_QUEUE.submit(kernel_func);
 
         event.wait();
 
-        auto policy = oneapi::dpl::execution::make_device_policy<class custom_blas_dot_c_kernel<_DataType>>(DPNP_QUEUE);
+        auto policy = oneapi::dpl::execution::make_device_policy<class dpnp_dot_c_kernel<_DataType>>(DPNP_QUEUE);
 
         _DataType accumulator = 0;
         accumulator = std::reduce(policy, local_mem, local_mem + size, _DataType(0), std::plus<_DataType>());
@@ -178,13 +170,8 @@ void custom_blas_dot_c(void* array1_in, void* array2_in, void* result1, size_t s
     }
 }
 
-template void custom_blas_dot_c<int>(void* array1_in, void* array2_in, void* result1, size_t size);
-template void custom_blas_dot_c<long>(void* array1_in, void* array2_in, void* result1, size_t size);
-template void custom_blas_dot_c<float>(void* array1_in, void* array2_in, void* result1, size_t size);
-template void custom_blas_dot_c<double>(void* array1_in, void* array2_in, void* result1, size_t size);
-
 template <typename _DataType, typename _ResultType>
-void custom_lapack_eig_c(const void* array_in, void* result1, void* result2, size_t size)
+void dpnp_eig_c(const void* array_in, void* result1, void* result2, size_t size)
 {
     // TODO this kernel works with square 2-D array only
 
@@ -245,7 +232,22 @@ void custom_lapack_eig_c(const void* array_in, void* result1, void* result2, siz
     dpnp_memory_free_c(result_vec_kern);
 }
 
-template void custom_lapack_eig_c<int, double>(const void* array_in, void* result1, void* result2, size_t size);
-template void custom_lapack_eig_c<long, double>(const void* array_in, void* result1, void* result2, size_t size);
-template void custom_lapack_eig_c<float, float>(const void* array_in, void* result1, void* result2, size_t size);
-template void custom_lapack_eig_c<double, double>(const void* array_in, void* result1, void* result2, size_t size);
+void func_map_init_linalg(func_map_t& fmap)
+{
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_dot_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_dot_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_dot_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_dot_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_EIG][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_eig_c<int, double>};
+    fmap[DPNPFuncName::DPNP_FN_EIG][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_eig_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_EIG][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_eig_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_EIG][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_eig_c<double, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_matmul_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_matmul_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_matmul_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_matmul_c<double>};
+
+    return;
+}
