@@ -86,19 +86,19 @@ void* get_backend_function_name(const char* func_name, const char* type_name)
     {
         if (!strncmp(type_name, supported_type1_name, strlen(supported_type1_name)))
         {
-            return reinterpret_cast<void*>(custom_blas_dot_c<double>);
+            return reinterpret_cast<void*>(dpnp_dot_c<double>);
         }
         else if (!strncmp(type_name, supported_type2_name, strlen(supported_type2_name)))
         {
-            return reinterpret_cast<void*>(custom_blas_dot_c<float>);
+            return reinterpret_cast<void*>(dpnp_dot_c<float>);
         }
         else if (!strncmp(type_name, supported_type3_name, strlen(supported_type3_name)))
         {
-            return reinterpret_cast<void*>(custom_blas_dot_c<long>);
+            return reinterpret_cast<void*>(dpnp_dot_c<long>);
         }
         else if (!strncmp(type_name, supported_type4_name, strlen(supported_type4_name)))
         {
-            return reinterpret_cast<void*>(custom_blas_dot_c<int>);
+            return reinterpret_cast<void*>(dpnp_dot_c<int>);
         }
     }
 
@@ -135,6 +135,7 @@ static func_map_t func_map_init()
     func_map_t fmap;
 
     func_map_init_elemwise(fmap);
+    func_map_init_linalg(fmap);
     func_map_init_manipulation(fmap);
     func_map_init_reduction(fmap);
     func_map_init_searching(fmap);
@@ -146,22 +147,7 @@ static func_map_t func_map_init()
     fmap[DPNPFuncName::DPNP_FN_ABSOLUTE][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_elemwise_absolute_c<float>};
     fmap[DPNPFuncName::DPNP_FN_ABSOLUTE][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_elemwise_absolute_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_INT] = {eft_INT, (void*)custom_blas_dot_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_blas_dot_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_blas_dot_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_blas_dot_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_EIG][eft_INT][eft_INT] = {eft_DBL, (void*)custom_lapack_eig_c<int, double>};
-    fmap[DPNPFuncName::DPNP_FN_EIG][eft_LNG][eft_LNG] = {eft_DBL, (void*)custom_lapack_eig_c<long, double>};
-    fmap[DPNPFuncName::DPNP_FN_EIG][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_lapack_eig_c<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_EIG][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_lapack_eig_c<double, double>};
-
     fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)mkl_rng_gaussian<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_INT][eft_INT] = {eft_INT, (void*)custom_blas_gemm_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_blas_gemm_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_blas_gemm_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_blas_gemm_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_INT][eft_INT] = {eft_INT, (void*)mkl_rng_uniform<int>};
     fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_FLT][eft_FLT] = {eft_FLT, (void*)mkl_rng_uniform<float>};
