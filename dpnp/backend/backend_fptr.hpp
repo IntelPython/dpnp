@@ -65,6 +65,7 @@ const DPNPFuncType eft_DBL = DPNPFuncType::DPNP_FT_DOUBLE;
  * FPTR interface initialization functions
  */
 void func_map_init_elemwise(func_map_t& fmap);
+void func_map_init_linalg(func_map_t& fmap);
 void func_map_init_manipulation(func_map_t& fmap);
 void func_map_init_reduction(func_map_t& fmap);
 void func_map_init_searching(func_map_t& fmap);
