@@ -26,10 +26,6 @@
 
 from dpnp.random._random import *
 
-dpnp_srand()
-'''
-Basic random number generator engine initialization.
-'''
 
 __all__ = [
     'rand',
