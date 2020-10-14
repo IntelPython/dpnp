@@ -43,6 +43,9 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_ARGMAX
         DPNP_FN_ARGMIN
         DPNP_FN_ARGSORT
+        DPNP_FN_BITWISE_AND
+        DPNP_FN_BITWISE_OR
+        DPNP_FN_BITWISE_XOR
         DPNP_FN_CBRT
         DPNP_FN_CEIL
         DPNP_FN_COS
@@ -60,6 +63,8 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_FMOD
         DPNP_FN_GAUSSIAN
         DPNP_FN_HYPOT
+        DPNP_FN_INVERT
+        DPNP_FN_LEFT_SHIFT
         DPNP_FN_LOG
         DPNP_FN_LOG10
         DPNP_FN_LOG1P
@@ -77,6 +82,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_UNIFORM
         DPNP_FN_RADIANS
         DPNP_FN_RECIP
+        DPNP_FN_RIGHT_SHIFT
         DPNP_FN_SIGN
         DPNP_FN_SIN
         DPNP_FN_SINH
@@ -142,6 +148,17 @@ Internal functions
 """
 cpdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype)
 cpdef dpnp_DPNPFuncType_to_dtype(size_t type)
+
+
+"""
+Bitwise functions
+"""
+cpdef dparray dpnp_bitwise_and(dparray array1, dparray array2)
+cpdef dparray dpnp_bitwise_or(dparray array1, dparray array2)
+cpdef dparray dpnp_bitwise_xor(dparray array1, dparray array2)
+cpdef dparray dpnp_invert(dparray arr)
+cpdef dparray dpnp_left_shift(dparray array1, dparray array2)
+cpdef dparray dpnp_right_shift(dparray array1, dparray array2)
 
 
 """

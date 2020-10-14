@@ -24,53 +24,24 @@
 //*****************************************************************************
 
 /*
- * This header file contains internal function declarations related to FPTR interface.
- * It should not contains public declarations
- */
-
-#pragma once
-#ifndef BACKEND_FPTR_H // Cython compatibility
-#define BACKEND_FPTR_H
-
-#include <map>
-
-#include <backend_iface_fptr.hpp>
-
-/**
- * Data storage type of the FPTR interface
+ * This header file contains single argument bitwise functions definitions
  *
- * map[FunctionName][InputType2][InputType2]
+ * Macro `MACRO_CUSTOM_2ARG_1TYPE_OP` must be defined before usage
  *
- * Function name is enum DPNPFuncName
- * InputTypes are presented as enum DPNPFuncType
- *
- * contains structure with kernel information
- *
- * if the kernel requires only one input type - use same type for both parameters
+ * Parameters:
+ * - public name of the function and kernel name
+ * - operation used to calculate the result
  *
  */
-typedef std::map<DPNPFuncType, DPNPFuncData_t> map_2p_t;
-typedef std::map<DPNPFuncType, map_2p_t> map_1p_t;
-typedef std::map<DPNPFuncName, map_1p_t> func_map_t;
 
-/**
- * Internal shortcuts for Data type enum values
- */
-const DPNPFuncType eft_INT = DPNPFuncType::DPNP_FT_INT;
-const DPNPFuncType eft_LNG = DPNPFuncType::DPNP_FT_LONG;
-const DPNPFuncType eft_FLT = DPNPFuncType::DPNP_FT_FLOAT;
-const DPNPFuncType eft_DBL = DPNPFuncType::DPNP_FT_DOUBLE;
+#ifndef MACRO_CUSTOM_2ARG_1TYPE_OP
+#error "MACRO_CUSTOM_2ARG_1TYPE_OP is not defined"
+#endif
 
-/**
- * FPTR interface initialization functions
- */
-void func_map_init_bitwise(func_map_t& fmap);
-void func_map_init_elemwise(func_map_t& fmap);
-void func_map_init_linalg(func_map_t& fmap);
-void func_map_init_manipulation(func_map_t& fmap);
-void func_map_init_reduction(func_map_t& fmap);
-void func_map_init_searching(func_map_t& fmap);
-void func_map_init_sorting(func_map_t& fmap);
-void func_map_init_statistics(func_map_t& fmap);
+MACRO_CUSTOM_2ARG_1TYPE_OP(dpnp_bitwise_and_c, input_elem1 & input_elem2)
+MACRO_CUSTOM_2ARG_1TYPE_OP(dpnp_bitwise_or_c, input_elem1 | input_elem2)
+MACRO_CUSTOM_2ARG_1TYPE_OP(dpnp_bitwise_xor_c, input_elem1 ^ input_elem2)
+MACRO_CUSTOM_2ARG_1TYPE_OP(dpnp_left_shift_c, input_elem1 << input_elem2)
+MACRO_CUSTOM_2ARG_1TYPE_OP(dpnp_right_shift_c, input_elem1 >> input_elem2)
 
-#endif // BACKEND_FPTR_H
+#undef MACRO_CUSTOM_2ARG_1TYPE_OP

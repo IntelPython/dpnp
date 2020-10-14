@@ -304,6 +304,7 @@ dpnp_backend_c = [
             "sources": [
                 "dpnp/backend/backend_iface_fptr.cpp",
                 "dpnp/backend/custom_kernels.cpp",
+                "dpnp/backend/custom_kernels_bitwise.cpp",
                 "dpnp/backend/custom_kernels_elemwise.cpp",
                 "dpnp/backend/custom_kernels_manipulation.cpp",
                 "dpnp/backend/custom_kernels_mathematical.cpp",

@@ -59,11 +59,11 @@ __all__ = [
 ]
 
 
-def use_dpnp_backend(x1, x2, valid_types):
+def use_dpnp_backend(x1, x2):
     for x in (x1, x2):
         if not isinstance(x, dparray):
             return False
-        if x.dtype not in valid_types:
+        if x.dtype not in (numpy.int64, numpy.int32):
             return False
 
     if x1.shape != x2.shape:
@@ -95,20 +95,10 @@ def bitwise_and(x1, x2):
     ogical_and, bitwise_or, bitwise_xor, binary_repr
 
     """
-
-    def numpy_bitwise_and(x1, x2):
-        x1 = dpnp.asnumpy(x1) if isinstance(x1, dparray) else x1
-        x2 = dpnp.asnumpy(x2) if isinstance(x2, dparray) else x2
-        return numpy.bitwise_and(x1, x2)
-
-    if use_origin_backend(x1):
-        return numpy_bitwise_and(x1, x2)
-
-    valid_types = (numpy.int64, numpy.int32, numpy.bool)
-    if use_dpnp_backend(x1, x2, valid_types):
+    if not use_origin_backend(x1) and use_dpnp_backend(x1, x2):
         return dpnp_bitwise_and(x1, x2)
 
-    return numpy_bitwise_and(x1, x2)
+    return call_origin(numpy.bitwise_and, x1, x2)
 
 
 def bitwise_or(x1, x2):
@@ -132,20 +122,10 @@ def bitwise_or(x1, x2):
     logical_or, bitwise_and, bitwise_xor, binary_repr
 
     """
-
-    def numpy_bitwise_or(x1, x2):
-        x1 = dpnp.asnumpy(x1) if isinstance(x1, dparray) else x1
-        x2 = dpnp.asnumpy(x2) if isinstance(x2, dparray) else x2
-        return numpy.bitwise_or(x1, x2)
-
-    if use_origin_backend(x1):
-        return numpy_bitwise_or(x1, x2)
-
-    valid_types = (numpy.int64, numpy.int32, numpy.bool)
-    if use_dpnp_backend(x1, x2, valid_types):
+    if not use_origin_backend(x1) and use_dpnp_backend(x1, x2):
         return dpnp_bitwise_or(x1, x2)
 
-    return numpy_bitwise_or(x1, x2)
+    return call_origin(numpy.bitwise_or, x1, x2)
 
 
 def bitwise_xor(x1, x2):
@@ -169,20 +149,10 @@ def bitwise_xor(x1, x2):
     logical_xor, bitwise_and, bitwise_or, binary_repr
 
     """
-
-    def numpy_bitwise_xor(x1, x2):
-        x1 = dpnp.asnumpy(x1) if isinstance(x1, dparray) else x1
-        x2 = dpnp.asnumpy(x2) if isinstance(x2, dparray) else x2
-        return numpy.bitwise_xor(x1, x2)
-
-    if use_origin_backend(x1):
-        return numpy_bitwise_xor(x1, x2)
-
-    valid_types = (numpy.int64, numpy.int32, numpy.bool)
-    if use_dpnp_backend(x1, x2, valid_types):
+    if not use_origin_backend(x1) and use_dpnp_backend(x1, x2):
         return dpnp_bitwise_xor(x1, x2)
 
-    return numpy_bitwise_xor(x1, x2)
+    return call_origin(numpy.bitwise_xor, x1, x2)
 
 
 def invert(x):
@@ -206,28 +176,15 @@ def invert(x):
     bitwise_and, bitwise_or, bitwise_xor, logical_not, binary_repr
 
     """
-
-    def numpy_invert(x):
-        x = dpnp.asnumpy(x) if isinstance(x, dparray) else x
-        return numpy.invert(x)
-
-    if use_origin_backend(x):
-        return numpy_invert(x)
-
-    def use_dpnp_backend(x):
+    if not use_origin_backend(x):
         if not isinstance(x, dparray):
-            return False
+            pass
+        elif x.dtype not in (numpy.int64, numpy.int32):
+            pass
+        else:
+            return dpnp_invert(x)
 
-        valid_types = (numpy.int64, numpy.int32, numpy.bool)
-        if x.dtype not in valid_types:
-            return False
-
-        return True
-
-    if use_dpnp_backend(x):
-        return dpnp_invert(x)
-
-    return numpy_invert(x)
+    return call_origin(numpy.invert, x)
 
 
 bitwise_not = invert  # bitwise_not is an alias for invert
@@ -256,20 +213,10 @@ def left_shift(x1, x2):
     right_shift, binary_repr
 
     """
-
-    def numpy_left_shift(x1, x2):
-        x1 = dpnp.asnumpy(x1) if isinstance(x1, dparray) else x1
-        x2 = dpnp.asnumpy(x2) if isinstance(x2, dparray) else x2
-        return numpy.left_shift(x1, x2)
-
-    if use_origin_backend(x1):
-        return numpy_left_shift(x1, x2)
-
-    valid_types = (numpy.int64, numpy.int32, numpy.bool)
-    if use_dpnp_backend(x1, x2, valid_types):
+    if not use_origin_backend(x1) and use_dpnp_backend(x1, x2):
         return dpnp_left_shift(x1, x2)
 
-    return numpy_left_shift(x1, x2)
+    return call_origin(numpy.left_shift, x1, x2)
 
 
 def right_shift(x1, x2):
@@ -295,17 +242,7 @@ def right_shift(x1, x2):
     left_shift, binary_repr
 
     """
-
-    def numpy_right_shift(x1, x2):
-        x1 = dpnp.asnumpy(x1) if isinstance(x1, dparray) else x1
-        x2 = dpnp.asnumpy(x2) if isinstance(x2, dparray) else x2
-        return numpy.right_shift(x1, x2)
-
-    if use_origin_backend(x1):
-        return numpy_right_shift(x1, x2)
-
-    valid_types = (numpy.int64, numpy.int32, numpy.bool)
-    if use_dpnp_backend(x1, x2, valid_types):
+    if not use_origin_backend(x1) and use_dpnp_backend(x1, x2):
         return dpnp_right_shift(x1, x2)
 
-    return numpy_right_shift(x1, x2)
+    return call_origin(numpy.right_shift, x1, x2)
