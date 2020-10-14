@@ -118,8 +118,6 @@ INP_DLLEXPORT void
  *
  * @param [in]  array1_in    Input array.
  *
- * @param [in]  input_shape  Input shape.
- *
  * @param [out] result1      Output array.
  *
  * @param [in]  size         Number of elements in input arrays.
@@ -127,7 +125,7 @@ INP_DLLEXPORT void
  */
 template <typename _DataType>
 INP_DLLEXPORT void
-    custom_elemwise_absolute_c(void* array1_in, const std::vector<long>& input_shape, void* result1, size_t size);
+    custom_elemwise_absolute_c(void* array1_in, void* result1, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -398,8 +396,7 @@ INP_DLLEXPORT void custom_var_c(
  * @param [in]  size  Number of elements in the input array.
  *
  */
-
-#define MACRO_CUSTOM_1ARG_1TYPE_OP(__name__, __operation__)                                                            \
+#define MACRO_CUSTOM_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                           \
     template <typename _DataType>                                                                                      \
     INP_DLLEXPORT void __name__(void* array1, void* result1, size_t size);
 

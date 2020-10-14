@@ -49,6 +49,7 @@ from Cython.Compiler import Options as cython_options
 from utils.command_style import source_style
 from utils.command_clean import source_clean
 from utils.command_build_clib import custom_build_clib
+from utils.dpnp_build_utils import find_mathlib
 
 
 """
@@ -94,8 +95,6 @@ Operating System :: POSIX
 Operating System :: Unix
 Operating System :: MacOS
 """
-
-IS_CONDA_BUILD = True if os.environ.get("CONDA_BUILD", None) == "1" else False
 
 IS_WIN = False
 IS_MAC = False
@@ -197,7 +196,7 @@ else:
 """
 Search and set math library environemnt
 """
-_mkl_rpath = []
+_mathlib_rpath = []
 _cmplr_rpath = []
 _omp_rpath = []
 
@@ -205,52 +204,16 @@ _omp_rpath = []
 """
 Get the math library environemnt
 """
-_mkl_include = None
-_mkl_libpath = None
-
-# try to find math library in environment
-if IS_CONDA_BUILD:
-    _conda_root = os.environ.get("PREFIX", None)
-else:
-    _conda_root = os.environ.get("CONDA_PREFIX", None)
-if _conda_root is not None:
-    _mkl_include_find = os.path.join(_conda_root, "include")
-    _mkl_libpath_find = os.path.join(_conda_root, "lib")
-    _required_header = os.path.join(_mkl_include_find, "oneapi", "mkl.hpp")
-    _required_library = os.path.join(_mkl_libpath_find, "libmkl_sycl.so")
-
-    if (os.path.exists(_required_header) and os.path.exists(_required_library)):
-        print(
-            f"Intel DPNP: using $CONDA_PREFIX based math library. include={_mkl_include_find}, libpath={_mkl_libpath_find}")
-        _mkl_include = [_mkl_include_find]
-        _mkl_libpath = [_mkl_libpath_find]
-
-_mkl_root = os.environ.get("MKLROOT", None)
-if ((_mkl_include is None or _mkl_libpath is None) and (_mkl_root is not None)):  # if MKLROOT was specified then use it
-    # TODO change paths and file names for new version
-    # paths and file names are aligned to beta09 at this moment
-    _mkl_include_find = os.path.join(_mkl_root, "include")
-    _mkl_libpath_find = os.path.join(_mkl_root, "lib", "intel64")
-    _required_header = os.path.join(_mkl_include_find, "mkl_blas_sycl.hpp")
-    _required_library = os.path.join(_mkl_libpath_find, "libmkl_sycl.so")
-
-    if (os.path.exists(_required_header) and os.path.exists(_required_library)):
-        print(
-            f"Intel DPNP: using $MKLROOT based math library. include={_mkl_include_find}, libpath={_mkl_libpath_find}")
-        _mkl_include = [_mkl_include_find]
-        _mkl_libpath = [_mkl_libpath_find]
-
-if _mkl_include is None or _mkl_libpath is None:
-    raise EnvironmentError("Intel DPNP: Unable to find math library")
+_mathlib_include, _mathlib_path = find_mathlib(verbose=True)
 
 _project_cmplr_macro += [("MKL_ILP64", "1")]  # using 64bit integers in MKL interface (long)
-_mkl_libs = ["mkl_rt", "mkl_sycl", "mkl_intel_ilp64", "mkl_sequential",
+_mathlibs = ["mkl_rt", "mkl_sycl", "mkl_intel_ilp64", "mkl_sequential",
              "mkl_core", "sycl", "OpenCL", "pthread", "m", "dl"]
 
 if IS_LIN:
-    _mkl_rpath = _mkl_libpath
+    _mathlib_rpath = _mathlib_path
 elif IS_WIN:
-    _mkl_libs = ["mkl_sycl", "mkl_intel_ilp64", "mkl_tbb_thread", "mkl_core", "sycl", "OpenCL", "tbb"]
+    _mathlibs = ["mkl_sycl", "mkl_intel_ilp64", "mkl_tbb_thread", "mkl_core", "sycl", "OpenCL", "tbb"]
 
 """
 Get the compiler environemnt
@@ -315,13 +278,13 @@ dpnp_backend_c = [
                 "dpnp/backend/mkl_wrap_rng.cpp",
                 "dpnp/backend/queue_sycl.cpp"
             ],
-            "include_dirs": _mkl_include + _project_backend_dir + _dpctrl_include,
-            "library_dirs": _mkl_libpath + _omp_libpath + _dpctrl_libpath,
-            "runtime_library_dirs": _project_rpath + _mkl_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath,
+            "include_dirs": _mathlib_include + _project_backend_dir + _dpctrl_include,
+            "library_dirs": _mathlib_path + _omp_libpath + _dpctrl_libpath,
+            "runtime_library_dirs": _project_rpath + _mathlib_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath,
             "extra_preargs": _project_cmplr_flag_sycl,
             "extra_link_preargs": _project_cmplr_flag_compatibility,
             "extra_link_postargs": [],
-            "libraries": _mkl_libs + _dpctrl_lib,
+            "libraries": _mathlibs + _dpctrl_lib,
             "macros": _project_cmplr_macro,
             "force_build": _project_force_build,
             "compiler": [_project_compiler],
