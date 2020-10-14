@@ -402,7 +402,7 @@ INP_DLLEXPORT void custom_var_c(
 
 #include <custom_1arg_1type_tbl.hpp>
 
-#define MACRO_CUSTOM_1ARG_2TYPES_OP(__name__, __operation__)                                                           \
+#define MACRO_CUSTOM_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)                                          \
     template <typename _DataType_input, typename _DataType_output>                                                     \
     INP_DLLEXPORT void __name__(void* array1, void* result1, size_t size);
 
