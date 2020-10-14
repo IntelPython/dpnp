@@ -281,135 +281,183 @@ template void
     custom_min_c<float>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
 template void
     custom_min_c<long>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
-template void
-    custom_min_c<int>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
-
+template void custom_min_c<int>(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
 
 template <typename _DataType>
 class custom_min_axis_c_kernel;
 
 template <typename _DataType>
-void custom_min_axis_c(void* array1_in, void* result1, size_t* shape, size_t* res_shape, size_t ndim, size_t res_ndim, size_t* axis, size_t naxis, size_t ind)
+void custom_min_axis_c(void* array1_in,
+                       void* result1,
+                       size_t* shape,
+                       size_t* res_shape,
+                       size_t ndim,
+                       size_t res_ndim,
+                       size_t* axis,
+                       size_t naxis,
+                       size_t ind)
 {
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
-//    _DataType* result = reinterpret_cast<_DataType*>(result1);
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    float output_shape[res_ndim];
-    for (size_t i = 0; i < res_ndim; ++i)
-    {
-        output_shape[i] = res_shape[i];
-    }
     size_t size_input = 1;
     for (size_t i = 0; i < ndim; ++i)
     {
         size_input *= shape[i];
     }
 
-    long prod = 1;
-
-    for (size_t i = 0; i < ind; i++)
-    {
-        if (res_shape[i] != 0)
-        {
-            prod *= res_shape[i];
-        }
-    }
-
-    float result_array[prod];
     size_t input_shape_offsets[ndim];
-    int acc = 1;
-    int ind_;
-    for (size_t i = 0; i < ndim; i++)
+    size_t acc = 1;
+    for (size_t i = ndim - 1; i > 0; --i)
     {
-        ind_ = ndim - 1 - i;
-        input_shape_offsets[ind_] = acc;
-        acc *= shape[ind_];
+        input_shape_offsets[i] = acc;
+        acc *= shape[i];
     }
-    size_t output_shape_offsets[ndim];
+    input_shape_offsets[0] = acc;
+
+    size_t output_shape_offsets[res_ndim];
     acc = 1;
-    for (size_t i = 0; i < res_ndim; i++)
+    for (size_t i = res_ndim - 1; i > 0; --i)
     {
-        ind_ = res_ndim - 1 - i;
-        output_shape_offsets[ind_] = acc;
-        acc *= output_shape[ind_];
+        output_shape_offsets[i] = acc;
+        acc *= res_shape[i];
     }
-    size_t result_offsets[ndim];
-    for (size_t i = 0; i < ndim; i++)
+    output_shape_offsets[0] = acc;
+
+    size_t size_result = 1;
+    for (size_t i = 0; i < res_ndim; ++i)
     {
-        result_offsets[i] = input_shape_offsets[i];
+        size_result *= res_shape[i];
     }
 
-     for (size_t i = 0; i < ndim-res_ndim; i++)
-     {
-        int j = axis[i];
-        result_offsets[j] = 0;
-     }
-
-     for (size_t source_idx = 0; source_idx < size_input; source_idx++)
-     {
-        // reconstruct x,y,z from linear source_idx
-        size_t xyz[ndim];
-        size_t remainder = source_idx;
-        for (size_t i = 0; i < ndim; i++)
+    //init result array
+    for (size_t result_idx = 0; result_idx < size_result; ++result_idx)
+    {
+        size_t xyz[res_ndim];
+        size_t remainder = result_idx;
+        for (size_t i = 0; i < res_ndim; ++i)
         {
-            size_t j = input_shape_offsets[i];
-            size_t quotient = remainder / j;
-            remainder = remainder % j;
-            quotient = quotient - remainder;
-            xyz[i] = quotient;
+            xyz[i] = remainder / output_shape_offsets[i];
+            remainder = remainder - xyz[i] * output_shape_offsets[i];
         }
-        size_t result_axis[res_ndim];
-        int ind_ = 0;
-        for (size_t idx = 0; idx < ndim; idx++)
+
+        size_t source_axis[ndim];
+        size_t result_axis_idx = 0;
+        for (size_t idx = 0; idx < ndim; ++idx)
         {
-            size_t offset = xyz[idx];
-            int is_idx = 0;
-            for (size_t i = 0; i < ndim-res_ndim; i++)
+            bool found = false;
+            for (size_t i = 0; i < naxis; ++i)
             {
-                if (idx == axis[i])
+                if (axis[i] == idx)
                 {
-                    is_idx = 1;
+                    found = true;
                     break;
                 }
             }
-            if (is_idx == 0)
+            if (found)
             {
-                result_axis[ind_] = offset;
-                ind_ += 1;
+                source_axis[idx] = 0;
+            }
+            else
+            {
+                source_axis[idx] = xyz[result_axis_idx];
+                result_axis_idx++;
+            }
+        }
+
+        size_t source_idx = 0;
+        for (size_t i = 0; i < ndim; ++i)
+        {
+            source_idx += input_shape_offsets[i] * source_axis[i];
+        }
+
+        result[result_idx] = array_1[source_idx];
+    }
+
+    for (size_t source_idx = 0; source_idx < size_input; ++source_idx)
+    {
+        // reconstruct x,y,z from linear source_idx
+        size_t xyz[ndim];
+        size_t remainder = source_idx;
+        for (size_t i = 0; i < ndim; ++i)
+        {
+            xyz[i] = remainder / input_shape_offsets[i];
+            remainder = remainder - xyz[i] * input_shape_offsets[i];
+        }
+
+        // extract result axis
+        size_t result_axis[res_ndim];
+        size_t result_idx = 0;
+        for (size_t idx = 0; idx < ndim; ++idx)
+        {
+            // try to find current idx in axis array
+            bool found = false;
+            for (size_t i = 0; i < naxis; ++i)
+            {
+                if (axis[i] == idx)
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                result_axis[result_idx] = xyz[idx];
+                result_idx++;
             }
         }
 
         // Construct result offset
-        int result_offset = 0;
-        for (size_t i = 0; i < res_ndim; i++)
+        size_t result_offset = 0;
+        for (size_t i = 0; i < res_ndim; ++i)
         {
-            result_offset += (output_shape_offsets[i] * result_axis[i]);
+            result_offset += output_shape_offsets[i] * result_axis[i];
         }
 
-        float input_elem = array_1[source_idx];
-//        if (result_array[result_offset] < 0)
-//        {
-//            result_array[result_offset] = input_elem;
-//        }
-//        else
-//        {
-//            if (result_array[result_offset] > input_elem)
-//            {
-//                result_array[result_offset] = input_elem;
-//            }
-//        }
-     }
+        if (result[result_offset] > array_1[source_idx])
+        {
+            result[result_offset] = array_1[source_idx];
+        }
+    }
 
 #if 0
     std::cout << "min result " << result_array << "\n";
 #endif
 }
 
-template void
-    custom_min_axis_c<double>(void* array1_in, void* result1, size_t* shape, size_t* res_shape, size_t ndim, size_t res_ndim, size_t* axis, size_t naxis, size_t ind);
-template void
-    custom_min_axis_c<float>(void* array1_in, void* result1, size_t* shape, size_t* res_shape, size_t ndim, size_t res_ndim, size_t* axis, size_t naxis, size_t ind);
-template void
-    custom_min_axis_c<long>(void* array1_in, void* result1, size_t* shape, size_t* res_shape, size_t ndim, size_t res_ndim, size_t* axis, size_t naxis, size_t ind);
-template void
-    custom_min_axis_c<int>(void* array1_in, void* result1, size_t* shape, size_t* res_shape, size_t ndim, size_t res_ndim, size_t* axis, size_t naxis, size_t ind);
+template void custom_min_axis_c<double>(void* array1_in,
+                                        void* result1,
+                                        size_t* shape,
+                                        size_t* res_shape,
+                                        size_t ndim,
+                                        size_t res_ndim,
+                                        size_t* axis,
+                                        size_t naxis,
+                                        size_t ind);
+template void custom_min_axis_c<float>(void* array1_in,
+                                       void* result1,
+                                       size_t* shape,
+                                       size_t* res_shape,
+                                       size_t ndim,
+                                       size_t res_ndim,
+                                       size_t* axis,
+                                       size_t naxis,
+                                       size_t ind);
+template void custom_min_axis_c<long>(void* array1_in,
+                                      void* result1,
+                                      size_t* shape,
+                                      size_t* res_shape,
+                                      size_t ndim,
+                                      size_t res_ndim,
+                                      size_t* axis,
+                                      size_t naxis,
+                                      size_t ind);
+template void custom_min_axis_c<int>(void* array1_in,
+                                     void* result1,
+                                     size_t* shape,
+                                     size_t* res_shape,
+                                     size_t ndim,
+                                     size_t res_ndim,
+                                     size_t* axis,
+                                     size_t naxis,
+                                     size_t ind);
