@@ -28,6 +28,7 @@ import os
 from setuptools import Command
 from fnmatch import fnmatch
 from shutil import rmtree
+from distutils import log
 
 
 class source_clean(Command):
@@ -54,12 +55,13 @@ class source_clean(Command):
 
     def run(self):
         root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        log.info(f"DPNP: cleaning in {root_dir}")
 
         # removing dirs from root_dir
         for dir_mask in self.CLEAN_ROOTDIRS:
             rdir = os.path.join(root_dir, dir_mask)
             if os.path.isdir(rdir):
-                print('CLEAN removing: ', rdir)
+                log.info(f"rm {rdir}")
                 rmtree(rdir)
 
         for (dirpath, dirnames, filenames) in os.walk(root_dir):
@@ -68,7 +70,7 @@ class source_clean(Command):
                 for dir_mask in self.CLEAN_DIRS:
                     if fnmatch(dir, dir_mask):
                         rdir = os.path.join(dirpath, dir)
-                        print('CLEAN removing: ', rdir)
+                        log.info(f"rm {rdir}")
                         rmtree(rdir)
 
             # removing files
@@ -76,7 +78,7 @@ class source_clean(Command):
                 for file_mask in self.CLEAN_FILES:
                     if fnmatch(file, file_mask):
                         rfile = os.path.join(dirpath, file)
-                        print('CLEAN removing: ', rfile)
+                        log.info(f"rm {rfile}")
                         os.remove(rfile)
 
-        print('CLEAN done!')
+        log.info(f"DPNP: cleaning finished")

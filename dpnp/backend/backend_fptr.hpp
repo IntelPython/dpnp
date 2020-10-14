@@ -24,23 +24,52 @@
 //*****************************************************************************
 
 /*
- * This header file contains single argument element wise functions definitions
- *
- * Macro `MACRO_CUSTOM_1ARG_1TYPE_OP` must be defined before usage
- *
- * Parameters:
- * - public name of the function and kernel name
- * - operation used to calculate the result
- *
+ * This header file contains internal function declarations related to FPTR interface.
+ * It should not contains public declarations
  */
 
-#ifndef MACRO_CUSTOM_1ARG_1TYPE_OP
-#error "MACRO_CUSTOM_1ARG_1TYPE_OP is not defined"
-#endif
+#pragma once
+#ifndef BACKEND_FPTR_H // Cython compatibility
+#define BACKEND_FPTR_H
 
-MACRO_CUSTOM_1ARG_1TYPE_OP(dpnp_recip_c,
-                           _DataType(1) / input_elem) // error: no member named 'recip' in namespace 'cl::sycl'
-MACRO_CUSTOM_1ARG_1TYPE_OP(dpnp_sign_c, cl::sycl::sign((double)input_elem)) // no sycl::sign for int and long
-MACRO_CUSTOM_1ARG_1TYPE_OP(dpnp_square_c, input_elem* input_elem)
+#include <map>
 
-#undef MACRO_CUSTOM_1ARG_1TYPE_OP
+#include <backend_iface_fptr.hpp>
+
+/**
+ * Data storage type of the FPTR interface
+ *
+ * map[FunctionName][InputType2][InputType2]
+ *
+ * Function name is enum DPNPFuncName
+ * InputTypes are presented as enum DPNPFuncType
+ *
+ * contains structure with kernel information
+ *
+ * if the kernel requires only one input type - use same type for both parameters
+ *
+ */
+typedef std::map<DPNPFuncType, DPNPFuncData_t> map_2p_t;
+typedef std::map<DPNPFuncType, map_2p_t> map_1p_t;
+typedef std::map<DPNPFuncName, map_1p_t> func_map_t;
+
+/**
+ * Internal shortcuts for Data type enum values
+ */
+const DPNPFuncType eft_INT = DPNPFuncType::DPNP_FT_INT;
+const DPNPFuncType eft_LNG = DPNPFuncType::DPNP_FT_LONG;
+const DPNPFuncType eft_FLT = DPNPFuncType::DPNP_FT_FLOAT;
+const DPNPFuncType eft_DBL = DPNPFuncType::DPNP_FT_DOUBLE;
+
+/**
+ * FPTR interface initialization functions
+ */
+void func_map_init_elemwise(func_map_t& fmap);
+void func_map_init_linalg(func_map_t& fmap);
+void func_map_init_manipulation(func_map_t& fmap);
+void func_map_init_reduction(func_map_t& fmap);
+void func_map_init_searching(func_map_t& fmap);
+void func_map_init_sorting(func_map_t& fmap);
+void func_map_init_statistics(func_map_t& fmap);
+
+#endif // BACKEND_FPTR_H

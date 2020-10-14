@@ -110,7 +110,7 @@ void dpnp_memory_memcpy_c(void* dst, const void* src, size_t size_in_bytes);
  */
 template <typename _DataType>
 INP_DLLEXPORT void
-    custom_blas_gemm_c(void* array1, void* array2, void* result1, size_t size_m, size_t size_n, size_t size_k);
+    dpnp_matmul_c(void* array1, void* array2, void* result1, size_t size_m, size_t size_n, size_t size_k);
 
 /**
  * @ingroup BACKEND_API
@@ -143,7 +143,7 @@ INP_DLLEXPORT void
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_blas_dot_c(void* array1, void* array2, void* result1, size_t size);
+INP_DLLEXPORT void dpnp_dot_c(void* array1, void* array2, void* result1, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -173,17 +173,19 @@ INP_DLLEXPORT void custom_prod_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
- * @brief math library implementation of eig function
+ * @brief Compute the eigenvalues and right eigenvectors of a square array.
  *
- * @param [in]  array1  Input array.
+ * @param [in]  array_in  Input array[size][size]
  *
- * @param [out] result1 Output array.
+ * @param [out] result1   The eigenvalues, each repeated according to its multiplicity
  *
- * @param [in]  size    Number of elements in input arrays.
+ * @param [out] result2   The normalized (unit “length”) eigenvectors
+ *
+ * @param [in]  size      One dimension of square [size][size] array
  *
  */
-template <typename _DataType>
-INP_DLLEXPORT void mkl_lapack_syevd_c(void* array1, void* result1, size_t size);
+template <typename _DataType, typename _ResultType>
+INP_DLLEXPORT void dpnp_eig_c(const void* array_in, void* result1, void* result2, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -396,21 +398,22 @@ INP_DLLEXPORT void custom_var_c(
  * @param [in]  size  Number of elements in the input array.
  *
  */
-#define MACRO_CUSTOM_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)                                          \
-    template <typename _DataType_input, typename _DataType_output>                                                     \
-    INP_DLLEXPORT void custom_elemwise_##__name__##_c(void* array1, void* result1, size_t size);
-
-#include <custom_1arg_2type_tbl.hpp>
 
 #define MACRO_CUSTOM_1ARG_1TYPE_OP(__name__, __operation__)                                                            \
     template <typename _DataType>                                                                                      \
-    INP_DLLEXPORT void custom_elemwise_##__name__##_c(void* array1, void* result1, size_t size);
+    INP_DLLEXPORT void __name__(void* array1, void* result1, size_t size);
 
 #include <custom_1arg_1type_tbl.hpp>
 
-#define MACRO_CUSTOM_2ARG_3TYPES_OP(__name__, __operation__)                                                           \
+#define MACRO_CUSTOM_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)                                          \
+    template <typename _DataType_input, typename _DataType_output>                                                     \
+    INP_DLLEXPORT void __name__(void* array1, void* result1, size_t size);
+
+#include <custom_1arg_2type_tbl.hpp>
+
+#define MACRO_CUSTOM_2ARG_3TYPES_OP(__name__, __operation1__, __operation2__)                                          \
     template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>                         \
-    INP_DLLEXPORT void custom_elemwise_##__name__##_c(void* array1, void* array2, void* result1, size_t size);
+    INP_DLLEXPORT void __name__(void* array1, void* array2, void* result1, size_t size);
 
 #include <custom_2arg_3type_tbl.hpp>
 
