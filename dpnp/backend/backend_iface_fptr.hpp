@@ -103,7 +103,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_MULTIPLY,  /**< Used in numpy.multiply() implementation  */
     DPNP_FN_POWER,     /**< Used in numpy.random.power() implementation  */
     DPNP_FN_PROD,      /**< Used in numpy.prod() implementation  */
-    DPNP_FN_UNIFORM,   /**< Used in numpy.random.uniform() implementation  */
     DPNP_FN_RADIANS,   /**< Used in numpy.radians() implementation  */
     DPNP_FN_RECIP,     /**< Used in numpy.recip() implementation  */
     DPNP_FN_SIGN,      /**< Used in numpy.sign() implementation  */
@@ -119,6 +118,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_TANH,      /**< Used in numpy.tanh() implementation  */
     DPNP_FN_TRANSPOSE, /**< Used in numpy.transpose() implementation  */
     DPNP_FN_TRUNC,     /**< Used in numpy.trunc() implementation  */
+    DPNP_FN_UNIFORM,   /**< Used in numpy.random.uniform() implementation  */
     DPNP_FN_VAR,       /**< Used in numpy.var() implementation  */
     DPNP_FN_LAST       /**< The latest element of the enumeration */
 };

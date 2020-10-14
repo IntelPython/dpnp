@@ -26,6 +26,11 @@
 
 from dpnp.random._random import *
 
+dpnp_srand()
+'''
+Basic random number generator engine initialization.
+'''
+
 __all__ = [
     'rand',
     'randf',
@@ -34,6 +39,7 @@ __all__ = [
     'random',
     'random_integers',
     'random_sample',
+    'seed',
     'sample',
     'uniform'
 ]
