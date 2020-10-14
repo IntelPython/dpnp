@@ -68,7 +68,7 @@
 #include <custom_1arg_2type_tbl.hpp>
 
 /* ========================================================================== */
-#define MACRO_CUSTOM_1ARG_1TYPE_OP(__name__, __operation__)                                                            \
+#define MACRO_CUSTOM_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                           \
     template <typename _KernelNameSpecialization>                                                                      \
     class custom_elemwise_##__name__##_c_kernel;                                                                       \
                                                                                                                        \
@@ -76,6 +76,7 @@
     void custom_elemwise_##__name__##_c(void* array1_in, void* result1, size_t size)                                   \
     {                                                                                                                  \
         cl::sycl::event event;                                                                                         \
+                                                                                                                       \
         _DataType* array1 = reinterpret_cast<_DataType*>(array1_in);                                                   \
         _DataType* result = reinterpret_cast<_DataType*>(result1);                                                     \
                                                                                                                        \
@@ -84,7 +85,7 @@
             size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/                                             \
             {                                                                                                          \
                 _DataType input_elem = array1[i];                                                                      \
-                result[i] = __operation__;                                                                             \
+                result[i] = __operation1__;                                                                            \
             }                                                                                                          \
         };                                                                                                             \
                                                                                                                        \
@@ -92,47 +93,12 @@
             cgh.parallel_for<class custom_elemwise_##__name__##_c_kernel<_DataType>>(gws, kernel_parallel_for_func);   \
         };                                                                                                             \
                                                                                                                        \
-        event = DPNP_QUEUE.submit(kernel_func);                                                                        \
-                                                                                                                       \
-        event.wait();                                                                                                  \
-    }                                                                                                                  \
-                                                                                                                       \
-    template void custom_elemwise_##__name__##_c<double>(void* array1_in, void* result1, size_t size);                 \
-    template void custom_elemwise_##__name__##_c<float>(void* array1_in, void* result1, size_t size);                  \
-    template void custom_elemwise_##__name__##_c<long>(void* array1_in, void* result1, size_t size);                   \
-    template void custom_elemwise_##__name__##_c<int>(void* array1_in, void* result1, size_t size);
-
-#define MACRO_CUSTOM_1ARG_1TYPE_2OPS(__name__, __operation1__, __operation2__)                                         \
-    template <typename _KernelNameSpecialization>                                                                      \
-    class custom_elemwise_##__name__##_c_kernel;                                                                       \
-                                                                                                                       \
-    template <typename _DataType>                                                                                      \
-    void custom_elemwise_##__name__##_c(void* array1_in, void* result1, size_t size)                                   \
-    {                                                                                                                  \
-        cl::sycl::event event;                                                                                         \
-        _DataType* array1 = reinterpret_cast<_DataType*>(array1_in);                                                   \
-        _DataType* result = reinterpret_cast<_DataType*>(result1);                                                     \
-                                                                                                                       \
         if constexpr (std::is_same<_DataType, double>::value)                                                          \
         {                                                                                                              \
-            event = __operation2__(DPNP_QUEUE, size, array1, result);                                                  \
+            event = __operation2__;                                                                                    \
         }                                                                                                              \
         else                                                                                                           \
         {                                                                                                              \
-            cl::sycl::range<1> gws(size);                                                                              \
-            auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                           \
-                size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/                                         \
-                {                                                                                                      \
-                    _DataType input_elem = array1[i];                                                                  \
-                    result[i] = __operation1__;                                                                        \
-                }                                                                                                      \
-            };                                                                                                         \
-                                                                                                                       \
-            auto kernel_func = [&](cl::sycl::handler& cgh) {                                                           \
-                cgh.parallel_for<class custom_elemwise_##__name__##_c_kernel<_DataType>>(gws,                          \
-                                                                                         kernel_parallel_for_func);    \
-            };                                                                                                         \
-                                                                                                                       \
             event = DPNP_QUEUE.submit(kernel_func);                                                                    \
         }                                                                                                              \
                                                                                                                        \
