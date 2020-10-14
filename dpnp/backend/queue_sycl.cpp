@@ -48,7 +48,7 @@ static long dpnp_custom_kernels_link()
 
     *value_ptr = 2;
 
-    custom_elemwise_square_c<long>(value_ptr, result_ptr, 1);
+    dpnp_square_c<long>(value_ptr, result_ptr, 1);
 
     result = *result_ptr;
 

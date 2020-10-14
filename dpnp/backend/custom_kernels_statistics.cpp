@@ -26,6 +26,7 @@
 #include <iostream>
 
 #include <backend_iface.hpp>
+#include "backend_fptr.hpp"
 #include "backend_utils.hpp"
 #include "queue_sycl.hpp"
 
@@ -56,15 +57,6 @@ void custom_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols)
     }
     policy.queue().wait();
 
-#if 0
-    std::cout << "mean\n";
-    for (size_t i = 0; i < nrows; ++i)
-    {
-        std::cout << " , " << mean[i];
-    }
-    std::cout << std::endl;
-#endif
-
     _DataType* temp = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(nrows * ncols * sizeof(_DataType)));
     for (size_t i = 0; i < nrows; ++i)
     {
@@ -73,18 +65,6 @@ void custom_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols)
         std::transform(policy, row_start, row_start + ncols, temp + offset, [=](_DataType x) { return x - mean[i]; });
     }
     policy.queue().wait();
-
-#if 0
-    std::cout << "temp\n";
-    for (size_t i = 0; i < nrows; ++i)
-    {
-        for (size_t j = 0; j < ncols; ++j)
-        {
-            std::cout << " , " << temp[i * ncols + j];
-        }
-        std::cout << std::endl;
-    }
-#endif
 
     cl::sycl::event event_syrk;
 
@@ -103,16 +83,6 @@ void custom_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols)
                                 result,                           // T* c,
                                 nrows);                           // std::int64_t ldc);
     event_syrk.wait();
-
-#if 0 // serial fill lower elements on CPU
-    for (size_t i = 1; i < nrows; ++i)
-    {
-        for (size_t j = 0; j < i; ++j)
-        {
-            result[i * nrows + j] = result[j * nrows + i];
-        }
-    }
-#endif
 
     // fill lower elements
     cl::sycl::event event;
@@ -137,9 +107,9 @@ void custom_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols)
 
     dpnp_memory_free_c(mean);
     dpnp_memory_free_c(temp);
-}
 
-template void custom_cov_c<double>(void* array1_in, void* result1, size_t nrows, size_t ncols);
+    return;
+}
 
 template <typename _DataType>
 class custom_max_c_kernel;
@@ -158,26 +128,31 @@ void custom_max_c(void* array1_in, void* result1, const size_t* shape, size_t nd
         size *= shape[i];
     }
 
-    auto policy = oneapi::dpl::execution::make_device_policy<class custom_max_c_kernel<_DataType>>(DPNP_QUEUE);
+    if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
+    {
+        // Required initializing the result before call the function
+        result[0] = array_1[0];
 
-    _DataType* res = std::max_element(policy, array_1, array_1 + size);
-    policy.queue().wait();
+        // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-make_dataset.html
+        auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, size, array_1);
 
-    result[0] = *res;
+        // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-max.html
+        cl::sycl::event event = mkl_stats::max(DPNP_QUEUE, dataset, result);
 
-#if 0
-    std::cout << "max result " << result[0] << "\n";
-#endif
+        event.wait();
+    }
+    else
+    {
+        auto policy = oneapi::dpl::execution::make_device_policy<class custom_max_c_kernel<_DataType>>(DPNP_QUEUE);
+
+        _DataType* res = std::max_element(policy, array_1, array_1 + size);
+        policy.queue().wait();
+
+        result[0] = *res;
+    }
+
+    return;
 }
-
-template void custom_max_c<double>(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
-template void custom_max_c<float>(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
-template void custom_max_c<long>(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
-template void custom_max_c<int>(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 
 template <typename _DataType, typename _ResultType>
 void custom_mean_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
@@ -219,16 +194,9 @@ void custom_mean_c(void* array1_in, void* result1, const size_t* shape, size_t n
 
         dpnp_memory_free_c(sum);
     }
-}
 
-template void custom_mean_c<double, double>(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
-template void custom_mean_c<float, float>(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
-template void custom_mean_c<long, double>(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
-template void custom_mean_c<int, double>(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
+    return;
+}
 
 template <typename _DataType, typename _ResultType>
 void custom_median_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
@@ -258,19 +226,8 @@ void custom_median_c(void* array1_in, void* result1, const size_t* shape, size_t
 
     dpnp_memory_free_c(sorted);
 
-#if 0
-    std::cout << "median result " << result[0] << "\n";
-#endif
+    return;
 }
-
-template void custom_median_c<double, double>(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
-template void custom_median_c<float, double>(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
-template void custom_median_c<long, double>(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
-template void custom_median_c<int, double>(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 
 template <typename _DataType>
 class custom_min_c_kernel;
@@ -288,27 +245,31 @@ void custom_min_c(void* array1_in, void* result1, const size_t* shape, size_t nd
     {
         size *= shape[i];
     }
+    if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
+    {
+        // Required initializing the result before call the function
+        result[0] = array_1[0];
 
-    auto policy = oneapi::dpl::execution::make_device_policy<class custom_min_c_kernel<_DataType>>(DPNP_QUEUE);
+        // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-make_dataset.html
+        auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, size, array_1);
 
-    _DataType* res = std::min_element(policy, array_1, array_1 + size);
-    policy.queue().wait();
+        // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-min.html
+        cl::sycl::event event = mkl_stats::min(DPNP_QUEUE, dataset, result);
 
-    result[0] = *res;
+        event.wait();
+    }
+    else
+    {
+        auto policy = oneapi::dpl::execution::make_device_policy<class custom_min_c_kernel<_DataType>>(DPNP_QUEUE);
 
-#if 0
-    std::cout << "min result " << result[0] << "\n";
-#endif
+        _DataType* res = std::min_element(policy, array_1, array_1 + size);
+        policy.queue().wait();
+
+        result[0] = *res;
+    }
+
+    return;
 }
-
-template void custom_min_c<double>(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
-template void custom_min_c<float>(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
-template void custom_min_c<long>(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
-template void custom_min_c<int>(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 
 template <typename _DataType, typename _ResultType>
 void custom_std_c(
@@ -320,23 +281,12 @@ void custom_std_c(
     _ResultType* var = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(1 * sizeof(_ResultType)));
     custom_var_c<_DataType, _ResultType>(array1, var, shape, ndim, axis, naxis, ddof);
 
-    custom_elemwise_sqrt_c<_ResultType, _ResultType>(var, result, 1);
+    dpnp_sqrt_c<_ResultType, _ResultType>(var, result, 1);
 
     dpnp_memory_free_c(var);
 
-#if 0
-    std::cout << "std result " << res[0] << "\n";
-#endif
+    return;
 }
-
-template void custom_std_c<int, double>(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
-template void custom_std_c<long, double>(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
-template void custom_std_c<float, float>(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
-template void custom_std_c<double, double>(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
 
 template <typename _DataType, typename _ResultType>
 class custom_var_c_kernel;
@@ -386,16 +336,45 @@ void custom_var_c(
     dpnp_memory_free_c(mean);
     dpnp_memory_free_c(squared_deviations);
 
-#if 0
-    std::cout << "var result " << res[0] << "\n";
-#endif
+    return;
 }
 
-template void custom_var_c<int, double>(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
-template void custom_var_c<long, double>(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
-template void custom_var_c<float, float>(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
-template void custom_var_c<double, double>(
-    void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
+void func_map_init_statistics(func_map_t& fmap)
+{
+    fmap[DPNPFuncName::DPNP_FN_COV][eft_INT][eft_INT] = {eft_DBL, (void*)custom_cov_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_COV][eft_LNG][eft_LNG] = {eft_DBL, (void*)custom_cov_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_COV][eft_FLT][eft_FLT] = {eft_DBL, (void*)custom_cov_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_COV][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_cov_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_MAX][eft_INT][eft_INT] = {eft_INT, (void*)custom_max_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_MAX][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_max_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_MAX][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_max_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_MAX][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_max_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_MEAN][eft_INT][eft_INT] = {eft_DBL, (void*)custom_mean_c<int, double>};
+    fmap[DPNPFuncName::DPNP_FN_MEAN][eft_LNG][eft_LNG] = {eft_DBL, (void*)custom_mean_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_MEAN][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_mean_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_MEAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_mean_c<double, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_INT][eft_INT] = {eft_DBL, (void*)custom_median_c<int, double>};
+    fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_LNG][eft_LNG] = {eft_DBL, (void*)custom_median_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_FLT][eft_FLT] = {eft_DBL, (void*)custom_median_c<float, double>};
+    fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_median_c<double, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_MIN][eft_INT][eft_INT] = {eft_INT, (void*)custom_min_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_MIN][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_min_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_MIN][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_min_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_MIN][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_min_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_STD][eft_INT][eft_INT] = {eft_DBL, (void*)custom_std_c<int, double>};
+    fmap[DPNPFuncName::DPNP_FN_STD][eft_LNG][eft_LNG] = {eft_DBL, (void*)custom_std_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_STD][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_std_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_STD][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_std_c<double, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_VAR][eft_INT][eft_INT] = {eft_DBL, (void*)custom_var_c<int, double>};
+    fmap[DPNPFuncName::DPNP_FN_VAR][eft_LNG][eft_LNG] = {eft_DBL, (void*)custom_var_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_VAR][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_var_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_VAR][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_var_c<double, double>};
+
+    return;
+}

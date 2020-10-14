@@ -26,6 +26,7 @@
 #include <iostream>
 
 #include <backend_iface.hpp>
+#include "backend_fptr.hpp"
 #include "queue_sycl.hpp"
 
 template <typename _DataType, typename _idx_DataType>
@@ -64,14 +65,14 @@ void custom_argsort_c(void* array1_in, void* result1, size_t size)
     policy.queue().wait();
 }
 
-template void custom_argsort_c<double, long>(void* array1_in, void* result1, size_t size);
-template void custom_argsort_c<float, long>(void* array1_in, void* result1, size_t size);
-template void custom_argsort_c<long, long>(void* array1_in, void* result1, size_t size);
-template void custom_argsort_c<int, long>(void* array1_in, void* result1, size_t size);
-template void custom_argsort_c<double, int>(void* array1_in, void* result1, size_t size);
-template void custom_argsort_c<float, int>(void* array1_in, void* result1, size_t size);
-template void custom_argsort_c<long, int>(void* array1_in, void* result1, size_t size);
-template void custom_argsort_c<int, int>(void* array1_in, void* result1, size_t size);
+// template void custom_argsort_c<double, long>(void* array1_in, void* result1, size_t size);
+// template void custom_argsort_c<float, long>(void* array1_in, void* result1, size_t size);
+// template void custom_argsort_c<long, long>(void* array1_in, void* result1, size_t size);
+// template void custom_argsort_c<int, long>(void* array1_in, void* result1, size_t size);
+// template void custom_argsort_c<double, int>(void* array1_in, void* result1, size_t size);
+// template void custom_argsort_c<float, int>(void* array1_in, void* result1, size_t size);
+// template void custom_argsort_c<long, int>(void* array1_in, void* result1, size_t size);
+// template void custom_argsort_c<int, int>(void* array1_in, void* result1, size_t size);
 
 template <typename _DataType>
 struct _sort_less
@@ -102,7 +103,17 @@ void custom_sort_c(void* array1_in, void* result1, size_t size)
     policy.queue().wait();
 }
 
-template void custom_sort_c<double>(void* array1_in, void* result1, size_t size);
-template void custom_sort_c<float>(void* array1_in, void* result1, size_t size);
-template void custom_sort_c<long>(void* array1_in, void* result1, size_t size);
-template void custom_sort_c<int>(void* array1_in, void* result1, size_t size);
+void func_map_init_sorting(func_map_t& fmap)
+{
+    fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_INT][eft_INT] = {eft_LNG, (void*)custom_argsort_c<int, long>};
+    fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_argsort_c<long, long>};
+    fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_FLT][eft_FLT] = {eft_LNG, (void*)custom_argsort_c<float, long>};
+    fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_DBL][eft_DBL] = {eft_LNG, (void*)custom_argsort_c<double, long>};
+
+    fmap[DPNPFuncName::DPNP_FN_SORT][eft_INT][eft_INT] = {eft_INT, (void*)custom_sort_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_SORT][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_sort_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_SORT][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_sort_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_SORT][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_sort_c<double>};
+
+    return;
+}

@@ -55,7 +55,7 @@ int main(int, char**)
     }
     std::cout << std::endl;
 
-    custom_elemwise_cos_c<int, double>(array1, result, size);
+    dpnp_cos_c<int, double>(array1, result, size);
 
     for (size_t i = 0; i < 10; ++i)
     {
