@@ -396,7 +396,7 @@ INP_DLLEXPORT void custom_var_c(
  * @param [in]  size  Number of elements in the input array.
  *
  */
-#define MACRO_CUSTOM_1ARG_1TYPE_OP(__name__, __operation__)                                                            \
+#define MACRO_CUSTOM_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                           \
     template <typename _DataType>                                                                                      \
     INP_DLLEXPORT void __name__(void* array1, void* result1, size_t size);
 
