@@ -31,6 +31,7 @@
  * Parameters:
  * - public name of the function and kernel name
  * - operation used to calculate the result
+ * - mkl operation used to calculate the result
  *
  */
 
@@ -38,15 +39,23 @@
 #error "MACRO_CUSTOM_2ARG_3TYPES_OP is not defined"
 #endif
 
-MACRO_CUSTOM_2ARG_3TYPES_OP(add, input_elem1 + input_elem2)
-MACRO_CUSTOM_2ARG_3TYPES_OP(arctan2, cl::sycl::atan2((double)input_elem1, (double)input_elem2))
-MACRO_CUSTOM_2ARG_3TYPES_OP(divide, input_elem1 / input_elem2)
-MACRO_CUSTOM_2ARG_3TYPES_OP(fmod, cl::sycl::fmod((double)input_elem1, (double)input_elem2))
-MACRO_CUSTOM_2ARG_3TYPES_OP(hypot, cl::sycl::hypot((double)input_elem1, (double)input_elem2))
-MACRO_CUSTOM_2ARG_3TYPES_OP(maximum, cl::sycl::max(input_elem1, input_elem2))
-MACRO_CUSTOM_2ARG_3TYPES_OP(minimum, cl::sycl::min(input_elem1, input_elem2))
-MACRO_CUSTOM_2ARG_3TYPES_OP(multiply, input_elem1* input_elem2)
-MACRO_CUSTOM_2ARG_3TYPES_OP(power, cl::sycl::powr((double)input_elem1, (double)input_elem2))
-MACRO_CUSTOM_2ARG_3TYPES_OP(subtract, input_elem1 - input_elem2)
+MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_add_c, input_elem1 + input_elem2, oneapi::mkl::vm::add)
+MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_arctan2_c,
+                            cl::sycl::atan2((double)input_elem1, (double)input_elem2),
+                            oneapi::mkl::vm::atan2)
+MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_divide_c, input_elem1 / input_elem2, oneapi::mkl::vm::div)
+MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_fmod_c,
+                            cl::sycl::fmod((double)input_elem1, (double)input_elem2),
+                            oneapi::mkl::vm::fmod)
+MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_hypot_c,
+                            cl::sycl::hypot((double)input_elem1, (double)input_elem2),
+                            oneapi::mkl::vm::hypot)
+MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_maximum_c, cl::sycl::max(input_elem1, input_elem2), oneapi::mkl::vm::fmax)
+MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_minimum_c, cl::sycl::min(input_elem1, input_elem2), oneapi::mkl::vm::fmin)
+MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_multiply_c, input_elem1* input_elem2, oneapi::mkl::vm::mul)
+MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_power_c,
+                            cl::sycl::powr((double)input_elem1, (double)input_elem2),
+                            oneapi::mkl::vm::pow)
+MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_subtract_c, input_elem1 - input_elem2, oneapi::mkl::vm::sub)
 
 #undef MACRO_CUSTOM_2ARG_3TYPES_OP

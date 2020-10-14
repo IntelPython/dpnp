@@ -45,8 +45,9 @@ int main(int, char**)
 
     dpnp_queue_initialize_c(QueueOptions::CPU_SELECTOR);
 
-    int* array = (int*)dpnp_memory_alloc_c(len * sizeof(int));
-    double* result = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+    float* array = (float*)dpnp_memory_alloc_c(len * sizeof(float));
+    float* result1 = (float*)dpnp_memory_alloc_c(size * sizeof(float));
+    float* result2 = (float*)dpnp_memory_alloc_c(len * sizeof(float));
 
     /* init input diagonal array like:
     1, 0, 0,
@@ -62,16 +63,17 @@ int main(int, char**)
         array[size * i + i] = i + 1;
     }
 
-    mkl_lapack_syevd_c<double>(array, result, size);
+    custom_lapack_eig_c<float, float>(array, result1, result2, size);
 
     std::cout << "eigen values" << std::endl;
     for (size_t i = 0; i < size; ++i)
     {
-        std::cout << result[i] << ", ";
+        std::cout << result1[i] << ", ";
     }
     std::cout << std::endl;
 
-    dpnp_memory_free_c(result);
+    dpnp_memory_free_c(result2);
+    dpnp_memory_free_c(result1);
     dpnp_memory_free_c(array);
 
     return 0;

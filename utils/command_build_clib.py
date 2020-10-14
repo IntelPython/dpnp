@@ -71,7 +71,7 @@ class custom_build_clib(build_clib.build_clib):
 
             sources = list(sources)
 
-            log.info("DPNP: building '%s' library", lib_name)
+            log.info(f"DPNP: building {lib_name} library")
 
             macros = build_info.get('macros')
             include_dirs = build_info.get('include_dirs')
@@ -133,4 +133,4 @@ class custom_build_clib(build_clib.build_clib):
             """
             copy_file(c_library_filename, dest_filename, verbose=self.verbose, dry_run=self.dry_run)
 
-            log.info("DPNP: building '%s' library finished", lib_name)
+            log.info(f"DPNP: building {lib_name} library finished")
