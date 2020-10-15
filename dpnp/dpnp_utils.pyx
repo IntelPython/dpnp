@@ -45,6 +45,7 @@ Python import functions
 """
 __all__ = [
     "call_origin",
+    "check2call",
     "checker_throw_axis_error",
     "checker_throw_index_error",
     "checker_throw_runtime_error",
@@ -93,6 +94,54 @@ def call_origin(function, *args, **kwargs):
             result._setitem_scalar(i, result_origin.item(i))
 
     return result
+
+
+def check2call(origin_func, dpnp_func, valid_dtypes, *input_arrays, check_shapes=False, check_dtypes=False, **kwargs):
+    """
+    Choose function to call based on required input arrays types, data types and shapes
+    and call chosen fucntion.
+    
+    Parameters
+    ----------
+    origin_func : function
+        original function to call if at least one input array didn't meet the requirements
+    dpnp_func : function
+        dpnp function to call if all the input arrays met the requirements
+    valid_dtypes : list(dtypes)
+        required data types
+    input_arrays : tuple(arrays)
+        input arrays
+    check_shapes : bool
+        to check all input arrays shapes are equal
+    check_dtypes : bool
+        to check all input arrays data types are equal
+    kwargs : dict
+        remaining input parameters of the function
+
+    Returns
+    -------
+        result of the function call
+    """
+    x1, *_ = input_arrays
+    if not use_origin_backend(x1):
+        for x in input_arrays:
+            if not isinstance(x, dparray):
+                # input array isn't valid
+                break
+            elif valid_dtypes and x.dtype not in valid_dtypes:
+                # input array dtype isn't valid
+                break
+        else:
+            if check_shapes and len(set(x.shape for x in input_arrays)) > 1:
+                # input arrays shapes aren't equal
+                pass
+            elif check_dtypes and len(set(x.dtype for x in input_arrays)) > 1:
+                # input arrays dtypes aren't equal
+                pass
+            else:
+                return dpnp_func(*input_arrays, **kwargs)
+
+    return call_origin(origin_func, *input_arrays, **kwargs)
 
 
 cpdef checker_throw_axis_error(function_name, param_name, param, expected):
