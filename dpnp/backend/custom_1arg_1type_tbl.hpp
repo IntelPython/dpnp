@@ -31,6 +31,7 @@
  * Parameters:
  * - public name of the function and kernel name
  * - operation used to calculate the result
+ * - mkl operation used to calculate the result
  *
  */
 
@@ -38,9 +39,11 @@
 #error "MACRO_CUSTOM_1ARG_1TYPE_OP is not defined"
 #endif
 
-MACRO_CUSTOM_1ARG_1TYPE_OP(dpnp_recip_c,
-                           _DataType(1) / input_elem) // error: no member named 'recip' in namespace 'cl::sycl'
-MACRO_CUSTOM_1ARG_1TYPE_OP(dpnp_sign_c, cl::sycl::sign((double)input_elem)) // no sycl::sign for int and long
-MACRO_CUSTOM_1ARG_1TYPE_OP(dpnp_square_c, input_elem* input_elem)
+MACRO_CUSTOM_1ARG_1TYPE_OP(dpnp_recip_c, _DataType(1) / input_elem,
+                           DPNP_QUEUE.submit(kernel_func)) // error: no member named 'recip' in namespace 'cl::sycl'
+MACRO_CUSTOM_1ARG_1TYPE_OP(dpnp_sign_c, cl::sycl::sign((double)input_elem),
+                           DPNP_QUEUE.submit(kernel_func)) // no sycl::sign for int and long
+MACRO_CUSTOM_1ARG_1TYPE_OP(dpnp_square_c, input_elem * input_elem,
+                           oneapi::mkl::vm::sqr(DPNP_QUEUE, size, array1, result))
 
 #undef MACRO_CUSTOM_1ARG_1TYPE_OP

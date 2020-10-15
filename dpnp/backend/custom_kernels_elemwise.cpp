@@ -31,7 +31,7 @@
 #include "backend_utils.hpp"
 #include "queue_sycl.hpp"
 
-#define MACRO_CUSTOM_1ARG_2TYPES_OP(__name__, __operation__)                                                           \
+#define MACRO_CUSTOM_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)                                          \
     template <typename _KernelNameSpecialization>                                                                      \
     class __name__##_kernel;                                                                                           \
                                                                                                                        \
@@ -39,6 +39,7 @@
     void __name__(void* array1_in, void* result1, size_t size)                                                         \
     {                                                                                                                  \
         cl::sycl::event event;                                                                                         \
+                                                                                                                       \
         _DataType_input* array1 = reinterpret_cast<_DataType_input*>(array1_in);                                       \
         _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);                                       \
                                                                                                                        \
@@ -47,7 +48,7 @@
             size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/                                             \
             {                                                                                                          \
                 _DataType_output input_elem = array1[i];                                                               \
-                result[i] = __operation__;                                                                             \
+                result[i] = __operation1__;                                                                            \
             }                                                                                                          \
         };                                                                                                             \
                                                                                                                        \
@@ -55,7 +56,14 @@
             cgh.parallel_for<class __name__##_kernel<_DataType_input>>(gws, kernel_parallel_for_func);                 \
         };                                                                                                             \
                                                                                                                        \
-        event = DPNP_QUEUE.submit(kernel_func);                                                                        \
+        if constexpr (std::is_same<_DataType_input, double>::value || std::is_same<_DataType_input, float>::value)     \
+        {                                                                                                              \
+            event = __operation2__;                                                                                    \
+        }                                                                                                              \
+        else                                                                                                           \
+        {                                                                                                              \
+            event = DPNP_QUEUE.submit(kernel_func);                                                                    \
+        }                                                                                                              \
                                                                                                                        \
         event.wait();                                                                                                  \
     }
@@ -202,7 +210,7 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
     return;
 }
 
-#define MACRO_CUSTOM_1ARG_1TYPE_OP(__name__, __operation__)                                                            \
+#define MACRO_CUSTOM_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                           \
     template <typename _KernelNameSpecialization>                                                                      \
     class __name__##_kernel;                                                                                           \
                                                                                                                        \
@@ -210,6 +218,7 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
     void __name__(void* array1_in, void* result1, size_t size)                                                         \
     {                                                                                                                  \
         cl::sycl::event event;                                                                                         \
+                                                                                                                       \
         _DataType* array1 = reinterpret_cast<_DataType*>(array1_in);                                                   \
         _DataType* result = reinterpret_cast<_DataType*>(result1);                                                     \
                                                                                                                        \
@@ -218,7 +227,7 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
             size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/                                             \
             {                                                                                                          \
                 _DataType input_elem = array1[i];                                                                      \
-                result[i] = __operation__;                                                                             \
+                result[i] = __operation1__;                                                                            \
             }                                                                                                          \
         };                                                                                                             \
                                                                                                                        \
@@ -226,7 +235,14 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
             cgh.parallel_for<class __name__##_kernel<_DataType>>(gws, kernel_parallel_for_func);                       \
         };                                                                                                             \
                                                                                                                        \
-        event = DPNP_QUEUE.submit(kernel_func);                                                                        \
+        if constexpr (std::is_same<_DataType, double>::value)                                                          \
+        {                                                                                                              \
+            event = __operation2__;                                                                                    \
+        }                                                                                                              \
+        else                                                                                                           \
+        {                                                                                                              \
+            event = DPNP_QUEUE.submit(kernel_func);                                                                    \
+        }                                                                                                              \
                                                                                                                        \
         event.wait();                                                                                                  \
     }
