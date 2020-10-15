@@ -1,1 +1,4 @@
-mkl >=2021.1b10
+#python
+#dpctl >=0.3.7
+#dpcpp_cpp_rt >=2021.1b10
+#mkl >=2021.1b10
