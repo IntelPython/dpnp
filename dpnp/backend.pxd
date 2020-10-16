@@ -76,6 +76,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_PROD
         DPNP_FN_UNIFORM
         DPNP_FN_RADIANS
+        DPNP_FN_REMAINDER
         DPNP_FN_RECIP
         DPNP_FN_SIGN
         DPNP_FN_SIN
@@ -133,7 +134,6 @@ cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shap
 cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, dparray_shape_type result_shape)
 
 
-cpdef dparray dpnp_remainder(dparray array1, int scalar)
 cpdef dparray dpnp_astype(dparray array1, dtype_target)
 
 
@@ -188,6 +188,7 @@ cpdef dparray dpnp_minimum(dparray array1, dparray array2)
 cpdef dparray dpnp_multiply(dparray array1, dparray array2)
 cpdef dparray dpnp_negative(dparray array1)
 cpdef dparray dpnp_power(dparray array1, dparray array2)
+cpdef dparray dpnp_remainder(dparray array1, dparray array2)
 cpdef dparray dpnp_sin(dparray array1)
 cpdef dparray dpnp_subtract(dparray array1, dparray array2)
 

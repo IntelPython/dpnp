@@ -469,6 +469,23 @@ static void func_map_init_elemwise_2arg_3type(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_POWER][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_power_c<double, float, double>};
     fmap[DPNPFuncName::DPNP_FN_POWER][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_power_c<double, double, double>};
 
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_remainder_c<int, int, int>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_remainder_c<int, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_INT][eft_FLT] = {eft_DBL, (void*)dpnp_remainder_c<int, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_remainder_c<int, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_LNG][eft_INT] = {eft_LNG, (void*)dpnp_remainder_c<long, int, long>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_remainder_c<long, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_LNG][eft_FLT] = {eft_DBL, (void*)dpnp_remainder_c<long, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_remainder_c<long, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_FLT][eft_INT] = {eft_DBL, (void*)dpnp_remainder_c<float, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_FLT][eft_LNG] = {eft_DBL, (void*)dpnp_remainder_c<float, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_remainder_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_FLT][eft_DBL] = {eft_DBL, (void*)dpnp_remainder_c<float, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_remainder_c<double, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_remainder_c<double, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_remainder_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_remainder_c<double, double, double>};
+
     fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_subtract_c<int, int, int>};
     fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_subtract_c<int, long, long>};
     fmap[DPNPFuncName::DPNP_FN_SUBTRACT][eft_INT][eft_FLT] = {eft_DBL, (void*)dpnp_subtract_c<int, float, double>};

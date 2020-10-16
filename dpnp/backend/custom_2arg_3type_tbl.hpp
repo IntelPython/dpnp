@@ -56,6 +56,9 @@ MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_multiply_c, input_elem1* input_elem2, oneapi::m
 MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_power_c,
                             cl::sycl::powr((double)input_elem1, (double)input_elem2),
                             oneapi::mkl::vm::pow)
+MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_remainder_c,
+                            cl::sycl::remainder((double)input_elem1, (double)input_elem2),
+                            oneapi::mkl::vm::remainder)
 MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_subtract_c, input_elem1 - input_elem2, oneapi::mkl::vm::sub)
 
 #undef MACRO_CUSTOM_2ARG_3TYPES_OP
