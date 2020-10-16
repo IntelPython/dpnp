@@ -119,7 +119,6 @@ cdef extern from "backend/backend_iface.hpp":
     char * dpnp_memory_alloc_c(size_t size_in_bytes)
     void dpnp_memory_free_c(void * ptr)
     void dpnp_memory_memcpy_c(void * dst, const void * src, size_t size_in_bytes)
-    void dpnp_srand_c()
     void dpnp_srand_c(size_t seed)
 
 

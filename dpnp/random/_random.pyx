@@ -48,15 +48,12 @@ ctypedef void(*fptr_mkl_rng_gaussian_1out_t)(void *, size_t)
 ctypedef void(*fptr_mkl_rng_uniform_1out_t)(void *, long, long, size_t)
 
 
-cpdef dpnp_srand(seed=None):
+cpdef dpnp_srand(seed):
     """
     Initialize basic random number generator.
 
     """
-    if seed is None:
-        dpnp_srand_c()
-    else:
-        dpnp_srand_c(seed)
+    dpnp_srand_c(seed)
 
 
 cpdef dparray dpnp_randn(dims):

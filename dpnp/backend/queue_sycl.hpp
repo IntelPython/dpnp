@@ -99,8 +99,7 @@ public:
     /**
      * Initialize @ref rng_engine
      */
-    static void backend_sycl_rng_engine_init();
-    static void backend_sycl_rng_engine_init(size_t seed);
+    static void backend_sycl_rng_engine_init(size_t seed = 1);
 
     /**
      * Return the @ref queue to the user
