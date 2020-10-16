@@ -85,6 +85,47 @@ def eig(in_array1):
     return dpnp_eig(in_array1)
 
 
+def matrix_power(input, count):
+    """
+    Raise a square matrix to the (integer) power `count`.
+
+    Parameters
+    ----------
+    input : sequence of array_like
+
+    Returns
+    -------
+    output : dparray
+        Returns the dot product of the supplied arrays.
+
+    See Also
+    --------
+    :meth:`numpy.linalg.matrix_power`
+
+    """
+
+    is_input_dparray = isinstance(input, dparray)
+
+    if not use_origin_backend(input) and is_input_dparray and count > 0:
+        result = input
+        for id in range(count - 1):
+            result = dpnp.matmul(result, input)
+
+        return result
+
+    input1 = dpnp.asnumpy(input) if is_input_dparray else input
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.linalg.matrix_power(input1, count)
+    result = result_numpy
+    if isinstance(result, numpy.ndarray):
+        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_numpy.item(i))
+
+    return result
+
+
 def matrix_rank(input, tol=None, hermitian=False):
     """
     Return matrix rank of array
@@ -127,58 +168,7 @@ def matrix_rank(input, tol=None, hermitian=False):
 
         return result
 
-    input1 = dpnp.asnumpy(input) if is_input_dparray else input
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.linalg.matrix_rank(input1, tol=tol, hermitian=hermitian)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
-
-
-def matrix_power(input, count):
-    """
-    Raise a square matrix to the (integer) power `count`.
-
-    Parameters
-    ----------
-    input : sequence of array_like
-
-    Returns
-    -------
-    output : dparray
-        Returns the dot product of the supplied arrays.
-
-    See Also
-    --------
-    :meth:`numpy.linalg.matrix_power`
-
-    """
-
-    is_input_dparray = isinstance(input, dparray)
-
-    if not use_origin_backend(input) and is_input_dparray and count > 0:
-        result = input
-        for id in range(count - 1):
-            result = dpnp.matmul(result, input)
-
-        return result
-
-    input1 = dpnp.asnumpy(input) if is_input_dparray else input
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.linalg.matrix_power(input1, count)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return call_origin(numpy.linalg.matrix_rank, input, tol, hermitian)
 
 
 def multi_dot(arrays, out=None):
