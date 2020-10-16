@@ -25,7 +25,7 @@
 
 /*
  * This header file is for interface Cython with C++.
- * It should not contains any backend specific headers (like SYCL or MKL) because
+ * It should not contains any backend specific headers (like SYCL or math library) because
  * all included headers will be exposed in Cython compilation procedure
  *
  * We would like to avoid backend specific things in higher level Cython modules.
@@ -60,6 +60,7 @@
 enum class DPNPFuncName : size_t
 {
     DPNP_FN_NONE,      /**< Very first element of the enumeration */
+    DPNP_FN_ABSOLUTE,  /**< Used in numpy.absolute() implementation  */
     DPNP_FN_ADD,       /**< Used in numpy.add() implementation  */
     DPNP_FN_ARCCOS,    /**< Used in numpy.arccos() implementation  */
     DPNP_FN_ARCCOSH,   /**< Used in numpy.arccosh() implementation  */
@@ -104,7 +105,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_PROD,      /**< Used in numpy.prod() implementation  */
     DPNP_FN_UNIFORM,   /**< Used in numpy.random.uniform() implementation  */
     DPNP_FN_RADIANS,   /**< Used in numpy.radians() implementation  */
-    DPNP_FN_RANDOM,    /**< Used in numpy.random.random() implementation  */
+    DPNP_FN_REMAINDER, /**< Used in numpy.remainder() implementation  */
     DPNP_FN_RECIP,     /**< Used in numpy.recip() implementation  */
     DPNP_FN_SIGN,      /**< Used in numpy.sign() implementation  */
     DPNP_FN_SIN,       /**< Used in numpy.sin() implementation  */
@@ -112,12 +113,14 @@ enum class DPNPFuncName : size_t
     DPNP_FN_SORT,      /**< Used in numpy.sort() implementation  */
     DPNP_FN_SQRT,      /**< Used in numpy.sqrt() implementation  */
     DPNP_FN_SQUARE,    /**< Used in numpy.square() implementation  */
+    DPNP_FN_STD,       /**< Used in numpy.std() implementation  */
     DPNP_FN_SUBTRACT,  /**< Used in numpy.subtract() implementation  */
     DPNP_FN_SUM,       /**< Used in numpy.sum() implementation  */
     DPNP_FN_TAN,       /**< Used in numpy.tan() implementation  */
     DPNP_FN_TANH,      /**< Used in numpy.tanh() implementation  */
     DPNP_FN_TRANSPOSE, /**< Used in numpy.transpose() implementation  */
     DPNP_FN_TRUNC,     /**< Used in numpy.trunc() implementation  */
+    DPNP_FN_VAR,       /**< Used in numpy.var() implementation  */
     DPNP_FN_LAST       /**< The latest element of the enumeration */
 };
 

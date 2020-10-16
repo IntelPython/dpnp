@@ -518,6 +518,15 @@ cdef class dparray:
         """
         return repeat(self, *args, **kwds)
 
+    def std(self, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
+        """ Returns the variance of the array elements, along given axis.
+
+        .. seealso::
+           :func:`dpnp.var` for full documentation,
+
+        """
+        return std(self, axis, dtype, out, ddof, keepdims)
+
     def transpose(self, *axes):
         """ Returns a view of the array with axes permuted.
 
@@ -527,6 +536,15 @@ cdef class dparray:
 
         """
         return transpose(self, axes)
+
+    def var(self, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
+        """ Returns the standard deviation of the array elements along given axis.
+
+        .. seealso::
+           :func:`dpnp.std` for full documentation,
+
+        """
+        return var(self, axis, dtype, out, ddof, keepdims)
 
     def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
         """ Return our function pointer regusted by `ufunc` parameter

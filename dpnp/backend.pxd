@@ -31,6 +31,7 @@ from dpnp.dparray cimport dparray, dparray_shape_type
 
 cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
     cdef enum DPNPFuncName "DPNPFuncName":
+        DPNP_FN_ABSOLUTE
         DPNP_FN_ADD
         DPNP_FN_ARCCOS
         DPNP_FN_ARCCOSH
@@ -75,7 +76,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_PROD
         DPNP_FN_UNIFORM
         DPNP_FN_RADIANS
-        DPNP_FN_RANDOM
+        DPNP_FN_REMAINDER
         DPNP_FN_RECIP
         DPNP_FN_SIGN
         DPNP_FN_SIN
@@ -83,12 +84,14 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_SORT
         DPNP_FN_SQRT
         DPNP_FN_SQUARE
+        DPNP_FN_STD
         DPNP_FN_SUBTRACT
         DPNP_FN_SUM
         DPNP_FN_TAN
         DPNP_FN_TANH
         DPNP_FN_TRANSPOSE
         DPNP_FN_TRUNC
+        DPNP_FN_VAR
 
 cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
     cdef enum DPNPFuncType "DPNPFuncType":
@@ -131,7 +134,6 @@ cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shap
 cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, dparray_shape_type result_shape)
 
 
-cpdef dparray dpnp_remainder(dparray array1, int scalar)
 cpdef dparray dpnp_astype(dparray array1, dtype_target)
 
 
@@ -186,6 +188,7 @@ cpdef dparray dpnp_minimum(dparray array1, dparray array2)
 cpdef dparray dpnp_multiply(dparray array1, dparray array2)
 cpdef dparray dpnp_negative(dparray array1)
 cpdef dparray dpnp_power(dparray array1, dparray array2)
+cpdef dparray dpnp_remainder(dparray array1, dparray array2)
 cpdef dparray dpnp_sin(dparray array1)
 cpdef dparray dpnp_subtract(dparray array1, dparray array2)
 

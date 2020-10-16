@@ -27,8 +27,6 @@
 #include <iostream>
 #include <vector>
 
-#include <mkl_sycl.hpp>
-
 #include <backend_iface.hpp>
 #include "backend_utils.hpp"
 #include "queue_sycl.hpp"
@@ -38,6 +36,11 @@ namespace mkl_rng = oneapi::mkl::rng;
 template <typename _DataType>
 void mkl_rng_gaussian(void* result, size_t size)
 {
+    if (!size)
+    {
+        return;
+    }
+
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
     // TODO:
@@ -50,22 +53,20 @@ void mkl_rng_gaussian(void* result, size_t size)
     const _DataType stddev = _DataType(1.0);
 
     mkl_rng::gaussian<_DataType> distribution(mean, stddev);
-    try
-    {
-        // perform generation
-        mkl_rng::generate(distribution, engine, size, result1);
-        DPNP_QUEUE.wait_and_throw();
-    }
-    catch (cl::sycl::exception const& e)
-    {
-        std::cerr << "Caught synchronous SYCL exception during mkl_rng_gaussian():\n"
-                  << e.what() << "\nOpenCL status: " << e.get_cl_code() << std::endl;
-    }
+    // perform generation
+    mkl_rng::generate(distribution, engine, size, result1);
+
+    DPNP_QUEUE.wait();
 }
 
 template <typename _DataType>
 void mkl_rng_uniform(void* result, long low, long high, size_t size)
 {
+    if (!size)
+    {
+        return;
+    }
+
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
     // TODO:
@@ -80,17 +81,10 @@ void mkl_rng_uniform(void* result, long low, long high, size_t size)
     const _DataType b = (_DataType(high));
 
     mkl_rng::uniform<_DataType> distribution(a, b);
-    try
-    {
-        // perform generation
-        mkl_rng::generate(distribution, engine, size, result1);
-        DPNP_QUEUE.wait_and_throw();
-    }
-    catch (cl::sycl::exception const& e)
-    {
-        std::cerr << "Caught synchronous SYCL exception during mkl_rng_uniform_mt19937():\n"
-                  << e.what() << "\nOpenCL status: " << e.get_cl_code() << std::endl;
-    }
+    // perform generation
+    mkl_rng::generate(distribution, engine, size, result1);
+
+    DPNP_QUEUE.wait();
 }
 
 template void mkl_rng_gaussian<double>(void* result, size_t size);

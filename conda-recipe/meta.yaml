@@ -1,4 +1,4 @@
-{% set version = "0.0.1" %}
+{% set version = "0.3.0" %}
 {% set buildnumber = 0 %}
 
 package:
@@ -14,22 +14,44 @@ requirements:
       - setuptools
       - numpy-devel >=1.18
       - cython
+      - dpctl >=0.3.7
+      - mkl-devel >=2021.1b10
     run:
       - python
+      - dpctl >=0.3.7
+      - dpcpp_cpp_rt >=2021.1b10
+      - mkl >=2021.1b10
 
 build:
     number: {{buildnumber}}
     include_recipe: False
     script_env:
       - ONEAPI_ROOT
+      - DPCPPROOT
+      - MKLROOT
+      - TBBROOT
 
 test:
     requires:
       - pytest
+      - setuptools
+    source_files:
+        - examples
+        - tests
     commands:
-      - source ${ONEAPI_ROOT}/compiler/latest/env/vars.sh && python -c "import dpnp"
+      - python -c "import dpnp"
+      - pytest
 
 about:
-    license: ISSL
+    home: https://github.com/IntelPython/dpnp
+    license: BSD-2-Clause
     license_file: LICENSE.txt
-    summary: NumPy-like API accelerated with SYCL
+    description: |
+        <strong>LEGAL NOTICE: Use of this software package is subject to the
+        software license agreement (as set forth above, in the license section of
+        the installed Conda package and/or the README file) and all notices,
+        disclaimers or license terms for third party or open source software
+        included in or with the software.</strong>
+        <br/><br/>
+        EULA: <a href="https://opensource.org/licenses/BSD-2-Clause" target="_blank">BSD-2-Clause</a>
+        <br/><br/>

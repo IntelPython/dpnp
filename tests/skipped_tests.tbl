@@ -1,6 +1,41 @@
-tests/test_linalg.py::test_eig_arange[16-float32]
-tests/test_linalg.py::test_eig_arange[300-float32]
+tests/test_dot.py::test_dot_arange[float32]
+tests/test_linalg.py::test_eig_arange[2-float64]
+tests/test_linalg.py::test_eig_arange[2-float32]
+tests/test_linalg.py::test_eig_arange[2-int64]
+tests/test_linalg.py::test_eig_arange[2-int32]
+tests/test_linalg.py::test_eig_arange[4-float64]
+tests/test_linalg.py::test_eig_arange[4-float32]
+tests/test_linalg.py::test_eig_arange[4-int64]
+tests/test_linalg.py::test_eig_arange[4-int32]
+tests/test_linalg.py::test_eig_arange[8-float64]
 tests/test_linalg.py::test_eig_arange[8-float32]
+tests/test_linalg.py::test_eig_arange[8-int64]
+tests/test_linalg.py::test_eig_arange[8-int32]
+tests/test_linalg.py::test_eig_arange[16-float64]
+tests/test_linalg.py::test_eig_arange[16-float32]
+tests/test_linalg.py::test_eig_arange[16-int64]
+tests/test_linalg.py::test_eig_arange[16-int32]
+tests/test_linalg.py::test_eig_arange[300-float64]
+tests/test_linalg.py::test_eig_arange[300-float32]
+tests/test_linalg.py::test_eig_arange[300-int64]
+tests/test_linalg.py::test_eig_arange[300-int32]
+tests/test_random.py::test_random_input_size[rand]
+tests/test_random.py::test_random_input_size[randn]
+tests/test_random.py::test_random_input_shape[random]
+tests/test_random.py::test_random_input_shape[random_sample]
+tests/test_random.py::test_random_input_shape[randf]
+tests/test_random.py::test_random_input_shape[sample]
+tests/test_random.py::test_random_check_otput[random]
+tests/test_random.py::test_random_check_otput[random_sample]
+tests/test_random.py::test_random_check_otput[randf]
+tests/test_random.py::test_random_check_otput[sample]
+tests/test_random.py::test_random_check_otput[rand]
+tests/test_random.py::test_randn_normal_distribution
+tests/test_random.py::test_radnom_seed[random]
+tests/test_random.py::test_radnom_seed[random_sample]
+tests/test_random.py::test_radnom_seed[randf]
+tests/test_random.py::test_radnom_seed[sample]
+tests/test_random.py::test_radnom_seed[rand]
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_and
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_or
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_xor
@@ -346,53 +381,37 @@ tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_5_{reps
 tests/third_party/cupy/manipulation_tests/test_transpose.py::TestTranspose::test_moveaxis_invalid5_2
 tests/third_party/cupy/manipulation_tests/test_transpose.py::TestTranspose::test_moveaxis_invalid5_3
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1079_{arg1=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), arg2=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1083_{arg1=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), arg2=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), dtype=float64, name='remainder', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1085_{arg1=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), arg2=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), dtype=float64, name='mod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1087_{arg1=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), arg2=array([-3., -2., -1.,  1.,  2.,  3.]), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1091_{arg1=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), arg2=array([-3., -2., -1.,  1.,  2.,  3.]), dtype=float64, name='remainder', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1093_{arg1=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), arg2=array([-3., -2., -1.,  1.,  2.,  3.]), dtype=float64, name='mod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1095_{arg1=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), arg2=array([-3, -2, -1,  1,  2,  3], dtype=int32), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1099_{arg1=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), arg2=array([-3, -2, -1,  1,  2,  3], dtype=int32), dtype=float64, name='remainder', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1101_{arg1=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), arg2=array([-3, -2, -1,  1,  2,  3], dtype=int32), dtype=float64, name='mod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1103_{arg1=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), arg2=array([-3, -2, -1,  1,  2,  3]), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1107_{arg1=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), arg2=array([-3, -2, -1,  1,  2,  3]), dtype=float64, name='remainder', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1109_{arg1=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), arg2=array([-3, -2, -1,  1,  2,  3]), dtype=float64, name='mod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1159_{arg1=array([-3., -2., -1.,  1.,  2.,  3.]), arg2=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1163_{arg1=array([-3., -2., -1.,  1.,  2.,  3.]), arg2=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), dtype=float64, name='remainder', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1165_{arg1=array([-3., -2., -1.,  1.,  2.,  3.]), arg2=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), dtype=float64, name='mod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1167_{arg1=array([-3., -2., -1.,  1.,  2.,  3.]), arg2=array([-3., -2., -1.,  1.,  2.,  3.]), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1171_{arg1=array([-3., -2., -1.,  1.,  2.,  3.]), arg2=array([-3., -2., -1.,  1.,  2.,  3.]), dtype=float64, name='remainder', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1173_{arg1=array([-3., -2., -1.,  1.,  2.,  3.]), arg2=array([-3., -2., -1.,  1.,  2.,  3.]), dtype=float64, name='mod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1175_{arg1=array([-3., -2., -1.,  1.,  2.,  3.]), arg2=array([-3, -2, -1,  1,  2,  3], dtype=int32), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1179_{arg1=array([-3., -2., -1.,  1.,  2.,  3.]), arg2=array([-3, -2, -1,  1,  2,  3], dtype=int32), dtype=float64, name='remainder', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1181_{arg1=array([-3., -2., -1.,  1.,  2.,  3.]), arg2=array([-3, -2, -1,  1,  2,  3], dtype=int32), dtype=float64, name='mod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1183_{arg1=array([-3., -2., -1.,  1.,  2.,  3.]), arg2=array([-3, -2, -1,  1,  2,  3]), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1187_{arg1=array([-3., -2., -1.,  1.,  2.,  3.]), arg2=array([-3, -2, -1,  1,  2,  3]), dtype=float64, name='remainder', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1189_{arg1=array([-3., -2., -1.,  1.,  2.,  3.]), arg2=array([-3, -2, -1,  1,  2,  3]), dtype=float64, name='mod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1239_{arg1=array([-3, -2, -1,  1,  2,  3], dtype=int32), arg2=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1243_{arg1=array([-3, -2, -1,  1,  2,  3], dtype=int32), arg2=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), dtype=float64, name='remainder', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1245_{arg1=array([-3, -2, -1,  1,  2,  3], dtype=int32), arg2=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), dtype=float64, name='mod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1247_{arg1=array([-3, -2, -1,  1,  2,  3], dtype=int32), arg2=array([-3., -2., -1.,  1.,  2.,  3.]), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1251_{arg1=array([-3, -2, -1,  1,  2,  3], dtype=int32), arg2=array([-3., -2., -1.,  1.,  2.,  3.]), dtype=float64, name='remainder', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1253_{arg1=array([-3, -2, -1,  1,  2,  3], dtype=int32), arg2=array([-3., -2., -1.,  1.,  2.,  3.]), dtype=float64, name='mod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1255_{arg1=array([-3, -2, -1,  1,  2,  3], dtype=int32), arg2=array([-3, -2, -1,  1,  2,  3], dtype=int32), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1259_{arg1=array([-3, -2, -1,  1,  2,  3], dtype=int32), arg2=array([-3, -2, -1,  1,  2,  3], dtype=int32), dtype=float64, name='remainder', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1261_{arg1=array([-3, -2, -1,  1,  2,  3], dtype=int32), arg2=array([-3, -2, -1,  1,  2,  3], dtype=int32), dtype=float64, name='mod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1263_{arg1=array([-3, -2, -1,  1,  2,  3], dtype=int32), arg2=array([-3, -2, -1,  1,  2,  3]), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1267_{arg1=array([-3, -2, -1,  1,  2,  3], dtype=int32), arg2=array([-3, -2, -1,  1,  2,  3]), dtype=float64, name='remainder', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1269_{arg1=array([-3, -2, -1,  1,  2,  3], dtype=int32), arg2=array([-3, -2, -1,  1,  2,  3]), dtype=float64, name='mod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_129_{arg1=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), arg2=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), dtype=float64, name='power', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1319_{arg1=array([-3, -2, -1,  1,  2,  3]), arg2=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1323_{arg1=array([-3, -2, -1,  1,  2,  3]), arg2=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), dtype=float64, name='remainder', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1325_{arg1=array([-3, -2, -1,  1,  2,  3]), arg2=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), dtype=float64, name='mod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1327_{arg1=array([-3, -2, -1,  1,  2,  3]), arg2=array([-3., -2., -1.,  1.,  2.,  3.]), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1331_{arg1=array([-3, -2, -1,  1,  2,  3]), arg2=array([-3., -2., -1.,  1.,  2.,  3.]), dtype=float64, name='remainder', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1333_{arg1=array([-3, -2, -1,  1,  2,  3]), arg2=array([-3., -2., -1.,  1.,  2.,  3.]), dtype=float64, name='mod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1335_{arg1=array([-3, -2, -1,  1,  2,  3]), arg2=array([-3, -2, -1,  1,  2,  3], dtype=int32), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1339_{arg1=array([-3, -2, -1,  1,  2,  3]), arg2=array([-3, -2, -1,  1,  2,  3], dtype=int32), dtype=float64, name='remainder', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1341_{arg1=array([-3, -2, -1,  1,  2,  3]), arg2=array([-3, -2, -1,  1,  2,  3], dtype=int32), dtype=float64, name='mod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1343_{arg1=array([-3, -2, -1,  1,  2,  3]), arg2=array([-3, -2, -1,  1,  2,  3]), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1347_{arg1=array([-3, -2, -1,  1,  2,  3]), arg2=array([-3, -2, -1,  1,  2,  3]), dtype=float64, name='remainder', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1349_{arg1=array([-3, -2, -1,  1,  2,  3]), arg2=array([-3, -2, -1,  1,  2,  3]), dtype=float64, name='mod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_135_{arg1=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), arg2=array([-3., -2., -1.,  1.,  2.,  3.]), dtype=float64, name='power', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_159_{arg1=array([-3., -2., -1.,  1.,  2.,  3.]), arg2=array([-3., -2., -1.,  1.,  2.,  3.], dtype=float32), dtype=float64, name='power', use_dtype=False}::test_binary
@@ -492,6 +511,7 @@ tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_clip_min_max_none
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_clip_min_none
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_external_clip1
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_external_clip2
+tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_fmin_nan
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_maximum_nan
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_minimum_nan
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num
@@ -1170,25 +1190,9 @@ tests/third_party/cupy/statistics_tests/test_meanvar.py::TestAverage::test_avera
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestAverage::test_average_axis_weights
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestAverage::test_average_weights
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestAverage::test_returned
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_std_all
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_std_all_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_std_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_std_axis_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_var_all
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_var_all_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_var_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_var_axis_ddof
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_mean_all_complex_dtype
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_mean_all_float64_dtype
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_mean_all_int64_dtype
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_std_all
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_std_all_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_std_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_std_axis_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_all
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_all_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_axis_ddof
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_0_{axis=(0, 1), keepdims=True, shape=(3, 4, 5)}::test_median_axis_sequence
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_1_{axis=(0, 1), keepdims=False, shape=(3, 4, 5)}::test_median_axis_sequence
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_2_{axis=(0, -1), keepdims=True, shape=(3, 4, 5)}::test_median_axis_sequence

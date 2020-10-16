@@ -209,15 +209,6 @@ cpdef dpnp_queue_initialize():
     dpnp_queue_initialize_c(queue_type)
 
 
-cpdef dparray dpnp_remainder(dparray array1, int scalar):
-
-    cdef dparray result = dparray(array1.shape, dtype=array1.dtype)
-
-    for i in range(result.size):
-        result[i] = (array1[i] % scalar)
-
-    return result
-
 """
 Internal functions
 """

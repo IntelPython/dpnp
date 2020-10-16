@@ -56,33 +56,21 @@ __all__ = [
 ]
 
 
-def eig(in_array1):
+def eig(x1):
     """
     Compute the eigenvalues and right eigenvectors of a square array.
-    Parameters
-    ----------
-    a : (..., M, M) array
-        Matrices for which the eigenvalues and right eigenvectors will
-        be computed
-    Returns
-    -------
-    w : (..., M) array
-        The eigenvalues, each repeated according to its multiplicity.
-        The eigenvalues are not necessarily ordered. The resulting
-        array will be of complex type, unless the imaginary part is
-        zero in which case it will be cast to a real type. When `a`
-        is real the resulting eigenvalues will be real (0 imaginary
-        part) or occur in conjugate pairs
-    v : (..., M, M) array
-        The normalized (unit "length") eigenvectors, such that the
-        column ``v[:,i]`` is the eigenvector corresponding to the
-        eigenvalue ``w[i]``.
+
+    .. seealso:: :func:`numpy.linalg.eig`
+
     """
 
-    if (use_origin_backend()):
-        return numpy.linalg.eig(in_array1)
+    is_x1_dparray = isinstance(x1, dparray)
 
-    return dpnp_eig(in_array1)
+    if (not use_origin_backend(x1) and is_x1_dparray):
+        if (x1.size > 0):
+            return dpnp_eig(x1)
+
+    return call_origin(numpy.linalg.eig, x1)
 
 
 def matrix_power(input, count):

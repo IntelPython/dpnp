@@ -63,54 +63,28 @@ __all__ += [
 ]
 
 
+ctypedef void(*fptr_custom_elemwise_absolute_1in_1out_t)(void * , void * , size_t)
+
+
 cpdef dparray dpnp_absolute(dparray input):
-    cdef dparray_shape_type shape_input = input.shape
-    cdef long size_input = input.size
-    output_shape = dparray(len(shape_input), dtype=numpy.int64)
-    for id, shape_ in enumerate(shape_input):
-        output_shape[id] = shape_
-    cdef long prod = 1
-    for i in range(len(output_shape)):
-        if output_shape[i] != 0:
-            prod *= output_shape[i]
-    result_array = [None] * prod
-    input_shape_offsets = [None] * len(shape_input)
-    acc = 1
-    for i in range(len(shape_input)):
-        ind = len(shape_input) - 1 - i
-        input_shape_offsets[ind] = acc
-        acc *= shape_input[ind]
-    output_shape_offsets = [None] * len(shape_input)
-    acc = 1
-    for i in range(len(output_shape)):
-        ind = len(output_shape) - 1 - i
-        output_shape_offsets[ind] = acc
-        acc *= output_shape[ind]
-        result_offsets = input_shape_offsets[:]  # need copy. not a reference
+    cdef dparray_shape_type input_shape = input.shape
+    cdef size_t input_shape_size = input.ndim
 
-    for source_idx in range(size_input):
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
-        # reconstruct x,y,z from linear source_idx
-        xyz = []
-        remainder = source_idx
-        for i in input_shape_offsets:
-            quotient, remainder = divmod(remainder, i)
-            xyz.append(quotient)
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ABSOLUTE, param1_type, param1_type)
 
-        result_indexes = []
-        for idx, offset in enumerate(xyz):
-            result_indexes.append(offset)
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray result = dparray(input_shape, dtype=result_type)
 
-        result_offset = 0
-        for i, result_indexes_val in enumerate(result_indexes):
-            result_offset += (output_shape_offsets[i] * result_indexes_val)
+    cdef fptr_custom_elemwise_absolute_1in_1out_t func = <fptr_custom_elemwise_absolute_1in_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(input.get_data(), result.get_data(), input.size)
 
-        input_elem = input.item(source_idx)
-        result_array[result_offset] = input_elem if input_elem >= 0 else -1 * input_elem
-
-    dpnp_array = dpnp.array(result_array, dtype=input.dtype)
-    dpnp_result_array = dpnp_array.reshape(output_shape)
-    return dpnp_result_array
+    return result
 
 
 cpdef dparray dpnp_add(dparray x1, dparray x2):
@@ -196,6 +170,10 @@ cpdef dpnp_prod(dparray x1):
     return_type = numpy.dtype(numpy.int64) if (x1.dtype == numpy.int32) else x1.dtype
 
     return return_type.type(result[0])
+
+
+cpdef dparray dpnp_remainder(dparray x1, dparray x2):
+    return call_fptr_2in_1out(DPNP_FN_REMAINDER, x1, x2, x1.shape)
 
 
 cpdef dparray dpnp_sign(dparray x1):
