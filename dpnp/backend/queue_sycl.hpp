@@ -56,7 +56,7 @@ class backend_sycl
 #endif
     static mkl_rng::philox4x32x10* rng_engine; /**< RNG engine ptr. initialized in @ref backend_sycl_rng_engine_init */
 
-    static void destroy_queue()
+    static void destroy()
     {
         backend_sycl::destroy_rng_engine();
 #if defined(DPNP_LOCAL_QUEUE)
@@ -82,7 +82,7 @@ public:
 
     virtual ~backend_sycl()
     {
-        backend_sycl::destroy_queue();
+        backend_sycl::destroy();
     }
 
     /**

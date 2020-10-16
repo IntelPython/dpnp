@@ -84,7 +84,7 @@ void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
 
     if (queue)
     {
-        backend_sycl::destroy_queue();
+        backend_sycl::destroy();
     }
 
     cl::sycl::device dev;
