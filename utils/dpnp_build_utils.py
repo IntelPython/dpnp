@@ -26,6 +26,7 @@
 # *****************************************************************************
 
 import os
+import sys
 
 
 IS_CONDA_BUILD = os.environ.get("CONDA_BUILD") == "1"
@@ -74,6 +75,57 @@ def find_library(var_name, rel_header_paths, rel_lib_paths,
         print(msg_template.format(var_name, include_find, libpath_find))
 
     return [include_find], [libpath_find]
+
+
+def _find_cmplr_in_dpcpp_root(verbose=False):
+    """
+    Find compiler in dpcpp root using $DPCPPROOT.
+
+    Parameters
+    ----------
+    verbose : bool
+        to print paths to include and library directories
+
+    Returns
+    -------
+    tuple(list(str), list(str))
+        path to include directory, path to library directory
+    """
+    rel_header_paths = rel_lib_paths = []
+
+    if 'linux' in sys.platform:
+        rel_include_path = os.path.join('linux', 'include')
+        rel_libdir_path = os.path.join('linux', 'lib')
+    elif sys.platform in ['win32', 'cygwin']:
+        rel_include_path = os.path.join('windows', 'include')
+        rel_libdir_path = os.path.join('windows', 'lib')
+    else:
+        rel_include_path, rel_libdir_path = 'include', 'lib'
+
+    return find_library("DPCPPROOT", rel_header_paths, rel_lib_paths,
+                        rel_include_path=rel_include_path, rel_libdir_path=rel_libdir_path, verbose=verbose)
+
+
+def find_cmplr(verbose=False):
+    """
+    Find compiler in environment.
+
+    Parameters
+    ----------
+    verbose : bool
+        to print paths to include and library directories
+
+    Returns
+    -------
+    tuple(list(str), list(str))
+        path to include directory, path to library directory
+    """
+    cmplr_include, cmplr_libpath = _find_cmplr_in_dpcpp_root(verbose=verbose)
+
+    if not cmplr_include or not cmplr_libpath:
+        raise EnvironmentError(f"Intel DPNP: Unable to find compiler. Please install Intel OneAPI environment")
+
+    return cmplr_include, cmplr_libpath
 
 
 def _find_mathlib_in_conda_root(verbose=False):
@@ -142,3 +194,54 @@ def find_mathlib(verbose=False):
         raise EnvironmentError("Intel DPNP: Unable to find math library")
 
     return mathlib_include, mathlib_path
+
+
+def _find_omp_in_dpcpp_root(verbose=False):
+    """
+    Find omp in dpcpp root using $DPCPPROOT.
+
+    Parameters
+    ----------
+    verbose : bool
+        to print paths to include and library directories
+
+    Returns
+    -------
+    tuple(list(str), list(str))
+        path to include directory, path to library directory
+    """
+    rel_header_paths = rel_lib_paths = []
+
+    if 'linux' in sys.platform:
+        rel_include_path = os.path.join('linux', 'compiler', 'include')
+        rel_libdir_path = os.path.join('linux', 'compiler', 'lib', 'intel64')
+    elif sys.platform in ['win32', 'cygwin']:
+        rel_include_path = os.path.join('windows', 'compiler', 'include')
+        rel_libdir_path = os.path.join('windows', 'compiler', 'lib', 'intel64_win')
+    else:
+        rel_include_path, rel_libdir_path = 'include', 'lib'
+
+    return find_library("DPCPPROOT", rel_header_paths, rel_lib_paths,
+                        rel_include_path=rel_include_path, rel_libdir_path=rel_libdir_path, verbose=verbose)
+
+
+def find_omp(verbose=False):
+    """
+    Find omp in environment.
+
+    Parameters
+    ----------
+    verbose : bool
+        to print paths to include and library directories
+
+    Returns
+    -------
+    tuple(list(str), list(str))
+        path to include directory, path to library directory
+    """
+    omp_include, omp_libpath = _find_omp_in_dpcpp_root(verbose=verbose)
+
+    if not omp_include or not omp_libpath:
+        raise EnvironmentError(f"Intel DPNP: Unable to find omp. Please install Intel OneAPI environment")
+
+    return omp_include, omp_libpath

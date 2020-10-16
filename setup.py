@@ -49,7 +49,7 @@ from Cython.Compiler import Options as cython_options
 from utils.command_style import source_style
 from utils.command_clean import source_clean
 from utils.command_build_clib import custom_build_clib
-from utils.dpnp_build_utils import find_mathlib
+from utils.dpnp_build_utils import find_cmplr, find_mathlib, find_omp
 
 
 """
@@ -218,18 +218,12 @@ elif IS_WIN:
 """
 Get the compiler environemnt
 """
-_cmplr_root = os.environ.get('DPCPPROOT', None)
-if _cmplr_root is None:
-    raise EnvironmentError("Please install Intel OneAPI environment. DPCPPROOT is empty")
+_, _cmplr_libpath = find_cmplr(verbose=True)
+_, _omp_libpath = find_omp(verbose=True)
 
 if IS_LIN:
-    _cmplr_libpath = [os.path.join(_cmplr_root, 'linux', 'lib')]
-    _omp_libpath = [os.path.join(_cmplr_root, 'linux', 'compiler', 'lib', 'intel64')]
     _cmplr_rpath = _cmplr_libpath
     _omp_rpath = _omp_libpath
-elif IS_WIN:
-    _cmplr_libpath = [os.path.join(_cmplr_root, 'windows', 'lib')]
-    _omp_libpath = [os.path.join(_cmplr_root, 'windows', 'compiler', 'lib', 'intel64_win')]
 
 
 """
