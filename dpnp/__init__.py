@@ -39,3 +39,7 @@ dpnp_queue_initialize()
 '''
 SYCL queue initialization
 '''
+dpnp_engine_initialize()
+'''
+Basic random number generator engine initialization.
+'''

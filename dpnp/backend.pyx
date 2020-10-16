@@ -46,6 +46,7 @@ __all__ = [
     "dpnp_arange",
     "dpnp_array",
     "dpnp_astype",
+    "dpnp_engine_initialize",
     "dpnp_init_val",
     "dpnp_matmul",
     "dpnp_queue_initialize",
@@ -113,6 +114,20 @@ cpdef dparray dpnp_astype(dparray array1, dtype_target):
         result[i] = array1[i]
 
     return result
+
+
+cpdef dpnp_engine_initialize():
+    """
+    Initialize basic random number generator engine.
+
+    """
+
+    cdef time_t seed_from_time
+
+    # TODO:
+    # choose seed number as is in numpy
+    seed_from_time = time(NULL)
+    dpnp_srand_c(seed_from_time)
 
 
 cpdef dparray dpnp_init_val(shape, dtype, value):
@@ -204,16 +219,11 @@ cpdef dpnp_queue_initialize():
     """
 
     cdef QueueOptions queue_type = CPU_SELECTOR
-    cdef time_t seed_from_time
 
     if (config.__DPNP_QUEUE_GPU__):
         queue_type = GPU_SELECTOR
 
     dpnp_queue_initialize_c(queue_type)
-    # TODO:
-    # choose seed number as is in numpy
-    seed_from_time = time(NULL)
-    dpnp_srand_c(seed_from_time)
 
 
 cpdef dparray dpnp_remainder(dparray array1, int scalar):

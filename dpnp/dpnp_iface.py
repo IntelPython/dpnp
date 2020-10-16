@@ -53,6 +53,7 @@ import collections
 __all__ = [
     "array_equal",
     "asnumpy",
+    "dpnp_engine_initialize",
     "dpnp_queue_initialize",
     "get_include",
     "matmul"
