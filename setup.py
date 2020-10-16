@@ -49,7 +49,7 @@ from Cython.Compiler import Options as cython_options
 from utils.command_style import source_style
 from utils.command_clean import source_clean
 from utils.command_build_clib import custom_build_clib
-from utils.dpnp_build_utils import find_cmplr, find_mathlib, find_omp, IS_LIN, IS_WIN
+from utils.dpnp_build_utils import find_cmplr, find_mathlib, find_omp
 
 
 """
@@ -96,6 +96,18 @@ Operating System :: Unix
 Operating System :: MacOS
 """
 
+IS_WIN = False
+IS_MAC = False
+IS_LIN = False
+
+if 'linux' in sys.platform:
+    IS_LIN = True
+elif sys.platform == 'darwin':
+    IS_MAC = True
+elif sys.platform in ['win32', 'cygwin']:
+    IS_WIN = True
+else:
+    raise EnvironmentError("Intel NumPy: " + sys.platform + " not supported")
 
 """
 Set compiler for the project

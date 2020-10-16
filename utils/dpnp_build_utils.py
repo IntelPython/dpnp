@@ -31,19 +31,6 @@ import sys
 
 IS_CONDA_BUILD = os.environ.get("CONDA_BUILD") == "1"
 
-IS_WIN = False
-IS_MAC = False
-IS_LIN = False
-
-if 'linux' in sys.platform:
-    IS_LIN = True
-elif sys.platform == 'darwin':
-    IS_MAC = True
-elif sys.platform in ['win32', 'cygwin']:
-    IS_WIN = True
-else:
-    raise EnvironmentError(f"Intel NumPy: {sys.platform} not supported")
-
 
 def find_library(var_name, rel_header_paths, rel_lib_paths,
                  rel_include_path="include", rel_libdir_path="lib", verbose=False):
@@ -106,10 +93,10 @@ def _find_cmplr_in_dpcpp_root(verbose=False):
     """
     rel_header_paths = rel_lib_paths = []
 
-    if IS_LIN:
+    if 'linux' in sys.platform:
         rel_include_path = os.path.join('linux', 'include')
         rel_libdir_path = os.path.join('linux', 'lib')
-    elif IS_WIN:
+    elif sys.platform in ['win32', 'cygwin']:
         rel_include_path = os.path.join('windows', 'include')
         rel_libdir_path = os.path.join('windows', 'lib')
     else:
@@ -225,10 +212,10 @@ def _find_omp_in_dpcpp_root(verbose=False):
     """
     rel_header_paths = rel_lib_paths = []
 
-    if IS_LIN:
+    if 'linux' in sys.platform:
         rel_include_path = os.path.join('linux', 'compiler', 'include')
         rel_libdir_path = os.path.join('linux', 'compiler', 'lib', 'intel64')
-    elif IS_WIN:
+    elif sys.platform in ['win32', 'cygwin']:
         rel_include_path = os.path.join('windows', 'compiler', 'include')
         rel_libdir_path = os.path.join('windows', 'compiler', 'lib', 'intel64_win')
     else:
