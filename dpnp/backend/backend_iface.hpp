@@ -311,7 +311,7 @@ INP_DLLEXPORT void custom_min_c(void* array, void* result, size_t* shape, size_t
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_min_axis_c(void* array1_in, void* result1, size_t* shape, size_t* res_shape, size_t ndim, size_t res_ndim, size_t* axis, size_t naxis, size_t ind);
+INP_DLLEXPORT void custom_min_axis_c(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API

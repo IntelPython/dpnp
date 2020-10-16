@@ -290,15 +290,33 @@ template <typename _DataType>
 void custom_min_axis_c(void* array1_in,
                        void* result1,
                        size_t* shape,
-                       size_t* res_shape,
                        size_t ndim,
-                       size_t res_ndim,
                        size_t* axis,
-                       size_t naxis,
-                       size_t ind)
+                       size_t naxis)
 {
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    size_t res_ndim = ndim - naxis;
+    size_t res_shape[res_ndim];
+    int ind = 0;
+    for (size_t i = 0; i < ndim; i++)
+    {
+        bool found = false;
+        for (size_t j = 0; j < naxis; j++)
+        {
+            if (axis[j] == i)
+            {
+                found = true;
+                break;
+            }
+        }
+        if (!found)
+        {
+            res_shape[ind] = shape[i];
+            ind++;
+        }
+    }
 
     size_t size_input = 1;
     for (size_t i = 0; i < ndim; ++i)
@@ -428,36 +446,24 @@ void custom_min_axis_c(void* array1_in,
 template void custom_min_axis_c<double>(void* array1_in,
                                         void* result1,
                                         size_t* shape,
-                                        size_t* res_shape,
                                         size_t ndim,
-                                        size_t res_ndim,
                                         size_t* axis,
-                                        size_t naxis,
-                                        size_t ind);
+                                        size_t naxis);
 template void custom_min_axis_c<float>(void* array1_in,
                                        void* result1,
                                        size_t* shape,
-                                       size_t* res_shape,
                                        size_t ndim,
-                                       size_t res_ndim,
                                        size_t* axis,
-                                       size_t naxis,
-                                       size_t ind);
+                                       size_t naxis);
 template void custom_min_axis_c<long>(void* array1_in,
                                       void* result1,
                                       size_t* shape,
-                                      size_t* res_shape,
                                       size_t ndim,
-                                      size_t res_ndim,
                                       size_t* axis,
-                                      size_t naxis,
-                                      size_t ind);
+                                      size_t naxis);
 template void custom_min_axis_c<int>(void* array1_in,
                                      void* result1,
                                      size_t* shape,
-                                     size_t* res_shape,
                                      size_t ndim,
-                                     size_t res_ndim,
                                      size_t* axis,
-                                     size_t naxis,
-                                     size_t ind);
+                                     size_t naxis);

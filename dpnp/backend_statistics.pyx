@@ -58,10 +58,6 @@ ctypedef void(*fptr_custom_cov_1in_1out_t)(void * , void * , size_t, size_t)
 ctypedef void(*custom_statistic_1in_1out_func_ptr_t)(void * , void * , size_t * , size_t, size_t * , size_t)
 
 
-# C function pointer to the C library template functions
-ctypedef void(*custom_statistic_1in_1out_func_axis_ptr_t)(void * , void * , size_t * , size_t * , size_t, size_t, size_t * , size_t , size_t)
-
-
 cpdef dpnp_average(dparray x1):
     array_sum = dpnp_sum(x1)
 
@@ -364,7 +360,7 @@ cpdef dparray _dpnp_min_(dparray input, axis, output_shape):
     result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     cdef dparray result = dparray(output_shape, dtype=result_type)
 
-    cdef custom_statistic_1in_1out_func_axis_ptr_t func = <custom_statistic_1in_1out_func_axis_ptr_t > kernel_data.ptr
+    cdef custom_statistic_1in_1out_func_ptr_t func = <custom_statistic_1in_1out_func_ptr_t > kernel_data.ptr
 
     cdef dparray_shape_type axis_
     axis_.reserve(len(axis))
@@ -375,7 +371,7 @@ cpdef dparray _dpnp_min_(dparray input, axis, output_shape):
     cdef Py_ssize_t axis_size = len(axis)
     cdef Py_ssize_t ind = len(output_shape)
 
-    func(input.get_data(), result.get_data(), < size_t * > input._dparray_shape.data(), < size_t * > result._dparray_shape.data(), input.ndim, result.ndim, < size_t * > axis_.data(), axis_size, ind)
+    func(input.get_data(), result.get_data(), < size_t * > input._dparray_shape.data(), input.ndim, < size_t * > axis_.data(), axis_size)
 
     dpnp_array = dpnp.array(result, dtype=input.dtype)
     dpnp_result_array = dpnp_array.reshape(output_shape)
