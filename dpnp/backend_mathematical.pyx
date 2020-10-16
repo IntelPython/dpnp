@@ -172,6 +172,10 @@ cpdef dpnp_prod(dparray x1):
     return return_type.type(result[0])
 
 
+cpdef dparray dpnp_remainder(dparray x1, dparray x2):
+    return call_fptr_2in_1out(DPNP_FN_REMAINDER, x1, x2, x1.shape)
+
+
 cpdef dparray dpnp_sign(dparray x1):
     return call_fptr_1in_1out(DPNP_FN_SIGN, x1, x1.shape)
 
