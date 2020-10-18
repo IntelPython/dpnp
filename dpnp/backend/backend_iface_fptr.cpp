@@ -134,6 +134,7 @@ static func_map_t func_map_init()
 {
     func_map_t fmap;
 
+    func_map_init_bitwise(fmap);
     func_map_init_elemwise(fmap);
     func_map_init_linalg(fmap);
     func_map_init_manipulation(fmap);
