@@ -110,6 +110,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_PROD,        /**< Used in numpy.prod() implementation  */
     DPNP_FN_UNIFORM,     /**< Used in numpy.random.uniform() implementation  */
     DPNP_FN_RADIANS,     /**< Used in numpy.radians() implementation  */
+    DPNP_FN_REMAINDER,   /**< Used in numpy.remainder() implementation  */
     DPNP_FN_RECIP,       /**< Used in numpy.recip() implementation  */
     DPNP_FN_RIGHT_SHIFT, /**< Used in numpy.right_shift() implementation  */
     DPNP_FN_SIGN,        /**< Used in numpy.sign() implementation  */
