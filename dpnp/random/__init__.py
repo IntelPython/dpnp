@@ -26,6 +26,7 @@
 
 from dpnp.random._random import *
 
+
 __all__ = [
     'rand',
     'randf',
@@ -34,6 +35,7 @@ __all__ = [
     'random',
     'random_integers',
     'random_sample',
+    'seed',
     'sample',
     'uniform'
 ]

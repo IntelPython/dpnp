@@ -39,6 +39,8 @@ cimport cpython
 cimport dpnp.dpnp_utils as utils
 cimport numpy
 
+from libc.time cimport time, time_t
+
 
 __all__ = [
     "dpnp_arange",
@@ -200,7 +202,7 @@ cpdef dpnp_queue_initialize():
     It takes visible time and needs to be done in the module loading procedure
 
     """
-
+    cdef time_t seed_from_time
     cdef QueueOptions queue_type = CPU_SELECTOR
 
     if (config.__DPNP_QUEUE_GPU__):
@@ -208,15 +210,11 @@ cpdef dpnp_queue_initialize():
 
     dpnp_queue_initialize_c(queue_type)
 
+    # TODO:
+    # choose seed number as is in numpy
+    seed_from_time = time(NULL)
+    dpnp_srand_c(seed_from_time)
 
-cpdef dparray dpnp_remainder(dparray array1, int scalar):
-
-    cdef dparray result = dparray(array1.shape, dtype=array1.dtype)
-
-    for i in range(result.size):
-        result[i] = (array1[i] % scalar)
-
-    return result
 
 """
 Internal functions

@@ -41,6 +41,7 @@ cimport numpy
 
 __all__ = [
     "dpnp_eig",
+    "dpnp_matrix_rank"
 ]
 
 
@@ -62,3 +63,23 @@ cpdef tuple dpnp_eig(dparray x1):
     func(x1.get_data(), res_val.get_data(), res_vec.get_data(), size)
 
     return (res_val, res_vec)
+
+
+cpdef dparray dpnp_matrix_rank(dparray input):
+    cdef dparray_shape_type shape_input = input.shape
+
+    cdef size_t elems = 1
+    cdef dparray result = dparray((1,), dtype=input.dtype)
+    cdef long rank_val = 0
+    if input.ndim > 1:
+        elems = min(shape_input)
+    for i in range(elems):
+        ind_ = []
+        for j in range(input.ndim):
+            ind_.append(i)
+        ind = tuple(ind_)
+        rank_val += input[ind]
+
+    result[0] = rank_val
+
+    return result

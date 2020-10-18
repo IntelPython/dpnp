@@ -502,4 +502,13 @@ INP_DLLEXPORT void mkl_rng_gaussian(void* result, size_t size);
 template <typename _DataType>
 INP_DLLEXPORT void mkl_rng_uniform(void* result, long low, long high, size_t size);
 
+/**
+ * @ingroup BACKEND_API
+ * @brief initializer for basic random number generator.
+ *
+ * @param [in]  seed    The seed value.
+ *
+ */
+INP_DLLEXPORT void dpnp_srand_c(size_t seed = 1);
+
 #endif // BACKEND_IFACE_H
