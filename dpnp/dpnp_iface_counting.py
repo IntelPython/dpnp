@@ -116,4 +116,4 @@ def count_nonzero(in_array1, axis=None, *, keepdims=False):
 
         return result
 
-    return numpy.count_nonzero(in_array1, axis, keepdims)
+    return numpy.count_nonzero(in_array1, axis, keepdims=keepdims)
