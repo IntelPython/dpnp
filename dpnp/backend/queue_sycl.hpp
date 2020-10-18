@@ -28,7 +28,7 @@
 #define QUEUE_SYCL_H
 
 #include <CL/sycl.hpp>
-#include <oneapi/mkl.hpp>
+#include <mkl_sycl.hpp>
 
 #include <ctime>
 
