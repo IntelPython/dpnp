@@ -150,6 +150,7 @@ static func_map_t func_map_init()
     fmap[DPNPFuncName::DPNP_FN_ABSOLUTE][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_elemwise_absolute_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)mkl_rng_gaussian<double>};
+    fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_FLT][eft_FLT] = {eft_DBL, (void*)mkl_rng_gaussian<float>};
 
     fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_INT][eft_INT] = {eft_INT, (void*)mkl_rng_uniform<int>};
     fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_FLT][eft_FLT] = {eft_FLT, (void*)mkl_rng_uniform<float>};
