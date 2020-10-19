@@ -24,6 +24,7 @@
 //*****************************************************************************
 
 #include <backend_iface.hpp>
+#include "backend_fptr.hpp"
 #include "backend_utils.hpp"
 #include "queue_sycl.hpp"
 
@@ -65,9 +66,14 @@ void mkl_rng_uniform(void* result, long low, long high, size_t size)
 
 }
 
-template void mkl_rng_gaussian<double>(void* result, double mean, double stddev, size_t size);
-template void mkl_rng_gaussian<float>(void* result, float mean, float stddev, size_t size);
+void func_map_init_random(func_map_t& fmap)
+{
+    fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)mkl_rng_gaussian<double>};
+    fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_FLT][eft_FLT] = {eft_DBL, (void*)mkl_rng_gaussian<float>};
 
-template void mkl_rng_uniform<int>(void* result, long low, long high, size_t size);
-template void mkl_rng_uniform<float>(void* result, long low, long high, size_t size);
-template void mkl_rng_uniform<double>(void* result, long low, long high, size_t size);
+    fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_INT][eft_INT] = {eft_INT, (void*)mkl_rng_uniform<int>};
+    fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_FLT][eft_FLT] = {eft_FLT, (void*)mkl_rng_uniform<float>};
+    fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_DBL][eft_DBL] = {eft_DBL, (void*)mkl_rng_uniform<double>};
+
+    return;
+}
