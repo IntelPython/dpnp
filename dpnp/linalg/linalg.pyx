@@ -45,6 +45,10 @@ __all__ = [
 ]
 
 
+# C function pointer to the C library template functions
+ctypedef void(*custom_linalg_1in_1out_func_ptr_t)(void * , void * , size_t * , size_t)
+
+
 cpdef tuple dpnp_eig(dparray x1):
     cdef dparray_shape_type x1_shape = x1.shape
 
@@ -66,20 +70,15 @@ cpdef tuple dpnp_eig(dparray x1):
 
 
 cpdef dparray dpnp_matrix_rank(dparray input):
-    cdef dparray_shape_type shape_input = input.shape
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
-    cdef size_t elems = 1
-    cdef dparray result = dparray((1,), dtype=input.dtype)
-    cdef long rank_val = 0
-    if input.ndim > 1:
-        elems = min(shape_input)
-    for i in range(elems):
-        ind_ = []
-        for j in range(input.ndim):
-            ind_.append(i)
-        ind = tuple(ind_)
-        rank_val += input[ind]
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MATRIX_RANK, param1_type, param1_type)
 
-    result[0] = rank_val
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    cdef dparray result = dparray((1,), dtype=result_type)
+
+    cdef custom_linalg_1in_1out_func_ptr_t func = <custom_linalg_1in_1out_func_ptr_t > kernel_data.ptr
+
+    func(input.get_data(), result.get_data(), < size_t * > input._dparray_shape.data(), input.ndim)
 
     return result

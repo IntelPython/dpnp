@@ -137,7 +137,9 @@ static func_map_t func_map_init()
     func_map_init_bitwise(fmap);
     func_map_init_elemwise(fmap);
     func_map_init_linalg(fmap);
+    func_map_init_linalg_func(fmap);
     func_map_init_manipulation(fmap);
+    func_map_init_mathematical(fmap);
     func_map_init_reduction(fmap);
     func_map_init_searching(fmap);
     func_map_init_sorting(fmap);

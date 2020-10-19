@@ -231,6 +231,22 @@ INP_DLLEXPORT void custom_cov_c(void* array1_in, void* result1, size_t nrows, si
 
 /**
  * @ingroup BACKEND_API
+ * @brief MKL implementation of matrix_rank function
+ *
+ * @param [in]  array   Input array with data.
+ *
+ * @param [out] result  Output array.
+ *
+ * @param [in]  shape   Shape of input array.
+ *
+ * @param [in]  ndim    Number of elements in shape.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t ndim);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of max function
  *
  * @param [in]  array   Input array with data.
@@ -468,6 +484,22 @@ INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
     INP_DLLEXPORT void __name__(void* array1, void* array2, void* result1, size_t size);
 
 #include <custom_2arg_3type_tbl.hpp>
+
+/**
+ * @ingroup BACKEND_API
+ * @brief remainder function.
+ *
+ * @param [in]  array1_in    Input array 1.
+ *
+ * @param [in]  array2_in    Input array 2.
+ *
+ * @param [out] result1      Output array.
+ *
+ * @param [in]  size         Number of elements in input arrays.
+ *
+ */
+template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
+INP_DLLEXPORT void dpnp_remainder_c(void* array1_in, void* array2_in, void* result1, size_t size);
 
 /**
  * @ingroup BACKEND_API
