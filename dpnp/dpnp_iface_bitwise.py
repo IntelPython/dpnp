@@ -80,8 +80,7 @@ def bitwise_and(x1, x2, **kwargs):
     ogical_and, bitwise_or, bitwise_xor, binary_repr
 
     """
-    supported_dtypes = [numpy.int64, numpy.int32]
-    return check_nd_call(numpy.bitwise_and, dpnp_bitwise_and, supported_dtypes, x1, x2,
+    return check_nd_call(numpy.bitwise_and, dpnp_bitwise_and, x1, x2,
                          check_sizes=True, check_shapes=True, check_dtypes=True, **kwargs)
 
 
@@ -106,8 +105,7 @@ def bitwise_or(x1, x2, **kwargs):
     logical_or, bitwise_and, bitwise_xor, binary_repr
 
     """
-    supported_dtypes = [numpy.int64, numpy.int32]
-    return check_nd_call(numpy.bitwise_or, dpnp_bitwise_or, supported_dtypes, x1, x2,
+    return check_nd_call(numpy.bitwise_or, dpnp_bitwise_or, x1, x2,
                          check_sizes=True, check_shapes=True, check_dtypes=True, **kwargs)
 
 
@@ -132,8 +130,7 @@ def bitwise_xor(x1, x2, **kwargs):
     logical_xor, bitwise_and, bitwise_or, binary_repr
 
     """
-    supported_dtypes = [numpy.int64, numpy.int32]
-    return check_nd_call(numpy.bitwise_xor, dpnp_bitwise_xor, supported_dtypes, x1, x2,
+    return check_nd_call(numpy.bitwise_xor, dpnp_bitwise_xor, x1, x2,
                          check_sizes=True, check_shapes=True, check_dtypes=True, **kwargs)
 
 
@@ -158,8 +155,7 @@ def invert(x, **kwargs):
     bitwise_and, bitwise_or, bitwise_xor, logical_not, binary_repr
 
     """
-    supported_dtypes = [numpy.int64, numpy.int32]
-    return check_nd_call(numpy.invert, dpnp_invert, supported_dtypes, x, **kwargs)
+    return check_nd_call(numpy.invert, dpnp_invert, x, **kwargs)
 
 
 bitwise_not = invert  # bitwise_not is an alias for invert
@@ -188,8 +184,7 @@ def left_shift(x1, x2, **kwargs):
     right_shift, binary_repr
 
     """
-    supported_dtypes = [numpy.int64, numpy.int32]
-    return check_nd_call(numpy.left_shift, dpnp_left_shift, supported_dtypes, x1, x2,
+    return check_nd_call(numpy.left_shift, dpnp_left_shift, x1, x2,
                          check_sizes=True, check_shapes=True, check_dtypes=True, **kwargs)
 
 
@@ -216,6 +211,5 @@ def right_shift(x1, x2, **kwargs):
     left_shift, binary_repr
 
     """
-    supported_dtypes = [numpy.int64, numpy.int32]
-    return check_nd_call(numpy.right_shift, dpnp_right_shift, supported_dtypes, x1, x2,
+    return check_nd_call(numpy.right_shift, dpnp_right_shift, x1, x2,
                          check_sizes=True, check_shapes=True, check_dtypes=True, **kwargs)

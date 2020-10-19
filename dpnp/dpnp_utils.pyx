@@ -96,27 +96,7 @@ def call_origin(function, *args, **kwargs):
     return result
 
 
-def check_attr_equal(func_name, attr_name, *input_arrays):
-    """
-    Check value of the specified attribute of all input arrays is equal,
-    otherwise ValueError is rased.
-    
-    Parameters
-    ----------
-    func_name : str
-        name of the function to raise the exception
-    attr_name : str
-        name of the attribute to check
-    input_arrays : tuple(arrays)
-        input arrays
-    """
-    unique_vals = set(getattr(x, attr_name) for x in input_arrays)
-    if len(unique_vals) > 1:
-        x1, x2, *_ = list(unique_vals)
-        checker_throw_value_error(func_name, attr_name, x1, x2)
-
-
-def check_nd_call(origin_func, dpnp_func, supported_dtypes, *input_arrays,
+def check_nd_call(origin_func, dpnp_func, *input_arrays,
                   check_sizes=False, check_shapes=False, check_dtypes=False, **kwargs):
     """
     Choose function to call based on required input arrays types, data types and shapes
@@ -128,8 +108,6 @@ def check_nd_call(origin_func, dpnp_func, supported_dtypes, *input_arrays,
         original function to call if at least one input array didn't meet the requirements
     dpnp_func : function
         dpnp function to call if all the input arrays met the requirements
-    supported_dtypes : list(dtypes)
-        supported data types
     input_arrays : tuple(arrays)
         input arrays
     check_sizes : bool
@@ -150,17 +128,15 @@ def check_nd_call(origin_func, dpnp_func, supported_dtypes, *input_arrays,
         for x in input_arrays:
             if not isinstance(x, dparray):
                 break
-            if supported_dtypes and x.dtype not in supported_dtypes:
-                break
         else:
-            if check_sizes:
-                check_attr_equal(origin_func.__name__, "size", *input_arrays)
-            if check_shapes:
-                check_attr_equal(origin_func.__name__, "shape", *input_arrays)
-            if check_dtypes:
-                check_attr_equal(origin_func.__name__, "dtype", *input_arrays)
-
-            return dpnp_func(*input_arrays)
+            if check_sizes and len(set(x.size for x in input_arrays)) > 1:
+                pass  # fallback to numpy in case of different sizes of input arrays
+            elif check_shapes and len(set(x.shape for x in input_arrays)) > 1:
+                pass  # fallback to numpy in case of different shapes of input arrays
+            elif check_dtypes and len(set(x.dtype for x in input_arrays)) > 1:
+                pass  # fallback to numpy in case of different dtypes of input arrays
+            else:
+                return dpnp_func(*input_arrays)
 
     return call_origin(origin_func, *input_arrays, **kwargs)
 
