@@ -27,6 +27,7 @@
 #include <list>
 
 #include <backend_iface.hpp>
+#include "backend_fptr.hpp"
 #include "backend_utils.hpp"
 #include "queue_sycl.hpp"
 
@@ -42,7 +43,7 @@ void custom_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t 
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
     size_t elems = 1;
-    _DataType rank_val = 0;
+    result[0] = 0;
     if (ndim > 1)
     {
         elems = shape[0];
@@ -61,20 +62,19 @@ void custom_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t 
         {
             ind += (shape[j] - 1) * i;
         }
-        rank_val += array_1[ind];
+        result[0] += array_1[ind];
     }
-    result[0] = rank_val;
 
-#if 0
-    std::cout << "matrix_rank result " << result[0] << "\n";
-#endif
+    return;
 }
 
 
-template void
-    custom_matrix_rank_c<double>(void* array1_in, void* result1, size_t* shape, size_t ndim);
-template void
-    custom_matrix_rank_c<float>(void* array1_in, void* result1, size_t* shape, size_t ndim);
-template void
-    custom_matrix_rank_c<long>(void* array1_in, void* result1, size_t* shape, size_t ndim);
-template void custom_matrix_rank_c<int>(void* array1_in, void* result1, size_t* shape, size_t ndim);
+void func_map_init_linalg_func(func_map_t& fmap)
+{
+    fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_INT][eft_INT] = {eft_INT, (void*)custom_matrix_rank_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_matrix_rank_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_matrix_rank_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_matrix_rank_c<double>};
+
+    return;
+}

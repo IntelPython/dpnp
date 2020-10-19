@@ -137,6 +137,7 @@ static func_map_t func_map_init()
     func_map_init_bitwise(fmap);
     func_map_init_elemwise(fmap);
     func_map_init_linalg(fmap);
+    func_map_init_linalg_func(fmap);
     func_map_init_manipulation(fmap);
     func_map_init_reduction(fmap);
     func_map_init_searching(fmap);
@@ -149,11 +150,6 @@ static func_map_t func_map_init()
     fmap[DPNPFuncName::DPNP_FN_ABSOLUTE][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_elemwise_absolute_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)mkl_rng_gaussian<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_INT][eft_INT] = {eft_INT, (void*)custom_matrix_rank_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_matrix_rank_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_matrix_rank_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_matrix_rank_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_INT][eft_INT] = {eft_INT, (void*)mkl_rng_uniform<int>};
     fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_FLT][eft_FLT] = {eft_FLT, (void*)mkl_rng_uniform<float>};
