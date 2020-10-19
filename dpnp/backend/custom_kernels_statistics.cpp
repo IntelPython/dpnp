@@ -235,41 +235,193 @@ class custom_min_c_kernel;
 template <typename _DataType>
 void custom_min_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
 {
-    __attribute__((unused)) void* tmp = (void*)(axis + naxis);
-
-    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
-
-    size_t size = 1;
-    for (size_t i = 0; i < ndim; ++i)
+    if (naxis == 0)
     {
-        size *= shape[i];
-    }
-    if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
-    {
-        // Required initializing the result before call the function
-        result[0] = array_1[0];
+        __attribute__((unused)) void* tmp = (void*)(axis + naxis);
 
-        // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-make_dataset.html
-        auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, size, array_1);
+        _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
+        _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-        // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-min.html
-        cl::sycl::event event = mkl_stats::min(DPNP_QUEUE, dataset, result);
+        size_t size = 1;
+        for (size_t i = 0; i < ndim; ++i)
+        {
+            size *= shape[i];
+        }
+        if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
+        {
+            // Required initializing the result before call the function
+            result[0] = array_1[0];
 
-        event.wait();
+            // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-make_dataset.html
+            auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, size, array_1);
+
+            // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-min.html
+            cl::sycl::event event = mkl_stats::min(DPNP_QUEUE, dataset, result);
+
+            event.wait();
+        }
+        else
+        {
+            auto policy = oneapi::dpl::execution::make_device_policy<class custom_min_c_kernel<_DataType>>(DPNP_QUEUE);
+
+            _DataType* res = std::min_element(policy, array_1, array_1 + size);
+            policy.queue().wait();
+
+            result[0] = *res;
+        }
     }
     else
     {
-        auto policy = oneapi::dpl::execution::make_device_policy<class custom_min_c_kernel<_DataType>>(DPNP_QUEUE);
+        _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
+        _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-        _DataType* res = std::min_element(policy, array_1, array_1 + size);
-        policy.queue().wait();
+        size_t res_ndim = ndim - naxis;
+        size_t res_shape[res_ndim];
+        int ind = 0;
+        for (size_t i = 0; i < ndim; i++)
+        {
+            bool found = false;
+            for (size_t j = 0; j < naxis; j++)
+            {
+                if (axis[j] == i)
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                res_shape[ind] = shape[i];
+                ind++;
+            }
+        }
 
-        result[0] = *res;
+        size_t size_input = 1;
+        for (size_t i = 0; i < ndim; ++i)
+        {
+            size_input *= shape[i];
+        }
+
+        size_t input_shape_offsets[ndim];
+        size_t acc = 1;
+        for (size_t i = ndim - 1; i > 0; --i)
+        {
+            input_shape_offsets[i] = acc;
+            acc *= shape[i];
+        }
+        input_shape_offsets[0] = acc;
+
+        size_t output_shape_offsets[res_ndim];
+        acc = 1;
+        for (size_t i = res_ndim - 1; i > 0; --i)
+        {
+            output_shape_offsets[i] = acc;
+            acc *= res_shape[i];
+        }
+        output_shape_offsets[0] = acc;
+
+        size_t size_result = 1;
+        for (size_t i = 0; i < res_ndim; ++i)
+        {
+            size_result *= res_shape[i];
+        }
+
+        //init result array
+        for (size_t result_idx = 0; result_idx < size_result; ++result_idx)
+        {
+            size_t xyz[res_ndim];
+            size_t remainder = result_idx;
+            for (size_t i = 0; i < res_ndim; ++i)
+            {
+                xyz[i] = remainder / output_shape_offsets[i];
+                remainder = remainder - xyz[i] * output_shape_offsets[i];
+            }
+
+            size_t source_axis[ndim];
+            size_t result_axis_idx = 0;
+            for (size_t idx = 0; idx < ndim; ++idx)
+            {
+                bool found = false;
+                for (size_t i = 0; i < naxis; ++i)
+                {
+                    if (axis[i] == idx)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found)
+                {
+                    source_axis[idx] = 0;
+                }
+                else
+                {
+                    source_axis[idx] = xyz[result_axis_idx];
+                    result_axis_idx++;
+                }
+            }
+
+            size_t source_idx = 0;
+            for (size_t i = 0; i < ndim; ++i)
+            {
+                source_idx += input_shape_offsets[i] * source_axis[i];
+            }
+
+            result[result_idx] = array_1[source_idx];
+        }
+
+        for (size_t source_idx = 0; source_idx < size_input; ++source_idx)
+        {
+            // reconstruct x,y,z from linear source_idx
+            size_t xyz[ndim];
+            size_t remainder = source_idx;
+            for (size_t i = 0; i < ndim; ++i)
+            {
+                xyz[i] = remainder / input_shape_offsets[i];
+                remainder = remainder - xyz[i] * input_shape_offsets[i];
+            }
+
+            // extract result axis
+            size_t result_axis[res_ndim];
+            size_t result_idx = 0;
+            for (size_t idx = 0; idx < ndim; ++idx)
+            {
+                // try to find current idx in axis array
+                bool found = false;
+                for (size_t i = 0; i < naxis; ++i)
+                {
+                    if (axis[i] == idx)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    result_axis[result_idx] = xyz[idx];
+                    result_idx++;
+                }
+            }
+
+            // Construct result offset
+            size_t result_offset = 0;
+            for (size_t i = 0; i < res_ndim; ++i)
+            {
+                result_offset += output_shape_offsets[i] * result_axis[i];
+            }
+
+            if (result[result_offset] > array_1[source_idx])
+            {
+                result[result_offset] = array_1[source_idx];
+            }
+        }
+
     }
+
 
     return;
 }
+
 
 template <typename _DataType, typename _ResultType>
 void custom_std_c(
@@ -338,6 +490,7 @@ void custom_var_c(
 
     return;
 }
+
 
 void func_map_init_statistics(func_map_t& fmap)
 {
