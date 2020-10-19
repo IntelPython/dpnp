@@ -360,43 +360,27 @@ cpdef dparray dpnp_median(dparray array1):
     return result
 
 
-cpdef dparray _dpnp_min(dparray input):
+cpdef dparray _dpnp_min(dparray input, _axis_, output_shape):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MIN, param1_type, param1_type)
 
     result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-    cdef dparray result = dparray((1,), dtype=result_type)
-
-    cdef custom_statistic_1in_1out_func_ptr_t func = <custom_statistic_1in_1out_func_ptr_t > kernel_data.ptr
-
-    # stub for interface support
-    cdef dparray_shape_type axis
-    cdef Py_ssize_t axis_size = 0
-
-    func(input.get_data(), result.get_data(), < size_t * > input._dparray_shape.data(), input.ndim, < size_t * > axis.data(), axis_size)
-
-    return result
-
-
-cpdef dparray _dpnp_min_(dparray input, axis, output_shape):
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MIN_AXIS, param1_type, param1_type)
-
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     cdef dparray result = dparray(output_shape, dtype=result_type)
 
     cdef custom_statistic_1in_1out_func_ptr_t func = <custom_statistic_1in_1out_func_ptr_t > kernel_data.ptr
+    cdef dparray_shape_type axis
+    cdef Py_ssize_t axis_size = 0
+    cdef dparray_shape_type axis_ = axis
 
-    cdef dparray_shape_type axis_
-    axis_.reserve(len(axis))
-    for shape_it in axis:
-        if shape_it < 0:
-            raise ValueError("Intel NumPy dparray::__init__(): Negative values in 'shape' are not allowed")
-        axis_.push_back(shape_it)
-    cdef Py_ssize_t axis_size = len(axis)
-    cdef Py_ssize_t ind = len(output_shape)
+    if _axis_ is not None:
+        axis = _axis_
+        axis_.reserve(len(axis))
+        for shape_it in axis:
+            if shape_it < 0:
+                raise ValueError("Intel NumPy dparray::__init__(): Negative values in 'shape' are not allowed")
+            axis_.push_back(shape_it)
+        axis_size = len(axis)
 
     func(input.get_data(), result.get_data(), < size_t * > input._dparray_shape.data(), input.ndim, < size_t * > axis_.data(), axis_size)
 
@@ -408,7 +392,8 @@ cpdef dparray _dpnp_min_(dparray input, axis, output_shape):
 cpdef dparray dpnp_min(dparray input, axis):
     cdef dparray_shape_type shape_input = input.shape
     if axis is None:
-        return _dpnp_min(input)
+        axis_ = axis
+        output_shape = 1
     else:
         if isinstance(axis, int):
             if axis < 0:
@@ -430,7 +415,7 @@ cpdef dparray dpnp_min(dparray input, axis):
             if id not in axis_:
                 output_shape[ind] = shape_axis
                 ind += 1
-        return _dpnp_min_(input, axis_, output_shape)
+    return _dpnp_min(input, axis_, output_shape)
 
 
 cpdef dparray dpnp_std(dparray a, size_t ddof):
