@@ -181,7 +181,7 @@ def matmul(in_array1, in_array2, out=None):
         cost_size = 4096  # 2D array shape(64, 64)
         if ((in_array1.dtype == numpy.float64) or (in_array1.dtype == numpy.float32)):
             """
-            Floating point types are handled via original MKL better than SYCL MKL
+            Floating point types are handled via original math library better than SYCL math library
             """
             cost_size = 262144  # 2D array shape(512, 512)
 

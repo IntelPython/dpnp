@@ -51,37 +51,26 @@ from dpnp.linalg.linalg import *
 __all__ = [
     "eig",
     "matrix_power",
+    "matrix_rank",
     "multi_dot"
 ]
 
 
-def eig(in_array1):
+def eig(x1):
     """
     Compute the eigenvalues and right eigenvectors of a square array.
-    Parameters
-    ----------
-    a : (..., M, M) array
-        Matrices for which the eigenvalues and right eigenvectors will
-        be computed
-    Returns
-    -------
-    w : (..., M) array
-        The eigenvalues, each repeated according to its multiplicity.
-        The eigenvalues are not necessarily ordered. The resulting
-        array will be of complex type, unless the imaginary part is
-        zero in which case it will be cast to a real type. When `a`
-        is real the resulting eigenvalues will be real (0 imaginary
-        part) or occur in conjugate pairs
-    v : (..., M, M) array
-        The normalized (unit "length") eigenvectors, such that the
-        column ``v[:,i]`` is the eigenvector corresponding to the
-        eigenvalue ``w[i]``.
+
+    .. seealso:: :func:`numpy.linalg.eig`
+
     """
 
-    if (use_origin_backend()):
-        return numpy.linalg.eig(in_array1)
+    is_x1_dparray = isinstance(x1, dparray)
 
-    return dpnp_eig(in_array1)
+    if (not use_origin_backend(x1) and is_x1_dparray):
+        if (x1.size > 0):
+            return dpnp_eig(x1)
+
+    return call_origin(numpy.linalg.eig, x1)
 
 
 def matrix_power(input, count):
@@ -123,6 +112,51 @@ def matrix_power(input, count):
             result._setitem_scalar(i, result_numpy.item(i))
 
     return result
+
+
+def matrix_rank(input, tol=None, hermitian=False):
+    """
+    Return matrix rank of array
+    Rank of the array is the number of singular values of the array that are
+    greater than `tol`.
+
+    Parameters
+    ----------
+    M : {(M,), (..., M, N)} array_like
+        Input vector or stack of matrices.
+    tol : (...) array_like, float, optional
+        Threshold below which SVD values are considered zero. If `tol` is
+        None, and ``S`` is an array with singular values for `M`, and
+        ``eps`` is the epsilon value for datatype of ``S``, then `tol` is
+        set to ``S.max() * max(M.shape) * eps``.
+    hermitian : bool, optional
+        If True, `M` is assumed to be Hermitian (symmetric if real-valued),
+        enabling a more efficient method for finding singular values.
+        Defaults to False.
+    Returns
+    -------
+    rank : (...) array_like
+        Rank of M.
+
+    """
+
+    is_input_dparray = isinstance(input, dparray)
+
+    if not use_origin_backend(input) and is_input_dparray:
+        if tol is not None:
+            checker_throw_value_error("matrix_rank", "tol", type(tol), None)
+        if hermitian is not False:
+            checker_throw_value_error("matrix_rank", "hermitian", hermitian, False)
+
+        result = dpnp_matrix_rank(input)
+
+        # scalar returned
+        if result.shape == (1,):
+            return result.dtype.type(result[0])
+
+        return result
+
+    return call_origin(numpy.linalg.matrix_rank, input, tol, hermitian)
 
 
 def multi_dot(arrays, out=None):

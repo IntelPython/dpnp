@@ -48,6 +48,14 @@ ctypedef void(*fptr_mkl_rng_gaussian_1out_t)(void *, size_t)
 ctypedef void(*fptr_mkl_rng_uniform_1out_t)(void *, long, long, size_t)
 
 
+cpdef dpnp_srand(seed):
+    """
+    Initialize basic random number generator.
+
+    """
+    dpnp_srand_c(seed)
+
+
 cpdef dparray dpnp_randn(dims):
     """
     Return a random matrix with data from the "standard normal" distribution.
@@ -87,7 +95,7 @@ cpdef dparray dpnp_random(dims):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RANDOM, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_UNIFORM, param1_type, param1_type)
 
     result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
@@ -152,7 +160,7 @@ def rand(d0, *dn):
 
     for dim in dims:
         if not isinstance(dim, int):
-            checker_throw_value_error("randint", "type(dim)", type(dim), int)
+            checker_throw_value_error("rand", "type(dim)", type(dim), int)
 
     return dpnp_random(dims)
 
@@ -181,7 +189,7 @@ def randf(size):
 
     for dim in size:
         if not isinstance(dim, int):
-            checker_throw_value_error("randint", "type(dim)", type(dim), int)
+            checker_throw_value_error("randf", "type(dim)", type(dim), int)
 
     return dpnp_random(size)
 
@@ -286,7 +294,7 @@ def randn(d0, *dn):
 
     for dim in dims:
         if not isinstance(dim, int):
-            checker_throw_value_error("randint", "type(dim)", type(dim), int)
+            checker_throw_value_error("randn", "type(dim)", type(dim), int)
 
     return dpnp_randn(dims)
 
@@ -315,7 +323,7 @@ def random(size):
 
     for dim in size:
         if not isinstance(dim, int):
-            checker_throw_value_error("randint", "type(dim)", type(dim), int)
+            checker_throw_value_error("random", "type(dim)", type(dim), int)
 
     return dpnp_random(size)
 
@@ -386,9 +394,31 @@ def random_sample(size):
 
     for dim in size:
         if not isinstance(dim, int):
-            checker_throw_value_error("randint", "type(dim)", type(dim), int)
+            checker_throw_value_error("random_sample", "type(dim)", type(dim), int)
 
     return dpnp_random(size)
+
+
+def seed(seed=None):
+    """
+    Reseed a legacy philox4x32x10 random number generator engine
+
+    Parameters
+    ----------
+    seed : {None, int}, optional
+
+    """
+
+    # TODO:
+    # implement seed default value as is in numpy
+    if seed is None:
+        seed = 1
+    elif not isinstance(seed, int):
+        checker_throw_value_error("seed", "type(seed)", type(seed), int)
+    elif seed < 0:
+        checker_throw_value_error("seed", "seed", seed, "non-negative")
+
+    dpnp_srand(seed)
 
 
 def sample(size):
@@ -415,7 +445,7 @@ def sample(size):
 
     for dim in size:
         if not isinstance(dim, int):
-            checker_throw_value_error("randint", "type(dim)", type(dim), int)
+            checker_throw_value_error("sample", "type(dim)", type(dim), int)
 
     return dpnp_random(size)
 

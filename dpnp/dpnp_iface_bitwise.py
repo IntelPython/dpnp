@@ -59,22 +59,7 @@ __all__ = [
 ]
 
 
-def use_dpnp_backend(x1, x2, valid_types):
-    for x in (x1, x2):
-        if not isinstance(x, dparray):
-            return False
-        if x.dtype not in valid_types:
-            return False
-
-    if x1.shape != x2.shape:
-        return False
-    if x1.dtype != x2.dtype:
-        return False
-
-    return True
-
-
-def bitwise_and(x1, x2):
+def bitwise_and(x1, x2, **kwargs):
     """
     Compute the bit-wise AND of two arrays element-wise.
 
@@ -95,23 +80,12 @@ def bitwise_and(x1, x2):
     ogical_and, bitwise_or, bitwise_xor, binary_repr
 
     """
-
-    def numpy_bitwise_and(x1, x2):
-        x1 = dpnp.asnumpy(x1) if isinstance(x1, dparray) else x1
-        x2 = dpnp.asnumpy(x2) if isinstance(x2, dparray) else x2
-        return numpy.bitwise_and(x1, x2)
-
-    if use_origin_backend(x1):
-        return numpy_bitwise_and(x1, x2)
-
-    valid_types = (numpy.int64, numpy.int32, numpy.bool)
-    if use_dpnp_backend(x1, x2, valid_types):
-        return dpnp_bitwise_and(x1, x2)
-
-    return numpy_bitwise_and(x1, x2)
+    supported_dtypes = [numpy.int64, numpy.int32]
+    return check_nd_call(numpy.bitwise_and, dpnp_bitwise_and, supported_dtypes, x1, x2,
+                         check_sizes=True, check_shapes=True, check_dtypes=True, **kwargs)
 
 
-def bitwise_or(x1, x2):
+def bitwise_or(x1, x2, **kwargs):
     """
     Compute the bit-wise OR of two arrays element-wise.
 
@@ -132,23 +106,12 @@ def bitwise_or(x1, x2):
     logical_or, bitwise_and, bitwise_xor, binary_repr
 
     """
-
-    def numpy_bitwise_or(x1, x2):
-        x1 = dpnp.asnumpy(x1) if isinstance(x1, dparray) else x1
-        x2 = dpnp.asnumpy(x2) if isinstance(x2, dparray) else x2
-        return numpy.bitwise_or(x1, x2)
-
-    if use_origin_backend(x1):
-        return numpy_bitwise_or(x1, x2)
-
-    valid_types = (numpy.int64, numpy.int32, numpy.bool)
-    if use_dpnp_backend(x1, x2, valid_types):
-        return dpnp_bitwise_or(x1, x2)
-
-    return numpy_bitwise_or(x1, x2)
+    supported_dtypes = [numpy.int64, numpy.int32]
+    return check_nd_call(numpy.bitwise_or, dpnp_bitwise_or, supported_dtypes, x1, x2,
+                         check_sizes=True, check_shapes=True, check_dtypes=True, **kwargs)
 
 
-def bitwise_xor(x1, x2):
+def bitwise_xor(x1, x2, **kwargs):
     """
     Compute the bit-wise XOR of two arrays element-wise.
 
@@ -169,23 +132,12 @@ def bitwise_xor(x1, x2):
     logical_xor, bitwise_and, bitwise_or, binary_repr
 
     """
-
-    def numpy_bitwise_xor(x1, x2):
-        x1 = dpnp.asnumpy(x1) if isinstance(x1, dparray) else x1
-        x2 = dpnp.asnumpy(x2) if isinstance(x2, dparray) else x2
-        return numpy.bitwise_xor(x1, x2)
-
-    if use_origin_backend(x1):
-        return numpy_bitwise_xor(x1, x2)
-
-    valid_types = (numpy.int64, numpy.int32, numpy.bool)
-    if use_dpnp_backend(x1, x2, valid_types):
-        return dpnp_bitwise_xor(x1, x2)
-
-    return numpy_bitwise_xor(x1, x2)
+    supported_dtypes = [numpy.int64, numpy.int32]
+    return check_nd_call(numpy.bitwise_xor, dpnp_bitwise_xor, supported_dtypes, x1, x2,
+                         check_sizes=True, check_shapes=True, check_dtypes=True, **kwargs)
 
 
-def invert(x):
+def invert(x, **kwargs):
     """
     Compute bit-wise inversion, or bit-wise NOT, element-wise.
 
@@ -206,34 +158,14 @@ def invert(x):
     bitwise_and, bitwise_or, bitwise_xor, logical_not, binary_repr
 
     """
-
-    def numpy_invert(x):
-        x = dpnp.asnumpy(x) if isinstance(x, dparray) else x
-        return numpy.invert(x)
-
-    if use_origin_backend(x):
-        return numpy_invert(x)
-
-    def use_dpnp_backend(x):
-        if not isinstance(x, dparray):
-            return False
-
-        valid_types = (numpy.int64, numpy.int32, numpy.bool)
-        if x.dtype not in valid_types:
-            return False
-
-        return True
-
-    if use_dpnp_backend(x):
-        return dpnp_invert(x)
-
-    return numpy_invert(x)
+    supported_dtypes = [numpy.int64, numpy.int32]
+    return check_nd_call(numpy.invert, dpnp_invert, supported_dtypes, x, **kwargs)
 
 
 bitwise_not = invert  # bitwise_not is an alias for invert
 
 
-def left_shift(x1, x2):
+def left_shift(x1, x2, **kwargs):
     """
     Shift the bits of an integer to the left.
 
@@ -256,23 +188,12 @@ def left_shift(x1, x2):
     right_shift, binary_repr
 
     """
-
-    def numpy_left_shift(x1, x2):
-        x1 = dpnp.asnumpy(x1) if isinstance(x1, dparray) else x1
-        x2 = dpnp.asnumpy(x2) if isinstance(x2, dparray) else x2
-        return numpy.left_shift(x1, x2)
-
-    if use_origin_backend(x1):
-        return numpy_left_shift(x1, x2)
-
-    valid_types = (numpy.int64, numpy.int32, numpy.bool)
-    if use_dpnp_backend(x1, x2, valid_types):
-        return dpnp_left_shift(x1, x2)
-
-    return numpy_left_shift(x1, x2)
+    supported_dtypes = [numpy.int64, numpy.int32]
+    return check_nd_call(numpy.left_shift, dpnp_left_shift, supported_dtypes, x1, x2,
+                         check_sizes=True, check_shapes=True, check_dtypes=True, **kwargs)
 
 
-def right_shift(x1, x2):
+def right_shift(x1, x2, **kwargs):
     """
     Shift the bits of an integer to the right.
 
@@ -295,17 +216,6 @@ def right_shift(x1, x2):
     left_shift, binary_repr
 
     """
-
-    def numpy_right_shift(x1, x2):
-        x1 = dpnp.asnumpy(x1) if isinstance(x1, dparray) else x1
-        x2 = dpnp.asnumpy(x2) if isinstance(x2, dparray) else x2
-        return numpy.right_shift(x1, x2)
-
-    if use_origin_backend(x1):
-        return numpy_right_shift(x1, x2)
-
-    valid_types = (numpy.int64, numpy.int32, numpy.bool)
-    if use_dpnp_backend(x1, x2, valid_types):
-        return dpnp_right_shift(x1, x2)
-
-    return numpy_right_shift(x1, x2)
+    supported_dtypes = [numpy.int64, numpy.int32]
+    return check_nd_call(numpy.right_shift, dpnp_right_shift, supported_dtypes, x1, x2,
+                         check_sizes=True, check_shapes=True, check_dtypes=True, **kwargs)

@@ -26,7 +26,7 @@
 #include <iostream>
 
 #include <backend_iface.hpp>
-#include "backend_pstl.hpp"
+#include "backend_fptr.hpp"
 #include "queue_sycl.hpp"
 
 template <typename _DataType, typename _idx_DataType>
@@ -46,19 +46,8 @@ void custom_argmax_c(void* array1_in, void* result1, size_t size)
 
     result[0] = std::distance(array_1, res);
 
-#if 0
-    std::cout << "result " << result[0] << "\n";
-#endif
+    return;
 }
-
-template void custom_argmax_c<double, long>(void* array1_in, void* result1, size_t size);
-template void custom_argmax_c<float, long>(void* array1_in, void* result1, size_t size);
-template void custom_argmax_c<long, long>(void* array1_in, void* result1, size_t size);
-template void custom_argmax_c<int, long>(void* array1_in, void* result1, size_t size);
-template void custom_argmax_c<double, int>(void* array1_in, void* result1, size_t size);
-template void custom_argmax_c<float, int>(void* array1_in, void* result1, size_t size);
-template void custom_argmax_c<long, int>(void* array1_in, void* result1, size_t size);
-template void custom_argmax_c<int, int>(void* array1_in, void* result1, size_t size);
 
 template <typename _DataType, typename _idx_DataType>
 class custom_argmin_c_kernel;
@@ -77,16 +66,28 @@ void custom_argmin_c(void* array1_in, void* result1, size_t size)
 
     result[0] = std::distance(array_1, res);
 
-#if 0
-    std::cout << "result " << result[0] << "\n";
-#endif
+    return;
 }
 
-template void custom_argmin_c<double, long>(void* array1_in, void* result1, size_t size);
-template void custom_argmin_c<float, long>(void* array1_in, void* result1, size_t size);
-template void custom_argmin_c<long, long>(void* array1_in, void* result1, size_t size);
-template void custom_argmin_c<int, long>(void* array1_in, void* result1, size_t size);
-template void custom_argmin_c<double, int>(void* array1_in, void* result1, size_t size);
-template void custom_argmin_c<float, int>(void* array1_in, void* result1, size_t size);
-template void custom_argmin_c<long, int>(void* array1_in, void* result1, size_t size);
-template void custom_argmin_c<int, int>(void* array1_in, void* result1, size_t size);
+void func_map_init_searching(func_map_t& fmap)
+{
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_INT][eft_INT] = {eft_INT, (void*)custom_argmax_c<int, int>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_INT][eft_LNG] = {eft_LNG, (void*)custom_argmax_c<int, long>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_LNG][eft_INT] = {eft_INT, (void*)custom_argmax_c<long, int>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_argmax_c<long, long>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_FLT][eft_INT] = {eft_INT, (void*)custom_argmax_c<float, int>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_FLT][eft_LNG] = {eft_LNG, (void*)custom_argmax_c<float, long>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_DBL][eft_INT] = {eft_INT, (void*)custom_argmax_c<double, int>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMAX][eft_DBL][eft_LNG] = {eft_LNG, (void*)custom_argmax_c<double, long>};
+
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_INT][eft_INT] = {eft_INT, (void*)custom_argmin_c<int, int>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_INT][eft_LNG] = {eft_LNG, (void*)custom_argmin_c<int, long>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_LNG][eft_INT] = {eft_INT, (void*)custom_argmin_c<long, int>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_argmin_c<long, long>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_FLT][eft_INT] = {eft_INT, (void*)custom_argmin_c<float, int>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_FLT][eft_LNG] = {eft_LNG, (void*)custom_argmin_c<float, long>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_DBL][eft_INT] = {eft_INT, (void*)custom_argmin_c<double, int>};
+    fmap[DPNPFuncName::DPNP_FN_ARGMIN][eft_DBL][eft_LNG] = {eft_LNG, (void*)custom_argmin_c<double, long>};
+
+    return;
+}

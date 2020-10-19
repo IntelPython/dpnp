@@ -25,7 +25,7 @@
 
 /*
  * This header file is for interface Cython with C++.
- * It should not contains any backend specific headers (like SYCL or MKL) because
+ * It should not contains any backend specific headers (like SYCL or math library) because
  * all included headers will be exposed in Cython compilation procedure
  *
  * We would like to avoid backend specific things in higher level Cython modules.
@@ -93,9 +93,39 @@ INP_DLLEXPORT char* dpnp_memory_alloc_c(size_t size_in_bytes);
 INP_DLLEXPORT void dpnp_memory_free_c(void* ptr);
 void dpnp_memory_memcpy_c(void* dst, const void* src, size_t size_in_bytes);
 
+/**
+ * @ingroup BACKEND_API
+ * @brief Matrix multiplication.
+ *
+ * Matrix multiplication procedure. Works with 2-D matrices
+ *
+ * @param [in]  array1    Input array.
+ *
+ * @param [in]  array2    Input array.
+ *
+ * @param [out] result1   Output array.
+ *
+ * @param [in]  size      Number of elements in input arrays.
+ *
+ */
 template <typename _DataType>
 INP_DLLEXPORT void
-    custom_blas_gemm_c(void* array1, void* array2, void* result1, size_t size_m, size_t size_n, size_t size_k);
+    dpnp_matmul_c(void* array1, void* array2, void* result1, size_t size_m, size_t size_n, size_t size_k);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief absolute function.
+ *
+ * @param [in]  array1_in    Input array.
+ *
+ * @param [out] result1      Output array.
+ *
+ * @param [in]  size         Number of elements in input arrays.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void
+    custom_elemwise_absolute_c(void* array1_in, void* result1, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -111,7 +141,7 @@ INP_DLLEXPORT void
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_blas_dot_c(void* array1, void* array2, void* result1, size_t size);
+INP_DLLEXPORT void dpnp_dot_c(void* array1, void* array2, void* result1, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -141,37 +171,23 @@ INP_DLLEXPORT void custom_prod_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
- * @brief MKL implementation of dot function
+ * @brief Compute the eigenvalues and right eigenvectors of a square array.
  *
- * @param [in]  array1  Input array.
+ * @param [in]  array_in  Input array[size][size]
  *
- * @param [in]  array2  Input array.
+ * @param [out] result1   The eigenvalues, each repeated according to its multiplicity
  *
- * @param [out] result1 Output array.
+ * @param [out] result2   The normalized (unit “length”) eigenvectors
  *
- * @param [in]  size    Number of elements in input arrays.
+ * @param [in]  size      One dimension of square [size][size] array
  *
  */
-template <typename _DataType>
-INP_DLLEXPORT void mkl_blas_dot_c(void* array1, void* array2, void* result1, size_t size);
+template <typename _DataType, typename _ResultType>
+INP_DLLEXPORT void dpnp_eig_c(const void* array_in, void* result1, void* result2, size_t size);
 
 /**
  * @ingroup BACKEND_API
- * @brief MKL implementation of eig function
- *
- * @param [in]  array1  Input array.
- *
- * @param [out] result1 Output array.
- *
- * @param [in]  size    Number of elements in input arrays.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void mkl_lapack_syevd_c(void* array1, void* result1, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief MKL implementation of argsort function
+ * @brief math library implementation of argsort function
  *
  * @param [in]  array   Input array with data.
  *
@@ -185,7 +201,7 @@ INP_DLLEXPORT void custom_argsort_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
- * @brief MKL implementation of sort function
+ * @brief math library implementation of sort function
  *
  * @param [in]  array   Input array with data.
  *
@@ -199,7 +215,7 @@ INP_DLLEXPORT void custom_sort_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
- * @brief Custom implementation of cov function with MKL and PSTL
+ * @brief Custom implementation of cov function with math library and PSTL
  *
  * @param [in]  array       Input array.
  *
@@ -215,7 +231,7 @@ INP_DLLEXPORT void custom_cov_c(void* array1_in, void* result1, size_t nrows, si
 
 /**
  * @ingroup BACKEND_API
- * @brief MKL implementation of max function
+ * @brief math library implementation of max function
  *
  * @param [in]  array   Input array with data.
  *
@@ -231,11 +247,12 @@ INP_DLLEXPORT void custom_cov_c(void* array1_in, void* result1, size_t nrows, si
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_max_c(void* array1_in, void* result1, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+INP_DLLEXPORT void
+    custom_max_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
- * @brief MKL implementation of mean function
+ * @brief math library implementation of mean function
  *
  * @param [in]  array   Input array with data.
  *
@@ -251,11 +268,12 @@ INP_DLLEXPORT void custom_max_c(void* array1_in, void* result1, size_t* shape, s
  *
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void custom_mean_c(void* array, void* result, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+INP_DLLEXPORT void
+    custom_mean_c(void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
- * @brief MKL implementation of median function
+ * @brief math library implementation of median function
  *
  * @param [in]  array   Input array with data.
  *
@@ -271,11 +289,12 @@ INP_DLLEXPORT void custom_mean_c(void* array, void* result, size_t* shape, size_
  *
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void custom_median_c(void* array, void* result, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+INP_DLLEXPORT void
+    custom_median_c(void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
- * @brief MKL implementation of min function
+ * @brief math library implementation of min function
  *
  * @param [in]  array   Input array with data.
  *
@@ -291,7 +310,8 @@ INP_DLLEXPORT void custom_median_c(void* array, void* result, size_t* shape, siz
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_min_c(void* array, void* result, size_t* shape, size_t ndim, size_t* axis, size_t naxis);
+INP_DLLEXPORT void
+    custom_min_c(void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
@@ -315,7 +335,7 @@ INP_DLLEXPORT void custom_min_axis_c(void* array1_in, void* result1, size_t* sha
 
 /**
  * @ingroup BACKEND_API
- * @brief MKL implementation of argmax function
+ * @brief math library implementation of argmax function
  *
  * @param [in]  array   Input array with data.
  *
@@ -329,7 +349,7 @@ INP_DLLEXPORT void custom_argmax_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
- * @brief MKL implementation of argmin function
+ * @brief math library implementation of argmin function
  *
  * @param [in]  array   Input array with data.
  *
@@ -341,14 +361,86 @@ INP_DLLEXPORT void custom_argmax_c(void* array, void* result, size_t size);
 template <typename _DataType, typename _idx_DataType>
 INP_DLLEXPORT void custom_argmin_c(void* array, void* result, size_t size);
 
-#if 0 // Example for OpenCL kernel
-template <typename _DataType>
-void custom_dgemm_c_opencl(void* array_1, void* array_2, void* result_1, size_t size);
-#endif
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of std function
+ *
+ * @param [in]  array   Input array with data.
+ *
+ * @param [out] result  Output array with indeces.
+ *
+ * @param [in]  shape   Shape of input array.
+ *
+ * @param [in]  ndim    Number of elements in shape.
+ *
+ * @param [in]  axis    Axis.
+ *
+ * @param [in]  naxis   Number of elements in axis.
+ *
+ * @param [in]  ddof    Delta degrees of freedom.
+ *
+ */
+template <typename _DataType, typename _ResultType>
+INP_DLLEXPORT void custom_std_c(
+    void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
 
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of var function
+ *
+ * @param [in]  array   Input array with data.
+ *
+ * @param [out] result  Output array with indeces.
+ *
+ * @param [in]  shape   Shape of input array.
+ *
+ * @param [in]  ndim    Number of elements in shape.
+ *
+ * @param [in]  axis    Axis.
+ *
+ * @param [in]  naxis   Number of elements in axis.
+ *
+ * @param [in]  ddof    Delta degrees of freedom.
+ *
+ */
+template <typename _DataType, typename _ResultType>
+INP_DLLEXPORT void custom_var_c(
+    void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief Implementation of invert function
+ *
+ * @param [in]  array1_in  Input array.
+ *
+ * @param [out] result1    Output array.
+ *
+ * @param [in]  size       Number of elements in the input array.
+ *
+ */
 template <typename _DataType>
-INP_DLLEXPORT void
-    dpnp_blas_gemm_c(void* array1, void* array2, void* result1, size_t size_m, size_t size_n, size_t size_k);
+INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief Bitwise function __name__
+ *
+ * __name__ function called with the SYCL backend.
+ *
+ * @param [in]  array1_in  First input array.
+ * 
+ * @param [in]  array2_in  Second input array.
+ *
+ * @param [out] result1    Output array.
+ *
+ * @param [in]  size       Number of elements in the input array.
+ *
+ */
+#define MACRO_CUSTOM_2ARG_1TYPE_OP(__name__, __operation__)                                                            \
+    template <typename _DataType>                                                                                      \
+    INP_DLLEXPORT void __name__(void* array1_in1, void* array2_in, void* result1, size_t size);
+
+#include <custom_2arg_1type_tbl.hpp>
 
 /**
  * @ingroup BACKEND_API
@@ -359,21 +451,21 @@ INP_DLLEXPORT void
  * @param [in]  size  Number of elements in the input array.
  *
  */
-#define MACRO_CUSTOM_1ARG_2TYPES_OP(__name__, __operation__)                                                           \
-    template <typename _DataType_input, typename _DataType_output>                                                     \
-    INP_DLLEXPORT void custom_elemwise_##__name__##_c(void* array1, void* result1, size_t size);
-
-#include <custom_1arg_2type_tbl.hpp>
-
-#define MACRO_CUSTOM_1ARG_1TYPE_OP(__name__, __operation__)                                                            \
+#define MACRO_CUSTOM_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                           \
     template <typename _DataType>                                                                                      \
-    INP_DLLEXPORT void custom_elemwise_##__name__##_c(void* array1, void* result1, size_t size);
+    INP_DLLEXPORT void __name__(void* array1, void* result1, size_t size);
 
 #include <custom_1arg_1type_tbl.hpp>
 
-#define MACRO_CUSTOM_2ARG_3TYPES_OP(__name__, __operation__)                                                           \
+#define MACRO_CUSTOM_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)                                          \
+    template <typename _DataType_input, typename _DataType_output>                                                     \
+    INP_DLLEXPORT void __name__(void* array1, void* result1, size_t size);
+
+#include <custom_1arg_2type_tbl.hpp>
+
+#define MACRO_CUSTOM_2ARG_3TYPES_OP(__name__, __operation1__, __operation2__)                                          \
     template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>                         \
-    INP_DLLEXPORT void custom_elemwise_##__name__##_c(void* array1, void* array2, void* result1, size_t size);
+    INP_DLLEXPORT void __name__(void* array1, void* array2, void* result1, size_t size);
 
 #include <custom_2arg_3type_tbl.hpp>
 
@@ -404,7 +496,7 @@ INP_DLLEXPORT void custom_elemwise_transpose_c(void* array1_in,
 
 /**
  * @ingroup BACKEND_API
- * @brief MKL implementation of random number generator (gaussian continious distribution)
+ * @brief math library implementation of random number generator (gaussian continious distribution)
  *
  * @param [in]  size   Number of elements in `result` arrays.
  *
@@ -416,7 +508,7 @@ INP_DLLEXPORT void mkl_rng_gaussian(void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
- * @brief MKL implementation of random number generator (uniform distribution)
+ * @brief math library implementation of random number generator (uniform distribution)
  *
  * @param [in]  low    Left bound of array values.
  *
@@ -429,5 +521,14 @@ INP_DLLEXPORT void mkl_rng_gaussian(void* result, size_t size);
  */
 template <typename _DataType>
 INP_DLLEXPORT void mkl_rng_uniform(void* result, long low, long high, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief initializer for basic random number generator.
+ *
+ * @param [in]  seed    The seed value.
+ *
+ */
+INP_DLLEXPORT void dpnp_srand_c(size_t seed = 1);
 
 #endif // BACKEND_IFACE_H

@@ -29,10 +29,12 @@ def vvsort(val, vec, size):
                          [2, 4, 8, 16, 300])
 def test_eig_arange(type, size):
     a = numpy.arange(size * size, dtype=type).reshape((size, size))
-    symm = numpy.tril(a) + numpy.tril(a, -1).T + numpy.diag(numpy.full((size,), size * size, dtype=type))
-    isymm = inp.array(symm)
+    symm_orig = numpy.tril(a) + numpy.tril(a, -1).T + numpy.diag(numpy.full((size,), size * size, dtype=type))
+    symm = symm_orig
+    dpnp_symm_orig = inp.array(symm)
+    dpnp_symm = dpnp_symm_orig
 
-    dpnp_val, dpnp_vec = inp.linalg.eig(isymm)
+    dpnp_val, dpnp_vec = inp.linalg.eig(dpnp_symm)
     np_val, np_vec = numpy.linalg.eig(symm)
 
     # DPNP sort val/vec by abs value
@@ -46,5 +48,32 @@ def test_eig_arange(type, size):
         if np_vec[0, i] * dpnp_vec[0, i] < 0:
             np_vec[:, i] = -np_vec[:, i]
 
+    numpy.testing.assert_array_equal(symm_orig, symm)
+    numpy.testing.assert_array_equal(dpnp_symm_orig, dpnp_symm)
+
+    assert (dpnp_val.dtype == np_val.dtype)
+    assert (dpnp_vec.dtype == np_vec.dtype)
+    assert (dpnp_val.shape == np_val.shape)
+    assert (dpnp_vec.shape == np_vec.shape)
+
     numpy.testing.assert_allclose(dpnp_val, np_val, rtol=1e-05, atol=1e-05)
     numpy.testing.assert_allclose(dpnp_vec, np_vec, rtol=1e-05, atol=1e-05)
+
+
+def test_matrix_rank():
+    arrays = [
+              [0, 0],
+              # [0, 1],
+              [1, 2],
+              [[0, 0], [0, 0]],
+              # [[1, 2], [1, 2]],
+              # [[1, 2], [3, 4]],
+              ]
+    tols = [None]
+    for array in arrays:
+        for tol in tols:
+            a = numpy.array(array)
+            ia = inp.array(a)
+            result = inp.linalg.matrix_rank(ia, tol=tol)
+            expected = numpy.linalg.matrix_rank(a, tol=tol)
+            numpy.testing.assert_array_equal(expected, result)
