@@ -215,6 +215,22 @@ INP_DLLEXPORT void custom_cov_c(void* array1_in, void* result1, size_t nrows, si
 
 /**
  * @ingroup BACKEND_API
+ * @brief MKL implementation of matrix_rank function
+ *
+ * @param [in]  array   Input array with data.
+ *
+ * @param [out] result  Output array.
+ *
+ * @param [in]  shape   Shape of input array.
+ *
+ * @param [in]  ndim    Number of elements in shape.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t ndim);
+
+/**
+ * @ingroup BACKEND_API
  * @brief MKL implementation of max function
  *
  * @param [in]  array   Input array with data.

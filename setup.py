@@ -250,6 +250,7 @@ dpnp_backend_c = [
                 "dpnp/backend/backend_iface_fptr.cpp",
                 "dpnp/backend/custom_kernels.cpp",
                 "dpnp/backend/custom_kernels_elemwise.cpp",
+                "dpnp/backend/custom_kernels_linalg.cpp",
                 "dpnp/backend/custom_kernels_manipulation.cpp",
                 "dpnp/backend/custom_kernels_reduction.cpp",
                 "dpnp/backend/custom_kernels_searching.cpp",
