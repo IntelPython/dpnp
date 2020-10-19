@@ -416,6 +416,22 @@ INP_DLLEXPORT void custom_var_c(
 
 /**
  * @ingroup BACKEND_API
+ * @brief remainder function.
+ *
+ * @param [in]  array1_in    Input array 1.
+ *
+ * @param [in]  array2_in    Input array 2.
+ *
+ * @param [out] result1      Output array.
+ *
+ * @param [in]  size         Number of elements in input arrays.
+ *
+ */
+template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
+INP_DLLEXPORT void dpnp_remainder_c(void* array1_in, void* array2_in, void* result1, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief transpose function. Permute axes of the input to the output with elements permutation.
  *
  * @param [in]  array1_in    Input array.
