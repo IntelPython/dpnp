@@ -28,30 +28,47 @@
 #define QUEUE_SYCL_H
 
 #include <CL/sycl.hpp>
+#include <oneapi/mkl.hpp>
+
+#include <ctime>
 
 #if !defined(DPNP_LOCAL_QUEUE)
-#include <dppl_sycl_queue_interface.h>
+#include <dppl_sycl_queue_manager.h>
 #endif
 
+#include "backend_pstl.hpp" // this header must be included after <mkl_sycl.hpp>
+
+namespace mkl_rng = oneapi::mkl::rng;
+
 #define DPNP_QUEUE backend_sycl::get_queue()
+#define DPNP_RNG_ENGINE backend_sycl::get_rng_engine()
 
 /**
- * This is container for the SYCL queue and related functions like queue initialization and maintenance
+ * This is container for the SYCL queue, random number generation engine and related functions like queue and engine
+ * initialization and maintenance.
  * The queue could not be initialized as a global object. Global object initialization order is undefined.
- * This class postpone initialization of the SYCL queue
+ * This class postpone initialization of the SYCL queue and philox4x32x10 random number generation engine.
  */
 class backend_sycl
 {
 #if defined(DPNP_LOCAL_QUEUE)
     static cl::sycl::queue* queue; /**< contains SYCL queue pointer initialized in @ref backend_sycl_queue_init */
 #endif
+    static mkl_rng::philox4x32x10* rng_engine; /**< RNG engine ptr. initialized in @ref backend_sycl_rng_engine_init */
 
     static void destroy()
     {
+        backend_sycl::destroy_rng_engine();
 #if defined(DPNP_LOCAL_QUEUE)
         delete queue;
         queue = nullptr;
 #endif
+    }
+
+    static void destroy_rng_engine()
+    {
+        delete rng_engine;
+        rng_engine = nullptr;
     }
 
 public:
@@ -59,6 +76,7 @@ public:
     {
 #if defined(DPNP_LOCAL_QUEUE)
         queue = nullptr;
+        rng_engine = nullptr;
 #endif
     }
 
@@ -79,6 +97,11 @@ public:
     static void backend_sycl_queue_init(QueueOptions selector = QueueOptions::CPU_SELECTOR);
 
     /**
+     * Initialize @ref rng_engine
+     */
+    static void backend_sycl_rng_engine_init(size_t seed = 1);
+
+    /**
      * Return the @ref queue to the user
      */
     static cl::sycl::queue& get_queue()
@@ -92,9 +115,21 @@ public:
         return *queue;
 #else
         // temporal solution. Started from Sept-2020
-        DPPLSyclQueueRef DPCtrl_queue = DPPLGetCurrentQueue();
+        DPPLSyclQueueRef DPCtrl_queue = DPPLQueueMgr_GetCurrentQueue();
         return *(reinterpret_cast<cl::sycl::queue*>(DPCtrl_queue));
 #endif
+    }
+
+    /**
+     * Return the @ref rng_engine to the user
+     */
+    static mkl_rng::philox4x32x10& get_rng_engine()
+    {
+        if (!rng_engine)
+        {
+            backend_sycl_rng_engine_init();
+        }
+        return *rng_engine;
     }
 };
 

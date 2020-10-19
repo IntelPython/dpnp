@@ -73,8 +73,8 @@ if __name__ == '__main__':
         print(f"...Test data type is {test_type}, each test repetitions {test_repetition}")
 
         for size in [16, 32, 64, 128, 256, 512, 1024, 2048, 4096]:
-            time_python, result_python = run_function(numpy, "    <NumPy>", size, test_type, test_repetition)
-            time_mkl, result_mkl = run_function(dpnp, "<Intel MKL>", size, test_type, test_repetition)
+            time_python, result_python = run_function(numpy, "<NumPy>", size, test_type, test_repetition)
+            time_mkl, result_mkl = run_function(dpnp, " <DPNP>", size, test_type, test_repetition)
 
             if result_mkl == result_python:
                 verification = True

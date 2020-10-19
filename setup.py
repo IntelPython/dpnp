@@ -49,6 +49,7 @@ from Cython.Compiler import Options as cython_options
 from utils.command_style import source_style
 from utils.command_clean import source_clean
 from utils.command_build_clib import custom_build_clib
+from utils.dpnp_build_utils import find_cmplr, find_mathlib, find_omp
 
 
 """
@@ -116,9 +117,13 @@ _project_compiler = "clang++"
 _project_linker = "clang++"
 _project_cmplr_flag_sycl_devel = ["-fsycl-device-code-split=per_kernel"]
 _project_cmplr_flag_sycl = ["-fsycl"]
-_project_cmplr_flag_compatibility = ["-Wl,--enable-new-dtags", "-fPIC"]
-_project_cmplr_flag_lib = []
+_project_cmplr_flag_compatibility = ["-Wl,--enable-new-dtags"]
+_project_cmplr_flag_lib = ["-shared"]
+_project_cmplr_flag_release_build = ["-O3", "-DNDEBUG", "-fPIC"]
+_project_cmplr_flag_debug_build = ["-g", "-O1", "-W", "-Wextra", "-Wshadow", "-Wall", "-Wstrict-prototypes", "-fPIC"]
+_project_cmplr_flag_default_build = []
 _project_cmplr_macro = []
+_project_force_build = False
 _project_sycl_queue_control_macro = [("DPNP_LOCAL_QUEUE", "1")]
 _project_rpath = ["$ORIGIN"]
 _dpctrl_include = []
@@ -130,13 +135,12 @@ try:
     """
     Detect external SYCL queue handling library
     """
-    import dpctrl
+    import dpctl
 
-    # TODO this will not work with no Conda environment
-    _conda_root = os.environ.get('CONDA_PREFIX', "conda_include_error")
-    _dpctrl_include += [os.path.join(_conda_root, 'include')]
-    _dpctrl_libpath += [os.path.join(_conda_root, 'lib')]
-    _dpctrl_lib += ["dpctrlsyclinterface"]
+    _dpctrl_include += [dpctl.get_include()]
+    # _dpctrl_libpath = for package build + for local build
+    _dpctrl_libpath += ["$ORIGIN/../dpctl"] + [os.path.join(dpctl.get_include(), '..')]
+    _dpctrl_lib += ["DPPLSyclInterface"]
 except ImportError:
     """
     Set local SYCL queue handler
@@ -151,7 +155,7 @@ if IS_WIN:
     _project_cmplr_flag_sycl = []
     _project_cmplr_flag_compatibility = []
     _project_cmplr_flag_lib = ['/DLL']
-    _project_cmplr_macro = [("_WIN", "1"), ("MKL_ILP64", "1")]
+    _project_cmplr_macro = [("_WIN", "1")]
     _project_rpath = []
     # TODO obtain setuptools.compiler.buildline options line and replace /MD with /MT instead adding it
     os.environ["CFLAGS"] = "/MT"
@@ -175,43 +179,51 @@ except KeyError:
 """
 Get the project build type
 """
-__dpnp_debug__ = os.environ.get('DEBUG', None)
+__dpnp_debug__ = os.environ.get('DPNP_DEBUG', None)
 if __dpnp_debug__ is not None:
+    """
+    Debug configuration
+    """
     _project_cmplr_flag_sycl += _project_cmplr_flag_sycl_devel
+    _project_cmplr_flag_default_build = _project_cmplr_flag_debug_build
+else:
+    """
+    Release configuration
+    """
+    _project_cmplr_flag_default_build = _project_cmplr_flag_release_build
 
 
 """
-Search and set MKL environemnt
+Search and set math library environemnt
 """
-_mkl_rpath = []
+_mathlib_rpath = []
 _cmplr_rpath = []
 _omp_rpath = []
 
 
-_mkl_root = os.environ.get('MKLROOT', None)
-if _mkl_root is None:
-    raise EnvironmentError("Intel NumPy: Please install Intel OneAPI environment. MKLROOT is empty")
-_mkl_include = [os.path.join(_mkl_root, 'include')]
-_mkl_libs = ['mkl_rt', 'mkl_sycl', 'mkl_intel_ilp64', 'mkl_tbb_thread', 'mkl_core', 'tbb', 'iomp5']
+"""
+Get the math library environemnt
+"""
+_mathlib_include, _mathlib_path = find_mathlib(verbose=True)
 
-_mkl_libpath = [os.path.join(_mkl_root, 'lib', 'intel64')]
+_project_cmplr_macro += [("MKL_ILP64", "1")]  # using 64bit integers in MKL interface (long)
+_mathlibs = ["mkl_rt", "mkl_sycl", "mkl_intel_ilp64", "mkl_sequential",
+             "mkl_core", "sycl", "OpenCL", "pthread", "m", "dl"]
+
 if IS_LIN:
-    _mkl_rpath = _mkl_libpath
+    _mathlib_rpath = _mathlib_path
 elif IS_WIN:
-    _mkl_libs = ["mkl_sycl", "mkl_intel_ilp64", "mkl_tbb_thread", "mkl_core", "sycl", "OpenCL", "tbb"]
+    _mathlibs = ["mkl_sycl", "mkl_intel_ilp64", "mkl_tbb_thread", "mkl_core", "sycl", "OpenCL", "tbb"]
 
-_cmplr_root = os.environ.get('ONEAPI_ROOT', None)
-if _cmplr_root is None:
-    raise EnvironmentError("Please install Intel OneAPI environment. ONEAPI_ROOT is empty")
+"""
+Get the compiler environemnt
+"""
+_, _cmplr_libpath = find_cmplr(verbose=True)
+_, _omp_libpath = find_omp(verbose=True)
 
 if IS_LIN:
-    _cmplr_libpath = [os.path.join(_cmplr_root, 'compiler', 'latest', 'linux', 'lib')]
-    _omp_libpath = [os.path.join(_cmplr_root, 'compiler', 'latest', 'linux', 'compiler', 'lib', 'intel64')]
     _cmplr_rpath = _cmplr_libpath
     _omp_rpath = _omp_libpath
-elif IS_WIN:
-    _cmplr_libpath = [os.path.join(_cmplr_root, 'compiler', 'latest', 'windows', 'lib')]
-    _omp_libpath = [os.path.join(_cmplr_root, 'compiler', 'latest', 'windows', 'compiler', 'lib', 'intel64_win')]
 
 
 """
@@ -249,27 +261,31 @@ dpnp_backend_c = [
             "sources": [
                 "dpnp/backend/backend_iface_fptr.cpp",
                 "dpnp/backend/custom_kernels.cpp",
+                "dpnp/backend/custom_kernels_bitwise.cpp",
                 "dpnp/backend/custom_kernels_elemwise.cpp",
                 "dpnp/backend/custom_kernels_linalg.cpp",
                 "dpnp/backend/custom_kernels_manipulation.cpp",
+                "dpnp/backend/custom_kernels_mathematical.cpp",
                 "dpnp/backend/custom_kernels_reduction.cpp",
                 "dpnp/backend/custom_kernels_searching.cpp",
                 "dpnp/backend/custom_kernels_sorting.cpp",
                 "dpnp/backend/custom_kernels_statistics.cpp",
                 "dpnp/backend/memory_sycl.cpp",
-                "dpnp/backend/mkl_wrap_blas1.cpp",
-                "dpnp/backend/mkl_wrap_blas3.cpp",
-                "dpnp/backend/mkl_wrap_lapack.cpp",
                 "dpnp/backend/mkl_wrap_rng.cpp",
                 "dpnp/backend/queue_sycl.cpp"
             ],
-            "include_dirs": _mkl_include + _project_backend_dir + _dpctrl_include,
-            "library_dirs": _mkl_libpath + _omp_libpath + _dpctrl_libpath,
-            "runtime_library_dirs": [],  # _project_rpath + _mkl_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath,
+            "include_dirs": _mathlib_include + _project_backend_dir + _dpctrl_include,
+            "library_dirs": _mathlib_path + _omp_libpath + _dpctrl_libpath,
+            "runtime_library_dirs": _project_rpath + _mathlib_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath,
             "extra_preargs": _project_cmplr_flag_sycl,
-            "extra_link_postargs": _project_cmplr_flag_compatibility + _project_cmplr_flag_lib,
-            "libraries": _mkl_libs + _dpctrl_lib,
+            "extra_link_preargs": _project_cmplr_flag_compatibility,
+            "extra_link_postargs": [],
+            "libraries": _mathlibs + _dpctrl_lib,
             "macros": _project_cmplr_macro,
+            "force_build": _project_force_build,
+            "compiler": [_project_compiler],
+            "linker": [_project_linker] + _project_cmplr_flag_lib,
+            "default_flags": _project_cmplr_flag_default_build,
             "language": "c++"
         }
      ]

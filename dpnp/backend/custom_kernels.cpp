@@ -25,158 +25,229 @@
 
 #include <cmath>
 #include <iostream>
-#include <mkl_blas_sycl.hpp>
+#include <type_traits>
 
 #include <backend_iface.hpp>
-#include "backend_pstl.hpp"
+#include "backend_fptr.hpp"
 #include "backend_utils.hpp"
 #include "queue_sycl.hpp"
 
+namespace mkl_blas = oneapi::mkl::blas;
+namespace mkl_lapack = oneapi::mkl::lapack;
+
 template <typename _KernelNameSpecialization>
-class custom_blas_gemm_c_kernel;
+class dpnp_matmul_c_kernel;
 
 template <typename _DataType>
-void custom_blas_gemm_c(void* array1_in, void* array2_in, void* result1, size_t size_m, size_t size_n, size_t size_k)
+void dpnp_matmul_c(void* array1_in, void* array2_in, void* result1, size_t size_m, size_t size_n, size_t size_k)
 {
     cl::sycl::event event;
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* array_2 = reinterpret_cast<_DataType*>(array2_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    // input1: M x K
-    // input2: K x N
-    // result: M x N
-    const size_t dim_m = size_m; // shape1.front(); // First dimensions of array1
-    const size_t dim_n = size_n; // shape2.back();  // Last dimensions of array2
-    const size_t dim_k = size_k; // shape1.back(); // First dimensions of array2
+    if (!size_m || !size_n || !size_k)
+    {
+        return;
+    }
 
-    cl::sycl::range<2> gws(dim_m, dim_n); // dimensions are: "i" and "j"
-    event = DPNP_QUEUE.submit([&](cl::sycl::handler& cgh) {
-            cgh.parallel_for<class custom_blas_gemm_c_kernel<_DataType> >(
-                gws,
-                [=](cl::sycl::id<2> global_id)
+    if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
+    {
+        // using std::max for these ldx variables is required by math library
+        const std::int64_t lda = std::max<size_t>(1UL, size_k); // First dimensions of array_1
+        const std::int64_t ldb = std::max<size_t>(1UL, size_n); // First dimensions of array_2
+        const std::int64_t ldc = std::max<size_t>(1UL, size_n); // Fast dimensions of result
+
+        event = mkl_blas::gemm(DPNP_QUEUE,
+                               oneapi::mkl::transpose::nontrans,
+                               oneapi::mkl::transpose::nontrans,
+                               size_n,
+                               size_m,
+                               size_k,
+                               _DataType(1),
+                               array_2,
+                               ldb,
+                               array_1,
+                               lda,
+                               _DataType(0),
+                               result,
+                               ldc);
+    }
+    else
+    {
+        // input1: M x K
+        // input2: K x N
+        // result: M x N
+        const size_t dim_m = size_m; // shape1.front(); // First dimensions of array1
+        const size_t dim_n = size_n; // shape2.back();  // Last dimensions of array2
+        const size_t dim_k = size_k; // shape1.back(); // First dimensions of array2
+
+        cl::sycl::range<2> gws(dim_m, dim_n); // dimensions are: "i" and "j"
+
+        auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
+            size_t i = global_id[0]; //for (size_t i = 0; i < size; ++i)
             {
-                size_t i = global_id[0]; //for (size_t i = 0; i < size; ++i)
+                size_t j = global_id[1]; //for (size_t j = 0; j < size; ++j)
                 {
-                    size_t j = global_id[1]; //for (size_t j = 0; j < size; ++j)
+                    _DataType acc = _DataType(0);
+                    for (size_t k = 0; k < dim_k; ++k)
                     {
-                        _DataType acc = _DataType(0);
-                        for (size_t k = 0; k < dim_k; ++k)
-                        {
-                            const size_t index_1 = i * dim_k + k;
-                            const size_t index_2 = k * dim_n + j;
-                            acc += array_1[index_1] * array_2[index_2];
-                        }
-                        const size_t index_result = i * dim_n + j;
-                        result[index_result] = acc;
+                        const size_t index_1 = i * dim_k + k;
+                        const size_t index_2 = k * dim_n + j;
+                        acc += array_1[index_1] * array_2[index_2];
                     }
+                    const size_t index_result = i * dim_n + j;
+                    result[index_result] = acc;
                 }
-            }); // parallel_for
-    });         // queue.submit
+            }
+        };
 
+        auto kernel_func = [&](cl::sycl::handler& cgh) {
+            cgh.parallel_for<class dpnp_matmul_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+        };
+
+        event = DPNP_QUEUE.submit(kernel_func);
+    }
     event.wait();
 }
 
-template void custom_blas_gemm_c<long>(
-    void* array1_in, void* array2_in, void* result1, size_t size_m, size_t size_n, size_t size_k);
-template void custom_blas_gemm_c<int>(
-    void* array1_in, void* array2_in, void* result1, size_t size_m, size_t size_n, size_t size_k);
-
 template <typename _KernelNameSpecialization>
-class custom_blas_dot_c_kernel;
+class dpnp_dot_c_kernel;
 
 template <typename _DataType>
-void custom_blas_dot_c(void* array1_in, void* array2_in, void* result1, size_t size)
+void dpnp_dot_c(void* array1_in, void* array2_in, void* result1, size_t size)
 {
     cl::sycl::event event;
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* array_2 = reinterpret_cast<_DataType*>(array2_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    _DataType* local_mem = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+    if (!size)
+    {
+        return;
+    }
 
-    // what about reduction??
-    cl::sycl::range<1> gws(size);
-    event = DPNP_QUEUE.submit([&](cl::sycl::handler& cgh) {
-            cgh.parallel_for<class custom_blas_dot_c_kernel<_DataType> >(gws, [=](cl::sycl::id<1> global_id)
-            {
-                const size_t index = global_id[0];
-                local_mem[index] = array_1[index] * array_2[index];
-            }     // kernel lambda
-            );    // parallel_for
-    }             // task lambda
-    );            // queue.submit
+    if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
+    {
+        event = mkl_blas::dot(DPNP_QUEUE,
+                              size,
+                              array_1,
+                              1, // array_1 stride
+                              array_2,
+                              1, // array_2 stride
+                              result);
+        event.wait();
+    }
+    else
+    {
+        _DataType* local_mem = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
 
+        // what about reduction??
+        cl::sycl::range<1> gws(size);
+
+        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+            const size_t index = global_id[0];
+            local_mem[index] = array_1[index] * array_2[index];
+        };
+
+        auto kernel_func = [&](cl::sycl::handler& cgh) {
+            cgh.parallel_for<class dpnp_dot_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+        };
+
+        event = DPNP_QUEUE.submit(kernel_func);
+
+        event.wait();
+
+        auto policy = oneapi::dpl::execution::make_device_policy<class dpnp_dot_c_kernel<_DataType>>(DPNP_QUEUE);
+
+        _DataType accumulator = 0;
+        accumulator = std::reduce(policy, local_mem, local_mem + size, _DataType(0), std::plus<_DataType>());
+        policy.queue().wait();
+
+        result[0] = accumulator;
+
+        free(local_mem, DPNP_QUEUE);
+    }
+}
+
+template <typename _DataType, typename _ResultType>
+void dpnp_eig_c(const void* array_in, void* result1, void* result2, size_t size)
+{
+    // TODO this kernel works with square 2-D array only
+
+    // Kernel Type for calculation is double type
+    // because interface requires float type but calculations are expected in double type
+
+    if (!size)
+    {
+        return;
+    }
+
+    cl::sycl::event event;
+
+    const _DataType* array = reinterpret_cast<const _DataType*>(array_in);
+    _ResultType* result_val = reinterpret_cast<_ResultType*>(result1);
+    _ResultType* result_vec = reinterpret_cast<_ResultType*>(result2);
+
+    double* result_val_kern = reinterpret_cast<double*>(dpnp_memory_alloc_c(size * sizeof(double)));
+    double* result_vec_kern = reinterpret_cast<double*>(dpnp_memory_alloc_c(size * size * sizeof(double)));
+
+    // type conversion. Also, math library requires copy memory because override
+    for (size_t it = 0; it < (size * size); ++it)
+    {
+        result_vec_kern[it] = array[it];
+    }
+
+    const std::int64_t lda = std::max<size_t>(1UL, size);
+
+    const std::int64_t scratchpad_size = mkl_lapack::syevd_scratchpad_size<double>(
+        DPNP_QUEUE, oneapi::mkl::job::vec, oneapi::mkl::uplo::upper, size, lda);
+
+    double* scratchpad = reinterpret_cast<double*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(double)));
+
+    event = mkl_lapack::syevd(DPNP_QUEUE,               // queue
+                              oneapi::mkl::job::vec,    // jobz
+                              oneapi::mkl::uplo::upper, // uplo
+                              size,                     // The order of the matrix A (0 <= n)
+                              result_vec_kern,          // will be overwritten with eigenvectors
+                              lda,
+                              result_val_kern,
+                              scratchpad,
+                              scratchpad_size);
     event.wait();
 
-    auto policy = oneapi::dpl::execution::make_device_policy<class custom_blas_dot_c_kernel<_DataType>>(DPNP_QUEUE);
+    dpnp_memory_free_c(scratchpad);
 
-    _DataType accumulator = 0;
-    accumulator = std::reduce(policy, local_mem, local_mem + size, _DataType(0), std::plus<_DataType>());
-    policy.queue().wait();
+    for (size_t it1 = 0; it1 < size; ++it1)
+    {
+        result_val[it1] = result_val_kern[it1];
+        for (size_t it2 = 0; it2 < size; ++it2)
+        {
+            // copy + transpose
+            result_vec[it2 * size + it1] = result_vec_kern[it1 * size + it2];
+        }
+    }
 
-    result[0] = accumulator;
-
-    free(local_mem, DPNP_QUEUE);
+    dpnp_memory_free_c(result_val_kern);
+    dpnp_memory_free_c(result_vec_kern);
 }
 
-template void custom_blas_dot_c<long>(void* array1_in, void* array2_in, void* result1, size_t size);
-template void custom_blas_dot_c<int>(void* array1_in, void* array2_in, void* result1, size_t size);
-
-#if 0 // Example for OpenCL kernel
-#include <map>
-#include <typeindex>
-
-static std::map<std::type_index, std::string> types_map = {{typeid(long), "long"}, {typeid(int), "int"}};
-
-static const char* blas_gemm_naive =
-    "//#define __KERNEL_TYPE__ long                                                \n"
-    "#define __KERNEL_TYPE_ZERO__ 0                                                \n"
-    "__kernel void blas_gemm_naive(__global __KERNEL_TYPE__* array_1,              \n"
-    "                              __global __KERNEL_TYPE__* array_2,              \n"
-    "                              __global __KERNEL_TYPE__* result,               \n"
-    "                              unsigned long size)                             \n"
-    "{                                                                             \n"
-    "    size_t i = get_global_id(0); //for (size_t i = 0; i < size; ++i)          \n"
-    "    {                                                                         \n"
-    "        size_t j = get_global_id(1); //for (size_t j = 0; j < size; ++j)      \n"
-    "        {                                                                     \n"
-    "            __KERNEL_TYPE__ temp = __KERNEL_TYPE_ZERO__;                      \n"
-    "            for (size_t k = 0; k < size; ++k)                                 \n"
-    "            {                                                                 \n"
-    "                const size_t index_1 = i * size + k;                          \n"
-    "                const size_t index_2 = k * size + j;                          \n"
-    "                temp += array_1[index_1] * array_2[index_2];                  \n"
-    "            }                                                                 \n"
-    "                                                                              \n"
-    "            const size_t index_result = i * size + j;                         \n"
-    "            result[index_result] = temp;                                      \n"
-    "        }                                                                     \n"
-    "    }                                                                         \n"
-    "}                                                                             \n";
-
-template <typename _DataType>
-void custom_dgemm_c_opencl(void* array_1_in, void* array_2_in, void* result_1, size_t size)
+void func_map_init_linalg(func_map_t& fmap)
 {
-    _DataType* array_1 = reinterpret_cast<_DataType*>(array_1_in);
-    _DataType* array_2 = reinterpret_cast<_DataType*>(array_2_in);
-    _DataType* result = reinterpret_cast<_DataType*>(result_1);
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_dot_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_dot_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_dot_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_dot_c<double>};
 
-    std::string compile_time_options("-cl-std=CL1.2");
-    compile_time_options += " -D__KERNEL_TYPE__=" + types_map.at(typeid(_DataType));
+    fmap[DPNPFuncName::DPNP_FN_EIG][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_eig_c<int, double>};
+    fmap[DPNPFuncName::DPNP_FN_EIG][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_eig_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_EIG][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_eig_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_EIG][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_eig_c<double, double>};
 
-    cl::sycl::program program_src(DPNP_QUEUE.get_context());
-    program_src.build_with_source(blas_gemm_naive, compile_time_options);
+    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_matmul_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_matmul_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_matmul_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_matmul_c<double>};
 
-    cl::sycl::range<2> kernel_work_ids(size, size); // dimensions are: "i" and "j"
-    DPNP_QUEUE.submit([&](cl::sycl::handler& cgh) {
-        cgh.set_args(array_1, array_2, result, size);
-        cgh.parallel_for(kernel_work_ids, program_src.get_kernel("blas_gemm_naive"));
-    });
-
-    DPNP_QUEUE.wait();
+    return;
 }
-
-template void custom_dgemm_c_opencl<long>(void* array_1_in, void* array_2_in, void* result_1, size_t size);
-
-#endif

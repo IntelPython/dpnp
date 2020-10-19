@@ -25,10 +25,11 @@
 
 #include <cmath>
 #include <iostream>
-#include <mkl_blas_sycl.hpp>
 #include <vector>
 
 #include <backend_iface.hpp>
+
+#include "backend_fptr.hpp"
 #include "backend_utils.hpp"
 #include "queue_sycl.hpp"
 
@@ -73,29 +74,29 @@ void custom_elemwise_transpose_c(void* array1_in,
     }
 
     cl::sycl::range<1> gws(size);
-    event = DPNP_QUEUE.submit([&](cl::sycl::handler& cgh) {
-            cgh.parallel_for<class custom_elemwise_transpose_c_kernel<_DataType> >(
-                gws,
-                [=](cl::sycl::id<1> global_id)
-            {
-                const size_t idx = global_id[0];
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        const size_t idx = global_id[0];
 
-                size_t output_index = 0;
-                size_t reminder = idx;
-                for (size_t axis = 0; axis < input_shape_size; ++axis)
-                {
-                    /* reconstruct [x][y][z] from given linear idx */
-                    size_t xyz_id = reminder / input_offset_shape[axis];
-                    reminder = reminder % input_offset_shape[axis];
+        size_t output_index = 0;
+        size_t reminder = idx;
+        for (size_t axis = 0; axis < input_shape_size; ++axis)
+        {
+            /* reconstruct [x][y][z] from given linear idx */
+            size_t xyz_id = reminder / input_offset_shape[axis];
+            reminder = reminder % input_offset_shape[axis];
 
-                    /* calculate destination index based on reconstructed [x][y][z] */
-                    output_index += (xyz_id * result_offset_shape[axis]);
-                }
+            /* calculate destination index based on reconstructed [x][y][z] */
+            output_index += (xyz_id * result_offset_shape[axis]);
+        }
 
-                result[output_index] = array1[idx];
+        result[output_index] = array1[idx];
+    };
 
-            }); // parallel_for
-    });         // queue.submit
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class custom_elemwise_transpose_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+    };
+
+    event = DPNP_QUEUE.submit(kernel_func);
 
     event.wait();
 
@@ -103,27 +104,12 @@ void custom_elemwise_transpose_c(void* array1_in,
     free(result_offset_shape, DPNP_QUEUE);
 }
 
-template void custom_elemwise_transpose_c<double>(void* array1_in,
-                                                  const std::vector<long>& input_shape,
-                                                  const std::vector<long>& result_shape,
-                                                  const std::vector<long>& permute_axes,
-                                                  void* result1,
-                                                  size_t size);
-template void custom_elemwise_transpose_c<float>(void* array1_in,
-                                                 const std::vector<long>& input_shape,
-                                                 const std::vector<long>& result_shape,
-                                                 const std::vector<long>& permute_axes,
-                                                 void* result1,
-                                                 size_t size);
-template void custom_elemwise_transpose_c<long>(void* array1_in,
-                                                const std::vector<long>& input_shape,
-                                                const std::vector<long>& result_shape,
-                                                const std::vector<long>& permute_axes,
-                                                void* result1,
-                                                size_t size);
-template void custom_elemwise_transpose_c<int>(void* array1_in,
-                                               const std::vector<long>& input_shape,
-                                               const std::vector<long>& result_shape,
-                                               const std::vector<long>& permute_axes,
-                                               void* result1,
-                                               size_t size);
+void func_map_init_manipulation(func_map_t& fmap)
+{
+    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_INT][eft_INT] = {eft_INT, (void*)custom_elemwise_transpose_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_elemwise_transpose_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_elemwise_transpose_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_elemwise_transpose_c<double>};
+
+    return;
+}

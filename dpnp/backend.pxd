@@ -31,6 +31,7 @@ from dpnp.dparray cimport dparray, dparray_shape_type
 
 cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
     cdef enum DPNPFuncName "DPNPFuncName":
+        DPNP_FN_ABSOLUTE
         DPNP_FN_ADD
         DPNP_FN_ARCCOS
         DPNP_FN_ARCCOSH
@@ -42,6 +43,9 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_ARGMAX
         DPNP_FN_ARGMIN
         DPNP_FN_ARGSORT
+        DPNP_FN_BITWISE_AND
+        DPNP_FN_BITWISE_OR
+        DPNP_FN_BITWISE_XOR
         DPNP_FN_CBRT
         DPNP_FN_CEIL
         DPNP_FN_COS
@@ -59,6 +63,8 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_FMOD
         DPNP_FN_GAUSSIAN
         DPNP_FN_HYPOT
+        DPNP_FN_INVERT
+        DPNP_FN_LEFT_SHIFT
         DPNP_FN_LOG
         DPNP_FN_LOG10
         DPNP_FN_LOG1P
@@ -76,20 +82,23 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_PROD
         DPNP_FN_UNIFORM
         DPNP_FN_RADIANS
-        DPNP_FN_RANDOM
+        DPNP_FN_REMAINDER
         DPNP_FN_RECIP
+        DPNP_FN_RIGHT_SHIFT
         DPNP_FN_SIGN
         DPNP_FN_SIN
         DPNP_FN_SINH
         DPNP_FN_SORT
         DPNP_FN_SQRT
         DPNP_FN_SQUARE
+        DPNP_FN_STD
         DPNP_FN_SUBTRACT
         DPNP_FN_SUM
         DPNP_FN_TAN
         DPNP_FN_TANH
         DPNP_FN_TRANSPOSE
         DPNP_FN_TRUNC
+        DPNP_FN_VAR
 
 cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
     cdef enum DPNPFuncType "DPNPFuncType":
@@ -118,9 +127,7 @@ cdef extern from "backend/backend_iface.hpp":
     char * dpnp_memory_alloc_c(size_t size_in_bytes)
     void dpnp_memory_free_c(void * ptr)
     void dpnp_memory_memcpy_c(void * dst, const void * src, size_t size_in_bytes)
-
-    # Random module routines
-    # void mkl_rng_uniform_mt19937[_DataType](void * result, long low, long high, size_t size)
+    void dpnp_srand_c(size_t seed)
 
 
 # C function pointer to the C library template functions
@@ -132,7 +139,6 @@ cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shap
 cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, dparray_shape_type result_shape)
 
 
-cpdef dparray dpnp_remainder(dparray array1, int scalar)
 cpdef dparray dpnp_astype(dparray array1, dtype_target)
 
 
@@ -141,6 +147,17 @@ Internal functions
 """
 cpdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype)
 cpdef dpnp_DPNPFuncType_to_dtype(size_t type)
+
+
+"""
+Bitwise functions
+"""
+cpdef dparray dpnp_bitwise_and(dparray array1, dparray array2)
+cpdef dparray dpnp_bitwise_or(dparray array1, dparray array2)
+cpdef dparray dpnp_bitwise_xor(dparray array1, dparray array2)
+cpdef dparray dpnp_invert(dparray arr)
+cpdef dparray dpnp_left_shift(dparray array1, dparray array2)
+cpdef dparray dpnp_right_shift(dparray array1, dparray array2)
 
 
 """
@@ -187,6 +204,7 @@ cpdef dparray dpnp_minimum(dparray array1, dparray array2)
 cpdef dparray dpnp_multiply(dparray array1, dparray array2)
 cpdef dparray dpnp_negative(dparray array1)
 cpdef dparray dpnp_power(dparray array1, dparray array2)
+cpdef dparray dpnp_remainder(dparray array1, dparray array2)
 cpdef dparray dpnp_sin(dparray array1)
 cpdef dparray dpnp_subtract(dparray array1, dparray array2)
 
