@@ -25,10 +25,8 @@
 
 #include <iostream>
 #include <list>
-#include <mkl_blas_sycl.hpp>
 
 #include <backend_iface.hpp>
-#include "backend_pstl.hpp"
 #include "backend_utils.hpp"
 #include "queue_sycl.hpp"
 
@@ -44,21 +42,15 @@ void custom_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t 
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
     size_t elems = 1;
-    long rank_val = 0;
+    _DataType rank_val = 0;
     if (ndim > 1)
     {
-        for (size_t i = 0; i < ndim; i++)
+        elems = shape[0];
+        for (size_t i = 1; i < ndim; i++)
         {
-            if (i == 0)
+            if (shape[i] < elems)
             {
                 elems = shape[i];
-            }
-            else
-            {
-                if (shape[i] < elems)
-                {
-                    elems = shape[i];
-                }
             }
         }
     }
@@ -67,7 +59,7 @@ void custom_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t 
         size_t ind = 0;
         for (size_t j = 0; j < ndim; j++)
         {
-            ind += shape[j] * i;
+            ind += (shape[j] - 1) * i;
         }
         rank_val += array_1[ind];
     }
