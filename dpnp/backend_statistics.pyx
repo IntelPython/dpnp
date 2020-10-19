@@ -385,14 +385,14 @@ cpdef dparray dpnp_min(dparray input, axis):
     else:
         if isinstance(axis, int):
             if axis < 0:
-                axis_ = tuple([-1 * axis])
+                axis_ = tuple([ndim - axis])
             else:
                 axis_ = tuple([axis])
         else:
             _axis_ = []
             for i in range(len(axis)):
                 if axis[i] < 0:
-                    _axis_.append(-1 * axis[i])
+                    _axis_.append(ndim - axis[i])
                 else:
                     _axis_.append(axis[i])
             axis_ = tuple(_axis_)
