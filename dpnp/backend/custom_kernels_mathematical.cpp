@@ -28,6 +28,7 @@
 #include <vector>
 
 #include <backend_iface.hpp>
+#include "backend_fptr.hpp"
 #include "backend_utils.hpp"
 #include "queue_sycl.hpp"
 
@@ -89,3 +90,70 @@ template void custom_elemwise_absolute_c<long>(void* array1_in,
 template void custom_elemwise_absolute_c<int>(void* array1_in,
                                               void* result1,
                                               size_t size);
+
+template <typename _KernelNameSpecialization1,
+          typename _KernelNameSpecialization2,
+          typename _KernelNameSpecialization3>
+class dpnp_remainder_c_kernel;
+
+template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
+void dpnp_remainder_c(void* array1_in, void* array2_in, void* result1, size_t size)
+{
+    cl::sycl::event event;
+    _DataType_input1* array1 = reinterpret_cast<_DataType_input1*>(array1_in);
+    _DataType_input2* array2 = reinterpret_cast<_DataType_input2*>(array2_in);
+    _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
+
+    if constexpr ((std::is_same<_DataType_input1, double>::value ||
+                   std::is_same<_DataType_input1, float>::value) &&
+                  std::is_same<_DataType_input2, _DataType_input1>::value)
+    {
+        event = oneapi::mkl::vm::remainder(DPNP_QUEUE, size, array1, array2, result);
+        event.wait();
+        event = oneapi::mkl::vm::copysign(DPNP_QUEUE, size, result, array2, result);
+    }
+    else
+    {
+        cl::sycl::range<1> gws(size);
+        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+            size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/
+            {
+                _DataType_input1 input_elem1 = array1[i];
+                _DataType_input2 input_elem2 = array2[i];
+                double rem = cl::sycl::remainder((double)input_elem1, (double)input_elem2);
+                result[i] = cl::sycl::copysign(rem, (double)input_elem2);
+            }
+        };
+
+        auto kernel_func = [&](cl::sycl::handler& cgh) {
+            cgh.parallel_for<class dpnp_remainder_c_kernel<_DataType_input1, _DataType_input2, _DataType_output>>(
+                gws, kernel_parallel_for_func);
+        };
+
+        event = DPNP_QUEUE.submit(kernel_func);
+    }
+
+    event.wait();
+}
+
+void func_map_init_mathematical(func_map_t& fmap)
+{
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_remainder_c<int, int, int>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_remainder_c<int, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_INT][eft_FLT] = {eft_DBL, (void*)dpnp_remainder_c<int, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_remainder_c<int, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_LNG][eft_INT] = {eft_LNG, (void*)dpnp_remainder_c<long, int, long>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_remainder_c<long, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_LNG][eft_FLT] = {eft_DBL, (void*)dpnp_remainder_c<long, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_remainder_c<long, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_FLT][eft_INT] = {eft_DBL, (void*)dpnp_remainder_c<float, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_FLT][eft_LNG] = {eft_DBL, (void*)dpnp_remainder_c<float, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_remainder_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_FLT][eft_DBL] = {eft_DBL, (void*)dpnp_remainder_c<float, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_remainder_c<double, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_remainder_c<double, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_remainder_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_remainder_c<double, double, double>};
+
+    return;
+}
