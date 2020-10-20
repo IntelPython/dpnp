@@ -44,6 +44,7 @@ __all__ += [
     "dpnp_add",
     'dpnp_arctan2',
     "dpnp_ceil",
+    "dpnp_copysign",
     "dpnp_divide",
     "dpnp_fabs",
     "dpnp_floor",
@@ -97,6 +98,10 @@ cpdef dparray dpnp_arctan2(dparray x1, dparray x2):
 
 cpdef dparray dpnp_ceil(dparray x1):
     return call_fptr_1in_1out(DPNP_FN_CEIL, x1, x1.shape)
+
+
+cpdef dparray dpnp_copysign(dparray x1, dparray x2):
+    return call_fptr_2in_1out(DPNP_FN_COPYSIGN, x1, x2, x1.shape)
 
 
 cpdef dparray dpnp_divide(dparray x1, dparray x2):

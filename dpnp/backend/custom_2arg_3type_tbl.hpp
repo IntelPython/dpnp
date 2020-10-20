@@ -43,6 +43,9 @@ MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_add_c, input_elem1 + input_elem2, oneapi::mkl::
 MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_arctan2_c,
                             cl::sycl::atan2((double)input_elem1, (double)input_elem2),
                             oneapi::mkl::vm::atan2)
+MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_copysign_c,
+                            cl::sycl::copysign((double)input_elem1, (double)input_elem2),
+                            oneapi::mkl::vm::copysign)
 MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_divide_c, input_elem1 / input_elem2, oneapi::mkl::vm::div)
 MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_fmod_c,
                             cl::sycl::fmod((double)input_elem1, (double)input_elem2),

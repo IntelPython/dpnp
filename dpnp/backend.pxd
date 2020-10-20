@@ -48,6 +48,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_BITWISE_XOR
         DPNP_FN_CBRT
         DPNP_FN_CEIL
+        DPNP_FN_COPYSIGN
         DPNP_FN_COS
         DPNP_FN_COSH
         DPNP_FN_COV
@@ -70,6 +71,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_LOG1P
         DPNP_FN_LOG2
         DPNP_FN_MATMUL
+        DPNP_FN_MATRIX_RANK
         DPNP_FN_MAX
         DPNP_FN_MAXIMUM
         DPNP_FN_MEAN

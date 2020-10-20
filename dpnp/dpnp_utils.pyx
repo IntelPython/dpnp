@@ -45,7 +45,6 @@ Python import functions
 """
 __all__ = [
     "call_origin",
-    "check_nd_call",
     "checker_throw_axis_error",
     "checker_throw_index_error",
     "checker_throw_runtime_error",
@@ -94,75 +93,6 @@ def call_origin(function, *args, **kwargs):
             result._setitem_scalar(i, result_origin.item(i))
 
     return result
-
-
-def check_attr_equal(func_name, attr_name, *input_arrays):
-    """
-    Check value of the specified attribute of all input arrays is equal,
-    otherwise ValueError is rased.
-    
-    Parameters
-    ----------
-    func_name : str
-        name of the function to raise the exception
-    attr_name : str
-        name of the attribute to check
-    input_arrays : tuple(arrays)
-        input arrays
-    """
-    unique_vals = set(getattr(x, attr_name) for x in input_arrays)
-    if len(unique_vals) > 1:
-        x1, x2, *_ = list(unique_vals)
-        checker_throw_value_error(func_name, attr_name, x1, x2)
-
-
-def check_nd_call(origin_func, dpnp_func, supported_dtypes, *input_arrays,
-                  check_sizes=False, check_shapes=False, check_dtypes=False, **kwargs):
-    """
-    Choose function to call based on required input arrays types, data types and shapes
-    and call chosen fucntion.
-    
-    Parameters
-    ----------
-    origin_func : function
-        original function to call if at least one input array didn't meet the requirements
-    dpnp_func : function
-        dpnp function to call if all the input arrays met the requirements
-    supported_dtypes : list(dtypes)
-        supported data types
-    input_arrays : tuple(arrays)
-        input arrays
-    check_sizes : bool
-        to check all input arrays sizes are equal
-    check_shapes : bool
-        to check all input arrays shapes are equal
-    check_dtypes : bool
-        to check all input arrays data types are equal
-    kwargs : dict
-        remaining input parameters of the function
-
-    Returns
-    -------
-        result of the function call
-    """
-    x1, *_ = input_arrays
-    if not use_origin_backend(x1) and not kwargs:
-        for x in input_arrays:
-            if not isinstance(x, dparray):
-                break
-            if supported_dtypes and x.dtype not in supported_dtypes:
-                break
-        else:
-            if check_sizes:
-                check_attr_equal(origin_func.__name__, "size", *input_arrays)
-            if check_shapes:
-                check_attr_equal(origin_func.__name__, "shape", *input_arrays)
-            if check_dtypes:
-                check_attr_equal(origin_func.__name__, "dtype", *input_arrays)
-
-            return dpnp_func(*input_arrays)
-
-    return call_origin(origin_func, *input_arrays, **kwargs)
 
 
 cpdef checker_throw_axis_error(function_name, param_name, param, expected):

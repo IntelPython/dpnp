@@ -77,6 +77,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_BITWISE_XOR, /**< Used in numpy.bitwise_xor() implementation  */
     DPNP_FN_CBRT,        /**< Used in numpy.cbrt() implementation  */
     DPNP_FN_CEIL,        /**< Used in numpy.ceil() implementation  */
+    DPNP_FN_COPYSIGN,    /**< Used in numpy.copysign() implementation  */
     DPNP_FN_COS,         /**< Used in numpy.cos() implementation  */
     DPNP_FN_COSH,        /**< Used in numpy.cosh() implementation  */
     DPNP_FN_COV,         /**< Used in numpy.cov() implementation  */
@@ -99,6 +100,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_LOG2,        /**< Used in numpy.log2() implementation  */
     DPNP_FN_LOG1P,       /**< Used in numpy.log1p() implementation  */
     DPNP_FN_MATMUL,      /**< Used in numpy.matmul() implementation  */
+    DPNP_FN_MATRIX_RANK, /**< Used in numpy.linalg.matrix_rank() implementation  */
     DPNP_FN_MAX,         /**< Used in numpy.max() implementation  */
     DPNP_FN_MAXIMUM,     /**< Used in numpy.maximum() implementation  */
     DPNP_FN_MEAN,        /**< Used in numpy.mean() implementation  */

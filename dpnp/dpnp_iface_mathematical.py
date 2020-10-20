@@ -53,6 +53,7 @@ __all__ = [
     "absolute",
     "add",
     "ceil",
+    "copysign",
     "divide",
     "fabs",
     "floor",
@@ -165,6 +166,39 @@ def ceil(x1, **kwargs):
         return dpnp_ceil(x1)
 
     return call_origin(numpy.ceil, x1, **kwargs)
+
+
+def copysign(x1, x2, **kwargs):
+    """
+    Change the sign of x1 to that of x2, element-wise.
+    
+    Parameters
+    ----------
+    x1 : array_like
+        Values to change the sign of.
+    x2 : array_like
+        The sign of x2 is copied to x1.
+    kwargs : dict
+        Remaining input parameters of the function.
+
+    Returns
+    -------
+    out: ndarray or scalar
+        The values of x1 with the sign of x2.
+    """
+    if not use_origin_backend(x1) and not kwargs:
+        if not isinstance(x1, dparray):
+            pass
+        elif not isinstance(x2, dparray):
+            pass
+        elif x1.size != x2.size:
+            pass
+        elif x1.shape != x2.shape:
+            pass
+        else:
+            return dpnp_copysign(x1, x2)
+
+    return call_origin(numpy.copysign, x1, x2, **kwargs)
 
 
 def divide(x1, x2, **kwargs):

@@ -471,6 +471,12 @@ tests/third_party/cupy/math_tests/test_arithmetic.py::TestBoolSubtract_param_3_{
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestBoolSubtract_param_4_{shape=(3, 0, 2), xp=numpy}::test_bool_subtract
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp2
+tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_copysign_float
+tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_frexp
+tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_ldexp
+tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_nextafter_combination
+tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_nextafter_float
+tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_signbit
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_clip1
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_clip2
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_clip3
