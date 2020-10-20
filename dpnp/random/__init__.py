@@ -24,7 +24,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-from dpnp.random.random_iface import *
-from dpnp.random.random_iface import __all__ as __all__random
+from dpnp.random.dpnp_iface_random import *
+from dpnp.random.dpnp_iface_random import __all__ as __all__random
 
 __all__ = __all__random

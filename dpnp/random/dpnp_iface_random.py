@@ -45,7 +45,7 @@ from dpnp.random._random import *
 
 __all__ = [
     'rand',
-    'randf',
+    'ranf',
     'randint',
     'randn',
     'random',
@@ -88,7 +88,7 @@ def rand(d0, *dn):
     return dpnp_random(dims)
 
 
-def randf(size):
+def ranf(size):
     """
     Return random floats in the half-open interval [0.0, 1.0).
     This is an alias of random_sample.
@@ -112,7 +112,7 @@ def randf(size):
 
     for dim in size:
         if not isinstance(dim, int):
-            checker_throw_value_error("randf", "type(dim)", type(dim), int)
+            checker_throw_value_error("ranf", "type(dim)", type(dim), int)
 
     return dpnp_random(size)
 
