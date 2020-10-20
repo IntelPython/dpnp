@@ -512,11 +512,15 @@ INP_DLLEXPORT void custom_elemwise_transpose_c(void* array1_in,
  *
  * @param [in]  size   Number of elements in `result` arrays.
  *
+ * @param [in]  mean   Mean value.
+ *
+ * @param [in]  stddev Standard deviation.
+ *
  * @param [out] result Output array.
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void mkl_rng_gaussian(void* result, size_t size);
+INP_DLLEXPORT void mkl_rng_gaussian(void* result, _DataType mean, _DataType stddev, size_t size);
 
 /**
  * @ingroup BACKEND_API

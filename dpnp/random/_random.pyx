@@ -49,9 +49,7 @@ __all__ = [
     "dpnp_uniform"
 ]
 
-
-
-ctypedef void(*fptr_mkl_rng_gaussian_1out_t)(void *, size_t)
+ctypedef void(*fptr_mkl_rng_gaussian_1out_t)(void *, double, double, size_t)
 ctypedef void(*fptr_mkl_rng_uniform_1out_t)(void *, long, long, size_t)
 
 
@@ -63,6 +61,8 @@ cpdef dparray dpnp_randn(dims):
     univariate "normal" (Gaussian) distribution of mean 0 and variance 1.
 
     """
+    cdef double mean = 0.0
+    cdef double stddev = 1.0
 
     # convert string type names (dparray.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
@@ -76,7 +76,7 @@ cpdef dparray dpnp_randn(dims):
 
     cdef fptr_mkl_rng_gaussian_1out_t func = <fptr_mkl_rng_gaussian_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), result.size)
+    func(result.get_data(), mean, stddev, result.size)
 
     return result
 
