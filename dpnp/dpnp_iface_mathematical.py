@@ -282,8 +282,8 @@ def floor_divide(x1, x2, **kwargs):
     is_x1_dparray = isinstance(x1, dparray)
     is_x2_dparray = isinstance(x2, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
-        return dpnp_floor_divide(x1)
+    if not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs:
+        return dpnp_floor_divide(x1, x2)
 
     return call_origin(numpy.floor_divide, x1, x2, **kwargs)
 
