@@ -19,10 +19,10 @@ def test_random_input_size(func):
 @pytest.mark.parametrize("func",
                          [dpnp.random.random,
                           dpnp.random.random_sample,
-                          dpnp.random.randf,
+                          dpnp.random.ranf,
                           dpnp.random.sample],
                          ids=['random', 'random_sample',
-                              'randf', 'sample'])
+                              'ranf', 'sample'])
 def test_random_input_shape(func):
     shape = (10, 5)
     res = func(shape)
@@ -32,11 +32,11 @@ def test_random_input_shape(func):
 @pytest.mark.parametrize("func",
                          [dpnp.random.random,
                           dpnp.random.random_sample,
-                          dpnp.random.randf,
+                          dpnp.random.ranf,
                           dpnp.random.sample,
                           dpnp.random.rand],
                          ids=['random', 'random_sample',
-                              'randf', 'sample',
+                              'ranf', 'sample',
                               'rand'])
 def test_random_check_otput(func):
     shape = (10, 5)
@@ -76,11 +76,11 @@ def test_randn_normal_distribution():
 @pytest.mark.parametrize("func",
                          [dpnp.random.random,
                           dpnp.random.random_sample,
-                          dpnp.random.randf,
+                          dpnp.random.ranf,
                           dpnp.random.sample,
                           dpnp.random.rand],
                          ids=['random', 'random_sample',
-                              'randf', 'sample',
+                              'ranf', 'sample',
                               'rand'])
 def test_radnom_seed(func):
     seed = 28041990
