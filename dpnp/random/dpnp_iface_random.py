@@ -76,16 +76,15 @@ def rand(d0, *dn):
 
     """
 
-    if (use_origin_backend(d0)):
-        return numpy.random.rand(d0, *dn)
+    if not use_origin_backend(d0):
+        dims = tuple([d0, *dn])
 
-    dims = tuple([d0, *dn])
+        for dim in dims:
+            if not isinstance(dim, int):
+                checker_throw_value_error("rand", "type(dim)", type(dim), int)
+        return dpnp_random(dims)
 
-    for dim in dims:
-        if not isinstance(dim, int):
-            checker_throw_value_error("rand", "type(dim)", type(dim), int)
-
-    return dpnp_random(dims)
+    return call_origin(d0, *dn)
 
 
 def ranf(size):
@@ -107,14 +106,13 @@ def ranf(size):
 
     """
 
-    if (use_origin_backend(size)):
-        return numpy.random.ranf(size)
+    if not use_origin_backend(size):
+        for dim in size:
+            if not isinstance(dim, int):
+                checker_throw_value_error("ranf", "type(dim)", type(dim), int)
+        return dpnp_random(size)
 
-    for dim in size:
-        if not isinstance(dim, int):
-            checker_throw_value_error("ranf", "type(dim)", type(dim), int)
-
-    return dpnp_random(size)
+    return call_origin(size)
 
 
 def randint(low, high=None, size=None, dtype=int):
@@ -155,39 +153,38 @@ def randint(low, high=None, size=None, dtype=int):
 
     """
 
-    if (use_origin_backend(low)):
-        return numpy.random.randint(low, high, size, dtype)
+    if not use_origin_backend(low):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("randint", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("randint", "type(size)", type(size), int)
 
-    if size is None:
-        size = 1
-    elif isinstance(size, tuple):
-        for dim in size:
-            if not isinstance(dim, int):
-                checker_throw_value_error("randint", "type(dim)", type(dim), int)
-    elif not isinstance(size, int):
-        checker_throw_value_error("randint", "type(size)", type(size), int)
+        if high is None:
+            high = low
+            low = 0
 
-    if high is None:
-        high = low
-        low = 0
+        low = int(low)
+        high = int(high)
 
-    low = int(low)
-    high = int(high)
+        if (low >= high):
+            checker_throw_value_error("randint", "low", low, high)
 
-    if (low >= high):
-        checker_throw_value_error("randint", "low", low, high)
+        _dtype = numpy.dtype(dtype)
 
-    _dtype = numpy.dtype(dtype)
+        # TODO:
+        # supported only int32
+        # or just raise error when dtype != numpy.int32
+        if _dtype == numpy.int32 or _dtype == numpy.int64:
+            _dtype = numpy.int32
+        else:
+            raise TypeError('Unsupported dtype %r for randint' % dtype)
+        return dpnp_uniform(low, high, size, _dtype)
 
-    # TODO:
-    # supported only int32
-    # or just raise error when dtype != numpy.int32
-    if _dtype == numpy.int32 or _dtype == numpy.int64:
-        _dtype = numpy.int32
-    else:
-        raise TypeError('Unsupported dtype %r for randint' % dtype)
-
-    return dpnp_uniform(low, high, size, _dtype)
+    return call_origin(low, high, size, dtype)
 
 
 def randn(d0, *dn):
@@ -210,16 +207,15 @@ def randn(d0, *dn):
 
     """
 
-    if (use_origin_backend(d0)):
-        return numpy.random.randn(d0, *dn)
+    if not use_origin_backend(d0):
+        dims = tuple([d0, *dn])
 
-    dims = tuple([d0, *dn])
+        for dim in dims:
+            if not isinstance(dim, int):
+                checker_throw_value_error("randn", "type(dim)", type(dim), int)
+        return dpnp_randn(dims)
 
-    for dim in dims:
-        if not isinstance(dim, int):
-            checker_throw_value_error("randn", "type(dim)", type(dim), int)
-
-    return dpnp_randn(dims)
+    return call_origin(d0, *dn)
 
 
 def random(size):
@@ -241,15 +237,13 @@ def random(size):
 
     """
 
-    if (use_origin_backend(size)):
-        return numpy.random.random(size)
+    if not use_origin_backend(size):
+        for dim in size:
+            if not isinstance(dim, int):
+                checker_throw_value_error("random", "type(dim)", type(dim), int)
+        return dpnp_random(size)
 
-    for dim in size:
-        if not isinstance(dim, int):
-            checker_throw_value_error("random", "type(dim)", type(dim), int)
-
-    return dpnp_random(size)
-
+    return call_origin(size)
 
 def random_integers(low, high=None, size=None):
     """
@@ -284,14 +278,13 @@ def random_integers(low, high=None, size=None):
 
     """
 
-    if (use_origin_backend(low)):
-        return numpy.random.random_integers(low, high, size)
+    if not use_origin_backend(low):
+        if high is None:
+            high = low
+            low = 1
+        return randint(low, int(high) + 1, size=size)
 
-    if high is None:
-        high = low
-        low = 1
-
-    return randint(low, int(high) + 1, size=size)
+    return call_origin(low, high, size)
 
 
 def random_sample(size):
@@ -312,14 +305,13 @@ def random_sample(size):
 
     """
 
-    if (use_origin_backend(size)):
-        return numpy.random.random_sample(size)
+    if not use_origin_backend(size):
+        for dim in size:
+            if not isinstance(dim, int):
+                checker_throw_value_error("random_sample", "type(dim)", type(dim), int)
+        return dpnp_random(size)
 
-    for dim in size:
-        if not isinstance(dim, int):
-            checker_throw_value_error("random_sample", "type(dim)", type(dim), int)
-
-    return dpnp_random(size)
+    return call_origin(size)
 
 
 def seed(seed=None):
@@ -331,17 +323,18 @@ def seed(seed=None):
     seed : {None, int}, optional
 
     """
+    if not use_origin_backend(seed):
+        # TODO:
+        # implement seed default value as is in numpy
+        if seed is None:
+            seed = 1
+        elif not isinstance(seed, int):
+            checker_throw_value_error("seed", "type(seed)", type(seed), int)
+        elif seed < 0:
+            checker_throw_value_error("seed", "seed", seed, "non-negative")
+        return dpnp_srand(seed)
 
-    # TODO:
-    # implement seed default value as is in numpy
-    if seed is None:
-        seed = 1
-    elif not isinstance(seed, int):
-        checker_throw_value_error("seed", "type(seed)", type(seed), int)
-    elif seed < 0:
-        checker_throw_value_error("seed", "seed", seed, "non-negative")
-
-    dpnp_srand(seed)
+    return call_origin(seed)
 
 
 def sample(size):
@@ -363,14 +356,13 @@ def sample(size):
 
     """
 
-    if (use_origin_backend(size)):
-        return numpy.random.sample(size)
+    if not use_origin_backend(size):
+        for dim in size:
+            if not isinstance(dim, int):
+                checker_throw_value_error("sample", "type(dim)", type(dim), int)
+        return dpnp_random(size)
 
-    for dim in size:
-        if not isinstance(dim, int):
-            checker_throw_value_error("sample", "type(dim)", type(dim), int)
-
-    return dpnp_random(size)
+    return call_origin(size)
 
 
 def uniform(low=0.0, high=1.0, size=None):
@@ -404,20 +396,18 @@ def uniform(low=0.0, high=1.0, size=None):
 
     """
 
-    if (use_origin_backend(low)):
-        return numpy.random.uniform(low, high, size)
+    if not use_origin_backend(low):
+        if size is None:
+            size = 1
+        if low == high:
+            # TODO:
+            # currently dparray.full is not implemented
+            # return dpnp.dparray.dparray.full(size, low, dtype=numpy.float64)
+            message = "`low` equal to `high`, should return an array, filled with `low` value."
+            message += "  Currently not supported. See: numpy.full TODO"
+            checker_throw_runtime_error("uniform", message)
+        elif low > high:
+            low, high = high, low
+        return dpnp_uniform(low, high, size, dtype=numpy.float64)
 
-    if size is None:
-        size = 1
-
-    if low == high:
-        # TODO:
-        # currently dparray.full is not implemented
-        # return dpnp.dparray.dparray.full(size, low, dtype=numpy.float64)
-        message = "`low` equal to `high`, should return an array, filled with `low` value."
-        message += "  Currently not supported. See: numpy.full TODO"
-        checker_throw_runtime_error("uniform", message)
-    elif low > high:
-        low, high = high, low
-
-    return dpnp_uniform(low, high, size, dtype=numpy.float64)
+    return call_origin(low, high, size)
