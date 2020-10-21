@@ -483,6 +483,22 @@ INP_DLLEXPORT void dpnp_floor_divide_c(void* array1_in, void* array2_in, void* r
 
 /**
  * @ingroup BACKEND_API
+ * @brief modf function.
+ *
+ * @param [in]  array1_in    Input array.
+ *
+ * @param [out] result1_out  Output array 1.
+ *
+ * @param [out] result2_out  Output array 2.
+ *
+ * @param [in]  size         Number of elements in input arrays.
+ *
+ */
+template <typename _DataType_input, typename _DataType_output>
+INP_DLLEXPORT void dpnp_modf_c(void* array1_in, void* result1_out, void* result2_out, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief remainder function.
  *
  * @param [in]  array1_in    Input array 1.
