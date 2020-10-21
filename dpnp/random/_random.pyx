@@ -49,8 +49,8 @@ __all__ = [
     "dpnp_uniform"
 ]
 
-ctypedef void(*fptr_mkl_rng_gaussian_1out_t)(void *, double, double, size_t)
-ctypedef void(*fptr_mkl_rng_uniform_1out_t)(void *, long, long, size_t)
+ctypedef void(*fptr_custom_rng_gaussian_c_1out_t)(void *, double, double, size_t)
+ctypedef void(*fptr_custom_rng_uniform_c_1out_t)(void *, long, long, size_t)
 
 
 cpdef dparray dpnp_randn(dims):
@@ -74,7 +74,7 @@ cpdef dparray dpnp_randn(dims):
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(dims, dtype=result_type)
 
-    cdef fptr_mkl_rng_gaussian_1out_t func = <fptr_mkl_rng_gaussian_1out_t > kernel_data.ptr
+    cdef fptr_custom_rng_gaussian_c_1out_t func = <fptr_custom_rng_gaussian_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), mean, stddev, result.size)
 
@@ -100,7 +100,7 @@ cpdef dparray dpnp_random(dims):
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(dims, dtype=result_type)
 
-    cdef fptr_mkl_rng_uniform_1out_t func = <fptr_mkl_rng_uniform_1out_t > kernel_data.ptr
+    cdef fptr_custom_rng_uniform_c_1out_t func = <fptr_custom_rng_uniform_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), low, high, result.size)
 
@@ -134,7 +134,7 @@ cpdef dparray dpnp_uniform(long low, long high, size, dtype=numpy.int32):
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(size, dtype=result_type)
 
-    cdef fptr_mkl_rng_uniform_1out_t func = <fptr_mkl_rng_uniform_1out_t > kernel_data.ptr
+    cdef fptr_custom_rng_uniform_c_1out_t func = <fptr_custom_rng_uniform_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), low, high, result.size)
 
