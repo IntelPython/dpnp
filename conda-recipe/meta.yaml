@@ -1,10 +1,6 @@
-{% set version = "0.3.0" %}
-{% set buildnumber = 0 %}
-
 package:
     name: dpnp
-    version: {{version}}
-
+    version: {{ GIT_DESCRIBE_TAG }}
 source:
     path: ..
 
@@ -23,7 +19,7 @@ requirements:
       - mkl >=2021.1b10
 
 build:
-    number: {{buildnumber}}
+    number: {{ GIT_DESCRIBE_NUMBER }}
     include_recipe: False
     script_env:
       - ONEAPI_ROOT

@@ -44,6 +44,7 @@ __all__ += [
     "dpnp_add",
     'dpnp_arctan2',
     "dpnp_ceil",
+    "dpnp_copysign",
     "dpnp_divide",
     "dpnp_fabs",
     "dpnp_floor",
@@ -52,6 +53,7 @@ __all__ += [
     'dpnp_hypot',
     "dpnp_maximum",
     "dpnp_minimum",
+    "dpnp_modf",
     "dpnp_multiply",
     "dpnp_negative",
     "dpnp_power",
@@ -64,6 +66,7 @@ __all__ += [
 
 
 ctypedef void(*fptr_custom_elemwise_absolute_1in_1out_t)(void * , void * , size_t)
+ctypedef void(*fptr_1in_2out_t)(void * , void * , void * , size_t)
 
 
 cpdef dparray dpnp_absolute(dparray input):
@@ -99,6 +102,10 @@ cpdef dparray dpnp_ceil(dparray x1):
     return call_fptr_1in_1out(DPNP_FN_CEIL, x1, x1.shape)
 
 
+cpdef dparray dpnp_copysign(dparray x1, dparray x2):
+    return call_fptr_2in_1out(DPNP_FN_COPYSIGN, x1, x2, x1.shape)
+
+
 cpdef dparray dpnp_divide(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_DIVIDE, x1, x2, x1.shape)
 
@@ -111,13 +118,8 @@ cpdef dparray dpnp_floor(dparray x1):
     return call_fptr_1in_1out(DPNP_FN_FLOOR, x1, x1.shape)
 
 
-cpdef dparray dpnp_floor_divide(dparray array1, dparray array2):
-    cdef dparray result = dparray(array1.shape, dtype=array1.dtype)
-
-    for i in range(result.size):
-        result[i] = (array1[i] // array2[i])
-
-    return result
+cpdef dparray dpnp_floor_divide(dparray x1, dparray x2):
+    return call_fptr_2in_1out(DPNP_FN_FLOOR_DIVIDE, x1, x2, x1.shape)
 
 
 cpdef dparray dpnp_hypot(dparray x1, dparray x2):
@@ -130,6 +132,25 @@ cpdef dparray dpnp_maximum(dparray x1, dparray x2):
 
 cpdef dparray dpnp_minimum(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_MINIMUM, x1, x2, x1.shape)
+
+
+cpdef tuple dpnp_modf(dparray x1):
+    """ Convert string type names (dparray.dtype) to C enum DPNPFuncType """
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
+
+    """ get the FPTR data structure """
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MODF, param1_type, DPNP_FT_NONE)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    """ Create result arrays with type given by FPTR data """
+    cdef dparray result1 = dparray(x1.shape, dtype=result_type)
+    cdef dparray result2 = dparray(x1.shape, dtype=result_type)
+
+    cdef fptr_1in_2out_t func = <fptr_1in_2out_t > kernel_data.ptr
+    """ Call FPTR function """
+    func(x1.get_data(), result1.get_data(), result2.get_data(), x1.size)
+
+    return result1, result2
 
 
 cpdef dparray dpnp_multiply(dparray x1, dparray x2):

@@ -53,6 +53,7 @@ __all__ = [
     "absolute",
     "add",
     "ceil",
+    "copysign",
     "divide",
     "fabs",
     "floor",
@@ -63,6 +64,7 @@ __all__ = [
     "maximum",
     "minimum",
     "mod",
+    "modf",
     "multiply",
     "negative",
     "power",
@@ -167,6 +169,39 @@ def ceil(x1, **kwargs):
     return call_origin(numpy.ceil, x1, **kwargs)
 
 
+def copysign(x1, x2, **kwargs):
+    """
+    Change the sign of x1 to that of x2, element-wise.
+    
+    Parameters
+    ----------
+    x1 : array_like
+        Values to change the sign of.
+    x2 : array_like
+        The sign of x2 is copied to x1.
+    kwargs : dict
+        Remaining input parameters of the function.
+
+    Returns
+    -------
+    out: ndarray or scalar
+        The values of x1 with the sign of x2.
+    """
+    if not use_origin_backend(x1) and not kwargs:
+        if not isinstance(x1, dparray):
+            pass
+        elif not isinstance(x2, dparray):
+            pass
+        elif x1.size != x2.size:
+            pass
+        elif x1.shape != x2.shape:
+            pass
+        else:
+            return dpnp_copysign(x1, x2)
+
+    return call_origin(numpy.copysign, x1, x2, **kwargs)
+
+
 def divide(x1, x2, **kwargs):
     """
     Divide arguments element-wise.
@@ -248,8 +283,8 @@ def floor_divide(x1, x2, **kwargs):
     is_x1_dparray = isinstance(x1, dparray)
     is_x2_dparray = isinstance(x2, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
-        return dpnp_floor_divide(x1)
+    if not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs:
+        return dpnp_floor_divide(x1, x2)
 
     return call_origin(numpy.floor_divide, x1, x2, **kwargs)
 
@@ -383,6 +418,39 @@ def mod(*args, **kwargs):
     """
 
     return dpnp.remainder(*args, **kwargs)
+
+
+def modf(x, **kwargs):
+    """
+    Return the fractional and integral parts of an array, element-wise.
+
+    The fractional and integral parts are negative if the given number is negative.
+
+    Parameters
+    ----------
+    x : array_like
+        Input array.
+    kwargs : dict
+        Remaining input parameters of the function.
+
+    Returns
+    -------
+    y1 : ndarray or scalar
+        Fractional part of x. This is a scalar if x is a scalar.
+    y2 : ndarray or scalar
+        Integral part of x. This is a scalar if x is a scalar.
+
+    See Also
+    --------
+    divmod
+    """
+    if not use_origin_backend(x) and not kwargs:
+        if not isinstance(x, dparray):
+            pass
+        else:
+            return dpnp_modf(x)
+
+    return call_origin(numpy.modf, x, **kwargs)
 
 
 def multiply(x1, x2, **kwargs):

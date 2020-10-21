@@ -24,15 +24,14 @@
 //*****************************************************************************
 
 #include <backend_iface.hpp>
+#include "backend_fptr.hpp"
 #include "backend_utils.hpp"
 #include "queue_sycl.hpp"
 
 namespace mkl_rng = oneapi::mkl::rng;
 
-// TODO:
-// add mean and std params ?
 template <typename _DataType>
-void mkl_rng_gaussian(void* result, size_t size)
+void custom_rng_chi_square_c(void* result, int df, size_t size)
 {
     if (!size)
     {
@@ -40,8 +39,20 @@ void mkl_rng_gaussian(void* result, size_t size)
     }
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    const _DataType mean = _DataType(0.0);
-    const _DataType stddev = _DataType(1.0);
+    mkl_rng::chi_square<_DataType> distribution(df);
+    // perform generation
+    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+    event_out.wait();
+}
+
+template <typename _DataType>
+void custom_rng_gaussian_c(void* result, _DataType mean, _DataType stddev, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
     mkl_rng::gaussian<_DataType> distribution(mean, stddev);
     // perform generation
@@ -50,7 +61,7 @@ void mkl_rng_gaussian(void* result, size_t size)
 }
 
 template <typename _DataType>
-void mkl_rng_uniform(void* result, long low, long high, size_t size)
+void custom_rng_uniform_c(void* result, long low, long high, size_t size)
 {
     if (!size)
     {
@@ -70,9 +81,17 @@ void mkl_rng_uniform(void* result, long low, long high, size_t size)
 
 }
 
-template void mkl_rng_gaussian<double>(void* result, size_t size);
-template void mkl_rng_gaussian<float>(void* result, size_t size);
+void func_map_init_random(func_map_t& fmap)
+{
+    fmap[DPNPFuncName::DPNP_FN_CHISQUARE][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_chi_square_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_CHISQUARE][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_rng_chi_square_c<float>};
 
-template void mkl_rng_uniform<int>(void* result, long low, long high, size_t size);
-template void mkl_rng_uniform<float>(void* result, long low, long high, size_t size);
-template void mkl_rng_uniform<double>(void* result, long low, long high, size_t size);
+    fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_gaussian_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_rng_gaussian_c<float>};
+
+    fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_uniform_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_rng_uniform_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_INT][eft_INT] = {eft_INT, (void*)custom_rng_uniform_c<int>};
+
+    return;
+}

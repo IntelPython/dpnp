@@ -467,6 +467,38 @@ INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
+ * @brief floor_divide function.
+ *
+ * @param [in]  array1_in    Input array 1.
+ *
+ * @param [in]  array2_in    Input array 2.
+ *
+ * @param [out] result1      Output array.
+ *
+ * @param [in]  size         Number of elements in input arrays.
+ *
+ */
+template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
+INP_DLLEXPORT void dpnp_floor_divide_c(void* array1_in, void* array2_in, void* result1, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief modf function.
+ *
+ * @param [in]  array1_in    Input array.
+ *
+ * @param [out] result1_out  Output array 1.
+ *
+ * @param [out] result2_out  Output array 2.
+ *
+ * @param [in]  size         Number of elements in input arrays.
+ *
+ */
+template <typename _DataType_input, typename _DataType_output>
+INP_DLLEXPORT void dpnp_modf_c(void* array1_in, void* result1_out, void* result2_out, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief remainder function.
  *
  * @param [in]  array1_in    Input array 1.
@@ -512,11 +544,15 @@ INP_DLLEXPORT void custom_elemwise_transpose_c(void* array1_in,
  *
  * @param [in]  size   Number of elements in `result` arrays.
  *
+ * @param [in]  mean   Mean value.
+ *
+ * @param [in]  stddev Standard deviation.
+ *
  * @param [out] result Output array.
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void mkl_rng_gaussian(void* result, size_t size);
+INP_DLLEXPORT void custom_rng_gaussian_c(void* result, _DataType mean, _DataType stddev, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -532,7 +568,7 @@ INP_DLLEXPORT void mkl_rng_gaussian(void* result, size_t size);
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void mkl_rng_uniform(void* result, long low, long high, size_t size);
+INP_DLLEXPORT void custom_rng_uniform_c(void* result, long low, long high, size_t size);
 
 /**
  * @ingroup BACKEND_API
