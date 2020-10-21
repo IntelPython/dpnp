@@ -72,9 +72,8 @@ def exponential(scale=1.0, size=None):
                     checker_throw_value_error("exponential", "type(dim)", type(dim), int)
         elif not isinstance(size, int):
             checker_throw_value_error("exponential", "type(size)", type(size), int)
-
-        #return dpnp_exponential(scale, size)
-        pass
+        # displacement `a` is 0.0
+        return dpnp_exponential(0.0, scale, size)
 
     return call_origin(df, size)
 

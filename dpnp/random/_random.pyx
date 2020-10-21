@@ -51,15 +51,11 @@ __all__ = [
 ]
 
 
-# TODO:
-# common typpe for different types
 ctypedef void(*fptr_custom_rng_exponential_c_1out_t)(void *, double, double, size_t)
 ctypedef void(*fptr_mkl_rng_gaussian_1out_t)(void *, double, double, size_t)
 ctypedef void(*fptr_mkl_rng_uniform_1out_t)(void *, long, long, size_t)
 
 
-# TODO
-# add for different types
 cpdef dparray dpnp_exponential(double a, double beta, size):
     """
     Return a random matrix with data from the "exponential" distribution.
