@@ -5,6 +5,7 @@ import numpy
 import dpnp as cupy
 from dpnp import random as _distributions
 from tests.third_party.cupy import testing
+from tests.third_party.cupy.testing import helper
 
 
 _regular_float_dtypes = (numpy.float64, numpy.float32)
@@ -36,7 +37,7 @@ class RandomDistributionsTestCase(unittest.TestCase):
 @testing.gpu
 class TestDistributionsBeta(RandomDistributionsTestCase):
 
-    @cupy.testing.for_dtypes_combination(
+    @helper.for_dtypes_combination(
         _float_dtypes, names=['a_dtype', 'b_dtype'])
     def test_beta(self, a_dtype, b_dtype):
         a = numpy.full(self.a_shape, 3, dtype=a_dtype)
@@ -55,8 +56,8 @@ class TestDistributionsBeta(RandomDistributionsTestCase):
 @testing.gpu
 class TestDistributionsBinomial(RandomDistributionsTestCase):
 
-    @cupy.testing.for_signed_dtypes('n_dtype')
-    @cupy.testing.for_float_dtypes('p_dtype')
+    @helper.for_signed_dtypes('n_dtype')
+    @helper.for_float_dtypes('p_dtype')
     def test_binomial(self, n_dtype, p_dtype):
         if numpy.dtype('l') == numpy.int32 and n_dtype == numpy.int64:
             self.skipTest('n must be able to cast to long')
@@ -80,8 +81,8 @@ class TestDistributionsChisquare(unittest.TestCase):
         self.assertEqual(self.shape, out.shape)
         self.assertEqual(out.dtype, dtype)
 
-    @cupy.testing.for_float_dtypes('df_dtype')
-    @cupy.testing.for_float_dtypes('dtype')
+    @helper.for_float_dtypes('df_dtype')
+    @helper.for_float_dtypes('dtype')
     def test_chisquare(self, df_dtype, dtype):
         self.check_distribution(_distributions.chisquare, df_dtype, dtype)
 
@@ -94,7 +95,7 @@ class TestDistributionsChisquare(unittest.TestCase):
 @testing.gpu
 class TestDistributionsDirichlet(RandomDistributionsTestCase):
 
-    @cupy.testing.for_dtypes_combination(
+    @helper.for_dtypes_combination(
         _float_dtypes, names=['alpha_dtype', 'dtype'])
     def test_dirichlet(self, alpha_dtype, dtype):
         alpha = numpy.ones(self.alpha_shape, dtype=alpha_dtype)
@@ -110,8 +111,8 @@ class TestDistributionsDirichlet(RandomDistributionsTestCase):
 @testing.gpu
 class TestDistributionsExponential(RandomDistributionsTestCase):
 
-    @cupy.testing.for_float_dtypes('dtype', no_float16=True)
-    @cupy.testing.for_float_dtypes('scale_dtype')
+    @helper.for_float_dtypes('dtype', no_float16=True)
+    @helper.for_float_dtypes('scale_dtype')
     def test_exponential(self, scale_dtype, dtype):
         scale = numpy.ones(self.scale_shape, dtype=scale_dtype)
         self.check_distribution('exponential',
@@ -144,8 +145,8 @@ class TestDistributionsF(unittest.TestCase):
         self.assertEqual(self.shape, out.shape)
         self.assertEqual(out.dtype, dtype)
 
-    @cupy.testing.for_float_dtypes('dfnum_dtype')
-    @cupy.testing.for_float_dtypes('dfden_dtype')
+    @helper.for_float_dtypes('dfnum_dtype')
+    @helper.for_float_dtypes('dfden_dtype')
     def test_f(self, dfnum_dtype, dfden_dtype):
         self.check_distribution(_distributions.f,
                                 dfnum_dtype, dfden_dtype, self.dtype)
@@ -168,7 +169,7 @@ class TestDistributionsGamma(unittest.TestCase):
         self.assertEqual(self.shape, out.shape)
         self.assertEqual(out.dtype, dtype)
 
-    @cupy.testing.for_dtypes_combination(
+    @helper.for_dtypes_combination(
         _float_dtypes, names=['shape_dtype', 'scale_dtype'])
     def test_gamma(self, shape_dtype, scale_dtype):
         self.check_distribution(_distributions.gamma,
@@ -190,7 +191,7 @@ class TestDistributionsGeometric(unittest.TestCase):
         self.assertEqual(self.shape, out.shape)
         self.assertEqual(out.dtype, dtype)
 
-    @cupy.testing.for_float_dtypes('p_dtype')
+    @helper.for_float_dtypes('p_dtype')
     def test_geometric(self, p_dtype):
         self.check_distribution(_distributions.geometric,
                                 p_dtype, self.dtype)
@@ -205,8 +206,8 @@ class TestDistributionsGeometric(unittest.TestCase):
 @testing.gpu
 class TestDistributionsGumbel(RandomDistributionsTestCase):
 
-    @cupy.testing.for_float_dtypes('dtype', no_float16=True)
-    @cupy.testing.for_dtypes_combination(
+    @helper.for_float_dtypes('dtype', no_float16=True)
+    @helper.for_dtypes_combination(
         _float_dtypes, names=['loc_dtype', 'scale_dtype'])
     def test_gumbel(self, loc_dtype, scale_dtype, dtype):
         loc = numpy.ones(self.loc_shape, dtype=loc_dtype)
@@ -236,7 +237,7 @@ class TestDistributionsHyperGeometric(unittest.TestCase):
         self.assertEqual(self.shape, out.shape)
         self.assertEqual(out.dtype, dtype)
 
-    @cupy.testing.for_dtypes_combination(
+    @helper.for_dtypes_combination(
         [numpy.int32, numpy.int64], names=['ngood_dtype', 'nbad_dtype'])
     def test_hypergeometric(self, ngood_dtype, nbad_dtype):
         self.check_distribution(_distributions.hypergeometric, ngood_dtype,
@@ -252,8 +253,8 @@ class TestDistributionsHyperGeometric(unittest.TestCase):
 @testing.gpu
 class TestDistributionsuLaplace(RandomDistributionsTestCase):
 
-    @cupy.testing.for_float_dtypes('dtype', no_float16=True)
-    @cupy.testing.for_dtypes_combination(
+    @helper.for_float_dtypes('dtype', no_float16=True)
+    @helper.for_dtypes_combination(
         _float_dtypes, names=['loc_dtype', 'scale_dtype'])
     def test_laplace(self, loc_dtype, scale_dtype, dtype):
         loc = numpy.ones(self.loc_shape, dtype=loc_dtype)
@@ -271,8 +272,8 @@ class TestDistributionsuLaplace(RandomDistributionsTestCase):
 @testing.gpu
 class TestDistributionsLogistic(RandomDistributionsTestCase):
 
-    @cupy.testing.for_float_dtypes('dtype', no_float16=True)
-    @cupy.testing.for_dtypes_combination(
+    @helper.for_float_dtypes('dtype', no_float16=True)
+    @helper.for_dtypes_combination(
         _float_dtypes, names=['loc_dtype', 'scale_dtype'])
     def test_logistic(self, loc_dtype, scale_dtype, dtype):
         loc = numpy.ones(self.loc_shape, dtype=loc_dtype)
@@ -290,8 +291,8 @@ class TestDistributionsLogistic(RandomDistributionsTestCase):
 @testing.gpu
 class TestDistributionsLognormal(RandomDistributionsTestCase):
 
-    @cupy.testing.for_float_dtypes('dtype', no_float16=True)
-    @cupy.testing.for_dtypes_combination(
+    @helper.for_float_dtypes('dtype', no_float16=True)
+    @helper.for_dtypes_combination(
         _float_dtypes, names=['mean_dtype', 'sigma_dtype'])
     def test_lognormal(self, mean_dtype, sigma_dtype, dtype):
         mean = numpy.ones(self.mean_shape, dtype=mean_dtype)
@@ -308,15 +309,15 @@ class TestDistributionsLognormal(RandomDistributionsTestCase):
 @testing.gpu
 class TestDistributionsLogseries(RandomDistributionsTestCase):
 
-    @cupy.testing.for_dtypes([numpy.int64, numpy.int32], 'dtype')
-    @cupy.testing.for_float_dtypes('p_dtype', no_float16=True)
+    @helper.for_dtypes([numpy.int64, numpy.int32], 'dtype')
+    @helper.for_float_dtypes('p_dtype', no_float16=True)
     def test_logseries(self, p_dtype, dtype):
         p = numpy.full(self.p_shape, 0.5, dtype=p_dtype)
         self.check_distribution('logseries',
                                 {'p': p}, dtype)
 
-    @cupy.testing.for_dtypes([numpy.int64, numpy.int32], 'dtype')
-    @cupy.testing.for_float_dtypes('p_dtype', no_float16=True)
+    @helper.for_dtypes([numpy.int64, numpy.int32], 'dtype')
+    @helper.for_float_dtypes('p_dtype', no_float16=True)
     def test_logseries_for_invalid_p(self, p_dtype, dtype):
         with self.assertRaises(ValueError):
             cp_params = {'p': cupy.zeros(self.p_shape, dtype=p_dtype)}
@@ -342,9 +343,9 @@ class TestDistributionsMultivariateNormal(unittest.TestCase):
         self.assertEqual(self.shape+(self.d,), out.shape)
         self.assertEqual(out.dtype, dtype)
 
-    @cupy.testing.for_float_dtypes('dtype', no_float16=True)
-    @cupy.testing.for_float_dtypes('mean_dtype', no_float16=True)
-    @cupy.testing.for_float_dtypes('cov_dtype', no_float16=True)
+    @helper.for_float_dtypes('dtype', no_float16=True)
+    @helper.for_float_dtypes('mean_dtype', no_float16=True)
+    @helper.for_float_dtypes('cov_dtype', no_float16=True)
     def test_normal(self, mean_dtype, cov_dtype, dtype):
         self.check_distribution(_distributions.multivariate_normal,
                                 mean_dtype, cov_dtype, dtype)
@@ -360,16 +361,16 @@ class TestDistributionsMultivariateNormal(unittest.TestCase):
 @testing.gpu
 class TestDistributionsNegativeBinomial(RandomDistributionsTestCase):
 
-    @cupy.testing.for_float_dtypes('n_dtype')
-    @cupy.testing.for_float_dtypes('p_dtype')
+    @helper.for_float_dtypes('n_dtype')
+    @helper.for_float_dtypes('p_dtype')
     def test_negative_binomial(self, n_dtype, p_dtype):
         n = numpy.full(self.n_shape, 5, dtype=n_dtype)
         p = numpy.full(self.p_shape, 0.5, dtype=p_dtype)
         self.check_distribution('negative_binomial',
                                 {'n': n, 'p': p}, self.dtype)
 
-    @cupy.testing.for_float_dtypes('n_dtype')
-    @cupy.testing.for_float_dtypes('p_dtype')
+    @helper.for_float_dtypes('n_dtype')
+    @helper.for_float_dtypes('p_dtype')
     def test_negative_binomial_for_noninteger_n(self, n_dtype, p_dtype):
         n = numpy.full(self.n_shape, 5.5, dtype=n_dtype)
         p = numpy.full(self.p_shape, 0.5, dtype=p_dtype)
@@ -387,7 +388,7 @@ class TestDistributionsNegativeBinomial(RandomDistributionsTestCase):
 @testing.gpu
 class TestDistributionsNoncentralChisquare(RandomDistributionsTestCase):
 
-    @cupy.testing.for_dtypes_combination(
+    @helper.for_dtypes_combination(
         _regular_float_dtypes, names=['df_dtype', 'nonc_dtype'])
     def test_noncentral_chisquare(self, df_dtype, nonc_dtype):
         df = numpy.full(self.df_shape, 1, dtype=df_dtype)
@@ -395,7 +396,7 @@ class TestDistributionsNoncentralChisquare(RandomDistributionsTestCase):
         self.check_distribution('noncentral_chisquare',
                                 {'df': df, 'nonc': nonc}, self.dtype)
 
-    @cupy.testing.for_float_dtypes('param_dtype', no_float16=True)
+    @helper.for_float_dtypes('param_dtype', no_float16=True)
     def test_noncentral_chisquare_for_invalid_params(self, param_dtype):
         df = cupy.full(self.df_shape, -1, dtype=param_dtype)
         nonc = cupy.full(self.nonc_shape, 1, dtype=param_dtype)
@@ -421,7 +422,7 @@ class TestDistributionsNoncentralChisquare(RandomDistributionsTestCase):
 @testing.gpu
 class TestDistributionsNoncentralF(RandomDistributionsTestCase):
 
-    @cupy.testing.for_dtypes_combination(
+    @helper.for_dtypes_combination(
         _regular_float_dtypes,
         names=['dfnum_dtype', 'dfden_dtype', 'nonc_dtype'])
     def test_noncentral_f(self, dfnum_dtype, dfden_dtype, nonc_dtype):
@@ -432,7 +433,7 @@ class TestDistributionsNoncentralF(RandomDistributionsTestCase):
                                 {'dfnum': dfnum, 'dfden': dfden, 'nonc': nonc},
                                 self.dtype)
 
-    @cupy.testing.for_float_dtypes('param_dtype', no_float16=True)
+    @helper.for_float_dtypes('param_dtype', no_float16=True)
     def test_noncentral_f_for_invalid_params(self, param_dtype):
         dfnum = numpy.full(self.dfnum_shape, -1, dtype=param_dtype)
         dfden = numpy.full(self.dfden_shape, 1, dtype=param_dtype)
@@ -465,8 +466,8 @@ class TestDistributionsNoncentralF(RandomDistributionsTestCase):
 @testing.gpu
 class TestDistributionsNormal(RandomDistributionsTestCase):
 
-    @cupy.testing.for_float_dtypes('dtype', no_float16=True)
-    @cupy.testing.for_dtypes_combination(
+    @helper.for_float_dtypes('dtype', no_float16=True)
+    @helper.for_dtypes_combination(
         _float_dtypes, names=['loc_dtype', 'scale_dtype'])
     def test_normal(self, loc_dtype, scale_dtype, dtype):
         loc = numpy.ones(self.loc_shape, dtype=loc_dtype)
@@ -489,8 +490,8 @@ class TestDistributionsPareto(unittest.TestCase):
         self.assertEqual(self.shape, out.shape)
         self.assertEqual(out.dtype, dtype)
 
-    @cupy.testing.for_float_dtypes('dtype', no_float16=True)
-    @cupy.testing.for_float_dtypes('a_dtype')
+    @helper.for_float_dtypes('dtype', no_float16=True)
+    @helper.for_float_dtypes('a_dtype')
     def test_pareto(self, a_dtype, dtype):
         self.check_distribution(_distributions.pareto,
                                 a_dtype, dtype)
@@ -510,8 +511,8 @@ class TestDistributionsPoisson(unittest.TestCase):
         self.assertEqual(self.shape, out.shape)
         self.assertEqual(out.dtype, dtype)
 
-    @cupy.testing.for_int_dtypes('dtype')
-    @cupy.testing.for_float_dtypes('lam_dtype')
+    @helper.for_int_dtypes('dtype')
+    @helper.for_float_dtypes('lam_dtype')
     def test_poisson(self, lam_dtype, dtype):
         self.check_distribution(_distributions.poisson, lam_dtype, dtype)
 
@@ -524,14 +525,14 @@ class TestDistributionsPoisson(unittest.TestCase):
 @testing.gpu
 class TestDistributionsPower(RandomDistributionsTestCase):
 
-    @cupy.testing.for_float_dtypes('dtype', no_float16=True)
-    @cupy.testing.for_float_dtypes('a_dtype')
+    @helper.for_float_dtypes('dtype', no_float16=True)
+    @helper.for_float_dtypes('a_dtype')
     def test_power(self, a_dtype, dtype):
         a = numpy.full(self.a_shape, 0.5, dtype=a_dtype)
         self.check_distribution('power', {'a': a}, dtype)
 
-    @cupy.testing.for_float_dtypes('dtype', no_float16=True)
-    @cupy.testing.for_float_dtypes('a_dtype')
+    @helper.for_float_dtypes('dtype', no_float16=True)
+    @helper.for_float_dtypes('a_dtype')
     def test_power_for_negative_a(self, a_dtype, dtype):
         a = numpy.full(self.a_shape, -0.5, dtype=a_dtype)
         with self.assertRaises(ValueError):
@@ -548,22 +549,22 @@ class TestDistributionsPower(RandomDistributionsTestCase):
 @testing.gpu
 class TestDistributionsRayleigh(RandomDistributionsTestCase):
 
-    @cupy.testing.for_float_dtypes('dtype', no_float16=True)
-    @cupy.testing.for_float_dtypes('scale_dtype')
+    @helper.for_float_dtypes('dtype', no_float16=True)
+    @helper.for_float_dtypes('scale_dtype')
     def test_rayleigh(self, scale_dtype, dtype):
         scale = numpy.full(self.scale_shape, 3, dtype=scale_dtype)
         self.check_distribution('rayleigh',
                                 {'scale': scale}, dtype)
 
-    @cupy.testing.for_float_dtypes('dtype', no_float16=True)
-    @cupy.testing.for_float_dtypes('scale_dtype')
+    @helper.for_float_dtypes('dtype', no_float16=True)
+    @helper.for_float_dtypes('scale_dtype')
     def test_rayleigh_for_zero_scale(self, scale_dtype, dtype):
         scale = numpy.zeros(self.scale_shape, dtype=scale_dtype)
         self.check_distribution('rayleigh',
                                 {'scale': scale}, dtype)
 
-    @cupy.testing.for_float_dtypes('dtype', no_float16=True)
-    @cupy.testing.for_float_dtypes('scale_dtype')
+    @helper.for_float_dtypes('dtype', no_float16=True)
+    @helper.for_float_dtypes('scale_dtype')
     def test_rayleigh_for_negative_scale(self, scale_dtype, dtype):
         scale = numpy.full(self.scale_shape, -0.5, dtype=scale_dtype)
         with self.assertRaises(ValueError):
@@ -578,7 +579,7 @@ class TestDistributionsRayleigh(RandomDistributionsTestCase):
 @testing.gpu
 class TestDistributionsStandardCauchy(RandomDistributionsTestCase):
 
-    @cupy.testing.for_float_dtypes('dtype', no_float16=True)
+    @helper.for_float_dtypes('dtype', no_float16=True)
     def test_standard_cauchy(self, dtype):
         self.check_distribution('standard_cauchy', {}, dtype)
 
@@ -590,7 +591,7 @@ class TestDistributionsStandardCauchy(RandomDistributionsTestCase):
 @testing.gpu
 class TestDistributionsStandardExponential(RandomDistributionsTestCase):
 
-    @cupy.testing.for_float_dtypes('dtype', no_float16=True)
+    @helper.for_float_dtypes('dtype', no_float16=True)
     def test_standard_exponential(self, dtype):
         self.check_distribution('standard_exponential', {}, dtype)
 
@@ -603,8 +604,8 @@ class TestDistributionsStandardExponential(RandomDistributionsTestCase):
 @testing.gpu
 class TestDistributionsStandardGamma(RandomDistributionsTestCase):
 
-    @cupy.testing.for_float_dtypes('dtype', no_float16=True)
-    @cupy.testing.for_float_dtypes('shape_dtype')
+    @helper.for_float_dtypes('dtype', no_float16=True)
+    @helper.for_float_dtypes('shape_dtype')
     def test_standard_gamma(self, shape_dtype, dtype):
         shape = numpy.ones(self.shape_shape, dtype=shape_dtype)
         self.check_distribution('standard_gamma',
@@ -618,7 +619,7 @@ class TestDistributionsStandardGamma(RandomDistributionsTestCase):
 @testing.gpu
 class TestDistributionsStandardNormal(RandomDistributionsTestCase):
 
-    @cupy.testing.for_float_dtypes('dtype', no_float16=True)
+    @helper.for_float_dtypes('dtype', no_float16=True)
     def test_standard_normal(self, dtype):
         self.check_distribution('standard_normal', {}, dtype)
 
@@ -637,8 +638,8 @@ class TestDistributionsStandardT(unittest.TestCase):
         self.assertEqual(self.shape, out.shape)
         self.assertEqual(out.dtype, dtype)
 
-    @cupy.testing.for_float_dtypes('dtype', no_float16=True)
-    @cupy.testing.for_float_dtypes('df_dtype')
+    @helper.for_float_dtypes('dtype', no_float16=True)
+    @helper.for_float_dtypes('df_dtype')
     def test_standard_t(self, df_dtype, dtype):
         self.check_distribution(_distributions.standard_t, df_dtype, dtype)
 
@@ -654,7 +655,7 @@ class TestDistributionsStandardT(unittest.TestCase):
 @testing.gpu
 class TestDistributionsTriangular(RandomDistributionsTestCase):
 
-    @cupy.testing.for_dtypes_combination(
+    @helper.for_dtypes_combination(
         _regular_float_dtypes,
         names=['left_dtype', 'mode_dtype', 'right_dtype'])
     def test_triangular(self, left_dtype, mode_dtype, right_dtype):
@@ -665,7 +666,7 @@ class TestDistributionsTriangular(RandomDistributionsTestCase):
                                 {'left': left, 'mode': mode, 'right': right},
                                 self.dtype)
 
-    @cupy.testing.for_float_dtypes('param_dtype', no_float16=True)
+    @helper.for_float_dtypes('param_dtype', no_float16=True)
     def test_triangular_for_invalid_params(self, param_dtype):
         left = cupy.full(self.left_shape, 1, dtype=param_dtype)
         mode = cupy.full(self.mode_shape, 0, dtype=param_dtype)
@@ -698,8 +699,8 @@ class TestDistributionsTriangular(RandomDistributionsTestCase):
 @testing.gpu
 class TestDistributionsUniform(RandomDistributionsTestCase):
 
-    @cupy.testing.for_float_dtypes('dtype', no_float16=True)
-    @cupy.testing.for_dtypes_combination(
+    @helper.for_float_dtypes('dtype', no_float16=True)
+    @helper.for_dtypes_combination(
         _float_dtypes, names=['low_dtype', 'high_dtype'])
     def test_uniform(self, low_dtype, high_dtype, dtype):
         low = numpy.ones(self.low_shape, dtype=low_dtype)
@@ -725,7 +726,7 @@ class TestDistributionsVonmises(unittest.TestCase):
         self.assertEqual(self.shape, out.shape)
         self.assertEqual(out.dtype, dtype)
 
-    @cupy.testing.for_dtypes_combination(
+    @helper.for_dtypes_combination(
         _float_dtypes, names=['mu_dtype', 'kappa_dtype'])
     def test_vonmises(self, mu_dtype, kappa_dtype):
         self.check_distribution(_distributions.vonmises,
@@ -742,7 +743,7 @@ class TestDistributionsVonmises(unittest.TestCase):
 @testing.gpu
 class TestDistributionsWald(RandomDistributionsTestCase):
 
-    @cupy.testing.for_dtypes_combination(
+    @helper.for_dtypes_combination(
         _float_dtypes, names=['mean_dtype', 'scale_dtype'])
     def test_wald(self, mean_dtype, scale_dtype):
         mean = numpy.full(self.mean_shape, 3, dtype=mean_dtype)
@@ -759,21 +760,21 @@ class TestDistributionsWald(RandomDistributionsTestCase):
 @testing.gpu
 class TestDistributionsWeibull(RandomDistributionsTestCase):
 
-    @cupy.testing.for_float_dtypes('dtype', no_float16=True)
-    @cupy.testing.for_float_dtypes('a_dtype')
+    @helper.for_float_dtypes('dtype', no_float16=True)
+    @helper.for_float_dtypes('a_dtype')
     def test_weibull(self, a_dtype, dtype):
         a = numpy.ones(self.a_shape, dtype=a_dtype)
         self.check_distribution('weibull',
                                 {'a': a}, dtype)
 
-    @cupy.testing.for_float_dtypes('dtype', no_float16=True)
-    @cupy.testing.for_float_dtypes('a_dtype')
+    @helper.for_float_dtypes('dtype', no_float16=True)
+    @helper.for_float_dtypes('a_dtype')
     def test_weibull_for_inf_a(self, a_dtype, dtype):
         a = numpy.full(self.a_shape, numpy.inf, dtype=a_dtype)
         self.check_distribution('weibull', {'a': a}, dtype)
 
-    @cupy.testing.for_float_dtypes('dtype', no_float16=True)
-    @cupy.testing.for_float_dtypes('a_dtype')
+    @helper.for_float_dtypes('dtype', no_float16=True)
+    @helper.for_float_dtypes('a_dtype')
     def test_weibull_for_negative_a(self, a_dtype, dtype):
         a = numpy.full(self.a_shape, -0.5, dtype=a_dtype)
         with self.assertRaises(ValueError):
@@ -790,8 +791,8 @@ class TestDistributionsWeibull(RandomDistributionsTestCase):
 @testing.gpu
 class TestDistributionsZipf(RandomDistributionsTestCase):
 
-    @cupy.testing.for_dtypes([numpy.int32, numpy.int64], 'dtype')
-    @cupy.testing.for_float_dtypes('a_dtype')
+    @helper.for_dtypes([numpy.int32, numpy.int64], 'dtype')
+    @helper.for_float_dtypes('a_dtype')
     def test_zipf(self, a_dtype, dtype):
         a = numpy.full(self.a_shape, 2, dtype=a_dtype)
         self.check_distribution('zipf', {'a': a}, dtype)
