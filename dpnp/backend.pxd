@@ -48,6 +48,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_BITWISE_XOR
         DPNP_FN_CBRT
         DPNP_FN_CEIL
+        DPNP_FN_CHISQUARE
         DPNP_FN_COPYSIGN
         DPNP_FN_COS
         DPNP_FN_COSH
@@ -80,6 +81,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_MEDIAN
         DPNP_FN_MIN
         DPNP_FN_MINIMUM
+        DPNP_FN_MODF
         DPNP_FN_MULTIPLY
         DPNP_FN_POWER
         DPNP_FN_PROD

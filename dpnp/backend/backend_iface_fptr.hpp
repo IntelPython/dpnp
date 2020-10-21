@@ -77,6 +77,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_BITWISE_XOR,  /**< Used in numpy.bitwise_xor() implementation  */
     DPNP_FN_CBRT,         /**< Used in numpy.cbrt() implementation  */
     DPNP_FN_CEIL,         /**< Used in numpy.ceil() implementation  */
+    DPNP_FN_CHISQUARE,   /**< Used in numpy.random.chisquare() implementation  */
     DPNP_FN_COPYSIGN,     /**< Used in numpy.copysign() implementation  */
     DPNP_FN_COS,          /**< Used in numpy.cos() implementation  */
     DPNP_FN_COSH,         /**< Used in numpy.cosh() implementation  */
@@ -109,6 +110,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_MEDIAN,       /**< Used in numpy.median() implementation  */
     DPNP_FN_MIN,          /**< Used in numpy.min() implementation  */
     DPNP_FN_MINIMUM,      /**< Used in numpy.minimum() implementation  */
+    DPNP_FN_MODF,         /**< Used in numpy.modf() implementation  */
     DPNP_FN_MULTIPLY,     /**< Used in numpy.multiply() implementation  */
     DPNP_FN_POWER,        /**< Used in numpy.random.power() implementation  */
     DPNP_FN_PROD,         /**< Used in numpy.prod() implementation  */

@@ -5,27 +5,38 @@ import numpy
 # from scipy import stats
 from numpy.testing import assert_allclose
 
+
 @pytest.mark.parametrize("func",
-                         [dpnp.random.rand,
+                         [dpnp.random.chisquare,
+                          dpnp.random.rand,
                           dpnp.random.randn],
-                         ids=['rand', 'randn'])
+                         ids=['chisquare', 'rand', 'randn'])
 def test_random_input_size(func):
     output_shape = (10,)
     size = 10
-    res = func(size)
+    df = 3 # for dpnp.random.chisquare
+    if func == dpnp.random.chisquare:
+        res = func(df, size)
+    else:
+        res = func(size)
     assert output_shape == res.shape
 
 
 @pytest.mark.parametrize("func",
-                         [dpnp.random.random,
+                         [dpnp.random.chisquare,
+                          dpnp.random.random,
                           dpnp.random.random_sample,
                           dpnp.random.ranf,
                           dpnp.random.sample],
-                         ids=['random', 'random_sample',
+                         ids=['chisquare', 'random', 'random_sample',
                               'ranf', 'sample'])
 def test_random_input_shape(func):
     shape = (10, 5)
-    res = func(shape)
+    df = 3 # for dpnp.random.chisquare
+    if func == dpnp.random.chisquare:
+        res = func(df, shape)
+    else:
+        res = func(shape)
     assert shape == res.shape
 
 
@@ -80,8 +91,7 @@ def test_randn_normal_distribution():
                           dpnp.random.sample,
                           dpnp.random.rand],
                          ids=['random', 'random_sample',
-                              'ranf', 'sample',
-                              'rand'])
+                              'ranf', 'sample', 'rand'])
 def test_radnom_seed(func):
     seed = 28041990
     size = 100
@@ -114,3 +124,22 @@ def test_exponential_invalid_scale():
     scale = -1 # non-negative `scale` is expected
     with pytest.raises(ValueError):
         dpnp.random.exponential(scale, size)
+
+
+def test_radnom_chisquare_seed():
+    seed = 28041990
+    size = 100
+    df = 3  # number of degrees of freedom
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.chisquare(df, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.chisquare(df, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_chisquare_invalid_df():
+    size = 10
+    df = -1 # positive `df` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.chisquare(df, size)
