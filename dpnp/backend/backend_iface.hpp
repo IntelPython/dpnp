@@ -536,7 +536,7 @@ INP_DLLEXPORT void custom_elemwise_transpose_c(void* array1_in,
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void mkl_rng_gaussian(void* result, _DataType mean, _DataType stddev, size_t size);
+INP_DLLEXPORT void custom_rng_gaussian_c(void* result, _DataType mean, _DataType stddev, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -552,7 +552,7 @@ INP_DLLEXPORT void mkl_rng_gaussian(void* result, _DataType mean, _DataType stdd
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void mkl_rng_uniform(void* result, long low, long high, size_t size);
+INP_DLLEXPORT void custom_rng_uniform_c(void* result, long low, long high, size_t size);
 
 /**
  * @ingroup BACKEND_API
