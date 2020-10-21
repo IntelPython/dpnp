@@ -116,13 +116,8 @@ cpdef dparray dpnp_floor(dparray x1):
     return call_fptr_1in_1out(DPNP_FN_FLOOR, x1, x1.shape)
 
 
-cpdef dparray dpnp_floor_divide(dparray array1, dparray array2):
-    cdef dparray result = dparray(array1.shape, dtype=array1.dtype)
-
-    for i in range(result.size):
-        result[i] = (array1[i] // array2[i])
-
-    return result
+cpdef dparray dpnp_floor_divide(dparray x1, dparray x2):
+    return call_fptr_2in_1out(DPNP_FN_FLOOR_DIVIDE, x1, x2, x1.shape)
 
 
 cpdef dparray dpnp_hypot(dparray x1, dparray x2):
