@@ -64,6 +64,7 @@ __all__ = [
     "maximum",
     "minimum",
     "mod",
+    "modf",
     "multiply",
     "negative",
     "power",
@@ -417,6 +418,39 @@ def mod(*args, **kwargs):
     """
 
     return dpnp.remainder(*args, **kwargs)
+
+
+def modf(x, **kwargs):
+    """
+    Return the fractional and integral parts of an array, element-wise.
+
+    The fractional and integral parts are negative if the given number is negative.
+
+    Parameters
+    ----------
+    x : array_like
+        Input array.
+    kwargs : dict
+        Remaining input parameters of the function.
+
+    Returns
+    -------
+    y1 : ndarray or scalar
+        Fractional part of x. This is a scalar if x is a scalar.
+    y2 : ndarray or scalar
+        Integral part of x. This is a scalar if x is a scalar.
+
+    See Also
+    --------
+    divmod
+    """
+    if not use_origin_backend(x) and not kwargs:
+        if not isinstance(x, dparray):
+            pass
+        else:
+            return dpnp_modf(x)
+
+    return call_origin(numpy.modf, x, **kwargs)
 
 
 def multiply(x1, x2, **kwargs):

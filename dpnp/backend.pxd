@@ -80,6 +80,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_MEDIAN
         DPNP_FN_MIN
         DPNP_FN_MINIMUM
+        DPNP_FN_MODF
         DPNP_FN_MULTIPLY
         DPNP_FN_POWER
         DPNP_FN_PROD
