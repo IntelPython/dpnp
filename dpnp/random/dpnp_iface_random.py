@@ -44,6 +44,7 @@ from dpnp.random._random import *
 
 
 __all__ = [
+    'exponential',
     'rand',
     'ranf',
     'randint',
@@ -55,6 +56,28 @@ __all__ = [
     'sample',
     'uniform'
 ]
+
+
+def exponential(scale=1.0, size=None):
+    """Exponential distribution. TODO
+
+    """
+
+    if not use_origin_backend(scale):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("exponential", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("exponential", "type(size)", type(size), int)
+
+        #return dpnp_exponential(scale, size)
+        pass
+
+    return call_origin(df, size)
+
 
 
 def rand(d0, *dn):

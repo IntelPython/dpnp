@@ -88,6 +88,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_EXP,         /**< Used in numpy.exp() implementation  */
     DPNP_FN_EXP2,        /**< Used in numpy.exp2() implementation  */
     DPNP_FN_EXPM1,       /**< Used in numpy.expm1() implementation  */
+    DPNP_FN_EXPONENTIAL, /**< Used in numpy.random.exponential() implementation  */
     DPNP_FN_FABS,        /**< Used in numpy.fabs() implementation  */
     DPNP_FN_FLOOR,       /**< Used in numpy.floor() implementation  */
     DPNP_FN_FMOD,        /**< Used in numpy.fmod() implementation  */
