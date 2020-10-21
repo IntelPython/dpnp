@@ -107,6 +107,25 @@ def test_radnom_seed(func):
     assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
+def test_radnom_exponential_seed():
+    seed = 28041990
+    size = 100
+    scale = 3  # number of degrees of freedom
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.exponential(scale, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.exponential(scale, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_exponential_invalid_scale():
+    size = 10
+    scale = -1 # non-negative `scale` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.exponential(scale, size)
+
+
 def test_radnom_chisquare_seed():
     seed = 28041990
     size = 100

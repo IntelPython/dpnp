@@ -46,6 +46,21 @@ void custom_rng_chi_square_c(void* result, int df, size_t size)
 }
 
 template <typename _DataType>
+void custom_rng_exponential_c(void* result, _DataType a, _DataType beta, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    mkl_rng::exponential<_DataType> distribution(a, beta);
+    // perform generation
+    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+    event_out.wait();
+}
+
+template <typename _DataType>
 void custom_rng_gaussian_c(void* result, _DataType mean, _DataType stddev, size_t size)
 {
     if (!size)
@@ -85,6 +100,9 @@ void func_map_init_random(func_map_t& fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_CHISQUARE][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_chi_square_c<double>};
     fmap[DPNPFuncName::DPNP_FN_CHISQUARE][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_rng_chi_square_c<float>};
+
+    fmap[DPNPFuncName::DPNP_FN_EXPONENTIAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_exponential_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_EXPONENTIAL][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_rng_exponential_c<float>};
 
     fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_gaussian_c<double>};
     fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_rng_gaussian_c<float>};

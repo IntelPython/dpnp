@@ -45,6 +45,7 @@ from dpnp.random._random import *
 
 __all__ = [
     'chisquare',
+    'exponential',
     'rand',
     'ranf',
     'randint',
@@ -115,6 +116,75 @@ def chisquare(df, size=None):
         # TODO:
         # float to int, safe
         return dpnp_chisquare(int(df), size)
+
+    return call_origin(df, size)
+
+
+def exponential(scale=1.0, size=None):
+    """Exponential distribution.
+
+    Draw samples from an exponential distribution.
+
+    Its probability density function is
+
+    .. math:: f(x; \\frac{1}{\\beta}) = \\frac{1}{\\beta} \\exp(-\\frac{x}{\\beta}),
+
+    for ``x > 0`` and 0 elsewhere. :math:`\\beta` is the scale parameter,
+    which is the inverse of the rate parameter :math:`\\lambda = 1/\\beta`.
+    The rate parameter is an alternative, widely used parameterization
+    of the exponential distribution [3]_.
+
+    The exponential distribution is a continuous analogue of the
+    geometric distribution.  It describes many common situations, such as
+    the size of raindrops measured over many rainstorms [1]_, or the time
+    between page requests to Wikipedia [2]_.
+
+    .. note::
+        New code should use the ``exponential`` method of a ``default_rng()``
+        instance instead; please see the :ref:`random-quick-start`.
+
+    Parameters
+    ----------
+    scale : float
+        The scale parameter, :math:`\\beta = 1/\\lambda`. Must be
+        non-negative.
+    size : int or tuple of ints, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
+        a single value is returned if ``scale`` is a scalar.  Otherwise,
+        ``np.array(scale).size`` samples are drawn.
+
+    Returns
+    -------
+    out : dparray
+        Drawn samples from the parameterized exponential distribution.
+
+    References
+    ----------
+    .. [1] Peyton Z. Peebles Jr., "Probability, Random Variables and
+           Random Signal Principles", 4th ed, 2001, p. 57.
+    .. [2] Wikipedia, "Poisson process",
+           https://en.wikipedia.org/wiki/Poisson_process
+    .. [3] Wikipedia, "Exponential distribution",
+           https://en.wikipedia.org/wiki/Exponential_distribution
+
+    """
+
+    if not use_origin_backend(scale):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("exponential", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("exponential", "type(size)", type(size), int)
+
+        if scale < 0:
+            checker_throw_value_error("exponential", "scale", scale, "non-negative")
+
+        # displacement `a` is 0.0
+        return dpnp_exponential(0.0, scale, size)
 
     return call_origin(df, size)
 
