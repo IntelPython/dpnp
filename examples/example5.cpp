@@ -30,7 +30,7 @@ int main(int, char**)
     for (size_t i = 0; i < 4; ++i)
     {
         dpnp_srand_c(seed);
-        mkl_rng_uniform<double>(result, low, high, size);
+        custom_rng_uniform_c<double>(result, low, high, size);
         print_dpnp_array(result, 10);
     }
 
@@ -38,7 +38,7 @@ int main(int, char**)
     dpnp_srand_c();
     for (size_t i = 0; i < 4; ++i)
     {
-        mkl_rng_uniform<double>(result, low, high, size);
+        custom_rng_uniform_c<double>(result, low, high, size);
         print_dpnp_array(result, 10);
     }
 
