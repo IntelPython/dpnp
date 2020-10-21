@@ -49,11 +49,39 @@ from dpnp.linalg.linalg import *
 
 
 __all__ = [
+    "det",
     "eig",
     "matrix_power",
     "matrix_rank",
     "multi_dot"
 ]
+
+
+def det(input):
+    """
+    Compute the determinant of an array.
+    Parameters
+    ----------
+    input : (..., M, M) array_like
+        Input array to compute determinants for.
+    Returns
+    -------
+    det : (...) array_like
+        Determinant of `input`.
+    """
+    is_input_dparray = isinstance(input, dparray)
+
+    if not use_origin_backend(input) and is_input_dparray:
+        if input.shape[-1] == input.shape[-2]:
+            result = dpnp_det(input)
+
+            # scalar returned
+            if result.shape == (1,):
+                return result.dtype.type(result[0])
+
+            return result
+
+    return call_origin(numpy.linalg.det, input)
 
 
 def eig(x1):

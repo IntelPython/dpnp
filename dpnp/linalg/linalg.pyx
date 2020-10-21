@@ -37,9 +37,11 @@ from dpnp.backend cimport *
 from dpnp.dparray cimport dparray, dparray_shape_type
 import numpy
 cimport numpy
+import dpnp
 
 
 __all__ = [
+    "dpnp_det",
     "dpnp_eig",
     "dpnp_matrix_rank"
 ]
@@ -47,6 +49,65 @@ __all__ = [
 
 # C function pointer to the C library template functions
 ctypedef void(*custom_linalg_1in_1out_func_ptr_t)(void * , void * , size_t * , size_t)
+
+
+cpdef dparray dpnp_det(dparray input):
+    cdef size_t n = input.shape[-1]
+    cdef size_t size_out = 1
+    if input.ndim == 2:
+        output_shape = (1, )
+        size_out = 0
+    else:
+        output_shape = tuple((list(input.shape))[:-2])
+        for i in range(len(output_shape)):
+            size_out *= output_shape[i]
+
+    cdef dparray result = dparray(size_out, dtype=input.dtype)
+
+    for i in range(size_out):
+        if size_out > 1:
+            elems = []
+            for j in range(i *(n ** 2), (i + 1) * (n ** 2)):
+                elems.append(input[j])
+
+            matrix = []
+            for j in range(n):
+                matrix_ = []
+                for k in range(n):
+                    matrix_.append(elems[j*n +k])
+                matrix.append(matrix_)
+        else:
+            matrix = input
+
+        det_val = 1
+        for l in range(n):
+            if matrix[l][l] == 0:
+                for j in range(l, n):
+                    if matrix[j][l] != 0:
+                        for k in range(l, n):
+                            c = matrix[l][k]
+                            matrix[l][k] = -1 * matrix[j][k]
+                            matrix[j][k] = c
+                        break
+                    if j == n-1 and matrix[j][l] == 0:
+                        det_val = 0
+            if det_val != 0:
+                for j in range(l + 1, n):
+                    q = - (matrix[j][l] / matrix[l][l])
+                    for k in range(l + 1, n):
+                        matrix[j][k] += q * matrix[l][k]
+
+        if det_val != 0:
+            for l in range(n):
+                det_val *= matrix[l][l]
+
+        result[i] = det_val
+
+    if size_out > 1:
+        dpnp_result = result.reshape(output_shape)
+        return dpnp_result
+    else:
+        return result
 
 
 cpdef tuple dpnp_eig(dparray x1):
