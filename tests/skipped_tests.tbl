@@ -660,6 +660,7 @@ tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_2dim_with_axis
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_2dim_with_discont
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_2dim_without_axis
+tests/third_party/cupy/random_tests/test_distributions.py
 tests/third_party/cupy/random_tests/test_sample.py::TestChoice::test_no_none
 tests/third_party/cupy/random_tests/test_sample.py::TestChoice::test_p_is_none
 tests/third_party/cupy/random_tests/test_sample.py::TestChoice::test_replace_and_p_are_none
