@@ -467,6 +467,22 @@ INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
+ * @brief floor_divide function.
+ *
+ * @param [in]  array1_in    Input array 1.
+ *
+ * @param [in]  array2_in    Input array 2.
+ *
+ * @param [out] result1      Output array.
+ *
+ * @param [in]  size         Number of elements in input arrays.
+ *
+ */
+template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
+INP_DLLEXPORT void dpnp_floor_divide_c(void* array1_in, void* array2_in, void* result1, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief remainder function.
  *
  * @param [in]  array1_in    Input array 1.
@@ -520,7 +536,7 @@ INP_DLLEXPORT void custom_elemwise_transpose_c(void* array1_in,
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void mkl_rng_gaussian(void* result, _DataType mean, _DataType stddev, size_t size);
+INP_DLLEXPORT void custom_rng_gaussian_c(void* result, _DataType mean, _DataType stddev, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -536,7 +552,7 @@ INP_DLLEXPORT void mkl_rng_gaussian(void* result, _DataType mean, _DataType stdd
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void mkl_rng_uniform(void* result, long low, long high, size_t size);
+INP_DLLEXPORT void custom_rng_uniform_c(void* result, long low, long high, size_t size);
 
 /**
  * @ingroup BACKEND_API

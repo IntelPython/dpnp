@@ -46,7 +46,8 @@ void custom_rng_exponential_c(void* result, _DataType a, _DataType beta, size_t 
 }
 
 template <typename _DataType>
-void mkl_rng_gaussian(void* result, _DataType mean, _DataType stddev, size_t size)
+
+void custom_rng_gaussian_c(void* result, _DataType mean, _DataType stddev, size_t size)
 {
     if (!size)
     {
@@ -61,7 +62,7 @@ void mkl_rng_gaussian(void* result, _DataType mean, _DataType stddev, size_t siz
 }
 
 template <typename _DataType>
-void mkl_rng_uniform(void* result, long low, long high, size_t size)
+void custom_rng_uniform_c(void* result, long low, long high, size_t size)
 {
     if (!size)
     {
@@ -86,12 +87,12 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_EXPONENTIAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_exponential_c<double>};
     fmap[DPNPFuncName::DPNP_FN_EXPONENTIAL][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_rng_exponential_c<float>};
 
-    fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)mkl_rng_gaussian<double>};
-    fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_FLT][eft_FLT] = {eft_FLT, (void*)mkl_rng_gaussian<float>};
+    fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_gaussian_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_rng_gaussian_c<float>};
 
-    fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_DBL][eft_DBL] = {eft_DBL, (void*)mkl_rng_uniform<double>};
-    fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_FLT][eft_FLT] = {eft_FLT, (void*)mkl_rng_uniform<float>};
-    fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_INT][eft_INT] = {eft_INT, (void*)mkl_rng_uniform<int>};
+    fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_uniform_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_rng_uniform_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_INT][eft_INT] = {eft_INT, (void*)custom_rng_uniform_c<int>};
 
     return;
 }
