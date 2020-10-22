@@ -502,19 +502,31 @@ def log2(x1):
     return dpnp_log2(x1)
 
 
-def reciprocal(x1):
+def reciprocal(x, **kwargs):
     """
     Return the reciprocal of the argument, element-wise.
 
+    Calculates 1/x.
+
+    Parameters
+    ----------
+    x : array_like
+        Input array.
+    kwargs : dict
+        Remaining input parameters of the function.
+
+    Returns
+    -------
+    y : ndarray
+        Return array. This is a scalar if x is a scalar.
     """
+    if not use_origin_backend(x) and not kwargs:
+        if not isinstance(x, dparray):
+            pass
+        else:
+            return dpnp_recip(x)
 
-    if (use_origin_backend(x1)):
-        return numpy.reciprocal(x1)
-
-    if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy reciprocal(): Unsupported x1={type(x1)}")
-
-    return dpnp_recip(x1)
+    return call_origin(numpy.reciprocal, x, **kwargs)
 
 
 def rad2deg(x1):
