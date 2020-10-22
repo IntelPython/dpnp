@@ -183,10 +183,9 @@ def exponential(scale=1.0, size=None):
         if scale < 0:
             checker_throw_value_error("exponential", "scale", scale, "non-negative")
 
-        # displacement `a` is 0.0
-        return dpnp_exponential(0.0, scale, size)
+        return dpnp_exponential(scale, size)
 
-    return call_origin(df, size)
+    return call_origin(scale, size)
 
 
 def rand(d0, *dn):
