@@ -262,7 +262,7 @@ def gamma(shape, scale=1.0, size=None):
 
         return dpnp_gamma(shape, scale, size)
 
-    return call_origin(shape, scale, size)
+    return call_origin(numpy.random.gamma, shape, scale, size)
 
 
 def rand(d0, *dn):
