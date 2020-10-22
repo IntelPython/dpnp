@@ -98,26 +98,12 @@ def chisquare(df, size=None):
 
     """
 
-    if not use_origin_backend(df):
-        if size is None:
-            size = 1
-        elif isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    checker_throw_value_error("chisquare", "type(dim)", type(dim), int)
-        elif not isinstance(size, int):
-            checker_throw_value_error("chisquare", "type(size)", type(size), int)
+#    if not use_origin_backend(df):
+#        # TODO:
+#        # raise warning and call_origin? 
+#        pass
 
-        # TODO:
-        # array_like of floats for `df`
-        # add check for df array like, after adding array-like interface for df param
-        if df <= 0:
-            checker_throw_value_error("chisquare", "df", df, "positive")
-        # TODO:
-        # float to int, safe
-        return dpnp_chisquare(int(df), size)
-
-    return call_origin(df, size)
+    return call_origin(numpy.random.chisquare, df, size)
 
 
 def exponential(scale=1.0, size=None):

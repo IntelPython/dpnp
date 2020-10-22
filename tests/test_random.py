@@ -124,22 +124,3 @@ def test_exponential_invalid_scale():
     scale = -1 # non-negative `scale` is expected
     with pytest.raises(ValueError):
         dpnp.random.exponential(scale, size)
-
-
-def test_radnom_chisquare_seed():
-    seed = 28041990
-    size = 100
-    df = 3  # number of degrees of freedom
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.chisquare(df, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.chisquare(df, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_chisquare_invalid_df():
-    size = 10
-    df = -1 # positive `df` is expected
-    with pytest.raises(ValueError):
-        dpnp.random.chisquare(df, size)
