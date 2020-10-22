@@ -441,11 +441,7 @@ tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticUnary_param_
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticUnary_param_3_{arg1=array([[2, 3, 4],       [5, 6, 7]]), name='reciprocal'}::test_unary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticUnary_param_4_{arg1=2, name='reciprocal'}::test_unary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticUnary_param_5_{arg1=2.0, name='reciprocal'}::test_unary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestBoolSubtract_param_0_{shape=(3, 2), xp=numpy}::test_bool_subtract
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestBoolSubtract_param_1_{shape=(3, 2), xp=dpnp}::test_bool_subtract
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestBoolSubtract_param_2_{shape=(), xp=numpy}::test_bool_subtract
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestBoolSubtract_param_3_{shape=(), xp=dpnp}::test_bool_subtract
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestBoolSubtract_param_4_{shape=(3, 0, 2), xp=numpy}::test_bool_subtract
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp2
 tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_copysign_float

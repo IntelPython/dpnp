@@ -39,7 +39,7 @@ from tests.third_party.cupy.testing.helper import numpy_cupy_array_list_equal
 # from tests.third_party.cupy.testing.helper import numpy_cupy_array_max_ulp
 from tests.third_party.cupy.testing.helper import numpy_cupy_equal
 # from tests.third_party.cupy.testing.helper import numpy_cupy_raises
-# from tests.third_party.cupy.testing.helper import numpy_satisfies
+from tests.third_party.cupy.testing.helper import numpy_satisfies
 from tests.third_party.cupy.testing.helper import NumpyAliasBasicTestBase
 from tests.third_party.cupy.testing.helper import NumpyAliasValuesTestBase
 from tests.third_party.cupy.testing.helper import NumpyError
