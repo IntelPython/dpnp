@@ -72,12 +72,13 @@ enum class DPNPFuncName : size_t
     DPNP_FN_ARGMAX,       /**< Used in numpy.argmax() implementation  */
     DPNP_FN_ARGMIN,       /**< Used in numpy.argmin() implementation  */
     DPNP_FN_ARGSORT,      /**< Used in numpy.argsort() implementation  */
+    DPNP_FN_BETA,         /**< Used in numpy.random.beta() implementation  */
     DPNP_FN_BITWISE_AND,  /**< Used in numpy.bitwise_and() implementation  */
     DPNP_FN_BITWISE_OR,   /**< Used in numpy.bitwise_or() implementation  */
     DPNP_FN_BITWISE_XOR,  /**< Used in numpy.bitwise_xor() implementation  */
     DPNP_FN_CBRT,         /**< Used in numpy.cbrt() implementation  */
     DPNP_FN_CEIL,         /**< Used in numpy.ceil() implementation  */
-    DPNP_FN_CHISQUARE,   /**< Used in numpy.random.chisquare() implementation  */
+    DPNP_FN_CHISQUARE,    /**< Used in numpy.random.chisquare() implementation  */
     DPNP_FN_COPYSIGN,     /**< Used in numpy.copysign() implementation  */
     DPNP_FN_COS,          /**< Used in numpy.cos() implementation  */
     DPNP_FN_COSH,         /**< Used in numpy.cosh() implementation  */

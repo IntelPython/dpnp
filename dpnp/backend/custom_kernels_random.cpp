@@ -31,6 +31,29 @@
 namespace mkl_rng = oneapi::mkl::rng;
 
 template <typename _DataType>
+void custom_rng_beta_c(void* result, _DataType a, _DataType b, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+    // TODO:
+    // set p and q as is in numpy
+
+    // set shape p
+    _DataType p = _DataType(1.0);
+    // set shape q
+    _DataType q  = _DataType(1.0);
+
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    mkl_rng::beta<_DataType> distribution(p, q, a, b);;
+    // perform generation
+    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+    event_out.wait();
+}
+
+template <typename _DataType>
 void custom_rng_chi_square_c(void* result, int df, size_t size)
 {
     if (!size)
@@ -98,6 +121,9 @@ void custom_rng_uniform_c(void* result, long low, long high, size_t size)
 
 void func_map_init_random(func_map_t& fmap)
 {
+    fmap[DPNPFuncName::DPNP_FN_BETA][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_beta_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_BETA][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_rng_beta_c<float>};
+
     fmap[DPNPFuncName::DPNP_FN_CHISQUARE][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_chi_square_c<double>};
     fmap[DPNPFuncName::DPNP_FN_CHISQUARE][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_rng_chi_square_c<float>};
 

@@ -44,6 +44,7 @@ from dpnp.random._random import *
 
 
 __all__ = [
+    'beta',
     'chisquare',
     'exponential',
     'rand',
@@ -57,6 +58,69 @@ __all__ = [
     'sample',
     'uniform'
 ]
+
+
+def beta(a, b, size=None):
+    """Beta distribution.
+
+    Draw samples from a Beta distribution.
+
+    The Beta distribution is a special case of the Dirichlet distribution,
+    and is related to the Gamma distribution.  It has the probability
+    distribution function
+
+    .. math:: f(x; a,b) = \\frac{1}{B(\\alpha, \\beta)} x^{\\alpha - 1}
+                                                     (1 - x)^{\\beta - 1},
+
+    where the normalization, B, is the beta function,
+
+    .. math:: B(\\alpha, \\beta) = \\int_0^1 t^{\\alpha - 1}
+                                 (1 - t)^{\\beta - 1} dt.
+
+    It is often seen in Bayesian inference and order statistics.
+
+    .. note::
+        New code should use the ``beta`` method of a ``default_rng()``
+        instance instead; please see the :ref:`random-quick-start`.
+
+    Parameters
+    ----------
+    a : float
+        Alpha, positive (>0).
+    b : float
+        Beta, positive (>0).
+    size : int or tuple of ints, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
+        a single value is returned if ``a`` and ``b`` are both scalars.
+
+    Returns
+    -------
+    out : dparray
+        Drawn samples from the parameterized beta distribution.
+
+    """
+
+    # TODO:
+    # array_like of floats for `a`, `b`
+    if not use_origin_backend(a):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("beta", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("beta", "type(size)", type(size), int)
+
+        if a <= 0:
+            checker_throw_value_error("beta", "a", a, "positive")
+        if b <= 0:
+            checker_throw_value_error("beta", "b", b, "positive")
+
+        return dpnp_beta(a, b, size)
+
+    return call_origin(a, b, size)
 
 
 def chisquare(df, size=None):
