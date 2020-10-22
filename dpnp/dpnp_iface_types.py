@@ -27,7 +27,7 @@
 # *****************************************************************************
 
 """
-Type interface of the Intel NumPy
+Type interface of the DPNP
 
 Notes
 -----

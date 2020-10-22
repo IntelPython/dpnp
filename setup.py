@@ -56,7 +56,7 @@ from utils.dpnp_build_utils import find_cmplr, find_mathlib, find_omp
 Python version check
 """
 if sys.version_info[:2] < (3, 6):
-    raise RuntimeError("Intel NumPy: Python version >= 3.5 required.")
+    raise RuntimeError("DPNP: Python version >= 3.5 required.")
 
 
 """
@@ -107,7 +107,7 @@ elif sys.platform == 'darwin':
 elif sys.platform in ['win32', 'cygwin']:
     IS_WIN = True
 else:
-    raise EnvironmentError("Intel NumPy: " + sys.platform + " not supported")
+    raise EnvironmentError("DPNP: " + sys.platform + " not supported")
 
 """
 Set compiler for the project

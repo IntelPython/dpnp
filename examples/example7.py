@@ -27,11 +27,11 @@
 
 """Example 1.
 
-This example shows simple usage of the Intel NumPy
+This example shows simple usage of the DPNP
 to calculate square matrix multiplication
 
 Also, it produces performance comparison between regular NumPy
-and Intel NumPy for several matrix multiplication
+and DPNP for several matrix multiplication
 
 """
 

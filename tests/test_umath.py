@@ -64,10 +64,10 @@ def test_umaths(test_cases):
     args = get_args(args_str, xp=numpy)
     iargs = get_args(args_str, xp=dpnp)
 
-    # original NumPy
+    # original
     expected = getattr(numpy, umath)(*args)
 
-    # Intel NumPy
+    # DPNP
     result = getattr(dpnp, umath)(*iargs)
 
     numpy.testing.assert_allclose(result, expected, rtol=1e-6)

@@ -27,7 +27,7 @@
 # *****************************************************************************
 
 """
-Interface of the Mathematical part of the Intel NumPy
+Interface of the Mathematical part of the DPNP
 
 Notes
 -----

@@ -27,7 +27,7 @@
 # *****************************************************************************
 
 """
-Interface of the Binary operations of the Intel NumPy
+Interface of the Binary operations of the DPNP
 
 Notes
 -----

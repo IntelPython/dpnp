@@ -71,7 +71,7 @@ def find_library(var_name, rel_header_paths, rel_lib_paths,
             return [], []
 
     if verbose:
-        msg_template = "Intel DPNP: using ${} based library. include={}, libpath={}"
+        msg_template = "DPNP: using ${} based library. include={}, libpath={}"
         print(msg_template.format(var_name, include_find, libpath_find))
 
     return [include_find], [libpath_find]
@@ -123,7 +123,7 @@ def find_cmplr(verbose=False):
     cmplr_include, cmplr_libpath = _find_cmplr_in_dpcpp_root(verbose=verbose)
 
     if not cmplr_include or not cmplr_libpath:
-        raise EnvironmentError(f"Intel DPNP: Unable to find compiler. Please install Intel OneAPI environment")
+        raise EnvironmentError(f"DPNP: Unable to find compiler. Please install Intel OneAPI environment")
 
     return cmplr_include, cmplr_libpath
 
@@ -191,7 +191,7 @@ def find_mathlib(verbose=False):
         mathlib_include, mathlib_path = _find_mathlib_in_mathlib_root(verbose=verbose)
 
     if not mathlib_include or not mathlib_path:
-        raise EnvironmentError("Intel DPNP: Unable to find math library")
+        raise EnvironmentError("DPNP: Unable to find math library")
 
     return mathlib_include, mathlib_path
 
@@ -242,6 +242,6 @@ def find_omp(verbose=False):
     omp_include, omp_libpath = _find_omp_in_dpcpp_root(verbose=verbose)
 
     if not omp_include or not omp_libpath:
-        raise EnvironmentError(f"Intel DPNP: Unable to find omp. Please install Intel OneAPI environment")
+        raise EnvironmentError(f"DPNP: Unable to find omp. Please install Intel OneAPI environment")
 
     return omp_include, omp_libpath

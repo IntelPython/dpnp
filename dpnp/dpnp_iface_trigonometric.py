@@ -27,7 +27,7 @@
 # *****************************************************************************
 
 """
-Interface of the Trigonometric part of the Intel NumPy
+Interface of the Trigonometric part of the DPNP
 
 Notes
 -----
@@ -105,7 +105,7 @@ def arccos(x1):
         return numpy.arccos(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy arccos(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP arccos(): Unsupported x1={type(x1)}")
 
     return dpnp_arccos(x1)
 
@@ -120,7 +120,7 @@ def arccosh(x1):
         return numpy.arccosh(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy arccosh(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP arccosh(): Unsupported x1={type(x1)}")
 
     return dpnp_arccosh(x1)
 
@@ -147,7 +147,7 @@ def arcsin(x1):
         return numpy.arcsin(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy arcsin(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP arcsin(): Unsupported x1={type(x1)}")
 
     return dpnp_arcsin(x1)
 
@@ -162,7 +162,7 @@ def arcsinh(x1):
         return numpy.arcsinh(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy arcsinh(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP arcsinh(): Unsupported x1={type(x1)}")
 
     return dpnp_arcsinh(x1)
 
@@ -191,7 +191,7 @@ def arctan(x1):
         return numpy.arctan(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy arctan(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP arctan(): Unsupported x1={type(x1)}")
 
     return dpnp_arctan(x1)
 
@@ -206,7 +206,7 @@ def arctanh(x1):
         return numpy.arctanh(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy arctanh(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP arctanh(): Unsupported x1={type(x1)}")
 
     return dpnp_arctanh(x1)
 
@@ -221,7 +221,7 @@ def cbrt(x1):
         return numpy.cbrt(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy cbrt(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP cbrt(): Unsupported x1={type(x1)}")
 
     return dpnp_cbrt(x1)
 
@@ -291,7 +291,7 @@ def cos(x1):
         return numpy.cos(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy cos(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP cos(): Unsupported x1={type(x1)}")
 
     return dpnp_cos(x1)
 
@@ -306,7 +306,7 @@ def cosh(x1):
         return numpy.cosh(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy cosh(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP cosh(): Unsupported x1={type(x1)}")
 
     return dpnp_cosh(x1)
 
@@ -358,7 +358,7 @@ def degrees(x1):
         return numpy.degrees(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy degrees(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP degrees(): Unsupported x1={type(x1)}")
 
     return dpnp_degrees(x1)
 
@@ -373,7 +373,7 @@ def exp(x1):
         return numpy.exp(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy exp(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP exp(): Unsupported x1={type(x1)}")
 
     return dpnp_exp(x1)
 
@@ -388,7 +388,7 @@ def exp2(x1):
         return numpy.exp2(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy exp2(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP exp2(): Unsupported x1={type(x1)}")
 
     return dpnp_exp2(x1)
 
@@ -403,7 +403,7 @@ def expm1(x1):
         return numpy.expm1(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy expm1(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP expm1(): Unsupported x1={type(x1)}")
 
     return dpnp_expm1(x1)
 
@@ -452,7 +452,7 @@ def log(x1):
         return numpy.log(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy log(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP log(): Unsupported x1={type(x1)}")
 
     return dpnp_log(x1)
 
@@ -467,7 +467,7 @@ def log10(x1):
         return numpy.log10(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy log10(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP log10(): Unsupported x1={type(x1)}")
 
     return dpnp_log10(x1)
 
@@ -482,7 +482,7 @@ def log1p(x1):
         return numpy.log1p(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy log1p(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP log1p(): Unsupported x1={type(x1)}")
 
     return dpnp_log1p(x1)
 
@@ -497,7 +497,7 @@ def log2(x1):
         return numpy.log2(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy log2(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP log2(): Unsupported x1={type(x1)}")
 
     return dpnp_log2(x1)
 
@@ -552,7 +552,7 @@ def rad2deg(x1):
         return numpy.degrees(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy rad2deg(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP rad2deg(): Unsupported x1={type(x1)}")
 
     return degrees(x1)
 
@@ -579,7 +579,7 @@ def radians(x1):
         return numpy.radians(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy radians(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP radians(): Unsupported x1={type(x1)}")
 
     return dpnp_radians(x1)
 
@@ -607,7 +607,7 @@ def sin(x1):
         return numpy.sin(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy sin(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP sin(): Unsupported x1={type(x1)}")
 
     return dpnp_sin(x1)
 
@@ -622,7 +622,7 @@ def sinh(x1):
         return numpy.sinh(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy sinh(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP sinh(): Unsupported x1={type(x1)}")
 
     return dpnp_sinh(x1)
 
@@ -652,7 +652,7 @@ def square(x1):
         return numpy.square(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy square(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP square(): Unsupported x1={type(x1)}")
 
     return dpnp_square(x1)
 
@@ -677,7 +677,7 @@ def tan(x1):
         return numpy.tan(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy tan(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP tan(): Unsupported x1={type(x1)}")
 
     return dpnp_tan(x1)
 
@@ -692,7 +692,7 @@ def tanh(x1):
         return numpy.tanh(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy tanh(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP tanh(): Unsupported x1={type(x1)}")
 
     return dpnp_tanh(x1)
 
@@ -721,6 +721,6 @@ def unwrap(x1):
         return numpy.unwrap(x1)
 
     if not isinstance(x1, dparray):
-        raise TypeError(f"Intel NumPy unwrap(): Unsupported x1={type(x1)}")
+        raise TypeError(f"DPNP unwrap(): Unsupported x1={type(x1)}")
 
     return dpnp_unwrap(x1)

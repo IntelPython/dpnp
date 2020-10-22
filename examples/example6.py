@@ -27,7 +27,7 @@
 
 """Example 1.
 
-This example shows simple usage of the Intel NumPy
+This example shows simple usage of the DPNP
 
 dpnp.random.randn
 """

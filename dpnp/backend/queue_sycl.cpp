@@ -71,7 +71,7 @@ static void exception_handler(cl::sycl::exception_list exceptions)
         }
         catch (cl::sycl::exception const& e)
         {
-            std::cout << "Intel NumPy. Caught asynchronous SYCL exception:\n" << e.what() << std::endl;
+            std::cout << "DPNP. Caught asynchronous SYCL exception:\n" << e.what() << std::endl;
         }
     }
 };

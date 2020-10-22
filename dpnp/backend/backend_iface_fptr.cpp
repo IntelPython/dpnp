@@ -48,7 +48,7 @@ DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName func_name, DPNPFuncType first_
     func_map_t::const_iterator func_it = func_map.find(func_name);
     if (func_it == func_map.cend())
     {
-        throw std::runtime_error("Intel NumPy Error: Unsupported function call."); // TODO print Function ID
+        throw std::runtime_error("DPNP Error: Unsupported function call."); // TODO print Function ID
     }
 
     const map_1p_t& type1_map = func_it->second;
@@ -56,7 +56,7 @@ DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName func_name, DPNPFuncType first_
     if (type1_map_it == type1_map.cend())
     {
         throw std::runtime_error(
-            "Intel NumPy Error: Function ID with unsupported first parameter type."); // TODO print Function ID
+            "DPNP Error: Function ID with unsupported first parameter type."); // TODO print Function ID
     }
 
     const map_2p_t& type2_map = type1_map_it->second;
@@ -64,7 +64,7 @@ DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName func_name, DPNPFuncType first_
     if (type2_map_it == type2_map.cend())
     {
         throw std::runtime_error(
-            "Intel NumPy Error: Function ID with unsupported second parameter type."); // TODO print Function ID
+            "DPNP Error: Function ID with unsupported second parameter type."); // TODO print Function ID
     }
 
     DPNPFuncData_t func_info = type2_map_it->second;
@@ -102,7 +102,7 @@ void* get_backend_function_name(const char* func_name, const char* type_name)
         }
     }
 
-    throw std::runtime_error("Intel NumPy Error: Unsupported function call");
+    throw std::runtime_error("DPNP Error: Unsupported function call");
 }
 
 /**

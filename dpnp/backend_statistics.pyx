@@ -378,7 +378,7 @@ cpdef dparray _dpnp_min(dparray input, _axis_, output_shape):
         axis_.reserve(len(axis))
         for shape_it in axis:
             if shape_it < 0:
-                raise ValueError("Intel NumPy dparray::__init__(): Negative values in 'shape' are not allowed")
+                raise ValueError("DPNP dparray::__init__(): Negative values in 'shape' are not allowed")
             axis_.push_back(shape_it)
         axis_size = len(axis)
 

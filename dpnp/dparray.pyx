@@ -85,7 +85,7 @@ cdef class dparray:
             order = utils._normalize_order(order)
 
         if order != b'C' and order != b'F':
-            raise TypeError(f"Intel DPNP::__init__(): Parameter is not understood. order={order}")
+            raise TypeError(f"DPNP::__init__(): Parameter is not understood. order={order}")
 
         # dtype
         self._dparray_dtype = numpy.dtype(dtype)
@@ -97,7 +97,7 @@ cdef class dparray:
         self._dparray_size = 1
         for shape_it in shape_tup:
             if shape_it < 0:
-                raise ValueError("Intel NumPy dparray::__init__(): Negative values in 'shape' are not allowed")
+                raise ValueError("DPNP dparray::__init__(): Negative values in 'shape' are not allowed")
             # shape
             self._dparray_shape.push_back(shape_it)
             # size
@@ -108,7 +108,7 @@ cdef class dparray:
         self._dparray_strides.reserve(len(strides_tup))
         for strides_it in strides_tup:
             if strides_it < 0:
-                raise ValueError("Intel NumPy dparray::__init__(): Negative values in 'strides' are not allowed")
+                raise ValueError("DPNP dparray::__init__(): Negative values in 'strides' are not allowed")
             # stride
             self._dparray_strides.push_back(strides_it)
 
@@ -129,11 +129,11 @@ cdef class dparray:
         """ Output information about the array to standard output
 
         Example:
-          <Intel Numpy DParray:name=dparray: mem=0x7ffad6fa4000: size=1048576: shape=[1024, 1024]: type=float64>
+          <DPNP DParray:name=dparray: mem=0x7ffad6fa4000: size=1048576: shape=[1024, 1024]: type=float64>
 
         """
 
-        string = "<Intel Numpy DParray:name={}".format(self.__class__.__name__)
+        string = "<DPNP DParray:name={}".format(self.__class__.__name__)
         string += ": mem=0x{:x}".format(< size_t > self._dparray_data)
         string += ": size={}".format(self.size)
         string += ": shape={}".format(self.shape)
