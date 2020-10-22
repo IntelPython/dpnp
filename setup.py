@@ -129,6 +129,13 @@ _project_rpath = ["$ORIGIN"]
 _dpctrl_include = []
 _dpctrl_libpath = []
 _dpctrl_lib = []
+_sdl_cflags = ['-fstack-protector-strong',
+               '-fPIC', '-D_FORTIFY_SOURCE=2',
+               '-Wformat',
+               '-Wformat-security',
+               '-fno-strict-overflow',
+               '-fno-delete-null-pointer-checks']
+_sdl_ldflags = ['-Wl,-z,noexecstack,-z,relro,-z,now',]
 
 
 try:
@@ -277,9 +284,9 @@ dpnp_backend_c = [
             "include_dirs": _mathlib_include + _project_backend_dir + _dpctrl_include,
             "library_dirs": _mathlib_path + _omp_libpath + _dpctrl_libpath,
             "runtime_library_dirs": _project_rpath + _mathlib_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath,
-            "extra_preargs": _project_cmplr_flag_sycl,
+            "extra_preargs": _project_cmplr_flag_sycl + _sdl_cflags,
             "extra_link_preargs": _project_cmplr_flag_compatibility,
-            "extra_link_postargs": [],
+            "extra_link_postargs": _sdl_ldflags,
             "libraries": _mathlibs + _dpctrl_lib,
             "macros": _project_cmplr_macro,
             "force_build": _project_force_build,
@@ -296,8 +303,8 @@ dpnp_backend = Extension(
     sources=["dpnp/backend.pyx"],
     libraries=[],
     include_dirs=[numpy.get_include()] + _project_backend_dir,
-    extra_compile_args=[],
-    extra_link_args=_project_extra_link_args,
+    extra_compile_args=_sdl_cflags,
+    extra_link_args=_project_extra_link_args + _sdl_ldflags,
     define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
     language="c++"
 )
@@ -307,8 +314,8 @@ dpnp_dparray = Extension(
     sources=["dpnp/dparray.pyx"],
     libraries=[],
     include_dirs=[numpy.get_include()] + _project_backend_dir,
-    extra_compile_args=[],
-    extra_link_args=_project_extra_link_args,
+    extra_compile_args=_sdl_cflags,
+    extra_link_args=_project_extra_link_args + _sdl_ldflags,
     define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
     language="c++"
 )
@@ -317,7 +324,8 @@ dpnp_random = Extension(
     name="dpnp.random._random",
     sources=["dpnp/random/_random.pyx"],
     include_dirs=[numpy.get_include()] + _project_backend_dir,
-    extra_link_args=_project_extra_link_args,
+    extra_compile_args=_sdl_cflags,
+    extra_link_args=_project_extra_link_args + _sdl_ldflags,
     define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
     language="c++"
 )
@@ -326,8 +334,8 @@ dpnp_utils = Extension(
     name="dpnp.dpnp_utils",
     sources=["dpnp/dpnp_utils.pyx"],
     include_dirs=[numpy.get_include()] + _project_backend_dir,
-    extra_compile_args=[],
-    extra_link_args=_project_extra_link_args,
+    extra_compile_args=_sdl_cflags,
+    extra_link_args=_project_extra_link_args + _sdl_ldflags,
     define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
     language="c++"
 )
@@ -336,7 +344,8 @@ dpnp_linalg = Extension(
     name="dpnp.linalg.linalg",
     sources=["dpnp/linalg/linalg.pyx"],
     include_dirs=[numpy.get_include()] + _project_backend_dir,
-    extra_link_args=_project_extra_link_args,
+    extra_compile_args=_sdl_cflags,
+    extra_link_args=_project_extra_link_args + _sdl_ldflags,
     define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
     language="c++"
 )
