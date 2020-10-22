@@ -97,7 +97,6 @@ void custom_rng_uniform_c(void* result, long low, long high, size_t size)
     // perform generation
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
     event_out.wait();
-
 }
 
 void func_map_init_random(func_map_t& fmap)

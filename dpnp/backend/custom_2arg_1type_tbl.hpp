@@ -38,7 +38,7 @@
 #error "MACRO_CUSTOM_2ARG_1TYPE_OP is not defined"
 #endif
 
-MACRO_CUSTOM_2ARG_1TYPE_OP(dpnp_bitwise_and_c, input_elem1 & input_elem2)
+MACRO_CUSTOM_2ARG_1TYPE_OP(dpnp_bitwise_and_c, input_elem1& input_elem2)
 MACRO_CUSTOM_2ARG_1TYPE_OP(dpnp_bitwise_or_c, input_elem1 | input_elem2)
 MACRO_CUSTOM_2ARG_1TYPE_OP(dpnp_bitwise_xor_c, input_elem1 ^ input_elem2)
 MACRO_CUSTOM_2ARG_1TYPE_OP(dpnp_left_shift_c, input_elem1 << input_elem2)

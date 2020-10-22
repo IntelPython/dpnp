@@ -32,14 +32,13 @@ and the rest of the library
 
 """
 
+from libc.time cimport time, time_t
 import dpnp.config as config
 import numpy
 
 cimport cpython
 cimport dpnp.dpnp_utils as utils
 cimport numpy
-
-from libc.time cimport time, time_t
 
 
 __all__ = [

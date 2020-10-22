@@ -32,12 +32,12 @@ and the rest of the library
 
 """
 
+import dpnp
 from dpnp.dpnp_utils cimport *
 from dpnp.backend cimport *
 from dpnp.dparray cimport dparray, dparray_shape_type
 import numpy
 cimport numpy
-import dpnp
 
 
 __all__ = [
@@ -48,7 +48,7 @@ __all__ = [
 
 
 # C function pointer to the C library template functions
-ctypedef void(*custom_linalg_1in_1out_func_ptr_t)(void * , void * , size_t * , size_t)
+ctypedef void(*custom_linalg_1in_1out_func_ptr_t)(void *, void * , size_t * , size_t)
 
 
 cpdef dparray dpnp_det(dparray input):
@@ -66,7 +66,7 @@ cpdef dparray dpnp_det(dparray input):
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DET, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     cdef dparray result = dparray(size_out, dtype=result_type)
 
     cdef custom_linalg_1in_1out_func_ptr_t func = <custom_linalg_1in_1out_func_ptr_t > kernel_data.ptr
@@ -88,7 +88,7 @@ cpdef tuple dpnp_eig(dparray x1):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_EIG, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
 
     cdef dparray res_val = dparray((size,), dtype=result_type)
     cdef dparray res_vec = dparray(x1_shape, dtype=result_type)
@@ -105,7 +105,7 @@ cpdef dparray dpnp_matrix_rank(dparray input):
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MATRIX_RANK, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     cdef dparray result = dparray((1,), dtype=result_type)
 
     cdef custom_linalg_1in_1out_func_ptr_t func = <custom_linalg_1in_1out_func_ptr_t > kernel_data.ptr

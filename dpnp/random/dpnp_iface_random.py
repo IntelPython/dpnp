@@ -376,6 +376,7 @@ def random(size):
 
     return call_origin(numpy.random.random, size)
 
+
 def random_integers(low, high=None, size=None):
     """
     random_integers(low, high=None, size=None)

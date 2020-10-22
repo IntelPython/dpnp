@@ -78,13 +78,13 @@ def test_eig_arange(type, size):
 
 def test_matrix_rank():
     arrays = [
-              [0, 0],
-              # [0, 1],
-              [1, 2],
-              [[0, 0], [0, 0]],
-              # [[1, 2], [1, 2]],
-              # [[1, 2], [3, 4]],
-              ]
+        [0, 0],
+        # [0, 1],
+        [1, 2],
+        [[0, 0], [0, 0]],
+        # [[1, 2], [1, 2]],
+        # [[1, 2], [3, 4]],
+    ]
     tols = [None]
     for array in arrays:
         for tol in tols:

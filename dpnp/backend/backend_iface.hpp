@@ -124,8 +124,7 @@ INP_DLLEXPORT void
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void
-    custom_elemwise_absolute_c(void* array1_in, void* result1, size_t size);
+INP_DLLEXPORT void custom_elemwise_absolute_c(void* array1_in, void* result1, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -440,7 +439,7 @@ INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
  * __name__ function called with the SYCL backend.
  *
  * @param [in]  array1_in  First input array.
- * 
+ *
  * @param [in]  array2_in  Second input array.
  *
  * @param [out] result1    Output array.

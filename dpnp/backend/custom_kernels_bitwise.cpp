@@ -25,8 +25,8 @@
 
 #include <iostream>
 
-#include "backend_iface.hpp"
 #include "backend_fptr.hpp"
+#include "backend_iface.hpp"
 #include "queue_sycl.hpp"
 
 template <typename _KernelNameSpecialization>

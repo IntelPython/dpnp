@@ -172,7 +172,7 @@ def ceil(x1, **kwargs):
 def copysign(x1, x2, **kwargs):
     """
     Change the sign of x1 to that of x2, element-wise.
-    
+
     Parameters
     ----------
     x1 : array_like

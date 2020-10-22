@@ -42,11 +42,11 @@ void custom_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    size_t n = shape[ndim-1];
+    size_t n = shape[ndim - 1];
     size_t size_out = 1;
     if (ndim == 2)
     {
-          size_out = 0;
+        size_out = 0;
     }
     else
     {
@@ -71,7 +71,7 @@ void custom_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
             {
                 for (size_t k = 0; k < n; k++)
                 {
-                    matrix[j][k] = elems[j*n +k];
+                    matrix[j][k] = elems[j * n + k];
                 }
             }
         }
@@ -81,7 +81,7 @@ void custom_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
             {
                 for (size_t k = 0; k < n; k++)
                 {
-                    matrix[j][k] = array_1[j*n +k];
+                    matrix[j][k] = array_1[j * n + k];
                 }
             }
         }
@@ -103,7 +103,7 @@ void custom_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
                         }
                         break;
                     }
-                    if (j == n-1 and matrix[j][l] == 0)
+                    if (j == n - 1 and matrix[j][l] == 0)
                     {
                         det_val = 0;
                     }
@@ -113,7 +113,7 @@ void custom_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
             {
                 for (size_t j = l + 1; j < n; j++)
                 {
-                    _DataType q = - (matrix[j][l] / matrix[l][l]);
+                    _DataType q = -(matrix[j][l] / matrix[l][l]);
                     for (size_t k = l + 1; k < n; k++)
                     {
                         matrix[j][k] += q * matrix[l][k];
@@ -135,7 +135,6 @@ void custom_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
 
     return;
 }
-
 
 template <typename _DataType>
 class custom_matrix_rank_c_kernel;
@@ -171,7 +170,6 @@ void custom_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t 
 
     return;
 }
-
 
 void func_map_init_linalg_func(func_map_t& fmap)
 {

@@ -64,7 +64,7 @@ def _check_nd_call(origin_func, dpnp_func, *input_arrays,
     """
     Choose function to call based on required input arrays types, data types and shapes
     and call chosen fucntion.
-    
+
     Parameters
     ----------
     origin_func : function

@@ -415,13 +415,10 @@ void custom_min_c(void* array1_in, void* result1, const size_t* shape, size_t nd
                 result[result_offset] = array_1[source_idx];
             }
         }
-
     }
-
 
     return;
 }
-
 
 template <typename _DataType, typename _ResultType>
 void custom_std_c(
@@ -490,7 +487,6 @@ void custom_var_c(
 
     return;
 }
-
 
 void func_map_init_statistics(func_map_t& fmap)
 {
