@@ -231,7 +231,7 @@ INP_DLLEXPORT void custom_cov_c(void* array1_in, void* result1, size_t nrows, si
 
 /**
  * @ingroup BACKEND_API
- * @brief MKL implementation of matrix_rank function
+ * @brief math library implementation of matrix_rank function
  *
  * @param [in]  array   Input array with data.
  *
