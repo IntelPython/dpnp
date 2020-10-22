@@ -117,7 +117,7 @@ def chisquare(df, size=None):
         # float to int, safe
         return dpnp_chisquare(int(df), size)
 
-    return call_origin(df, size)
+    return call_origin(numpy.random.chisquare, df, size)
 
 
 def exponential(scale=1.0, size=None):
@@ -186,7 +186,7 @@ def exponential(scale=1.0, size=None):
         # displacement `a` is 0.0
         return dpnp_exponential(0.0, scale, size)
 
-    return call_origin(df, size)
+    return call_origin(numpy.random.exponential, scale, size)
 
 
 def rand(d0, *dn):
@@ -216,7 +216,7 @@ def rand(d0, *dn):
                 checker_throw_value_error("rand", "type(dim)", type(dim), int)
         return dpnp_random(dims)
 
-    return call_origin(d0, *dn)
+    return call_origin(numpy.random.rand, d0, *dn)
 
 
 def ranf(size):
@@ -244,7 +244,7 @@ def ranf(size):
                 checker_throw_value_error("ranf", "type(dim)", type(dim), int)
         return dpnp_random(size)
 
-    return call_origin(size)
+    return call_origin(numpy.random.ranf, size)
 
 
 def randint(low, high=None, size=None, dtype=int):
@@ -316,7 +316,7 @@ def randint(low, high=None, size=None, dtype=int):
             raise TypeError('Unsupported dtype %r for randint' % dtype)
         return dpnp_uniform(low, high, size, _dtype)
 
-    return call_origin(low, high, size, dtype)
+    return call_origin(numpy.random.randint, low, high, size, dtype)
 
 
 def randn(d0, *dn):
@@ -347,7 +347,7 @@ def randn(d0, *dn):
                 checker_throw_value_error("randn", "type(dim)", type(dim), int)
         return dpnp_randn(dims)
 
-    return call_origin(d0, *dn)
+    return call_origin(numpy.random.randn, d0, *dn)
 
 
 def random(size):
@@ -375,7 +375,7 @@ def random(size):
                 checker_throw_value_error("random", "type(dim)", type(dim), int)
         return dpnp_random(size)
 
-    return call_origin(size)
+    return call_origin(numpy.random.random, size)
 
 def random_integers(low, high=None, size=None):
     """
@@ -416,7 +416,7 @@ def random_integers(low, high=None, size=None):
             low = 1
         return randint(low, int(high) + 1, size=size)
 
-    return call_origin(low, high, size)
+    return call_origin(numpy.random.random_integers, low, high, size)
 
 
 def random_sample(size):
@@ -443,7 +443,7 @@ def random_sample(size):
                 checker_throw_value_error("random_sample", "type(dim)", type(dim), int)
         return dpnp_random(size)
 
-    return call_origin(size)
+    return call_origin(numpy.random.random_sample, size)
 
 
 def seed(seed=None):
@@ -466,7 +466,7 @@ def seed(seed=None):
             checker_throw_value_error("seed", "seed", seed, "non-negative")
         return dpnp_srand(seed)
 
-    return call_origin(seed)
+    return call_origin(numpy.random.seed, seed)
 
 
 def sample(size):
@@ -494,7 +494,7 @@ def sample(size):
                 checker_throw_value_error("sample", "type(dim)", type(dim), int)
         return dpnp_random(size)
 
-    return call_origin(size)
+    return call_origin(numpy.random.sample, size)
 
 
 def uniform(low=0.0, high=1.0, size=None):
@@ -542,4 +542,4 @@ def uniform(low=0.0, high=1.0, size=None):
             low, high = high, low
         return dpnp_uniform(low, high, size, dtype=numpy.float64)
 
-    return call_origin(low, high, size)
+    return call_origin(numpy.random.uniform, low, high, size)
