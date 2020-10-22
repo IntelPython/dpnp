@@ -94,6 +94,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_FLOOR,        /**< Used in numpy.floor() implementation  */
     DPNP_FN_FLOOR_DIVIDE, /**< Used in numpy.floor_divide() implementation  */
     DPNP_FN_FMOD,         /**< Used in numpy.fmod() implementation  */
+    DPNP_FN_GAMMA,        /**< Used in numpy.random.gamma() implementation  */
     DPNP_FN_GAUSSIAN,     /**< Used in numpy.random.randn() implementation  */
     DPNP_FN_HYPOT,        /**< Used in numpy.hypot() implementation  */
     DPNP_FN_INVERT,       /**< Used in numpy.invert() implementation  */

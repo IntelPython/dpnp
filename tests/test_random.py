@@ -143,3 +143,26 @@ def test_chisquare_invalid_df():
     df = -1 # positive `df` is expected
     with pytest.raises(ValueError):
         dpnp.random.chisquare(df, size)
+
+
+def test_radnom_gamma_seed():
+    seed = 28041990
+    size = 100
+    shape = 3.0  # shape param for gamma distr
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.gamma(shape=shape, size=size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.gamma(shape=shape, size=size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_gamma_invalid_args():
+    size = 10
+    shape = -1 # non-negative `shape` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.gamma(shape=shape, size=size)
+    shape = 1.0  # OK
+    scale = -1.0 # non-negative `shape` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.gamma(shape, scale, size)
