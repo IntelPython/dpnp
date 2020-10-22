@@ -191,9 +191,11 @@ void dpnp_remainder_c(void* array1_in, void* array2_in, void* result1, size_t si
                    std::is_same<_DataType_input1, float>::value) &&
                   std::is_same<_DataType_input2, _DataType_input1>::value)
     {
-        event = oneapi::mkl::vm::remainder(DPNP_QUEUE, size, array1, array2, result);
+        event = oneapi::mkl::vm::fmod(DPNP_QUEUE, size, array1, array2, result);
         event.wait();
-        event = oneapi::mkl::vm::copysign(DPNP_QUEUE, size, result, array2, result);
+        event = oneapi::mkl::vm::add(DPNP_QUEUE, size, result, array2, result);
+        event.wait();
+        event = oneapi::mkl::vm::fmod(DPNP_QUEUE, size, result, array2, result);
     }
     else
     {
@@ -203,8 +205,9 @@ void dpnp_remainder_c(void* array1_in, void* array2_in, void* result1, size_t si
             {
                 _DataType_input1 input_elem1 = array1[i];
                 _DataType_input2 input_elem2 = array2[i];
-                double rem = cl::sycl::remainder((double)input_elem1, (double)input_elem2);
-                result[i] = cl::sycl::copysign(rem, (double)input_elem2);
+                double fmod = cl::sycl::fmod((double)input_elem1, (double)input_elem2);
+                double add = fmod + input_elem2;
+                result[i] = cl::sycl::fmod(add, (double)input_elem2);
             }
         };
 
