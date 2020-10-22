@@ -120,7 +120,7 @@ def beta(a, b, size=None):
 
         return dpnp_beta(a, b, size)
 
-    return call_origin(a, b, size)
+    return call_origin(numpy.random.beta, a, b, size)
 
 
 def chisquare(df, size=None):
