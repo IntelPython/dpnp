@@ -54,6 +54,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_COSH
         DPNP_FN_COV
         DPNP_FN_DEGREES
+        DPNP_FN_DET
         DPNP_FN_DIVIDE
         DPNP_FN_DOT
         DPNP_FN_EIG
