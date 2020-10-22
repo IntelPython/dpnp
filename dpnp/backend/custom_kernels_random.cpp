@@ -46,12 +46,16 @@ void custom_rng_chi_square_c(void* result, int df, size_t size)
 }
 
 template <typename _DataType>
-void custom_rng_exponential_c(void* result, _DataType a, _DataType beta, size_t size)
+void custom_rng_exponential_c(void* result, _DataType beta, size_t size)
 {
     if (!size)
     {
         return;
     }
+
+    // set displacement a
+    const _DataType a = (_DataType(0.0));
+
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
     mkl_rng::exponential<_DataType> distribution(a, beta);
