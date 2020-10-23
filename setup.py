@@ -238,7 +238,8 @@ if IS_LIN:
 """
 Final set of arguments for extentions
 """
-_project_extra_link_args = _project_cmplr_flag_compatibility + ["-Wl,-rpath," + x for x in _project_rpath] + _sdl_ldflags
+_project_extra_link_args = _project_cmplr_flag_compatibility + \
+    ["-Wl,-rpath," + x for x in _project_rpath] + _sdl_ldflags
 _project_dir = os.path.dirname(os.path.abspath(__file__))
 _project_backend_dir = [os.path.join(_project_dir, "dpnp", "backend")]
 
