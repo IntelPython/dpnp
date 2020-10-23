@@ -415,13 +415,10 @@ void custom_min_c(void* array1_in, void* result1, const size_t* shape, size_t nd
                 result[result_offset] = array_1[source_idx];
             }
         }
-
     }
-
 
     return;
 }
-
 
 template <typename _DataType, typename _ResultType>
 void custom_std_c(
@@ -491,7 +488,6 @@ void custom_var_c(
     return;
 }
 
-
 void func_map_init_statistics(func_map_t& fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_COV][eft_INT][eft_INT] = {eft_DBL, (void*)custom_cov_c<double>};
@@ -511,7 +507,7 @@ void func_map_init_statistics(func_map_t& fmap)
 
     fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_INT][eft_INT] = {eft_DBL, (void*)custom_median_c<int, double>};
     fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_LNG][eft_LNG] = {eft_DBL, (void*)custom_median_c<long, double>};
-    fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_FLT][eft_FLT] = {eft_DBL, (void*)custom_median_c<float, double>};
+    fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_median_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_median_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_MIN][eft_INT][eft_INT] = {eft_INT, (void*)custom_min_c<int>};

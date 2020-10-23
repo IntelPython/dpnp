@@ -78,22 +78,12 @@ void custom_elemwise_absolute_c(void* array1_in, void* result1, size_t size)
     event.wait();
 }
 
-template void custom_elemwise_absolute_c<double>(void* array1_in,
-                                                 void* result1,
-                                                 size_t size);
-template void custom_elemwise_absolute_c<float>(void* array1_in,
-                                                void* result1,
-                                                size_t size);
-template void custom_elemwise_absolute_c<long>(void* array1_in,
-                                               void* result1,
-                                               size_t size);
-template void custom_elemwise_absolute_c<int>(void* array1_in,
-                                              void* result1,
-                                              size_t size);
+template void custom_elemwise_absolute_c<double>(void* array1_in, void* result1, size_t size);
+template void custom_elemwise_absolute_c<float>(void* array1_in, void* result1, size_t size);
+template void custom_elemwise_absolute_c<long>(void* array1_in, void* result1, size_t size);
+template void custom_elemwise_absolute_c<int>(void* array1_in, void* result1, size_t size);
 
-template <typename _KernelNameSpecialization1,
-          typename _KernelNameSpecialization2,
-          typename _KernelNameSpecialization3>
+template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2, typename _KernelNameSpecialization3>
 class dpnp_floor_divide_c_kernel;
 
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
@@ -104,8 +94,7 @@ void dpnp_floor_divide_c(void* array1_in, void* array2_in, void* result1, size_t
     _DataType_input2* array2 = reinterpret_cast<_DataType_input2*>(array2_in);
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
 
-    if constexpr ((std::is_same<_DataType_input1, double>::value ||
-                   std::is_same<_DataType_input1, float>::value) &&
+    if constexpr ((std::is_same<_DataType_input1, double>::value || std::is_same<_DataType_input1, float>::value) &&
                   std::is_same<_DataType_input2, _DataType_input1>::value)
     {
         event = oneapi::mkl::vm::div(DPNP_QUEUE, size, array1, array2, result);
@@ -136,8 +125,7 @@ void dpnp_floor_divide_c(void* array1_in, void* array2_in, void* result1, size_t
     event.wait();
 }
 
-template <typename _KernelNameSpecialization1,
-          typename _KernelNameSpecialization2>
+template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2>
 class dpnp_modf_c_kernel;
 
 template <typename _DataType_input, typename _DataType_output>
@@ -174,9 +162,7 @@ void dpnp_modf_c(void* array1_in, void* result1_out, void* result2_out, size_t s
     event.wait();
 }
 
-template <typename _KernelNameSpecialization1,
-          typename _KernelNameSpecialization2,
-          typename _KernelNameSpecialization3>
+template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2, typename _KernelNameSpecialization3>
 class dpnp_remainder_c_kernel;
 
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
@@ -187,13 +173,14 @@ void dpnp_remainder_c(void* array1_in, void* array2_in, void* result1, size_t si
     _DataType_input2* array2 = reinterpret_cast<_DataType_input2*>(array2_in);
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
 
-    if constexpr ((std::is_same<_DataType_input1, double>::value ||
-                   std::is_same<_DataType_input1, float>::value) &&
+    if constexpr ((std::is_same<_DataType_input1, double>::value || std::is_same<_DataType_input1, float>::value) &&
                   std::is_same<_DataType_input2, _DataType_input1>::value)
     {
-        event = oneapi::mkl::vm::remainder(DPNP_QUEUE, size, array1, array2, result);
+        event = oneapi::mkl::vm::fmod(DPNP_QUEUE, size, array1, array2, result);
         event.wait();
-        event = oneapi::mkl::vm::copysign(DPNP_QUEUE, size, result, array2, result);
+        event = oneapi::mkl::vm::add(DPNP_QUEUE, size, result, array2, result);
+        event.wait();
+        event = oneapi::mkl::vm::fmod(DPNP_QUEUE, size, result, array2, result);
     }
     else
     {
@@ -203,8 +190,9 @@ void dpnp_remainder_c(void* array1_in, void* array2_in, void* result1, size_t si
             {
                 _DataType_input1 input_elem1 = array1[i];
                 _DataType_input2 input_elem2 = array2[i];
-                double rem = cl::sycl::remainder((double)input_elem1, (double)input_elem2);
-                result[i] = cl::sycl::copysign(rem, (double)input_elem2);
+                double fmod = cl::sycl::fmod((double)input_elem1, (double)input_elem2);
+                double add = fmod + input_elem2;
+                result[i] = cl::sycl::fmod(add, (double)input_elem2);
             }
         };
 
@@ -223,20 +211,33 @@ void func_map_init_mathematical(func_map_t& fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_floor_divide_c<int, int, int>};
     fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_floor_divide_c<int, long, long>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_INT][eft_FLT] = {eft_DBL, (void*)dpnp_floor_divide_c<int, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_floor_divide_c<int, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_INT][eft_FLT] = {eft_DBL,
+                                                                  (void*)dpnp_floor_divide_c<int, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_INT][eft_DBL] = {eft_DBL,
+                                                                  (void*)dpnp_floor_divide_c<int, double, double>};
     fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_LNG][eft_INT] = {eft_LNG, (void*)dpnp_floor_divide_c<long, int, long>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_floor_divide_c<long, long, long>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_LNG][eft_FLT] = {eft_DBL, (void*)dpnp_floor_divide_c<long, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_floor_divide_c<long, double, double>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_FLT][eft_INT] = {eft_DBL, (void*)dpnp_floor_divide_c<float, int, double>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_FLT][eft_LNG] = {eft_DBL, (void*)dpnp_floor_divide_c<float, long, double>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_floor_divide_c<float, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_FLT][eft_DBL] = {eft_DBL, (void*)dpnp_floor_divide_c<float, double, double>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_floor_divide_c<double, int, double>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_floor_divide_c<double, long, double>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_floor_divide_c<double, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_floor_divide_c<double, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_LNG][eft_LNG] = {eft_LNG,
+                                                                  (void*)dpnp_floor_divide_c<long, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_LNG][eft_FLT] = {eft_DBL,
+                                                                  (void*)dpnp_floor_divide_c<long, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_LNG][eft_DBL] = {eft_DBL,
+                                                                  (void*)dpnp_floor_divide_c<long, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_FLT][eft_INT] = {eft_DBL,
+                                                                  (void*)dpnp_floor_divide_c<float, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_FLT][eft_LNG] = {eft_DBL,
+                                                                  (void*)dpnp_floor_divide_c<float, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_FLT][eft_FLT] = {eft_FLT,
+                                                                  (void*)dpnp_floor_divide_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_FLT][eft_DBL] = {eft_DBL,
+                                                                  (void*)dpnp_floor_divide_c<float, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_DBL][eft_INT] = {eft_DBL,
+                                                                  (void*)dpnp_floor_divide_c<double, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_DBL][eft_LNG] = {eft_DBL,
+                                                                  (void*)dpnp_floor_divide_c<double, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_DBL][eft_FLT] = {eft_DBL,
+                                                                  (void*)dpnp_floor_divide_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_FLOOR_DIVIDE][eft_DBL][eft_DBL] = {eft_DBL,
+                                                                  (void*)dpnp_floor_divide_c<double, double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_MODF][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_modf_c<int, double>};
     fmap[DPNPFuncName::DPNP_FN_MODF][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_modf_c<long, double>};
@@ -258,7 +259,8 @@ void func_map_init_mathematical(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_remainder_c<double, int, double>};
     fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_remainder_c<double, long, double>};
     fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_remainder_c<double, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_remainder_c<double, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_DBL][eft_DBL] = {eft_DBL,
+                                                               (void*)dpnp_remainder_c<double, double, double>};
 
     return;
 }

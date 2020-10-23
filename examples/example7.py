@@ -27,17 +27,14 @@
 
 """Example 1.
 
-This example shows simple usage of the Intel NumPy
+This example shows simple usage of the DPNP
 to calculate square matrix multiplication
 
 Also, it produces performance comparison between regular NumPy
-and Intel NumPy for several matrix multiplication
+and DPNP for several matrix multiplication
 
 """
 
-
-import numpy
-import time
 
 try:
     import dpnp
@@ -49,6 +46,9 @@ except ImportError:
     sys.path.append(root_dir)
 
     import dpnp
+
+import numpy
+import time
 
 
 def run_function(executor, name, size, test_type, repetition):

@@ -32,12 +32,12 @@ and the rest of the library
 
 """
 
+import dpnp
 from dpnp.dpnp_utils cimport *
 from dpnp.backend cimport *
 from dpnp.dparray cimport dparray, dparray_shape_type
 import numpy
 cimport numpy
-import dpnp
 
 
 __all__ = [
@@ -48,7 +48,7 @@ __all__ = [
 
 
 # C function pointer to the C library template functions
-ctypedef void(*custom_linalg_1in_1out_func_ptr_t)(void * , void * , size_t * , size_t)
+ctypedef void(*custom_linalg_1in_1out_func_ptr_t)(void *, void * , size_t * , size_t)
 
 
 cpdef dparray dpnp_det(dparray input):
@@ -62,46 +62,16 @@ cpdef dparray dpnp_det(dparray input):
         for i in range(len(output_shape)):
             size_out *= output_shape[i]
 
-    cdef dparray result = dparray(size_out, dtype=input.dtype)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
-    for i in range(size_out):
-        if size_out > 1:
-            elems = []
-            for j in range(i *(n ** 2), (i + 1) * (n ** 2)):
-                elems.append(input[j])
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DET, param1_type, param1_type)
 
-            matrix = []
-            for j in range(n):
-                matrix_ = []
-                for k in range(n):
-                    matrix_.append(elems[j*n +k])
-                matrix.append(matrix_)
-        else:
-            matrix = input
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray(size_out, dtype=result_type)
 
-        det_val = 1
-        for l in range(n):
-            if matrix[l][l] == 0:
-                for j in range(l, n):
-                    if matrix[j][l] != 0:
-                        for k in range(l, n):
-                            c = matrix[l][k]
-                            matrix[l][k] = -1 * matrix[j][k]
-                            matrix[j][k] = c
-                        break
-                    if j == n-1 and matrix[j][l] == 0:
-                        det_val = 0
-            if det_val != 0:
-                for j in range(l + 1, n):
-                    q = - (matrix[j][l] / matrix[l][l])
-                    for k in range(l + 1, n):
-                        matrix[j][k] += q * matrix[l][k]
+    cdef custom_linalg_1in_1out_func_ptr_t func = <custom_linalg_1in_1out_func_ptr_t > kernel_data.ptr
 
-        if det_val != 0:
-            for l in range(n):
-                det_val *= matrix[l][l]
-
-        result[i] = det_val
+    func(input.get_data(), result.get_data(), < size_t * > input._dparray_shape.data(), input.ndim)
 
     if size_out > 1:
         dpnp_result = result.reshape(output_shape)
@@ -118,7 +88,7 @@ cpdef tuple dpnp_eig(dparray x1):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_EIG, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
 
     cdef dparray res_val = dparray((size,), dtype=result_type)
     cdef dparray res_vec = dparray(x1_shape, dtype=result_type)
@@ -135,7 +105,7 @@ cpdef dparray dpnp_matrix_rank(dparray input):
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MATRIX_RANK, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     cdef dparray result = dparray((1,), dtype=result_type)
 
     cdef custom_linalg_1in_1out_func_ptr_t func = <custom_linalg_1in_1out_func_ptr_t > kernel_data.ptr

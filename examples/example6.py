@@ -27,14 +27,11 @@
 
 """Example 1.
 
-This example shows simple usage of the Intel NumPy
+This example shows simple usage of the DPNP
 
 dpnp.random.randn
 """
 
-
-import numpy
-import time
 
 try:
     import dpnp
@@ -46,6 +43,10 @@ except ImportError:
     sys.path.append(root_dir)
 
     import dpnp
+
+import numpy
+import time
+
 
 if __name__ == '__main__':
     # TODO

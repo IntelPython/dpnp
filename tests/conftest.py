@@ -31,24 +31,31 @@ import pytest
 skip_mark = pytest.mark.skip(reason='Skipping test.')
 
 
-def pytest_collection_modifyitems(config, items):
+def get_excluded_tests(test_exclude_file):
     excluded_tests = []
-    # global skip file
-    test_path = os.path.split(__file__)[0]
-    test_exclude_file = os.path.join(test_path, 'skipped_tests.tbl')
     if os.path.exists(test_exclude_file):
         with open(test_exclude_file) as skip_names_file:
             excluded_tests = skip_names_file.readlines()
+    return excluded_tests
+
+
+def pytest_collection_modifyitems(config, items):
+    test_path = os.path.split(__file__)[0]
+    excluded_tests = []
+    # global skip file
+    test_exclude_file = os.path.join(test_path, 'skipped_tests.tbl')
+
+    # global skip file, where gpu device is not supported
+    test_exclude_file_gpu = os.path.join(test_path, 'skipped_tests_gpu.tbl')
+
+    if 'DPNP_QUEUE_GPU' in os.environ and os.getenv('DPNP_QUEUE_GPU') == '1':
+        excluded_tests.extend(get_excluded_tests(test_exclude_file_gpu))
+    else:
+        excluded_tests.extend(get_excluded_tests(test_exclude_file))
 
     for item in items:
         # some test name contains '\n' in the parameters
         test_name = item.nodeid.replace('\n', '').strip()
-#         test_file = test_name.split(':', -1)[0]
-#         test_path = os.path.split(test_file)[0]
-#         test_exclude_file = os.path.join(test_path, 'skipped_tests.tbl')
-#         if os.path.exists(test_exclude_file):
-#             with open(test_exclude_file) as skip_names_file:
-#                 excluded_tests = skip_names_file.read()
 
         for item_tbl in excluded_tests:
             # remove end-of-line character

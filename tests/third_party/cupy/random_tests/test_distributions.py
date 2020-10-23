@@ -340,7 +340,7 @@ class TestDistributionsMultivariateNormal(unittest.TestCase):
         cov = cupy.random.normal(size=(self.d, self.d), dtype=cov_dtype)
         cov = cov.T.dot(cov)
         out = dist_func(mean, cov, self.shape, dtype=dtype)
-        self.assertEqual(self.shape+(self.d,), out.shape)
+        self.assertEqual(self.shape + (self.d,), out.shape)
         self.assertEqual(out.dtype, dtype)
 
     @helper.for_float_dtypes('dtype', no_float16=True)

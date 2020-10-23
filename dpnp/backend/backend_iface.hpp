@@ -124,8 +124,7 @@ INP_DLLEXPORT void
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void
-    custom_elemwise_absolute_c(void* array1_in, void* result1, size_t size);
+INP_DLLEXPORT void custom_elemwise_absolute_c(void* array1_in, void* result1, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -231,7 +230,23 @@ INP_DLLEXPORT void custom_cov_c(void* array1_in, void* result1, size_t nrows, si
 
 /**
  * @ingroup BACKEND_API
- * @brief MKL implementation of matrix_rank function
+ * @brief math library implementation of det function
+ *
+ * @param [in]  array   Input array with data.
+ *
+ * @param [out] result  Output array.
+ *
+ * @param [in]  shape   Shape of input array.
+ *
+ * @param [in]  ndim    Number of elements in shape.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of matrix_rank function
  *
  * @param [in]  array   Input array with data.
  *
@@ -424,7 +439,7 @@ INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
  * __name__ function called with the SYCL backend.
  *
  * @param [in]  array1_in  First input array.
- * 
+ *
  * @param [in]  array2_in  Second input array.
  *
  * @param [out] result1    Output array.

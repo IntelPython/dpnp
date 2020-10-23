@@ -58,7 +58,7 @@ __all__ = [
     "use_origin_backend"
 ]
 
-cdef ERROR_PREFIX = "Intel NumPy error:"
+cdef ERROR_PREFIX = "DPNP error:"
 
 
 def call_origin(function, *args, **kwargs):
@@ -243,7 +243,7 @@ cdef inline int _normalize_order(order, cpp_bool allow_k=True) except? 0:
 
     if order_type == b'K' or order_type == b'k':
         if not allow_k:
-            raise ValueError("Intel NumPy _normalize_order(): order \'K\' is not permitted")
+            raise ValueError("DPNP _normalize_order(): order \'K\' is not permitted")
         order_type = b'K'
     elif order_type == b'A' or order_type == b'a':
         order_type = b'A'
@@ -252,7 +252,7 @@ cdef inline int _normalize_order(order, cpp_bool allow_k=True) except? 0:
     elif order_type == b'F' or order_type == b'f':
         order_type = b'F'
     else:
-        raise TypeError("Intel NumPy _normalize_order(): order is not understood")
+        raise TypeError("DPNP _normalize_order(): order is not understood")
 
     return order_type
 
@@ -272,7 +272,7 @@ cpdef inline tuple _object_to_tuple(object obj):
     if isinstance(obj, int):
         return obj,
 
-    raise ValueError("Intel NumPy object_to_tuple(): 'obj' should be 'None', collections.abc.Sequence, or 'int'")
+    raise ValueError("DPNP object_to_tuple(): 'obj' should be 'None', collections.abc.Sequence, or 'int'")
 
 
 cpdef cpp_bool use_origin_backend(input1=None, size_t compute_size=0):

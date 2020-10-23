@@ -27,7 +27,7 @@
 # *****************************************************************************
 
 """
-Interface of the statistics function of the Intel NumPy
+Interface of the statistics function of the DPNP
 
 Notes
 -----
@@ -134,7 +134,7 @@ def amin(input, axis=None, out=None):
     return min(input, axis=axis, out=out)
 
 
-def average(in_array1, axis=None, weights=None, returned=False):
+def average(a, axis=None, weights=None, returned=False):
     """
     Compute the weighted average along the specified axis.
 
@@ -203,25 +203,22 @@ def average(in_array1, axis=None, weights=None, returned=False):
                         numpy type promotion rules to the arguments.
 
     """
+    if not use_origin_backend(a):
+        if not isinstance(a, dparray):
+            pass
+        elif axis is not None:
+            pass
+        elif weights is not None:
+            pass
+        elif returned:
+            pass
+        else:
+            return dpnp_average(a)
 
-    is_dparray1 = isinstance(in_array1, dparray)
-
-    if (not use_origin_backend(in_array1) and is_dparray1):
-        if axis is not None:
-            checker_throw_value_error("average", "axis", type(axis), None)
-        if weights is not None:
-            checker_throw_value_error("average", "weights", type(weights), None)
-        if returned is not False:
-            checker_throw_value_error("average", "returned", returned, False)
-
-        return dpnp_average(in_array1)
-
-    input1 = dpnp.asnumpy(in_array1) if is_dparray1 else in_array1
-
-    return numpy.average(input1, axis, weights, returned)
+    return call_origin(numpy.average, a, axis, weights, returned)
 
 
-def cov(in_array1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None):
+def cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None):
     """
     Estimate a covariance matrix, given data and weights.
 
@@ -337,32 +334,27 @@ def cov(in_array1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aw
     array(11.71)
 
     """
+    if not use_origin_backend(m):
+        if not isinstance(m, dparray):
+            pass
+        elif m.ndim > 2:
+            pass
+        elif y is not None:
+            pass
+        elif not rowvar:
+            pass
+        elif bias:
+            pass
+        elif ddof is not None:
+            pass
+        elif fweights is not None:
+            pass
+        elif aweights is not None:
+            pass
+        else:
+            return dpnp_cov(m)
 
-    is_dparray1 = isinstance(in_array1, dparray)
-
-    if (not use_origin_backend(in_array1) and is_dparray1):
-        # behaviour of original numpy
-        if in_array1.ndim > 2:
-            raise ValueError("array has more than 2 dimensions")
-
-        if y is not None:
-            checker_throw_value_error("cov", "y", type(y), None)
-        if rowvar is not True:
-            checker_throw_value_error("cov", "rowvar", rowvar, True)
-        if bias is not False:
-            checker_throw_value_error("cov", "bias", bias, False)
-        if ddof is not None:
-            checker_throw_value_error("cov", "ddof", type(ddof), None)
-        if fweights is not None:
-            checker_throw_value_error("cov", "fweights", type(fweights), None)
-        if aweights is not None:
-            checker_throw_value_error("cov", "aweights", type(aweights), None)
-
-        return dpnp_cov(in_array1)
-
-    input1 = dpnp.asnumpy(in_array1) if is_dparray1 else in_array1
-
-    return numpy.cov(input1, y, rowvar, bias, ddof, fweights, aweights)
+    return call_origin(numpy.cov, m, y, rowvar, bias, ddof, fweights, aweights)
 
 
 def max(input, axis=None, out=None):
@@ -419,7 +411,7 @@ def max(input, axis=None, out=None):
     return result
 
 
-def mean(input, axis=None):
+def mean(a, axis=None, **kwargs):
     """
     Compute the arithmetic mean along the specified axis.
 
@@ -427,7 +419,7 @@ def mean(input, axis=None):
 
     Parameters
     ----------
-    input : array_like
+    a : array_like
         Array containing numbers whose mean is desired. If `input` is not an
         array, a conversion is attempted.
     axis : None or int or tuple of ints, optional
@@ -436,6 +428,8 @@ def mean(input, axis=None):
         .. versionadded:: 1.7.0
         If this is a tuple of ints, a mean is performed over multiple axes,
         instead of a single axis or all the axes as before.
+    kwargs : dict
+        Remaining input parameters of the function.
 
     Returns
     -------
@@ -444,12 +438,13 @@ def mean(input, axis=None):
         otherwise a reference to the output array is returned.
 
     """
-
-    is_input_dparray = isinstance(input, dparray)
-
-    if not use_origin_backend(input) and is_input_dparray:
-        if input.size > 0:
-            result = dpnp_mean(input, axis=axis)
+    if not use_origin_backend(a) and not kwargs:
+        if not isinstance(a, dparray):
+            pass
+        elif a.size == 0:
+            pass
+        else:
+            result = dpnp_mean(a, axis=axis)
 
             # scalar returned
             if result.shape == (1,):
@@ -457,20 +452,10 @@ def mean(input, axis=None):
 
             return result
 
-    input1 = dpnp.asnumpy(input) if is_input_dparray else input
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.mean(input1, axis=axis)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return call_origin(numpy.mean, a, axis=axis, **kwargs)
 
 
-def median(in_array1, axis=None, out=None, overwrite_input=False, keepdims=False):
+def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
     """
     Compute the median along the specified axis.
     Returns the median of the array elements.
@@ -543,30 +528,27 @@ def median(in_array1, axis=None, out=None, overwrite_input=False, keepdims=False
     3.5
     >>> assert not np.all(a==b)
     """
+    if not use_origin_backend(a):
+        if not isinstance(a, dparray):
+            pass
+        elif axis is not None:
+            pass
+        elif out is not None:
+            pass
+        elif overwrite_input:
+            pass
+        elif keepdims:
+            pass
+        else:
+            result = dpnp_median(a)
 
-    is_dparray1 = isinstance(in_array1, dparray)
+            # scalar returned
+            if result.shape == (1,):
+                return result.dtype.type(result[0])
 
-    if (not use_origin_backend(in_array1) and is_dparray1):
-        if axis is not None:
-            checker_throw_value_error("median", "axis", type(axis), None)
-        if out is not None:
-            checker_throw_value_error("median", "out", type(out), None)
-        if overwrite_input is not False:
-            checker_throw_value_error("median", "overwrite_input", overwrite_input, False)
-        if keepdims is not False:
-            checker_throw_value_error("median", "keepdims", keepdims, False)
+            return result
 
-        result = dpnp_median(in_array1)
-
-        # scalar returned
-        if result.shape == (1,):
-            return result.dtype.type(result[0])
-
-        return result
-
-    input1 = dpnp.asnumpy(in_array1) if is_dparray1 else in_array1
-
-    return numpy.median(input1, axis, out, overwrite_input, keepdims)
+    return call_origin(numpy.median, a, axis, out, overwrite_input, keepdims)
 
 
 def min(input, axis=None, out=None):

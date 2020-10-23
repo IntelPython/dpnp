@@ -24,6 +24,11 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+import sys
+import warnings
+
+if "numpy" in sys.modules:
+    warnings.warn("\nDPNP: Module NumPy found. Please load DPNP module before NumPy.\n")
 
 from dpnp.dparray import dparray as ndarray
 from dpnp.dpnp_iface import *

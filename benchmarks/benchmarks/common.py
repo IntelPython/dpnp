@@ -112,4 +112,8 @@ def get_indexes_rand_():
 
 
 class Benchmark:
+    # warmup_time = 0
+    # number = 3 # test repeats for one setup
+    # repeat = 1
+    # rounds = 1
     pass
