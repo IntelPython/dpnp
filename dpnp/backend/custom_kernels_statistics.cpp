@@ -33,6 +33,59 @@
 namespace mkl_blas = oneapi::mkl::blas::row_major;
 namespace mkl_stats = oneapi::mkl::stats;
 
+template <typename _KernelNameSpecialization1,
+          typename _KernelNameSpecialization2,
+          typename _KernelNameSpecialization3>
+class dpnp_correlate_c_kernel;
+
+template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
+void dpnp_correlate_c(void* array1_in, void* array2_in, void* result1, size_t size)
+{
+    _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
+
+    _DataType_input1* sum_x = reinterpret_cast<_DataType_input1*>(dpnp_memory_alloc_c(1 * sizeof(_DataType_input1)));
+    custom_sum_c<_DataType_input1>(array1_in, sum_x, size);
+
+    _DataType_input2* sum_y = reinterpret_cast<_DataType_input2*>(dpnp_memory_alloc_c(1 * sizeof(_DataType_input2)));
+    custom_sum_c<_DataType_input2>(array2_in, sum_y, size);
+
+    _DataType_output* mul_xy = reinterpret_cast<_DataType_output*>(
+        dpnp_memory_alloc_c(size * sizeof(_DataType_output)));
+    dpnp_multiply_c<_DataType_input1, _DataType_input2, _DataType_output>(array1_in, array2_in, mul_xy, size);
+
+    _DataType_output* sum_xy = reinterpret_cast<_DataType_output*>(dpnp_memory_alloc_c(1 * sizeof(_DataType_output)));
+    custom_sum_c<_DataType_output>(mul_xy, sum_xy, size);
+
+    _DataType_input1* mul_xx = reinterpret_cast<_DataType_input1*>(
+        dpnp_memory_alloc_c(size * sizeof(_DataType_input1)));
+    dpnp_multiply_c<_DataType_input1, _DataType_input1, _DataType_input1>(array1_in, array1_in, mul_xx, size);
+
+    _DataType_input1* sum_xx = reinterpret_cast<_DataType_input1*>(dpnp_memory_alloc_c(1 * sizeof(_DataType_input1)));
+    custom_sum_c<_DataType_input1>(mul_xx, sum_xx, size);
+
+    _DataType_input2* mul_yy = reinterpret_cast<_DataType_input2*>(
+        dpnp_memory_alloc_c(size * sizeof(_DataType_input2)));
+    dpnp_multiply_c<_DataType_input2, _DataType_input2, _DataType_input2>(array2_in, array2_in, mul_yy, size);
+
+    _DataType_input2* sum_yy = reinterpret_cast<_DataType_input2*>(dpnp_memory_alloc_c(1 * sizeof(_DataType_input2)));
+    custom_sum_c<_DataType_input2>(mul_yy, sum_yy, size);
+
+    double cov_xy = sum_xy[0] - (double)sum_x[0] * sum_y[0] / size;
+    double var_x = sum_xx[0] - (double)sum_x[0] * sum_x[0] / size;
+    double var_y = sum_yy[0] - (double)sum_y[0] * sum_y[0] / size;
+
+    result[0] = cov_xy / cl::sycl::sqrt(var_x * var_y);
+
+    dpnp_memory_free_c(sum_x);
+    dpnp_memory_free_c(sum_y);
+    dpnp_memory_free_c(mul_xy);
+    dpnp_memory_free_c(sum_xy);
+    dpnp_memory_free_c(mul_xx);
+    dpnp_memory_free_c(sum_xx);
+    dpnp_memory_free_c(mul_yy);
+    dpnp_memory_free_c(sum_yy);
+}
+
 template <typename _DataType>
 class custom_cov_c_kernel;
 
@@ -490,6 +543,39 @@ void custom_var_c(
 
 void func_map_init_statistics(func_map_t& fmap)
 {
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_INT] = {eft_INT,
+                                                               (void*)dpnp_correlate_c<int, int, int>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_LNG] = {eft_LNG,
+                                                               (void*)dpnp_correlate_c<int, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_FLT] = {eft_DBL,
+                                                               (void*)dpnp_correlate_c<int, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_DBL] = {eft_DBL,
+                                                               (void*)dpnp_correlate_c<int, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_INT] = {eft_LNG,
+                                                               (void*)dpnp_correlate_c<long, int, long>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_LNG] = {eft_LNG,
+                                                               (void*)dpnp_correlate_c<long, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_FLT] = {eft_DBL,
+                                                               (void*)dpnp_correlate_c<long, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_DBL] = {eft_DBL,
+                                                               (void*)dpnp_correlate_c<long, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_INT] = {eft_DBL,
+                                                               (void*)dpnp_correlate_c<float, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_LNG] = {eft_DBL,
+                                                               (void*)dpnp_correlate_c<float, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_FLT] = {eft_FLT,
+                                                               (void*)dpnp_correlate_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_DBL] = {eft_DBL,
+                                                               (void*)dpnp_correlate_c<float, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_INT] = {eft_DBL,
+                                                               (void*)dpnp_correlate_c<double, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_LNG] = {eft_DBL,
+                                                               (void*)dpnp_correlate_c<double, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_FLT] = {eft_DBL,
+                                                               (void*)dpnp_correlate_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_DBL] = {eft_DBL,
+                                                               (void*)dpnp_correlate_c<double, double, double>};
+
     fmap[DPNPFuncName::DPNP_FN_COV][eft_INT][eft_INT] = {eft_DBL, (void*)custom_cov_c<double>};
     fmap[DPNPFuncName::DPNP_FN_COV][eft_LNG][eft_LNG] = {eft_DBL, (void*)custom_cov_c<double>};
     fmap[DPNPFuncName::DPNP_FN_COV][eft_FLT][eft_FLT] = {eft_DBL, (void*)custom_cov_c<double>};
