@@ -115,10 +115,10 @@ cpdef dparray dpnp_exponential(double beta, size):
 
 cpdef dparray dpnp_gamma(double shape, double scale, size):
     """
-    Return a random matrix with data from the "gamma" distribution.
+    Returns an array populated with samples from gamma distribution.
 
     `dpnp_gamma` generates a matrix filled with random floats sampled from a
-    univariate "gamma" distribution of `shape` and `scale`.
+    univariate gamma distribution of `shape` and `scale`.
 
     """
 
