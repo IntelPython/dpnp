@@ -438,9 +438,6 @@ tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNu
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_7_{name='true_divide', nargs=2}::test_raises_with_numpy_input
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_8_{name='floor_divide', nargs=2}::test_raises_with_numpy_input
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_9_{name='fmod', nargs=2}::test_raises_with_numpy_input
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestBoolSubtract_param_0_{shape=(3, 2), xp=numpy}::test_bool_subtract
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestBoolSubtract_param_1_{shape=(3, 2), xp=dpnp}::test_bool_subtract
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestBoolSubtract_param_2_{shape=(), xp=numpy}::test_bool_subtract
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestBoolSubtract_param_3_{shape=(), xp=dpnp}::test_bool_subtract
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp
 tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp2
