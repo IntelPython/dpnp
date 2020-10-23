@@ -120,7 +120,7 @@ def test_random_seed_beta():
     assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
-def test_invalid_args_gamma():
+def test_invalid_args_beta():
     size = 10
     a = 3.0   # OK
     b = -1.0  # positive `b` is expected
