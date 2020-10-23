@@ -416,7 +416,7 @@ def max(input, axis=None, out=None):
     return result
 
 
-def mean(input, axis=None):
+def mean(a, axis=None, **kwargs):
     """
     Compute the arithmetic mean along the specified axis.
 
@@ -424,7 +424,7 @@ def mean(input, axis=None):
 
     Parameters
     ----------
-    input : array_like
+    a : array_like
         Array containing numbers whose mean is desired. If `input` is not an
         array, a conversion is attempted.
     axis : None or int or tuple of ints, optional
@@ -433,6 +433,8 @@ def mean(input, axis=None):
         .. versionadded:: 1.7.0
         If this is a tuple of ints, a mean is performed over multiple axes,
         instead of a single axis or all the axes as before.
+    kwargs : dict
+        Remaining input parameters of the function.
 
     Returns
     -------
@@ -441,12 +443,13 @@ def mean(input, axis=None):
         otherwise a reference to the output array is returned.
 
     """
-
-    is_input_dparray = isinstance(input, dparray)
-
-    if not use_origin_backend(input) and is_input_dparray:
-        if input.size > 0:
-            result = dpnp_mean(input, axis=axis)
+    if not use_origin_backend(a) and not kwargs:
+        if not isinstance(a, dparray):
+            pass
+        elif a.size == 0:
+            pass
+        else:
+            result = dpnp_mean(a, axis=axis)
 
             # scalar returned
             if result.shape == (1,):
@@ -454,17 +457,7 @@ def mean(input, axis=None):
 
             return result
 
-    input1 = dpnp.asnumpy(input) if is_input_dparray else input
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.mean(input1, axis=axis)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return call_origin(numpy.mean, a, axis=axis, **kwargs)
 
 
 def median(in_array1, axis=None, out=None, overwrite_input=False, keepdims=False):
