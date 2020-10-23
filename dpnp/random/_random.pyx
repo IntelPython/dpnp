@@ -62,10 +62,10 @@ ctypedef void(*fptr_custom_rng_uniform_c_1out_t)(void *, long, long, size_t)
 
 cpdef dparray dpnp_beta(double a, double b, size):
     """
-    Return a random matrix with data from the beta distribution.
+    Returns an array populated with samples from beta distribution.
 
     `dpnp_beta` generates a matrix filled with random floats sampled from a
-    univariate "beta" distribution.
+    univariate beta distribution.
 
     """
 
