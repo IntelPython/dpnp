@@ -36,9 +36,6 @@ and DPNP for several matrix multiplication
 """
 
 
-import numpy
-import time
-
 try:
     import dpnp
 except ImportError:
@@ -49,6 +46,9 @@ except ImportError:
     sys.path.append(root_dir)
 
     import dpnp
+
+import numpy
+import time
 
 
 def run_function(executor, name, size, test_type, repetition):
