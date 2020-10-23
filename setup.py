@@ -157,7 +157,7 @@ except ImportError:
 
 # other OS specific
 if IS_WIN:
-    _project_compiler = "dpcpp-cl"   # "clang-cl"
+    _project_compiler = "dpcpp"   # "clang-cl"
     _project_linker = "lld-link"  # "dpcpp-cl"
     _project_cmplr_flag_sycl = []
     _project_cmplr_flag_compatibility = []
