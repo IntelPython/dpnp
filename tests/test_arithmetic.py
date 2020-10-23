@@ -17,3 +17,14 @@ class TestArithmeticModf(unittest.TestCase):
             d[i + a.size] = c[i]
 
         return d
+
+
+class TestArithmeticRemainder(unittest.TestCase):
+
+    @testing.for_float_dtypes()
+    @testing.numpy_cupy_allclose()
+    def test_remainder(self, xp, dtype):
+        a = xp.array([5, -3, -2, -1, -5], dtype=dtype)
+        b = xp.full(a.size, 3, dtype=dtype)
+
+        return xp.remainder(a, b)

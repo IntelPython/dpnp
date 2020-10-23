@@ -27,7 +27,7 @@
 # *****************************************************************************
 
 """
-Interface of the Logic part of the Intel NumPy
+Interface of the Logic part of the DPNP
 
 Notes
 -----
@@ -254,13 +254,13 @@ def equal(x1, x2):
 
     for input in (x1, x2):
         if not isinstance(input, dparray):
-            raise TypeError(f"Intel NumPy equal(): Unsupported input={type(input)}")
+            raise TypeError(f"DPNP equal(): Unsupported input={type(input)}")
 
     if x1.size != x2.size:
         utils.checker_throw_value_error("equal", "array sizes", x1.size, x2.size)
 
     if not x1.dtype == x2.dtype:
-        raise TypeError(f"Intel NumPy equal(): Input types must be equal ({x1.dtype} != {x2.dtype})")
+        raise TypeError(f"DPNP equal(): Input types must be equal ({x1.dtype} != {x2.dtype})")
 
     if x1.shape != x2.shape:
         utils.checker_throw_value_error("equal", "array shapes", x1.shape, x2.shape)

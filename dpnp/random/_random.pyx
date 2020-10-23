@@ -54,7 +54,7 @@ __all__ = [
 
 
 ctypedef void(*fptr_custom_rng_chi_square_c_1out_t)(void *, int, size_t)
-ctypedef void(*fptr_custom_rng_exponential_c_1out_t)(void *, double, double, size_t)
+ctypedef void(*fptr_custom_rng_exponential_c_1out_t)(void *, double, size_t)
 ctypedef void(*fptr_custom_rng_gamma_c_1out_t)(void *, double, double, size_t)
 ctypedef void(*fptr_custom_rng_gaussian_c_1out_t)(void *, double, double, size_t)
 ctypedef void(*fptr_custom_rng_uniform_c_1out_t)(void *, long, long, size_t)
@@ -86,12 +86,12 @@ cpdef dparray dpnp_chisquare(int df, size):
     return result
 
 
-cpdef dparray dpnp_exponential(double a, double beta, size):
+cpdef dparray dpnp_exponential(double beta, size):
     """
     Return a random matrix with data from the "exponential" distribution.
 
     `dpnp_exponential` generates a matrix filled with random floats sampled from a
-    univariate "exponential" distribution of `a` and `beta`.
+    univariate "exponential" distribution of `beta`.
 
     """
 
@@ -108,7 +108,7 @@ cpdef dparray dpnp_exponential(double a, double beta, size):
 
     cdef fptr_custom_rng_exponential_c_1out_t func = <fptr_custom_rng_exponential_c_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), a, beta, result.size)
+    func(result.get_data(), beta, result.size)
 
     return result
 

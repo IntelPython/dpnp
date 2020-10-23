@@ -27,7 +27,7 @@
 # *****************************************************************************
 
 """
-Interface of the Array manipulation routines part of the Intel NumPy
+Interface of the Array manipulation routines part of the DPNP
 
 Notes
 -----

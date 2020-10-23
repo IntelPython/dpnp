@@ -32,14 +32,13 @@ and the rest of the library
 
 """
 
+from libc.time cimport time, time_t
 import dpnp.config as config
 import numpy
 
 cimport cpython
 cimport dpnp.dpnp_utils as utils
 cimport numpy
-
-from libc.time cimport time, time_t
 
 
 __all__ = [
@@ -68,11 +67,11 @@ include "backend_trigonometric.pyx"
 cpdef dparray dpnp_arange(start, stop, step, dtype):
 
     if step is not 1:
-        raise ValueError("Intel NumPy dpnp_arange(): `step` is not supported")
+        raise ValueError("DPNP dpnp_arange(): `step` is not supported")
 
     obj_len = int(numpy.ceil((stop - start) / step))
     if obj_len < 0:
-        raise ValueError(f"Intel NumPy dpnp_arange(): Negative array size (start={start},stop={stop},step={step})")
+        raise ValueError(f"DPNP dpnp_arange(): Negative array size (start={start},stop={stop},step={step})")
 
     cdef dparray result = dparray(obj_len, dtype=dtype)
 
@@ -88,7 +87,7 @@ cpdef dparray dpnp_array(obj, dtype=None):
     cdef dparray_shape_type obj_shape
 
     if not cpython.PySequence_Check(obj):
-        raise TypeError(f"Intel NumPy array(): Unsupported non-sequence obj={type(obj)}")
+        raise TypeError(f"DPNP array(): Unsupported non-sequence obj={type(obj)}")
 
     obj_shape, elem_dtype = get_shape_dtype(obj)
     if dtype is not None:

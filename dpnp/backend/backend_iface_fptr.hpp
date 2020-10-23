@@ -77,19 +77,20 @@ enum class DPNPFuncName : size_t
     DPNP_FN_BITWISE_XOR,  /**< Used in numpy.bitwise_xor() implementation  */
     DPNP_FN_CBRT,         /**< Used in numpy.cbrt() implementation  */
     DPNP_FN_CEIL,         /**< Used in numpy.ceil() implementation  */
-    DPNP_FN_CHISQUARE,   /**< Used in numpy.random.chisquare() implementation  */
+    DPNP_FN_CHISQUARE,    /**< Used in numpy.random.chisquare() implementation  */
     DPNP_FN_COPYSIGN,     /**< Used in numpy.copysign() implementation  */
     DPNP_FN_COS,          /**< Used in numpy.cos() implementation  */
     DPNP_FN_COSH,         /**< Used in numpy.cosh() implementation  */
     DPNP_FN_COV,          /**< Used in numpy.cov() implementation  */
     DPNP_FN_DEGREES,      /**< Used in numpy.degrees() implementation  */
+    DPNP_FN_DET,          /**< Used in numpy.linalg.det() implementation  */
     DPNP_FN_DIVIDE,       /**< Used in numpy.divide() implementation  */
     DPNP_FN_DOT,          /**< Used in numpy.dot() implementation  */
     DPNP_FN_EIG,          /**< Used in numpy.linalg.eig() implementation  */
     DPNP_FN_EXP,          /**< Used in numpy.exp() implementation  */
     DPNP_FN_EXP2,         /**< Used in numpy.exp2() implementation  */
     DPNP_FN_EXPM1,        /**< Used in numpy.expm1() implementation  */
-    DPNP_FN_EXPONENTIAL, /**< Used in numpy.random.exponential() implementation  */
+    DPNP_FN_EXPONENTIAL,  /**< Used in numpy.random.exponential() implementation  */
     DPNP_FN_FABS,         /**< Used in numpy.fabs() implementation  */
     DPNP_FN_FLOOR,        /**< Used in numpy.floor() implementation  */
     DPNP_FN_FLOOR_DIVIDE, /**< Used in numpy.floor_divide() implementation  */

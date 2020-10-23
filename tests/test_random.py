@@ -14,7 +14,7 @@ from numpy.testing import assert_allclose
 def test_random_input_size(func):
     output_shape = (10,)
     size = 10
-    df = 3 # for dpnp.random.chisquare
+    df = 3  # for dpnp.random.chisquare
     if func == dpnp.random.chisquare:
         res = func(df, size)
     else:
@@ -32,7 +32,7 @@ def test_random_input_size(func):
                               'ranf', 'sample'])
 def test_random_input_shape(func):
     shape = (10, 5)
-    df = 3 # for dpnp.random.chisquare
+    df = 3  # for dpnp.random.chisquare
     if func == dpnp.random.chisquare:
         res = func(df, shape)
     else:
@@ -121,7 +121,7 @@ def test_radnom_exponential_seed():
 
 def test_exponential_invalid_scale():
     size = 10
-    scale = -1 # non-negative `scale` is expected
+    scale = -1  # non-negative `scale` is expected
     with pytest.raises(ValueError):
         dpnp.random.exponential(scale, size)
 
@@ -140,7 +140,7 @@ def test_radnom_chisquare_seed():
 
 def test_chisquare_invalid_df():
     size = 10
-    df = -1 # positive `df` is expected
+    df = -1  # positive `df` is expected
     with pytest.raises(ValueError):
         dpnp.random.chisquare(df, size)
 

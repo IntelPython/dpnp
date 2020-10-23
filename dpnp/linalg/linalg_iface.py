@@ -27,7 +27,7 @@
 # *****************************************************************************
 
 """
-Interface of the Linear Algebra part of the Intel NumPy
+Interface of the Linear Algebra part of the DPNP
 
 Notes
 -----

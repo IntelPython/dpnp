@@ -88,7 +88,7 @@ def arange(*args, **kwargs):
         return numpy.arange(*args, **kwargs)
 
     if not isinstance(args[0], (int)):
-        raise TypeError(f"Intel NumPy arange(): scalar arguments expected. Given:{type(args[0])}")
+        raise TypeError(f"DPNP arange(): scalar arguments expected. Given:{type(args[0])}")
 
     start_param = 0
     stop_param = 0
@@ -98,7 +98,7 @@ def arange(*args, **kwargs):
         dtype_param = numpy.float64
 
     if kwargs:
-        raise TypeError("Intel NumPy arange(): unexpected keyword argument(s): %s" % ",".join(kwargs.keys()))
+        raise TypeError("DPNP arange(): unexpected keyword argument(s): %s" % ",".join(kwargs.keys()))
 
     args_len = len(args)
     if args_len == 1:
@@ -109,7 +109,7 @@ def arange(*args, **kwargs):
     elif args_len == 3:
         start_param, stop_param, step_param = args
     else:
-        raise TypeError("Intel NumPy arange() takes 3 positional arguments: arange([start], stop, [step])")
+        raise TypeError("DPNP arange() takes 3 positional arguments: arange([start], stop, [step])")
 
     return dpnp_arange(start_param, stop_param, step_param, dtype_param)
 

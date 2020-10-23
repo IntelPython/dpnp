@@ -40,7 +40,7 @@
 
 namespace mkl_rng = oneapi::mkl::rng;
 
-#define DPNP_QUEUE backend_sycl::get_queue()
+#define DPNP_QUEUE      backend_sycl::get_queue()
 #define DPNP_RNG_ENGINE backend_sycl::get_rng_engine()
 
 /**
