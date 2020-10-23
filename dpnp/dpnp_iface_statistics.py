@@ -221,7 +221,7 @@ def average(in_array1, axis=None, weights=None, returned=False):
     return numpy.average(input1, axis, weights, returned)
 
 
-def cov(in_array1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None):
+def cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None):
     """
     Estimate a covariance matrix, given data and weights.
 
@@ -337,32 +337,27 @@ def cov(in_array1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aw
     array(11.71)
 
     """
+    if not use_origin_backend(m):
+        if not isinstance(m, dparray):
+            pass
+        elif m.ndim > 2:
+            pass
+        elif y is not None:
+            pass
+        elif not rowvar:
+            pass
+        elif bias:
+            pass
+        elif ddof is not None:
+            pass
+        elif fweights is not None:
+            pass
+        elif aweights is not None:
+            pass
+        else:
+            return dpnp_cov(m)
 
-    is_dparray1 = isinstance(in_array1, dparray)
-
-    if (not use_origin_backend(in_array1) and is_dparray1):
-        # behaviour of original numpy
-        if in_array1.ndim > 2:
-            raise ValueError("array has more than 2 dimensions")
-
-        if y is not None:
-            checker_throw_value_error("cov", "y", type(y), None)
-        if rowvar is not True:
-            checker_throw_value_error("cov", "rowvar", rowvar, True)
-        if bias is not False:
-            checker_throw_value_error("cov", "bias", bias, False)
-        if ddof is not None:
-            checker_throw_value_error("cov", "ddof", type(ddof), None)
-        if fweights is not None:
-            checker_throw_value_error("cov", "fweights", type(fweights), None)
-        if aweights is not None:
-            checker_throw_value_error("cov", "aweights", type(aweights), None)
-
-        return dpnp_cov(in_array1)
-
-    input1 = dpnp.asnumpy(in_array1) if is_dparray1 else in_array1
-
-    return numpy.cov(input1, y, rowvar, bias, ddof, fweights, aweights)
+    return call_origin(numpy.cov, m, y, rowvar, bias, ddof, fweights, aweights)
 
 
 def max(input, axis=None, out=None):
