@@ -2085,8 +2085,6 @@ tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeC
 tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_7_{mode='valid', shape1=(6,), shape2=(21,)}::test_correlate
 tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_8_{mode='valid', shape1=(20,), shape2=(5,)}::test_correlate
 tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_9_{mode='valid', shape1=(20,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCov::test_cov
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCov::test_cov_warns
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeInvalid::test_digitize_complex
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeInvalid::test_digitize_nd_bins
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_0_{right=True}::test_digitize_all_nan_bins
