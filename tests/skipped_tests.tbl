@@ -2174,21 +2174,6 @@ tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_h
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_same_value
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_weights_basic
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_weights_mismatch
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_0_{axis=(0, 1), keepdims=True, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_1_{axis=(0, 1), keepdims=False, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_2_{axis=(0, -1), keepdims=True, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_3_{axis=(0, -1), keepdims=False, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_4_{axis=(1, 2), keepdims=True, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_5_{axis=(1, 2), keepdims=False, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_6_{axis=(1,), keepdims=True, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_7_{axis=(1,), keepdims=False, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_axis1
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_axis2
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_invalid_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_keepdims_axis1
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_keepdims_noaxis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_noaxis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_overwrite_input
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_all_nan
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_float16
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_huge

@@ -460,7 +460,7 @@ def mean(a, axis=None, **kwargs):
     return call_origin(numpy.mean, a, axis=axis, **kwargs)
 
 
-def median(in_array1, axis=None, out=None, overwrite_input=False, keepdims=False):
+def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
     """
     Compute the median along the specified axis.
     Returns the median of the array elements.
@@ -533,30 +533,27 @@ def median(in_array1, axis=None, out=None, overwrite_input=False, keepdims=False
     3.5
     >>> assert not np.all(a==b)
     """
+    if not use_origin_backend(a):
+        if not isinstance(a, dparray):
+            pass
+        elif axis is not None:
+            pass
+        elif out is not None:
+            pass
+        elif overwrite_input:
+            pass
+        elif keepdims:
+            pass
+        else:
+            result = dpnp_median(a)
 
-    is_dparray1 = isinstance(in_array1, dparray)
+            # scalar returned
+            if result.shape == (1,):
+                return result.dtype.type(result[0])
 
-    if (not use_origin_backend(in_array1) and is_dparray1):
-        if axis is not None:
-            checker_throw_value_error("median", "axis", type(axis), None)
-        if out is not None:
-            checker_throw_value_error("median", "out", type(out), None)
-        if overwrite_input is not False:
-            checker_throw_value_error("median", "overwrite_input", overwrite_input, False)
-        if keepdims is not False:
-            checker_throw_value_error("median", "keepdims", keepdims, False)
+            return result
 
-        result = dpnp_median(in_array1)
-
-        # scalar returned
-        if result.shape == (1,):
-            return result.dtype.type(result[0])
-
-        return result
-
-    input1 = dpnp.asnumpy(in_array1) if is_dparray1 else in_array1
-
-    return numpy.median(input1, axis, out, overwrite_input, keepdims)
+    return call_origin(numpy.median, a, axis, out, overwrite_input, keepdims)
 
 
 def min(input, axis=None, out=None):
