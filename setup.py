@@ -129,13 +129,13 @@ _project_rpath = ["$ORIGIN"]
 _dpctrl_include = []
 _dpctrl_libpath = []
 _dpctrl_lib = []
-_sdl_cflags = ['-fstack-protector-strong',
-               '-fPIC', '-D_FORTIFY_SOURCE=2',
-               '-Wformat',
-               '-Wformat-security',
-               '-fno-strict-overflow',
-               '-fno-delete-null-pointer-checks']
-_sdl_ldflags = ['-Wl,-z,noexecstack,-z,relro,-z,now',]
+_sdl_cflags = ["-fstack-protector-strong",
+               "-fPIC", "-D_FORTIFY_SOURCE=2",
+               "-Wformat",
+               "-Wformat-security",
+               "-fno-strict-overflow",
+               "-fno-delete-null-pointer-checks"]
+_sdl_ldflags = ["-Wl,-z,noexecstack,-z,relro,-z,now"]
 
 
 try:
@@ -166,6 +166,8 @@ if IS_WIN:
     _project_rpath = []
     # TODO obtain setuptools.compiler.buildline options line and replace /MD with /MT instead adding it
     os.environ["CFLAGS"] = "/MT"
+    _sdl_cflags = ["-GS"]
+    _sdl_ldflags = ["-NXCompat", "-DynamicBase"]
 
 
 try:
@@ -236,9 +238,8 @@ if IS_LIN:
 """
 Final set of arguments for extentions
 """
-_project_extra_link_args = _project_cmplr_flag_compatibility + ["-Wl,-rpath," + x for x in _project_rpath]
+_project_extra_link_args = _project_cmplr_flag_compatibility + ["-Wl,-rpath," + x for x in _project_rpath] + _sdl_ldflags
 _project_dir = os.path.dirname(os.path.abspath(__file__))
-_project_main_module_dir = [os.path.join(_project_dir, "dpnp")]
 _project_backend_dir = [os.path.join(_project_dir, "dpnp", "backend")]
 
 
@@ -285,13 +286,13 @@ dpnp_backend_c = [
             "library_dirs": _mathlib_path + _omp_libpath + _dpctrl_libpath,
             "runtime_library_dirs": _project_rpath + _mathlib_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath,
             "extra_preargs": _project_cmplr_flag_sycl + _sdl_cflags,
-            "extra_link_preargs": _project_cmplr_flag_compatibility,
-            "extra_link_postargs": _sdl_ldflags,
+            "extra_link_preargs": _project_cmplr_flag_compatibility + _sdl_ldflags,
+            "extra_link_postargs": _project_cmplr_flag_lib,
             "libraries": _mathlibs + _dpctrl_lib,
             "macros": _project_cmplr_macro,
             "force_build": _project_force_build,
             "compiler": [_project_compiler],
-            "linker": [_project_linker] + _project_cmplr_flag_lib,
+            "linker": [_project_linker],
             "default_flags": _project_cmplr_flag_default_build,
             "language": "c++"
         }
@@ -304,7 +305,7 @@ dpnp_backend = Extension(
     libraries=[],
     include_dirs=[numpy.get_include()] + _project_backend_dir,
     extra_compile_args=_sdl_cflags,
-    extra_link_args=_project_extra_link_args + _sdl_ldflags,
+    extra_link_args=_project_extra_link_args,
     define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
     language="c++"
 )
@@ -315,7 +316,7 @@ dpnp_dparray = Extension(
     libraries=[],
     include_dirs=[numpy.get_include()] + _project_backend_dir,
     extra_compile_args=_sdl_cflags,
-    extra_link_args=_project_extra_link_args + _sdl_ldflags,
+    extra_link_args=_project_extra_link_args,
     define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
     language="c++"
 )
@@ -325,7 +326,7 @@ dpnp_random = Extension(
     sources=["dpnp/random/_random.pyx"],
     include_dirs=[numpy.get_include()] + _project_backend_dir,
     extra_compile_args=_sdl_cflags,
-    extra_link_args=_project_extra_link_args + _sdl_ldflags,
+    extra_link_args=_project_extra_link_args,
     define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
     language="c++"
 )
@@ -335,7 +336,7 @@ dpnp_utils = Extension(
     sources=["dpnp/dpnp_utils.pyx"],
     include_dirs=[numpy.get_include()] + _project_backend_dir,
     extra_compile_args=_sdl_cflags,
-    extra_link_args=_project_extra_link_args + _sdl_ldflags,
+    extra_link_args=_project_extra_link_args,
     define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
     language="c++"
 )
@@ -345,7 +346,7 @@ dpnp_linalg = Extension(
     sources=["dpnp/linalg/linalg.pyx"],
     include_dirs=[numpy.get_include()] + _project_backend_dir,
     extra_compile_args=_sdl_cflags,
-    extra_link_args=_project_extra_link_args + _sdl_ldflags,
+    extra_link_args=_project_extra_link_args,
     define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
     language="c++"
 )
