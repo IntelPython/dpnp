@@ -107,6 +107,31 @@ def test_radnom_seed(func):
     assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
+def test_random_seed_beta():
+    seed = 28041990
+    size = 100
+    a = 2.56
+    b = 0.8
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.beta(a, b, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.beta(a, b, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_invalid_args_gamma():
+    size = 10
+    a = 3.0   # OK
+    b = -1.0  # positive `b` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.beta(a=a, b=b, size=size)
+    a = -1.0  # positive `a` is expected
+    b = 3.0   # OK
+    with pytest.raises(ValueError):
+        dpnp.random.beta(a=a, b=b, size=size)
+
+
 def test_radnom_exponential_seed():
     seed = 28041990
     size = 100
