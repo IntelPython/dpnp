@@ -32,13 +32,25 @@ skip_mark = pytest.mark.skip(reason='Skipping test.')
 
 
 def pytest_collection_modifyitems(config, items):
-    excluded_tests = []
+    def get_excluded_tests(test_exclude_file):
+        if os.path.exists(test_exclude_file):
+            excluded_tests = []
+            with open(test_exclude_file) as skip_names_file:
+                excluded_tests = skip_names_file.readlines()
+            return excluded_tests
+
     # global skip file
     test_path = os.path.split(__file__)[0]
     test_exclude_file = os.path.join(test_path, 'skipped_tests.tbl')
-    if os.path.exists(test_exclude_file):
-        with open(test_exclude_file) as skip_names_file:
-            excluded_tests = skip_names_file.readlines()
+
+    # additional skip file, where gpu queue not supported
+    test_exclude_file_gpu = os.path.join(test_path, 'skipped_tests_gpu.tbl')
+
+    excluded_tests = get_excluded_tests(test_exclude_file)
+
+    if 'DPNP_QUEUE_GPU' in os.environ:
+        if os.getenv('DPNP_QUEUE_GPU') == '1':
+            excluded_tests.extend(get_excluded_tests(test_exclude_file_gpu))
 
     for item in items:
         # some test name contains '\n' in the parameters

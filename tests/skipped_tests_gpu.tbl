@@ -1,0 +1,4 @@
+tests/test_random.py::test_random_input_size[chisquare]
+tests/test_random.py::test_random_input_shape[chisquare]
+tests/test_random.py::test_radnom_chisquare_seed
+tests/test_random.py::test_chisquare_invalid_df
