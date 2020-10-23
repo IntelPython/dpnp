@@ -37,17 +37,14 @@ void custom_rng_beta_c(void* result, _DataType a, _DataType b, size_t size)
     {
         return;
     }
-    // TODO:
-    // set p and q as is in numpy
 
-    // set shape p
-    _DataType p = _DataType(1.0);
-    // set shape q
-    _DataType q  = _DataType(1.0);
+    _DataType displacement = _DataType(0.0);
+
+    _DataType scalefactor = _DataType(1.0);
 
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    mkl_rng::beta<_DataType> distribution(p, q, a, b);;
+    mkl_rng::beta<_DataType> distribution(a, b, displacement, scalefactor);
     // perform generation
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
     event_out.wait();
