@@ -2176,28 +2176,6 @@ tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_h
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_same_value
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_weights_basic
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_weights_mismatch
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestAverage::test_average_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestAverage::test_average_axis_weights
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestAverage::test_average_weights
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestAverage::test_returned
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_mean_all_complex_dtype
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_mean_all_float64_dtype
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_mean_all_int64_dtype
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_0_{axis=(0, 1), keepdims=True, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_1_{axis=(0, 1), keepdims=False, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_2_{axis=(0, -1), keepdims=True, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_3_{axis=(0, -1), keepdims=False, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_4_{axis=(1, 2), keepdims=True, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_5_{axis=(1, 2), keepdims=False, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_6_{axis=(1,), keepdims=True, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis_param_7_{axis=(1,), keepdims=False, shape=(3, 4, 5)}::test_median_axis_sequence
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_axis1
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_axis2
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_invalid_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_keepdims_axis1
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_keepdims_noaxis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_noaxis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_overwrite_input
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_all_nan
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_float16
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_huge
@@ -2288,8 +2266,6 @@ tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_p
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_15_{func='var', params=((0, 0), 1)}::test_external_mean_zero_len
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_16_{func='var', params=((0, 0, 0), None)}::test_external_mean_zero_len
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_17_{func='var', params=((0, 0, 0), (0, 2))}::test_external_mean_zero_len
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_3_{func='mean', params=((0, 0), 1)}::test_external_mean_zero_len
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_5_{func='mean', params=((0, 0, 0), (0, 2))}::test_external_mean_zero_len
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_6_{func='std', params=((), None)}::test_external_mean_zero_len
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_7_{func='std', params=((0,), None)}::test_external_mean_zero_len
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestProductZeroLength_param_8_{func='std', params=((0, 0), None)}::test_external_mean_zero_len
