@@ -36,9 +36,6 @@ over diffrent types of input data
 """
 
 
-import numpy
-import time
-
 try:
     import dpnp
 except ImportError:
@@ -50,6 +47,8 @@ except ImportError:
 
     import dpnp
 
+import numpy
+import time
 
 common_function_one_input = numpy.sin
 """
