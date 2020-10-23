@@ -134,7 +134,7 @@ def amin(input, axis=None, out=None):
     return min(input, axis=axis, out=out)
 
 
-def average(in_array1, axis=None, weights=None, returned=False):
+def average(a, axis=None, weights=None, returned=False):
     """
     Compute the weighted average along the specified axis.
 
@@ -203,22 +203,19 @@ def average(in_array1, axis=None, weights=None, returned=False):
                         numpy type promotion rules to the arguments.
 
     """
+    if not use_origin_backend(a):
+        if not isinstance(a, dparray):
+            pass
+        elif axis is not None:
+            pass
+        elif weights is not None:
+            pass
+        elif returned:
+            pass
+        else:
+            return dpnp_average(a)
 
-    is_dparray1 = isinstance(in_array1, dparray)
-
-    if (not use_origin_backend(in_array1) and is_dparray1):
-        if axis is not None:
-            checker_throw_value_error("average", "axis", type(axis), None)
-        if weights is not None:
-            checker_throw_value_error("average", "weights", type(weights), None)
-        if returned is not False:
-            checker_throw_value_error("average", "returned", returned, False)
-
-        return dpnp_average(in_array1)
-
-    input1 = dpnp.asnumpy(in_array1) if is_dparray1 else in_array1
-
-    return numpy.average(input1, axis, weights, returned)
+    return call_origin(numpy.average, a, axis, weights, returned)
 
 
 def cov(in_array1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None):
