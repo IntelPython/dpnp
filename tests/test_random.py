@@ -143,3 +143,27 @@ def test_chisquare_invalid_df():
     df = -1  # positive `df` is expected
     with pytest.raises(ValueError):
         dpnp.random.chisquare(df, size)
+
+
+def test_random_seed_negative_binomial():
+    seed = 28041990
+    size = 100
+    n, p = 10, .5  # number of trials, probability of each trial
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.negative_binomial(n, p, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.negative_binomial(n, p, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_invalid_args_negative_binomial():
+    size = 10
+    n = 10    # parameter `n`, OK
+    p = -0.5  # parameter `p`, expected between [0, 1]
+    with pytest.raises(ValueError):
+        dpnp.random.negative_binomial(n, p, size)
+    n = -10   # parameter `n`, expected non-negative
+    p = 0.5   # parameter `p`, OK
+    with pytest.raises(ValueError):
+        dpnp.random.negative_binomial(n, p, size)

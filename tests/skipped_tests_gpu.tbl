@@ -3,6 +3,8 @@ tests/test_linalg.py::test_eig_arange[300-float32]
 tests/test_linalg.py::test_eig_arange[300-float64]
 tests/test_linalg.py::test_eig_arange[300-int32]
 tests/test_linalg.py::test_eig_arange[300-int64]
+tests/test_random.py::test_random_seed_negative_binomial
+tests/test_random.py::test_invalid_args_negative_binomial
 tests/test_random.py::test_radnom_chisquare_seed
 tests/test_random.py::test_randn_normal_distribution
 tests/test_random.py::test_random_input_shape[chisquare]

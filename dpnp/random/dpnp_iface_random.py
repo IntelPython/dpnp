@@ -46,6 +46,7 @@ from dpnp.random._random import *
 __all__ = [
     'chisquare',
     'exponential',
+    'negative_binomial',
     'rand',
     'ranf',
     'randint',
@@ -186,6 +187,97 @@ def exponential(scale=1.0, size=None):
         return dpnp_exponential(scale, size)
 
     return call_origin(numpy.random.exponential, scale, size)
+
+
+def negative_binomial(n, p, size=None):
+    """Negative binomial distribution.
+
+    Draw samples from a negative binomial distribution.
+
+    Samples are drawn from a negative binomial distribution with specified
+    parameters, `n` successes and `p` probability of success where `n`
+    is > 0 and `p` is in the interval [0, 1].
+
+    Parameters
+    ----------
+    n : float
+        Parameter of the distribution, > 0.
+    p : float
+        Parameter of the distribution, >= 0 and <=1.
+    size : int or tuple of ints, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
+        a single value is returned if ``n`` and ``p`` are both scalars.
+
+    Returns
+    -------
+    out : dparray, int32
+        Drawn samples from the parameterized negative binomial distribution,
+        where each sample is equal to N, the number of failures that
+        occurred before a total of n successes was reached.
+
+    Notes
+    -----
+    The probability mass function of the negative binomial distribution is
+
+    .. math:: P(N;n,p) = \\frac{\\Gamma(N+n)}{N!\\Gamma(n)}p^{n}(1-p)^{N},
+
+    where :math:`n` is the number of successes, :math:`p` is the
+    probability of success, :math:`N+n` is the number of trials, and
+    :math:`\\Gamma` is the gamma function. When :math:`n` is an integer,
+    :math:`\\frac{\\Gamma(N+n)}{N!\\Gamma(n)} = \\binom{N+n-1}{N}`, which is
+    the more common form of this term in the the pmf. The negative
+    binomial distribution gives the probability of N failures given n
+    successes, with a success on the last trial.
+
+    If one throws a die repeatedly until the third time a "1" appears,
+    then the probability distribution of the number of non-"1"s that
+    appear before the third "1" is a negative binomial distribution.
+
+    References
+    ----------
+    .. [1] Weisstein, Eric W. "Negative Binomial Distribution." From
+           MathWorld--A Wolfram Web Resource.
+           http://mathworld.wolfram.com/NegativeBinomialDistribution.html
+    .. [2] Wikipedia, "Negative binomial distribution",
+           https://en.wikipedia.org/wiki/Negative_binomial_distribution
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    A real world example. A company drills wild-cat oil
+    exploration wells, each with an estimated probability of
+    success of 0.1.  What is the probability of having one success
+    for each successive well, that is what is the probability of a
+    single success after drilling 5 wells, after 6 wells, etc.?
+
+    >>> s = dpnp.random.negative_binomial(1, 0.1, 100000)
+    >>> for i in range(1, 11): # doctest: +SKIP
+    ...    probability = sum(s<i) / 100000.
+    ...    print(i, "wells drilled, probability of one success =", probability)
+
+    """
+
+    if not use_origin_backend(n):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("negative_binomial", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("negative_binomial", "type(size)", type(size), int)
+
+        # TODO:
+        # array_like of floats for `p` and `n` params
+        if p > 1 or p < 0:
+            checker_throw_value_error("negative_binomial", "p", p, "in [0, 1]")
+        if n < 0:
+            checker_throw_value_error("negative_binomial", "n", n, "non-negative")
+
+        return dpnp_negative_binomial(n, p, size)
+
+    return call_origin(numpy.random.negative_binomial, n, p, size)
 
 
 def rand(d0, *dn):
