@@ -107,6 +107,30 @@ def test_radnom_seed(func):
     assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
+def test_random_seed_binomial():
+    seed = 28041990
+    size = 100
+    n, p = 10, .5  # number of trials, probability of each trial
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.binomial(n, p, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.binomial(n, p, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_invalid_args_binomial():
+    size = 10
+    n = 10    # number of trials, OK
+    p = -0.5  # probability of each trial, expected between [0, 1]
+    with pytest.raises(ValueError):
+        dpnp.random.binomial(n, p, size)
+    n = -10    # number of trials, expected non-negative
+    p = 0.5  # probability of each trial, OK
+    with pytest.raises(ValueError):
+        dpnp.random.binomial(n, p, size)
+
+
 def test_radnom_exponential_seed():
     seed = 28041990
     size = 100
