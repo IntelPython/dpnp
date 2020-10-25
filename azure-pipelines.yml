@@ -57,6 +57,12 @@ jobs:
       sudo apt-get install valgrind
       echo ========================= install Numpy cython pytest ===============================
       pip3 install numpy cython pytest pytest-valgrind
+      echo ========================= install/delete libstdc++-dev ===============================
+      sudo apt remove -y gcc-7 g++-7 gcc-8 g++-8 gcc-10 g++-10
+      # oneapi beta 10 can not work with libstdc++-10-dev 
+      sudo apt remove -y libstdc++-10-dev
+      sudo apt autoremove
+      sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
       echo ========================= install Intel OneAPI ===============================
       sudo apt-get install intel-oneapi-mkl-2021.1-beta10                \
                            intel-oneapi-mkl-devel-2021.1-beta10          \
@@ -109,6 +115,12 @@ jobs:
                                                       cython pytest pytest-cov
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate CondaCodeStyle
+      echo ========================= install/delete libstdc++-dev ===============================
+      sudo apt remove -y gcc-7 g++-7 gcc-8 g++-8 gcc-10 g++-10
+      # oneapi beta 10 can not work with libstdc++-10-dev 
+      sudo apt remove -y libstdc++-10-dev
+      sudo apt autoremove
+      sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
       echo ========================= install Intel OneAPI ===============================
       sudo apt-get install intel-oneapi-mkl-2021.1-beta10                \
                            intel-oneapi-mkl-devel-2021.1-beta10          \
