@@ -227,7 +227,12 @@ elif IS_WIN:
 """
 Get the compiler environemnt
 """
-_, _cmplr_libpath = find_cmplr(verbose=True)
+_cmplr_include, _cmplr_libpath = find_cmplr(verbose=True)
+
+# DPL is in spandlone package in beta10
+# TODO fix the hardcode
+_cmplr_include += ["/opt/intel/oneapi/dpl/latest/linux/include"]
+
 _, _omp_libpath = find_omp(verbose=True)
 
 if IS_LIN:
@@ -283,7 +288,7 @@ dpnp_backend_c = [
                 "dpnp/backend/memory_sycl.cpp",
                 "dpnp/backend/queue_sycl.cpp"
             ],
-            "include_dirs": _mathlib_include + _project_backend_dir + _dpctrl_include,
+            "include_dirs": _cmplr_include + _mathlib_include + _project_backend_dir + _dpctrl_include,
             "library_dirs": _mathlib_path + _omp_libpath + _dpctrl_libpath,
             "runtime_library_dirs": _project_rpath + _mathlib_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath,
             "extra_preargs": _project_cmplr_flag_sycl + _sdl_cflags,
