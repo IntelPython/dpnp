@@ -172,6 +172,7 @@ jobs:
       ls -l /opt/intel/oneapi/
       . /opt/intel/oneapi/setvars.sh
       g++ --version
+      sudo apt list --installed
       echo ========================= Current clang version ===============================
       clang++ --version
       which clang++

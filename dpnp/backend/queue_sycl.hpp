@@ -41,7 +41,7 @@
 #include <dppl_sycl_queue_manager.h>
 #endif
 
-#include "backend_pstl.hpp" // this header must be included after <mkl_sycl.hpp>
+#include "backend_pstl.hpp" // this header must be included after <mkl.hpp>
 
 namespace mkl_rng = oneapi::mkl::rng;
 
