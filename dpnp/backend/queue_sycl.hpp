@@ -28,7 +28,12 @@
 #define QUEUE_SYCL_H
 
 #include <CL/sycl.hpp>
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
+#pragma clang diagnostic ignored "-Wreorder-ctor"
 #include <oneapi/mkl.hpp>
+#pragma clang diagnostic pop
 
 #include <ctime>
 
@@ -36,7 +41,7 @@
 #include <dppl_sycl_queue_manager.h>
 #endif
 
-#include "backend_pstl.hpp" // this header must be included after <mkl_sycl.hpp>
+#include "backend_pstl.hpp" // this header must be included after <mkl.hpp>
 
 namespace mkl_rng = oneapi::mkl::rng;
 
