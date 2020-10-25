@@ -40,8 +40,6 @@ def gen_ndarray(size, dtype=numpy.float64, low=None, high=None, seed=None):
         size of output array
     dtype : dtype
         data type of output array
-    rel_lib_paths : list(str)
-        relative paths to required libraries
     low : int
         lowest integers to be generated
     high : int
@@ -79,8 +77,6 @@ def gen_dparray(size, dtype=numpy.float64, low=None, high=None, seed=None):
         size of output array
     dtype : dtype
         data type of output array
-    rel_lib_paths : list(str)
-        relative paths to required libraries
     low : int
         lowest integers to be generated
     high : int
@@ -115,8 +111,6 @@ def gen_array(lib, size, dtype=numpy.float64, low=None, high=None, seed=None):
         size of output array
     dtype : dtype
         data type of output array
-    rel_lib_paths : list(str)
-        relative paths to required libraries
     low : int
         lowest integers to be generated
     high : int
