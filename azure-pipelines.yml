@@ -58,10 +58,10 @@ jobs:
       echo ========================= install Numpy cython pytest ===============================
       pip3 install numpy cython pytest pytest-valgrind
       echo ========================= install Intel OneAPI ===============================
-      sudo apt-get install intel-oneapi-mkl-2021.1-beta09                \
-                           intel-oneapi-mkl-devel-2021.1-beta09          \
-                           intel-oneapi-dpcpp-cpp-compiler-2021.1-beta09 \
-                           intel-oneapi-dpcpp-cpp-2021.1-beta09
+      sudo apt-get install intel-oneapi-mkl-2021.1-beta10                \
+                           intel-oneapi-mkl-devel-2021.1-beta10          \
+                           intel-oneapi-dpcpp-cpp-compiler-2021.1-beta10 \
+                           intel-oneapi-dpcpp-cpp-2021.1-beta10
       echo ========================= setup Intel OneAPI ===============================
       ls -l /opt/intel/oneapi/
       . /opt/intel/oneapi/setvars.sh
@@ -110,10 +110,10 @@ jobs:
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate CondaCodeStyle
       echo ========================= install Intel OneAPI ===============================
-      sudo apt-get install intel-oneapi-mkl-2021.1-beta09                \
-                           intel-oneapi-mkl-devel-2021.1-beta09          \
-                           intel-oneapi-dpcpp-cpp-compiler-2021.1-beta09 \
-                           intel-oneapi-dpcpp-cpp-2021.1-beta09
+      sudo apt-get install intel-oneapi-mkl-2021.1-beta10                \
+                           intel-oneapi-mkl-devel-2021.1-beta10          \
+                           intel-oneapi-dpcpp-cpp-compiler-2021.1-beta10 \
+                           intel-oneapi-dpcpp-cpp-2021.1-beta10
       echo ========================= setup Intel OneAPI ===============================
       ls -l /opt/intel/oneapi/
       . /opt/intel/oneapi/setvars.sh
@@ -164,10 +164,10 @@ jobs:
       echo ========================= install Numpy cython pytest ===============================
       pip3 install numpy cython pytest
       echo ========================= install Intel OneAPI ===============================
-      sudo apt-get install intel-oneapi-mkl-2021.1-beta09                \
-                           intel-oneapi-mkl-devel-2021.1-beta09          \
-                           intel-oneapi-dpcpp-cpp-compiler-2021.1-beta09 \
-                           intel-oneapi-dpcpp-cpp-2021.1-beta09
+      sudo apt-get install intel-oneapi-mkl-2021.1-beta10                \
+                           intel-oneapi-mkl-devel-2021.1-beta10          \
+                           intel-oneapi-dpcpp-cpp-compiler-2021.1-beta10 \
+                           intel-oneapi-dpcpp-cpp-2021.1-beta10
       echo ========================= setup Intel OneAPI ===============================
       ls -l /opt/intel/oneapi/
       . /opt/intel/oneapi/setvars.sh
