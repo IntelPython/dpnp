@@ -16,7 +16,6 @@ fi
 # if MKLROOT is specified (work with custom math library)
 if [ -n "${MKLROOT}" ]; then
     . ${MKLROOT}/env/vars.sh
-    conda remove mkl --force -y || true
 fi
 
 # have to activate while SYCL CPU device/driver needs paths
