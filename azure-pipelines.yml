@@ -163,6 +163,10 @@ jobs:
       python3 --version
       echo ========================= install Numpy cython pytest ===============================
       pip3 install numpy cython pytest
+      echo ========================= install/delete libstdc++-dev ===============================
+      sudo apt remove -y libstdc++-10-dev
+      sudo apt autoremove
+      sudo apt install --reinstall -y libstdc++-9-dev
       echo ========================= install Intel OneAPI ===============================
       sudo apt-get install intel-oneapi-mkl-2021.1-beta10                \
                            intel-oneapi-mkl-devel-2021.1-beta10          \
