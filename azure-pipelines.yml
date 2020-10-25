@@ -171,6 +171,7 @@ jobs:
       echo ========================= setup Intel OneAPI ===============================
       ls -l /opt/intel/oneapi/
       . /opt/intel/oneapi/setvars.sh
+      g++ --version
       echo ========================= Current clang version ===============================
       clang++ --version
       which clang++
