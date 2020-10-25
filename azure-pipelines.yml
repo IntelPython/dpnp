@@ -57,11 +57,17 @@ jobs:
       sudo apt-get install valgrind
       echo ========================= install Numpy cython pytest ===============================
       pip3 install numpy cython pytest pytest-valgrind
+      echo ========================= install/delete libstdc++-dev ===============================
+      sudo apt remove -y gcc-7 g++-7 gcc-8 g++-8 gcc-10 g++-10
+      # oneapi beta 10 can not work with libstdc++-10-dev 
+      sudo apt remove -y libstdc++-10-dev
+      sudo apt autoremove
+      sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
       echo ========================= install Intel OneAPI ===============================
-      sudo apt-get install intel-oneapi-mkl-2021.1-beta09                \
-                           intel-oneapi-mkl-devel-2021.1-beta09          \
-                           intel-oneapi-dpcpp-cpp-compiler-2021.1-beta09 \
-                           intel-oneapi-dpcpp-cpp-2021.1-beta09
+      sudo apt-get install intel-oneapi-mkl-2021.1-beta10                \
+                           intel-oneapi-mkl-devel-2021.1-beta10          \
+                           intel-oneapi-dpcpp-cpp-compiler-2021.1-beta10 \
+                           intel-oneapi-dpcpp-cpp-2021.1-beta10
       echo ========================= setup Intel OneAPI ===============================
       ls -l /opt/intel/oneapi/
       . /opt/intel/oneapi/setvars.sh
@@ -109,11 +115,17 @@ jobs:
                                                       cython pytest pytest-cov
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate CondaCodeStyle
+      echo ========================= install/delete libstdc++-dev ===============================
+      sudo apt remove -y gcc-7 g++-7 gcc-8 g++-8 gcc-10 g++-10
+      # oneapi beta 10 can not work with libstdc++-10-dev 
+      sudo apt remove -y libstdc++-10-dev
+      sudo apt autoremove
+      sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
       echo ========================= install Intel OneAPI ===============================
-      sudo apt-get install intel-oneapi-mkl-2021.1-beta09                \
-                           intel-oneapi-mkl-devel-2021.1-beta09          \
-                           intel-oneapi-dpcpp-cpp-compiler-2021.1-beta09 \
-                           intel-oneapi-dpcpp-cpp-2021.1-beta09
+      sudo apt-get install intel-oneapi-mkl-2021.1-beta10                \
+                           intel-oneapi-mkl-devel-2021.1-beta10          \
+                           intel-oneapi-dpcpp-cpp-compiler-2021.1-beta10 \
+                           intel-oneapi-dpcpp-cpp-2021.1-beta10
       echo ========================= setup Intel OneAPI ===============================
       ls -l /opt/intel/oneapi/
       . /opt/intel/oneapi/setvars.sh
@@ -163,14 +175,22 @@ jobs:
       python3 --version
       echo ========================= install Numpy cython pytest ===============================
       pip3 install numpy cython pytest
+      echo ========================= install/delete libstdc++-dev ===============================
+      sudo apt remove -y gcc-7 g++-7 gcc-8 g++-8 gcc-10 g++-10
+      # oneapi beta 10 can not work with libstdc++-10-dev 
+      sudo apt remove -y libstdc++-10-dev
+      sudo apt autoremove
+      sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
       echo ========================= install Intel OneAPI ===============================
-      sudo apt-get install intel-oneapi-mkl-2021.1-beta09                \
-                           intel-oneapi-mkl-devel-2021.1-beta09          \
-                           intel-oneapi-dpcpp-cpp-compiler-2021.1-beta09 \
-                           intel-oneapi-dpcpp-cpp-2021.1-beta09
+      sudo apt-get install intel-oneapi-mkl-2021.1-beta10                \
+                           intel-oneapi-mkl-devel-2021.1-beta10          \
+                           intel-oneapi-dpcpp-cpp-compiler-2021.1-beta10 \
+                           intel-oneapi-dpcpp-cpp-2021.1-beta10
       echo ========================= setup Intel OneAPI ===============================
       ls -l /opt/intel/oneapi/
       . /opt/intel/oneapi/setvars.sh
+      g++ --version
+      sudo apt list --installed
       echo ========================= Current clang version ===============================
       clang++ --version
       which clang++
