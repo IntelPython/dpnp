@@ -35,6 +35,7 @@ from tests.tests_perf.test_perf_utils import get_exec_times, is_true, TestResult
 
 
 class TestBase:
+    float_format = "%.3e"
     seed = 777
 
     @classmethod
@@ -43,8 +44,8 @@ class TestBase:
 
     @classmethod
     def teardown_class(cls):
-        cls.test_results.print()
-        cls.test_results.dump()
+        cls.test_results.print(float_format=cls.float_format)
+        cls.test_results.dump(float_format=cls.float_format)
 
     def _test_func(self, name, lib, dtype, size, *args, repeat=5, number=1000000):
         """

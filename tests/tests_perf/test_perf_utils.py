@@ -25,7 +25,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import time
+import timeit
 
 import pandas
 
@@ -50,20 +50,10 @@ def get_exec_times(f, *args, repeat=5, number=1000000):
     list
         list of execution times
     """
-    exec_times = []
-
     # Warming up
     f(*args)
 
-    for _ in range(repeat):
-        start = time.time()
-        for _ in range(number):
-            f(*args)
-        finish = time.time()
-
-        exec_times.append((finish - start) / number)
-
-    return exec_times
+    return timeit.repeat('f(*args)', repeat=repeat, number=number, globals=locals())
 
 
 def is_true(input_string):
@@ -89,11 +79,11 @@ class TestResults:
 
         self.results_data = self.results_data.append(local_results_data)
 
-    def print(self):
+    def print(self, float_format=None):
         """Print performance testing results from global data storage."""
         print("\nPerformance testing results:")
-        print(self.results_data.sort_index().to_string())
+        print(self.results_data.sort_index().to_string(float_format=float_format))
 
-    def dump(self):
+    def dump(self, float_format=None):
         """Dump performance testing results from global data storage to csv."""
-        self.results_data.sort_index().to_csv("perf_results.csv", float_format="%g")
+        self.results_data.sort_index().to_csv("perf_results.csv", float_format=float_format)
