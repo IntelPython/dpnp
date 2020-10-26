@@ -288,7 +288,7 @@ def correlate(a, v, mode='valid'):
             pass
         elif not isinstance(v, dparray):
             pass
-        elif a.size != v.size:
+        elif a.size != v.size or a.size == 0:
             pass
         elif a.shape != v.shape:
             pass
