@@ -102,6 +102,11 @@ public:
     static void backend_sycl_queue_init(QueueOptions selector = QueueOptions::CPU_SELECTOR);
 
     /**
+     * Return True if current @ref queue is related to cpu or host device
+     */
+    static bool backend_sycl_is_cpu();
+
+    /**
      * Initialize @ref rng_engine
      */
     static void backend_sycl_rng_engine_init(size_t seed = 1);
