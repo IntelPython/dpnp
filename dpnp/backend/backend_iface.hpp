@@ -82,7 +82,7 @@ INP_DLLEXPORT void dpnp_queue_initialize_c(QueueOptions selector);
  * @ingroup BACKEND_API
  * @brief SYCL queue device status.
  *
- * Return 1 is current @ref queue is related to cpu or host device. return 0 otherwise.
+ * Return 1 if current @ref queue is related to cpu or host device. return 0 otherwise.
  */
 INP_DLLEXPORT size_t dpnp_queue_is_cpu_c();
 
