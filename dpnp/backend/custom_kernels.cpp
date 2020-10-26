@@ -111,23 +111,27 @@ void dpnp_matmul_c(void* array1_in, void* array2_in, void* result1, size_t size_
     event.wait();
 }
 
-template <typename _KernelNameSpecialization>
+template <typename _KernelNameSpecialization1,
+          typename _KernelNameSpecialization2,
+          typename _KernelNameSpecialization3>
 class dpnp_dot_c_kernel;
 
-template <typename _DataType>
+template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
 void dpnp_dot_c(void* array1_in, void* array2_in, void* result1, size_t size)
 {
     cl::sycl::event event;
-    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
-    _DataType* array_2 = reinterpret_cast<_DataType*>(array2_in);
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
+    _DataType_input1* array_1 = reinterpret_cast<_DataType_input1*>(array1_in);
+    _DataType_input2* array_2 = reinterpret_cast<_DataType_input2*>(array2_in);
+    _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
 
     if (!size)
     {
         return;
     }
 
-    if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
+    if constexpr ((std::is_same<_DataType_input1, double>::value ||
+                   std::is_same<_DataType_input1, float>::value) &&
+                  std::is_same<_DataType_input2, _DataType_input1>::value)
     {
         event = mkl_blas::dot(DPNP_QUEUE,
                               size,
@@ -140,7 +144,8 @@ void dpnp_dot_c(void* array1_in, void* array2_in, void* result1, size_t size)
     }
     else
     {
-        _DataType* local_mem = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+        _DataType_output* local_mem = reinterpret_cast<_DataType_output*>(
+            dpnp_memory_alloc_c(size * sizeof(_DataType_output)));
 
         // what about reduction??
         cl::sycl::range<1> gws(size);
@@ -151,17 +156,20 @@ void dpnp_dot_c(void* array1_in, void* array2_in, void* result1, size_t size)
         };
 
         auto kernel_func = [&](cl::sycl::handler& cgh) {
-            cgh.parallel_for<class dpnp_dot_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+            cgh.parallel_for<class dpnp_dot_c_kernel<_DataType_input1, _DataType_input2, _DataType_output>>(
+                gws, kernel_parallel_for_func);
         };
 
         event = DPNP_QUEUE.submit(kernel_func);
 
         event.wait();
 
-        auto policy = oneapi::dpl::execution::make_device_policy<class dpnp_dot_c_kernel<_DataType>>(DPNP_QUEUE);
+        auto policy = oneapi::dpl::execution::make_device_policy<class dpnp_dot_c_kernel<
+            _DataType_input1, _DataType_input2, _DataType_output>>(DPNP_QUEUE);
 
-        _DataType accumulator = 0;
-        accumulator = std::reduce(policy, local_mem, local_mem + size, _DataType(0), std::plus<_DataType>());
+        _DataType_output accumulator = 0;
+        accumulator = std::reduce(policy, local_mem, local_mem + size,
+                                  _DataType_output(0), std::plus<_DataType_output>());
         policy.queue().wait();
 
         result[0] = accumulator;
@@ -234,10 +242,22 @@ void dpnp_eig_c(const void* array_in, void* result1, void* result2, size_t size)
 
 void func_map_init_linalg(func_map_t& fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_dot_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_dot_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_dot_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_dot_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_dot_c<int, int, int>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_dot_c<int, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_FLT] = {eft_DBL, (void*)dpnp_dot_c<int, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_dot_c<int, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_INT] = {eft_LNG, (void*)dpnp_dot_c<long, int, long>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_dot_c<long, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_FLT] = {eft_DBL, (void*)dpnp_dot_c<long, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_dot_c<long, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_INT] = {eft_DBL, (void*)dpnp_dot_c<float, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_LNG] = {eft_DBL, (void*)dpnp_dot_c<float, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_dot_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_DBL] = {eft_DBL, (void*)dpnp_dot_c<float, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_dot_c<double, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_dot_c<double, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_dot_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_dot_c<double, double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_EIG][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_eig_c<int, double>};
     fmap[DPNPFuncName::DPNP_FN_EIG][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_eig_c<long, double>};

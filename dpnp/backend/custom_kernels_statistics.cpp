@@ -41,8 +41,7 @@ class dpnp_correlate_c_kernel;
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
 void dpnp_correlate_c(void* array1_in, void* array2_in, void* result1, size_t size)
 {
-    _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
-    dpnp_dot_c<_DataType_output>(array1_in, array2_in, result, size);
+    dpnp_dot_c<_DataType_input1, _DataType_input2, _DataType_output>(array1_in, array2_in, result1, size);
 
     return;
 }
