@@ -31,7 +31,7 @@ import timeit
 import pandas
 
 
-def get_exec_times(f, *args, repeat=5, number=1000000):
+def get_exec_times(f, *args, repeat=5, number=1000000, **kwargs):
     """
     Get execution times.
 
@@ -40,11 +40,13 @@ def get_exec_times(f, *args, repeat=5, number=1000000):
     f : func
         function to execute
     args : tuple
-        parameters of the fucntion
+        position parameters of the function
     repeat : int
         number of measurements
     number : int
         number of the function calls within a single measurement
+    kwargs : dict
+        key word parameters of the function
 
     Returns
     -------
@@ -52,16 +54,14 @@ def get_exec_times(f, *args, repeat=5, number=1000000):
         list of execution times
     """
     # Warming up
-    f(*args)
+    f(*args, **kwargs)
 
-    return timeit.repeat('f(*args)', repeat=repeat, number=number, globals=locals())
-
-
-def is_true(input_string):
-    """Check input is true"""
-    if isinstance(input_string, str):
-        input_string = input_string.lower()
-    return input_string in ["yes", "y", "true", "t", "1", True]
+    globals = {
+        'f': f,
+        'args': args,
+        'kwargs': kwargs,
+    }
+    return timeit.repeat('f(*args, **kwargs)', repeat=repeat, number=number, globals=globals)
 
 
 class TestResults:

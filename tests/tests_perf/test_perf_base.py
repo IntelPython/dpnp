@@ -31,7 +31,7 @@ import statistics
 import dpnp
 import numpy
 
-from tests.tests_perf.test_perf_utils import get_exec_times, is_true, TestResults
+from tests.tests_perf.test_perf_utils import get_exec_times, TestResults
 
 
 class TestBase:
@@ -48,7 +48,7 @@ class TestBase:
         cls.test_results.print(float_format=cls.float_format)
         cls.test_results.to_csv(cls.csv_result_path, float_format=cls.float_format)
 
-    def _test_func(self, name, lib, dtype, size, *args, repeat=5, number=1000000):
+    def _test_func(self, name, lib, dtype, size, *args, repeat=5, number=1000000, **kwargs):
         """
         Test performance of specified function.
 
@@ -63,13 +63,15 @@ class TestBase:
         size : int
             size of the input array
         args : tuple
-            parameters of the fucntion
+            position parameters of the function
         repeat : int
             number of measurements
         number : int
             number of the function calls within a single measurement
+        kwargs : dict
+            key word parameters of the function
         """
-        exec_times = get_exec_times(getattr(lib, name), *args, repeat=repeat, number=number)
+        exec_times = get_exec_times(getattr(lib, name), *args, repeat=repeat, number=number, **kwargs)
         result = {
             'min': [min(exec_times)],
             'max': [max(exec_times)],
