@@ -25,6 +25,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+import os
 import timeit
 
 import pandas
@@ -64,6 +65,7 @@ def is_true(input_string):
 
 
 class TestResults:
+    index_col = ["name", "lib", "dtype", "size"]
     results_data = pandas.DataFrame()
 
     def add(self, name, lib, dtype, size, **result):
@@ -84,6 +86,12 @@ class TestResults:
         print("\nPerformance testing results:")
         print(self.results_data.sort_index().to_string(float_format=float_format))
 
-    def dump(self, float_format=None):
+    def to_csv(self, file_path, float_format=None):
         """Dump performance testing results from global data storage to csv."""
-        self.results_data.sort_index().to_csv("perf_results.csv", float_format=float_format)
+        if os.path.exists(file_path):
+            prev_results_data = pandas.read_csv(file_path, index_col=self.results_data.index.names)
+            local_results_data = self.results_data.combine_first(prev_results_data)
+        else:
+            local_results_data = self.results_data
+
+        local_results_data.sort_index().to_csv(file_path, float_format=float_format)
