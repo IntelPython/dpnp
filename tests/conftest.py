@@ -25,6 +25,7 @@
 # *****************************************************************************
 
 import os
+import dpnp
 import pytest
 
 
@@ -48,7 +49,9 @@ def pytest_collection_modifyitems(config, items):
     # global skip file, where gpu device is not supported
     test_exclude_file_gpu = os.path.join(test_path, 'skipped_tests_gpu.tbl')
 
-    if 'DPNP_QUEUE_GPU' in os.environ and os.getenv('DPNP_QUEUE_GPU') == '1':
+    current_queue_is_cpu = dpnp.dpnp_queue_is_cpu()
+    print(f"\nDPNP: current queue is CPU: {current_queue_is_cpu}")
+    if not current_queue_is_cpu or ('DPNP_QUEUE_GPU' in os.environ and os.getenv('DPNP_QUEUE_GPU') == '1'):
         excluded_tests.extend(get_excluded_tests(test_exclude_file_gpu))
     else:
         excluded_tests.extend(get_excluded_tests(test_exclude_file))
