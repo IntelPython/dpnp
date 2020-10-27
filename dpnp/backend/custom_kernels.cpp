@@ -131,7 +131,8 @@ void dpnp_dot_c(void* array1_in, void* array2_in, void* result1, size_t size)
 
     if constexpr ((std::is_same<_DataType_input1, double>::value ||
                    std::is_same<_DataType_input1, float>::value) &&
-                  std::is_same<_DataType_input2, _DataType_input1>::value)
+                  std::is_same<_DataType_input2, _DataType_input1>::value &&
+                  std::is_same<_DataType_output, _DataType_input1>::value)
     {
         event = mkl_blas::dot(DPNP_QUEUE,
                               size,
