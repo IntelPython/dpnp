@@ -124,7 +124,7 @@ def argsort(in_array1, axis=-1, kind=None, order=None):
     return numpy.argsort(in_array1, axis, kind, order)
 
 
-def sort(in_array1, axis=-1, kind=None, order=None):
+def sort(a, axis=-1, kind=None, order=None):
     """
     Return a sorted copy of an array.
     Parameters
@@ -243,17 +243,18 @@ def sort(in_array1, axis=-1, kind=None, order=None):
            ('Arthur', 1.8, 41)],
           dtype=[('name', '|S10'), ('height', '<f8'), ('age', '<i4')])
     """
+    if not use_origin_backend(a):
+        if not isinstance(a, dparray):
+            pass
+        elif a.ndim != 1:
+            pass
+        elif axis != -1:
+            pass
+        elif kind is not None:
+            pass
+        elif order is not None:
+            pass
+        else:
+            return dpnp_sort(a)
 
-    is_dparray1 = isinstance(in_array1, dparray)
-
-    if (not use_origin_backend(in_array1) and is_dparray1):
-        if axis != -1:
-            checker_throw_value_error("sort", "axis", axis, -1)
-        if kind is not None:
-            checker_throw_value_error("sort", "kind", type(kind), None)
-        if order is not None:
-            checker_throw_value_error("sort", "order", type(order), None)
-
-        return dpnp_sort(in_array1)
-
-    return numpy.sort(in_array1, axis, kind, order)
+    return call_origin(numpy.sort, a, axis, kind, order)
