@@ -119,6 +119,18 @@ void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
     std::cout << "SYCL kernels link time: " << time_kernels_link.count() << " (sec.)\n" << std::endl;
 }
 
+bool backend_sycl::backend_sycl_is_cpu()
+{
+    cl::sycl::queue& qptr = get_queue();
+
+    if (qptr.is_host() || qptr.get_device().is_cpu() || qptr.get_device().is_host())
+    {
+        return true;
+    }
+
+    return false;
+}
+
 void backend_sycl::backend_sycl_rng_engine_init(size_t seed)
 {
     if (rng_engine)
@@ -131,6 +143,11 @@ void backend_sycl::backend_sycl_rng_engine_init(size_t seed)
 void dpnp_queue_initialize_c(QueueOptions selector)
 {
     backend_sycl::backend_sycl_queue_init(selector);
+}
+
+size_t dpnp_queue_is_cpu_c()
+{
+    return backend_sycl::backend_sycl_is_cpu();
 }
 
 void dpnp_srand_c(size_t seed)
