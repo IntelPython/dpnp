@@ -205,7 +205,7 @@ cpdef dparray dpnp_subtract(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_SUBTRACT, x1, x2, x1.shape)
 
 
-cpdef dparray _dpnp_sum(dparray x1):
+cpdef dparray dpnp_sum_no_axis(dparray x1):
     """
     input:float64   : outout:float64   : name:sum
     input:float32   : outout:float32   : name:sum
@@ -229,15 +229,12 @@ cpdef dparray _dpnp_sum(dparray x1):
 
 cpdef dparray dpnp_sum(dparray input, axis=None):
     if axis is None:
-        return _dpnp_sum(input)
+        return dpnp_sum_no_axis(input)
 
     cdef long size_input = input.size
     cdef dparray_shape_type shape_input = input.shape
 
-    if input.dtype == numpy.int32:
-        res_type = numpy.int64
-    else:
-        res_type = input.dtype
+    return_type = numpy.int64 if input.dtype == numpy.int32 else input.dtype
 
     axis_ = _object_to_tuple(axis)
 
