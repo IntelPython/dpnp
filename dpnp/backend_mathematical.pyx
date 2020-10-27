@@ -239,10 +239,7 @@ cpdef dparray dpnp_sum(dparray input, axis=None):
     else:
         res_type = input.dtype
 
-    if isinstance(axis, int):
-        axis_ = tuple([axis])
-    else:
-        axis_ = axis
+    axis_ = _object_to_tuple(axis)
 
     output_shape = dparray(len(shape_input) - len(axis_), dtype=numpy.int64)
     ind = 0

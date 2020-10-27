@@ -627,7 +627,7 @@ def subtract(x1, x2, **kwargs):
     return call_origin(numpy.subtract, x1, x2, **kwargs)
 
 
-def sum(x1, axis=None, **kwargs):
+def sum(x1, **kwargs):
     """
     Sum of array elements over a given axis.
 
@@ -637,7 +637,9 @@ def sum(x1, axis=None, **kwargs):
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
+    if (not use_origin_backend(x1) and is_x1_dparray and len(kwargs) <= 1):
+        axis = kwargs.pop('axis') if len(kwargs) == 1 else None
+
         result = dpnp_sum(x1, axis)
 
         # scalar returned
@@ -646,7 +648,7 @@ def sum(x1, axis=None, **kwargs):
 
         return result
 
-    return call_origin(numpy.sum, x1, axis, **kwargs)
+    return call_origin(numpy.sum, x1, **kwargs)
 
 
 def true_divide(*args, **kwargs):
