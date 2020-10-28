@@ -128,9 +128,9 @@ def find_cmplr(verbose=False):
     return cmplr_include, cmplr_libpath
 
 
-def _find_dpl_in_dpl_root(verbose=False):
+def _find_dpl_in_oneapi_root(verbose=False):
     """
-    Find DPL in dpl root using $DPLROOT.
+    Find DPL in oneAPI root using $ONEAPI_ROOT.
 
     Parameters
     ----------
@@ -145,15 +145,15 @@ def _find_dpl_in_dpl_root(verbose=False):
     rel_header_paths = rel_lib_paths = []
 
     if 'linux' in sys.platform:
-        rel_include_path = os.path.join('linux', 'include')
-        rel_libdir_path = os.path.join('linux', 'lib')
+        rel_include_path = os.path.join('dpl', 'latest', 'linux', 'include')
+        rel_libdir_path = os.path.join('dpl', 'latest', 'linux', 'lib')
     elif sys.platform in ['win32', 'cygwin']:
-        rel_include_path = os.path.join('windows', 'include')
-        rel_libdir_path = os.path.join('windows', 'lib')
+        rel_include_path = os.path.join('dpl', 'latest', 'windows', 'include')
+        rel_libdir_path = os.path.join('dpl', 'latest', 'windows', 'lib')
     else:
         rel_include_path, rel_libdir_path = 'include', 'lib'
 
-    return find_library("DPLROOT", rel_header_paths, rel_lib_paths,
+    return find_library("ONEAPI_ROOT", rel_header_paths, rel_lib_paths,
                         rel_include_path=rel_include_path, rel_libdir_path=rel_libdir_path, verbose=verbose)
 
 
@@ -171,7 +171,7 @@ def find_dpl(verbose=False):
     tuple(list(str), list(str))
         path to include directory, path to library directory
     """
-    dpl_include, dpl_libpath = _find_dpl_in_dpl_root(verbose=verbose)
+    dpl_include, dpl_libpath = _find_dpl_in_oneapi_root(verbose=verbose)
 
     if not dpl_include or not dpl_libpath:
         raise EnvironmentError(f"DPNP: Unable to find DPL. Please install Intel OneAPI environment")
@@ -194,7 +194,7 @@ def _find_mathlib_in_conda_root(verbose=False):
         path to include directory, path to library directory
     """
     conda_root_var = "PREFIX" if IS_CONDA_BUILD else "CONDA_PREFIX"
-    rel_header_paths = [os.path.join("oneapi", "mkl.hpp")]
+    rel_header_paths = [os.path.join("oneapi", "mkl.h")]
     rel_lib_paths = ["libmkl_sycl.so"]
 
     return find_library(conda_root_var, rel_header_paths, rel_lib_paths, verbose=verbose)
@@ -221,6 +221,29 @@ def _find_mathlib_in_mathlib_root(verbose=False):
     return find_library("MKLROOT", rel_header_paths, rel_lib_paths, rel_libdir_path=rel_libdir_path, verbose=verbose)
 
 
+def _find_mathlib_in_oneapi_root(verbose=False):
+    """
+    Find mathlib in oneAPI root using $ONEAPI_ROOT.
+
+    Parameters
+    ----------
+    verbose : bool
+        to print paths to include and library directories
+
+    Returns
+    -------
+    tuple(list(str), list(str))
+        path to include directory, path to library directory
+    """
+    rel_header_paths = ["mkl.h"]
+    rel_lib_paths = ["libmkl_sycl.so"]
+    rel_include_path = os.path.join("mkl", "latest", "include")
+    rel_libdir_path = os.path.join("mkl", "latest", "lib", "intel64")
+
+    return find_library("ONEAPI_ROOT", rel_header_paths, rel_lib_paths, rel_include_path=rel_include_path,
+                        rel_libdir_path=rel_libdir_path, verbose=verbose)
+
+
 def find_mathlib(verbose=False):
     """
     Find mathlib in conda root then in mathlib root.
@@ -240,6 +263,9 @@ def find_mathlib(verbose=False):
 
     if not mathlib_include or not mathlib_path:
         mathlib_include, mathlib_path = _find_mathlib_in_mathlib_root(verbose=verbose)
+
+    if not mathlib_include or not mathlib_path:
+        mathlib_include, mathlib_path = _find_mathlib_in_oneapi_root(verbose=verbose)
 
     if not mathlib_include or not mathlib_path:
         raise EnvironmentError("DPNP: Unable to find math library")
