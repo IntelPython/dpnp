@@ -247,9 +247,6 @@ _project_extra_link_args = _project_cmplr_flag_compatibility + \
     ["-Wl,-rpath," + x for x in _project_rpath] + _sdl_ldflags
 _project_dir = os.path.dirname(os.path.abspath(__file__))
 _project_backend_dir = [os.path.join(_project_dir, "dpnp", "backend")]
-_runtime_library_dirs = _project_rpath + _mathlib_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath
-if IS_WIN:
-    _runtime_library_dirs = []
 
 
 """
@@ -293,7 +290,7 @@ dpnp_backend_c = [
             ],
             "include_dirs": _cmplr_include + _mathlib_include + _project_backend_dir + _dpctrl_include,
             "library_dirs": _mathlib_path + _omp_libpath + _dpctrl_libpath,
-            "runtime_library_dirs": _runtime_library_dirs,
+            "runtime_library_dirs": [],  # _project_rpath + _mathlib_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath,
             "extra_preargs": _project_cmplr_flag_sycl + _sdl_cflags,
             "extra_link_preargs": _project_cmplr_flag_compatibility + _sdl_ldflags,
             "extra_link_postargs": _project_cmplr_flag_lib,
