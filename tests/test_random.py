@@ -4,6 +4,7 @@ import dpnp.random
 import numpy
 # from scipy import stats
 from numpy.testing import assert_allclose
+import math
 
 
 @pytest.mark.parametrize("func",
@@ -159,10 +160,23 @@ def test_invalid_args_exponential():
 
 def test_invalid_args_gamma():
     size = 10
-    shape = -1 # non-negative `shape` is expected
+    shape = -1   # non-negative `shape` is expected
     with pytest.raises(ValueError):
         dpnp.random.gamma(shape=shape, size=size)
-    shape = 1.0  # OK
-    scale = -1.0 # non-negative `shape` is expected
+    shape = 1.0   # OK
+    scale = -1.0  # non-negative `shape` is expected
     with pytest.raises(ValueError):
         dpnp.random.gamma(shape, scale, size)
+
+
+def test_check_moments_gamma():
+    seed = 28041990
+    dpnp.random.seed(seed)
+    shape = 2.56
+    scale = 0.8
+    expected_mean = shape * scale
+    expected_var = shape * scale * scale
+    var = numpy.var(dpnp.random.gamma(shape=shape, scale=scale, size=10**6))
+    mean = numpy.mean(dpnp.random.gamma(shape=shape, scale=scale, size=10**6))
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
