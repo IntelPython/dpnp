@@ -221,29 +221,6 @@ def _find_mathlib_in_mathlib_root(verbose=False):
     return find_library("MKLROOT", rel_header_paths, rel_lib_paths, rel_libdir_path=rel_libdir_path, verbose=verbose)
 
 
-def _find_mathlib_in_oneapi_root(verbose=False):
-    """
-    Find mathlib in oneAPI root using $ONEAPI_ROOT.
-
-    Parameters
-    ----------
-    verbose : bool
-        to print paths to include and library directories
-
-    Returns
-    -------
-    tuple(list(str), list(str))
-        path to include directory, path to library directory
-    """
-    rel_header_paths = ["mkl.h"]
-    rel_lib_paths = ["libmkl_sycl.so"]
-    rel_include_path = os.path.join("mkl", "latest", "include")
-    rel_libdir_path = os.path.join("mkl", "latest", "lib", "intel64")
-
-    return find_library("ONEAPI_ROOT", rel_header_paths, rel_lib_paths, rel_include_path=rel_include_path,
-                        rel_libdir_path=rel_libdir_path, verbose=verbose)
-
-
 def find_mathlib(verbose=False):
     """
     Find mathlib in conda root then in mathlib root.
@@ -263,9 +240,6 @@ def find_mathlib(verbose=False):
 
     if not mathlib_include or not mathlib_path:
         mathlib_include, mathlib_path = _find_mathlib_in_mathlib_root(verbose=verbose)
-
-    if not mathlib_include or not mathlib_path:
-        mathlib_include, mathlib_path = _find_mathlib_in_oneapi_root(verbose=verbose)
 
     if not mathlib_include or not mathlib_path:
         raise EnvironmentError("DPNP: Unable to find math library")
