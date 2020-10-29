@@ -43,6 +43,7 @@ int main(int, char**)
     const size_t size = 256;
 
     dpnp_queue_initialize_c(QueueOptions::CPU_SELECTOR);
+    std::cout << "SYCL queue is CPU: " << dpnp_queue_is_cpu_c() << std::endl;
 
     int* array1 = (int*)dpnp_memory_alloc_c(size * sizeof(int));
     double* result = (double*)dpnp_memory_alloc_c(size * sizeof(double));
