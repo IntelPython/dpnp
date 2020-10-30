@@ -78,9 +78,12 @@ cpdef dparray dpnp_binomial(int ntrial, double p, size):
     cdef DPNPFuncData kernel_data
     cdef fptr_custom_rng_binomial_c_1out_t func
 
-    if ntrial == 0 or p == 0.0 or p == 1.0:
+    if ntrial == 0 or p == 0.0:
         result = dparray(size, dtype=dtype)
         result.fill(0.0)
+    elif p == 1.0:
+        result = dparray(size, dtype=dtype)
+        result.fill(ntrial)
     else:
         # convert string type names (dparray.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
