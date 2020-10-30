@@ -50,14 +50,6 @@ Building:
 conda-build conda-recipe/
 ```
 
-run tests from config:
-```
-python tests/run_pytest.py tests/config/example.yaml tests/config/deselect_failed.yaml -v --tb=no
-tests/run_pytest.py - runner
-tests/config/example.yaml tests/config/deselect_failed.yaml - one or several configs *.yaml
--v --tb=no - any usual pytest args
-```
-
 ## Run benchmark:
 ```
 $ cd benchmarks/

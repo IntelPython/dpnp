@@ -1925,15 +1925,7 @@ tests/third_party/cupy/sorting_tests/test_sort.py::TestSort_complex::test_sort_c
 tests/third_party/cupy/sorting_tests/test_sort.py::TestSort_complex::test_sort_complex_nan
 tests/third_party/cupy/sorting_tests/test_sort.py::TestSort_complex::test_sort_complex_ndim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestSort_complex::test_sort_complex_zero_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_external_sort_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_external_sort_invalid_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_external_sort_invalid_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_external_sort_invalid_negative_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_external_sort_invalid_negative_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_external_sort_negative_axis
 tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_external_sort_non_contiguous
-tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_external_sort_none_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_external_sort_two_or_more_dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_external_sort_zero_dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_nan1
 tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_nan2

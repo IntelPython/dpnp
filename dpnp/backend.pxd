@@ -51,6 +51,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_CEIL
         DPNP_FN_CHISQUARE
         DPNP_FN_COPYSIGN
+        DPNP_FN_CORRELATE
         DPNP_FN_COS
         DPNP_FN_COSH
         DPNP_FN_COV
@@ -67,6 +68,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_FLOOR
         DPNP_FN_FLOOR_DIVIDE
         DPNP_FN_FMOD
+        DPNP_FN_GAMMA
         DPNP_FN_GAUSSIAN
         DPNP_FN_HYPOT
         DPNP_FN_INVERT
@@ -130,6 +132,7 @@ cdef extern from "backend/backend_iface.hpp" namespace "QueueOptions":  # need t
 
 cdef extern from "backend/backend_iface.hpp":
     void dpnp_queue_initialize_c(QueueOptions selector)
+    size_t dpnp_queue_is_cpu_c()
 
     char * dpnp_memory_alloc_c(size_t size_in_bytes)
     void dpnp_memory_free_c(void * ptr)

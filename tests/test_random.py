@@ -93,7 +93,7 @@ def test_randn_normal_distribution():
                           dpnp.random.rand],
                          ids=['random', 'random_sample',
                               'ranf', 'sample', 'rand'])
-def test_radnom_seed(func):
+def test_random_seed(func):
     seed = 28041990
     size = 100
     shape = (100, 1)
@@ -120,6 +120,42 @@ def test_random_seed_binomial():
     assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
+def test_random_seed_chisquare():
+    seed = 28041990
+    size = 100
+    df = 3  # number of degrees of freedom
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.chisquare(df, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.chisquare(df, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_random_seed_exponential():
+    seed = 28041990
+    size = 100
+    scale = 3  # number of degrees of freedom
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.exponential(scale, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.exponential(scale, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_random_seed_gamma():
+    seed = 28041990
+    size = 100
+    shape = 3.0  # shape param for gamma distr
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.gamma(shape=shape, size=size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.gamma(shape=shape, size=size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
 def test_invalid_args_binomial():
     size = 10
     n = 10    # number of trials, OK
@@ -132,42 +168,29 @@ def test_invalid_args_binomial():
         dpnp.random.binomial(n, p, size)
 
 
-def test_radnom_exponential_seed():
-    seed = 28041990
-    size = 100
-    scale = 3  # number of degrees of freedom
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.exponential(scale, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.exponential(scale, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+def test_invalid_args_chisquare():
+    size = 10
+    df = -1  # positive `df` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.chisquare(df, size)
 
 
-def test_exponential_invalid_scale():
+def test_invalid_args_exponential():
     size = 10
     scale = -1  # non-negative `scale` is expected
     with pytest.raises(ValueError):
         dpnp.random.exponential(scale, size)
 
 
-def test_radnom_chisquare_seed():
-    seed = 28041990
-    size = 100
-    df = 3  # number of degrees of freedom
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.chisquare(df, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.chisquare(df, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_chisquare_invalid_df():
+def test_invalid_args_gamma():
     size = 10
-    df = -1  # positive `df` is expected
+    shape = -1   # non-negative `shape` is expected
     with pytest.raises(ValueError):
-        dpnp.random.chisquare(df, size)
+        dpnp.random.gamma(shape=shape, size=size)
+    shape = 1.0   # OK
+    scale = -1.0  # non-negative `shape` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.gamma(shape, scale, size)
 
 
 def test_check_moments_binomial():
@@ -181,3 +204,18 @@ def test_check_moments_binomial():
     mean = numpy.mean(dpnp.random.binomial(n=n, p=p, size=10**6))
     assert math.isclose(var, expected_var, abs_tol=0.003)
     assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
+def test_check_moments_gamma():
+    seed = 28041990
+    dpnp.random.seed(seed)
+    shape = 2.56
+    scale = 0.8
+    expected_mean = shape * scale
+    expected_var = shape * scale * scale
+    var = numpy.var(dpnp.random.gamma(shape=shape, scale=scale, size=10**6))
+    mean = numpy.mean(dpnp.random.gamma(shape=shape, scale=scale, size=10**6))
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+

@@ -46,6 +46,7 @@ __all__ = [
     "dpnp_binomial",
     "dpnp_chisquare",
     "dpnp_exponential",
+    "dpnp_gamma",
     "dpnp_randn",
     "dpnp_random",
     "dpnp_srand",
@@ -56,6 +57,7 @@ __all__ = [
 ctypedef void(*fptr_custom_rng_binomial_c_1out_t)(void *, int, double, size_t)
 ctypedef void(*fptr_custom_rng_chi_square_c_1out_t)(void *, int, size_t)
 ctypedef void(*fptr_custom_rng_exponential_c_1out_t)(void *, double, size_t)
+ctypedef void(*fptr_custom_rng_gamma_c_1out_t)(void *, double, double, size_t)
 ctypedef void(*fptr_custom_rng_gaussian_c_1out_t)(void *, double, double, size_t)
 ctypedef void(*fptr_custom_rng_uniform_c_1out_t)(void *, long, long, size_t)
 
@@ -99,10 +101,10 @@ cpdef dparray dpnp_binomial(int ntrial, double p, size):
 
 cpdef dparray dpnp_chisquare(int df, size):
     """
-    Return a random matrix with data from the chi-square distribution.
+    Returns an array populated with samples from chi-square distribution.
 
     `dpnp_chisquare` generates a matrix filled with random floats sampled from a
-    univariate "chi-square" distribution for a given number of degrees of freedom.
+    univariate chi-square distribution for a given number of degrees of freedom.
 
     """
 
@@ -125,10 +127,10 @@ cpdef dparray dpnp_chisquare(int df, size):
 
 cpdef dparray dpnp_exponential(double beta, size):
     """
-    Return a random matrix with data from the "exponential" distribution.
+    Returns an array populated with samples from exponential distribution.
 
     `dpnp_exponential` generates a matrix filled with random floats sampled from a
-    univariate "exponential" distribution of `beta`.
+    univariate exponential distribution of `beta`.
 
     """
 
@@ -150,12 +152,48 @@ cpdef dparray dpnp_exponential(double beta, size):
     return result
 
 
+cpdef dparray dpnp_gamma(double shape, double scale, size):
+    """
+    Returns an array populated with samples from gamma distribution.
+
+    `dpnp_gamma` generates a matrix filled with random floats sampled from a
+    univariate gamma distribution of `shape` and `scale`.
+
+    """
+
+    dtype = numpy.float64
+    cdef dparray result
+    cdef DPNPFuncType param1_type
+    cdef DPNPFuncData kernel_data
+    cdef fptr_custom_rng_gamma_c_1out_t func
+
+    if shape == 0.0 or scale==0.0:
+        result = dparray(size, dtype=dtype)
+        result.fill(0.0)
+    else:
+        # convert string type names (dparray.dtype) to C enum DPNPFuncType
+        param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+
+        # get the FPTR data structure
+        kernel_data = get_dpnp_function_ptr(DPNP_FN_GAMMA, param1_type, param1_type)
+
+        result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+        # ceate result array with type given by FPTR data
+        result = dparray(size, dtype=result_type)
+
+        func = <fptr_custom_rng_gamma_c_1out_t > kernel_data.ptr
+        # call FPTR function
+        func(result.get_data(), shape, scale, result.size)
+
+    return result
+
+
 cpdef dparray dpnp_randn(dims):
     """
-    Return a random matrix with data from the "standard normal" distribution.
+    Returns an array populated with samples from standard normal distribution.
 
     `dpnp_randn` generates a matrix filled with random floats sampled from a
-    univariate "normal" (Gaussian) distribution of mean 0 and variance 1.
+    univariate normal (Gaussian) distribution of mean 0 and variance 1.
 
     """
     cdef double mean = 0.0
@@ -214,7 +252,7 @@ cpdef dpnp_srand(seed):
 
 cpdef dparray dpnp_uniform(long low, long high, size, dtype=numpy.int32):
     """
-    Return a random matrix with data from the uniform distribution.
+    Returns an array populated with samples from standard uniform distribution.
 
     Generates a matrix filled with random numbers sampled from a
     uniform distribution of the certain left (low) and right (high)
