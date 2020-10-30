@@ -44,9 +44,15 @@ from dpnp.random._random import *
 
 
 __all__ = [
+<<<<<<< HEAD
     'beta',
     'chisquare',
     'exponential',
+=======
+    'chisquare',
+    'exponential',
+    'gamma',
+>>>>>>> master
     'rand',
     'ranf',
     'randint',
@@ -60,6 +66,7 @@ __all__ = [
 ]
 
 
+<<<<<<< HEAD
 def beta(a, b, size=None):
     """Beta distribution.
 
@@ -123,6 +130,8 @@ def beta(a, b, size=None):
     return call_origin(numpy.random.beta, a, b, size)
 
 
+=======
+>>>>>>> master
 def chisquare(df, size=None):
     """
     chisquare(df, size=None)
@@ -252,6 +261,84 @@ def exponential(scale=1.0, size=None):
     return call_origin(numpy.random.exponential, scale, size)
 
 
+<<<<<<< HEAD
+=======
+def gamma(shape, scale=1.0, size=None):
+    """Gamma distribution.
+
+    Draw samples from a Gamma distribution.
+
+    Samples are drawn from a Gamma distribution with specified parameters,
+    `shape` (sometimes designated "k") and `scale` (sometimes designated
+    "theta"), where both parameters are > 0.
+
+    .. note::
+        New code should use the ``gamma`` method of a ``default_rng()``
+        instance instead; please see the :ref:`random-quick-start`.
+
+    Parameters
+    ----------
+    shape : float or array_like of floats
+        The shape of the gamma distribution. Must be non-negative.
+    scale : float or array_like of floats, optional
+        The scale of the gamma distribution. Must be non-negative.
+        Default is equal to 1.
+    size : int or tuple of ints, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
+        a single value is returned if ``shape`` and ``scale`` are both scalars.
+
+    Returns
+    -------
+    out : dparray
+        Drawn samples from the parameterized gamma distribution.
+
+    Notes
+    -----
+    The probability density for the Gamma distribution is
+
+    .. math:: p(x) = x^{k-1}\\frac{e^{-x/\\theta}}{\\theta^k\\Gamma(k)},
+
+    where :math:`k` is the shape and :math:`\\theta` the scale,
+    and :math:`\\Gamma` is the Gamma function.
+
+    The Gamma distribution is often used to model the times to failure of
+    electronic components, and arises naturally in processes for which the
+    waiting times between Poisson distributed events are relevant.
+
+    References
+    ----------
+    .. [1] Weisstein, Eric W. "Gamma Distribution." From MathWorld--A
+           Wolfram Web Resource.
+           http://mathworld.wolfram.com/GammaDistribution.html
+    .. [2] Wikipedia, "Gamma distribution",
+           https://en.wikipedia.org/wiki/Gamma_distribution
+
+    """
+
+    # TODO:
+    # array_like of floats for `scale` and `shape`
+    if not use_origin_backend(scale):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("gamma", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("gamma", "type(size)", type(size), int)
+
+        if scale < 0:
+            checker_throw_value_error("gamma", "scale", scale, "non-negative")
+        if shape < 0:
+            checker_throw_value_error("gamma", "shape", shape, "non-negative")
+
+        return dpnp_gamma(shape, scale, size)
+
+    return call_origin(numpy.random.gamma, shape, scale, size)
+
+
+>>>>>>> master
 def rand(d0, *dn):
     """
     Create an array of the given shape and populate it

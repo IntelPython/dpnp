@@ -10,7 +10,10 @@ tests/test_random.py::test_invalid_args_beta
 tests/test_random.py::test_check_moments_beta
 tests/test_random.py::test_randn_normal_distribution
 tests/test_random.py::test_random_seed_chisquare
+tests/test_random.py::test_random_seed_gamma
 tests/test_random.py::test_invalid_args_chisquare
+tests/test_random.py::test_invalid_args_gamma
+tests/test_random.py::test_check_moments_gamma
 tests/test_statistics.py::test_median[2-float32]
 tests/test_statistics.py::test_median[2-float64]
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_and
