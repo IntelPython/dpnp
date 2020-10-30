@@ -124,8 +124,6 @@ def beta(a, b, size=None):
     return call_origin(numpy.random.beta, a, b, size)
 
 
-=======
->>>>>>> master
 def chisquare(df, size=None):
     """
     chisquare(df, size=None)
@@ -255,8 +253,6 @@ def exponential(scale=1.0, size=None):
     return call_origin(numpy.random.exponential, scale, size)
 
 
-<<<<<<< HEAD
-=======
 def gamma(shape, scale=1.0, size=None):
     """Gamma distribution.
 
@@ -332,7 +328,6 @@ def gamma(shape, scale=1.0, size=None):
     return call_origin(numpy.random.gamma, shape, scale, size)
 
 
->>>>>>> master
 def rand(d0, *dn):
     """
     Create an array of the given shape and populate it
