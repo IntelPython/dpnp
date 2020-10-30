@@ -4,6 +4,7 @@ import dpnp.random
 import numpy
 # from scipy import stats
 from numpy.testing import assert_allclose
+import math
 
 
 @pytest.mark.parametrize("func",
@@ -168,3 +169,19 @@ def test_chisquare_invalid_df():
     df = -1  # positive `df` is expected
     with pytest.raises(ValueError):
         dpnp.random.chisquare(df, size)
+
+
+def test_check_moments_beta():
+    seed = 28041990
+    dpnp.random.seed(seed)
+    a = 2.56
+    b = 0.8
+
+    expected_mean = a / (a + b)
+    expected_var = (a * b) / ((a + b)**2 * (a + b + 1))
+
+    var = numpy.var(dpnp.random.beta(a=a, b=b, size=10**6))
+    mean = numpy.mean(dpnp.random.beta(a=a, b=b, size=10**6))
+
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
