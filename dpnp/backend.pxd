@@ -67,6 +67,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_FLOOR
         DPNP_FN_FLOOR_DIVIDE
         DPNP_FN_FMOD
+        DPNP_FN_GAMMA
         DPNP_FN_GAUSSIAN
         DPNP_FN_HYPOT
         DPNP_FN_INVERT
