@@ -44,15 +44,10 @@ from dpnp.random._random import *
 
 
 __all__ = [
-<<<<<<< HEAD
     'beta',
     'chisquare',
     'exponential',
-=======
-    'chisquare',
-    'exponential',
     'gamma',
->>>>>>> master
     'rand',
     'ranf',
     'randint',
@@ -66,7 +61,6 @@ __all__ = [
 ]
 
 
-<<<<<<< HEAD
 def beta(a, b, size=None):
     """Beta distribution.
 
