@@ -80,6 +80,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_CEIL,         /**< Used in numpy.ceil() implementation  */
     DPNP_FN_CHISQUARE,    /**< Used in numpy.random.chisquare() implementation  */
     DPNP_FN_COPYSIGN,     /**< Used in numpy.copysign() implementation  */
+    DPNP_FN_CORRELATE,    /**< Used in numpy.correlate() implementation  */
     DPNP_FN_COS,          /**< Used in numpy.cos() implementation  */
     DPNP_FN_COSH,         /**< Used in numpy.cosh() implementation  */
     DPNP_FN_COV,          /**< Used in numpy.cov() implementation  */
@@ -158,6 +159,7 @@ enum class DPNPFuncType : size_t
  * This operator is needed for compatibility with Cython 0.29 which has a bug in Enum handling
  * TODO needs to be deleted in future
  */
+INP_DLLEXPORT
 size_t operator-(DPNPFuncType lhs, DPNPFuncType rhs);
 
 /**

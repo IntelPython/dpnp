@@ -88,10 +88,10 @@ cpdef dparray dpnp_beta(double a, double b, size):
 
 cpdef dparray dpnp_chisquare(int df, size):
     """
-    Return a random matrix with data from the chi-square distribution.
+    Returns an array populated with samples from chi-square distribution.
 
     `dpnp_chisquare` generates a matrix filled with random floats sampled from a
-    univariate "chi-square" distribution for a given number of degrees of freedom.
+    univariate chi-square distribution for a given number of degrees of freedom.
 
     """
 
@@ -114,10 +114,10 @@ cpdef dparray dpnp_chisquare(int df, size):
 
 cpdef dparray dpnp_exponential(double beta, size):
     """
-    Return a random matrix with data from the "exponential" distribution.
+    Returns an array populated with samples from exponential distribution.
 
     `dpnp_exponential` generates a matrix filled with random floats sampled from a
-    univariate "exponential" distribution of `beta`.
+    univariate exponential distribution of `beta`.
 
     """
 
@@ -141,10 +141,10 @@ cpdef dparray dpnp_exponential(double beta, size):
 
 cpdef dparray dpnp_randn(dims):
     """
-    Return a random matrix with data from the "standard normal" distribution.
+    Returns an array populated with samples from standard normal distribution.
 
     `dpnp_randn` generates a matrix filled with random floats sampled from a
-    univariate "normal" (Gaussian) distribution of mean 0 and variance 1.
+    univariate normal (Gaussian) distribution of mean 0 and variance 1.
 
     """
     cdef double mean = 0.0
@@ -203,7 +203,7 @@ cpdef dpnp_srand(seed):
 
 cpdef dparray dpnp_uniform(long low, long high, size, dtype=numpy.int32):
     """
-    Return a random matrix with data from the uniform distribution.
+    Returns an array populated with samples from standard uniform distribution.
 
     Generates a matrix filled with random numbers sampled from a
     uniform distribution of the certain left (low) and right (high)

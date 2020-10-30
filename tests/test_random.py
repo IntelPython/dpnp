@@ -93,7 +93,7 @@ def test_randn_normal_distribution():
                           dpnp.random.rand],
                          ids=['random', 'random_sample',
                               'ranf', 'sample', 'rand'])
-def test_radnom_seed(func):
+def test_random_seed(func):
     seed = 28041990
     size = 100
     shape = (100, 1)
@@ -121,6 +121,30 @@ def test_random_seed_beta():
     assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
+def test_random_seed_chisquare():
+    seed = 28041990
+    size = 100
+    df = 3  # number of degrees of freedom
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.chisquare(df, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.chisquare(df, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_random_seed_exponential():
+    seed = 28041990
+    size = 100
+    scale = 3  # number of degrees of freedom
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.exponential(scale, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.exponential(scale, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
 def test_invalid_args_beta():
     size = 10
     a = 3.0   # OK
@@ -133,42 +157,18 @@ def test_invalid_args_beta():
         dpnp.random.beta(a=a, b=b, size=size)
 
 
-def test_radnom_exponential_seed():
-    seed = 28041990
-    size = 100
-    scale = 3  # number of degrees of freedom
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.exponential(scale, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.exponential(scale, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_exponential_invalid_scale():
-    size = 10
-    scale = -1  # non-negative `scale` is expected
-    with pytest.raises(ValueError):
-        dpnp.random.exponential(scale, size)
-
-
-def test_radnom_chisquare_seed():
-    seed = 28041990
-    size = 100
-    df = 3  # number of degrees of freedom
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.chisquare(df, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.chisquare(df, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_chisquare_invalid_df():
+def test_invalid_args_chisquare():
     size = 10
     df = -1  # positive `df` is expected
     with pytest.raises(ValueError):
         dpnp.random.chisquare(df, size)
+
+
+def test_invalid_args_exponential():
+    size = 10
+    scale = -1  # non-negative `scale` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.exponential(scale, size)
 
 
 def test_check_moments_beta():
