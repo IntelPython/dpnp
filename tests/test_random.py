@@ -4,6 +4,7 @@ import dpnp.random
 import numpy
 # from scipy import stats
 from numpy.testing import assert_allclose
+import math
 
 
 @pytest.mark.parametrize("func",
@@ -167,3 +168,16 @@ def test_chisquare_invalid_df():
     df = -1  # positive `df` is expected
     with pytest.raises(ValueError):
         dpnp.random.chisquare(df, size)
+
+
+def test_check_moments_binomial():
+    seed = 28041990
+    dpnp.random.seed(seed)
+    n = 5
+    p = 0.8
+    expected_mean = n * p
+    expected_var = n * p * (1 - p)
+    var = numpy.var(dpnp.random.binomial(n=n, p=p, size=10**6))
+    mean = numpy.mean(dpnp.random.binomial(n=n, p=p, size=10**6))
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
