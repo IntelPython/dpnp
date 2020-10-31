@@ -25,11 +25,12 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+import os
 import inspect
-#from pprint import pprint
 
 name_dict = {}
 module_names_set = dict()
+extra_modules = ["fft", "linalg", "random", "char"]
 sep = ":"
 
 col0_width = 4
@@ -69,21 +70,27 @@ def print_footer():
 
     print_header_line()
 
+
 def add_symbol(item_name, module_name, item_val):
     if item_name not in name_dict.keys():
         name_dict[item_name] = dict()
+    if not name_dict[item_name].get(module_name, False):
+        name_dict[item_name][module_name] = str(item_val)
 
-    if module_name not in module_names_set.keys():
-        module_names_set[module_name] = 0
-    else:
-        module_names_set[module_name] += 1
+        if module_name not in module_names_set.keys():
+            module_names_set[module_name] = 0
+        else:
+            module_names_set[module_name] += 1
+#     else:
+#         print(f"item_name={item_name}, {name_dict[item_name][module_name]} replaced with {str(item_val)}")
 
-    name_dict[item_name][module_name] = str(item_val)
 
+def fill_data(module_name, module_obj, parent_module_name=""):
+    for item_name_raw, item_val in inspect.getmembers(module_obj):
+        if (item_name_raw[0] == "_"):
+            continue
 
-def fill_data(module_name, module_obj):
-
-    for item_name, item_val in inspect.getmembers(module_obj):
+        item_name = os.path.join(parent_module_name, item_name_raw)
         if getattr(item_val, '__call__', False):
             str_item = item_val
             try:
@@ -91,13 +98,18 @@ def fill_data(module_name, module_obj):
             except ValueError:
                 pass
             add_symbol(item_name, module_name, str_item)
-        elif isinstance(item_val, (tuple, list, float, int)):
-            add_symbol(item_name, module_name, item_val)
-        elif isinstance(item_val, str):
-            add_symbol(item_name, module_name, item_val.replace('\n', '').strip())
-        else:
-            add_symbol(item_name, module_name, type(item_val))
-            # print(f"Symbol {item_name} unrecognized. Symbol: {item_val}, type: {type(item_val)}")
+        elif inspect.ismodule(item_val):
+            if item_name in extra_modules:
+                fill_data(module_name, item_val, parent_module_name=item_name)
+            else:
+                print(f"IGNORED: {module_name}: module: {item_name}")
+#         elif isinstance(item_val, (tuple, list, float, int)):
+#             add_symbol(item_name, module_name, item_val)
+#         elif isinstance(item_val, str):
+#             add_symbol(item_name, module_name, item_val.replace('\n', '').strip())
+#         else:
+#             add_symbol(item_name, module_name, type(item_val))
+#             print(f"Symbol {item_name} unrecognized. Symbol: {item_val}, type: {type(item_val)}")
 
 
 def print_data():
