@@ -107,19 +107,18 @@ def beta(a, b, size=None):
     if not use_origin_backend(a):
         if size is None:
             size = 1
-        elif isinstance(size, tuple):
+        if isinstance(size, tuple):
             for dim in size:
                 if not isinstance(dim, int):
-                    checker_throw_value_error("beta", "type(dim)", type(dim), int)
+                    pass
         elif not isinstance(size, int):
-            checker_throw_value_error("beta", "type(size)", type(size), int)
-
-        if a <= 0:
-            checker_throw_value_error("beta", "a", a, "positive")
-        if b <= 0:
-            checker_throw_value_error("beta", "b", b, "positive")
-
-        return dpnp_beta(a, b, size)
+            pass
+        elif a <= 0:
+            pass
+        elif b <= 0:
+            pass
+        else:
+            return dpnp_beta(a, b, size)
 
     return call_origin(numpy.random.beta, a, b, size)
 
