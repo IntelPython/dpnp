@@ -557,14 +557,27 @@ tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_1
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_15_{axis=0, func='nanprod', keepdims=False, shape=(20, 30, 40), transpose_axes=False}::test_nansum_axis_transposed
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_9_{axis=0, func='nanprod', keepdims=True, shape=(2, 3, 4), transpose_axes=False}::test_nansum_all
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_9_{axis=0, func='nanprod', keepdims=True, shape=(2, 3, 4), transpose_axes=False}::test_nansum_axis_transposed
+tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_external_sum_axis
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_prod_all
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_prod_axis
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_prod_dtype
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all2
+tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all_keepdims
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all_transposed2
+tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axes
+tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axes2
+tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axes3
+tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axes4
+tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axis
+tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axis2
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axis_huge
+tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axis_transposed
+tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axis_transposed2
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_dtype
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_keepdims_and_dtype
+tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_keepdims_multiple_axes
+tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_out
+tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_out_wrong_shape
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim_with_discont
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_2dim_with_axis
@@ -2101,6 +2114,7 @@ tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_h
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_same_value
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_weights_basic
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_weights_mismatch
+tests/third_party/cupy/statistics_tests/test_meanvar.py::TestAverage::test_average_all
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_all_nan
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_float16
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_huge
