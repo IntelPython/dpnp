@@ -26,6 +26,8 @@ build:
       - DPCPPROOT
       - MKLROOT
       - TBBROOT
+      - DPSTL_USE_PARALLEL_POLICIES
+      - D_GLIBCXX_USE_TBB_PAR_BACKEND
 
 test:
     requires:
