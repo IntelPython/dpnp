@@ -637,7 +637,7 @@ def sum(x1, **kwargs):
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and len(kwargs) <= 1):
+    if (not use_origin_backend(x1) and is_x1_dparray and kwargs.pop('axis')):
         axis = kwargs.pop('axis') if len(kwargs) == 1 else None
 
         result = dpnp_sum(x1, axis)
