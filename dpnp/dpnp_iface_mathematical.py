@@ -637,8 +637,16 @@ def sum(x1, **kwargs):
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
-        return dpnp_sum(x1)
+    if (not use_origin_backend(x1) and is_x1_dparray):
+        axis = kwargs.get('axis')
+
+        result = dpnp_sum(x1, axis)
+
+        # scalar returned
+        if result.shape == (1,):
+            return result.dtype.type(result[0])
+
+        return result
 
     return call_origin(numpy.sum, x1, **kwargs)
 

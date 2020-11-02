@@ -205,7 +205,7 @@ cpdef dparray dpnp_subtract(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_SUBTRACT, x1, x2, x1.shape)
 
 
-cpdef dpnp_sum(dparray x1):
+cpdef dparray dpnp_sum_no_axis(dparray x1):
     """
     input:float64   : outout:float64   : name:sum
     input:float32   : outout:float32   : name:sum
@@ -221,7 +221,85 @@ cpdef dpnp_sum(dparray x1):
     """ Numpy interface inconsistency """
     return_type = numpy.dtype(numpy.int64) if (x1.dtype == numpy.int32) else x1.dtype
 
-    return return_type.type(result[0])
+    cdef dparray result_ = dparray((1,), dtype=return_type)
+    result_[0] = return_type.type(result)
+
+    return result_
+
+
+cpdef dparray dpnp_sum(dparray input, axis=None):
+    if axis is None:
+        return dpnp_sum_no_axis(input)
+
+    cdef long size_input = input.size
+    cdef dparray_shape_type shape_input = input.shape
+
+    return_type = numpy.int64 if input.dtype == numpy.int32 else input.dtype
+
+    axis_ = _object_to_tuple(axis)
+
+    output_shape = dparray(len(shape_input) - len(axis_), dtype=numpy.int64)
+    ind = 0
+    for id, shape_axis in enumerate(shape_input):
+        if id not in axis_:
+            output_shape[ind] = shape_axis
+            ind += 1
+
+    cdef long prod = 1
+    for i in range(len(output_shape)):
+        if output_shape[i] != 0:
+            prod *= output_shape[i]
+
+    result_array = [None] * prod
+    input_shape_offsets = [None] * len(shape_input)
+    acc = 1
+
+    for i in range(len(shape_input)):
+        ind = len(shape_input) - 1 - i
+        input_shape_offsets[ind] = acc
+        acc *= shape_input[ind]
+
+    output_shape_offsets = [None] * len(shape_input)
+    acc = 1
+
+    for i in range(len(output_shape)):
+        ind = len(output_shape) - 1 - i
+        output_shape_offsets[ind] = acc
+        acc *= output_shape[ind]
+        result_offsets = input_shape_offsets[:]  # need copy. not a reference
+    for i in axis_:
+        result_offsets[i] = 0
+
+    for source_idx in range(size_input):
+
+        # reconstruct x,y,z from linear source_idx
+        xyz = []
+        remainder = source_idx
+        for i in input_shape_offsets:
+            quotient, remainder = divmod(remainder, i)
+            xyz.append(quotient)
+
+        # extract result axis
+        result_axis = []
+        for idx, offset in enumerate(xyz):
+            if idx not in axis_:
+                result_axis.append(offset)
+
+        # Construct result offset
+        result_offset = 0
+        for i, result_axis_val in enumerate(result_axis):
+            result_offset += (output_shape_offsets[i] * result_axis_val)
+
+        input_elem = input.item(source_idx)
+        if result_array[result_offset] is None:
+            result_array[result_offset] = input_elem
+        else:
+            result_array[result_offset] += input_elem
+
+    dpnp_array = dpnp.array(result_array, dtype=input.dtype)
+    dpnp_result_array = dpnp_array.reshape(output_shape)
+    return dpnp_result_array
+
 
 
 cpdef dparray dpnp_trunc(dparray x1):

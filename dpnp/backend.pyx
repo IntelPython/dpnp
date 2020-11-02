@@ -48,6 +48,7 @@ __all__ = [
     "dpnp_init_val",
     "dpnp_matmul",
     "dpnp_queue_initialize",
+    "dpnp_queue_is_cpu",
     "dpnp_remainder"
 ]
 
@@ -213,6 +214,13 @@ cpdef dpnp_queue_initialize():
     # choose seed number as is in numpy
     seed_from_time = time(NULL)
     dpnp_srand_c(seed_from_time)
+
+
+cpdef dpnp_queue_is_cpu():
+    """Return 1 if current queue is CPU or HOST. Return 0 otherwise.
+
+    """
+    return dpnp_queue_is_cpu_c()
 
 
 """

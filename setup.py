@@ -164,9 +164,9 @@ if IS_WIN:
     _project_cmplr_flag_lib = ['/DLL']
     _project_cmplr_macro = [("_WIN", "1")]
     _project_rpath = []
-    # TODO obtain setuptools.compiler.buildline options line and replace /MD with /MT instead adding it
-    os.environ["CFLAGS"] = "/MT"
-    _sdl_cflags = ["-GS"]
+    # TODO this flag creates unexpected behavior during compilation, need to be fixed
+    # _sdl_cflags = ["-GS"]
+    _sdl_cflags = []
     _sdl_ldflags = ["-NXCompat", "-DynamicBase"]
 
 
@@ -290,7 +290,7 @@ dpnp_backend_c = [
             ],
             "include_dirs": _cmplr_include + _mathlib_include + _project_backend_dir + _dpctrl_include,
             "library_dirs": _mathlib_path + _omp_libpath + _dpctrl_libpath,
-            "runtime_library_dirs": _project_rpath + _mathlib_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath,
+            "runtime_library_dirs": [],  # _project_rpath + _mathlib_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath,
             "extra_preargs": _project_cmplr_flag_sycl + _sdl_cflags,
             "extra_link_preargs": _project_cmplr_flag_compatibility + _sdl_ldflags,
             "extra_link_postargs": _project_cmplr_flag_lib,
