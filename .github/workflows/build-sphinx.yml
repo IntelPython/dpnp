@@ -1,0 +1,31 @@
+name: sphinx
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-delpoy:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      # https://github.com/marketplace/actions/checkout
+      - uses: actions/checkout@v2
+      # https://github.com/marketplace/actions/setup-python
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+      - name: Install dependencies
+        run: pip install sphinx sphinx_rtd_theme
+      - name: Build Sphinx docs
+        run: make html
+        working-directory: docs
+      # https://github.com/marketplace/actions/github-pages-action
+      - name: Deploy
+        if: success()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          publish_branch: gh-pages
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/_build/html/
