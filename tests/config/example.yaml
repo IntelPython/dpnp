@@ -1,8 +1,0 @@
-# tests names for selecting/deselecting can be copied from pytest output
-select:
-  - tests/third_party/cupy/math_tests/test_hyperbolic.py # select 2 files
-  - tests/third_party/cupy/math_tests/test_matmul.py
-  - tests/third_party/cupy/math_tests/test_trigonometric.py::TestTrigonometric::test_cos # and one test from another file
-deselect:
-  - tests/third_party/cupy/math_tests/test_hyperbolic.py # deselect all tests from file
-  - tests/third_party/cupy/math_tests/test_matmul.py::TestMatmul_param_0_{shape_pair=((3, 2), (2, 4))}::test_operator_matmul # deselect one parameterized test

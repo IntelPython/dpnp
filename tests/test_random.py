@@ -4,6 +4,7 @@ import dpnp.random
 import numpy
 # from scipy import stats
 from numpy.testing import assert_allclose
+import math
 
 
 @pytest.mark.parametrize("func",
@@ -107,6 +108,19 @@ def test_random_seed(func):
     assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
+def test_random_seed_beta():
+    seed = 28041990
+    size = 100
+    a = 2.56
+    b = 0.8
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.beta(a, b, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.beta(a, b, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
 def test_random_seed_chisquare():
     seed = 28041990
     size = 100
@@ -131,6 +145,30 @@ def test_random_seed_exponential():
     assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
+def test_random_seed_gamma():
+    seed = 28041990
+    size = 100
+    shape = 3.0  # shape param for gamma distr
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.gamma(shape=shape, size=size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.gamma(shape=shape, size=size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_invalid_args_beta():
+    size = 10
+    a = 3.0   # OK
+    b = -1.0  # positive `b` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.beta(a=a, b=b, size=size)
+    a = -1.0  # positive `a` is expected
+    b = 3.0   # OK
+    with pytest.raises(ValueError):
+        dpnp.random.beta(a=a, b=b, size=size)
+
+
 def test_invalid_args_chisquare():
     size = 10
     df = -1  # positive `df` is expected
@@ -143,3 +181,43 @@ def test_invalid_args_exponential():
     scale = -1  # non-negative `scale` is expected
     with pytest.raises(ValueError):
         dpnp.random.exponential(scale, size)
+
+
+def test_invalid_args_gamma():
+    size = 10
+    shape = -1   # non-negative `shape` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.gamma(shape=shape, size=size)
+    shape = 1.0   # OK
+    scale = -1.0  # non-negative `shape` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.gamma(shape, scale, size)
+
+
+def test_check_moments_beta():
+    seed = 28041990
+    dpnp.random.seed(seed)
+    a = 2.56
+    b = 0.8
+
+    expected_mean = a / (a + b)
+    expected_var = (a * b) / ((a + b)**2 * (a + b + 1))
+
+    var = numpy.var(dpnp.random.beta(a=a, b=b, size=10**6))
+    mean = numpy.mean(dpnp.random.beta(a=a, b=b, size=10**6))
+
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
+def test_check_moments_gamma():
+    seed = 28041990
+    dpnp.random.seed(seed)
+    shape = 2.56
+    scale = 0.8
+    expected_mean = shape * scale
+    expected_var = shape * scale * scale
+    var = numpy.var(dpnp.random.gamma(shape=shape, scale=scale, size=10**6))
+    mean = numpy.mean(dpnp.random.gamma(shape=shape, scale=scale, size=10**6))
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)

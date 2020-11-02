@@ -147,7 +147,7 @@ INP_DLLEXPORT void custom_elemwise_absolute_c(void* array1_in, void* result1, si
  * @param [in]  size    Number of elements in input arrays.
  *
  */
-template <typename _DataType>
+template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
 INP_DLLEXPORT void dpnp_dot_c(void* array1, void* array2, void* result1, size_t size);
 
 /**
@@ -219,6 +219,22 @@ INP_DLLEXPORT void custom_argsort_c(void* array, void* result, size_t size);
  */
 template <typename _DataType>
 INP_DLLEXPORT void custom_sort_c(void* array, void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief correlate function
+ *
+ * @param [in]  array1_in   Input array 1.
+ *
+ * @param [in]  array2_in   Input array 2.
+ *
+ * @param [out] result      Output array.
+ *
+ * @param [in]  size        Number of elements in input arrays.
+ *
+ */
+template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
+INP_DLLEXPORT void dpnp_correlate_c(void* array1_in, void* array2_in, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API

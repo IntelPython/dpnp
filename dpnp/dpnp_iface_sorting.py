@@ -124,12 +124,12 @@ def argsort(in_array1, axis=-1, kind=None, order=None):
     return numpy.argsort(in_array1, axis, kind, order)
 
 
-def sort(in_array1, axis=-1, kind=None, order=None):
+def sort(x1, **kwargs):
     """
     Return a sorted copy of an array.
     Parameters
     ----------
-    a : array_like
+    x1 : array_like
         Array to be sorted.
     axis : int or None, optional
         Axis along which to sort. If None, the array is flattened before
@@ -243,17 +243,12 @@ def sort(in_array1, axis=-1, kind=None, order=None):
            ('Arthur', 1.8, 41)],
           dtype=[('name', '|S10'), ('height', '<f8'), ('age', '<i4')])
     """
+    if not use_origin_backend(x1) and not kwargs:
+        if not isinstance(x1, dparray):
+            pass
+        elif x1.ndim != 1:
+            pass
+        else:
+            return dpnp_sort(x1)
 
-    is_dparray1 = isinstance(in_array1, dparray)
-
-    if (not use_origin_backend(in_array1) and is_dparray1):
-        if axis != -1:
-            checker_throw_value_error("sort", "axis", axis, -1)
-        if kind is not None:
-            checker_throw_value_error("sort", "kind", type(kind), None)
-        if order is not None:
-            checker_throw_value_error("sort", "order", type(order), None)
-
-        return dpnp_sort(in_array1)
-
-    return numpy.sort(in_array1, axis, kind, order)
+    return call_origin(numpy.sort, x1, **kwargs)
