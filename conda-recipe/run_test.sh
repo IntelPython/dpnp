@@ -2,7 +2,7 @@
 
 # if ONEAPI_ROOT is specified (use all from it)
 if [ -n "${ONEAPI_ROOT}" ]; then
-    export DPCPPROOT=${ONEAPI_ROOT}/compiler/latest
+    export DPCPPROOT=/localdisk/opt/intel/oneapi_b10/compiler/2021.1-beta10
     # TODO uncomment when CI will be changed
     # export MKLROOT=${ONEAPI_ROOT}/mkl/latest
     export TBBROOT=${ONEAPI_ROOT}/tbb/latest
