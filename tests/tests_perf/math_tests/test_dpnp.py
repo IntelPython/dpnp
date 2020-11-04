@@ -12,7 +12,7 @@ def pytest_generate_tests(metafunc):
 class TestDPNP(DPNPTestPerfBase):
 
     @pytest.mark.parametrize("dtype", [numpy.float64, numpy.float32, numpy.int64, numpy.int32])
-    @pytest.mark.parametrize("size", [32, 64, 128, 256])
+    @pytest.mark.parametrize("size", [32, 64, 128, 256, 512, 1024])
     def test_matmul(self, lib, dtype, size):
         input1 = gen_array(lib, size * size, dtype=dtype, seed=self.seed).reshape((size, size))
         input2 = gen_array(lib, size * size, dtype=dtype, seed=self.seed).reshape((size, size))

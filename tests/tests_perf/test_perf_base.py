@@ -42,7 +42,7 @@ class DPNPTestPerfBase:
     
     @classmethod
     def setup_class(cls):
-        results_data = dict()
+        cls.results_data.clear()
 
 
     @classmethod
@@ -120,11 +120,11 @@ class DPNPTestPerfBase:
         for func_name, func_results in self.results_data.items():
             for dtype_id, dtype_results in func_results.items():
                 dtype_id_prn = dtype_id.__name__
+                graph_data = dict()
                 for lib_id, lib_results in dtype_results.items():
                     lib_id_prn = lib_id.__name__
                     
-                    axis_x_graph = list()
-                    axis_y_graph = list()
+                    graph_data[lib_id_prn] = {"x": list(), "y": list()}
                     for size, size_results in lib_results.items():
                         print(f"{func_name:{pw[0]}}", end=self.sep)
                         print(f"{dtype_id_prn:{pw[1]}}", end=self.sep)
@@ -139,17 +139,28 @@ class DPNPTestPerfBase:
                         print(f"{val_min:{pwn}.2e}", end=self.sep)
                         print(f"{val_max:{pwn}.2e}", end=self.sep)
                         
-                        axis_x_graph.append(size)
-                        axis_y_graph.append(val_median)
                         print()
 
-                    self.plot_graph(self, axis_x_graph, axis_y_graph, func_name=func_name)
+                        # prepare data for graphs
+                        graph_data[lib_id_prn]["x"].append(size)
+                        graph_data[lib_id_prn]["y"].append(val_median)
 
-    def plot_graph(self, axis_x, axis_y, func_name):
+                self.plot_graph(self, graph_data, func_name=func_name, lib=lib_id_prn, type=dtype_id_prn)
+
+    def plot_graph(self, graph_data, func_name, lib, type):
         """Plot graph with testing results from global data storage."""
         import matplotlib.pyplot as plt
         
-        plt.title(f"'{func_name}' time in (s)");
-        
-        plt.plot(axis_x, axis_y)
-        plt.savefig("dpnp_perf_" + func_name + ".jpg")
+        plt.suptitle(f"'{func_name}' time in (s)");
+        plt.title(f"for '{type}' data type");
+        plt.xlabel("number of elements")
+        plt.ylabel("time(s)")
+       
+        for lib_id, axis in graph_data.items():
+            plt.plot(axis["x"], axis["y"], label=lib_id, marker='.')
+
+        plt.legend()
+        plt.tight_layout()
+
+        plt.savefig("dpnp_perf_" + func_name + "_" + type + ".jpg", dpi=300)
+        plt.close()

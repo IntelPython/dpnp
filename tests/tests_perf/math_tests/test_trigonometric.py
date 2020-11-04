@@ -12,7 +12,7 @@ def pytest_generate_tests(metafunc):
 class TestDPNPTrigonometric(DPNPTestPerfBase):
     
     @pytest.mark.parametrize("dtype", [numpy.float64, numpy.float32, numpy.int64, numpy.int32])
-    @pytest.mark.parametrize("size", [32, 1024, 2048, 4096])
+    @pytest.mark.parametrize("size", [512, 1024, 2048, 4096, 8192, 16384, 32768, 262144])
     def test_cos(self, lib, dtype, size):
         input1 = gen_array(lib, size, dtype=dtype, seed=self.seed)
 
