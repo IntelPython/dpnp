@@ -101,8 +101,7 @@ def test_norm1():
         [1, 2],
         [1, 0]
     ]
-    # ords = [None, -numpy.Inf, -2, -1, 0, 1, 2, 3, numpy.Inf]
-    ords = [None]
+    ords = [None, -numpy.Inf, -2, -1, 0, 1, 2, 3, numpy.Inf]
     axis_ = [0, None]
     keepdims = [True, False]
     for array in arrays:
@@ -110,46 +109,59 @@ def test_norm1():
             for axis in axis_:
                 a = numpy.array(array)
                 ia = inp.array(a)
+                print('a = ', a)
+                print('axis = ', axis)
+                print('ord = ', ord)
                 result = inp.linalg.norm(ia, ord=ord, axis=axis)
+                print('result = ', result)
                 expected = numpy.linalg.norm(a, ord=ord, axis=axis)
+                print('expected = ', expected)
                 numpy.testing.assert_array_equal(expected, result)
 
 
-def test_norm2():
-    arrays = [
-        [[1, 0]],
-        [[1, 2]],
-        [[1, 0], [3, 0]],
-        [[1, 2], [3, 4]]
-    ]
-    # ords = [None, -numpy.Inf, -2, -1, 1, 2, numpy.Inf, 'fro', 'nuc']
-    ords = [None, 'fro']
-    axis_ = [(0, 1), None]
-    keepdims = [True, False]
-    for array in arrays:
-        for ord in ords:
-            for axis in axis_:
-                a = numpy.array(array)
-                ia = inp.array(a)
-                result = inp.linalg.norm(ia, ord=ord, axis=axis)
-                expected = numpy.linalg.norm(a, ord=ord, axis=axis)
-                numpy.testing.assert_array_equal(expected, result)
-
-
-def test_norm3():
-    arrays = [
-        [[[1, 2], [3, 4]], [[5, 6], [7, 8]]],
-        [[[1, 0], [3, 0]], [[5, 0], [7, 0]]]
-    ]
-    # ords = [None, -numpy.Inf, -2, -1, 0, 1, 2, 3, numpy.Inf]
-    ords = [None]
-    axis_ = [None, 0, 1, 2, (0, 1), (0, 2), (1, 2)]
-    keepdims = [True, False]
-    for array in arrays:
-        for ord in ords:
-            for axis in axis_:
-                a = numpy.array(array)
-                ia = inp.array(a)
-                result = inp.linalg.norm(ia, ord=ord, axis=axis)
-                expected = numpy.linalg.norm(a, ord=ord, axis=axis)
-                numpy.testing.assert_array_equal(expected, result)
+# def test_norm2():
+#     arrays = [
+#         [[1, 0]],
+#         [[1, 2]],
+#         [[1, 0], [3, 0]],
+#         [[1, 2], [3, 4]]
+#     ]
+#     ords = [None, -numpy.Inf, -2, -1, 1, 2, numpy.Inf, 'fro', 'nuc']
+#     axis_ = [(0, 1), None]
+#     keepdims = [True, False]
+#     for array in arrays:
+#         for ord in ords:
+#             for axis in axis_:
+#                 a = numpy.array(array)
+#                 ia = inp.array(a)
+#                 print('a = ', a)
+#                 print('axis = ', axis)
+#                 print('ord = ', ord)
+#                 result = inp.linalg.norm(ia, ord=ord, axis=axis)
+#                 print('result = ', result)
+#                 expected = numpy.linalg.norm(a, ord=ord, axis=axis)
+#                 print('expected = ', expected)
+#                 numpy.testing.assert_array_equal(expected, result)
+#
+#
+# def test_norm3():
+#     arrays = [
+#         [[[1, 2], [3, 4]], [[5, 6], [7, 8]]],
+#         [[[1, 0], [3, 0]], [[5, 0], [7, 0]]]
+#     ]
+#     ords = [None, -numpy.Inf, -2, -1, 0, 1, 2, 3, numpy.Inf]
+#     axis_ = [None, 0, 1, 2, (0, 1), (0, 2), (1, 2)]
+#     keepdims = [True, False]
+#     for array in arrays:
+#         for ord in ords:
+#             for axis in axis_:
+#                 a = numpy.array(array)
+#                 ia = inp.array(a)
+#                 print('a = ', a)
+#                 print('axis = ', axis)
+#                 print('ord = ', ord)
+#                 result = inp.linalg.norm(ia, ord=ord, axis=axis)
+#                 print('result = ', result)
+#                 expected = numpy.linalg.norm(a, ord=ord, axis=axis)
+#                 print('expected = ', expected)
+#                 numpy.testing.assert_array_equal(expected, result)

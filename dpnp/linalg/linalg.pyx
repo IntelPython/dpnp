@@ -116,7 +116,7 @@ cpdef dparray dpnp_matrix_rank(dparray input):
     return result
 
 
-cpdef dparray dpnp_norm(dparray input, ord=None, axis=None, keepdims=False):
+cpdef dparray dpnp_norm(dparray input, ord=None, axis=None):
     cdef long size_input = input.size
     cdef dparray_shape_type shape_input = input.shape
 
@@ -132,6 +132,26 @@ cpdef dparray dpnp_norm(dparray input, ord=None, axis=None, keepdims=False):
         axis_ = tuple([axis])
     else:
         axis_ = axis
+
+    if axis is None:
+        ndim = input.ndim
+        if ((ord is None)  or
+            (ord in ('f', 'fro') and ndim ==2) or
+            (ord == 2 and ndim == 1)):
+
+            input = input.ravel(order='K')
+            sqnorm = dpnp.dot(input, input)
+            ret = dpnp.sqrt(sqnorm)
+            return dpnp.array([ret], dtype=res_type)
+
+    len_axis = 1 if axis is None else len(axis_)
+    if len_axis == 1:
+        if ord == numpy.inf:
+            return dpnp.array([dpnp.abs(input).max(axis=axis_)])
+        elif ord == -numpy.inf:
+            return dpnp.array([dpnp.min(dpnp.abs(input), axis=axis_)])
+        elif ord == 0:
+            return dpnp.array([(input != 0).astype(input.real.dtype).sum(axis=axis)])
 
     if axis_ is None:
         output_shape = dparray(1, dtype=numpy.int64)

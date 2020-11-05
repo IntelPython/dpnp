@@ -263,12 +263,12 @@ def norm(input, ord=None, axis=None, keepdims=False):
     is_input_dparray = isinstance(input, dparray)
 
     if not use_origin_backend(input) and is_input_dparray:
-        # if ord is not None:
-        #     checker_throw_value_error("norm", "ord", type(ord), None)
         if keepdims is not False:
             checker_throw_value_error("norm", "keepdims", keepdims, False)
+        if not isinstance(axis, int) and not isinstance(axis, tuple) and axis is not None:
+            raise TypeError("'axis' must be None, an integer or a tuple of integers")
 
-        result = dpnp_norm(input, ord=ord, axis=axis, keepdims=keepdims)
+        result = dpnp_norm(input, ord=ord, axis=axis)
 
         # scalar returned
         if result.shape == (1,):
