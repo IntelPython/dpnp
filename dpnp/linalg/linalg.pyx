@@ -147,9 +147,9 @@ cpdef dparray dpnp_norm(dparray input, ord=None, axis=None):
     len_axis = 1 if axis is None else len(axis_)
     if len_axis == 1:
         if ord == numpy.inf:
-            return dpnp.array([dpnp.abs(input).max(axis=axis_)])
+            return dpnp.array([dpnp.abs(input).max(axis=axis)])
         elif ord == -numpy.inf:
-            return dpnp.array([dpnp.min(dpnp.abs(input), axis=axis_)])
+            return dpnp.array([dpnp.abs(input).min(axis=axis)])
         elif ord == 0:
             return dpnp.array([(input != 0).astype(input.real.dtype).sum(axis=axis)])
 
