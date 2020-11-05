@@ -109,10 +109,6 @@ def absolute(x1, **kwargs):
     if not use_origin_backend(x1) and is_input_dparray and x1.ndim != 0 and not kwargs:
         result = dpnp_absolute(x1)
 
-        # scalar returned
-        if result.shape == (1,):
-            return result.dtype.type(result[0])
-
         return result
 
     return call_origin(numpy.absolute, x1, **kwargs)
