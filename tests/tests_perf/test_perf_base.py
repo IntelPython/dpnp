@@ -31,7 +31,12 @@ import time
 
 import dpnp
 import numpy
+import pytest
 
+# def pytest_generate_tests(metafunc):
+#     metafunc.parametrize("lib", [numpy, dpnp], ids=["base", "DPNP"])
+
+@pytest.mark.parametrize("lib", [dpnp, numpy])
 class DPNPTestPerfBase:
     seed = 777
     repeat=15
@@ -145,9 +150,10 @@ class DPNPTestPerfBase:
                         graph_data[lib_id_prn]["x"].append(size)
                         graph_data[lib_id_prn]["y"].append(val_median)
 
-                self.plot_graph(self, graph_data, func_name=func_name, lib=lib_id_prn, type=dtype_id_prn)
+                self.plot_graph_2lines(self, graph_data, func_name=func_name, lib=lib_id_prn, type=dtype_id_prn)
+            self.plot_graph_ratio(self, func_name, func_results)
 
-    def plot_graph(self, graph_data, func_name, lib, type):
+    def plot_graph_2lines(self, graph_data, func_name, lib, type):
         """Plot graph with testing results from global data storage."""
         import matplotlib.pyplot as plt
         
@@ -155,12 +161,53 @@ class DPNPTestPerfBase:
         plt.title(f"for '{type}' data type");
         plt.xlabel("number of elements")
         plt.ylabel("time(s)")
-       
+        plt.grid(True)
+        
         for lib_id, axis in graph_data.items():
             plt.plot(axis["x"], axis["y"], label=lib_id, marker='.')
 
         plt.legend()
         plt.tight_layout()
 
-        plt.savefig("dpnp_perf_" + func_name + "_" + type + ".jpg", dpi=300)
+        plt.savefig("dpnp_perf_" + func_name + "_" + type + ".jpg", dpi=150)
+        plt.close()
+
+    def plot_graph_ratio(self, func_name, func_results):
+        """Plot graph with testing results from global data storage."""
+        import matplotlib.pyplot as plt
+        
+        fig, ax = plt.subplots()
+        plt.suptitle(f"Ratio for '{func_name}' time in (s)");
+        plt.xlabel("number of elements")
+        plt.ylabel("ratio")
+        ax.spines['bottom'].set_position(('data', 1))
+        ax.grid(True)
+        
+        for dtype_id, dtype_results in func_results.items():
+            dtype_id_prn = dtype_id.__name__
+
+            if (len(dtype_results.keys()) != 2):
+                raise ValueError("DPNP Performance test: expected only two libraries for this type of graph")
+
+            lib_id = list(dtype_results.keys())
+            plt.title(f"for '{lib_id[0].__name__}' / '{lib_id[1].__name__}'");
+
+            lib_results_0 = dtype_results[lib_id[0]]
+            lib_results_1 = dtype_results[lib_id[1]]
+
+            # import pdb; pdb.set_trace()
+            val_ratio_x = list()
+            val_ratio_y = list()
+            for size in lib_results_0.keys():
+                lib_results_0_median = statistics.median(lib_results_0[size])
+                lib_results_1_median = statistics.median(lib_results_1[size])
+                val_ratio_x.append(size)
+                val_ratio_y.append(lib_results_0_median / lib_results_1_median) 
+
+            plt.plot(val_ratio_x, val_ratio_y, label=dtype_id_prn, marker='.')
+        
+        ax.legend()
+        plt.tight_layout()
+
+        plt.savefig("dpnp_perf_ratio_" + func_name + ".jpg", dpi=150)
         plt.close()
