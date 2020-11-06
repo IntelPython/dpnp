@@ -50,6 +50,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_CBRT
         DPNP_FN_CEIL
         DPNP_FN_CHISQUARE
+        DPNP_FN_CHOLESKY
         DPNP_FN_COPYSIGN
         DPNP_FN_CORRELATE
         DPNP_FN_COS

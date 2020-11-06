@@ -34,6 +34,49 @@
 namespace mkl_blas = oneapi::mkl::blas::row_major;
 
 template <typename _DataType>
+class custom_cholesky_c_kernel;
+
+template <typename _DataType>
+void custom_cholesky_c(void* array1_in, void* result1, size_t* shape)
+{
+    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
+    _DataType* l_result = reinterpret_cast<_DataType*>(result1);
+
+    size_t n = shape[0];
+
+    l_result[0] = sqrt(array_1[0]);
+
+    for (size_t j = 1; j < n; j++)
+    {
+        l_result[j * n] = array_1[j * n]/l_result[0];
+    }
+
+    for (size_t i = 1; i < n; i++)
+    {
+        _DataType sum_val = 0;
+        for (size_t p = 0; p < i-1; p++)
+        {
+            sum_val += l_result[i * n + p - 1] * l_result[i * n + p - 1];
+        }
+        l_result[i * n + i - 1] = sqrt(array_1[i * n + i - 1]- sum_val);
+    }
+
+    for (size_t i = 1; i < n-1; i++)
+    {
+        for (size_t j = i; j < n; j++)
+        {
+            _DataType sum_val = 0;
+            for (size_t p = 0; p < i-1; p++)
+            {
+                sum_val += l_result[i * n + p - 1] * l_result[j * n + p - 1];
+            }
+            l_result[j * n + i - 1] = (1 / l_result[i * n + i - 1]) * (array_1[j * n + i - 1] - sum_val);
+        }
+    }
+    return;
+}
+
+template <typename _DataType>
 class custom_det_c_kernel;
 
 template <typename _DataType>
@@ -173,6 +216,11 @@ void custom_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t 
 
 void func_map_init_linalg_func(func_map_t& fmap)
 {
+    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_INT][eft_INT] = {eft_INT, (void*)custom_cholesky_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_cholesky_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_cholesky_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_cholesky_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_DET][eft_INT][eft_INT] = {eft_INT, (void*)custom_det_c<int>};
     fmap[DPNPFuncName::DPNP_FN_DET][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_det_c<long>};
     fmap[DPNPFuncName::DPNP_FN_DET][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_det_c<float>};

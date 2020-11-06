@@ -22,6 +22,14 @@ def vvsort(val, vec, size):
             vec[k, imax] = temp
 
 
+def test_cholesky():
+    a = numpy.array([[[1,-2],[2,5]]])
+    ia = inp.array(a)
+    result = inp.linalg.cholesky(ia)
+    expected = numpy.linalg.cholesky(a)
+    numpy.testing.assert_array_equal(expected, result)
+
+
 def test_det():
     arrays = [
         [[0, 0], [0, 0]],

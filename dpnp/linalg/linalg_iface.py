@@ -49,12 +49,44 @@ from dpnp.linalg.linalg import *
 
 
 __all__ = [
+    "cholesky",
     "det",
     "eig",
     "matrix_power",
     "matrix_rank",
     "multi_dot"
 ]
+
+
+def cholesky(input):
+    """
+    Cholesky decomposition.
+    Return the Cholesky decomposition, `L * L.H`, of the square matrix `input`,
+    where `L` is lower-triangular and .H is the conjugate transpose operator
+    (which is the ordinary transpose if `input` is real-valued).  `input` must be
+    Hermitian (symmetric if real-valued) and positive-definite. No
+    checking is performed to verify whether `a` is Hermitian or not.
+    In addition, only the lower-triangular and diagonal elements of `input`
+    are used. Only `L` is actually returned.
+    Parameters
+    ----------
+    input : (..., M, M) array_like
+        Hermitian (symmetric if all elements are real), positive-definite
+        input matrix.
+    Returns
+    -------
+    L : (..., M, M) array_like
+        Upper or lower-triangular Cholesky factor of `input`.  Returns a
+        matrix object if `input` is a matrix object.
+    """
+    is_input_dparray = isinstance(input, dparray)
+
+    if not use_origin_backend(input) and is_input_dparray and input.ndim == 2:
+        result = dpnp_cholesky(input)
+
+        return result
+
+    return call_origin(numpy.linalg.cholesky, input)
 
 
 def det(input):
