@@ -136,5 +136,6 @@ def gen_array_1d(lib, size, dtype=numpy.float64, low=None, high=None, seed=None)
 
     raise NotImplementedError(f"{lib.__name__} array generator not found.")
 
+
 def gen_array_2d(lib, size_x, size_y, dtype=numpy.float64, low=None, high=None, seed=None):
     return gen_array_1d(lib, size_x * size_y, dtype=dtype, low=low, high=high, seed=seed).reshape((size_x, size_y))

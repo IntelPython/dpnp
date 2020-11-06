@@ -65,8 +65,8 @@ __all__ += [
 ]
 
 
-ctypedef void(*fptr_custom_elemwise_absolute_1in_1out_t)(void * , void * , size_t)
-ctypedef void(*fptr_1in_2out_t)(void * , void * , void * , size_t)
+ctypedef void(*fptr_custom_elemwise_absolute_1in_1out_t)(void *, void * , size_t)
+ctypedef void(*fptr_1in_2out_t)(void *, void * , void * , size_t)
 
 
 cpdef dparray dpnp_absolute(dparray input):
@@ -79,7 +79,7 @@ cpdef dparray dpnp_absolute(dparray input):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ABSOLUTE, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(input_shape, dtype=result_type)
 
@@ -141,7 +141,7 @@ cpdef tuple dpnp_modf(dparray x1):
     """ get the FPTR data structure """
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MODF, param1_type, DPNP_FT_NONE)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     """ Create result arrays with type given by FPTR data """
     cdef dparray result1 = dparray(x1.shape, dtype=result_type)
     cdef dparray result2 = dparray(x1.shape, dtype=result_type)
@@ -299,7 +299,6 @@ cpdef dparray dpnp_sum(dparray input, axis=None):
     dpnp_array = dpnp.array(result_array, dtype=input.dtype)
     dpnp_result_array = dpnp_array.reshape(output_shape)
     return dpnp_result_array
-
 
 
 cpdef dparray dpnp_trunc(dparray x1):

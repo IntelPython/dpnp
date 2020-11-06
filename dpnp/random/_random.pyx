@@ -156,7 +156,7 @@ cpdef dparray dpnp_gamma(double shape, double scale, size):
     cdef DPNPFuncData kernel_data
     cdef fptr_custom_rng_gamma_c_1out_t func
 
-    if shape == 0.0 or scale==0.0:
+    if shape == 0.0 or scale == 0.0:
         result = dparray(size, dtype=dtype)
         result.fill(0.0)
     else:
