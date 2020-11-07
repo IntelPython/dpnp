@@ -28,6 +28,7 @@
 import os
 import statistics
 import time
+import warnings
 
 import dpnp
 import numpy
@@ -69,7 +70,7 @@ class DPNPTestPerfBase:
 
         self.results_data[name][dtype][lib][size] = result
 
-    def dpnp_benchmark(self, name, lib, dtype, size, *args, **kwargs):
+    def dpnp_benchmark(self, name, lib, dtype, size, *args, custom_fptr=None, **kwargs):
         """
         Test performance of specified function.
 
@@ -88,7 +89,10 @@ class DPNPTestPerfBase:
         kwargs : dict
             key word parameters of the function
         """
-        examine_function = getattr(lib, name)
+        if (custom_fptr is None):
+            examine_function = getattr(lib, name)
+        else:
+            examine_function = custom_fptr
 
         exec_times = []
         for iteration in range(self.repeat):
@@ -184,7 +188,9 @@ class DPNPTestPerfBase:
             dtype_id_prn = dtype_id.__name__
 
             if (len(dtype_results.keys()) != 2):
-                raise ValueError("DPNP Performance test: expected only two libraries for this type of graph")
+                warnings.warn(UserWarning("DPNP Performance test: expected two libraries only for this type of graph"))
+                plt.close()
+                return
 
             lib_id = list(dtype_results.keys())
             plt.title(f"for '{lib_id[0].__name__}' / '{lib_id[1].__name__}'")
