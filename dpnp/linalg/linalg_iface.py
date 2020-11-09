@@ -81,7 +81,8 @@ def cholesky(input):
     """
     is_input_dparray = isinstance(input, dparray)
 
-    if not use_origin_backend(input) and is_input_dparray and input.ndim == 2:
+    if not use_origin_backend(input) and is_input_dparray and input.ndim == 2 and \
+            input.shape[0] == input.shape[1] and input.shape[0] > 0:
         result = dpnp_cholesky(input)
 
         return result
