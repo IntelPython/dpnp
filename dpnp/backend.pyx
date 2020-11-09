@@ -65,6 +65,8 @@ include "backend_statistics.pyx"
 include "backend_trigonometric.pyx"
 
 
+ctypedef void(*fptr_dpnp_arange_t)(size_t, size_t, void * , size_t)
+
 cpdef dparray dpnp_arange(start, stop, step, dtype):
 
     if step is not 1:
@@ -74,10 +76,17 @@ cpdef dparray dpnp_arange(start, stop, step, dtype):
     if obj_len < 0:
         raise ValueError(f"DPNP dpnp_arange(): Negative array size (start={start},stop={stop},step={step})")
 
-    cdef dparray result = dparray(obj_len, dtype=dtype)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ARANGE, param1_type, param1_type)
 
-    for i in range(result.size):
-        result[i] = start + i
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray(obj_len, dtype=result_type)
+
+    # for i in range(result.size):
+    #     result[i] = start + i
+
+    cdef fptr_dpnp_arange_t func = <fptr_dpnp_arange_t > kernel_data.ptr
+    func(start, step, result.get_data(), result.size)
 
     return result
 
