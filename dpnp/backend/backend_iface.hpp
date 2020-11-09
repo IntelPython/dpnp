@@ -240,6 +240,20 @@ INP_DLLEXPORT void custom_sort_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of cholesky function
+ *
+ * @param [in]  array   Input array with data.
+ *
+ * @param [out] result  Output array.
+ *
+ * @param [in]  shape   Shape of input array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_cholesky_c(void* array1_in, void* result1, size_t* shape);
+
+/**
+ * @ingroup BACKEND_API
  * @brief correlate function
  *
  * @param [in]  array1_in   Input array 1.
