@@ -360,6 +360,7 @@
 <span class="c1"># numpy.empty(shape, dtype=float, order=&#39;C&#39;)</span>
 <div class="viewcode-block" id="empty"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.empty">[docs]</a><span class="k">def</span> <span class="nf">empty</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return a new matrix of given shape and type, without initializing entries.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    shape : int or tuple of int</span>
@@ -370,15 +371,18 @@
 <span class="sd">        Whether to store multi-dimensional data in row-major</span>
 <span class="sd">        (C-style) or column-major (Fortran-style) order in</span>
 <span class="sd">        memory.</span>
+
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    empty_like, zeros</span>
+
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    `empty`, unlike `zeros`, does not set the matrix values to zero,</span>
 <span class="sd">    and may therefore be marginally faster.  On the other hand, it requires</span>
 <span class="sd">    the user to manually set all the values in the array, and should be</span>
 <span class="sd">    used with caution.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import numpy.matlib</span>
@@ -403,6 +407,7 @@
 <div class="viewcode-block" id="empty_like"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.empty_like">[docs]</a><span class="k">def</span> <span class="nf">empty_like</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a new array with the same shape and type as a given array.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    prototype : array_like</span>
@@ -426,22 +431,26 @@
 <span class="sd">        dimensions is unchanged, will try to keep order, otherwise,</span>
 <span class="sd">        order=&#39;C&#39; is implied.</span>
 <span class="sd">        .. versionadded:: 1.17.0</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : ndarray</span>
 <span class="sd">        Array of uninitialized (arbitrary) data with the same</span>
 <span class="sd">        shape and type as `prototype`.</span>
+
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    ones_like : Return an array of ones with shape and type of input.</span>
 <span class="sd">    zeros_like : Return an array of zeros with shape and type of input.</span>
 <span class="sd">    full_like : Return a new array with shape of input filled with value.</span>
 <span class="sd">    empty : Return a new uninitialized array.</span>
+
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    This function does *not* initialize the returned array; to do that use</span>
 <span class="sd">    `zeros_like` or `ones_like` instead.  It may be marginally faster than</span>
 <span class="sd">    the functions that do set the array values.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; a = ([1,2,3], [4,5,6])                         # a is array-like</span>
@@ -472,6 +481,7 @@
 <div class="viewcode-block" id="full"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.full">[docs]</a><span class="k">def</span> <span class="nf">full</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a new array of given shape and type, filled with `fill_value`.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    shape : int or sequence of ints</span>
@@ -486,16 +496,19 @@
 <span class="sd">        (row- or column-wise) order in memory.</span>
 <span class="sd">    ${ARRAY_FUNCTION_LIKE}</span>
 <span class="sd">        .. versionadded:: 1.20.0</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : ndarray</span>
 <span class="sd">        Array of `fill_value` with the given shape, dtype, and order.</span>
+
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    full_like : Return a new array with shape of input filled with value.</span>
 <span class="sd">    empty : Return a new uninitialized array.</span>
 <span class="sd">    ones : Return a new array setting values to one.</span>
 <span class="sd">    zeros : Return a new array setting values to zero.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; np.full((2, 2), np.inf)</span>
@@ -524,6 +537,7 @@
 <div class="viewcode-block" id="full_like"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.full_like">[docs]</a><span class="k">def</span> <span class="nf">full_like</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a full array with the same shape and type as a given array.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : array_like</span>
@@ -547,16 +561,19 @@
 <span class="sd">        dimensions is unchanged, will try to keep order, otherwise,</span>
 <span class="sd">        order=&#39;C&#39; is implied.</span>
 <span class="sd">        .. versionadded:: 1.17.0</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : ndarray</span>
 <span class="sd">        Array of `fill_value` with the same shape and type as `a`.</span>
+
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    empty_like : Return an empty array with shape and type of input.</span>
 <span class="sd">    ones_like : Return an array of ones with shape and type of input.</span>
 <span class="sd">    zeros_like : Return an array of zeros with shape and type of input.</span>
 <span class="sd">    full : Return a new array of given shape filled with value.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; x = np.arange(6, dtype=int)</span>
@@ -643,6 +660,7 @@
 <div class="viewcode-block" id="ones_like"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.ones_like">[docs]</a><span class="k">def</span> <span class="nf">ones_like</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return an array of ones with the same shape and type as a given array.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : array_like</span>
@@ -666,16 +684,19 @@
 <span class="sd">        dimensions is unchanged, will try to keep order, otherwise,</span>
 <span class="sd">        order=&#39;C&#39; is implied.</span>
 <span class="sd">        .. versionadded:: 1.17.0</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : ndarray</span>
 <span class="sd">        Array of ones with the same shape and type as `a`.</span>
+
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    empty_like : Return an empty array with shape and type of input.</span>
 <span class="sd">    zeros_like : Return an array of zeros with shape and type of input.</span>
 <span class="sd">    full_like : Return a new array with shape of input filled with value.</span>
 <span class="sd">    ones : Return a new array setting values to one.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; x = np.arange(6)</span>
@@ -770,6 +791,7 @@
 <div class="viewcode-block" id="zeros_like"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.zeros_like">[docs]</a><span class="k">def</span> <span class="nf">zeros_like</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return an array of zeros with the same shape and type as a given array.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : array_like</span>
@@ -792,17 +814,21 @@
 <span class="sd">        Overrides the shape of the result. If order=&#39;K&#39; and the number of</span>
 <span class="sd">        dimensions is unchanged, will try to keep order, otherwise,</span>
 <span class="sd">        order=&#39;C&#39; is implied.</span>
+
 <span class="sd">        .. versionadded:: 1.17.0</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : ndarray</span>
 <span class="sd">        Array of zeros with the same shape and type as `a`.</span>
+
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    empty_like : Return an empty array with shape and type of input.</span>
 <span class="sd">    ones_like : Return an array of ones with shape and type of input.</span>
 <span class="sd">    full_like : Return a new array with shape of input filled with value.</span>
 <span class="sd">    zeros : Return a new array setting values to zero.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; x = np.arange(6)</span>

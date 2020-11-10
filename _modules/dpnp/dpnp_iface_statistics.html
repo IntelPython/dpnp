@@ -221,71 +221,75 @@
 
 <div class="viewcode-block" id="amax"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.amax">[docs]</a><span class="k">def</span> <span class="nf">amax</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the maximum of an array or maximum along an axis.</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        input : array_like</span>
-<span class="sd">            Input data.</span>
-<span class="sd">        axis : None or int or tuple of ints, optional</span>
-<span class="sd">            Axis or axes along which to operate.  By default, flattened input is</span>
-<span class="sd">            used.</span>
-<span class="sd">            .. versionadded:: 1.7.0</span>
-<span class="sd">            If this is a tuple of ints, the maximum is selected over multiple axes,</span>
-<span class="sd">            instead of a single axis or all the axes as before.</span>
-<span class="sd">        out : ndarray, optional</span>
-<span class="sd">            Alternative output array in which to place the result.  Must</span>
-<span class="sd">            be of the same shape and buffer length as the expected output.</span>
-<span class="sd">            See `ufuncs-output-type` for more details.</span>
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        amax : ndarray or scalar</span>
-<span class="sd">            Maximum of `a`. If `axis` is None, the result is a scalar value.</span>
-<span class="sd">            If `axis` is given, the result is an array of dimension</span>
-<span class="sd">            ``a.ndim - 1``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">    Return the maximum of an array or maximum along an axis.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    input : array_like</span>
+<span class="sd">        Input data.</span>
+<span class="sd">    axis : None or int or tuple of ints, optional</span>
+<span class="sd">        Axis or axes along which to operate.  By default, flattened input is</span>
+<span class="sd">        used.</span>
+<span class="sd">        .. versionadded:: 1.7.0</span>
+<span class="sd">        If this is a tuple of ints, the maximum is selected over multiple axes,</span>
+<span class="sd">        instead of a single axis or all the axes as before.</span>
+<span class="sd">    out : ndarray, optional</span>
+<span class="sd">        Alternative output array in which to place the result.  Must</span>
+<span class="sd">        be of the same shape and buffer length as the expected output.</span>
+<span class="sd">        See `ufuncs-output-type` for more details.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    amax : ndarray or scalar</span>
+<span class="sd">        Maximum of `a`. If `axis` is None, the result is a scalar value.</span>
+<span class="sd">        If `axis` is given, the result is an array of dimension</span>
+<span class="sd">        ``a.ndim - 1``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="amin"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.amin">[docs]</a><span class="k">def</span> <span class="nf">amin</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the minimum of an array or minimum along an axis.</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        input : array_like</span>
-<span class="sd">            Input data.</span>
-<span class="sd">        axis : None or int or tuple of ints, optional</span>
-<span class="sd">            Axis or axes along which to operate.  By default, flattened input is</span>
-<span class="sd">            used.</span>
-<span class="sd">            .. versionadded:: 1.7.0</span>
-<span class="sd">            If this is a tuple of ints, the minimum is selected over multiple axes,</span>
-<span class="sd">            instead of a single axis or all the axes as before.</span>
-<span class="sd">        out : ndarray, optional</span>
-<span class="sd">            Alternative output array in which to place the result.  Must</span>
-<span class="sd">            be of the same shape and buffer length as the expected output.</span>
-<span class="sd">            See `ufuncs-output-type` for more details.</span>
-<span class="sd">        keepdims : bool, optional</span>
-<span class="sd">            If this is set to True, the axes which are reduced are left</span>
-<span class="sd">            in the result as dimensions with size one. With this option,</span>
-<span class="sd">            the result will broadcast correctly against the input array.</span>
-<span class="sd">            If the default value is passed, then `keepdims` will not be</span>
-<span class="sd">            passed through to the `amin` method of sub-classes of</span>
-<span class="sd">            `ndarray`, however any non-default value will be.  If the</span>
-<span class="sd">            sub-class&#39; method does not implement `keepdims` any</span>
-<span class="sd">            exceptions will be raised.</span>
-<span class="sd">        initial : scalar, optional</span>
-<span class="sd">            The maximum value of an output element. Must be present to allow</span>
-<span class="sd">            computation on empty slice. See `~numpy.ufunc.reduce` for details.</span>
-<span class="sd">            .. versionadded:: 1.15.0</span>
-<span class="sd">        where : array_like of bool, optional</span>
-<span class="sd">            Elements to compare for the minimum. See `~numpy.ufunc.reduce`</span>
-<span class="sd">            for details.</span>
-<span class="sd">            .. versionadded:: 1.17.0</span>
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        amin : ndarray or scalar</span>
-<span class="sd">            Minimum of `input`. If `axis` is None, the result is a scalar value.</span>
-<span class="sd">            If `axis` is given, the result is an array of dimension</span>
-<span class="sd">            ``input.ndim - 1``.</span>
+<span class="sd">    Return the minimum of an array or minimum along an axis.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    input : array_like</span>
+<span class="sd">        Input data.</span>
+<span class="sd">    axis : None or int or tuple of ints, optional</span>
+<span class="sd">        Axis or axes along which to operate.  By default, flattened input is</span>
+<span class="sd">        used.</span>
+<span class="sd">        .. versionadded:: 1.7.0</span>
+<span class="sd">        If this is a tuple of ints, the minimum is selected over multiple axes,</span>
+<span class="sd">        instead of a single axis or all the axes as before.</span>
+<span class="sd">    out : ndarray, optional</span>
+<span class="sd">        Alternative output array in which to place the result.  Must</span>
+<span class="sd">        be of the same shape and buffer length as the expected output.</span>
+<span class="sd">        See `ufuncs-output-type` for more details.</span>
+<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">        If this is set to True, the axes which are reduced are left</span>
+<span class="sd">        in the result as dimensions with size one. With this option,</span>
+<span class="sd">        the result will broadcast correctly against the input array.</span>
+<span class="sd">        If the default value is passed, then `keepdims` will not be</span>
+<span class="sd">        passed through to the `amin` method of sub-classes of</span>
+<span class="sd">        `ndarray`, however any non-default value will be.  If the</span>
+<span class="sd">        sub-class&#39; method does not implement `keepdims` any</span>
+<span class="sd">        exceptions will be raised.</span>
+<span class="sd">    initial : scalar, optional</span>
+<span class="sd">        The maximum value of an output element. Must be present to allow</span>
+<span class="sd">        computation on empty slice. See `~numpy.ufunc.reduce` for details.</span>
+<span class="sd">        .. versionadded:: 1.15.0</span>
+<span class="sd">    where : array_like of bool, optional</span>
+<span class="sd">        Elements to compare for the minimum. See `~numpy.ufunc.reduce`</span>
+<span class="sd">        for details.</span>
+<span class="sd">        .. versionadded:: 1.17.0</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    amin : ndarray or scalar</span>
+<span class="sd">        Minimum of `input`. If `axis` is None, the result is a scalar value.</span>
+<span class="sd">        If `axis` is given, the result is an array of dimension</span>
+<span class="sd">        ``input.ndim - 1``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
@@ -597,28 +601,30 @@
 
 <div class="viewcode-block" id="max"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.max">[docs]</a><span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the maximum of an array or maximum along an axis.</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        input : array_like</span>
-<span class="sd">            Input data.</span>
-<span class="sd">        axis : None or int or tuple of ints, optional</span>
-<span class="sd">            Axis or axes along which to operate.  By default, flattened input is</span>
-<span class="sd">            used.</span>
-<span class="sd">            .. versionadded:: 1.7.0</span>
-<span class="sd">            If this is a tuple of ints, the maximum is selected over multiple axes,</span>
-<span class="sd">            instead of a single axis or all the axes as before.</span>
-<span class="sd">        out : ndarray, optional</span>
-<span class="sd">            Alternative output array in which to place the result.  Must</span>
-<span class="sd">            be of the same shape and buffer length as the expected output.</span>
-<span class="sd">            See `ufuncs-output-type` for more details.</span>
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        amax : ndarray or scalar</span>
-<span class="sd">            Maximum of `a`. If `axis` is None, the result is a scalar value.</span>
-<span class="sd">            If `axis` is given, the result is an array of dimension</span>
-<span class="sd">            ``a.ndim - 1``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">    Return the maximum of an array or maximum along an axis.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    input : array_like</span>
+<span class="sd">        Input data.</span>
+<span class="sd">    axis : None or int or tuple of ints, optional</span>
+<span class="sd">        Axis or axes along which to operate.  By default, flattened input is</span>
+<span class="sd">        used.</span>
+<span class="sd">        .. versionadded:: 1.7.0</span>
+<span class="sd">        If this is a tuple of ints, the maximum is selected over multiple axes,</span>
+<span class="sd">        instead of a single axis or all the axes as before.</span>
+<span class="sd">    out : ndarray, optional</span>
+<span class="sd">        Alternative output array in which to place the result.  Must</span>
+<span class="sd">        be of the same shape and buffer length as the expected output.</span>
+<span class="sd">        See `ufuncs-output-type` for more details.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    amax : ndarray or scalar</span>
+<span class="sd">        Maximum of `a`. If `axis` is None, the result is a scalar value.</span>
+<span class="sd">        If `axis` is given, the result is an array of dimension</span>
+<span class="sd">        ``a.ndim - 1``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dim_input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">ndim</span>
 
@@ -697,6 +703,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the median along the specified axis.</span>
 <span class="sd">    Returns the median of the array elements.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : array_like</span>
@@ -722,6 +729,7 @@
 <span class="sd">        in the result as dimensions with size one. With this option,</span>
 <span class="sd">        the result will broadcast correctly against the original `arr`.</span>
 <span class="sd">        .. versionadded:: 1.9.0</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    median : ndarray</span>
@@ -730,15 +738,18 @@
 <span class="sd">        ``np.float64``.  Otherwise, the data-type of the output is the</span>
 <span class="sd">        same as that of the input. If `out` is specified, that array is</span>
 <span class="sd">        returned instead.</span>
+
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    mean, percentile</span>
+
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    Given a vector ``V`` of length ``N``, the median of ``V`` is the</span>
 <span class="sd">    middle value of a sorted copy of ``V``, ``V_sorted`` - i</span>
 <span class="sd">    e., ``V_sorted[(N-1)/2]``, when ``N`` is odd, and the average of the</span>
 <span class="sd">    two middle values of ``V_sorted`` when ``N`` is even.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; a = np.array([[10, 7, 4], [3, 2, 1]])</span>
@@ -791,26 +802,28 @@
 
 <div class="viewcode-block" id="min"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.min">[docs]</a><span class="k">def</span> <span class="nf">min</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the minimum along a given axis.</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        input : array_like</span>
-<span class="sd">            Input data.</span>
-<span class="sd">        axis : None or int or tuple of ints, optional</span>
-<span class="sd">            Axis or axes along which to operate. By default, flattened input is used.</span>
-<span class="sd">            New in version 1.7.0.</span>
-<span class="sd">            If this is a tuple of ints, the minimum is selected over multiple axes,</span>
-<span class="sd">            instead of a single axis or all the axes as before.</span>
-<span class="sd">        out : ndarray, optional</span>
-<span class="sd">            Alternative output array in which to place the result. Must be of the</span>
-<span class="sd">            same shape and buffer length as the expected output.</span>
-<span class="sd">            See ufuncs-output-type for more details.</span>
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        m : ndarray, see dtype parameter above</span>
-<span class="sd">            Minimum of a. If axis is None, the result is a scalar value.</span>
-<span class="sd">            If axis is given, the result is an array of dimension a.ndim - 1.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">    Return the minimum along a given axis.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    input : array_like</span>
+<span class="sd">        Input data.</span>
+<span class="sd">    axis : None or int or tuple of ints, optional</span>
+<span class="sd">        Axis or axes along which to operate. By default, flattened input is used.</span>
+<span class="sd">        New in version 1.7.0.</span>
+<span class="sd">        If this is a tuple of ints, the minimum is selected over multiple axes,</span>
+<span class="sd">        instead of a single axis or all the axes as before.</span>
+<span class="sd">    out : ndarray, optional</span>
+<span class="sd">        Alternative output array in which to place the result. Must be of the</span>
+<span class="sd">        same shape and buffer length as the expected output.</span>
+<span class="sd">        See ufuncs-output-type for more details.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    m : ndarray, see dtype parameter above</span>
+<span class="sd">        Minimum of a. If axis is None, the result is a scalar value.</span>
+<span class="sd">        If axis is given, the result is an array of dimension a.ndim - 1.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dim_input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">ndim</span>
 

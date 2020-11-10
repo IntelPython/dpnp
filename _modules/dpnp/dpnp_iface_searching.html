@@ -212,6 +212,7 @@
 <div class="viewcode-block" id="argmax"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.argmax">[docs]</a><span class="k">def</span> <span class="nf">argmax</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the indices of the maximum values along an axis.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : array_like</span>
@@ -222,11 +223,13 @@
 <span class="sd">    out : array, optional</span>
 <span class="sd">        If provided, the result will be inserted into this array. It should</span>
 <span class="sd">        be of the appropriate shape and dtype.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    index_array : ndarray of ints</span>
 <span class="sd">        Array of indices into the array. It has the same shape as `a.shape`</span>
 <span class="sd">        with the dimension along `axis` removed.</span>
+
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    ndarray.argmax, argmin</span>
@@ -234,10 +237,12 @@
 <span class="sd">    unravel_index : Convert a flat index into an index tuple.</span>
 <span class="sd">    take_along_axis : Apply ``np.expand_dims(index_array, axis)``</span>
 <span class="sd">                      from argmax to an array as if by calling max.</span>
+
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    In case of multiple occurrences of the maximum values, the indices</span>
 <span class="sd">    corresponding to the first occurrence are returned.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; a = np.arange(6).reshape(2,3) + 10</span>
@@ -295,6 +300,7 @@
 <div class="viewcode-block" id="argmin"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.argmin">[docs]</a><span class="k">def</span> <span class="nf">argmin</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the indices of the minimum values along an axis.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : array_like</span>
@@ -305,11 +311,13 @@
 <span class="sd">    out : array, optional</span>
 <span class="sd">        If provided, the result will be inserted into this array. It should</span>
 <span class="sd">        be of the appropriate shape and dtype.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    index_array : ndarray of ints</span>
 <span class="sd">        Array of indices into the array. It has the same shape as `a.shape`</span>
 <span class="sd">        with the dimension along `axis` removed.</span>
+
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    ndarray.argmin, argmax</span>
@@ -317,10 +325,12 @@
 <span class="sd">    unravel_index : Convert a flat index into an index tuple.</span>
 <span class="sd">    take_along_axis : Apply ``np.expand_dims(index_array, axis)``</span>
 <span class="sd">                      from argmin to an array as if by calling min.</span>
+
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    In case of multiple occurrences of the minimum values, the indices</span>
 <span class="sd">    corresponding to the first occurrence are returned.</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; a = np.arange(6).reshape(2,3) + 10</span>
