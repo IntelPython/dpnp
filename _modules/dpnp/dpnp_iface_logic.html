@@ -1,0 +1,968 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dpnp.dpnp_iface_logic &mdash; dpnp 0.2 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../contents.html" class="icon icon-home" alt="Documentation Home"> dpnp
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">About dpnp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dpnp_api.html">DPNP API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">DPNP C++ backend API</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../contents.html">dpnp</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../contents.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>dpnp.dpnp_iface_logic</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for dpnp.dpnp_iface_logic</h1><div class="highlight"><pre>
+<span></span><span class="c1"># cython: language_level=3</span>
+<span class="c1"># distutils: language = c++</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># *****************************************************************************</span>
+<span class="c1"># Copyright (c) 2016-2020, Intel Corporation</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># Redistribution and use in source and binary forms, with or without</span>
+<span class="c1"># modification, are permitted provided that the following conditions are met:</span>
+<span class="c1"># - Redistributions of source code must retain the above copyright notice,</span>
+<span class="c1">#   this list of conditions and the following disclaimer.</span>
+<span class="c1"># - Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="c1">#   this list of conditions and the following disclaimer in the documentation</span>
+<span class="c1">#   and/or other materials provided with the distribution.</span>
+<span class="c1">#</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;</span>
+<span class="c1"># AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</span>
+<span class="c1"># IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE</span>
+<span class="c1"># ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE</span>
+<span class="c1"># LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR</span>
+<span class="c1"># CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF</span>
+<span class="c1"># SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS</span>
+<span class="c1"># INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN</span>
+<span class="c1"># CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)</span>
+<span class="c1"># ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF</span>
+<span class="c1"># THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="c1"># *****************************************************************************</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Interface of the Logic part of the DPNP</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">This module is a face or public interface file for the library</span>
+<span class="sd">it contains:</span>
+<span class="sd"> - Interface functions</span>
+<span class="sd"> - documentation for the functions</span>
+<span class="sd"> - The functions parameters check</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">dpnp</span>
+
+<span class="kn">from</span> <span class="nn">dpnp.backend</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">dpnp.dparray</span> <span class="kn">import</span> <span class="n">dparray</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;any&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;equal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;greater&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;greater_equal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;isclose&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;isfinite&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;isinf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;isnan&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;less&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;less_equal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;logical_and&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;logical_not&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;logical_or&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;logical_xor&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;not_equal&quot;</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="all"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.all">[docs]</a><span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test whether all array elements along a given axis evaluate to True.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : array_like</span>
+<span class="sd">        Input array or object that can be converted to an array.</span>
+<span class="sd">    axis : None or int or tuple of ints, optional</span>
+<span class="sd">        Axis or axes along which a logical AND reduction is performed.</span>
+<span class="sd">        The default (``axis=None``) is to perform a logical AND over all</span>
+<span class="sd">        the dimensions of the input array. `axis` may be negative, in</span>
+<span class="sd">        which case it counts from the last to the first axis.</span>
+
+<span class="sd">        .. versionadded:: 1.7.0</span>
+
+<span class="sd">        If this is a tuple of ints, a reduction is performed on multiple</span>
+<span class="sd">        axes, instead of a single axis or all the axes as before.</span>
+<span class="sd">    out : ndarray, optional</span>
+<span class="sd">        Alternate output array in which to place the result.</span>
+<span class="sd">        It must have the same shape as the expected output and its</span>
+<span class="sd">        type is preserved (e.g., if ``dtype(out)`` is float, the result</span>
+<span class="sd">        will consist of 0.0&#39;s and 1.0&#39;s). See `ufuncs-output-type` for more</span>
+<span class="sd">        details.</span>
+
+<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">        If this is set to True, the axes which are reduced are left</span>
+<span class="sd">        in the result as dimensions with size one. With this option,</span>
+<span class="sd">        the result will broadcast correctly against the input array.</span>
+
+<span class="sd">        If the default value is passed, then `keepdims` will not be</span>
+<span class="sd">        passed through to the `all` method of sub-classes of</span>
+<span class="sd">        `ndarray`, however any non-default value will be.  If the</span>
+<span class="sd">        sub-class&#39; method does not implement `keepdims` any</span>
+<span class="sd">        exceptions will be raised.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    all : ndarray, bool</span>
+<span class="sd">        A new boolean or array is returned unless `out` is specified,</span>
+<span class="sd">        in which case a reference to `out` is returned.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    ndarray.all : equivalent method</span>
+
+<span class="sd">    any : Test whether any element along a given axis evaluates to True.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Not a Number (NaN), positive infinity and negative infinity</span>
+<span class="sd">    evaluate to `True` because these are not equal to zero.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_dparray1</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">in_array1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_dparray1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">axis</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;out&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">out</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">keepdims</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;keepdims&quot;</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_all</span><span class="p">(</span><span class="n">in_array1</span><span class="p">)</span>
+
+        <span class="c1"># scalar returned</span>
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,):</span>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">all</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="any"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.any">[docs]</a><span class="k">def</span> <span class="nf">any</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test whether any array element along a given axis evaluates to True.</span>
+
+<span class="sd">    Returns single boolean unless `axis` is not ``None``</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : array_like</span>
+<span class="sd">        Input array or object that can be converted to an array.</span>
+<span class="sd">    axis : None or int or tuple of ints, optional</span>
+<span class="sd">        Axis or axes along which a logical OR reduction is performed.</span>
+<span class="sd">        The default (``axis=None``) is to perform a logical OR over all</span>
+<span class="sd">        the dimensions of the input array. `axis` may be negative, in</span>
+<span class="sd">        which case it counts from the last to the first axis.</span>
+
+<span class="sd">        .. versionadded:: 1.7.0</span>
+
+<span class="sd">        If this is a tuple of ints, a reduction is performed on multiple</span>
+<span class="sd">        axes, instead of a single axis or all the axes as before.</span>
+<span class="sd">    out : ndarray, optional</span>
+<span class="sd">        Alternate output array in which to place the result.  It must have</span>
+<span class="sd">        the same shape as the expected output and its type is preserved</span>
+<span class="sd">        (e.g., if it is of type float, then it will remain so, returning</span>
+<span class="sd">        1.0 for True and 0.0 for False, regardless of the type of `a`).</span>
+<span class="sd">        See `ufuncs-output-type` for more details.</span>
+
+<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">        If this is set to True, the axes which are reduced are left</span>
+<span class="sd">        in the result as dimensions with size one. With this option,</span>
+<span class="sd">        the result will broadcast correctly against the input array.</span>
+
+<span class="sd">        If the default value is passed, then `keepdims` will not be</span>
+<span class="sd">        passed through to the `any` method of sub-classes of</span>
+<span class="sd">        `ndarray`, however any non-default value will be.  If the</span>
+<span class="sd">        sub-class&#39; method does not implement `keepdims` any</span>
+<span class="sd">        exceptions will be raised.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    any : bool or ndarray</span>
+<span class="sd">        A new boolean or `ndarray` is returned unless `out` is specified,</span>
+<span class="sd">        in which case a reference to `out` is returned.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    ndarray.any : equivalent method</span>
+
+<span class="sd">    all : Test whether all elements along a given axis evaluate to True.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Not a Number (NaN), positive infinity and negative infinity evaluate</span>
+<span class="sd">    to `True` because these are not equal to zero.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_dparray1</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">in_array1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_dparray1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;any&quot;</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">axis</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;any&quot;</span><span class="p">,</span> <span class="s2">&quot;out&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">out</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">keepdims</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;any&quot;</span><span class="p">,</span> <span class="s2">&quot;keepdims&quot;</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_any</span><span class="p">(</span><span class="n">in_array1</span><span class="p">)</span>
+
+        <span class="c1"># scalar returned</span>
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,):</span>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">any</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="equal"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.equal">[docs]</a><span class="k">def</span> <span class="nf">equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return (x1 == x2) element-wise.</span>
+
+<span class="sd">    Unlike `numpy.equal`, this comparison is performed by first</span>
+<span class="sd">    stripping whitespace characters from the end of the string.  This</span>
+<span class="sd">    behavior is provided for backward-compatibility with numarray.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x1, x2 : array_like of str or unicode</span>
+<span class="sd">        Input arrays of the same shape.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : ndarray or bool</span>
+<span class="sd">        Output array of bools, or a single bool if x1 and x2 are scalars.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    not_equal, greater_equal, less_equal, greater, less</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>  <span class="c1"># hack to satisfy current test system requirements</span>
+        <span class="k">return</span> <span class="n">dpnp_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="nb">input</span> <span class="ow">in</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPNP equal(): Unsupported input=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">,</span> <span class="s2">&quot;array sizes&quot;</span><span class="p">,</span> <span class="n">x1</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">x2</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPNP equal(): Input types must be equal (</span><span class="si">{</span><span class="n">x1</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> != </span><span class="si">{</span><span class="n">x2</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">,</span> <span class="s2">&quot;array shapes&quot;</span><span class="p">,</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dpnp_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="greater"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.greater">[docs]</a><span class="k">def</span> <span class="nf">greater</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return (x1 &gt; x2) element-wise.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp_greater</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="greater_equal"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.greater_equal">[docs]</a><span class="k">def</span> <span class="nf">greater_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return (x1 &gt;= x2) element-wise.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp_greater_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="isclose"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.isclose">[docs]</a><span class="k">def</span> <span class="nf">isclose</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-05</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-08</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a boolean array where two arrays are element-wise equal within a tolerance.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>  <span class="c1"># hack to satisfy current test system requirements</span>
+        <span class="k">return</span> <span class="n">dpnp_isclose</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="p">,</span> <span class="n">equal_nan</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp_isclose</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="p">,</span> <span class="n">equal_nan</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="n">equal_nan</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="isfinite"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.isfinite">[docs]</a><span class="k">def</span> <span class="nf">isfinite</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test element-wise for finiteness (not infinity or not Not a Number).</span>
+
+<span class="sd">    The result is returned as a boolean array.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : array_like</span>
+<span class="sd">        Input values.</span>
+<span class="sd">    out : ndarray, None, or tuple of ndarray and None, optional</span>
+<span class="sd">        A location into which the result is stored. If provided, it must have</span>
+<span class="sd">        a shape that the inputs broadcast to. If not provided or None,</span>
+<span class="sd">        a freshly-allocated array is returned. A tuple (possible only as a</span>
+<span class="sd">        keyword argument) must have length equal to the number of outputs.</span>
+<span class="sd">    where : array_like, optional</span>
+<span class="sd">        This condition is broadcast over the input. At locations where the</span>
+<span class="sd">        condition is True, the `out` array will be set to the ufunc result.</span>
+<span class="sd">        Elsewhere, the `out` array will retain its original value.</span>
+<span class="sd">        Note that if an uninitialized `out` array is created via the default</span>
+<span class="sd">        ``out=None``, locations within it where the condition is False will</span>
+<span class="sd">        remain uninitialized.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        For other keyword-only arguments, see the</span>
+<span class="sd">        :ref:`ufunc docs &lt;ufuncs.kwargs&gt;`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y : ndarray, bool</span>
+<span class="sd">        True where ``x`` is not positive infinity, negative infinity,</span>
+<span class="sd">        or NaN; false otherwise.</span>
+<span class="sd">        This is a scalar if `x` is a scalar.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    isinf, isneginf, isposinf, isnan</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Not a Number, positive infinity and negative infinity are considered</span>
+<span class="sd">    to be non-finite.</span>
+
+<span class="sd">    NumPy uses the IEEE Standard for Binary Floating-Point for Arithmetic</span>
+<span class="sd">    (IEEE 754). This means that Not a Number is not equivalent to infinity.</span>
+<span class="sd">    Also that positive infinity is not equivalent to negative infinity. But</span>
+<span class="sd">    infinity is equivalent to positive infinity.  Errors result if the</span>
+<span class="sd">    second argument is also supplied when `x` is a scalar input, or if</span>
+<span class="sd">    first and second arguments have different shapes.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_dparray1</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">in_array1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_dparray1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;isfinite&quot;</span><span class="p">,</span> <span class="s2">&quot;out&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">out</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;isfinite&quot;</span><span class="p">,</span> <span class="s2">&quot;where&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp_isfinite</span><span class="p">(</span><span class="n">in_array1</span><span class="p">)</span>
+
+    <span class="n">input1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">in_array1</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_dparray1</span> <span class="k">else</span> <span class="n">in_array1</span>
+
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">input1</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">where</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="isinf"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.isinf">[docs]</a><span class="k">def</span> <span class="nf">isinf</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test element-wise for positive or negative infinity.</span>
+
+<span class="sd">    Returns a boolean array of the same shape as `x`, True where ``x ==</span>
+<span class="sd">    +/-inf``, otherwise False.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : array_like</span>
+<span class="sd">        Input values</span>
+<span class="sd">    out : ndarray, None, or tuple of ndarray and None, optional</span>
+<span class="sd">        A location into which the result is stored. If provided, it must have</span>
+<span class="sd">        a shape that the inputs broadcast to. If not provided or None,</span>
+<span class="sd">        a freshly-allocated array is returned. A tuple (possible only as a</span>
+<span class="sd">        keyword argument) must have length equal to the number of outputs.</span>
+<span class="sd">    where : array_like, optional</span>
+<span class="sd">        This condition is broadcast over the input. At locations where the</span>
+<span class="sd">        condition is True, the `out` array will be set to the ufunc result.</span>
+<span class="sd">        Elsewhere, the `out` array will retain its original value.</span>
+<span class="sd">        Note that if an uninitialized `out` array is created via the default</span>
+<span class="sd">        ``out=None``, locations within it where the condition is False will</span>
+<span class="sd">        remain uninitialized.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        For other keyword-only arguments, see the</span>
+<span class="sd">        :ref:`ufunc docs &lt;ufuncs.kwargs&gt;`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y : bool (scalar) or boolean ndarray</span>
+<span class="sd">        True where ``x`` is positive or negative infinity, false otherwise.</span>
+<span class="sd">        This is a scalar if `x` is a scalar.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    isneginf, isposinf, isnan, isfinite</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    NumPy uses the IEEE Standard for Binary Floating-Point for Arithmetic</span>
+<span class="sd">    (IEEE 754).</span>
+
+<span class="sd">    Errors result if the second argument is supplied when the first</span>
+<span class="sd">    argument is a scalar, or if the first and second arguments have</span>
+<span class="sd">    different shapes.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_dparray1</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">in_array1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_dparray1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;isinf&quot;</span><span class="p">,</span> <span class="s2">&quot;out&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">out</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;isinf&quot;</span><span class="p">,</span> <span class="s2">&quot;where&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp_isinf</span><span class="p">(</span><span class="n">in_array1</span><span class="p">)</span>
+
+    <span class="n">input1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">in_array1</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_dparray1</span> <span class="k">else</span> <span class="n">in_array1</span>
+
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">input1</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">where</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="isnan"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.isnan">[docs]</a><span class="k">def</span> <span class="nf">isnan</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test element-wise for NaN and return result as a boolean array.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : array_like</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    out : ndarray, None, or tuple of ndarray and None, optional</span>
+<span class="sd">        A location into which the result is stored. If provided, it must have</span>
+<span class="sd">        a shape that the inputs broadcast to. If not provided or None,</span>
+<span class="sd">        a freshly-allocated array is returned. A tuple (possible only as a</span>
+<span class="sd">        keyword argument) must have length equal to the number of outputs.</span>
+<span class="sd">    where : array_like, optional</span>
+<span class="sd">        This condition is broadcast over the input. At locations where the</span>
+<span class="sd">        condition is True, the `out` array will be set to the ufunc result.</span>
+<span class="sd">        Elsewhere, the `out` array will retain its original value.</span>
+<span class="sd">        Note that if an uninitialized `out` array is created via the default</span>
+<span class="sd">        ``out=None``, locations within it where the condition is False will</span>
+<span class="sd">        remain uninitialized.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        For other keyword-only arguments, see the</span>
+<span class="sd">        :ref:`ufunc docs &lt;ufuncs.kwargs&gt;`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y : ndarray or bool</span>
+<span class="sd">        True where ``x`` is NaN, false otherwise.</span>
+<span class="sd">        This is a scalar if `x` is a scalar.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    isinf, isneginf, isposinf, isfinite, isnat</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    NumPy uses the IEEE Standard for Binary Floating-Point for Arithmetic</span>
+<span class="sd">    (IEEE 754). This means that Not a Number is not equivalent to infinity.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_dparray1</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">in_array1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_dparray1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;isnan&quot;</span><span class="p">,</span> <span class="s2">&quot;out&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">out</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;isnan&quot;</span><span class="p">,</span> <span class="s2">&quot;where&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp_isnan</span><span class="p">(</span><span class="n">in_array1</span><span class="p">)</span>
+
+    <span class="n">input1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">in_array1</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_dparray1</span> <span class="k">else</span> <span class="n">in_array1</span>
+
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">input1</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">where</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="less"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.less">[docs]</a><span class="k">def</span> <span class="nf">less</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return (x1 &lt; x2) element-wise.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp_less</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="less_equal"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.less_equal">[docs]</a><span class="k">def</span> <span class="nf">less_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return (x1 &lt;= x2) element-wise.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">less_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp_less_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">less_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="logical_and"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.logical_and">[docs]</a><span class="k">def</span> <span class="nf">logical_and</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the truth value of x1 AND x2 element-wise.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x1, x2 : array_like</span>
+<span class="sd">        Input arrays. If ``x1.shape != x2.shape``, they must be broadcastable to a common shape (which becomes the shape of the output).</span>
+<span class="sd">    out : ndarray, None, or tuple of ndarray and None, optional</span>
+<span class="sd">        A location into which the result is stored. If provided, it must have</span>
+<span class="sd">        a shape that the inputs broadcast to. If not provided or None,</span>
+<span class="sd">        a freshly-allocated array is returned. A tuple (possible only as a</span>
+<span class="sd">        keyword argument) must have length equal to the number of outputs.</span>
+<span class="sd">    where : array_like, optional</span>
+<span class="sd">        This condition is broadcast over the input. At locations where the</span>
+<span class="sd">        condition is True, the `out` array will be set to the ufunc result.</span>
+<span class="sd">        Elsewhere, the `out` array will retain its original value.</span>
+<span class="sd">        Note that if an uninitialized `out` array is created via the default</span>
+<span class="sd">        ``out=None``, locations within it where the condition is False will</span>
+<span class="sd">        remain uninitialized.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        For other keyword-only arguments, see the</span>
+<span class="sd">        :ref:`ufunc docs &lt;ufuncs.kwargs&gt;`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y : ndarray or bool</span>
+<span class="sd">        Boolean result of the logical AND operation applied to the elements</span>
+<span class="sd">        of `x1` and `x2`; the shape is determined by broadcasting.</span>
+<span class="sd">        This is a scalar if both `x1` and `x2` are scalars.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    logical_or, logical_not, logical_xor</span>
+<span class="sd">    bitwise_and</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_dparray1</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+    <span class="n">is_dparray2</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_dparray1</span> <span class="ow">and</span> <span class="n">is_dparray2</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;logical_and&quot;</span><span class="p">,</span> <span class="s2">&quot;out&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">out</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;logical_and&quot;</span><span class="p">,</span> <span class="s2">&quot;where&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp_logical_and</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="n">input1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_dparray1</span> <span class="k">else</span> <span class="n">x1</span>
+    <span class="n">input2</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_dparray1</span> <span class="k">else</span> <span class="n">x2</span>
+
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">input1</span><span class="p">,</span> <span class="n">input2</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">where</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="logical_not"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.logical_not">[docs]</a><span class="k">def</span> <span class="nf">logical_not</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the truth value of NOT x element-wise.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : array_like</span>
+<span class="sd">        Logical NOT is applied to the elements of `x`.</span>
+<span class="sd">    out : ndarray, None, or tuple of ndarray and None, optional</span>
+<span class="sd">        A location into which the result is stored. If provided, it must have</span>
+<span class="sd">        a shape that the inputs broadcast to. If not provided or None,</span>
+<span class="sd">        a freshly-allocated array is returned. A tuple (possible only as a</span>
+<span class="sd">        keyword argument) must have length equal to the number of outputs.</span>
+<span class="sd">    where : array_like, optional</span>
+<span class="sd">        This condition is broadcast over the input. At locations where the</span>
+<span class="sd">        condition is True, the `out` array will be set to the ufunc result.</span>
+<span class="sd">        Elsewhere, the `out` array will retain its original value.</span>
+<span class="sd">        Note that if an uninitialized `out` array is created via the default</span>
+<span class="sd">        ``out=None``, locations within it where the condition is False will</span>
+<span class="sd">        remain uninitialized.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        For other keyword-only arguments, see the</span>
+<span class="sd">        :ref:`ufunc docs &lt;ufuncs.kwargs&gt;`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y : bool or ndarray of bool</span>
+<span class="sd">        Boolean result with the same shape as `x` of the NOT operation</span>
+<span class="sd">        on elements of `x`.</span>
+<span class="sd">        This is a scalar if `x` is a scalar.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    logical_and, logical_or, logical_xor</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_dparray1</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_dparray1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;logical_not&quot;</span><span class="p">,</span> <span class="s2">&quot;out&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">out</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;logical_not&quot;</span><span class="p">,</span> <span class="s2">&quot;where&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp_logical_not</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+
+    <span class="n">input1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_dparray1</span> <span class="k">else</span> <span class="n">x1</span>
+
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">logical_not</span><span class="p">(</span><span class="n">input1</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">where</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="logical_or"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.logical_or">[docs]</a><span class="k">def</span> <span class="nf">logical_or</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the truth value of x1 OR x2 element-wise.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x1, x2 : array_like</span>
+<span class="sd">        Logical OR is applied to the elements of `x1` and `x2`.</span>
+<span class="sd">        If ``x1.shape != x2.shape``, they must be broadcastable to a common shape (which becomes the shape of the output).</span>
+<span class="sd">    out : ndarray, None, or tuple of ndarray and None, optional</span>
+<span class="sd">        A location into which the result is stored. If provided, it must have</span>
+<span class="sd">        a shape that the inputs broadcast to. If not provided or None,</span>
+<span class="sd">        a freshly-allocated array is returned. A tuple (possible only as a</span>
+<span class="sd">        keyword argument) must have length equal to the number of outputs.</span>
+<span class="sd">    where : array_like, optional</span>
+<span class="sd">        This condition is broadcast over the input. At locations where the</span>
+<span class="sd">        condition is True, the `out` array will be set to the ufunc result.</span>
+<span class="sd">        Elsewhere, the `out` array will retain its original value.</span>
+<span class="sd">        Note that if an uninitialized `out` array is created via the default</span>
+<span class="sd">        ``out=None``, locations within it where the condition is False will</span>
+<span class="sd">        remain uninitialized.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        For other keyword-only arguments, see the</span>
+<span class="sd">        :ref:`ufunc docs &lt;ufuncs.kwargs&gt;`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y : ndarray or bool</span>
+<span class="sd">        Boolean result of the logical OR operation applied to the elements</span>
+<span class="sd">        of `x1` and `x2`; the shape is determined by broadcasting.</span>
+<span class="sd">        This is a scalar if both `x1` and `x2` are scalars.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    logical_and, logical_not, logical_xor</span>
+<span class="sd">    bitwise_or</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_dparray1</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+    <span class="n">is_dparray2</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_dparray1</span> <span class="ow">and</span> <span class="n">is_dparray2</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;logical_or&quot;</span><span class="p">,</span> <span class="s2">&quot;out&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">out</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;logical_or&quot;</span><span class="p">,</span> <span class="s2">&quot;where&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp_logical_or</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="n">input1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_dparray1</span> <span class="k">else</span> <span class="n">x1</span>
+    <span class="n">input2</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_dparray1</span> <span class="k">else</span> <span class="n">x2</span>
+
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">input1</span><span class="p">,</span> <span class="n">input2</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">where</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="logical_xor"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.logical_xor">[docs]</a><span class="k">def</span> <span class="nf">logical_xor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the truth value of x1 XOR x2, element-wise.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x1, x2 : array_like</span>
+<span class="sd">        Logical XOR is applied to the elements of `x1` and `x2`. If ``x1.shape != x2.shape``, they must be broadcastable to a common shape (which becomes the shape of the output).</span>
+<span class="sd">    out : ndarray, None, or tuple of ndarray and None, optional</span>
+<span class="sd">        A location into which the result is stored. If provided, it must have</span>
+<span class="sd">        a shape that the inputs broadcast to. If not provided or None,</span>
+<span class="sd">        a freshly-allocated array is returned. A tuple (possible only as a</span>
+<span class="sd">        keyword argument) must have length equal to the number of outputs.</span>
+<span class="sd">    where : array_like, optional</span>
+<span class="sd">        This condition is broadcast over the input. At locations where the</span>
+<span class="sd">        condition is True, the `out` array will be set to the ufunc result.</span>
+<span class="sd">        Elsewhere, the `out` array will retain its original value.</span>
+<span class="sd">        Note that if an uninitialized `out` array is created via the default</span>
+<span class="sd">        ``out=None``, locations within it where the condition is False will</span>
+<span class="sd">        remain uninitialized.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        For other keyword-only arguments, see the</span>
+<span class="sd">        :ref:`ufunc docs &lt;ufuncs.kwargs&gt;`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y : bool or ndarray of bool</span>
+<span class="sd">        Boolean result of the logical XOR operation applied to the elements</span>
+<span class="sd">        of `x1` and `x2`; the shape is determined by broadcasting.</span>
+<span class="sd">        This is a scalar if both `x1` and `x2` are scalars.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    logical_and, logical_or, logical_not, bitwise_xor</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_dparray1</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+    <span class="n">is_dparray2</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_dparray1</span> <span class="ow">and</span> <span class="n">is_dparray2</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;logical_xor&quot;</span><span class="p">,</span> <span class="s2">&quot;out&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">out</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;logical_xor&quot;</span><span class="p">,</span> <span class="s2">&quot;where&quot;</span><span class="p">,</span> <span class="n">where</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp_logical_xor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="n">input1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_dparray1</span> <span class="k">else</span> <span class="n">x1</span>
+    <span class="n">input2</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_dparray1</span> <span class="k">else</span> <span class="n">x2</span>
+
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">logical_xor</span><span class="p">(</span><span class="n">input1</span><span class="p">,</span> <span class="n">input2</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">where</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="not_equal"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.not_equal">[docs]</a><span class="k">def</span> <span class="nf">not_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return (x1 != x2) element-wise.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">not_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp_not_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">not_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Intel
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

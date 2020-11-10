@@ -1,0 +1,879 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dpnp.dpnp_iface_mathematical &mdash; dpnp 0.2 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../contents.html" class="icon icon-home" alt="Documentation Home"> dpnp
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">About dpnp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dpnp_api.html">DPNP API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">DPNP C++ backend API</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../contents.html">dpnp</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../contents.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>dpnp.dpnp_iface_mathematical</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for dpnp.dpnp_iface_mathematical</h1><div class="highlight"><pre>
+<span></span><span class="c1"># cython: language_level=3</span>
+<span class="c1"># distutils: language = c++</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1"># *****************************************************************************</span>
+<span class="c1"># Copyright (c) 2016-2020, Intel Corporation</span>
+<span class="c1"># All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># Redistribution and use in source and binary forms, with or without</span>
+<span class="c1"># modification, are permitted provided that the following conditions are met:</span>
+<span class="c1"># - Redistributions of source code must retain the above copyright notice,</span>
+<span class="c1">#   this list of conditions and the following disclaimer.</span>
+<span class="c1"># - Redistributions in binary form must reproduce the above copyright notice,</span>
+<span class="c1">#   this list of conditions and the following disclaimer in the documentation</span>
+<span class="c1">#   and/or other materials provided with the distribution.</span>
+<span class="c1">#</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;</span>
+<span class="c1"># AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</span>
+<span class="c1"># IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE</span>
+<span class="c1"># ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE</span>
+<span class="c1"># LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR</span>
+<span class="c1"># CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF</span>
+<span class="c1"># SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS</span>
+<span class="c1"># INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN</span>
+<span class="c1"># CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)</span>
+<span class="c1"># ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF</span>
+<span class="c1"># THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="c1"># *****************************************************************************</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Interface of the Mathematical part of the DPNP</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">This module is a face or public interface file for the library</span>
+<span class="sd">it contains:</span>
+<span class="sd"> - Interface functions</span>
+<span class="sd"> - documentation for the functions</span>
+<span class="sd"> - The functions parameters check</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="kn">from</span> <span class="nn">dpnp.backend</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">dpnp.dparray</span> <span class="kn">import</span> <span class="n">dparray</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">dpnp</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;abs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;absolute&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;add&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ceil&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;copysign&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;divide&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fabs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;floor&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;floor_divide&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fmax&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fmin&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fmod&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;maximum&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;minimum&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mod&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;modf&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;multiply&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;negative&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;power&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;prod&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;remainder&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sign&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;subtract&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sum&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;true_divide&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;trunc&quot;</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="abs"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.abs">[docs]</a><span class="k">def</span> <span class="nf">abs</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the absolute value element-wise.</span>
+
+<span class="sd">    .. seealso:: :func:`numpy.add`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="absolute"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.absolute">[docs]</a><span class="k">def</span> <span class="nf">absolute</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the absolute value element-wise.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x1 : array_like</span>
+<span class="sd">        Input array.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    absolute : ndarray</span>
+<span class="sd">        An ndarray containing the absolute value of each element in x.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_input_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_input_dparray</span> <span class="ow">and</span> <span class="n">x1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_absolute</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">absolute</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="add"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.add">[docs]</a><span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add arguments element-wise.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        The &#39;out&#39; parameter is currently not supported.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x1  (dpnp.dparray): The left argument.</span>
+<span class="sd">        x2  (dpnp.dparray): The right argument.</span>
+<span class="sd">        out (dpnp.dparray): Output array.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dpnp.dparray: The sum of x1 and x2, element-wise.</span>
+<span class="sd">        This is a scalar if both x1 and x2 are scalars.</span>
+
+<span class="sd">    .. seealso:: :func:`numpy.add`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+    <span class="n">is_x2_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="n">is_x2_dparray</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="n">x1</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp_add</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">add</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ceil"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.ceil">[docs]</a><span class="k">def</span> <span class="nf">ceil</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute  the ceiling of the input, element-wise.</span>
+
+<span class="sd">    .. seealso:: :func:`numpy.ceil`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp_ceil</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">ceil</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="copysign"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.copysign">[docs]</a><span class="k">def</span> <span class="nf">copysign</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Change the sign of x1 to that of x2, element-wise.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x1 : array_like</span>
+<span class="sd">        Values to change the sign of.</span>
+<span class="sd">    x2 : array_like</span>
+<span class="sd">        The sign of x2 is copied to x1.</span>
+<span class="sd">    kwargs : dict</span>
+<span class="sd">        Remaining input parameters of the function.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out: ndarray or scalar</span>
+<span class="sd">        The values of x1 with the sign of x2.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">x1</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_copysign</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">copysign</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="divide"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.divide">[docs]</a><span class="k">def</span> <span class="nf">divide</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Divide arguments element-wise.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        The &#39;out&#39; parameter is currently not supported.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x1  (dpnp.dparray): The left argument.</span>
+<span class="sd">        x2  (dpnp.dparray): The right argument.</span>
+<span class="sd">        out (dpnp.dparray): Output array.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dpnp.dparray: The division of x1 and x2, element-wise.</span>
+<span class="sd">        This is a scalar if both x1 and x2 are scalars.</span>
+
+<span class="sd">    .. seealso:: :func:`numpy.divide`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+    <span class="n">is_x2_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="n">is_x2_dparray</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;divide&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="n">x1</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;divide&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp_divide</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">divide</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="fabs"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.fabs">[docs]</a><span class="k">def</span> <span class="nf">fabs</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the absolute values element-wise.</span>
+
+<span class="sd">    .. seealso:: :func:`numpy.fabs`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp_fabs</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fabs</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="floor"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.floor">[docs]</a><span class="k">def</span> <span class="nf">floor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the floor of the input, element-wise.</span>
+
+<span class="sd">    Some spreadsheet programs calculate the “floor-towards-zero”, in other words floor(-2.5) == -2.</span>
+<span class="sd">    dpNP instead uses the definition of floor where floor(-2.5) == -3.</span>
+
+<span class="sd">    .. seealso:: :func:`numpy.floor`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp_floor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">floor</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="floor_divide"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.floor_divide">[docs]</a><span class="k">def</span> <span class="nf">floor_divide</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the largest integer smaller or equal to the division of the inputs.</span>
+
+<span class="sd">    .. seealso:: :func:`numpy.floor_divide`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+    <span class="n">is_x2_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="n">is_x2_dparray</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_floor_divide</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">floor_divide</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="fmax"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.fmax">[docs]</a><span class="k">def</span> <span class="nf">fmax</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Element-wise maximum of array elements.</span>
+
+<span class="sd">    .. seealso:: :func:`numpy.fmax`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="fmin"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.fmin">[docs]</a><span class="k">def</span> <span class="nf">fmin</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Element-wise minimum of array elements.</span>
+
+<span class="sd">    .. seealso:: :func:`numpy.fmin`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="fmod"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.fmod">[docs]</a><span class="k">def</span> <span class="nf">fmod</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the element-wise remainder of division.</span>
+
+<span class="sd">    .. seealso:: :func:`numpy.fmod`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+    <span class="n">is_x2_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="c1"># &quot;dtype is None&quot; is important here because we have no kernels with runtime dependent output type</span>
+    <span class="c1"># kernels are (use &quot;python example4.py&quot; to investigate):</span>
+    <span class="c1"># input1:float64   : input2:float64   : output:float64   : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="c1"># input1:float64   : input2:float32   : output:float64   : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="c1"># input1:float64   : input2:int64     : output:float64   : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="c1"># input1:float64   : input2:int32     : output:float64   : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="c1"># input1:float64   : input2:bool      : output:float64   : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="c1"># input1:float32   : input2:float64   : output:float64   : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="c1"># input1:float32   : input2:float32   : output:float32   : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="c1"># input1:float32   : input2:int64     : output:float64   : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="c1"># input1:float32   : input2:int32     : output:float64   : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="c1"># input1:float32   : input2:bool      : output:float32   : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="c1"># input1:int64     : input2:float64   : output:float64   : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="c1"># input1:int64     : input2:float32   : output:float64   : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="c1"># input1:int64     : input2:int64     : output:int64     : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="c1"># input1:int64     : input2:int32     : output:int64     : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="c1"># input1:int64     : input2:bool      : output:int64     : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="c1"># input1:int32     : input2:float64   : output:float64   : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="c1"># input1:int32     : input2:float32   : output:float64   : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="c1"># input1:int32     : input2:int64     : output:int64     : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="c1"># input1:int32     : input2:int32     : output:int32     : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="c1"># input1:int32     : input2:bool      : output:int32     : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="c1"># input1:bool      : input2:float64   : output:float64   : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="c1"># input1:bool      : input2:float32   : output:float32   : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="c1"># input1:bool      : input2:int64     : output:int64     : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="c1"># input1:bool      : input2:int32     : output:int32     : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="c1"># input1:bool      : input2:bool      : output:int8      : name:&lt;ufunc &#39;fmod&#39;&gt;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="n">is_x2_dparray</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;fmod&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="n">x1</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;fmod&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp_fmod</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fmod</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="maximum"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.maximum">[docs]</a><span class="k">def</span> <span class="nf">maximum</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Element-wise maximum of array elements.</span>
+
+<span class="sd">    .. seealso:: :func:`numpy.maximum`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+    <span class="n">is_x2_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="n">is_x2_dparray</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;maximum&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="n">x1</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;maximum&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp_maximum</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">maximum</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="minimum"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.minimum">[docs]</a><span class="k">def</span> <span class="nf">minimum</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Element-wise minimum of array elements.</span>
+
+<span class="sd">    .. seealso:: :func:`numpy.minimum`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+    <span class="n">is_x2_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="n">is_x2_dparray</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;minimum&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="n">x1</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;minimum&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp_minimum</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">minimum</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mod"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.mod">[docs]</a><span class="k">def</span> <span class="nf">mod</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute element-wise remainder of division.</span>
+
+<span class="sd">    Alias for :func:`dpnp.remainder`</span>
+
+<span class="sd">    .. seealso:: :func:`numpy.mod`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">remainder</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="modf"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.modf">[docs]</a><span class="k">def</span> <span class="nf">modf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the fractional and integral parts of an array, element-wise.</span>
+
+<span class="sd">    The fractional and integral parts are negative if the given number is negative.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : array_like</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    kwargs : dict</span>
+<span class="sd">        Remaining input parameters of the function.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y1 : ndarray or scalar</span>
+<span class="sd">        Fractional part of x. This is a scalar if x is a scalar.</span>
+<span class="sd">    y2 : ndarray or scalar</span>
+<span class="sd">        Integral part of x. This is a scalar if x is a scalar.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    divmod</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_modf</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">modf</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="multiply"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.multiply">[docs]</a><span class="k">def</span> <span class="nf">multiply</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Multiply arguments element-wise.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        The &#39;out&#39; parameter is currently not supported.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x1  (dpnp.dparray): The left argument.</span>
+<span class="sd">        x2  (dpnp.dparray): The right argument.</span>
+<span class="sd">        out (dpnp.dparray): Output array.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dpnp.dparray: The product of x1 and x2, element-wise.</span>
+<span class="sd">        This is a scalar if both x1 and x2 are scalars.</span>
+
+<span class="sd">    .. seealso:: :func:`numpy.multiply`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+    <span class="n">is_x2_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="n">is_x2_dparray</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;multiply&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="n">x1</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;multiply&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp_multiply</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">multiply</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="negative"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.negative">[docs]</a><span class="k">def</span> <span class="nf">negative</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Negative element-wise.</span>
+
+<span class="sd">    .. seealso:: :func:`numpy.negative`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="n">is_x2_dparray</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp_negative</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">negative</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="power"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.power">[docs]</a><span class="k">def</span> <span class="nf">power</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    First array elements raised to powers from second array, element-wise.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        The &#39;out&#39; parameter is currently not supported.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x1  (dpnp.dparray): array.</span>
+<span class="sd">        x2  (dpnp.dparray): array.</span>
+<span class="sd">        out (dpnp.dparray): Output array.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dpnp.dparray: The bases in x1 raised to the exponents in x2.</span>
+<span class="sd">        This is a scalar if both x1 and x2 are scalars.</span>
+
+<span class="sd">    .. seealso:: :func:`numpy.power`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+    <span class="n">is_x2_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="n">is_x2_dparray</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;power&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="n">x1</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;power&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp_power</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">power</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="prod"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.prod">[docs]</a><span class="k">def</span> <span class="nf">prod</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate product of array elements over a given axis.</span>
+
+<span class="sd">    .. seealso:: :func:`numpy.prod`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp_prod</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="remainder"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.remainder">[docs]</a><span class="k">def</span> <span class="nf">remainder</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return element-wise remainder of division.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+    <span class="n">is_x2_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="n">is_x2_dparray</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;remainder&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="n">x1</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;remainder&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp_remainder</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">remainder</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="sign"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.sign">[docs]</a><span class="k">def</span> <span class="nf">sign</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the absolute values element-wise.</span>
+
+<span class="sd">    .. seealso:: :func:`numpy.sign`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp_sign</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sign</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="subtract"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.subtract">[docs]</a><span class="k">def</span> <span class="nf">subtract</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Subtract arguments, element-wise.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        The &#39;out&#39; parameter is currently not supported.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x1  (dpnp.dparray): array.</span>
+<span class="sd">        x2  (dpnp.dparray): array.</span>
+<span class="sd">        out (dpnp.dparray): Output array.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dpnp.dparray: The difference of x1 and x2, element-wise.</span>
+<span class="sd">        This is a scalar if both x1 and x2 are scalars.</span>
+
+<span class="sd">    .. seealso:: :func:`numpy.subtract`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+    <span class="n">is_x2_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="n">is_x2_dparray</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x2</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">bool</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+                <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;subtract&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="p">,</span> <span class="n">x1</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
+                <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;subtract&quot;</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">,</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">x2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">dpnp_subtract</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">subtract</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="sum"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.sum">[docs]</a><span class="k">def</span> <span class="nf">sum</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sum of array elements over a given axis.</span>
+
+<span class="sd">    .. seealso:: :func:`numpy.sum`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span><span class="p">):</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;axis&#39;</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_sum</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+
+        <span class="c1"># scalar returned</span>
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,):</span>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="true_divide"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.true_divide">[docs]</a><span class="k">def</span> <span class="nf">true_divide</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Provide a true division of the inputs, element-wise.</span>
+
+<span class="sd">    .. seealso:: :func:`numpy.true_divide`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="trunc"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.trunc">[docs]</a><span class="k">def</span> <span class="nf">trunc</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the truncated value of the input, element-wise.</span>
+
+<span class="sd">    .. seealso:: :func:`numpy.trunc`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp_trunc</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">trunc</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Intel
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
