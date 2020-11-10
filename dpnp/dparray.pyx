@@ -740,6 +740,7 @@ cdef class dparray:
         Return an ndarray of indices that sort the array along the
         specified axis.  Masked values are filled beforehand to
         `fill_value`.
+
         Parameters
         ----------
         axis : int, optional
@@ -766,19 +767,23 @@ cdef class dparray:
         fill_value : {var}, optional
             Value used internally for the masked values.
             If ``fill_value`` is not None, it supersedes ``endwith``.
+
         Returns
         -------
         index_array : ndarray, int
             Array of indices that sort `a` along the specified axis.
             In other words, ``a[index_array]`` yields a sorted `a`.
+
         See Also
         --------
         MaskedArray.sort : Describes sorting algorithms used.
         lexsort : Indirect stable sort with multiple keys.
         numpy.ndarray.sort : Inplace sort.
+
         Notes
         -----
         See `sort` for notes on the different sorting algorithms.
+
         Examples
         --------
         >>> a = np.ma.array([3,2,1], mask=[False, False, True])
