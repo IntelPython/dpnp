@@ -1,6 +1,0 @@
-﻿dpnp.random.random\_sample
-==========================
-
-.. currentmodule:: dpnp.random
-
-.. autofunction:: random_sample

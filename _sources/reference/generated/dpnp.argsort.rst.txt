@@ -1,6 +1,0 @@
-﻿dpnp.argsort
-============
-
-.. currentmodule:: dpnp
-
-.. autofunction:: argsort

@@ -1,6 +1,0 @@
-﻿dpnp.sign
-=========
-
-.. currentmodule:: dpnp
-
-.. autofunction:: sign

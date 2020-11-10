@@ -1,6 +1,0 @@
-﻿dpnp.tan
-========
-
-.. currentmodule:: dpnp
-
-.. autofunction:: tan

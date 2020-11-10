@@ -50,7 +50,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> dpnp
+            <a href="../../contents.html" class="icon icon-home" alt="Documentation Home"> dpnp
           
 
           
@@ -85,9 +85,11 @@
               
             
             
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../reference/index.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">C++ backend API Reference</a></li>
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">About dpnp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dpnp_api.html">DPNP API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">DPNP C++ backend API</a></li>
 </ul>
 
             
@@ -103,7 +105,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">dpnp</a>
+          <a href="../../contents.html">dpnp</a>
         
       </nav>
 
@@ -132,7 +134,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="../../contents.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
@@ -214,7 +216,7 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="copyto"><a class="viewcode-back" href="../../reference/generated/dpnp.copyto.html#dpnp.copyto">[docs]</a><span class="k">def</span> <span class="nf">copyto</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s1">&#39;same_kind&#39;</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="copyto"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.copyto">[docs]</a><span class="k">def</span> <span class="nf">copyto</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s1">&#39;same_kind&#39;</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Copies values from one array to another, broadcasting as necessary.</span>
 <span class="sd">    Raises a TypeError if the casting rule is violated, and if where is provided,</span>
@@ -275,7 +277,7 @@
     <span class="k">return</span> <span class="n">result</span></div>
 
 
-<div class="viewcode-block" id="moveaxis"><a class="viewcode-back" href="../../reference/generated/dpnp.moveaxis.html#dpnp.moveaxis">[docs]</a><span class="k">def</span> <span class="nf">moveaxis</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+<div class="viewcode-block" id="moveaxis"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.moveaxis">[docs]</a><span class="k">def</span> <span class="nf">moveaxis</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Move axes of an array to new positions. Other axes remain in their original order.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -318,7 +320,7 @@
     <span class="k">return</span> <span class="n">transpose</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">input_permute</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ravel"><a class="viewcode-back" href="../../reference/generated/dpnp.ravel.html#dpnp.ravel">[docs]</a><span class="k">def</span> <span class="nf">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="ravel"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.ravel">[docs]</a><span class="k">def</span> <span class="nf">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a contiguous flattened array.</span>
 
@@ -348,7 +350,7 @@
     <span class="k">return</span> <span class="n">nd2dp_array</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="repeat"><a class="viewcode-back" href="../../reference/generated/dpnp.repeat.html#dpnp.repeat">[docs]</a><span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">repeats</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="repeat"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.repeat">[docs]</a><span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">repeats</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Repeat elements of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -383,7 +385,7 @@
     <span class="k">return</span> <span class="n">result</span></div>
 
 
-<div class="viewcode-block" id="rollaxis"><a class="viewcode-back" href="../../reference/generated/dpnp.rollaxis.html#dpnp.rollaxis">[docs]</a><span class="k">def</span> <span class="nf">rollaxis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="rollaxis"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.rollaxis">[docs]</a><span class="k">def</span> <span class="nf">rollaxis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Roll the specified axis backwards, until it lies in a given position.</span>
 
@@ -426,7 +428,7 @@
     <span class="k">return</span> <span class="n">nd2dp_array</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="swapaxes"><a class="viewcode-back" href="../../reference/generated/dpnp.swapaxes.html#dpnp.swapaxes">[docs]</a><span class="k">def</span> <span class="nf">swapaxes</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">axis1</span><span class="p">,</span> <span class="n">axis2</span><span class="p">):</span>
+<div class="viewcode-block" id="swapaxes"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.swapaxes">[docs]</a><span class="k">def</span> <span class="nf">swapaxes</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">axis1</span><span class="p">,</span> <span class="n">axis2</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interchange two axes of an array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -451,7 +453,7 @@
     <span class="k">return</span> <span class="n">transpose</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">input_permute</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="transpose"><a class="viewcode-back" href="../../reference/generated/dpnp.transpose.html#dpnp.transpose">[docs]</a><span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="transpose"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.transpose">[docs]</a><span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reverse or permute the axes of an array; returns the modified array.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
