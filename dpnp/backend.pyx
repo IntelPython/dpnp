@@ -207,9 +207,9 @@ cpdef dparray dpnp_matmul(dparray in_array1, dparray in_array2):
 
 
 cpdef dpnp_queue_initialize():
-    """Initialize SYCL queue which will be used for any library operations
-    It takes visible time and needs to be done in the module loading procedure
-
+    """
+    Initialize SYCL queue which will be used for any library operations.
+    It takes visible time and needs to be done in the module loading procedure.
     """
     cdef time_t seed_from_time
     cdef QueueOptions queue_type = CPU_SELECTOR

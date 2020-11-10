@@ -167,10 +167,10 @@ def array(obj, dtype=None, copy=True, order='C', subok=False, ndmin=0):
     if copy is not True:
         checker_throw_value_error("array", "copy", copy, True)
 
-    if order is not 'C':
+    if order != 'C':
         checker_throw_value_error("array", "order", order, 'K')
 
-    if ndmin is not 0:
+    if ndmin != 0:
         checker_throw_value_error("array", "ndmin", ndmin, 0)
 
     return dpnp_array(obj, dtype)
@@ -204,6 +204,7 @@ def asarray(input, dtype=None, order='C'):
 # numpy.empty(shape, dtype=float, order='C')
 def empty(shape, dtype=numpy.float64, order='C'):
     """Return a new matrix of given shape and type, without initializing entries.
+
     Parameters
     ----------
     shape : int or tuple of int
@@ -214,15 +215,18 @@ def empty(shape, dtype=numpy.float64, order='C'):
         Whether to store multi-dimensional data in row-major
         (C-style) or column-major (Fortran-style) order in
         memory.
+
     See Also
     --------
     empty_like, zeros
+
     Notes
     -----
     `empty`, unlike `zeros`, does not set the matrix values to zero,
     and may therefore be marginally faster.  On the other hand, it requires
     the user to manually set all the values in the array, and should be
     used with caution.
+
     Examples
     --------
     >>> import numpy.matlib
@@ -247,6 +251,7 @@ def empty(shape, dtype=numpy.float64, order='C'):
 def empty_like(prototype, dtype=None, order='C', subok=False, shape=None):
     """
     Return a new array with the same shape and type as a given array.
+
     Parameters
     ----------
     prototype : array_like
@@ -270,22 +275,26 @@ def empty_like(prototype, dtype=None, order='C', subok=False, shape=None):
         dimensions is unchanged, will try to keep order, otherwise,
         order='C' is implied.
         .. versionadded:: 1.17.0
+
     Returns
     -------
     out : ndarray
         Array of uninitialized (arbitrary) data with the same
         shape and type as `prototype`.
+
     See Also
     --------
     ones_like : Return an array of ones with shape and type of input.
     zeros_like : Return an array of zeros with shape and type of input.
     full_like : Return a new array with shape of input filled with value.
     empty : Return a new uninitialized array.
+
     Notes
     -----
     This function does *not* initialize the returned array; to do that use
     `zeros_like` or `ones_like` instead.  It may be marginally faster than
     the functions that do set the array values.
+
     Examples
     --------
     >>> a = ([1,2,3], [4,5,6])                         # a is array-like
@@ -316,6 +325,7 @@ def empty_like(prototype, dtype=None, order='C', subok=False, shape=None):
 def full(shape, fill_value, dtype=None, order='C'):
     """
     Return a new array of given shape and type, filled with `fill_value`.
+
     Parameters
     ----------
     shape : int or sequence of ints
@@ -330,16 +340,19 @@ def full(shape, fill_value, dtype=None, order='C'):
         (row- or column-wise) order in memory.
     ${ARRAY_FUNCTION_LIKE}
         .. versionadded:: 1.20.0
+
     Returns
     -------
     out : ndarray
         Array of `fill_value` with the given shape, dtype, and order.
+
     See Also
     --------
     full_like : Return a new array with shape of input filled with value.
     empty : Return a new uninitialized array.
     ones : Return a new array setting values to one.
     zeros : Return a new array setting values to zero.
+
     Examples
     --------
     >>> np.full((2, 2), np.inf)
@@ -368,6 +381,7 @@ def full(shape, fill_value, dtype=None, order='C'):
 def full_like(prototype, fill_value, dtype=None, order='C', subok=False, shape=None):
     """
     Return a full array with the same shape and type as a given array.
+
     Parameters
     ----------
     a : array_like
@@ -391,16 +405,19 @@ def full_like(prototype, fill_value, dtype=None, order='C', subok=False, shape=N
         dimensions is unchanged, will try to keep order, otherwise,
         order='C' is implied.
         .. versionadded:: 1.17.0
+
     Returns
     -------
     out : ndarray
         Array of `fill_value` with the same shape and type as `a`.
+
     See Also
     --------
     empty_like : Return an empty array with shape and type of input.
     ones_like : Return an array of ones with shape and type of input.
     zeros_like : Return an array of zeros with shape and type of input.
     full : Return a new array of given shape filled with value.
+
     Examples
     --------
     >>> x = np.arange(6, dtype=int)
@@ -487,6 +504,7 @@ def ones(shape, dtype=None, order='C'):
 def ones_like(prototype, dtype=None, order='C', subok=False, shape=None):
     """
     Return an array of ones with the same shape and type as a given array.
+
     Parameters
     ----------
     a : array_like
@@ -510,16 +528,19 @@ def ones_like(prototype, dtype=None, order='C', subok=False, shape=None):
         dimensions is unchanged, will try to keep order, otherwise,
         order='C' is implied.
         .. versionadded:: 1.17.0
+
     Returns
     -------
     out : ndarray
         Array of ones with the same shape and type as `a`.
+
     See Also
     --------
     empty_like : Return an empty array with shape and type of input.
     zeros_like : Return an array of zeros with shape and type of input.
     full_like : Return a new array with shape of input filled with value.
     ones : Return a new array setting values to one.
+
     Examples
     --------
     >>> x = np.arange(6)
@@ -614,6 +635,7 @@ def zeros(shape, dtype=None, order='C'):
 def zeros_like(prototype, dtype=None, order='C', subok=False, shape=None):
     """
     Return an array of zeros with the same shape and type as a given array.
+
     Parameters
     ----------
     a : array_like
@@ -636,17 +658,21 @@ def zeros_like(prototype, dtype=None, order='C', subok=False, shape=None):
         Overrides the shape of the result. If order='K' and the number of
         dimensions is unchanged, will try to keep order, otherwise,
         order='C' is implied.
+
         .. versionadded:: 1.17.0
+
     Returns
     -------
     out : ndarray
         Array of zeros with the same shape and type as `a`.
+
     See Also
     --------
     empty_like : Return an empty array with shape and type of input.
     ones_like : Return an array of ones with shape and type of input.
     full_like : Return a new array with shape of input filled with value.
     zeros : Return a new array setting values to zero.
+
     Examples
     --------
     >>> x = np.arange(6)

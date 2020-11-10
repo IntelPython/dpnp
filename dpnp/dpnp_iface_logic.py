@@ -339,8 +339,7 @@ def isfinite(in_array1, out=None, where=True, **kwargs):
         ``out=None``, locations within it where the condition is False will
         remain uninitialized.
     **kwargs
-        For other keyword-only arguments, see the
-        :ref:`ufunc docs <ufuncs.kwargs>`.
+        For other keyword-only arguments.
 
     Returns
     -------
@@ -406,8 +405,7 @@ def isinf(in_array1, out=None, where=True, **kwargs):
         ``out=None``, locations within it where the condition is False will
         remain uninitialized.
     **kwargs
-        For other keyword-only arguments, see the
-        :ref:`ufunc docs <ufuncs.kwargs>`.
+        For other keyword-only arguments.
 
     Returns
     -------
@@ -466,8 +464,7 @@ def isnan(in_array1, out=None, where=True, **kwargs):
         ``out=None``, locations within it where the condition is False will
         remain uninitialized.
     **kwargs
-        For other keyword-only arguments, see the
-        :ref:`ufunc docs <ufuncs.kwargs>`.
+        For other keyword-only arguments.
 
     Returns
     -------
@@ -552,8 +549,7 @@ def logical_and(x1, x2, out=None, where=True, **kwargs):
         ``out=None``, locations within it where the condition is False will
         remain uninitialized.
     **kwargs
-        For other keyword-only arguments, see the
-        :ref:`ufunc docs <ufuncs.kwargs>`.
+        For other keyword-only arguments.
 
     Returns
     -------
@@ -607,8 +603,7 @@ def logical_not(x1, out=None, where=True, **kwargs):
         ``out=None``, locations within it where the condition is False will
         remain uninitialized.
     **kwargs
-        For other keyword-only arguments, see the
-        :ref:`ufunc docs <ufuncs.kwargs>`.
+        For other keyword-only arguments.
 
     Returns
     -------
@@ -660,8 +655,7 @@ def logical_or(x1, x2, out=None, where=True, **kwargs):
         ``out=None``, locations within it where the condition is False will
         remain uninitialized.
     **kwargs
-        For other keyword-only arguments, see the
-        :ref:`ufunc docs <ufuncs.kwargs>`.
+        For other keyword-only arguments.
 
     Returns
     -------
@@ -715,8 +709,7 @@ def logical_xor(x1, x2, out=None, where=True, **kwargs):
         ``out=None``, locations within it where the condition is False will
         remain uninitialized.
     **kwargs
-        For other keyword-only arguments, see the
-        :ref:`ufunc docs <ufuncs.kwargs>`.
+        For other keyword-only arguments.
 
     Returns
     -------
