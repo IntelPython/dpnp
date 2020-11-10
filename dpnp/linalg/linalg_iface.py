@@ -68,11 +68,13 @@ def cholesky(input):
     checking is performed to verify whether `a` is Hermitian or not.
     In addition, only the lower-triangular and diagonal elements of `input`
     are used. Only `L` is actually returned.
+
     Parameters
     ----------
     input : (..., M, M) array_like
         Hermitian (symmetric if all elements are real), positive-definite
         input matrix.
+
     Returns
     -------
     L : (..., M, M) array_like
@@ -93,10 +95,12 @@ def cholesky(input):
 def det(input):
     """
     Compute the determinant of an array.
+
     Parameters
     ----------
     input : (..., M, M) array_like
         Input array to compute determinants for.
+
     Returns
     -------
     det : (...) array_like
@@ -194,6 +198,7 @@ def matrix_rank(input, tol=None, hermitian=False):
         If True, `M` is assumed to be Hermitian (symmetric if real-valued),
         enabling a more efficient method for finding singular values.
         Defaults to False.
+
     Returns
     -------
     rank : (...) array_like
