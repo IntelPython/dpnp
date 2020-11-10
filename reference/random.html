@@ -1,0 +1,331 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Random Sampling (dpnp.random) &mdash; dpnp 0.2 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dpnp.random.rand" href="generated/dpnp.random.rand.html" />
+    <link rel="prev" title="Polynomials" href="polynomials.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> dpnp
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ufunc.html">Universal Functions (ufunc)</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="routines.html">Routines</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="creation.html">Array Creation Routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manipulation.html">Array Manipulation Routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="binary.html">Binary Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="linalg.html">Linear Algebra</a></li>
+<li class="toctree-l3"><a class="reference internal" href="logic.html">Logic Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="math.html">Mathematical Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pad.html">Padding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="polynomials.html">Polynomials</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#simple-random-data">Simple random data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#permutations">Permutations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#distributions">Distributions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#random-generator">Random generator</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="sorting.html">Sorting, Searching, and Counting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="statistics.html">Statistical Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../dpnp_backend_api.html">C++ backend API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">dpnp</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">API Reference</a> &raquo;</li>
+        
+          <li><a href="routines.html">Routines</a> &raquo;</li>
+        
+      <li>Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/reference/random.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <span class="target" id="module-dpnp.random"></span><div class="section" id="random-sampling-dpnp-random">
+<h1>Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)<a class="headerlink" href="#random-sampling-dpnp-random" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="simple-random-data">
+<h2>Simple random data<a class="headerlink" href="#simple-random-data" title="Permalink to this headline">¶</a></h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.rand.html#dpnp.random.rand" title="dpnp.random.rand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.random.rand</span></code></a></p></td>
+<td><p>Create an array of the given shape and populate it with random samples from a uniform distribution over [0, 1).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.randn.html#dpnp.random.randn" title="dpnp.random.randn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.random.randn</span></code></a></p></td>
+<td><p>If positive int_like arguments are provided, randn generates an array of shape (d0, d1, …, dn), filled with random floats sampled from a univariate “normal” (Gaussian) distribution of mean 0 and variance 1.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.randint.html#dpnp.random.randint" title="dpnp.random.randint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.random.randint</span></code></a></p></td>
+<td><p>Return random integers from <cite>low</cite> (inclusive) to <cite>high</cite> (exclusive).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.random_integers.html#dpnp.random.random_integers" title="dpnp.random.random_integers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.random.random_integers</span></code></a></p></td>
+<td><p>Random integers between <cite>low</cite> and <cite>high</cite>, inclusive.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.random_sample.html#dpnp.random.random_sample" title="dpnp.random.random_sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.random.random_sample</span></code></a></p></td>
+<td><p>Return random floats in the half-open interval [0.0, 1.0).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.random.html#dpnp.random.random" title="dpnp.random.random"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.random.random</span></code></a></p></td>
+<td><p>Return random floats in the half-open interval [0.0, 1.0).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.ranf.html#dpnp.random.ranf" title="dpnp.random.ranf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.random.ranf</span></code></a></p></td>
+<td><p>Return random floats in the half-open interval [0.0, 1.0).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.sample.html#dpnp.random.sample" title="dpnp.random.sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.random.sample</span></code></a></p></td>
+<td><p>Return random floats in the half-open interval [0.0, 1.0).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="permutations">
+<h2>Permutations<a class="headerlink" href="#permutations" title="Permalink to this headline">¶</a></h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+</tbody>
+</table>
+</div>
+<div class="section" id="distributions">
+<h2>Distributions<a class="headerlink" href="#distributions" title="Permalink to this headline">¶</a></h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.beta.html#dpnp.random.beta" title="dpnp.random.beta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.random.beta</span></code></a></p></td>
+<td><p>Beta distribution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.chisquare.html#dpnp.random.chisquare" title="dpnp.random.chisquare"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.random.chisquare</span></code></a></p></td>
+<td><p>Draw samples from a chi-square distribution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.exponential.html#dpnp.random.exponential" title="dpnp.random.exponential"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.random.exponential</span></code></a></p></td>
+<td><p>Exponential distribution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.random.gamma.html#dpnp.random.gamma" title="dpnp.random.gamma"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.random.gamma</span></code></a></p></td>
+<td><p>Gamma distribution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.uniform.html#dpnp.random.uniform" title="dpnp.random.uniform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.random.uniform</span></code></a></p></td>
+<td><p>Draw samples from a uniform distribution.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="random-generator">
+<h2>Random generator<a class="headerlink" href="#random-generator" title="Permalink to this headline">¶</a></h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.random.seed.html#dpnp.random.seed" title="dpnp.random.seed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.random.seed</span></code></a></p></td>
+<td><p>Reseed a legacy philox4x32x10 random number generator engine</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="generated/dpnp.random.rand.html" class="btn btn-neutral float-right" title="dpnp.random.rand" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="polynomials.html" class="btn btn-neutral float-left" title="Polynomials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Intel
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

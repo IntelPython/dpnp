@@ -1,0 +1,6 @@
+﻿dpnp.linalg.matrix\_power
+=========================
+
+.. currentmodule:: dpnp.linalg
+
+.. autofunction:: matrix_power

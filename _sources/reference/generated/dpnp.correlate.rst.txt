@@ -1,0 +1,6 @@
+﻿dpnp.correlate
+==============
+
+.. currentmodule:: dpnp
+
+.. autofunction:: correlate
