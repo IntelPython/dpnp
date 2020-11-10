@@ -167,10 +167,10 @@ def array(obj, dtype=None, copy=True, order='C', subok=False, ndmin=0):
     if copy is not True:
         checker_throw_value_error("array", "copy", copy, True)
 
-    if order is not 'C':
+    if order != 'C':
         checker_throw_value_error("array", "order", order, 'K')
 
-    if ndmin is not 0:
+    if ndmin != 0:
         checker_throw_value_error("array", "ndmin", ndmin, 0)
 
     return dpnp_array(obj, dtype)
