@@ -44,6 +44,7 @@ This modification add:
 """
 
 import os
+import sys
 
 from setuptools.command import build_clib
 from distutils import log
@@ -116,21 +117,37 @@ class custom_build_clib(build_clib.build_clib):
             """
             newer_than_lib = newer_group(objects, c_library_filename, missing="newer")
             if force_build or newer_than_lib:
-                self.compiler.link_shared_lib(objects,
-                                              lib_name,
-                                              output_dir=self.build_clib,
-                                              libraries=libraries,
-                                              library_dirs=library_dirs,
-                                              runtime_library_dirs=runtime_library_dirs,
-                                              extra_preargs=extra_preargs + extra_link_preargs,
-                                              extra_postargs=extra_link_postargs,
-                                              debug=self.debug,
-                                              build_temp=self.build_temp,
-                                              target_lang=language)
+                # TODO very brute way, need to refactor
+                if sys.platform in ['win32', 'cygwin']: # if IS_WIN:
+                    link_command = " ".join(compiler)
+                    link_command += " " + " ".join(default_flags)
+                    link_command += " " + " ".join(objects) # specify *.obj files
+                    link_command += " /link" # start linker options
+                    link_command += " " + " ".join(extra_link_preargs)
+                    link_command += " " + ".lib ".join(libraries) + ".lib" # libraries
+                    link_command += " /OUT:" + c_library_filename # output file name
+                    link_command += " " + " ".join(extra_link_postargs)
+                    print(link_command)
+                    os.system(link_command)
+                else:
+                    self.compiler.link_shared_lib(objects,
+                                                  lib_name,
+                                                  output_dir=self.build_clib,
+                                                  libraries=libraries,
+                                                  library_dirs=library_dirs,
+                                                  runtime_library_dirs=runtime_library_dirs,
+                                                  extra_preargs=extra_preargs + extra_link_preargs,
+                                                  extra_postargs=extra_link_postargs,
+                                                  debug=self.debug,
+                                                  build_temp=self.build_temp,
+                                                  target_lang=language)
 
             """
             Copy library to the destination path
             """
             copy_file(c_library_filename, dest_filename, verbose=self.verbose, dry_run=self.dry_run)
+            # TODO very brute way, need to refactor
+            if c_library_filename.endswith(".dll"):
+                copy_file(c_library_filename.replace(".dll", ".lib"), dest_filename, verbose=self.verbose, dry_run=self.dry_run)
 
             log.info(f"DPNP: building {lib_name} library finished")
