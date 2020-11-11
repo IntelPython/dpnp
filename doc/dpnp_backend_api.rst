@@ -4,4 +4,4 @@
 C++ backend API Reference
 *************************
 
-`DPNP C++ backend <https://intelpython.github.io/dpnp/backend_doc/>`_
+`DPNP C++ backend <backend_doc/>`_
