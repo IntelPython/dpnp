@@ -43,6 +43,13 @@ jobs:
       - name: Build docs
         run: ./0.builddoc.sh
         working-directory: doc
+      # https://github.com/marketplace/actions/doxygen-action
+      - name: Build backend docs
+        uses: mattnotmitt/doxygen-action@v1
+        with:
+            working-directory: 'dpnp/backend'
+      - name: Copy backend docs
+        run: cp -r docs/backend_doc doc/_build/html/
       # https://github.com/marketplace/actions/github-pages-action
       - name: Deploy docs
         uses: peaceiris/actions-gh-pages@v3
