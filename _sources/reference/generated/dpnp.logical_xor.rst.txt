@@ -1,0 +1,6 @@
+﻿dpnp.logical\_xor
+=================
+
+.. currentmodule:: dpnp
+
+.. autofunction:: logical_xor

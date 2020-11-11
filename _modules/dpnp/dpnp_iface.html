@@ -50,7 +50,7 @@
           
 
           
-            <a href="../../contents.html" class="icon icon-home" alt="Documentation Home"> dpnp
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> dpnp
           
 
           
@@ -85,11 +85,9 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../index.html">About dpnp</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../dpnp_api.html">DPNP API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">DPNP C++ backend API</a></li>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reference/index.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">C++ backend API Reference</a></li>
 </ul>
 
             
@@ -105,7 +103,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../contents.html">dpnp</a>
+          <a href="../../index.html">dpnp</a>
         
       </nav>
 
@@ -134,7 +132,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../contents.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
@@ -255,7 +253,7 @@
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__trigonometric</span>
 
 
-<div class="viewcode-block" id="array_equal"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.array_equal">[docs]</a><span class="k">def</span> <span class="nf">array_equal</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">array_equal</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;True if two arrays have the same shape and elements, False otherwise.</span>
 
 <span class="sd">    Parameters</span>
@@ -275,10 +273,10 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="asnumpy"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.asnumpy">[docs]</a><span class="k">def</span> <span class="nf">asnumpy</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">asnumpy</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Returns the NumPy array with input data.</span>
 
 <span class="sd">    Args:</span>
@@ -288,20 +286,20 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="get_include"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.get_include">[docs]</a><span class="k">def</span> <span class="nf">get_include</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">get_include</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the directory that contains the DPNP C++ backend \\*.h header files.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;backend&#39;</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">dpnp_path</span></div>
+    <span class="k">return</span> <span class="n">dpnp_path</span>
 
 
-<div class="viewcode-block" id="matmul"><a class="viewcode-back" href="../../dpnp_api.html#dpnp.matmul">[docs]</a><span class="k">def</span> <span class="nf">matmul</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">in_array2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="matmul"><a class="viewcode-back" href="../../reference/generated/dpnp.matmul.html#dpnp.matmul">[docs]</a><span class="k">def</span> <span class="nf">matmul</span><span class="p">(</span><span class="n">in_array1</span><span class="p">,</span> <span class="n">in_array2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the matrix product of two arrays and is the implementation of</span>
 <span class="sd">    the `@` operator introduced in Python 3.5 following PEP465.</span>

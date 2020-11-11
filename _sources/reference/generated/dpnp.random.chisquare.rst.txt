@@ -1,0 +1,6 @@
+﻿dpnp.random.chisquare
+=====================
+
+.. currentmodule:: dpnp.random
+
+.. autofunction:: chisquare
