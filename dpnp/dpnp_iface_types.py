@@ -46,7 +46,9 @@ __all__ = [
     "int",
     "int32",
     "int64",
+    "integer",
     "isscalar",
+    "nan",
     "newaxis"
 ]
 
@@ -61,6 +63,8 @@ float64 = numpy.float64
 int = numpy.int
 int32 = numpy.int32
 int64 = numpy.int64
+integer = numpy.integer
+nan = numpy.nan
 
 newaxis = None
 
