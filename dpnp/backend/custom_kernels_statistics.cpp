@@ -324,10 +324,13 @@ void custom_min_c(void* array1_in, void* result1, const size_t* shape, size_t nd
 
         size_t output_shape_offsets[res_ndim];
         acc = 1;
-        for (size_t i = res_ndim - 1; i > 0; --i)
+        if (res_ndim > 0)
         {
-            output_shape_offsets[i] = acc;
-            acc *= res_shape[i];
+            for (size_t i = res_ndim - 1; i > 0; --i)
+            {
+                output_shape_offsets[i] = acc;
+                acc *= res_shape[i];
+            }
         }
         output_shape_offsets[0] = acc;
 
