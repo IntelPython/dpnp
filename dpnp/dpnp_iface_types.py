@@ -54,9 +54,7 @@ __all__ = [
 
 bool = numpy.bool
 bool_ = numpy.bool_
-
 dtype = numpy.dtype
-
 float = numpy.float
 float32 = numpy.float32
 float64 = numpy.float64
@@ -64,9 +62,6 @@ int = numpy.int
 int32 = numpy.int32
 int64 = numpy.int64
 integer = numpy.integer
-nan = numpy.nan
-
-newaxis = None
 
 
 def isscalar(obj):
@@ -74,3 +69,7 @@ def isscalar(obj):
     Returns True if the type of `obj` is a scalar type.
     """
     return numpy.isscalar(obj)
+
+
+nan = numpy.nan
+newaxis = None
