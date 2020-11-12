@@ -157,12 +157,12 @@ except ImportError:
 
 # other OS specific
 if IS_WIN:
-    _project_compiler = "dpcpp"   # "clang-cl"
-    _project_linker = "lld-link"  # "dpcpp-cl"
+    _project_compiler = "dpcpp"
+    _project_linker = "lld-link"
     _project_cmplr_flag_sycl = []
     _project_cmplr_flag_compatibility = []
-    _project_cmplr_flag_lib = ['/DLL']
-    _project_cmplr_macro = [("_WIN", "1")]
+    _project_cmplr_flag_lib = ["/DLL"]
+    _project_cmplr_macro += [("_WIN", "1")]
     _project_rpath = []
     # TODO this flag creates unexpected behavior during compilation, need to be fixed
     # _sdl_cflags = ["-GS"]

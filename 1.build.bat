@@ -1,4 +1,6 @@
 
+CALL "1.env.bat"
+
 python setup.py clean
 python setup.py build_clib
 

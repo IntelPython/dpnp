@@ -13,10 +13,11 @@ def cos_2_args(input_A, input_B, lib):
     sincosA = sin_A * cos_B
     cos_A = lib.cos(input_A)
     sin_B = lib.sin(input_B)
-    sincosB =  cos_A * sin_B
+    sincosB = cos_A * sin_B
     result = sincosA + sincosB
 
     return result
+
 
 class TestDPNPTrigonometric(DPNPTestPerfBase):
 
@@ -39,5 +40,5 @@ class TestDPNPTrigonometric(DPNPTestPerfBase):
         """
         input1 = gen_array_1d(lib, size, dtype=dtype, seed=self.seed)
         input2 = gen_array_1d(lib, size, dtype=dtype, seed=self.seed)
-        
+
         self.dpnp_benchmark("cos_2_args", lib, dtype, input1.size, input1, input2, lib, custom_fptr=cos_2_args)

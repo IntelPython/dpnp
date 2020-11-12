@@ -48,25 +48,25 @@ void custom_cholesky_c(void* array1_in, void* result1, size_t* shape)
 
     for (size_t j = 1; j < n; j++)
     {
-        l_result[j * n] = array_1[j * n]/l_result[0];
+        l_result[j * n] = array_1[j * n] / l_result[0];
     }
 
     for (size_t i = 1; i < n; i++)
     {
         _DataType sum_val = 0;
-        for (size_t p = 0; p < i-1; p++)
+        for (size_t p = 0; p < i - 1; p++)
         {
             sum_val += l_result[i * n + p - 1] * l_result[i * n + p - 1];
         }
-        l_result[i * n + i - 1] = sqrt(array_1[i * n + i - 1]- sum_val);
+        l_result[i * n + i - 1] = sqrt(array_1[i * n + i - 1] - sum_val);
     }
 
-    for (size_t i = 1; i < n-1; i++)
+    for (size_t i = 1; i < n - 1; i++)
     {
         for (size_t j = i; j < n; j++)
         {
             _DataType sum_val = 0;
-            for (size_t p = 0; p < i-1; p++)
+            for (size_t p = 0; p < i - 1; p++)
             {
                 sum_val += l_result[i * n + p - 1] * l_result[j * n + p - 1];
             }

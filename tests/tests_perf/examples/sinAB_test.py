@@ -1,5 +1,6 @@
 import time
 
+
 def cos_2_args(executor, size, test_type):
     """ sin(A + B) = sin A cos B + cos A sin B """
 
@@ -17,7 +18,7 @@ def cos_2_args(executor, size, test_type):
 
     cos_A = executor.cos(input_A)
     sin_B = executor.sin(input_B)
-    sincosB =  cos_A * sin_B
+    sincosB = cos_A * sin_B
 
     result = sincosA + sincosB
 
@@ -28,8 +29,9 @@ def cos_2_args(executor, size, test_type):
 
     return result
 
+
 if __name__ == '__main__':
-    size = 33554432 #16777216
+    size = 33554432  # 16777216
 
     import dpnp
     cos_2_args(dpnp, size, dpnp.float64)

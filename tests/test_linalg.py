@@ -23,7 +23,7 @@ def vvsort(val, vec, size):
 
 
 def test_cholesky():
-    a = numpy.array([[[1,-2],[2,5]]])
+    a = numpy.array([[[1, -2], [2, 5]]])
     ia = inp.array(a)
     result = inp.linalg.cholesky(ia)
     expected = numpy.linalg.cholesky(a)
