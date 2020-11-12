@@ -53,7 +53,7 @@ ctypedef void(*custom_linalg_1in_1out_func_ptr_t)(void *, void * , size_t * , si
 
 
 # C function pointer to the C library template functions
-ctypedef void(*custom_linalg_1in_1out_func_ptr_t_)(void *, void * , size_t *)
+ctypedef void(*custom_linalg_1in_1out_func_ptr_t_)(void * , void * , size_t * )
 
 
 cpdef dparray dpnp_cholesky(dparray input):

@@ -118,14 +118,14 @@ class custom_build_clib(build_clib.build_clib):
             newer_than_lib = newer_group(objects, c_library_filename, missing="newer")
             if force_build or newer_than_lib:
                 # TODO very brute way, need to refactor
-                if sys.platform in ['win32', 'cygwin']: # if IS_WIN:
+                if sys.platform in ['win32', 'cygwin']:  # if IS_WIN:
                     link_command = " ".join(compiler)
                     link_command += " " + " ".join(default_flags)
-                    link_command += " " + " ".join(objects) # specify *.obj files
-                    link_command += " /link" # start linker options
+                    link_command += " " + " ".join(objects)  # specify *.obj files
+                    link_command += " /link"  # start linker options
                     link_command += " " + " ".join(extra_link_preargs)
-                    link_command += " " + ".lib ".join(libraries) + ".lib" # libraries
-                    link_command += " /OUT:" + c_library_filename # output file name
+                    link_command += " " + ".lib ".join(libraries) + ".lib"  # libraries
+                    link_command += " /OUT:" + c_library_filename  # output file name
                     link_command += " " + " ".join(extra_link_postargs)
                     print(link_command)
                     os.system(link_command)
@@ -148,6 +148,7 @@ class custom_build_clib(build_clib.build_clib):
             copy_file(c_library_filename, dest_filename, verbose=self.verbose, dry_run=self.dry_run)
             # TODO very brute way, need to refactor
             if c_library_filename.endswith(".dll"):
-                copy_file(c_library_filename.replace(".dll", ".lib"), dest_filename, verbose=self.verbose, dry_run=self.dry_run)
+                copy_file(c_library_filename.replace(".dll", ".lib"),
+                          dest_filename, verbose=self.verbose, dry_run=self.dry_run)
 
             log.info(f"DPNP: building {lib_name} library finished")
