@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.cbrt &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.nanprod &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Padding" href="../pad.html" />
-    <link rel="prev" title="dpnp.nanprod" href="dpnp.nanprod.html" /> 
+    <link rel="next" title="dpnp.cbrt" href="dpnp.cbrt.html" />
+    <link rel="prev" title="dpnp.sum" href="dpnp.sum.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -100,13 +100,13 @@
 <li class="toctree-l4"><a class="reference internal" href="../math.html#trigonometric-functions">Trigonometric functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#hyperbolic-functions">Hyperbolic functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#rounding">Rounding</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#sums-products-differences">Sums, products, differences</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../math.html#sums-products-differences">Sums, products, differences</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#exponents-and-logarithms">Exponents and logarithms</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#other-special-functions">Other special functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#floating-point-routines">Floating point routines</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#arithmetic-operations">Arithmetic operations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#handling-complex-numbers">Handling complex numbers</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../math.html#miscellaneous">Miscellaneous</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../math.html#miscellaneous">Miscellaneous</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../pad.html">Padding</a></li>
@@ -171,13 +171,13 @@
         
           <li><a href="../math.html">Mathematical Functions</a> &raquo;</li>
         
-      <li>dpnp.cbrt</li>
+      <li>dpnp.nanprod</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.cbrt.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.nanprod.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -190,12 +190,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-cbrt">
-<h1>dpnp.cbrt<a class="headerlink" href="#dpnp-cbrt" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-nanprod">
+<h1>dpnp.nanprod<a class="headerlink" href="#dpnp-nanprod" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.cbrt">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">cbrt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_trigonometric.html#cbrt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.cbrt" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the cube-root of an array, element-wise.</p>
+<dt id="dpnp.nanprod">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">nanprod</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_mathematical.html#nanprod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.nanprod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate prod() function treating ‘Not a Numbers’ (NaN) as ones.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.nanprod()</span></code></p>
+</div>
 </dd></dl>
 
 </div>
@@ -208,10 +212,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../pad.html" class="btn btn-neutral float-right" title="Padding" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.cbrt.html" class="btn btn-neutral float-right" title="dpnp.cbrt" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.nanprod.html" class="btn btn-neutral float-left" title="dpnp.nanprod" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.sum.html" class="btn btn-neutral float-left" title="dpnp.sum" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
