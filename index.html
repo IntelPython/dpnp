@@ -156,6 +156,26 @@
             
   <div class="section" id="module-dpnp">
 <span id="dpnp-a-numpy-like-api-accelerated-with-sycl"></span><h1>DPNP – A NumPy-like API accelerated with SYCL<a class="headerlink" href="#module-dpnp" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://github.com/IntelPython/dpnp">DPNP</a> is NumPy-like API accelerated with SYCL on Intel GPU.
+DPNP represents Python interface with NumPy-like API that includes a subset of methods of <a class="reference internal" href="reference/generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>
+and many functions. Under the interface is C++ library with SYCL based kernels to be executed on Intel GPU.</p>
+<p>In the following code, np is an abbreviation of dpnp as is usually done with numpy:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="reference/generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> class is in its core, which is a compatible alternative of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">x</span></code> in the above example is an instance of <a class="reference internal" href="reference/generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> that is created identically to <code class="docutils literal notranslate"><span class="pre">NumPy</span></code>’s one.
+The key difference of <code class="xref py py-class docutils literal notranslate"><span class="pre">cupy.ndarray</span></code> from <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> is
+that the memory is allocated on Intel GPU when setting up <code class="docutils literal notranslate"><span class="pre">DPNP_QUEUE_GPU=1</span></code> in the environment.</p>
+<p>Most of the array manipulations are also done in the way similar to NumPy. Take the sum for example.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>DPNP implements many functions on <a class="reference internal" href="reference/generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> objects.
+See the <a class="reference internal" href="reference/index.html#dpnp-reference"><span class="std std-ref">reference</span></a> for the supported subset of NumPy API.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="reference/index.html">API Reference</a><ul>
