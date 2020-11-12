@@ -645,6 +645,7 @@ def uniform(low=0.0, high=1.0, size=None):
     ``[low, high)`` (includes low, but excludes high).  In other words,
     any value within the given interval is equally likely to be drawn
     by `uniform`.
+
     Parameters
     ----------
     low : float, optional
@@ -657,10 +658,12 @@ def uniform(low=0.0, high=1.0, size=None):
         Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
         ``m * n * k`` samples are drawn.  If size is ``None`` (default),
         a single value is returned if ``low`` and ``high`` are both scalars.
+
     Returns
     -------
     out : array or scalar
         Drawn samples from the parameterized uniform distribution.
+
     See Also
     --------
     random : Floats uniformly distributed over ``[0, 1)``.

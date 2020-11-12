@@ -111,9 +111,7 @@ void dpnp_matmul_c(void* array1_in, void* array2_in, void* result1, size_t size_
     event.wait();
 }
 
-template <typename _KernelNameSpecialization1,
-          typename _KernelNameSpecialization2,
-          typename _KernelNameSpecialization3>
+template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2, typename _KernelNameSpecialization3>
 class dpnp_dot_c_kernel;
 
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
@@ -129,8 +127,7 @@ void dpnp_dot_c(void* array1_in, void* array2_in, void* result1, size_t size)
         return;
     }
 
-    if constexpr ((std::is_same<_DataType_input1, double>::value ||
-                   std::is_same<_DataType_input1, float>::value) &&
+    if constexpr ((std::is_same<_DataType_input1, double>::value || std::is_same<_DataType_input1, float>::value) &&
                   std::is_same<_DataType_input2, _DataType_input1>::value &&
                   std::is_same<_DataType_output, _DataType_input1>::value)
     {
@@ -145,8 +142,8 @@ void dpnp_dot_c(void* array1_in, void* array2_in, void* result1, size_t size)
     }
     else
     {
-        _DataType_output* local_mem = reinterpret_cast<_DataType_output*>(
-            dpnp_memory_alloc_c(size * sizeof(_DataType_output)));
+        _DataType_output* local_mem =
+            reinterpret_cast<_DataType_output*>(dpnp_memory_alloc_c(size * sizeof(_DataType_output)));
 
         // what about reduction??
         cl::sycl::range<1> gws(size);
@@ -165,12 +162,12 @@ void dpnp_dot_c(void* array1_in, void* array2_in, void* result1, size_t size)
 
         event.wait();
 
-        auto policy = oneapi::dpl::execution::make_device_policy<class dpnp_dot_c_kernel<
-            _DataType_input1, _DataType_input2, _DataType_output>>(DPNP_QUEUE);
+        auto policy = oneapi::dpl::execution::make_device_policy<
+            class dpnp_dot_c_kernel<_DataType_input1, _DataType_input2, _DataType_output>>(DPNP_QUEUE);
 
         _DataType_output accumulator = 0;
-        accumulator = std::reduce(policy, local_mem, local_mem + size,
-                                  _DataType_output(0), std::plus<_DataType_output>());
+        accumulator =
+            std::reduce(policy, local_mem, local_mem + size, _DataType_output(0), std::plus<_DataType_output>());
         policy.queue().wait();
 
         result[0] = accumulator;

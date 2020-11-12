@@ -33,9 +33,7 @@
 namespace mkl_blas = oneapi::mkl::blas::row_major;
 namespace mkl_stats = oneapi::mkl::stats;
 
-template <typename _KernelNameSpecialization1,
-          typename _KernelNameSpecialization2,
-          typename _KernelNameSpecialization3>
+template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2, typename _KernelNameSpecialization3>
 class dpnp_correlate_c_kernel;
 
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
@@ -326,10 +324,13 @@ void custom_min_c(void* array1_in, void* result1, const size_t* shape, size_t nd
 
         size_t output_shape_offsets[res_ndim];
         acc = 1;
-        for (size_t i = res_ndim - 1; i > 0; --i)
+        if (res_ndim > 0)
         {
-            output_shape_offsets[i] = acc;
-            acc *= res_shape[i];
+            for (size_t i = res_ndim - 1; i > 0; --i)
+            {
+                output_shape_offsets[i] = acc;
+                acc *= res_shape[i];
+            }
         }
         output_shape_offsets[0] = acc;
 
@@ -503,36 +504,21 @@ void custom_var_c(
 
 void func_map_init_statistics(func_map_t& fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_INT] = {eft_INT,
-                                                               (void*)dpnp_correlate_c<int, int, int>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_LNG] = {eft_LNG,
-                                                               (void*)dpnp_correlate_c<int, long, long>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_FLT] = {eft_DBL,
-                                                               (void*)dpnp_correlate_c<int, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_DBL] = {eft_DBL,
-                                                               (void*)dpnp_correlate_c<int, double, double>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_INT] = {eft_LNG,
-                                                               (void*)dpnp_correlate_c<long, int, long>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_LNG] = {eft_LNG,
-                                                               (void*)dpnp_correlate_c<long, long, long>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_FLT] = {eft_DBL,
-                                                               (void*)dpnp_correlate_c<long, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_DBL] = {eft_DBL,
-                                                               (void*)dpnp_correlate_c<long, double, double>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_INT] = {eft_DBL,
-                                                               (void*)dpnp_correlate_c<float, int, double>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_LNG] = {eft_DBL,
-                                                               (void*)dpnp_correlate_c<float, long, double>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_FLT] = {eft_FLT,
-                                                               (void*)dpnp_correlate_c<float, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_DBL] = {eft_DBL,
-                                                               (void*)dpnp_correlate_c<float, double, double>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_INT] = {eft_DBL,
-                                                               (void*)dpnp_correlate_c<double, int, double>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_LNG] = {eft_DBL,
-                                                               (void*)dpnp_correlate_c<double, long, double>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_FLT] = {eft_DBL,
-                                                               (void*)dpnp_correlate_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_correlate_c<int, int, int>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_correlate_c<int, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_FLT] = {eft_DBL, (void*)dpnp_correlate_c<int, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_correlate_c<int, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_INT] = {eft_LNG, (void*)dpnp_correlate_c<long, int, long>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_correlate_c<long, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_FLT] = {eft_DBL, (void*)dpnp_correlate_c<long, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_correlate_c<long, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_INT] = {eft_DBL, (void*)dpnp_correlate_c<float, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_LNG] = {eft_DBL, (void*)dpnp_correlate_c<float, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_correlate_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_DBL] = {eft_DBL, (void*)dpnp_correlate_c<float, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_correlate_c<double, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_correlate_c<double, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_correlate_c<double, float, double>};
     fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_DBL] = {eft_DBL,
                                                                (void*)dpnp_correlate_c<double, double, double>};
 

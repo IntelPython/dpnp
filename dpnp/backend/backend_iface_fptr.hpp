@@ -62,6 +62,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_NONE,         /**< Very first element of the enumeration */
     DPNP_FN_ABSOLUTE,     /**< Used in numpy.absolute() implementation  */
     DPNP_FN_ADD,          /**< Used in numpy.add() implementation  */
+    DPNP_FN_ARANGE,       /**< Used in numpy.arange() implementation  */
     DPNP_FN_ARCCOS,       /**< Used in numpy.arccos() implementation  */
     DPNP_FN_ARCCOSH,      /**< Used in numpy.arccosh() implementation  */
     DPNP_FN_ARCSIN,       /**< Used in numpy.arcsin() implementation  */
@@ -79,6 +80,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_CBRT,         /**< Used in numpy.cbrt() implementation  */
     DPNP_FN_CEIL,         /**< Used in numpy.ceil() implementation  */
     DPNP_FN_CHISQUARE,    /**< Used in numpy.random.chisquare() implementation  */
+    DPNP_FN_CHOLESKY,     /**< Used in numpy.linalg.cholesky() implementation  */
     DPNP_FN_COPYSIGN,     /**< Used in numpy.copysign() implementation  */
     DPNP_FN_CORRELATE,    /**< Used in numpy.correlate() implementation  */
     DPNP_FN_COS,          /**< Used in numpy.cos() implementation  */

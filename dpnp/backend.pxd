@@ -33,6 +33,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
     cdef enum DPNPFuncName "DPNPFuncName":
         DPNP_FN_ABSOLUTE
         DPNP_FN_ADD
+        DPNP_FN_ARANGE
         DPNP_FN_ARCCOS
         DPNP_FN_ARCCOSH
         DPNP_FN_ARCSIN
@@ -50,6 +51,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_CBRT
         DPNP_FN_CEIL
         DPNP_FN_CHISQUARE
+        DPNP_FN_CHOLESKY
         DPNP_FN_COPYSIGN
         DPNP_FN_CORRELATE
         DPNP_FN_COS

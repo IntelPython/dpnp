@@ -103,6 +103,24 @@ void dpnp_memory_memcpy_c(void* dst, const void* src, size_t size_in_bytes);
 
 /**
  * @ingroup BACKEND_API
+ * @brief Array initialization
+ *
+ * Input array, step based, initialization procedure.
+ *
+ * @param [in]  start     Start of initialization sequence
+ *
+ * @param [in]  step      Step for initialization sequence
+ *
+ * @param [out] result1   Output array.
+ *
+ * @param [in]  size      Number of elements in input arrays.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_arange_c(size_t start, size_t step, void* result1, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief Matrix multiplication.
  *
  * Matrix multiplication procedure. Works with 2-D matrices
@@ -219,6 +237,20 @@ INP_DLLEXPORT void custom_argsort_c(void* array, void* result, size_t size);
  */
 template <typename _DataType>
 INP_DLLEXPORT void custom_sort_c(void* array, void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of cholesky function
+ *
+ * @param [in]  array   Input array with data.
+ *
+ * @param [out] result  Output array.
+ *
+ * @param [in]  shape   Shape of input array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_cholesky_c(void* array1_in, void* result1, size_t* shape);
 
 /**
  * @ingroup BACKEND_API

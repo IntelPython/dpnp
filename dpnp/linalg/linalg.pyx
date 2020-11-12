@@ -41,6 +41,7 @@ cimport numpy
 
 
 __all__ = [
+    "dpnp_cholesky",
     "dpnp_det",
     "dpnp_eig",
     "dpnp_matrix_rank",
@@ -50,6 +51,25 @@ __all__ = [
 
 # C function pointer to the C library template functions
 ctypedef void(*custom_linalg_1in_1out_func_ptr_t)(void *, void * , size_t * , size_t)
+
+
+# C function pointer to the C library template functions
+ctypedef void(*custom_linalg_1in_1out_func_ptr_t_)(void * , void * , size_t * )
+
+
+cpdef dparray dpnp_cholesky(dparray input):
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_CHOLESKY, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray(input.size, dtype=result_type)
+
+    cdef custom_linalg_1in_1out_func_ptr_t_ func = <custom_linalg_1in_1out_func_ptr_t_ > kernel_data.ptr
+
+    func(input.get_data(), result.get_data(), < size_t * > input._dparray_shape.data())
+    l_result = result.reshape(input.shape)
+    return l_result
 
 
 cpdef dparray dpnp_det(dparray input):

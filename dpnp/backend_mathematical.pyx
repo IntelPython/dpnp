@@ -55,6 +55,8 @@ __all__ += [
     "dpnp_minimum",
     "dpnp_modf",
     "dpnp_multiply",
+    "dpnp_nanprod",
+    "dpnp_nansum",
     "dpnp_negative",
     "dpnp_power",
     "dpnp_prod",
@@ -65,8 +67,8 @@ __all__ += [
 ]
 
 
-ctypedef void(*fptr_custom_elemwise_absolute_1in_1out_t)(void * , void * , size_t)
-ctypedef void(*fptr_1in_2out_t)(void * , void * , void * , size_t)
+ctypedef void(*fptr_custom_elemwise_absolute_1in_1out_t)(void *, void * , size_t)
+ctypedef void(*fptr_1in_2out_t)(void *, void * , void * , size_t)
 
 
 cpdef dparray dpnp_absolute(dparray input):
@@ -79,7 +81,7 @@ cpdef dparray dpnp_absolute(dparray input):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ABSOLUTE, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(input_shape, dtype=result_type)
 
@@ -122,6 +124,10 @@ cpdef dparray dpnp_floor_divide(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_FLOOR_DIVIDE, x1, x2, x1.shape)
 
 
+cpdef dparray dpnp_fmod(dparray x1, dparray x2):
+    return call_fptr_2in_1out(DPNP_FN_FMOD, x1, x2, x1.shape)
+
+
 cpdef dparray dpnp_hypot(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_HYPOT, x1, x2, x1.shape)
 
@@ -141,7 +147,7 @@ cpdef tuple dpnp_modf(dparray x1):
     """ get the FPTR data structure """
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MODF, param1_type, DPNP_FT_NONE)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     """ Create result arrays with type given by FPTR data """
     cdef dparray result1 = dparray(x1.shape, dtype=result_type)
     cdef dparray result2 = dparray(x1.shape, dtype=result_type)
@@ -157,6 +163,37 @@ cpdef dparray dpnp_multiply(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_MULTIPLY, x1, x2, x1.shape)
 
 
+cpdef dpnp_nanprod(dparray x1):
+    cdef dparray result = dparray(x1.shape, dtype=x1.dtype)
+
+    for i in range(result.size):
+        input_elem = x1.item(i)
+
+        if dpnp.isnan(input_elem):
+            result._setitem_scalar(i, 1)
+        else:
+            result._setitem_scalar(i, input_elem)
+
+    return dpnp_prod(result)
+
+
+cpdef dpnp_nansum(dparray x1):
+    cdef dparray result = dparray(x1.shape, dtype=x1.dtype)
+
+    for i in range(result.size):
+        input_elem = x1.item(i)
+
+        if dpnp.isnan(input_elem):
+            result._setitem_scalar(i, 0)
+        else:
+            result._setitem_scalar(i, input_elem)
+
+    # due to bug in dpnp_sum need this workaround
+    # return dpnp_sum(result)
+    sum_result = dpnp_sum(result)
+    return x1.dtype.type(sum_result[0])
+
+
 cpdef dparray dpnp_negative(dparray array1):
     cdef dparray result = dparray(array1.shape, dtype=array1.dtype)
 
@@ -168,10 +205,6 @@ cpdef dparray dpnp_negative(dparray array1):
 
 cpdef dparray dpnp_power(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_POWER, x1, x2, x1.shape)
-
-
-cpdef dparray dpnp_fmod(dparray x1, dparray x2):
-    return call_fptr_2in_1out(DPNP_FN_FMOD, x1, x2, x1.shape)
 
 
 cpdef dpnp_prod(dparray x1):
@@ -299,7 +332,6 @@ cpdef dparray dpnp_sum(dparray input, axis=None):
     dpnp_array = dpnp.array(result_array, dtype=input.dtype)
     dpnp_result_array = dpnp_array.reshape(output_shape)
     return dpnp_result_array
-
 
 
 cpdef dparray dpnp_trunc(dparray x1):
