@@ -495,7 +495,7 @@ def isnan(in_array1, out=None, where=True, **kwargs):
 
     input1 = dpnp.asnumpy(in_array1) if is_dparray1 else in_array1
 
-    return numpy.isnan(input1, out, where, **kwargs)
+    return numpy.isnan(input1, out, where=where, **kwargs)
 
 
 def less(x1, x2):

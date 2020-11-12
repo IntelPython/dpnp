@@ -66,6 +66,7 @@ __all__ = [
     "mod",
     "modf",
     "multiply",
+    "nanprod",
     "negative",
     "power",
     "prod",
@@ -482,6 +483,22 @@ def multiply(x1, x2, **kwargs):
         return dpnp_multiply(x1, x2)
 
     return call_origin(numpy.multiply, x1, x2, **kwargs)
+
+
+def nanprod(x1, **kwargs):
+    """
+    Calculate prod() function treating 'Not a Numbers' (NaN) as ones.
+
+    .. seealso:: :func:`numpy.nanprod`
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
+        return dpnp_nanprod(x1)
+
+    return call_origin(numpy.nanprod, x1, **kwargs)
 
 
 def negative(x1, **kwargs):
