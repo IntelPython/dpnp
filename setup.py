@@ -358,7 +358,6 @@ dpnp_linalg = Extension(
 )
 
 cython_options.docstrings = True
-cython_options.embed_pos_in_docstring = True
 cython_options.warning_errors = True
 
 dpnp_cython_mods = cythonize([dpnp_backend, dpnp_dparray, dpnp_random, dpnp_utils, dpnp_linalg],
