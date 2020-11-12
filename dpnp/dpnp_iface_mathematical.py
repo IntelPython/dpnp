@@ -67,6 +67,7 @@ __all__ = [
     "modf",
     "multiply",
     "nanprod",
+    "nansum",
     "negative",
     "power",
     "prod",
@@ -499,6 +500,22 @@ def nanprod(x1, **kwargs):
         return dpnp_nanprod(x1)
 
     return call_origin(numpy.nanprod, x1, **kwargs)
+
+
+def nansum(x1, **kwargs):
+    """
+    Calculate sum() function treating 'Not a Numbers' (NaN) as zero.
+
+    .. seealso:: :func:`numpy.nansum`
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
+        return dpnp_nansum(x1)
+
+    return call_origin(numpy.nansum, x1, **kwargs)
 
 
 def negative(x1, **kwargs):
