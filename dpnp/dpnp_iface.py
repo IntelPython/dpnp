@@ -42,13 +42,14 @@ it contains:
 
 import os
 import numpy
+import collections
 
 from dpnp.backend import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
+from dpnp.fft import *
 from dpnp.linalg import *
 from dpnp.random import *
-import collections
 
 __all__ = [
     "array_equal",
