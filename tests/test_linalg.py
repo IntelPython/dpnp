@@ -84,6 +84,20 @@ def test_eig_arange(type, size):
     numpy.testing.assert_allclose(dpnp_vec, np_vec, rtol=1e-05, atol=1e-05)
 
 
+def test_eigvals():
+    arrays = [
+        [[0, 0], [0, 0]],
+        [[1, 2], [1, 2]],
+        [[1, 2], [3, 4]]
+    ]
+    for array in arrays:
+        a = numpy.array(array)
+        ia = inp.array(a)
+        result = inp.linalg.eigvals(ia)
+        expected = numpy.linalg.eigvals(a)
+        numpy.testing.assert_allclose(expected, result, atol=0.5)
+
+
 def test_matrix_rank():
     arrays = [
         [0, 0],
