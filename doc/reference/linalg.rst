@@ -20,8 +20,6 @@ Matrix and vector products
    dpnp.einsum
    dpnp.linalg.matrix_power
    dpnp.kron
-   
-   dpnpx.scipy.linalg.kron
 
 Decompositions
 --------------
@@ -72,10 +70,6 @@ Solving linear equations
    dpnp.linalg.pinv
    dpnp.linalg.tensorinv
 
-   dpnpx.scipy.linalg.lu_factor
-   dpnpx.scipy.linalg.lu_solve
-   dpnpx.scipy.linalg.solve_triangular
-
 Special Matrices
 ----------------
 
@@ -86,20 +80,3 @@ Special Matrices
    dpnp.tri
    dpnp.tril
    dpnp.triu
-
-   dpnpx.scipy.linalg.tri
-   dpnpx.scipy.linalg.tril
-   dpnpx.scipy.linalg.triu
-   dpnpx.scipy.linalg.toeplitz
-   dpnpx.scipy.linalg.circulant
-   dpnpx.scipy.linalg.hankel
-   dpnpx.scipy.linalg.hadamard
-   dpnpx.scipy.linalg.leslie
-   dpnpx.scipy.linalg.block_diag
-   dpnpx.scipy.linalg.companion
-   dpnpx.scipy.linalg.helmert
-   dpnpx.scipy.linalg.hilbert
-   dpnpx.scipy.linalg.dft
-   dpnpx.scipy.linalg.fiedler
-   dpnpx.scipy.linalg.fiedler_companion
-   dpnpx.scipy.linalg.convolution_matrix
