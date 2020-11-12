@@ -238,6 +238,61 @@ void dpnp_eig_c(const void* array_in, void* result1, void* result2, size_t size)
     dpnp_memory_free_c(result_vec_kern);
 }
 
+template <typename _DataType, typename _ResultType>
+void dpnp_eigvals_c(const void* array_in, void* result1, size_t size)
+{
+    // TODO this kernel works with square 2-D array only
+
+    // Kernel Type for calculation is double type
+    // because interface requires float type but calculations are expected in double type
+
+    if (!size)
+    {
+        return;
+    }
+
+    cl::sycl::event event;
+
+    const _DataType* array = reinterpret_cast<const _DataType*>(array_in);
+    _ResultType* result_val = reinterpret_cast<_ResultType*>(result1);
+
+    double* result_val_kern = reinterpret_cast<double*>(dpnp_memory_alloc_c(size * sizeof(double)));
+    double* result_vec_kern = reinterpret_cast<double*>(dpnp_memory_alloc_c(size * size * sizeof(double)));
+
+    // type conversion. Also, math library requires copy memory because override
+    for (size_t it = 0; it < (size * size); ++it)
+    {
+        result_vec_kern[it] = array[it];
+    }
+
+    const std::int64_t lda = std::max<size_t>(1UL, size);
+
+    const std::int64_t scratchpad_size = mkl_lapack::syevd_scratchpad_size<double>(
+        DPNP_QUEUE, oneapi::mkl::job::vec, oneapi::mkl::uplo::upper, size, lda);
+
+    double* scratchpad = reinterpret_cast<double*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(double)));
+
+    event = mkl_lapack::syevd(DPNP_QUEUE,               // queue
+                              oneapi::mkl::job::vec,    // jobz
+                              oneapi::mkl::uplo::upper, // uplo
+                              size,                     // The order of the matrix A (0 <= n)
+                              result_vec_kern,
+                              lda,
+                              result_val_kern,
+                              scratchpad,
+                              scratchpad_size);
+    event.wait();
+
+    dpnp_memory_free_c(scratchpad);
+
+    for (size_t it1 = 0; it1 < size; ++it1)
+    {
+        result_val[it1] = result_val_kern[it1];
+    }
+
+    dpnp_memory_free_c(result_val_kern);
+}
+
 void func_map_init_linalg(func_map_t& fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_dot_c<int, int, int>};
@@ -261,6 +316,10 @@ void func_map_init_linalg(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_EIG][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_eig_c<long, double>};
     fmap[DPNPFuncName::DPNP_FN_EIG][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_eig_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_EIG][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_eig_c<double, double>};
+    fmap[DPNPFuncName::DPNP_FN_EIGVALS][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_eigvals_c<int, double>};
+    fmap[DPNPFuncName::DPNP_FN_EIGVALS][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_eigvals_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_EIGVALS][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_eigvals_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_EIGVALS][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_eigvals_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_matmul_c<int>};
     fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_matmul_c<long>};

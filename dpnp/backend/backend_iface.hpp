@@ -212,6 +212,20 @@ INP_DLLEXPORT void dpnp_eig_c(const void* array_in, void* result1, void* result2
 
 /**
  * @ingroup BACKEND_API
+ * @brief Compute the eigenvalues of a square array.
+ *
+ * @param [in]  array_in  Input array[size][size]
+ *
+ * @param [out] result1   The eigenvalues, each repeated according to its multiplicity
+ *
+ * @param [in]  size      One dimension of square [size][size] array
+ *
+ */
+template <typename _DataType, typename _ResultType>
+INP_DLLEXPORT void dpnp_eigvals_c(const void* array_in, void* result1, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of argsort function
  *
  * @param [in]  array   Input array with data.
