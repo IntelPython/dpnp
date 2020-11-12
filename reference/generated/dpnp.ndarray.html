@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.hypot &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.ndarray &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.sinh" href="dpnp.sinh.html" />
-    <link rel="prev" title="dpnp.arctan2" href="dpnp.arctan2.html" /> 
+    <link rel="next" title="dpnp.dparray.dparray" href="dpnp.dparray.dparray.html" />
+    <link rel="prev" title="Multi-Dimensional Array (ndarray)" href="../ndarray.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -89,18 +89,12 @@
             
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="../ufunc.html#available-ufuncs">Available ufuncs</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../ufunc.html#math-operations">Math operations</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../ufunc.html#trigonometric-functions">Trigonometric functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../ufunc.html#bit-twiddling-functions">Bit-twiddling functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../ufunc.html#comparison-functions">Comparison functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../ufunc.html#floating-functions">Floating functions</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">dpnp.ndarray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpnp.dparray.dparray.html">dpnp.dparray.dparray</a></li>
 </ul>
 </li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../routines.html">Routines</a></li>
 </ul>
 </li>
@@ -153,15 +147,15 @@
         
           <li><a href="../index.html">API Reference</a> &raquo;</li>
         
-          <li><a href="../ufunc.html">Universal Functions (ufunc)</a> &raquo;</li>
+          <li><a href="../ndarray.html">Multi-Dimensional Array (ndarray)</a> &raquo;</li>
         
-      <li>dpnp.hypot</li>
+      <li>dpnp.ndarray</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.hypot.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.ndarray.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -174,27 +168,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-hypot">
-<h1>dpnp.hypot<a class="headerlink" href="#dpnp-hypot" title="Permalink to this headline">¶</a></h1>
-<dl class="py function">
-<dt id="dpnp.hypot">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">hypot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_trigonometric.html#hypot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.hypot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given the “legs” of a right triangle, return its hypotenuse.</p>
-<p>Equivalent to sqrt(x1**2 + x2**2), element-wise. If x1 or x2 is scalar_like (i.e., unambiguously cast-able to a scalar type), it is broadcast for use with each element of the other argument. (See Examples)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x1</strong> (<em>Leg of the triangle</em><em>(</em><em>s</em><em>)</em><em> If x1.shape != x2.shape</em><em>, </em><em>they must be broadcastable to a common shape</em><em> (</em><em>which becomes the shape of the output</em><em>)</em><em></em>) – </p></li>
-<li><p><strong>x2</strong> (<em>Leg of the triangle</em><em>(</em><em>s</em><em>)</em><em> If x1.shape != x2.shape</em><em>, </em><em>they must be broadcastable to a common shape</em><em> (</em><em>which becomes the shape of the output</em><em>)</em><em></em>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>The hypotenuse of the triangle(s) This is a scalar if both x1 and x2 are scalars.</p>
-</dd>
-</dl>
+  <div class="section" id="dpnp-ndarray">
+<h1>dpnp.ndarray<a class="headerlink" href="#dpnp-ndarray" title="Permalink to this headline">¶</a></h1>
+<dl class="py attribute">
+<dt id="dpnp.ndarray">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">ndarray</code><a class="headerlink" href="#dpnp.ndarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="dpnp.dparray.dparray.html#dpnp.dparray.dparray" title="dpnp.dparray.dparray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.dparray.dparray</span></code></a></p>
 </dd></dl>
 
 </div>
@@ -207,10 +186,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.sinh.html" class="btn btn-neutral float-right" title="dpnp.sinh" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.dparray.dparray.html" class="btn btn-neutral float-right" title="dpnp.dparray.dparray" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.arctan2.html" class="btn btn-neutral float-left" title="dpnp.arctan2" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../ndarray.html" class="btn btn-neutral float-left" title="Multi-Dimensional Array (ndarray)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

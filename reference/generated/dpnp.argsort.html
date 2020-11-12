@@ -89,6 +89,7 @@
             
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../creation.html">Array Creation Routines</a></li>
@@ -194,7 +195,7 @@ specified axis.  Masked values are filled beforehand to
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>axis</strong> (<em>int</em><em>, </em><em>optional</em>) – <p>Axis along which to sort. If None, the default, the flattened array
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – <p>Axis along which to sort. If None, the default, the flattened array
 is used.</p>
 <div class="versionchanged">
 <p><span class="versionmodified changed">Changed in version 1.13.0: </span>Previously, the default was documented to be -1, but that was
@@ -205,7 +206,7 @@ Until then, the axis should be given explicitly when
 </div>
 </p></li>
 <li><p><strong>kind</strong> (<em>{'quicksort'</em><em>, </em><em>'mergesort'</em><em>, </em><em>'heapsort'</em><em>, </em><em>'stable'}</em><em>, </em><em>optional</em>) – The sorting algorithm used.</p></li>
-<li><p><strong>order</strong> (<em>list</em><em>, </em><em>optional</em>) – When <cite>a</cite> is an array with fields defined, this argument specifies
+<li><p><strong>order</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><em>optional</em>) – When <cite>a</cite> is an array with fields defined, this argument specifies
 which fields to compare first, second, etc.  Not all fields need be
 specified.</p></li>
 <li><p><strong>endwith</strong> (<em>{True</em><em>, </em><em>False}</em><em>, </em><em>optional</em>) – Whether missing values (if any) should be treated as the largest values
@@ -222,7 +223,7 @@ If <code class="docutils literal notranslate"><span class="pre">fill_value</span
 In other words, <code class="docutils literal notranslate"><span class="pre">a[index_array]</span></code> yields a sorted <cite>a</cite>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray, int</p>
+<dd class="field-odd"><p>ndarray, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -232,7 +233,7 @@ In other words, <code class="docutils literal notranslate"><span class="pre">a[i
 </dd>
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">lexsort</span></code></dt><dd><p>Indirect stable sort with multiple keys.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.sort</span></code></dt><dd><p>Inplace sort.</p>
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.sort.html#numpy.ndarray.sort" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.sort</span></code></a></dt><dd><p>Inplace sort.</p>
 </dd>
 </dl>
 </div>

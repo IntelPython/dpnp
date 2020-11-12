@@ -1,0 +1,57 @@
+﻿dpnp.ndarray
+============
+
+.. currentmodule:: dpnp
+
+.. autoclass:: ndarray
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ndarray.__init__
+      ~ndarray.all
+      ~ndarray.any
+      ~ndarray.argmax
+      ~ndarray.argmin
+      ~ndarray.argsort
+      ~ndarray.astype
+      ~ndarray.fill
+      ~ndarray.flatten
+      ~ndarray.item
+      ~ndarray.max
+      ~ndarray.mean
+      ~ndarray.min
+      ~ndarray.ravel
+      ~ndarray.repeat
+      ~ndarray.reshape
+      ~ndarray.sort
+      ~ndarray.std
+      ~ndarray.sum
+      ~ndarray.transpose
+      ~ndarray.var
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ndarray.T
+      ~ndarray.dtype
+      ~ndarray.flags
+      ~ndarray.flat
+      ~ndarray.itemsize
+      ~ndarray.nbytes
+      ~ndarray.ndim
+      ~ndarray.shape
+      ~ndarray.size
+      ~ndarray.strides
+   
+   

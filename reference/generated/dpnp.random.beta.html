@@ -89,6 +89,7 @@
             
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../creation.html">Array Creation Routines</a></li>
@@ -205,14 +206,14 @@ distribution function</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>New code should use the <code class="docutils literal notranslate"><span class="pre">beta</span></code> method of a <code class="docutils literal notranslate"><span class="pre">default_rng()</span></code>
-instance instead; please see the <span class="xref std std-ref">random-quick-start</span>.</p>
+instance instead; please see the <a class="reference external" href="https://numpy.org/doc/stable/reference/random/index.html#random-quick-start" title="(in NumPy v1.19)"><span>Quick Start</span></a>.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>float</em>) – Alpha, positive (&gt;0).</p></li>
-<li><p><strong>b</strong> (<em>float</em>) – Beta, positive (&gt;0).</p></li>
-<li><p><strong>size</strong> (<em>int</em><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
+<li><p><strong>a</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Alpha, positive (&gt;0).</p></li>
+<li><p><strong>b</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Beta, positive (&gt;0).</p></li>
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
 <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">*</span> <span class="pre">k</span></code> samples are drawn.  If size is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default),
 a single value is returned if <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> are both scalars.</p></li>
 </ul>
@@ -221,7 +222,7 @@ a single value is returned if <code class="docutils literal notranslate"><span c
 <dd class="field-even"><p><strong>out</strong> – Drawn samples from the parameterized beta distribution.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dparray</p>
+<dd class="field-odd"><p><a class="reference internal" href="dpnp.dparray.dparray.html#dpnp.dparray.dparray" title="dpnp.dparray.dparray">dparray</a></p>
 </dd>
 </dl>
 </dd></dl>

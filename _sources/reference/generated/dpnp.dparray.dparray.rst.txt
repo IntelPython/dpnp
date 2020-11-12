@@ -1,0 +1,57 @@
+﻿dpnp.dparray.dparray
+====================
+
+.. currentmodule:: dpnp.dparray
+
+.. autoclass:: dparray
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~dparray.__init__
+      ~dparray.all
+      ~dparray.any
+      ~dparray.argmax
+      ~dparray.argmin
+      ~dparray.argsort
+      ~dparray.astype
+      ~dparray.fill
+      ~dparray.flatten
+      ~dparray.item
+      ~dparray.max
+      ~dparray.mean
+      ~dparray.min
+      ~dparray.ravel
+      ~dparray.repeat
+      ~dparray.reshape
+      ~dparray.sort
+      ~dparray.std
+      ~dparray.sum
+      ~dparray.transpose
+      ~dparray.var
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~dparray.T
+      ~dparray.dtype
+      ~dparray.flags
+      ~dparray.flat
+      ~dparray.itemsize
+      ~dparray.nbytes
+      ~dparray.ndim
+      ~dparray.shape
+      ~dparray.size
+      ~dparray.strides
+   
+   

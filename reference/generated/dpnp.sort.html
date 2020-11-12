@@ -89,6 +89,7 @@
             
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../creation.html">Array Creation Routines</a></li>
@@ -193,7 +194,7 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x1</strong> (<em>array_like</em>) – Array to be sorted.</p></li>
-<li><p><strong>axis</strong> (<em>int</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Axis along which to sort. If None, the array is flattened before
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em>, </em><em>optional</em>) – Axis along which to sort. If None, the array is flattened before
 sorting. The default is -1, which sorts along the last axis.</p></li>
 <li><p><strong>kind</strong> (<em>{'quicksort'</em><em>, </em><em>'mergesort'</em><em>, </em><em>'heapsort'</em><em>, </em><em>'stable'}</em><em>, </em><em>optional</em>) – <p>Sorting algorithm. The default is ‘quicksort’. Note that both ‘stable’
 and ‘mergesort’ use timsort or radix sort under the covers and, in general,
@@ -203,7 +204,7 @@ is retained for backwards compatibility.</p>
 <p><span class="versionmodified changed">Changed in version 1.15.0.: </span>The ‘stable’ option was added.</p>
 </div>
 </p></li>
-<li><p><strong>order</strong> (<em>str</em><em> or </em><em>list of str</em><em>, </em><em>optional</em>) – When <cite>a</cite> is an array with fields defined, this argument specifies
+<li><p><strong>order</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><em>list of str</em><em>, </em><em>optional</em>) – When <cite>a</cite> is an array with fields defined, this argument specifies
 which fields to compare first, second, etc.  A single field can
 be specified as a string, and not all fields need be specified,
 but unspecified fields will still be used, in the order in which

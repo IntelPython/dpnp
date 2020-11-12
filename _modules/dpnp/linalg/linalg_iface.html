@@ -206,6 +206,7 @@
     <span class="s2">&quot;cholesky&quot;</span><span class="p">,</span>
     <span class="s2">&quot;det&quot;</span><span class="p">,</span>
     <span class="s2">&quot;eig&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;eigvals&quot;</span><span class="p">,</span>
     <span class="s2">&quot;matrix_power&quot;</span><span class="p">,</span>
     <span class="s2">&quot;matrix_rank&quot;</span><span class="p">,</span>
     <span class="s2">&quot;multi_dot&quot;</span>
@@ -290,6 +291,34 @@
             <span class="k">return</span> <span class="n">dpnp_eig</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">eigvals</span><span class="p">(</span><span class="nb">input</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the eigenvalues of a general matrix.</span>
+<span class="sd">    Main difference between `eigvals` and `eig`: the eigenvectors aren&#39;t</span>
+<span class="sd">    returned.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    input : (..., M, M) array_like</span>
+<span class="sd">        A complex- or real-valued matrix whose eigenvalues will be computed.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    w : (..., M,) ndarray</span>
+<span class="sd">        The eigenvalues, each repeated according to its multiplicity.</span>
+<span class="sd">        They are not necessarily ordered, nor are they necessarily</span>
+<span class="sd">        real for real matrices.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_input_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_input_dparray</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">dpnp_eigvals</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">,</span> <span class="nb">input</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="matrix_power"><a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.matrix_power.html#dpnp.linalg.matrix_power">[docs]</a><span class="k">def</span> <span class="nf">matrix_power</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>

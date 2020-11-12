@@ -89,6 +89,7 @@
             
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../creation.html">Array Creation Routines</a></li>
@@ -195,7 +196,7 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<em>array_like</em>) – Input array or object that can be converted to an array.</p></li>
-<li><p><strong>axis</strong> (<em>None</em><em> or </em><em>int</em><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – <p>Axis or axes along which a logical AND reduction is performed.
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – <p>Axis or axes along which a logical AND reduction is performed.
 The default (<code class="docutils literal notranslate"><span class="pre">axis=None</span></code>) is to perform a logical AND over all
 the dimensions of the input array. <cite>axis</cite> may be negative, in
 which case it counts from the last to the first axis.</p>
@@ -210,7 +211,7 @@ It must have the same shape as the expected output and its
 type is preserved (e.g., if <code class="docutils literal notranslate"><span class="pre">dtype(out)</span></code> is float, the result
 will consist of 0.0’s and 1.0’s). See <cite>ufuncs-output-type</cite> for more
 details.</p></li>
-<li><p><strong>keepdims</strong> (<em>bool</em><em>, </em><em>optional</em>) – <p>If this is set to True, the axes which are reduced are left
+<li><p><strong>keepdims</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – <p>If this is set to True, the axes which are reduced are left
 in the result as dimensions with size one. With this option,
 the result will broadcast correctly against the input array.</p>
 <p>If the default value is passed, then <cite>keepdims</cite> will not be
@@ -226,7 +227,7 @@ exceptions will be raised.</p>
 in which case a reference to <cite>out</cite> is returned.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray, bool</p>
+<dd class="field-odd"><p>ndarray, <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
 </dd>
 </dl>
 <div class="admonition seealso">

@@ -89,6 +89,7 @@
             
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../creation.html">Array Creation Routines</a></li>
@@ -195,7 +196,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<em>array_like</em>) – Array containing data to be averaged. If <cite>a</cite> is not an array, a
 conversion is attempted.</p></li>
-<li><p><strong>axis</strong> (<em>None</em><em> or </em><em>int</em><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – <p>Axis or axes along which to average <cite>a</cite>.  The default,
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – <p>Axis or axes along which to average <cite>a</cite>.  The default,
 axis=None, will average over all of the elements of the input array.
 If axis is negative it counts from the last to the first axis.</p>
 <div class="versionadded">
@@ -216,7 +217,7 @@ weight equal to one.  The 1-D calculation is:</p>
 </div>
 <p>The only constraint on <cite>weights</cite> is that <cite>sum(weights)</cite> must not be 0.</p>
 </p></li>
-<li><p><strong>returned</strong> (<em>bool</em><em>, </em><em>optional</em>) – Default is <cite>False</cite>. If <cite>True</cite>, the tuple (<cite>average</cite>, <cite>sum_of_weights</cite>)
+<li><p><strong>returned</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Default is <cite>False</cite>. If <cite>True</cite>, the tuple (<cite>average</cite>, <cite>sum_of_weights</cite>)
 is returned, otherwise only the average is returned.
 If <cite>weights=None</cite>, <cite>sum_of_weights</cite> is equivalent to the number of
 elements over which the average is taken.</p></li>
@@ -239,9 +240,9 @@ at least be <code class="docutils literal notranslate"><span class="pre">float64
 </dd>
 <dt class="field-even">Raises</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>ZeroDivisionError</strong> – When all weights along axis are zero. See <cite>numpy.ma.average</cite> for a
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ZeroDivisionError" title="(in Python v3.9)"><strong>ZeroDivisionError</strong></a> – When all weights along axis are zero. See <cite>numpy.ma.average</cite> for a
     version robust to this type of error.</p></li>
-<li><p><strong>TypeError</strong> – When the length of 1D <cite>weights</cite> is not the same as the shape of <cite>a</cite>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><strong>TypeError</strong></a> – When the length of 1D <cite>weights</cite> is not the same as the shape of <cite>a</cite>
     along axis.</p></li>
 </ul>
 </dd>
@@ -252,7 +253,7 @@ at least be <code class="docutils literal notranslate"><span class="pre">float64
 <dl class="simple">
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">ma.average</span></code></dt><dd><p>average for masked arrays – useful if your data contains “missing” values</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.result_type</span></code></dt><dd><p>Returns the type that results from applying the numpy type promotion rules to the arguments.</p>
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.result_type.html#numpy.result_type" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.result_type</span></code></a></dt><dd><p>Returns the type that results from applying the numpy type promotion rules to the arguments.</p>
 </dd>
 </dl>
 </div>

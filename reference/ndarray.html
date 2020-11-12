@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Padding &mdash; dpnp 0.2 documentation</title>
+  <title>Multi-Dimensional Array (ndarray) &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Polynomials" href="polynomials.html" />
-    <link rel="prev" title="dpnp.cbrt" href="generated/dpnp.cbrt.html" /> 
+    <link rel="next" title="dpnp.ndarray" href="generated/dpnp.ndarray.html" />
+    <link rel="prev" title="API Reference" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -89,22 +89,13 @@
             
               <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ufunc.html">Universal Functions (ufunc)</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="routines.html">Routines</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="creation.html">Array Creation Routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="manipulation.html">Array Manipulation Routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="binary.html">Binary Operations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="linalg.html">Linear Algebra</a></li>
-<li class="toctree-l3"><a class="reference internal" href="logic.html">Logic Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="math.html">Mathematical Functions</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Padding</a></li>
-<li class="toctree-l3"><a class="reference internal" href="polynomials.html">Polynomials</a></li>
-<li class="toctree-l3"><a class="reference internal" href="random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sorting.html">Sorting, Searching, and Counting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="statistics.html">Statistical Functions</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Multi-Dimensional Array (ndarray)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.ndarray.html">dpnp.ndarray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/dpnp.dparray.dparray.html">dpnp.dparray.dparray</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="ufunc.html">Universal Functions (ufunc)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="routines.html">Routines</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../dpnp_backend_api.html">C++ backend API Reference</a></li>
@@ -156,15 +147,13 @@
         
           <li><a href="index.html">API Reference</a> &raquo;</li>
         
-          <li><a href="routines.html">Routines</a> &raquo;</li>
-        
-      <li>Padding</li>
+      <li>Multi-Dimensional Array (ndarray)</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/reference/pad.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/reference/ndarray.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -177,14 +166,22 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="padding">
-<h1>Padding<a class="headerlink" href="#padding" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="multi-dimensional-array-ndarray">
+<h1>Multi-Dimensional Array (ndarray)<a class="headerlink" href="#multi-dimensional-array-ndarray" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference internal" href="generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> is the DPNP counterpart of NumPy <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>.</p>
+<p>For the basic concept of <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>s, please refer to the <a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/arrays.ndarray.html">NumPy documentation</a>.</p>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a></p></td>
+<td><p>alias of <a class="reference internal" href="generated/dpnp.dparray.dparray.html#dpnp.dparray.dparray" title="dpnp.dparray.dparray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.dparray.dparray</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.dparray.dparray.html#dpnp.dparray.dparray" title="dpnp.dparray.dparray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.dparray.dparray</span></code></a></p></td>
+<td><p>Multi-dimensional array using USM interface for an Intel GPU device.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -197,10 +194,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="polynomials.html" class="btn btn-neutral float-right" title="Polynomials" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="generated/dpnp.ndarray.html" class="btn btn-neutral float-right" title="dpnp.ndarray" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="generated/dpnp.cbrt.html" class="btn btn-neutral float-left" title="dpnp.cbrt" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="API Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

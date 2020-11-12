@@ -1,0 +1,387 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dpnp.dparray.dparray &mdash; dpnp 0.2 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Universal Functions (ufunc)" href="../ufunc.html" />
+    <link rel="prev" title="dpnp.ndarray" href="dpnp.ndarray.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> dpnp
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="dpnp.ndarray.html">dpnp.ndarray</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">dpnp.dparray.dparray</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../routines.html">Routines</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">C++ backend API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">dpnp</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">API Reference</a> &raquo;</li>
+        
+          <li><a href="../ndarray.html">Multi-Dimensional Array (ndarray)</a> &raquo;</li>
+        
+      <li>dpnp.dparray.dparray</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/reference/generated/dpnp.dparray.dparray.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="dpnp-dparray-dparray">
+<h1>dpnp.dparray.dparray<a class="headerlink" href="#dpnp-dparray-dparray" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="dpnp.dparray.dparray">
+<em class="property">class </em><code class="sig-prename descclassname">dpnp.dparray.</code><code class="sig-name descname">dparray</code><a class="headerlink" href="#dpnp.dparray.dparray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multi-dimensional array using USM interface for an Intel GPU device.</p>
+<p>This class implements a subset of methods of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>.
+The difference is that this class allocates the array content useing
+USM interface on the current GPU device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shape</strong> (<em>tuple of ints</em>) – Length of axes.</p></li>
+<li><p><strong>dtype</strong> – Data type. It must be an argument of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a>.</p></li>
+<li><p><strong>memptr</strong> (<em>char *</em>) – Pointer to the array content head.</p></li>
+<li><p><strong>strides</strong> (<em>tuple of ints</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – Strides of data in memory.</p></li>
+<li><p><strong>order</strong> (<em>{'C'</em><em>, </em><em>'F'}</em>) – Row-major (C-style) or column-major (Fortran-style) order.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>base</strong> (<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> or </em><em>dpnp.dparray</em>) – Base array from which this array is created as a view.</p></li>
+<li><p><strong>data</strong> (<em>char *</em>) – Pointer to the array content head.</p></li>
+<li><p><strong>dtype</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.19)"><em>numpy.dtype</em></a>) – <p>Dtype object of elements type.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html">Data type objects (dtype)</a></p>
+</div>
+</p></li>
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – <p>Number of elements this array holds.</p>
+<p>This is equivalent to product over the shape tuple.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.size.html#numpy.ndarray.size" title="(in NumPy v1.19)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">numpy.ndarray.size</span></code></a></p>
+</div>
+</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="dpnp.dparray.dparray.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dpnp.dparray.dparray.__init__" title="dpnp.dparray.dparray.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Initialize self.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">all</span></code></p></td>
+<td><p>Returns True if all elements evaluate to True.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">any</span></code></p></td>
+<td><p>Returns True if any of the elements of <cite>a</cite> evaluate to True.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmax</span></code></p></td>
+<td><p>Returns array of indices of the maximum values along the given axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">argmin</span></code></p></td>
+<td><p>Return array of indices to the minimum values along the given axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">argsort</span></code></p></td>
+<td><p>Return an ndarray of indices that sort the array along the specified axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">astype</span></code></p></td>
+<td><p>Copy the array with data type casting.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fill</span></code></p></td>
+<td><p>Fill the array with a scalar value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">flatten</span></code></p></td>
+<td><p>Return a copy of the array collapsed into one dimension.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">item</span></code></p></td>
+<td><p>Return the item described by id.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">max</span></code></p></td>
+<td><p>Return the maximum along an axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean</span></code></p></td>
+<td><p>Returns the average of the array elements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">min</span></code></p></td>
+<td><p>Return the minimum along a given axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ravel</span></code></p></td>
+<td><p>Return a contiguous flattened array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">repeat</span></code></p></td>
+<td><p>Repeat elements of an array.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reshape</span></code></p></td>
+<td><p>Change the shape of the array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sort</span></code></p></td>
+<td><p>Sort the array</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">std</span></code></p></td>
+<td><p>Returns the variance of the array elements, along given axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sum</span></code></p></td>
+<td><p>Returns the sum along a given axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">transpose</span></code></p></td>
+<td><p>Returns a view of the array with axes permuted.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">var</span></code></p></td>
+<td><p>Returns the variance of the array elements along given axis.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code></p></td>
+<td><p>Shape-reversed view of the array.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype</span></code></p></td>
+<td><p>Type of the elements in the array</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">flags</span></code></p></td>
+<td><p>Object containing memory-layout information.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">flat</span></code></p></td>
+<td><p>Return a flat iterator, or set a flattened version of self to value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">itemsize</span></code></p></td>
+<td><p>Size of each element in bytes.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nbytes</span></code></p></td>
+<td><p>Total size of all elements in bytes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndim</span></code></p></td>
+<td><p>Number of dimensions.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></p></td>
+<td><p>Lengths of axes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></p></td>
+<td><p>Number of elements in the array.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">strides</span></code></p></td>
+<td><p>Strides of axes in bytes.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../ufunc.html" class="btn btn-neutral float-right" title="Universal Functions (ufunc)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="dpnp.ndarray.html" class="btn btn-neutral float-left" title="dpnp.ndarray" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Intel
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
