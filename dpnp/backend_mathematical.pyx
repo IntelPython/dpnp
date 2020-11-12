@@ -56,6 +56,7 @@ __all__ += [
     "dpnp_modf",
     "dpnp_multiply",
     "dpnp_nanprod",
+    "dpnp_nansum",
     "dpnp_negative",
     "dpnp_power",
     "dpnp_prod",
@@ -174,6 +175,23 @@ cpdef dpnp_nanprod(dparray x1):
             result._setitem_scalar(i, input_elem)
 
     return dpnp_prod(result)
+
+
+cpdef dpnp_nansum(dparray x1):
+    cdef dparray result = dparray(x1.shape, dtype=x1.dtype)
+
+    for i in range(result.size):
+        input_elem = x1.item(i)
+
+        if dpnp.isnan(input_elem):
+            result._setitem_scalar(i, 0)
+        else:
+            result._setitem_scalar(i, input_elem)
+
+    # due to bug in dpnp_sum need this workaround
+    # return dpnp_sum(result)
+    sum_result = dpnp_sum(result)
+    return x1.dtype.type(sum_result[0])
 
 
 cpdef dparray dpnp_negative(dparray array1):
