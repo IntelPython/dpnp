@@ -262,7 +262,7 @@ void dpnp_arange_c(size_t start, size_t step, void* result1, size_t size)
     {
         return;
     }
-    
+
     cl::sycl::event event;
 
     _DataType* result = reinterpret_cast<_DataType*>(result1);

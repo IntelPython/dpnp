@@ -137,6 +137,12 @@ _sdl_cflags = ["-fstack-protector-strong",
                "-fno-delete-null-pointer-checks"]
 _sdl_ldflags = ["-Wl,-z,noexecstack,-z,relro,-z,now"]
 
+# TODO remove when it will be fixed on TBB side. Details:
+# In GCC versions 9 and 10 the application that uses Parallel STL algorithms may fail to compile due to incompatible
+# interface changes between earlier versions of Intel TBB and oneTBB. Disable support for Parallel STL algorithms
+# by defining PSTL_USE_PARALLEL_POLICIES (in GCC 9), _GLIBCXX_USE_TBB_PAR_BACKEND (in GCC 10) macro to zero
+# before inclusion of the first standard header file in each translation unit.
+_project_cmplr_macro += [("PSTL_USE_PARALLEL_POLICIES", "0"), ("_GLIBCXX_USE_TBB_PAR_BACKEND", "0")]
 
 try:
     """
