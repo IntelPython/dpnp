@@ -35,7 +35,7 @@ and the rest of the library
 
 import dpnp
 import numpy
-import dpnp
+
 from dpnp.dpnp_utils cimport *
 from dpnp.backend cimport *
 
