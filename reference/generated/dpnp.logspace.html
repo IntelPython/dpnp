@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.arange &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.logspace &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.linspace" href="dpnp.linspace.html" />
-    <link rel="prev" title="dpnp.asarray" href="dpnp.asarray.html" /> 
+    <link rel="next" title="Array Manipulation Routines" href="../manipulation.html" />
+    <link rel="prev" title="dpnp.linspace" href="dpnp.linspace.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -166,13 +166,13 @@
         
           <li><a href="../creation.html">Array Creation Routines</a> &raquo;</li>
         
-      <li>dpnp.arange</li>
+      <li>dpnp.logspace</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.arange.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.logspace.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -185,34 +185,60 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-arange">
-<h1>dpnp.arange<a class="headerlink" href="#dpnp-arange" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-logspace">
+<h1>dpnp.logspace<a class="headerlink" href="#dpnp-logspace" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.arange">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">arange</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#arange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.arange" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns an array with evenly spaced values within a given interval.</p>
-<p>Values are generated within the half-open interval [start, stop). The first
-three arguments are mapped like the <code class="docutils literal notranslate"><span class="pre">range</span></code> built-in function, i.e. start
-and step are optional.</p>
+<dt id="dpnp.logspace">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">logspace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">stop</span></em>, <em class="sig-param"><span class="n">num</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">endpoint</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">base</span><span class="o">=</span><span class="default_value">10.0</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#logspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.logspace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return numbers spaced evenly on a log scale.</p>
+<p>In linear space, the sequence starts at <code class="docutils literal notranslate"><span class="pre">base</span> <span class="pre">**</span> <span class="pre">start</span></code>
+(<cite>base</cite> to the power of <cite>start</cite>) and ends with <code class="docutils literal notranslate"><span class="pre">base</span> <span class="pre">**</span> <span class="pre">stop</span></code>
+(see <cite>endpoint</cite> below).</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.16.0: </span>Non-scalar <cite>start</cite> and <cite>stop</cite> are now supported.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>start</strong> (<em>Start of the interval.</em>) – </p></li>
-<li><p><strong>stop</strong> (<em>End of the interval.</em>) – </p></li>
-<li><p><strong>step</strong> (<em>Step width between each pair of consecutive values.</em>) – </p></li>
-<li><p><strong>dtype</strong> (<em>Data type specifier. It is inferred from other arguments by</em>) – default.</p></li>
+<li><p><strong>start</strong> (<em>array_like</em>) – <code class="docutils literal notranslate"><span class="pre">base</span> <span class="pre">**</span> <span class="pre">start</span></code> is the starting value of the sequence.</p></li>
+<li><p><strong>stop</strong> (<em>array_like</em>) – <code class="docutils literal notranslate"><span class="pre">base</span> <span class="pre">**</span> <span class="pre">stop</span></code> is the final value of the sequence, unless <cite>endpoint</cite>
+is False.  In that case, <code class="docutils literal notranslate"><span class="pre">num</span> <span class="pre">+</span> <span class="pre">1</span></code> values are spaced over the
+interval in log-space, of which all but the last (a sequence of
+length <cite>num</cite>) are returned.</p></li>
+<li><p><strong>num</strong> (<em>integer</em><em>, </em><em>optional</em>) – Number of samples to generate.  Default is 50.</p></li>
+<li><p><strong>endpoint</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If true, <cite>stop</cite> is the last sample. Otherwise, it is not included.
+Default is True.</p></li>
+<li><p><strong>base</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>optional</em>) – The base of the log space. The step size between the elements in
+<code class="docutils literal notranslate"><span class="pre">ln(samples)</span> <span class="pre">/</span> <span class="pre">ln(base)</span></code> (or <code class="docutils literal notranslate"><span class="pre">log_base(samples)</span></code>) is uniform.
+Default is 10.0.</p></li>
+<li><p><strong>dtype</strong> (<em>dtype</em>) – The type of the output array.  If <cite>dtype</cite> is not given, infer the data
+type from the other input arguments.</p></li>
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – <p>The axis in the result to store the samples.  Relevant only if start
+or stop are array-like.  By default (0), the samples will be along a
+new axis inserted at the beginning. Use -1 to get an axis at the end.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.16.0.</span></p>
+</div>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>inumpy.dparray</strong></p>
+<dd class="field-even"><p><strong>samples</strong> – <cite>num</cite> samples, equally spaced on a log scale.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>The 1-D array of range values.</p>
+<dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="(in NumPy v1.19)"><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.arange()</span></code></a></p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.arange.html#dpnp.arange" title="dpnp.arange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arange</span></code></a></dt><dd><p>Similar to linspace, with the step size specified instead of the number of samples. Note that, when used with a float endpoint, the endpoint may or may not be included.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.linspace.html#dpnp.linspace" title="dpnp.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">linspace</span></code></a></dt><dd><p>Similar to logspace, but with the samples uniformly distributed in linear space, instead of log space.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">geomspace</span></code></dt><dd><p>Similar to logspace, but with endpoints specified directly.</p>
+</dd>
+</dl>
 </div>
 </dd></dl>
 
@@ -226,10 +252,10 @@ and step are optional.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.linspace.html" class="btn btn-neutral float-right" title="dpnp.linspace" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../manipulation.html" class="btn btn-neutral float-right" title="Array Manipulation Routines" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.asarray.html" class="btn btn-neutral float-left" title="dpnp.asarray" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.linspace.html" class="btn btn-neutral float-left" title="dpnp.linspace" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
