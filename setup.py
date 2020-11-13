@@ -49,7 +49,7 @@ from Cython.Compiler import Options as cython_options
 from utils.command_style import source_style
 from utils.command_clean import source_clean
 from utils.command_build_clib import custom_build_clib
-from utils.dpnp_build_utils import find_cmplr, find_mathlib, find_omp
+from utils.dpnp_build_utils import find_cmplr, find_dpl, find_mathlib, find_omp
 
 
 """
@@ -137,6 +137,12 @@ _sdl_cflags = ["-fstack-protector-strong",
                "-fno-delete-null-pointer-checks"]
 _sdl_ldflags = ["-Wl,-z,noexecstack,-z,relro,-z,now"]
 
+# TODO remove when it will be fixed on TBB side. Details:
+# In GCC versions 9 and 10 the application that uses Parallel STL algorithms may fail to compile due to incompatible
+# interface changes between earlier versions of Intel TBB and oneTBB. Disable support for Parallel STL algorithms
+# by defining PSTL_USE_PARALLEL_POLICIES (in GCC 9), _GLIBCXX_USE_TBB_PAR_BACKEND (in GCC 10) macro to zero
+# before inclusion of the first standard header file in each translation unit.
+_project_cmplr_macro += [("PSTL_USE_PARALLEL_POLICIES", "0"), ("_GLIBCXX_USE_TBB_PAR_BACKEND", "0")]
 
 try:
     """
@@ -157,12 +163,12 @@ except ImportError:
 
 # other OS specific
 if IS_WIN:
-    _project_compiler = "dpcpp"   # "clang-cl"
-    _project_linker = "lld-link"  # "dpcpp-cl"
+    _project_compiler = "dpcpp"
+    _project_linker = "lld-link"
     _project_cmplr_flag_sycl = []
     _project_cmplr_flag_compatibility = []
-    _project_cmplr_flag_lib = ['/DLL']
-    _project_cmplr_macro = [("_WIN", "1")]
+    _project_cmplr_flag_lib = ["/DLL"]
+    _project_cmplr_macro += [("_WIN", "1")]
     _project_rpath = []
     # TODO this flag creates unexpected behavior during compilation, need to be fixed
     # _sdl_cflags = ["-GS"]
@@ -228,11 +234,7 @@ elif IS_WIN:
 Get the compiler environemnt
 """
 _cmplr_include, _cmplr_libpath = find_cmplr(verbose=True)
-
-# DPL is in spandlone package in beta10
-# TODO fix the hardcode
-_cmplr_include += ["/opt/intel/oneapi/dpl/latest/linux/include"]
-
+_dpl_include, _ = find_dpl(verbose=True)
 _, _omp_libpath = find_omp(verbose=True)
 
 if IS_LIN:
@@ -288,7 +290,7 @@ dpnp_backend_c = [
                 "dpnp/backend/memory_sycl.cpp",
                 "dpnp/backend/queue_sycl.cpp"
             ],
-            "include_dirs": _cmplr_include + _mathlib_include + _project_backend_dir + _dpctrl_include,
+            "include_dirs": _cmplr_include + _dpl_include + _mathlib_include + _project_backend_dir + _dpctrl_include,
             "library_dirs": _mathlib_path + _omp_libpath + _dpctrl_libpath,
             "runtime_library_dirs": [],  # _project_rpath + _mathlib_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath,
             "extra_preargs": _project_cmplr_flag_sycl + _sdl_cflags,
@@ -358,7 +360,6 @@ dpnp_linalg = Extension(
 )
 
 cython_options.docstrings = True
-cython_options.embed_pos_in_docstring = True
 cython_options.warning_errors = True
 
 dpnp_cython_mods = cythonize([dpnp_backend, dpnp_dparray, dpnp_random, dpnp_utils, dpnp_linalg],
@@ -397,8 +398,9 @@ setup(name="DPNP",
       ext_modules=dpnp_cython_mods,
       cmdclass=dpnp_build_commands,
       packages=['dpnp',
-                'dpnp.random',
+                'dpnp.fft',
                 'dpnp.linalg',
+                'dpnp.random'
                 ],
       package_data={'dpnp': ['libdpnp_backend_c.so']},
       include_package_data=True,

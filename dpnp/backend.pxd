@@ -33,6 +33,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
     cdef enum DPNPFuncName "DPNPFuncName":
         DPNP_FN_ABSOLUTE
         DPNP_FN_ADD
+        DPNP_FN_ARANGE
         DPNP_FN_ARCCOS
         DPNP_FN_ARCCOSH
         DPNP_FN_ARCSIN
@@ -43,6 +44,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_ARGMAX
         DPNP_FN_ARGMIN
         DPNP_FN_ARGSORT
+        DPNP_FN_BETA
         DPNP_FN_BINOMIAL
         DPNP_FN_BITWISE_AND
         DPNP_FN_BITWISE_OR
@@ -50,6 +52,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_CBRT
         DPNP_FN_CEIL
         DPNP_FN_CHISQUARE
+        DPNP_FN_CHOLESKY
         DPNP_FN_COPYSIGN
         DPNP_FN_CORRELATE
         DPNP_FN_COS
@@ -60,6 +63,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_DIVIDE
         DPNP_FN_DOT
         DPNP_FN_EIG
+        DPNP_FN_EIGVALS
         DPNP_FN_EXP
         DPNP_FN_EXP2
         DPNP_FN_EXPM1

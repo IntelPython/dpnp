@@ -108,6 +108,19 @@ def test_random_seed(func):
     assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
+def test_random_seed_beta():
+    seed = 28041990
+    size = 100
+    a = 2.56
+    b = 0.8
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.beta(a, b, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.beta(a, b, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
 def test_random_seed_binomial():
     seed = 28041990
     size = 100
@@ -156,16 +169,28 @@ def test_random_seed_gamma():
     assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
-def test_invalid_args_binomial():
+def test_invalid_args_beta():
     size = 10
-    n = 10    # number of trials, OK
-    p = -0.5  # probability of each trial, expected between [0, 1]
+    a = 3.0   # OK
+    b = -1.0  # positive `b` is expected
     with pytest.raises(ValueError):
-        dpnp.random.binomial(n, p, size)
-    n = -10    # number of trials, expected non-negative
-    p = 0.5  # probability of each trial, OK
+        dpnp.random.beta(a=a, b=b, size=size)
+    a = -1.0  # positive `a` is expected
+    b = 3.0   # OK
     with pytest.raises(ValueError):
-        dpnp.random.binomial(n, p, size)
+        dpnp.random.beta(a=a, b=b, size=size)
+
+
+def test_random_seed_binomial():
+    seed = 28041990
+    size = 100
+    n, p = 10, .5  # number of trials, probability of each trial
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.binomial(n, p, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.binomial(n, p, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
 def test_invalid_args_chisquare():
@@ -193,6 +218,22 @@ def test_invalid_args_gamma():
         dpnp.random.gamma(shape, scale, size)
 
 
+def test_check_moments_beta():
+    seed = 28041990
+    dpnp.random.seed(seed)
+    a = 2.56
+    b = 0.8
+
+    expected_mean = a / (a + b)
+    expected_var = (a * b) / ((a + b)**2 * (a + b + 1))
+
+    var = numpy.var(dpnp.random.beta(a=a, b=b, size=10**6))
+    mean = numpy.mean(dpnp.random.beta(a=a, b=b, size=10**6))
+
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
 def test_check_moments_binomial():
     seed = 28041990
     dpnp.random.seed(seed)
@@ -217,7 +258,6 @@ def test_check_moments_gamma():
     mean = numpy.mean(dpnp.random.gamma(shape=shape, scale=scale, size=10**6))
     assert math.isclose(var, expected_var, abs_tol=0.003)
     assert math.isclose(mean, expected_mean, abs_tol=0.003)
-
 
 def test_check_extreme_value_binomial():
     seed = 28041990
