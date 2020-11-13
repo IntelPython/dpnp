@@ -44,6 +44,7 @@ cimport numpy
 
 __all__ = [
     "dpnp_beta",
+    "dpnp_binomial",
     "dpnp_chisquare",
     "dpnp_exponential",
     "dpnp_gamma",
@@ -55,6 +56,7 @@ __all__ = [
 
 
 ctypedef void(*fptr_custom_rng_beta_c_1out_t)(void *, double, double, size_t)
+ctypedef void(*fptr_custom_rng_binomial_c_1out_t)(void *, int, double, size_t)
 ctypedef void(*fptr_custom_rng_chi_square_c_1out_t)(void *, int, size_t)
 ctypedef void(*fptr_custom_rng_exponential_c_1out_t)(void *, double, size_t)
 ctypedef void(*fptr_custom_rng_gamma_c_1out_t)(void *, double, double, size_t)
@@ -65,10 +67,8 @@ ctypedef void(*fptr_custom_rng_uniform_c_1out_t)(void *, long, long, size_t)
 cpdef dparray dpnp_beta(double a, double b, size):
     """
     Returns an array populated with samples from beta distribution.
-
     `dpnp_beta` generates a matrix filled with random floats sampled from a
     univariate beta distribution.
-
     """
 
     # convert string type names (dparray.dtype) to C enum DPNPFuncType
@@ -84,6 +84,44 @@ cpdef dparray dpnp_beta(double a, double b, size):
     cdef fptr_custom_rng_beta_c_1out_t func = <fptr_custom_rng_beta_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), a, b, result.size)
+
+    return result
+
+
+cpdef dparray dpnp_binomial(int ntrial, double p, size):
+    """
+    Returns an array populated with samples from binomial distribution.
+    `dpnp_binomial` generates a matrix filled with random floats sampled from a
+    univariate binomial distribution for a given number of independent trials and
+    success probability p of a single trial.
+    """
+
+    dtype = numpy.int32
+    cdef dparray result
+    cdef DPNPFuncType param1_type
+    cdef DPNPFuncData kernel_data
+    cdef fptr_custom_rng_binomial_c_1out_t func
+
+    if ntrial == 0 or p == 0.0:
+        result = dparray(size, dtype=dtype)
+        result.fill(0.0)
+    elif p == 1.0:
+        result = dparray(size, dtype=dtype)
+        result.fill(ntrial)
+    else:
+        # convert string type names (dparray.dtype) to C enum DPNPFuncType
+        param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+
+        # get the FPTR data structure
+        kernel_data = get_dpnp_function_ptr(DPNP_FN_BINOMIAL, param1_type, param1_type)
+
+        result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+        # ceate result array with type given by FPTR data
+        result = dparray(size, dtype=result_type)
+
+        func = <fptr_custom_rng_binomial_c_1out_t > kernel_data.ptr
+        # call FPTR function
+        func(result.get_data(), ntrial, p, result.size)
 
     return result
 

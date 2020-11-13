@@ -3,6 +3,9 @@ tests/test_linalg.py::test_eig_arange[300-float32]
 tests/test_linalg.py::test_eig_arange[300-float64]
 tests/test_linalg.py::test_eig_arange[300-int32]
 tests/test_linalg.py::test_eig_arange[300-int64]
+tests/test_random.py::test_random_seed_binomial
+tests/test_random.py::test_invalid_args_binomial
+tests/test_random.py::test_check_moments_binomial
 tests/test_random.py::test_check_moments_beta
 tests/test_random.py::test_check_moments_gamma
 tests/test_random.py::test_invalid_args_beta

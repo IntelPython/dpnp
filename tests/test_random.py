@@ -121,6 +121,18 @@ def test_random_seed_beta():
     assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
+def test_random_seed_binomial():
+    seed = 28041990
+    size = 100
+    n, p = 10, .5  # number of trials, probability of each trial
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.binomial(n, p, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.binomial(n, p, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
 def test_random_seed_chisquare():
     seed = 28041990
     size = 100
@@ -169,6 +181,18 @@ def test_invalid_args_beta():
         dpnp.random.beta(a=a, b=b, size=size)
 
 
+def test_random_seed_binomial():
+    seed = 28041990
+    size = 100
+    n, p = 10, .5  # number of trials, probability of each trial
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.binomial(n, p, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.binomial(n, p, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
 def test_invalid_args_chisquare():
     size = 10
     df = -1  # positive `df` is expected
@@ -210,6 +234,19 @@ def test_check_moments_beta():
     assert math.isclose(mean, expected_mean, abs_tol=0.003)
 
 
+def test_check_moments_binomial():
+    seed = 28041990
+    dpnp.random.seed(seed)
+    n = 5
+    p = 0.8
+    expected_mean = n * p
+    expected_var = n * p * (1 - p)
+    var = numpy.var(dpnp.random.binomial(n=n, p=p, size=10**6))
+    mean = numpy.mean(dpnp.random.binomial(n=n, p=p, size=10**6))
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
 def test_check_moments_gamma():
     seed = 28041990
     dpnp.random.seed(seed)
@@ -221,3 +258,25 @@ def test_check_moments_gamma():
     mean = numpy.mean(dpnp.random.gamma(shape=shape, scale=scale, size=10**6))
     assert math.isclose(var, expected_var, abs_tol=0.003)
     assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+def test_check_extreme_value_binomial():
+    seed = 28041990
+    dpnp.random.seed(seed)
+
+    n = 5
+    p = 0.0
+    res = numpy.asarray(dpnp.random.binomial(n=n, p=p, size=100))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == 0.0
+
+    n = 0
+    p = 0.5
+    res = numpy.asarray(dpnp.random.binomial(n=n, p=p, size=100))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == 0.0
+
+    n = 5
+    p = 1.0
+    res = numpy.asarray(dpnp.random.binomial(n=n, p=p, size=100))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == 5

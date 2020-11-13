@@ -45,6 +45,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_ARGMIN
         DPNP_FN_ARGSORT
         DPNP_FN_BETA
+        DPNP_FN_BINOMIAL
         DPNP_FN_BITWISE_AND
         DPNP_FN_BITWISE_OR
         DPNP_FN_BITWISE_XOR
