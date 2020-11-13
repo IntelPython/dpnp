@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.random.chisquare &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.random.binomial &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.random.exponential" href="dpnp.random.exponential.html" />
-    <link rel="prev" title="dpnp.random.binomial" href="dpnp.random.binomial.html" /> 
+    <link rel="next" title="dpnp.random.chisquare" href="dpnp.random.chisquare.html" />
+    <link rel="prev" title="dpnp.random.beta" href="dpnp.random.beta.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -166,13 +166,13 @@
         
           <li><a href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a> &raquo;</li>
         
-      <li>dpnp.random.chisquare</li>
+      <li>dpnp.random.binomial</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.random.chisquare.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.random.binomial.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -185,42 +185,86 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-random-chisquare">
-<h1>dpnp.random.chisquare<a class="headerlink" href="#dpnp-random-chisquare" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-random-binomial">
+<h1>dpnp.random.binomial<a class="headerlink" href="#dpnp-random-binomial" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.random.chisquare">
-<code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">chisquare</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#chisquare"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.chisquare" title="Permalink to this definition">¶</a></dt>
-<dd><p>Draw samples from a chi-square distribution.</p>
-<p>When <cite>df</cite> independent random variables, each with standard normal
-distributions (mean 0, variance 1), are squared and summed, the
-resulting distribution is chi-square (see Notes).  This distribution
-is often used in hypothesis testing.</p>
+<dt id="dpnp.random.binomial">
+<code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">binomial</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#binomial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.binomial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Binomial distribution.</p>
+<p>Draw samples from a binomial distribution.</p>
+<p>Samples are drawn from a binomial distribution with specified
+parameters, n trials and p probability of success where
+n an integer &gt;= 0 and p is in the interval [0,1]. (n may be
+input as a float, but it is truncated to an integer in use)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>df</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Number of degrees of freedom, must be &gt; 0.</p></li>
+<li><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Parameter of the distribution, &gt;= 0. Floats are also accepted,
+but they will be truncated to integers.</p></li>
+<li><p><strong>p</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Parameter of the distribution, &gt;= 0 and &lt;=1.</p></li>
 <li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
 <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">*</span> <span class="pre">k</span></code> samples are drawn.  If size is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default),
-a single value is returned if <code class="docutils literal notranslate"><span class="pre">df</span></code> is a scalar.  Otherwise,
-<code class="docutils literal notranslate"><span class="pre">np.array(df).size</span></code> samples are drawn.</p></li>
+a single value is returned if <code class="docutils literal notranslate"><span class="pre">n</span></code> and <code class="docutils literal notranslate"><span class="pre">p</span></code> are both scalars.
+Otherwise, <code class="docutils literal notranslate"><span class="pre">np.broadcast(n,</span> <span class="pre">p).size</span></code> samples are drawn.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – Drawn samples from the parameterized chi-square distribution.</p>
+<dd class="field-even"><p><strong>out</strong> – Drawn samples from the parameterized binomial distribution, where
+each sample is equal to the number of successes over the n trials.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray or scalar</p>
+<dd class="field-odd"><p><a class="reference internal" href="dpnp.dparray.dparray.html#dpnp.dparray.dparray" title="dpnp.dparray.dparray">dparray</a>, int32</p>
 </dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – When <cite>df</cite> &lt;= 0 or when an inappropriate <cite>size</cite> (e.g. <code class="docutils literal notranslate"><span class="pre">size=-1</span></code>)
-    is given.</p>
+</dl>
+<p class="rubric">Notes</p>
+<p>The probability density for the binomial distribution is</p>
+<div class="math notranslate nohighlight">
+\[P(N) = \binom{n}{N}p^N(1-p)^{n-N},\]</div>
+<p>where <span class="math notranslate nohighlight">\(n\)</span> is the number of trials, <span class="math notranslate nohighlight">\(p\)</span> is the probability
+of success, and <span class="math notranslate nohighlight">\(N\)</span> is the number of successes.</p>
+<p>When estimating the standard error of a proportion in a population by
+using a random sample, the normal distribution works well unless the
+product p*n &lt;=5, where p = population proportion estimate, and n =
+number of samples, in which case the binomial distribution is used
+instead. For example, a sample of 15 people shows 4 who are left
+handed, and 11 who are right handed. Then p = 4/15 = 27%. 0.27*15 = 4,
+so the binomial distribution should be used in this case.</p>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id1"><span class="brackets">1</span></dt>
+<dd><p>Dalgaard, Peter, “Introductory Statistics with R”,
+Springer-Verlag, 2002.</p>
+</dd>
+<dt class="label" id="id2"><span class="brackets">2</span></dt>
+<dd><p>Glantz, Stanton A. “Primer of Biostatistics.”, McGraw-Hill,
+Fifth Edition, 2002.</p>
+</dd>
+<dt class="label" id="id3"><span class="brackets">3</span></dt>
+<dd><p>Lentner, Marvin, “Elementary Applied Statistics”, Bogden
+and Quigley, 1972.</p>
+</dd>
+<dt class="label" id="id4"><span class="brackets">4</span></dt>
+<dd><p>Weisstein, Eric W. “Binomial Distribution.” From MathWorld–A
+Wolfram Web Resource.
+<a class="reference external" href="http://mathworld.wolfram.com/BinomialDistribution.html">http://mathworld.wolfram.com/BinomialDistribution.html</a></p>
+</dd>
+<dt class="label" id="id5"><span class="brackets">5</span></dt>
+<dd><p>Wikipedia, “Binomial distribution”,
+<a class="reference external" href="https://en.wikipedia.org/wiki/Binomial_distribution">https://en.wikipedia.org/wiki/Binomial_distribution</a></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dpnp</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">chisquare</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
-<span class="go">array([ 1.89920014,  9.00867716,  3.13710533,  5.62318272]) # random</span>
-</pre></div>
-</div>
+<p>Draw samples from the distribution:
+&gt;&gt;&gt; n, p = 10, .5  # number of trials, probability of each trial
+&gt;&gt;&gt; s = dpnp.random.binomial(n, p, 1000)
+# result of flipping a coin 10 times, tested 1000 times.
+A real world example. A company drills 9 wild-cat oil exploration
+wells, each with an estimated probability of success of 0.1. All nine
+wells fail. What is the probability of that happening?
+Let’s do 20,000 trials of the model, and count the number that
+generate zero positive results.
+&gt;&gt;&gt; sum(dpnp.random.binomial(9, 0.1, 20000) == 0)/20000.
+# answer = 0.38885, or 38%.</p>
 </dd></dl>
 
 </div>
@@ -233,10 +277,10 @@ a single value is returned if <code class="docutils literal notranslate"><span c
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.random.exponential.html" class="btn btn-neutral float-right" title="dpnp.random.exponential" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.random.chisquare.html" class="btn btn-neutral float-right" title="dpnp.random.chisquare" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.random.binomial.html" class="btn btn-neutral float-left" title="dpnp.random.binomial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.random.beta.html" class="btn btn-neutral float-left" title="dpnp.random.beta" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
