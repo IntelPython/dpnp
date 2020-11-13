@@ -1,4 +1,4 @@
 <map id="custom_elemwise_transpose_c" name="custom_elemwise_transpose_c">
-<area shape="rect" id="node1" title="transpose function. Permute axes of the input to the output with elements permutation." alt="" coords="5,5,231,32"/>
-<area shape="rect" id="node2" href="$group___b_a_c_k_e_n_d___a_p_i.html#ga8805a5bf88725bc644760a3eb4f73c3e" title="SYCL queue memory allocation." alt="" coords="279,5,447,32"/>
+<area shape="rect" id="node1" title="transpose function. Permute axes of the input to the output with elements permutation." alt="" coords="5,5,211,32"/>
+<area shape="rect" id="node2" href="$group___b_a_c_k_e_n_d___a_p_i.html#ga8805a5bf88725bc644760a3eb4f73c3e" title="SYCL queue memory allocation." alt="" coords="259,5,409,32"/>
 </map>

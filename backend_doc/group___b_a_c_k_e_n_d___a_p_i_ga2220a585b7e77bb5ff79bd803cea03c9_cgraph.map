@@ -1,4 +1,4 @@
 <map id="custom_cov_c" name="custom_cov_c">
-<area shape="rect" id="node1" title="Custom implementation of cov function with MKL and PSTL." alt="" coords="5,5,120,32"/>
-<area shape="rect" id="node2" href="$group___b_a_c_k_e_n_d___a_p_i.html#ga8805a5bf88725bc644760a3eb4f73c3e" title="SYCL queue memory allocation." alt="" coords="168,5,336,32"/>
+<area shape="rect" id="node1" title="Custom implementation of cov function with math library and PSTL." alt="" coords="5,5,112,32"/>
+<area shape="rect" id="node2" href="$group___b_a_c_k_e_n_d___a_p_i.html#ga8805a5bf88725bc644760a3eb4f73c3e" title="SYCL queue memory allocation." alt="" coords="160,5,311,32"/>
 </map>
