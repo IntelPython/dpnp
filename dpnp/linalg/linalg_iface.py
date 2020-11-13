@@ -309,7 +309,7 @@ def norm(input, ord=None, axis=None, keepdims=False):
         result = dpnp_norm(input, ord=ord, axis=axis)
 
         # scalar returned
-        if result.shape == (1,):
+        if result.shape == (1,) and axis is None:
             return result.dtype.type(result[0])
 
         return result

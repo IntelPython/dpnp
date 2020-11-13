@@ -111,7 +111,6 @@ def test_norm1():
     ]
     ords = [None, -numpy.Inf, -2, -1, 0, 1, 2, 3, numpy.Inf]
     axis_ = [0, None]
-    keepdims = [True, False]
     for array in arrays:
         for ord in ords:
             for axis in axis_:
@@ -124,7 +123,7 @@ def test_norm1():
                 print('result = ', result)
                 expected = numpy.linalg.norm(a, ord=ord, axis=axis)
                 print('expected = ', expected)
-                numpy.testing.assert_array_equal(expected, result)
+                numpy.testing.assert_allclose(expected, result)
 
 
 # def test_norm2():
