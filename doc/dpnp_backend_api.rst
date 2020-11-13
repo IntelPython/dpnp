@@ -1,7 +1,7 @@
-.. _dpnp_backend_api:
+.. _dpnp_backend_reference:
 
-###############
-DPNP C++ backend API Functions
-###############
+*************************
+C++ backend API Reference
+*************************
 
-`DPNP C++ backend <https://intelpython.github.io/dpnp/backend_doc/>`_
+`DPNP C++ backend <backend_doc/>`_

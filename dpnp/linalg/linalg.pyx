@@ -41,14 +41,39 @@ cimport numpy
 
 
 __all__ = [
+    "dpnp_cholesky",
     "dpnp_det",
     "dpnp_eig",
+    "dpnp_eigvals",
     "dpnp_matrix_rank"
 ]
 
 
 # C function pointer to the C library template functions
 ctypedef void(*custom_linalg_1in_1out_func_ptr_t)(void *, void * , size_t * , size_t)
+
+
+# C function pointer to the C library template functions
+ctypedef void(*custom_linalg_1in_1out_func_ptr_t_)(void * , void * , size_t * )
+
+
+# C function pointer to the C library template functions
+ctypedef void(*custom_linalg_1in_1out_with_size_func_ptr_t_)(void *, void * , size_t)
+
+
+cpdef dparray dpnp_cholesky(dparray input):
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_CHOLESKY, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray(input.size, dtype=result_type)
+
+    cdef custom_linalg_1in_1out_func_ptr_t_ func = <custom_linalg_1in_1out_func_ptr_t_ > kernel_data.ptr
+
+    func(input.get_data(), result.get_data(), < size_t * > input._dparray_shape.data())
+    l_result = result.reshape(input.shape)
+    return l_result
 
 
 cpdef dparray dpnp_det(dparray input):
@@ -98,6 +123,25 @@ cpdef tuple dpnp_eig(dparray x1):
     func(x1.get_data(), res_val.get_data(), res_vec.get_data(), size)
 
     return (res_val, res_vec)
+
+
+cpdef dparray dpnp_eigvals(dparray input):
+    cdef dparray_shape_type input_shape = input.shape
+
+    cdef size_t size = 0 if input_shape.empty() else input_shape.front()
+
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_EIGVALS, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+
+    cdef dparray res_val = dparray((size,), dtype=result_type)
+
+    cdef custom_linalg_1in_1out_with_size_func_ptr_t_ func = <custom_linalg_1in_1out_with_size_func_ptr_t_> kernel_data.ptr
+    # call FPTR function
+    func(input.get_data(), res_val.get_data(), size)
+
+    return res_val
 
 
 cpdef dparray dpnp_matrix_rank(dparray input):

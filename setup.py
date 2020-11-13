@@ -157,12 +157,12 @@ except ImportError:
 
 # other OS specific
 if IS_WIN:
-    _project_compiler = "dpcpp"   # "clang-cl"
-    _project_linker = "lld-link"  # "dpcpp-cl"
+    _project_compiler = "dpcpp"
+    _project_linker = "lld-link"
     _project_cmplr_flag_sycl = []
     _project_cmplr_flag_compatibility = []
-    _project_cmplr_flag_lib = ['/DLL']
-    _project_cmplr_macro = [("_WIN", "1")]
+    _project_cmplr_flag_lib = ["/DLL"]
+    _project_cmplr_macro += [("_WIN", "1")]
     _project_rpath = []
     # TODO this flag creates unexpected behavior during compilation, need to be fixed
     # _sdl_cflags = ["-GS"]
@@ -354,7 +354,6 @@ dpnp_linalg = Extension(
 )
 
 cython_options.docstrings = True
-cython_options.embed_pos_in_docstring = True
 cython_options.warning_errors = True
 
 dpnp_cython_mods = cythonize([dpnp_backend, dpnp_dparray, dpnp_random, dpnp_utils, dpnp_linalg],
@@ -393,8 +392,9 @@ setup(name="DPNP",
       ext_modules=dpnp_cython_mods,
       cmdclass=dpnp_build_commands,
       packages=['dpnp',
-                'dpnp.random',
+                'dpnp.fft',
                 'dpnp.linalg',
+                'dpnp.random'
                 ],
       package_data={'dpnp': ['libdpnp_backend_c.so']},
       include_package_data=True,

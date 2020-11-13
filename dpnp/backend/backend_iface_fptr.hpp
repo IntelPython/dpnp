@@ -62,6 +62,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_NONE,         /**< Very first element of the enumeration */
     DPNP_FN_ABSOLUTE,     /**< Used in numpy.absolute() implementation  */
     DPNP_FN_ADD,          /**< Used in numpy.add() implementation  */
+    DPNP_FN_ARANGE,       /**< Used in numpy.arange() implementation  */
     DPNP_FN_ARCCOS,       /**< Used in numpy.arccos() implementation  */
     DPNP_FN_ARCCOSH,      /**< Used in numpy.arccosh() implementation  */
     DPNP_FN_ARCSIN,       /**< Used in numpy.arcsin() implementation  */
@@ -72,13 +73,16 @@ enum class DPNPFuncName : size_t
     DPNP_FN_ARGMAX,       /**< Used in numpy.argmax() implementation  */
     DPNP_FN_ARGMIN,       /**< Used in numpy.argmin() implementation  */
     DPNP_FN_ARGSORT,      /**< Used in numpy.argsort() implementation  */
+    DPNP_FN_BETA,         /**< Used in numpy.random.beta() implementation  */
     DPNP_FN_BITWISE_AND,  /**< Used in numpy.bitwise_and() implementation  */
     DPNP_FN_BITWISE_OR,   /**< Used in numpy.bitwise_or() implementation  */
     DPNP_FN_BITWISE_XOR,  /**< Used in numpy.bitwise_xor() implementation  */
     DPNP_FN_CBRT,         /**< Used in numpy.cbrt() implementation  */
     DPNP_FN_CEIL,         /**< Used in numpy.ceil() implementation  */
     DPNP_FN_CHISQUARE,    /**< Used in numpy.random.chisquare() implementation  */
+    DPNP_FN_CHOLESKY,     /**< Used in numpy.linalg.cholesky() implementation  */
     DPNP_FN_COPYSIGN,     /**< Used in numpy.copysign() implementation  */
+    DPNP_FN_CORRELATE,    /**< Used in numpy.correlate() implementation  */
     DPNP_FN_COS,          /**< Used in numpy.cos() implementation  */
     DPNP_FN_COSH,         /**< Used in numpy.cosh() implementation  */
     DPNP_FN_COV,          /**< Used in numpy.cov() implementation  */
@@ -87,6 +91,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_DIVIDE,       /**< Used in numpy.divide() implementation  */
     DPNP_FN_DOT,          /**< Used in numpy.dot() implementation  */
     DPNP_FN_EIG,          /**< Used in numpy.linalg.eig() implementation  */
+    DPNP_FN_EIGVALS,      /**< Used in numpy.linalg.eigvals() implementation  */
     DPNP_FN_EXP,          /**< Used in numpy.exp() implementation  */
     DPNP_FN_EXP2,         /**< Used in numpy.exp2() implementation  */
     DPNP_FN_EXPM1,        /**< Used in numpy.expm1() implementation  */
@@ -95,6 +100,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_FLOOR,        /**< Used in numpy.floor() implementation  */
     DPNP_FN_FLOOR_DIVIDE, /**< Used in numpy.floor_divide() implementation  */
     DPNP_FN_FMOD,         /**< Used in numpy.fmod() implementation  */
+    DPNP_FN_GAMMA,        /**< Used in numpy.random.gamma() implementation  */
     DPNP_FN_GAUSSIAN,     /**< Used in numpy.random.randn() implementation  */
     DPNP_FN_HYPOT,        /**< Used in numpy.hypot() implementation  */
     DPNP_FN_INVERT,       /**< Used in numpy.invert() implementation  */

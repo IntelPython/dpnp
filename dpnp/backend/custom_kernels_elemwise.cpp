@@ -249,8 +249,47 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
 
 #include <custom_1arg_1type_tbl.hpp>
 
+template <typename _KernelNameSpecialization>
+class dpnp_arange_c_kernel;
+
+template <typename _DataType>
+void dpnp_arange_c(size_t start, size_t step, void* result1, size_t size)
+{
+    // parameter `size` used instead `stop` to avoid dependency on array length calculation algorithm
+    // TODO: floating point (and negatives) types from `start` and `step`
+
+    if (!size)
+    {
+        return;
+    }
+    
+    cl::sycl::event event;
+
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    cl::sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        size_t i = global_id[0];
+
+        result[i] = start + i * step;
+    };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_arange_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+    };
+
+    event = DPNP_QUEUE.submit(kernel_func);
+
+    event.wait();
+}
+
 static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
 {
+    fmap[DPNPFuncName::DPNP_FN_ARANGE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_arange_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_ARANGE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_arange_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_ARANGE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_arange_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_ARANGE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_arange_c<long>};
+
     fmap[DPNPFuncName::DPNP_FN_RECIP][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_recip_c<double>};
     fmap[DPNPFuncName::DPNP_FN_RECIP][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_recip_c<float>};
     fmap[DPNPFuncName::DPNP_FN_RECIP][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_recip_c<int>};

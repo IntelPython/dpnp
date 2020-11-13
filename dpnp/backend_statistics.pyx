@@ -35,13 +35,14 @@ and the rest of the library
 
 import dpnp
 import numpy
-import dpnp
+
 from dpnp.dpnp_utils cimport *
 from dpnp.backend cimport *
 
 
 __all__ += [
     "dpnp_average",
+    "dpnp_correlate",
     "dpnp_cov",
     "dpnp_max",
     "dpnp_mean",
@@ -92,6 +93,25 @@ cpdef dpnp_average(dparray x1):
     return_type = numpy.float32 if (x1.dtype == numpy.float32) else numpy.float64
 
     return (return_type(array_sum / x1.size))
+
+
+cpdef dparray dpnp_correlate(dparray x1, dparray x2):
+    """ Convert string type names (dparray.dtype) to C enum DPNPFuncType """
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(x2.dtype)
+
+    """ get the FPTR data structure """
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_CORRELATE, param1_type, param2_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    """ Create result array with type given by FPTR data """
+    cdef dparray result = dparray(1, dtype=result_type)
+
+    cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
+    """ Call FPTR function """
+    func(x1.get_data(), x2.get_data(), result.get_data(), x1.size)
+
+    return result
 
 
 cpdef dparray dpnp_cov(dparray array1):
