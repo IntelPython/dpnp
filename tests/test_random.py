@@ -282,6 +282,7 @@ def test_check_moments_gamma():
     assert math.isclose(var, expected_var, abs_tol=0.003)
     assert math.isclose(mean, expected_mean, abs_tol=0.003)
 
+
 def test_check_extreme_value_binomial():
     seed = 28041990
     dpnp.random.seed(seed)
@@ -303,3 +304,22 @@ def test_check_extreme_value_binomial():
     res = numpy.asarray(dpnp.random.binomial(n=n, p=p, size=100))
     assert len(numpy.unique(res)) == 1
     assert numpy.unique(res)[0] == 5
+
+
+def test_check_extreme_value_negative_binomial():
+    seed = 28041990
+    dpnp.random.seed(seed)
+
+    n = 5
+    p = 1.0
+    res = numpy.asarray(dpnp.random.negative_binomial(n=n, p=p, size=10))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == 0.0
+
+    n = 5
+    p = 0.0
+    res = numpy.asarray(dpnp.random.negative_binomial(n=n, p=p, size=10))
+    check_val = numpy.iinfo(res.dtype).min
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == check_val
+
