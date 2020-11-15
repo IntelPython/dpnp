@@ -222,20 +222,32 @@ cpdef dparray dpnp_negative_binomial(double a, double p, size):
     """
 
     dtype = numpy.int32
+    cdef dparray result
+    cdef DPNPFuncType param1_type
+    cdef DPNPFuncData kernel_data
+    cdef fptr_custom_rng_negative_binomial_c_1out_t func
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+    if p == 0.0:
+        filled_val = numpy.iinfo(dtype).min
+        result = dparray(size, dtype=dtype)
+        result.fill(filled_val)
+    elif p == 1.0:
+        result = dparray(size, dtype=dtype)
+        result.fill(0.0)
+    else:
+        # convert string type names (dparray.dtype) to C enum DPNPFuncType
+        param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
-    # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_NEGATIVE_BINOMIAL, param1_type, param1_type)
+        # get the FPTR data structure
+        kernel_data = get_dpnp_function_ptr(DPNP_FN_NEGATIVE_BINOMIAL, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-    # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(size, dtype=result_type)
+        result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+        # ceate result array with type given by FPTR data
+        result = dparray(size, dtype=result_type)
 
-    cdef fptr_custom_rng_negative_binomial_c_1out_t func = <fptr_custom_rng_negative_binomial_c_1out_t > kernel_data.ptr
-    # call FPTR function
-    func(result.get_data(), a, p, result.size)
+        func = <fptr_custom_rng_negative_binomial_c_1out_t > kernel_data.ptr
+        # call FPTR function
+        func(result.get_data(), a, p, result.size)
 
     return result
 

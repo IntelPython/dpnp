@@ -510,7 +510,7 @@ def negative_binomial(n, p, size=None):
         # array_like of floats for `p` and `n` params
         if p > 1 or p < 0:
             checker_throw_value_error("negative_binomial", "p", p, "in [0, 1]")
-        if n < 0:
+        if n <= 0:
             checker_throw_value_error("negative_binomial", "n", n, "non-negative")
 
         return dpnp_negative_binomial(n, p, size)
