@@ -2,6 +2,7 @@ var files_dup =
 [
     [ "backend_fptr.hpp", "backend__fptr_8hpp_source.html", null ],
     [ "backend_iface.hpp", "backend__iface_8hpp_source.html", null ],
+    [ "backend_iface_fft.hpp", "backend__iface__fft_8hpp_source.html", null ],
     [ "backend_iface_fptr.cpp", "backend__iface__fptr_8cpp_source.html", null ],
     [ "backend_iface_fptr.hpp", "backend__iface__fptr_8hpp_source.html", null ],
     [ "backend_pstl.hpp", "backend__pstl_8hpp_source.html", null ],
@@ -21,6 +22,7 @@ var files_dup =
     [ "custom_kernels_searching.cpp", "custom__kernels__searching_8cpp_source.html", null ],
     [ "custom_kernels_sorting.cpp", "custom__kernels__sorting_8cpp_source.html", null ],
     [ "custom_kernels_statistics.cpp", "custom__kernels__statistics_8cpp_source.html", null ],
+    [ "dpnp_kernels_fft.cpp", "dpnp__kernels__fft_8cpp_source.html", null ],
     [ "memory_sycl.cpp", "memory__sycl_8cpp_source.html", null ],
     [ "queue_sycl.cpp", "queue__sycl_8cpp_source.html", null ],
     [ "queue_sycl.hpp", "queue__sycl_8hpp_source.html", null ]
