@@ -168,6 +168,17 @@ def test_random_seed_gamma():
     a2 = dpnp.random.gamma(shape=shape, size=size)
     assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
+def test_random_seed_negative_binomial():
+    seed = 28041990
+    size = 100
+    n, p = 10, .5  # number of trials, probability of each trial
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.negative_binomial(n, p, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.negative_binomial(n, p, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
 
 def test_invalid_args_beta():
     size = 10
@@ -218,6 +229,18 @@ def test_invalid_args_gamma():
         dpnp.random.gamma(shape, scale, size)
 
 
+def test_invalid_args_negative_binomial():
+    size = 10
+    n = 10    # parameter `n`, OK
+    p = -0.5  # parameter `p`, expected between [0, 1]
+    with pytest.raises(ValueError):
+        dpnp.random.negative_binomial(n, p, size)
+    n = -10   # parameter `n`, expected non-negative
+    p = 0.5   # parameter `p`, OK
+    with pytest.raises(ValueError):
+        dpnp.random.negative_binomial(n, p, size)
+
+
 def test_check_moments_beta():
     seed = 28041990
     dpnp.random.seed(seed)
@@ -259,6 +282,7 @@ def test_check_moments_gamma():
     assert math.isclose(var, expected_var, abs_tol=0.003)
     assert math.isclose(mean, expected_mean, abs_tol=0.003)
 
+
 def test_check_extreme_value_binomial():
     seed = 28041990
     dpnp.random.seed(seed)
@@ -280,3 +304,22 @@ def test_check_extreme_value_binomial():
     res = numpy.asarray(dpnp.random.binomial(n=n, p=p, size=100))
     assert len(numpy.unique(res)) == 1
     assert numpy.unique(res)[0] == 5
+
+
+def test_check_extreme_value_negative_binomial():
+    seed = 28041990
+    dpnp.random.seed(seed)
+
+    n = 5
+    p = 1.0
+    res = numpy.asarray(dpnp.random.negative_binomial(n=n, p=p, size=10))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == 0.0
+
+    n = 5
+    p = 0.0
+    res = numpy.asarray(dpnp.random.negative_binomial(n=n, p=p, size=10))
+    check_val = numpy.iinfo(res.dtype).min
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == check_val
+
