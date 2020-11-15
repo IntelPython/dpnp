@@ -39,6 +39,7 @@ import numpy
 __all__ = [
     "bool",
     "bool_",
+    "complex128",
     "dtype",
     "float",
     "float32",
@@ -54,6 +55,7 @@ __all__ = [
 
 bool = numpy.bool
 bool_ = numpy.bool_
+complex128 = numpy.complex128
 dtype = numpy.dtype
 float = numpy.float
 float32 = numpy.float32

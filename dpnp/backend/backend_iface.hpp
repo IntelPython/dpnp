@@ -42,6 +42,8 @@
 #include <cstdint>
 #include <vector>
 
+#include "backend_iface_fft.hpp"
+
 #ifdef _WIN
 #define INP_DLLEXPORT __declspec(dllexport)
 #else
