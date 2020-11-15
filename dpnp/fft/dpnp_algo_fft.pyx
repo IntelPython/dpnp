@@ -1,5 +1,4 @@
 # cython: language_level=3
-# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2020, Intel Corporation
@@ -26,53 +25,43 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""
-Interface of the Discrete Fourier Transform part of the DPNP
+"""Module Backend (FFT part)
 
-Notes
------
-This module is a face or public interface file for the library
-it contains:
- - Interface functions
- - documentation for the functions
- - The functions parameters check
+This module contains interface functions between C backend layer
+and the rest of the library
 
 """
 
 
 import dpnp
-import numpy
-
-from dpnp.dparray import dparray
-from dpnp.dpnp_utils import *
-from dpnp.fft.dpnp_algo_fft import *
+from dpnp.backend cimport *
+from dpnp.dpnp_utils cimport *
 
 
 __all__ = [
-    "fft"
+    "dpnp_fft"
 ]
 
 
-def fft(x1, n=None, axis=-1, norm=None):
-    """
-    Compute the one-dimensional discrete Fourier Transform.
+ctypedef void(*fptr_dpnp_fft_fft_t)(void * , void * , size_t)
 
-    See Also
-    --------
-    :meth:`numpy.fft.fft`
 
-    """
+cpdef dparray dpnp_fft(dparray input):
+    cdef dparray_shape_type input_shape = input.shape
+    cdef size_t input_shape_size = input.ndim
 
-    is_x1_dparray = isinstance(x1, dparray)
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and 0):
-        if n is not None:
-            pass
-        if axis != -1:
-            pass
-        if norm is not None:
-            pass
-        else:
-            return dpnp_fft(x1)
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FFT_FFT, param1_type, param1_type)
 
-    return call_origin(numpy.fft.fft, x1, n, axis, norm)
+    result_type = dpnp.complex128  # dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray result = dparray(input_shape, dtype=result_type)
+
+    cdef fptr_dpnp_fft_fft_t func = <fptr_dpnp_fft_fft_t > kernel_data.ptr
+    # call FPTR function
+    func(input.get_data(), result.get_data(), input.size)
+
+    return result

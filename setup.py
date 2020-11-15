@@ -276,8 +276,8 @@ dpnp_backend_c = [
         {
             "sources": [
                 "dpnp/backend/backend_iface_fptr.cpp",
-                "dpnp/backend/custom_kernels.cpp",
                 "dpnp/backend/custom_kernels_bitwise.cpp",
+                "dpnp/backend/custom_kernels.cpp",
                 "dpnp/backend/custom_kernels_elemwise.cpp",
                 "dpnp/backend/custom_kernels_linalg.cpp",
                 "dpnp/backend/custom_kernels_manipulation.cpp",
@@ -287,6 +287,7 @@ dpnp_backend_c = [
                 "dpnp/backend/custom_kernels_searching.cpp",
                 "dpnp/backend/custom_kernels_sorting.cpp",
                 "dpnp/backend/custom_kernels_statistics.cpp",
+                "dpnp/backend/dpnp_kernels_fft.cpp",
                 "dpnp/backend/memory_sycl.cpp",
                 "dpnp/backend/queue_sycl.cpp"
             ],
@@ -359,10 +360,20 @@ dpnp_linalg = Extension(
     language="c++"
 )
 
+dpnp_fft = Extension(
+    name="dpnp.fft.dpnp_algo_fft",
+    sources=["dpnp/fft/dpnp_algo_fft.pyx"],
+    include_dirs=[numpy.get_include()] + _project_backend_dir,
+    extra_compile_args=_sdl_cflags,
+    extra_link_args=_project_extra_link_args,
+    define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
+    language="c++"
+)
+
 cython_options.docstrings = True
 cython_options.warning_errors = True
 
-dpnp_cython_mods = cythonize([dpnp_backend, dpnp_dparray, dpnp_random, dpnp_utils, dpnp_linalg],
+dpnp_cython_mods = cythonize([dpnp_backend, dpnp_dparray, dpnp_random, dpnp_utils, dpnp_linalg, dpnp_fft],
                              compiler_directives={"language_level": sys.version_info[0],
                                                   "warn.unused": False,
                                                   "warn.unused_result": False,
