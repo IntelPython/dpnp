@@ -52,6 +52,7 @@ __all__ = [
     'amax',
     'amin',
     'average',
+    'correlate',
     'cov',
     'max',
     'mean',
@@ -64,71 +65,75 @@ __all__ = [
 
 def amax(input, axis=None, out=None):
     """
-        Return the maximum of an array or maximum along an axis.
-        Parameters
-        ----------
-        input : array_like
-            Input data.
-        axis : None or int or tuple of ints, optional
-            Axis or axes along which to operate.  By default, flattened input is
-            used.
-            .. versionadded:: 1.7.0
-            If this is a tuple of ints, the maximum is selected over multiple axes,
-            instead of a single axis or all the axes as before.
-        out : ndarray, optional
-            Alternative output array in which to place the result.  Must
-            be of the same shape and buffer length as the expected output.
-            See `ufuncs-output-type` for more details.
-        Returns
-        -------
-        amax : ndarray or scalar
-            Maximum of `a`. If `axis` is None, the result is a scalar value.
-            If `axis` is given, the result is an array of dimension
-            ``a.ndim - 1``.
-        """
+    Return the maximum of an array or maximum along an axis.
+
+    Parameters
+    ----------
+    input : array_like
+        Input data.
+    axis : None or int or tuple of ints, optional
+        Axis or axes along which to operate.  By default, flattened input is
+        used.
+        .. versionadded:: 1.7.0
+        If this is a tuple of ints, the maximum is selected over multiple axes,
+        instead of a single axis or all the axes as before.
+    out : ndarray, optional
+        Alternative output array in which to place the result.  Must
+        be of the same shape and buffer length as the expected output.
+        See `ufuncs-output-type` for more details.
+
+    Returns
+    -------
+    amax : ndarray or scalar
+        Maximum of `a`. If `axis` is None, the result is a scalar value.
+        If `axis` is given, the result is an array of dimension
+        ``a.ndim - 1``.
+    """
     return max(input, axis=axis, out=out)
 
 
 def amin(input, axis=None, out=None):
     """
-        Return the minimum of an array or minimum along an axis.
-        Parameters
-        ----------
-        input : array_like
-            Input data.
-        axis : None or int or tuple of ints, optional
-            Axis or axes along which to operate.  By default, flattened input is
-            used.
-            .. versionadded:: 1.7.0
-            If this is a tuple of ints, the minimum is selected over multiple axes,
-            instead of a single axis or all the axes as before.
-        out : ndarray, optional
-            Alternative output array in which to place the result.  Must
-            be of the same shape and buffer length as the expected output.
-            See `ufuncs-output-type` for more details.
-        keepdims : bool, optional
-            If this is set to True, the axes which are reduced are left
-            in the result as dimensions with size one. With this option,
-            the result will broadcast correctly against the input array.
-            If the default value is passed, then `keepdims` will not be
-            passed through to the `amin` method of sub-classes of
-            `ndarray`, however any non-default value will be.  If the
-            sub-class' method does not implement `keepdims` any
-            exceptions will be raised.
-        initial : scalar, optional
-            The maximum value of an output element. Must be present to allow
-            computation on empty slice. See `~numpy.ufunc.reduce` for details.
-            .. versionadded:: 1.15.0
-        where : array_like of bool, optional
-            Elements to compare for the minimum. See `~numpy.ufunc.reduce`
-            for details.
-            .. versionadded:: 1.17.0
-        Returns
-        -------
-        amin : ndarray or scalar
-            Minimum of `input`. If `axis` is None, the result is a scalar value.
-            If `axis` is given, the result is an array of dimension
-            ``input.ndim - 1``.
+    Return the minimum of an array or minimum along an axis.
+
+    Parameters
+    ----------
+    input : array_like
+        Input data.
+    axis : None or int or tuple of ints, optional
+        Axis or axes along which to operate.  By default, flattened input is
+        used.
+        .. versionadded:: 1.7.0
+        If this is a tuple of ints, the minimum is selected over multiple axes,
+        instead of a single axis or all the axes as before.
+    out : ndarray, optional
+        Alternative output array in which to place the result.  Must
+        be of the same shape and buffer length as the expected output.
+        See `ufuncs-output-type` for more details.
+    keepdims : bool, optional
+        If this is set to True, the axes which are reduced are left
+        in the result as dimensions with size one. With this option,
+        the result will broadcast correctly against the input array.
+        If the default value is passed, then `keepdims` will not be
+        passed through to the `amin` method of sub-classes of
+        `ndarray`, however any non-default value will be.  If the
+        sub-class' method does not implement `keepdims` any
+        exceptions will be raised.
+    initial : scalar, optional
+        The maximum value of an output element. Must be present to allow
+        computation on empty slice. See `~numpy.ufunc.reduce` for details.
+        .. versionadded:: 1.15.0
+    where : array_like of bool, optional
+        Elements to compare for the minimum. See `~numpy.ufunc.reduce`
+        for details.
+        .. versionadded:: 1.17.0
+
+    Returns
+    -------
+    amin : ndarray or scalar
+        Minimum of `input`. If `axis` is None, the result is a scalar value.
+        If `axis` is given, the result is an array of dimension
+        ``input.ndim - 1``.
     """
 
     return min(input, axis=axis, out=out)
@@ -216,6 +221,87 @@ def average(a, axis=None, weights=None, returned=False):
             return dpnp_average(a)
 
     return call_origin(numpy.average, a, axis, weights, returned)
+
+
+def correlate(a, v, mode='valid'):
+    """
+    Cross-correlation of two 1-dimensional sequences.
+
+    This function computes the correlation as generally defined in signal
+    processing texts::
+
+        c_{av}[k] = sum_n a[n+k] * conj(v[n])
+
+    with a and v sequences being zero-padded where necessary and conj being
+    the conjugate.
+
+    Parameters
+    ----------
+    a, v : array_like
+        Input sequences.
+    mode : {'valid', 'same', 'full'}, optional
+        Refer to the `convolve` docstring.  Note that the default
+        is 'valid', unlike `convolve`, which uses 'full'.
+    old_behavior : bool
+        `old_behavior` was removed in NumPy 1.10. If you need the old
+        behavior, use `multiarray.correlate`.
+
+    Returns
+    -------
+    out : ndarray
+        Discrete cross-correlation of `a` and `v`.
+
+    See Also
+    --------
+    convolve : Discrete, linear convolution of two one-dimensional sequences.
+    multiarray.correlate : Old, no conjugate, version of correlate.
+
+    Notes
+    -----
+    The definition of correlation above is not unique and sometimes correlation
+    may be defined differently. Another common definition is::
+
+        c'_{av}[k] = sum_n a[n] conj(v[n+k])
+
+    which is related to ``c_{av}[k]`` by ``c'_{av}[k] = c_{av}[-k]``.
+
+    Examples
+    --------
+    >>> np.correlate([1, 2, 3], [0, 1, 0.5])
+    array([3.5])
+    >>> np.correlate([1, 2, 3], [0, 1, 0.5], "same")
+    array([2. ,  3.5,  3. ])
+    >>> np.correlate([1, 2, 3], [0, 1, 0.5], "full")
+    array([0.5,  2. ,  3.5,  3. ,  0. ])
+
+    Using complex sequences:
+
+    >>> np.correlate([1+1j, 2, 3-1j], [0, 1, 0.5j], 'full')
+    array([ 0.5-0.5j,  1.0+0.j ,  1.5-1.5j,  3.0-1.j ,  0.0+0.j ])
+
+    Note that you get the time reversed, complex conjugated result
+    when the two input sequences change places, i.e.,
+    ``c_{va}[k] = c^{*}_{av}[-k]``:
+
+    >>> np.correlate([0, 1, 0.5j], [1+1j, 2, 3-1j], 'full')
+    array([ 0.0+0.j ,  3.0+1.j ,  1.5+1.5j,  1.0+0.j ,  0.5+0.5j])
+
+    """
+    if not use_origin_backend(a):
+        if not isinstance(a, dparray):
+            pass
+        elif not isinstance(v, dparray):
+            pass
+        elif a.size != v.size or a.size == 0:
+            pass
+        elif a.shape != v.shape:
+            pass
+        elif mode != 'valid':
+            pass
+        else:
+            return dpnp_correlate(a, v)
+
+    return call_origin(numpy.correlate, a, v, mode=mode)
 
 
 def cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None):
@@ -359,28 +445,30 @@ def cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=N
 
 def max(input, axis=None, out=None):
     """
-        Return the maximum of an array or maximum along an axis.
-        Parameters
-        ----------
-        input : array_like
-            Input data.
-        axis : None or int or tuple of ints, optional
-            Axis or axes along which to operate.  By default, flattened input is
-            used.
-            .. versionadded:: 1.7.0
-            If this is a tuple of ints, the maximum is selected over multiple axes,
-            instead of a single axis or all the axes as before.
-        out : ndarray, optional
-            Alternative output array in which to place the result.  Must
-            be of the same shape and buffer length as the expected output.
-            See `ufuncs-output-type` for more details.
-        Returns
-        -------
-        amax : ndarray or scalar
-            Maximum of `a`. If `axis` is None, the result is a scalar value.
-            If `axis` is given, the result is an array of dimension
-            ``a.ndim - 1``.
-        """
+    Return the maximum of an array or maximum along an axis.
+
+    Parameters
+    ----------
+    input : array_like
+        Input data.
+    axis : None or int or tuple of ints, optional
+        Axis or axes along which to operate.  By default, flattened input is
+        used.
+        .. versionadded:: 1.7.0
+        If this is a tuple of ints, the maximum is selected over multiple axes,
+        instead of a single axis or all the axes as before.
+    out : ndarray, optional
+        Alternative output array in which to place the result.  Must
+        be of the same shape and buffer length as the expected output.
+        See `ufuncs-output-type` for more details.
+
+    Returns
+    -------
+    amax : ndarray or scalar
+        Maximum of `a`. If `axis` is None, the result is a scalar value.
+        If `axis` is given, the result is an array of dimension
+        ``a.ndim - 1``.
+    """
 
     dim_input = input.ndim
 
@@ -459,6 +547,7 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
     """
     Compute the median along the specified axis.
     Returns the median of the array elements.
+
     Parameters
     ----------
     a : array_like
@@ -484,6 +573,7 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
         in the result as dimensions with size one. With this option,
         the result will broadcast correctly against the original `arr`.
         .. versionadded:: 1.9.0
+
     Returns
     -------
     median : ndarray
@@ -492,15 +582,18 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
         ``np.float64``.  Otherwise, the data-type of the output is the
         same as that of the input. If `out` is specified, that array is
         returned instead.
+
     See Also
     --------
     mean, percentile
+
     Notes
     -----
     Given a vector ``V`` of length ``N``, the median of ``V`` is the
     middle value of a sorted copy of ``V``, ``V_sorted`` - i
     e., ``V_sorted[(N-1)/2]``, when ``N`` is odd, and the average of the
     two middle values of ``V_sorted`` when ``N`` is even.
+
     Examples
     --------
     >>> a = np.array([[10, 7, 4], [3, 2, 1]])
@@ -553,26 +646,28 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
 
 def min(input, axis=None, out=None):
     """
-        Return the minimum along a given axis.
-        Parameters
-        ----------
-        input : array_like
-            Input data.
-        axis : None or int or tuple of ints, optional
-            Axis or axes along which to operate. By default, flattened input is used.
-            New in version 1.7.0.
-            If this is a tuple of ints, the minimum is selected over multiple axes,
-            instead of a single axis or all the axes as before.
-        out : ndarray, optional
-            Alternative output array in which to place the result. Must be of the
-            same shape and buffer length as the expected output.
-            See ufuncs-output-type for more details.
-        Returns
-        -------
-        m : ndarray, see dtype parameter above
-            Minimum of a. If axis is None, the result is a scalar value.
-            If axis is given, the result is an array of dimension a.ndim - 1.
-        """
+    Return the minimum along a given axis.
+
+    Parameters
+    ----------
+    input : array_like
+        Input data.
+    axis : None or int or tuple of ints, optional
+        Axis or axes along which to operate. By default, flattened input is used.
+        New in version 1.7.0.
+        If this is a tuple of ints, the minimum is selected over multiple axes,
+        instead of a single axis or all the axes as before.
+    out : ndarray, optional
+        Alternative output array in which to place the result. Must be of the
+        same shape and buffer length as the expected output.
+        See ufuncs-output-type for more details.
+
+    Returns
+    -------
+    m : ndarray, see dtype parameter above
+        Minimum of a. If axis is None, the result is a scalar value.
+        If axis is given, the result is an array of dimension a.ndim - 1.
+    """
 
     dim_input = input.ndim
 

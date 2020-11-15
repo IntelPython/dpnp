@@ -66,6 +66,8 @@ __all__ = [
     "mod",
     "modf",
     "multiply",
+    "nanprod",
+    "nansum",
     "negative",
     "power",
     "prod",
@@ -108,10 +110,6 @@ def absolute(x1, **kwargs):
 
     if not use_origin_backend(x1) and is_input_dparray and x1.ndim != 0 and not kwargs:
         result = dpnp_absolute(x1)
-
-        # scalar returned
-        if result.shape == (1,):
-            return result.dtype.type(result[0])
 
         return result
 
@@ -488,6 +486,38 @@ def multiply(x1, x2, **kwargs):
     return call_origin(numpy.multiply, x1, x2, **kwargs)
 
 
+def nanprod(x1, **kwargs):
+    """
+    Calculate prod() function treating 'Not a Numbers' (NaN) as ones.
+
+    .. seealso:: :func:`numpy.nanprod`
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
+        return dpnp_nanprod(x1)
+
+    return call_origin(numpy.nanprod, x1, **kwargs)
+
+
+def nansum(x1, **kwargs):
+    """
+    Calculate sum() function treating 'Not a Numbers' (NaN) as zero.
+
+    .. seealso:: :func:`numpy.nansum`
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
+        return dpnp_nansum(x1)
+
+    return call_origin(numpy.nansum, x1, **kwargs)
+
+
 def negative(x1, **kwargs):
     """
     Negative element-wise.
@@ -637,8 +667,16 @@ def sum(x1, **kwargs):
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
-        return dpnp_sum(x1)
+    if (not use_origin_backend(x1) and is_x1_dparray):
+        axis = kwargs.get('axis')
+
+        result = dpnp_sum(x1, axis)
+
+        # scalar returned
+        if result.shape == (1,):
+            return result.dtype.type(result[0])
+
+        return result
 
     return call_origin(numpy.sum, x1, **kwargs)
 

@@ -31,6 +31,41 @@
 namespace mkl_rng = oneapi::mkl::rng;
 
 template <typename _DataType>
+void custom_rng_beta_c(void* result, _DataType a, _DataType b, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+
+    _DataType displacement = _DataType(0.0);
+
+    _DataType scalefactor = _DataType(1.0);
+
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    mkl_rng::beta<_DataType> distribution(a, b, displacement, scalefactor);
+    // perform generation
+    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+    event_out.wait();
+}
+
+template <typename _DataType>
+void custom_rng_binomial_c(void* result, int ntrial, double p, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    mkl_rng::binomial<_DataType> distribution(ntrial, p);
+    // perform generation
+    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+    event_out.wait();
+}
+
+template <typename _DataType>
 void custom_rng_chi_square_c(void* result, int df, size_t size)
 {
     if (!size)
@@ -59,6 +94,25 @@ void custom_rng_exponential_c(void* result, _DataType beta, size_t size)
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
     mkl_rng::exponential<_DataType> distribution(a, beta);
+    // perform generation
+    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+    event_out.wait();
+}
+
+template <typename _DataType>
+void custom_rng_gamma_c(void* result, _DataType shape, _DataType scale, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+
+    // set displacement a
+    const _DataType a = (_DataType(0.0));
+
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    mkl_rng::gamma<_DataType> distribution(shape, a, scale);
     // perform generation
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
     event_out.wait();
@@ -116,11 +170,19 @@ void custom_rng_uniform_c(void* result, long low, long high, size_t size)
 
 void func_map_init_random(func_map_t& fmap)
 {
+    fmap[DPNPFuncName::DPNP_FN_BETA][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_beta_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_BETA][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_rng_beta_c<float>};
+
+    fmap[DPNPFuncName::DPNP_FN_BINOMIAL][eft_INT][eft_INT] = {eft_INT, (void*)custom_rng_binomial_c<int>};
+
     fmap[DPNPFuncName::DPNP_FN_CHISQUARE][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_chi_square_c<double>};
     fmap[DPNPFuncName::DPNP_FN_CHISQUARE][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_rng_chi_square_c<float>};
 
     fmap[DPNPFuncName::DPNP_FN_EXPONENTIAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_exponential_c<double>};
     fmap[DPNPFuncName::DPNP_FN_EXPONENTIAL][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_rng_exponential_c<float>};
+
+    fmap[DPNPFuncName::DPNP_FN_GAMMA][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_gamma_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_GAMMA][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_rng_gamma_c<float>};
 
     fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_gaussian_c<double>};
     fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_rng_gaussian_c<float>};

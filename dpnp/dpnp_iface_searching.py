@@ -56,6 +56,7 @@ __all__ = [
 def argmax(in_array1, axis=None, out=None):
     """
     Returns the indices of the maximum values along an axis.
+
     Parameters
     ----------
     a : array_like
@@ -66,11 +67,13 @@ def argmax(in_array1, axis=None, out=None):
     out : array, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
+
     Returns
     -------
     index_array : ndarray of ints
         Array of indices into the array. It has the same shape as `a.shape`
         with the dimension along `axis` removed.
+
     See Also
     --------
     ndarray.argmax, argmin
@@ -78,10 +81,12 @@ def argmax(in_array1, axis=None, out=None):
     unravel_index : Convert a flat index into an index tuple.
     take_along_axis : Apply ``np.expand_dims(index_array, axis)``
                       from argmax to an array as if by calling max.
+
     Notes
     -----
     In case of multiple occurrences of the maximum values, the indices
     corresponding to the first occurrence are returned.
+
     Examples
     --------
     >>> a = np.arange(6).reshape(2,3) + 10
@@ -139,6 +144,7 @@ def argmax(in_array1, axis=None, out=None):
 def argmin(in_array1, axis=None, out=None):
     """
     Returns the indices of the minimum values along an axis.
+
     Parameters
     ----------
     a : array_like
@@ -149,11 +155,13 @@ def argmin(in_array1, axis=None, out=None):
     out : array, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
+
     Returns
     -------
     index_array : ndarray of ints
         Array of indices into the array. It has the same shape as `a.shape`
         with the dimension along `axis` removed.
+
     See Also
     --------
     ndarray.argmin, argmax
@@ -161,10 +169,12 @@ def argmin(in_array1, axis=None, out=None):
     unravel_index : Convert a flat index into an index tuple.
     take_along_axis : Apply ``np.expand_dims(index_array, axis)``
                       from argmin to an array as if by calling min.
+
     Notes
     -----
     In case of multiple occurrences of the minimum values, the indices
     corresponding to the first occurrence are returned.
+
     Examples
     --------
     >>> a = np.arange(6).reshape(2,3) + 10

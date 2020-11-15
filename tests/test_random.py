@@ -4,6 +4,7 @@ import dpnp.random
 import numpy
 # from scipy import stats
 from numpy.testing import assert_allclose
+import math
 
 
 @pytest.mark.parametrize("func",
@@ -92,7 +93,7 @@ def test_randn_normal_distribution():
                           dpnp.random.rand],
                          ids=['random', 'random_sample',
                               'ranf', 'sample', 'rand'])
-def test_radnom_seed(func):
+def test_random_seed(func):
     seed = 28041990
     size = 100
     shape = (100, 1)
@@ -107,26 +108,32 @@ def test_radnom_seed(func):
     assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
-def test_radnom_exponential_seed():
+def test_random_seed_beta():
     seed = 28041990
     size = 100
-    scale = 3  # number of degrees of freedom
+    a = 2.56
+    b = 0.8
 
     dpnp.random.seed(seed)
-    a1 = dpnp.random.exponential(scale, size)
+    a1 = dpnp.random.beta(a, b, size)
     dpnp.random.seed(seed)
-    a2 = dpnp.random.exponential(scale, size)
+    a2 = dpnp.random.beta(a, b, size)
     assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
-def test_exponential_invalid_scale():
-    size = 10
-    scale = -1  # non-negative `scale` is expected
-    with pytest.raises(ValueError):
-        dpnp.random.exponential(scale, size)
+def test_random_seed_binomial():
+    seed = 28041990
+    size = 100
+    n, p = 10, .5  # number of trials, probability of each trial
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.binomial(n, p, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.binomial(n, p, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
-def test_radnom_chisquare_seed():
+def test_random_seed_chisquare():
     seed = 28041990
     size = 100
     df = 3  # number of degrees of freedom
@@ -138,12 +145,28 @@ def test_radnom_chisquare_seed():
     assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
-def test_chisquare_invalid_df():
-    size = 10
-    df = -1  # positive `df` is expected
-    with pytest.raises(ValueError):
-        dpnp.random.chisquare(df, size)
+def test_random_seed_exponential():
+    seed = 28041990
+    size = 100
+    scale = 3  # number of degrees of freedom
 
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.exponential(scale, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.exponential(scale, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_random_seed_gamma():
+    seed = 28041990
+    size = 100
+    shape = 3.0  # shape param for gamma distr
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.gamma(shape=shape, size=size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.gamma(shape=shape, size=size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 def test_random_seed_negative_binomial():
     seed = 28041990
@@ -157,6 +180,55 @@ def test_random_seed_negative_binomial():
     assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
+def test_invalid_args_beta():
+    size = 10
+    a = 3.0   # OK
+    b = -1.0  # positive `b` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.beta(a=a, b=b, size=size)
+    a = -1.0  # positive `a` is expected
+    b = 3.0   # OK
+    with pytest.raises(ValueError):
+        dpnp.random.beta(a=a, b=b, size=size)
+
+
+def test_random_seed_binomial():
+    seed = 28041990
+    size = 100
+    n, p = 10, .5  # number of trials, probability of each trial
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.binomial(n, p, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.binomial(n, p, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_invalid_args_chisquare():
+    size = 10
+    df = -1  # positive `df` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.chisquare(df, size)
+
+
+def test_invalid_args_exponential():
+    size = 10
+    scale = -1  # non-negative `scale` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.exponential(scale, size)
+
+
+def test_invalid_args_gamma():
+    size = 10
+    shape = -1   # non-negative `shape` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.gamma(shape=shape, size=size)
+    shape = 1.0   # OK
+    scale = -1.0  # non-negative `shape` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.gamma(shape, scale, size)
+
+
 def test_invalid_args_negative_binomial():
     size = 10
     n = 10    # parameter `n`, OK
@@ -167,3 +239,67 @@ def test_invalid_args_negative_binomial():
     p = 0.5   # parameter `p`, OK
     with pytest.raises(ValueError):
         dpnp.random.negative_binomial(n, p, size)
+
+
+def test_check_moments_beta():
+    seed = 28041990
+    dpnp.random.seed(seed)
+    a = 2.56
+    b = 0.8
+
+    expected_mean = a / (a + b)
+    expected_var = (a * b) / ((a + b)**2 * (a + b + 1))
+
+    var = numpy.var(dpnp.random.beta(a=a, b=b, size=10**6))
+    mean = numpy.mean(dpnp.random.beta(a=a, b=b, size=10**6))
+
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
+def test_check_moments_binomial():
+    seed = 28041990
+    dpnp.random.seed(seed)
+    n = 5
+    p = 0.8
+    expected_mean = n * p
+    expected_var = n * p * (1 - p)
+    var = numpy.var(dpnp.random.binomial(n=n, p=p, size=10**6))
+    mean = numpy.mean(dpnp.random.binomial(n=n, p=p, size=10**6))
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
+def test_check_moments_gamma():
+    seed = 28041990
+    dpnp.random.seed(seed)
+    shape = 2.56
+    scale = 0.8
+    expected_mean = shape * scale
+    expected_var = shape * scale * scale
+    var = numpy.var(dpnp.random.gamma(shape=shape, scale=scale, size=10**6))
+    mean = numpy.mean(dpnp.random.gamma(shape=shape, scale=scale, size=10**6))
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+def test_check_extreme_value_binomial():
+    seed = 28041990
+    dpnp.random.seed(seed)
+
+    n = 5
+    p = 0.0
+    res = numpy.asarray(dpnp.random.binomial(n=n, p=p, size=100))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == 0.0
+
+    n = 0
+    p = 0.5
+    res = numpy.asarray(dpnp.random.binomial(n=n, p=p, size=100))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == 0.0
+
+    n = 5
+    p = 1.0
+    res = numpy.asarray(dpnp.random.binomial(n=n, p=p, size=100))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == 5

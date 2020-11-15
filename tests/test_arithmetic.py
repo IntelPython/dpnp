@@ -3,7 +3,7 @@ import unittest
 from tests.third_party.cupy import testing
 
 
-class TestArithmeticModf(unittest.TestCase):
+class TestArithmetic(unittest.TestCase):
 
     @testing.for_float_dtypes()
     @testing.numpy_cupy_allclose()
@@ -18,8 +18,17 @@ class TestArithmeticModf(unittest.TestCase):
 
         return d
 
+    @testing.for_float_dtypes()
+    @testing.numpy_cupy_allclose()
+    def test_nanprod(self, xp, dtype):
+        a = xp.array([-2.5, -1.5, xp.nan, 10.5, 1.5, xp.nan], dtype=dtype)
+        return xp.nanprod(a)
 
-class TestArithmeticRemainder(unittest.TestCase):
+    @testing.for_float_dtypes()
+    @testing.numpy_cupy_allclose()
+    def test_nansum(self, xp, dtype):
+        a = xp.array([-2.5, -1.5, xp.nan, 10.5, 1.5, xp.nan], dtype=dtype)
+        return xp.nansum(a)
 
     @testing.for_float_dtypes()
     @testing.numpy_cupy_allclose()
