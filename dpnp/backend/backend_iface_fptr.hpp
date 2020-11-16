@@ -122,6 +122,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_MODF,               /**< Used in numpy.modf() implementation  */
     DPNP_FN_MULTIPLY,           /**< Used in numpy.multiply() implementation  */
     DPNP_FN_NEGATIVE_BINOMIAL,  /**< Used in numpy.random.negative_binomial() implementation  */
+    DPNP_FN_LAPLACE,            /**< Used in numpy.random.laplace() implementation  */
     DPNP_FN_POWER,              /**< Used in numpy.random.power() implementation  */
     DPNP_FN_PROD,               /**< Used in numpy.prod() implementation  */
     DPNP_FN_RADIANS,            /**< Used in numpy.radians() implementation  */

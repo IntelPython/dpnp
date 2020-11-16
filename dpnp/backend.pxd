@@ -93,6 +93,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_MODF
         DPNP_FN_MULTIPLY
         DPNP_FN_NEGATIVE_BINOMIAL
+        DPNP_FN_LAPLACE
         DPNP_FN_POWER
         DPNP_FN_PROD
         DPNP_FN_UNIFORM
