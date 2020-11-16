@@ -57,8 +57,9 @@ __all__ = [
     'random',
     'random_integers',
     'random_sample',
-    'seed',
     'sample',
+    'seed',
+    'standard_cauchy',
     'uniform'
 ]
 
@@ -825,6 +826,50 @@ def sample(size):
         return dpnp_random(size)
 
     return call_origin(numpy.random.sample, size)
+
+
+def standard_cauchy(size=None):
+    """Standard cauchy distribution.
+
+    Draw samples from a standard Cauchy distribution with mode = 0.
+
+    Also known as the Lorentz distribution.
+
+    Parameters
+    ----------
+    size : int, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.
+
+    Returns
+    -------
+    samples : dparray
+        The drawn samples.
+
+    Examples
+    --------
+    Draw samples and plot the distribution:
+    >>> import matplotlib.pyplot as plt
+    >>> s = dpnp.random.standard_cauchy(1000000)
+    >>> s = s[(s>-25) & (s<25)]  # truncate distribution so it plots well
+    >>> plt.hist(s, bins=100)
+    >>> plt.show()
+
+    """
+
+    if not use_origin_backend(size):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("standard_cauchy", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("standard_cauchy", "type(size)", type(size), int)
+
+        return dpnp_standard_cauchy(size)
+
+    return call_origin(numpy.random.standard_cauchy, size)
 
 
 def uniform(low=0.0, high=1.0, size=None):
