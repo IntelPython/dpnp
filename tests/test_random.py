@@ -358,3 +358,14 @@ def test_randn_normal_distribution():
     # dataset does not significantly deviate from normal.
     # If p > alpha, the null hypothesis cannot be rejected.
     assert p > alpha
+
+
+def test_standard_cauchy_seed():
+    seed = 28041990
+    size = 100
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.standard_cauchy(size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.standard_cauchy(size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
