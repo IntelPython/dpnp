@@ -291,7 +291,28 @@ def test_negative_binomial_check_extreme_value():
     assert len(numpy.unique(res)) == 1
     assert numpy.unique(res)[0] == check_val
 
-<<<<<<< HEAD
+
+def test_randn_normal_distribution():
+    """ Check if the sample obtained from the dpnp.random.randn differs from
+    the normal distribution.
+    Using ``scipy.stats.normaltest``.
+
+    It is based on D’Agostino and Pearson’s test that combines skew
+    and kurtosis to produce an omnibus test of normality,
+    see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.normaltest.html
+    """
+    pts = 1000
+    alpha = 0.05
+    dpnp.random.seed(28041990)
+    x = dpnp.random.randn(pts)
+    _, p = stats.normaltest(x)
+    # null hypothesis: x comes from a normal distribution.
+    # The p-value is interpreted against an alpha of 5% and finds that the test
+    # dataset does not significantly deviate from normal.
+    # If p > alpha, the null hypothesis cannot be rejected.
+    assert p > alpha
+
+
 def test_weibull_seed():
     seed = 28041990
     size = 100
@@ -320,25 +341,3 @@ def test_laplace_check_extreme_value():
     res = numpy.asarray(dpnp.random.weibull(a=a, size=100))
     assert len(numpy.unique(res)) == 1
     assert numpy.unique(res)[0] == 0.0
-=======
-
-def test_randn_normal_distribution():
-    """ Check if the sample obtained from the dpnp.random.randn differs from
-    the normal distribution.
-    Using ``scipy.stats.normaltest``.
-
-    It is based on D’Agostino and Pearson’s test that combines skew
-    and kurtosis to produce an omnibus test of normality,
-    see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.normaltest.html
-    """
-    pts = 1000
-    alpha = 0.05
-    dpnp.random.seed(28041990)
-    x = dpnp.random.randn(pts)
-    _, p = stats.normaltest(x)
-    # null hypothesis: x comes from a normal distribution.
-    # The p-value is interpreted against an alpha of 5% and finds that the test
-    # dataset does not significantly deviate from normal.
-    # If p > alpha, the null hypothesis cannot be rejected.
-    assert p > alpha
->>>>>>> master
