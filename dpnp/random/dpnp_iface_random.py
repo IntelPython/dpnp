@@ -49,6 +49,7 @@ __all__ = [
     'chisquare',
     'exponential',
     'gamma',
+    'laplace',
     'negative_binomial',
     'rand',
     'ranf',
@@ -425,6 +426,61 @@ def gamma(shape, scale=1.0, size=None):
         return dpnp_gamma(shape, scale, size)
 
     return call_origin(numpy.random.gamma, shape, scale, size)
+
+
+def laplace(loc=0.0, scale=1.0, size=None):
+    """Laplace distribution.
+
+    Draw samples from the Laplace or double exponential distribution with
+    specified location (or mean) and scale (decay).
+
+    The Laplace distribution is similar to the Gaussian/normal distribution,
+    but is sharper at the peak and has fatter tails. It represents the
+    difference between two independent, identically distributed exponential
+    random variables.
+
+    Parameters
+    ----------
+    loc : float, optional
+        The position, :math:`\\mu`, of the distribution peak. Default is 0.
+    scale : float, optional
+        :math:`\\lambda`, the exponential decay. Default is 1. Must be non-
+        negative.
+    size : int or tuple of ints, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
+        a single value is returned if ``loc`` and ``scale`` are both scalars.
+
+    Returns
+    -------
+    out : dparray
+        Drawn samples from the parameterized Laplace distribution.
+
+    Examples
+    --------
+    >>> loc, scale = 0., 1.
+    >>> s = dpnp.random.laplace(loc, scale, 1000)
+
+    """
+
+    if not use_origin_backend(loc):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("laplace", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("laplace", "type(size)", type(size), int)
+
+        # TODO:
+        # array_like of floats for `loc` and `scale` params
+        if scale < 0:
+            checker_throw_value_error("laplace", "scale", scale, "non-negative")
+
+        return dpnp_laplace(loc, scale, size)
+
+    return call_origin(numpy.random.laplace, loc, scale, size)
 
 
 def negative_binomial(n, p, size=None):
