@@ -1,0 +1,6 @@
+﻿dpnp.random.laplace
+===================
+
+.. currentmodule:: dpnp.random
+
+.. autofunction:: laplace
