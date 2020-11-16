@@ -929,6 +929,6 @@ def weibull(a, size=None):
         if a < 0:
             checker_throw_value_error("weibulla", "a", a, "non-negative")
 
-        return dpnp_weibulla(a, size)
+        return dpnp_weibull(a, size)
 
     return call_origin(numpy.random.weibull, a, size)
