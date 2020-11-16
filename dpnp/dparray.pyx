@@ -375,9 +375,8 @@ cdef class dparray:
 
     @property
     def __sycl_usm_array_interface__(self):
-        cdef dict iface = {
-            "data": (<Py_ssize_t>(<void *>self._dparray_data),
-                     False),
+        iface = {
+            "data": (<Py_ssize_t>(<void *>self._dparray_data), False),
             "shape": self.shape,
             "strides": self.strides,
             "typestr": (lambda dt: dt.byteorder + dt.kind + str(dt.itemsize))(self._dparray_dtype),
