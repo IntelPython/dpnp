@@ -12,7 +12,7 @@ import math
                           dpnp.random.rand,
                           dpnp.random.randn],
                          ids=['chisquare', 'rand', 'randn'])
-def test_random_input_size(func):
+def test_input_size(func):
     output_shape = (10,)
     size = 10
     df = 3  # for dpnp.random.chisquare
@@ -31,7 +31,7 @@ def test_random_input_size(func):
                           dpnp.random.sample],
                          ids=['chisquare', 'random', 'random_sample',
                               'ranf', 'sample'])
-def test_random_input_shape(func):
+def test_input_shape(func):
     shape = (10, 5)
     df = 3  # for dpnp.random.chisquare
     if func == dpnp.random.chisquare:
@@ -50,7 +50,7 @@ def test_random_input_shape(func):
                          ids=['random', 'random_sample',
                               'ranf', 'sample',
                               'rand'])
-def test_random_check_otput(func):
+def test_check_otput(func):
     shape = (10, 5)
     size = 10 * 5
     if func == dpnp.random.rand:
@@ -64,27 +64,6 @@ def test_random_check_otput(func):
         assert res[i] < 1.0
 
 
-def test_randn_normal_distribution():
-    """ Check if the sample obtained from the dpnp.random.randn differs from
-    the normal distribution.
-    Using ``scipy.stats.normaltest``.
-
-    It is based on D’Agostino and Pearson’s test that combines skew
-    and kurtosis to produce an omnibus test of normality,
-    see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.normaltest.html
-    """
-    pts = 1000
-    alpha = 0.05
-    dpnp.random.seed(28041990)
-    x = dpnp.random.randn(pts)
-    _, p = stats.normaltest(x)
-    # null hypothesis: x comes from a normal distribution.
-    # The p-value is interpreted against an alpha of 5% and finds that the test
-    # dataset does not significantly deviate from normal.
-    # If p > alpha, the null hypothesis cannot be rejected.
-    assert p > alpha
-
-
 @pytest.mark.parametrize("func",
                          [dpnp.random.random,
                           dpnp.random.random_sample,
@@ -93,7 +72,7 @@ def test_randn_normal_distribution():
                           dpnp.random.rand],
                          ids=['random', 'random_sample',
                               'ranf', 'sample', 'rand'])
-def test_random_seed(func):
+def test_seed(func):
     seed = 28041990
     size = 100
     shape = (100, 1)
@@ -108,7 +87,7 @@ def test_random_seed(func):
     assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
-def test_random_seed_beta():
+def test_beta_seed():
     seed = 28041990
     size = 100
     a = 2.56
@@ -121,66 +100,7 @@ def test_random_seed_beta():
     assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
-def test_random_seed_binomial():
-    seed = 28041990
-    size = 100
-    n, p = 10, .5  # number of trials, probability of each trial
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.binomial(n, p, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.binomial(n, p, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_random_seed_chisquare():
-    seed = 28041990
-    size = 100
-    df = 3  # number of degrees of freedom
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.chisquare(df, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.chisquare(df, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_random_seed_exponential():
-    seed = 28041990
-    size = 100
-    scale = 3  # number of degrees of freedom
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.exponential(scale, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.exponential(scale, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_random_seed_gamma():
-    seed = 28041990
-    size = 100
-    shape = 3.0  # shape param for gamma distr
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.gamma(shape=shape, size=size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.gamma(shape=shape, size=size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-def test_random_seed_negative_binomial():
-    seed = 28041990
-    size = 100
-    n, p = 10, .5  # number of trials, probability of each trial
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.negative_binomial(n, p, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.negative_binomial(n, p, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_invalid_args_beta():
+def test_beta_invalid_args():
     size = 10
     a = 3.0   # OK
     b = -1.0  # positive `b` is expected
@@ -192,56 +112,7 @@ def test_invalid_args_beta():
         dpnp.random.beta(a=a, b=b, size=size)
 
 
-def test_random_seed_binomial():
-    seed = 28041990
-    size = 100
-    n, p = 10, .5  # number of trials, probability of each trial
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.binomial(n, p, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.binomial(n, p, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_invalid_args_chisquare():
-    size = 10
-    df = -1  # positive `df` is expected
-    with pytest.raises(ValueError):
-        dpnp.random.chisquare(df, size)
-
-
-def test_invalid_args_exponential():
-    size = 10
-    scale = -1  # non-negative `scale` is expected
-    with pytest.raises(ValueError):
-        dpnp.random.exponential(scale, size)
-
-
-def test_invalid_args_gamma():
-    size = 10
-    shape = -1   # non-negative `shape` is expected
-    with pytest.raises(ValueError):
-        dpnp.random.gamma(shape=shape, size=size)
-    shape = 1.0   # OK
-    scale = -1.0  # non-negative `shape` is expected
-    with pytest.raises(ValueError):
-        dpnp.random.gamma(shape, scale, size)
-
-
-def test_invalid_args_negative_binomial():
-    size = 10
-    n = 10    # parameter `n`, OK
-    p = -0.5  # parameter `p`, expected between [0, 1]
-    with pytest.raises(ValueError):
-        dpnp.random.negative_binomial(n, p, size)
-    n = -10   # parameter `n`, expected non-negative
-    p = 0.5   # parameter `p`, OK
-    with pytest.raises(ValueError):
-        dpnp.random.negative_binomial(n, p, size)
-
-
-def test_check_moments_beta():
+def test_beta_check_moments():
     seed = 28041990
     dpnp.random.seed(seed)
     a = 2.56
@@ -257,7 +128,19 @@ def test_check_moments_beta():
     assert math.isclose(mean, expected_mean, abs_tol=0.003)
 
 
-def test_check_moments_binomial():
+def test_binomial_seed():
+    seed = 28041990
+    size = 100
+    n, p = 10, .5  # number of trials, probability of each trial
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.binomial(n, p, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.binomial(n, p, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_binomial_check_moments():
     seed = 28041990
     dpnp.random.seed(seed)
     n = 5
@@ -270,20 +153,7 @@ def test_check_moments_binomial():
     assert math.isclose(mean, expected_mean, abs_tol=0.003)
 
 
-def test_check_moments_gamma():
-    seed = 28041990
-    dpnp.random.seed(seed)
-    shape = 2.56
-    scale = 0.8
-    expected_mean = shape * scale
-    expected_var = shape * scale * scale
-    var = numpy.var(dpnp.random.gamma(shape=shape, scale=scale, size=10**6))
-    mean = numpy.mean(dpnp.random.gamma(shape=shape, scale=scale, size=10**6))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
-
-
-def test_check_extreme_value_binomial():
+def test_binomial_check_extreme_value():
     seed = 28041990
     dpnp.random.seed(seed)
 
@@ -306,22 +176,78 @@ def test_check_extreme_value_binomial():
     assert numpy.unique(res)[0] == 5
 
 
-def test_check_extreme_value_negative_binomial():
+def test_chisquare_seed():
+    seed = 28041990
+    size = 100
+    df = 3  # number of degrees of freedom
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.chisquare(df, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.chisquare(df, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_chisquare_invalid_args():
+    size = 10
+    df = -1  # positive `df` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.chisquare(df, size)
+
+
+def test_exponential_seed():
+    seed = 28041990
+    size = 100
+    scale = 3  # number of degrees of freedom
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.exponential(scale, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.exponential(scale, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_exponential_invalid_args():
+    size = 10
+    scale = -1  # non-negative `scale` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.exponential(scale, size)
+
+
+def test_gamma_seed():
+    seed = 28041990
+    size = 100
+    shape = 3.0  # shape param for gamma distr
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.gamma(shape=shape, size=size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.gamma(shape=shape, size=size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_gamma_invalid_args():
+    size = 10
+    shape = -1   # non-negative `shape` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.gamma(shape=shape, size=size)
+    shape = 1.0   # OK
+    scale = -1.0  # non-negative `shape` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.gamma(shape, scale, size)
+
+
+def test_gamma_check_moments():
     seed = 28041990
     dpnp.random.seed(seed)
-
-    n = 5
-    p = 1.0
-    res = numpy.asarray(dpnp.random.negative_binomial(n=n, p=p, size=10))
-    assert len(numpy.unique(res)) == 1
-    assert numpy.unique(res)[0] == 0.0
-
-    n = 5
-    p = 0.0
-    res = numpy.asarray(dpnp.random.negative_binomial(n=n, p=p, size=10))
-    check_val = numpy.iinfo(res.dtype).min
-    assert len(numpy.unique(res)) == 1
-    assert numpy.unique(res)[0] == check_val
+    shape = 2.56
+    scale = 0.8
+    expected_mean = shape * scale
+    expected_var = shape * scale * scale
+    var = numpy.var(dpnp.random.gamma(shape=shape, scale=scale, size=10**6))
+    mean = numpy.mean(dpnp.random.gamma(shape=shape, scale=scale, size=10**6))
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
 
 
 def test_laplace_seed():
@@ -369,3 +295,66 @@ def test_laplace_check_extreme_value():
     res = numpy.asarray(dpnp.random.laplace(loc=loc, scale=scale, size=100))
     assert len(numpy.unique(res)) == 1
     assert numpy.unique(res)[0] == 0.0
+
+
+def test_negative_binomial_seed():
+    seed = 28041990
+    size = 100
+    n, p = 10, .5  # number of trials, probability of each trial
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.negative_binomial(n, p, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.negative_binomial(n, p, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_negative_binomial_invalid_args():
+    size = 10
+    n = 10    # parameter `n`, OK
+    p = -0.5  # parameter `p`, expected between [0, 1]
+    with pytest.raises(ValueError):
+        dpnp.random.negative_binomial(n, p, size)
+    n = -10   # parameter `n`, expected non-negative
+    p = 0.5   # parameter `p`, OK
+    with pytest.raises(ValueError):
+        dpnp.random.negative_binomial(n, p, size)
+
+
+def test_negative_binomial_check_extreme_value():
+    seed = 28041990
+    dpnp.random.seed(seed)
+
+    n = 5
+    p = 1.0
+    res = numpy.asarray(dpnp.random.negative_binomial(n=n, p=p, size=10))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == 0.0
+
+    n = 5
+    p = 0.0
+    res = numpy.asarray(dpnp.random.negative_binomial(n=n, p=p, size=10))
+    check_val = numpy.iinfo(res.dtype).min
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == check_val
+
+
+def test_randn_normal_distribution():
+    """ Check if the sample obtained from the dpnp.random.randn differs from
+    the normal distribution.
+    Using ``scipy.stats.normaltest``.
+
+    It is based on D’Agostino and Pearson’s test that combines skew
+    and kurtosis to produce an omnibus test of normality,
+    see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.normaltest.html
+    """
+    pts = 1000
+    alpha = 0.05
+    dpnp.random.seed(28041990)
+    x = dpnp.random.randn(pts)
+    _, p = stats.normaltest(x)
+    # null hypothesis: x comes from a normal distribution.
+    # The p-value is interpreted against an alpha of 5% and finds that the test
+    # dataset does not significantly deviate from normal.
+    # If p > alpha, the null hypothesis cannot be rejected.
+    assert p > alpha
