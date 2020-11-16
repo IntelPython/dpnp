@@ -172,9 +172,9 @@ void custom_rng_standard_cauchy_c(void* result, size_t size)
     }
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    _DataType displacement = _DataType(0.0);
+    const _DataType displacement = _DataType(0.0);
 
-    _DataType scalefactor = _DataType(1.0);
+    const _DataType scalefactor = _DataType(1.0);
 
     mkl_rng::cauchy<_DataType> distribution(displacement, scalefactor);
     // perform generation
