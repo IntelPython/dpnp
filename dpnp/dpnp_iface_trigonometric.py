@@ -97,7 +97,7 @@ def arccos(x1):
 
     See Also
     --------
-    cos, arctan, arcsin, emath.arccos
+    cos, arctan, arcsin
 
     """
 
@@ -139,7 +139,7 @@ def arcsin(x1):
 
     See Also
     --------
-    sin, cos, arccos, tan, arctan, arctan2, emath.arcsin
+    sin, cos, arccos, tan, arctan, arctan2
 
     """
 
