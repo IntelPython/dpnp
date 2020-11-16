@@ -30,7 +30,28 @@ def import_mod(mod, cls):
         return obj, ':obj:`{}.{{}}`'.format(mod)
 
 
-def table_section(base_mod, ref_mods, base_type, ref_types, cls):
+def generate_totals(base_mod, ref_mods, base_type, ref_types, cls):
+    base_obj, _ = import_mod(base_mod, cls)
+    base_funcs = get_functions(base_obj)
+
+    all_types = [base_type] + ref_types
+    header = ', '.join('**{} Total**'.format(t) for t in all_types)
+    header = '   {}'.format(header)
+
+    totals = [len(base_funcs)]
+    for ref_mod in ref_mods:
+        ref_obj, _ = import_mod(ref_mod, cls)
+        ref_funcs = get_functions(ref_obj)
+
+        totals.append(len(ref_funcs & base_funcs))
+
+    cells = ', '.join(str(t) for t in totals)
+    total = '   {}'.format(cells)
+
+    return [header, total]
+
+
+def generate_comparison_rst(base_mod, ref_mods, base_type, ref_types, cls):
     base_obj, base_fmt = import_mod(base_mod, cls)
     base_funcs = get_functions(base_obj)
 
@@ -55,32 +76,13 @@ def table_section(base_mod, ref_mods, base_type, ref_types, cls):
         line = '   {}'.format(cells)
         rows.append(line)
 
-    return ['.. csv-table::', '   :header: {}'.format(header), ''] + rows
+    totals = generate_totals(base_mod, ref_mods, base_type, ref_types, cls)
 
-
-def summary_section(base_mod, ref_mods, base_type, ref_types, cls):
-    base_obj, _ = import_mod(base_mod, cls)
-    base_funcs = get_functions(base_obj)
-
-    summary_tmpl = '  Number of {} functions: {}'
-
-    base_summary = summary_tmpl.format(base_type, len(base_funcs))
-    summary_buf = [base_summary]
-
-    for ref_mod, ref_type in zip(ref_mods, ref_types):
-        ref_obj, _ = import_mod(ref_mod, cls)
-        ref_funcs = get_functions(ref_obj)
-
-        ref_summary = summary_tmpl.format(ref_type, len(ref_funcs & base_funcs))
-        summary_buf += [ref_summary]
-
-    return ['', 'Summary::', ''] + summary_buf + ['']
+    return ['.. csv-table::', '   :header: {}'.format(header), ''] + rows + totals
 
 
 def section(header, base_mod, ref_mods, base_type, ref_types, cls=None):
-    comparison_rst = []
-    comparison_rst += table_section(base_mod, ref_mods, base_type, ref_types, cls)
-    comparison_rst += summary_section(base_mod, ref_mods, base_type, ref_types, cls)
+    comparison_rst = generate_comparison_rst(base_mod, ref_mods, base_type, ref_types, cls)
 
     return [header, '~' * len(header), ''] + comparison_rst + ['']
 
