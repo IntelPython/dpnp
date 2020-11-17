@@ -360,6 +360,49 @@ def test_randn_normal_distribution():
     assert p > alpha
 
 
+def test_rayleigh_seed():
+    seed = 28041990
+    size = 100
+    scale = 0.8
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.rayleigh(scale, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.rayleigh(scale, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_rayleigh_invalid_args():
+    size = 10
+
+    scale = -1.0  # positive `b` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.rayleigh(scale=scale, size=size)
+
+
+def test_rayleigh_check_moments():
+    seed = 28041995
+    dpnp.random.seed(seed)
+    scale = 0.8
+    size = 10**6
+    expected_mean = scale * numpy.sqrt(numpy.pi / 2)
+    expected_var = ((4 - numpy.pi) / 2) * scale * scale
+    var = numpy.var(dpnp.random.rayleigh(scale=scale, size=size))
+    mean = numpy.mean(dpnp.random.rayleigh(scale=scale, size=size))
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
+def test_rayleigh_check_extreme_value():
+    seed = 28041990
+    dpnp.random.seed(seed)
+
+    scale = 0.0
+    res = numpy.asarray(dpnp.random.rayleigh(scale=scale, size=100))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == 0.0
+
+
 def test_standard_cauchy_seed():
     seed = 28041990
     size = 100
