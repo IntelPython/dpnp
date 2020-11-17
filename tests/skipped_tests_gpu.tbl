@@ -13,6 +13,7 @@ tests/test_random.py::test_chisquare_seed
 tests/test_random.py::test_gamma_seed 
 tests/test_random.py::test_gamma_check_moments
 tests/test_random.py::test_negative_binomial_seed
+tests/test_random.py::test_rayleigh_check_moments 
 tests/test_random.py::test_randn_normal_distribution
 tests/test_statistics.py::test_median[2-float32]
 tests/test_statistics.py::test_median[2-float64]
