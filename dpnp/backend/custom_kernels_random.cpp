@@ -134,6 +134,21 @@ void custom_rng_gaussian_c(void* result, _DataType mean, _DataType stddev, size_
 }
 
 template <typename _DataType>
+void custom_rng_gumbel_c(void* result, double loc, double scale, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    mkl_rng::gumbel<_DataType> distribution(loc, scale);
+    // perform generation
+    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+    event_out.wait();
+}
+
+template <typename _DataType>
 void custom_rng_laplace_c(void* result, double loc, double scale, size_t size)
 {
     if (!size)
@@ -220,6 +235,8 @@ void func_map_init_random(func_map_t& fmap)
 
     fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_gaussian_c<double>};
     fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_rng_gaussian_c<float>};
+
+    fmap[DPNPFuncName::DPNP_FN_GUMBEL][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_gumbel_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_LAPLACE][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_laplace_c<double>};
 
