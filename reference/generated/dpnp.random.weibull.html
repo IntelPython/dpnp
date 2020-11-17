@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.random.seed &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.random.weibull &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Sorting, Searching, and Counting" href="../sorting.html" />
-    <link rel="prev" title="dpnp.random.weibull" href="dpnp.random.weibull.html" /> 
+    <link rel="next" title="dpnp.random.seed" href="dpnp.random.seed.html" />
+    <link rel="prev" title="dpnp.random.uniform" href="dpnp.random.uniform.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -103,8 +103,8 @@
 <li class="toctree-l3 current"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../random.html#simple-random-data">Simple random data</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../random.html#permutations">Permutations</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../random.html#distributions">Distributions</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../random.html#random-generator">Random generator</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../random.html#distributions">Distributions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../random.html#random-generator">Random generator</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../sorting.html">Sorting, Searching, and Counting</a></li>
@@ -167,13 +167,13 @@
         
           <li><a href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a> &raquo;</li>
         
-      <li>dpnp.random.seed</li>
+      <li>dpnp.random.weibull</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.random.seed.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.random.weibull.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -186,17 +186,40 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-random-seed">
-<h1>dpnp.random.seed<a class="headerlink" href="#dpnp-random-seed" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-random-weibull">
+<h1>dpnp.random.weibull<a class="headerlink" href="#dpnp-random-weibull" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.random.seed">
-<code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">seed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">seed</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#seed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.seed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reseed a legacy philox4x32x10 random number generator engine</p>
+<dt id="dpnp.random.weibull">
+<code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">weibull</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#weibull"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.weibull" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw samples from a Weibull distribution.</p>
+<p>Draw samples from a 1-parameter Weibull distribution with the given
+shape parameter <cite>a</cite>.</p>
+<div class="math notranslate nohighlight">
+\[X = (-ln(U))^{1/a}\]</div>
+<p>Here, U is drawn from the uniform distribution over (0,1].
+The more common 2-parameter Weibull, including a scale parameter
+<span class="math notranslate nohighlight">\(\lambda\)</span> is just <span class="math notranslate nohighlight">\(X = \lambda(-ln(U))^{1/a}\)</span>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>seed</strong> (<em>{None</em><em>, </em><em>int}</em><em>, </em><em>optional</em>) – </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Shape parameter of the distribution.  Must be nonnegative.</p></li>
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
+<code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">*</span> <span class="pre">k</span></code> samples are drawn.  If size is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default),
+a single value is returned if <code class="docutils literal notranslate"><span class="pre">a</span></code> is a scalar.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – Drawn samples from the parameterized Weibull distribution.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray or scalar</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="mf">5.</span> <span class="c1"># shape</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">weibull</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>
@@ -209,10 +232,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../sorting.html" class="btn btn-neutral float-right" title="Sorting, Searching, and Counting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.random.seed.html" class="btn btn-neutral float-right" title="dpnp.random.seed" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.random.weibull.html" class="btn btn-neutral float-left" title="dpnp.random.weibull" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.random.uniform.html" class="btn btn-neutral float-left" title="dpnp.random.uniform" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
