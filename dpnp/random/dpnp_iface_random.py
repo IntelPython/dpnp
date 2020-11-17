@@ -888,6 +888,25 @@ def sample(size):
 def rayleigh(scale=1.0, size=None):
     """Rayleigh distribution.
 
+    Draw samples from a Rayleigh distribution.
+
+    The :math:`\\chi` and Weibull distributions are generalizations of the
+    Rayleigh.
+
+    Parameters
+    ----------
+    scale : float, optional
+        Scale, also equals the mode. Must be non-negative. Default is 1.
+    size : int or tuple of ints, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
+        a single value is returned if ``scale`` is a scalar.
+
+    Returns
+    -------
+    out : dparray
+        Drawn samples from the parameterized Rayleigh distribution.
+
     """
 
     if not use_origin_backend(scale):
