@@ -83,6 +83,7 @@ var group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i =
       [ "DPNP_FN_SQRT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558af8187e64cd7661fbf4bf2fd04f339e5c", null ],
       [ "DPNP_FN_SQUARE", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558af3639a7757f1772416d4402153d9987b", null ],
       [ "DPNP_FN_STANDARD_CAUCHY", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a67cd8d89d600086f2bb0d5ec230b8f48", null ],
+      [ "DPNP_FN_STANDARD_NORMAL", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a5d6ec6ab9176f5736146de2574a29057", null ],
       [ "DPNP_FN_STD", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ac0d3143bc0fd7a8f43501a3a8784a148", null ],
       [ "DPNP_FN_SUBTRACT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a4d36c00d4572df84a1542dbaad885f7d", null ],
       [ "DPNP_FN_SUM", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a5a5f78154de3845f234e34f22d870448", null ],

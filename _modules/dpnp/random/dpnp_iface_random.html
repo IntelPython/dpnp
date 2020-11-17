@@ -216,6 +216,7 @@
     <span class="s1">&#39;sample&#39;</span><span class="p">,</span>
     <span class="s1">&#39;seed&#39;</span><span class="p">,</span>
     <span class="s1">&#39;standard_cauchy&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;standard_normal&#39;</span><span class="p">,</span>
     <span class="s1">&#39;uniform&#39;</span>
 <span class="p">]</span>
 
@@ -1081,6 +1082,41 @@
         <span class="k">return</span> <span class="n">dpnp_standard_cauchy</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">standard_cauchy</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="standard_normal"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.standard_normal.html#dpnp.random.standard_normal">[docs]</a><span class="k">def</span> <span class="nf">standard_normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Standard normal distribution.</span>
+
+<span class="sd">    Draw samples from a standard Normal distribution (mean=0, stdev=1).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    size : int, optional</span>
+<span class="sd">        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then</span>
+<span class="sd">        ``m * n * k`` samples are drawn.  Default is None, in which case a</span>
+<span class="sd">        single value is returned.</span>
+<span class="sd"> </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : float or ndarray</span>
+<span class="sd">        A floating-point array of shape ``size`` of drawn samples, or a</span>
+<span class="sd">        single sample if ``size`` was not specified.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">size</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                    <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;standard_normal&quot;</span><span class="p">,</span> <span class="s2">&quot;type(dim)&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">dim</span><span class="p">),</span> <span class="nb">int</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;standard_normal&quot;</span><span class="p">,</span> <span class="s2">&quot;type(size)&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">size</span><span class="p">),</span> <span class="nb">int</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp_standard_normal</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="uniform"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.uniform.html#dpnp.random.uniform">[docs]</a><span class="k">def</span> <span class="nf">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>

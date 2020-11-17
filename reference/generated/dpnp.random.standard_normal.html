@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.random.randn &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.random.standard_normal &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.random.randint" href="dpnp.random.randint.html" />
-    <link rel="prev" title="dpnp.random.rand" href="dpnp.random.rand.html" /> 
+    <link rel="next" title="dpnp.random.uniform" href="dpnp.random.uniform.html" />
+    <link rel="prev" title="dpnp.random.standard_cauchy" href="dpnp.random.standard_cauchy.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -101,9 +101,9 @@
 <li class="toctree-l3"><a class="reference internal" href="../pad.html">Padding</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../polynomials.html">Polynomials</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a><ul class="current">
-<li class="toctree-l4 current"><a class="reference internal" href="../random.html#simple-random-data">Simple random data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../random.html#simple-random-data">Simple random data</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../random.html#permutations">Permutations</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../random.html#distributions">Distributions</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../random.html#distributions">Distributions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../random.html#random-generator">Random generator</a></li>
 </ul>
 </li>
@@ -167,13 +167,13 @@
         
           <li><a href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a> &raquo;</li>
         
-      <li>dpnp.random.randn</li>
+      <li>dpnp.random.standard_normal</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.random.randn.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.random.standard_normal.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -186,33 +186,27 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-random-randn">
-<h1>dpnp.random.randn<a class="headerlink" href="#dpnp-random-randn" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-random-standard-normal">
+<h1>dpnp.random.standard_normal<a class="headerlink" href="#dpnp-random-standard-normal" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.random.randn">
-<code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">randn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d0</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">dn</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#randn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.randn" title="Permalink to this definition">¶</a></dt>
-<dd><p>If positive int_like arguments are provided, randn generates an array of shape (d0, d1, …, dn),
-filled with random floats sampled from a univariate “normal” (Gaussian) distribution of mean 0 and variance 1.</p>
+<dt id="dpnp.random.standard_normal">
+<code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">standard_normal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#standard_normal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.standard_normal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Standard normal distribution.</p>
+<p>Draw samples from a standard Normal distribution (mean=0, stdev=1).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>d0</strong> (<em>The dimensions of the returned array</em><em>, </em><em>must be non-negative.</em>) – </p></li>
-<li><p><strong>d1</strong> (<em>The dimensions of the returned array</em><em>, </em><em>must be non-negative.</em>) – </p></li>
-<li><p><strong>…</strong> (<em>The dimensions of the returned array</em><em>, </em><em>must be non-negative.</em>) – </p></li>
-<li><p><strong>dn</strong> (<em>The dimensions of the returned array</em><em>, </em><em>must be non-negative.</em>) – </p></li>
-</ul>
+<dd class="field-odd"><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
+<code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">*</span> <span class="pre">k</span></code> samples are drawn.  Default is None, in which case a
+single value is returned.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong></p>
+<dd class="field-even"><p><strong>out</strong> – A floating-point array of shape <code class="docutils literal notranslate"><span class="pre">size</span></code> of drawn samples, or a
+single sample if <code class="docutils literal notranslate"><span class="pre">size</span></code> was not specified.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(d0, d1, .., dn)-shaped array of floating-point samples from the standard normal distribution.</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)">float</a> or ndarray</p>
 </dd>
 </dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference internal" href="dpnp.random.standard_normal.html#dpnp.random.standard_normal" title="dpnp.random.standard_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_normal</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">normal</span></code></p>
-</div>
 </dd></dl>
 
 </div>
@@ -225,10 +219,10 @@ filled with random floats sampled from a univariate “normal” (Gaussian) dist
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.random.randint.html" class="btn btn-neutral float-right" title="dpnp.random.randint" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.random.uniform.html" class="btn btn-neutral float-right" title="dpnp.random.uniform" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.random.rand.html" class="btn btn-neutral float-left" title="dpnp.random.rand" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.random.standard_cauchy.html" class="btn btn-neutral float-left" title="dpnp.random.standard_cauchy" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
