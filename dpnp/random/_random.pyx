@@ -55,7 +55,7 @@ __all__ = [
     "dpnp_srand",
     "dpnp_standard_cauchy",
     "dpnp_standard_normal",
-    "dpnp_uniform"
+    "dpnp_uniform",
     "dpnp_weibull"
 ]
 
