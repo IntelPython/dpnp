@@ -274,19 +274,26 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add arguments element-wise.</span>
 
-<span class="sd">    .. note::</span>
-<span class="sd">        The &#39;out&#39; parameter is currently not supported.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x1, x2 : array_like</span>
+<span class="sd">        The arrays to be added.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        For other keyword arguments.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        x1  (dpnp.dparray): The left argument.</span>
-<span class="sd">        x2  (dpnp.dparray): The right argument.</span>
-<span class="sd">        out (dpnp.dparray): Output array.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dparray:</span>
+<span class="sd">        The sum of `x1` and `x2`, element-wise.</span>
+<span class="sd">        This is a scalar if both `x1` and `x2` are scalars.</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        dpnp.dparray: The sum of x1 and x2, element-wise.</span>
-<span class="sd">        This is a scalar if both x1 and x2 are scalars.</span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :data:`numpy.add`</span>
 
-<span class="sd">    .. seealso:: :func:`numpy.add`</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Equivalent to `x1 + x2` in terms of array broadcasting.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -309,7 +316,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute  the ceiling of the input, element-wise.</span>
 
-<span class="sd">    .. seealso:: :func:`numpy.ceil`</span>
+<span class="sd">    .. seealso:: :data:`numpy.ceil`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -370,7 +377,7 @@
 <span class="sd">        dpnp.dparray: The division of x1 and x2, element-wise.</span>
 <span class="sd">        This is a scalar if both x1 and x2 are scalars.</span>
 
-<span class="sd">    .. seealso:: :func:`numpy.divide`</span>
+<span class="sd">    .. seealso:: :data:`numpy.divide`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -412,7 +419,7 @@
 <span class="sd">    Some spreadsheet programs calculate the “floor-towards-zero”, in other words floor(-2.5) == -2.</span>
 <span class="sd">    dpNP instead uses the definition of floor where floor(-2.5) == -3.</span>
 
-<span class="sd">    .. seealso:: :func:`numpy.floor`</span>
+<span class="sd">    .. seealso:: :data:`numpy.floor`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -428,7 +435,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the largest integer smaller or equal to the division of the inputs.</span>
 
-<span class="sd">    .. seealso:: :func:`numpy.floor_divide`</span>
+<span class="sd">    .. seealso:: :data:`numpy.floor_divide`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -445,7 +452,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Element-wise maximum of array elements.</span>
 
-<span class="sd">    .. seealso:: :func:`numpy.fmax`</span>
+<span class="sd">    .. seealso:: :data:`numpy.fmax`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -456,7 +463,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Element-wise minimum of array elements.</span>
 
-<span class="sd">    .. seealso:: :func:`numpy.fmin`</span>
+<span class="sd">    .. seealso:: :data:`numpy.fmin`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -467,7 +474,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the element-wise remainder of division.</span>
 
-<span class="sd">    .. seealso:: :func:`numpy.fmod`</span>
+<span class="sd">    .. seealso:: :data:`numpy.fmod`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -517,7 +524,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Element-wise maximum of array elements.</span>
 
-<span class="sd">    .. seealso:: :func:`numpy.maximum`</span>
+<span class="sd">    .. seealso:: :data:`numpy.maximum`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -540,7 +547,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Element-wise minimum of array elements.</span>
 
-<span class="sd">    .. seealso:: :func:`numpy.minimum`</span>
+<span class="sd">    .. seealso:: :data:`numpy.minimum`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -565,7 +572,7 @@
 
 <span class="sd">    Alias for :func:`dpnp.remainder`</span>
 
-<span class="sd">    .. seealso:: :func:`numpy.mod`</span>
+<span class="sd">    .. seealso:: :data:`numpy.mod`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -594,7 +601,8 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    divmod</span>
+<span class="sd">    :data:`numpy.modf`</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
@@ -621,7 +629,7 @@
 <span class="sd">        dpnp.dparray: The product of x1 and x2, element-wise.</span>
 <span class="sd">        This is a scalar if both x1 and x2 are scalars.</span>
 
-<span class="sd">    .. seealso:: :func:`numpy.multiply`</span>
+<span class="sd">    .. seealso:: :data:`numpy.multiply`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -676,7 +684,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Negative element-wise.</span>
 
-<span class="sd">    .. seealso:: :func:`numpy.negative`</span>
+<span class="sd">    .. seealso:: :data:`numpy.negative`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -704,7 +712,7 @@
 <span class="sd">        dpnp.dparray: The bases in x1 raised to the exponents in x2.</span>
 <span class="sd">        This is a scalar if both x1 and x2 are scalars.</span>
 
-<span class="sd">    .. seealso:: :func:`numpy.power`</span>
+<span class="sd">    .. seealso:: :data:`numpy.power`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -763,7 +771,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the absolute values element-wise.</span>
 
-<span class="sd">    .. seealso:: :func:`numpy.sign`</span>
+<span class="sd">    .. seealso:: :data:`numpy.sign`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -791,7 +799,7 @@
 <span class="sd">        dpnp.dparray: The difference of x1 and x2, element-wise.</span>
 <span class="sd">        This is a scalar if both x1 and x2 are scalars.</span>
 
-<span class="sd">    .. seealso:: :func:`numpy.subtract`</span>
+<span class="sd">    .. seealso:: :data:`numpy.subtract`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -839,7 +847,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Provide a true division of the inputs, element-wise.</span>
 
-<span class="sd">    .. seealso:: :func:`numpy.true_divide`</span>
+<span class="sd">    .. seealso:: :data:`numpy.true_divide`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -850,7 +858,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the truncated value of the input, element-wise.</span>
 
-<span class="sd">    .. seealso:: :func:`numpy.trunc`</span>
+<span class="sd">    .. seealso:: :data:`numpy.trunc`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 

@@ -181,30 +181,28 @@
 <dt id="dpnp.add">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_mathematical.html#add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.add" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add arguments element-wise.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The ‘out’ parameter is currently not supported.</p>
-</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x1</strong> (<em>dpnp.dparray</em>) – The left argument.</p></li>
-<li><p><strong>x2</strong> (<em>dpnp.dparray</em>) – The right argument.</p></li>
-<li><p><strong>out</strong> (<em>dpnp.dparray</em>) – Output array.</p></li>
+<li><p><strong>x1</strong> (<em>array_like</em>) – The arrays to be added.</p></li>
+<li><p><strong>x2</strong> (<em>array_like</em>) – The arrays to be added.</p></li>
+<li><p><strong>**kwargs</strong> – For other keyword arguments.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The sum of x1 and x2, element-wise.
-This is a scalar if both x1 and x2 are scalars.</p>
+<dd class="field-even"><p><strong>out</strong> – The sum of <cite>x1</cite> and <cite>x2</cite>, element-wise.
+This is a scalar if both <cite>x1</cite> and <cite>x2</cite> are scalars.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dpnp.dparray</p>
+<dd class="field-odd"><p>dparray:</p>
 </dd>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.add()</span></code></p>
+<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.add.html#numpy.add" title="(in NumPy v1.19)"><code class="xref py py-data docutils literal notranslate"><span class="pre">numpy.add</span></code></a></p>
 </div>
+<p class="rubric">Notes</p>
+<p>Equivalent to <cite>x1 + x2</cite> in terms of array broadcasting.</p>
 </dd></dl>
 
 </div>
