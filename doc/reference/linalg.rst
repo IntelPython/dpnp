@@ -12,12 +12,14 @@ Matrix and vector products
    
    dpnp.cross
    dpnp.dot
+   dpnp.linalg.multi_dot
    dpnp.vdot
    dpnp.inner
    dpnp.outer
    dpnp.matmul
    dpnp.tensordot
    dpnp.einsum
+   dpnp.einsum_path
    dpnp.linalg.matrix_power
    dpnp.kron
 
@@ -39,7 +41,9 @@ Matrix eigenvalues
    :toctree: generated/
    :nosignatures:
 
+   dpnp.linalg.eig
    dpnp.linalg.eigh
+   dpnp.linalg.eigvals
    dpnp.linalg.eigvalsh
 
 Norms etc.

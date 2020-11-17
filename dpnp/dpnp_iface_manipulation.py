@@ -182,7 +182,7 @@ def ravel(a, order='C'):
 
     See Also
     --------
-    flat, flatten, reshape
+    :obj:`numpy.ravel`
 
     """
 

@@ -163,7 +163,9 @@ Miscellaneous
    dpnp.sqrt
    dpnp.cbrt
    dpnp.square
+   dpnp.abs
    dpnp.absolute
+   dpnp.fabs
    dpnp.sign
    dpnp.maximum
    dpnp.minimum
