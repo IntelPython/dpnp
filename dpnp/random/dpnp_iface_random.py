@@ -110,7 +110,7 @@ def beta(a, b, size=None):
 
     # TODO:
     # array_like of floats for `a`, `b`
-    if not use_origin_backend(a):
+    if not use_origin_backend(a) and dpnp_queue_is_cpu():
         if size is None:
             size = 1
         if isinstance(size, tuple):
@@ -205,7 +205,7 @@ def binomial(n, p, size=None):
 
     """
 
-    if not use_origin_backend(n):
+    if not use_origin_backend(n) and dpnp_queue_is_cpu():
         if size is None:
             size = 1
         elif isinstance(size, tuple):
@@ -266,7 +266,7 @@ def chisquare(df, size=None):
 
     """
 
-    if not use_origin_backend(df):
+    if not use_origin_backend(df) and dpnp_queue_is_cpu():
         if size is None:
             size = 1
         elif isinstance(size, tuple):
@@ -555,7 +555,7 @@ def negative_binomial(n, p, size=None):
 
     """
 
-    if not use_origin_backend(n):
+    if not use_origin_backend(n) and dpnp_queue_is_cpu():
         if size is None:
             size = 1
         elif isinstance(size, tuple):
