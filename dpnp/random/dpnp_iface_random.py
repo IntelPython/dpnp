@@ -38,6 +38,7 @@ Set of functions to implement NumPy random module API
 import dpnp
 import numpy
 
+from dpnp.backend import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 from dpnp.random._random import *
@@ -409,7 +410,7 @@ def gamma(shape, scale=1.0, size=None):
 
     # TODO:
     # array_like of floats for `scale` and `shape`
-    if not use_origin_backend(scale):
+    if not use_origin_backend(scale) and dpnp_queue_is_cpu():
         if size is None:
             size = 1
         elif isinstance(size, tuple):
