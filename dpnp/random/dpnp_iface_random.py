@@ -58,6 +58,7 @@ __all__ = [
     'random',
     'random_integers',
     'random_sample',
+    'rayleigh',
     'sample',
     'seed',
     'standard_cauchy',
@@ -882,6 +883,31 @@ def sample(size):
         return dpnp_random(size)
 
     return call_origin(numpy.random.sample, size)
+
+
+def rayleigh(scale=1.0, size=None):
+    """Rayleigh distribution.
+
+    """
+
+    if not use_origin_backend(scale):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("rayleigh", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("rayleigh", "type(size)", type(size), int)
+
+        # TODO:
+        # array_like of floats for `scale` params
+        if scale < 0:
+            checker_throw_value_error("rayleigh", "scale", scale, "non-negative")
+
+        return dpnp_rayleigh(scale, size)
+
+    return call_origin(numpy.random.rayleigh, scale, size)
 
 
 def standard_cauchy(size=None):
