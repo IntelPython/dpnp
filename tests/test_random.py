@@ -275,15 +275,16 @@ def test_gumbel_invalid_args():
 def test_gumbel_check_moments():
     seed = 28041990
     dpnp.random.seed(seed)
-    loc = 2.56
+    loc = 12
     scale = 0.8
     size = 10**6
     expected_mean = loc + scale * numpy.euler_gamma
-    expected_var = (numpy.pi / 6) * (scale * scale)
+    expected_var = (numpy.pi**2 / 6) * (scale ** 2)
+
     var = numpy.var(dpnp.random.gumbel(loc=loc, scale=scale, size=size))
     mean = numpy.mean(dpnp.random.gumbel(loc=loc, scale=scale, size=size))
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
     assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
 
 
 def test_gumbel_check_extreme_value():
