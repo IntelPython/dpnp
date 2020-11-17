@@ -223,9 +223,9 @@
 <span class="sd">      (without complex conjugation).</span>
 
 <span class="sd">    - If both `a` and `b` are 2-D arrays, it is matrix multiplication,</span>
-<span class="sd">      but using :func:`matmul` or ``a @ b`` is preferred.</span>
+<span class="sd">      but using :obj:`dpnp.matmul` or ``a @ b`` is preferred.</span>
 
-<span class="sd">    - If either `a` or `b` is 0-D (scalar), it is equivalent to :func:`multiply`</span>
+<span class="sd">    - If either `a` or `b` is 0-D (scalar), it is equivalent to :obj:`dpnp.multiply`</span>
 <span class="sd">      and using ``numpy.multiply(a, b)`` or ``a * b`` is preferred.</span>
 
 <span class="sd">    - If `a` is an N-D array and `b` is a 1-D array, it is a sum product over</span>
@@ -290,14 +290,14 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :meth:`numpy.einsum`</span>
+<span class="sd">    :obj:`numpy.einsum`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">einsum</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">einsum_path</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="einsum_path"><a class="viewcode-back" href="../../reference/generated/dpnp.einsum_path.html#dpnp.einsum_path">[docs]</a><span class="k">def</span> <span class="nf">einsum_path</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    einsum_path(subscripts, *operands, optimize=&#39;greedy&#39;)</span>
 
@@ -306,11 +306,11 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :meth:`numpy.einsum_path`</span>
+<span class="sd">    :obj:`numpy.einsum_path`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">einsum_path</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">einsum_path</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="inner"><a class="viewcode-back" href="../../reference/generated/dpnp.inner.html#dpnp.inner">[docs]</a><span class="k">def</span> <span class="nf">inner</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -320,7 +320,7 @@
 <span class="sd">    The input arrays are flattened into 1-D vectors and then it performs inner</span>
 <span class="sd">    product of these vectors.</span>
 
-<span class="sd">    .. seealso:: :func:`numpy.inner`</span>
+<span class="sd">    .. seealso:: :obj:`numpy.inner`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -337,7 +337,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the kronecker product of two arrays.</span>
 
-<span class="sd">    .. seealso:: :func:`numpy.kron`</span>
+<span class="sd">    .. seealso:: :obj:`numpy.kron`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -351,7 +351,7 @@
 <span class="sd">    The input arrays are flattened into 1-D vectors and then it performs outer</span>
 <span class="sd">    product of these vectors.</span>
 
-<span class="sd">    .. seealso:: :func:`numpy.outer`</span>
+<span class="sd">    .. seealso:: :obj:`numpy.outer`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -368,7 +368,7 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute tensor dot product along specified axes.</span>
 
-<span class="sd">    .. seealso:: :func:`numpy.tensordot`</span>
+<span class="sd">    .. seealso:: :obj:`numpy.tensordot`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -387,7 +387,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :meth:`numpy.vdot`</span>
+<span class="sd">    :obj:`numpy.vdot`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 

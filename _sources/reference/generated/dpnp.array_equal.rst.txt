@@ -1,0 +1,6 @@
+﻿dpnp.array\_equal
+=================
+
+.. currentmodule:: dpnp
+
+.. autofunction:: array_equal

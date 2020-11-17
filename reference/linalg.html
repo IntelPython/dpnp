@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="dpnp.dot" href="generated/dpnp.dot.html" />
-    <link rel="prev" title="Binary Operations" href="binary.html" /> 
+    <link rel="prev" title="dpnp.fft.fft" href="generated/dpnp.fft.fft.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -95,6 +95,7 @@
 <li class="toctree-l3"><a class="reference internal" href="creation.html">Array Creation Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="manipulation.html">Array Manipulation Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="binary.html">Binary Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fft.html">FFT Functions</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Linear Algebra</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#matrix-and-vector-products">Matrix and vector products</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#decompositions">Decompositions</a></li>
@@ -114,6 +115,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="comparison.html">Comparison Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc.html">Miscellaneous routines</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../dpnp_backend_api.html">C++ backend API Reference</a></li>
@@ -199,23 +201,29 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.dot.html#dpnp.dot" title="dpnp.dot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.dot</span></code></a></p></td>
 <td><p>Dot product of two arrays.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.vdot.html#dpnp.vdot" title="dpnp.vdot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.vdot</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.linalg.multi_dot.html#dpnp.linalg.multi_dot" title="dpnp.linalg.multi_dot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.multi_dot</span></code></a></p></td>
+<td><p>Compute the dot product of two or more arrays in a single function call</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.vdot.html#dpnp.vdot" title="dpnp.vdot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.vdot</span></code></a></p></td>
 <td><p>Return the dot product of two vectors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.inner.html#dpnp.inner" title="dpnp.inner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.inner</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.inner.html#dpnp.inner" title="dpnp.inner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.inner</span></code></a></p></td>
 <td><p>Returns the inner product of two vectors.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.outer.html#dpnp.outer" title="dpnp.outer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.outer</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.outer.html#dpnp.outer" title="dpnp.outer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.outer</span></code></a></p></td>
 <td><p>Returns the outer product of two vectors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.matmul.html#dpnp.matmul" title="dpnp.matmul"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.matmul</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.matmul.html#dpnp.matmul" title="dpnp.matmul"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.matmul</span></code></a></p></td>
 <td><p>Returns the matrix product of two arrays and is the implementation of the <cite>&#64;</cite> operator introduced in Python 3.5 following PEP465.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.tensordot.html#dpnp.tensordot" title="dpnp.tensordot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.tensordot</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.tensordot.html#dpnp.tensordot" title="dpnp.tensordot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.tensordot</span></code></a></p></td>
 <td><p>Compute tensor dot product along specified axes.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.einsum.html#dpnp.einsum" title="dpnp.einsum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.einsum</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.einsum.html#dpnp.einsum" title="dpnp.einsum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.einsum</span></code></a></p></td>
 <td><p>Evaluates the Einstein summation convention on the operands.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.einsum_path.html#dpnp.einsum_path" title="dpnp.einsum_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.einsum_path</span></code></a></p></td>
+<td><p>Evaluates the lowest cost contraction order for an einsum expression by considering the creation of intermediate arrays.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.linalg.matrix_power.html#dpnp.linalg.matrix_power" title="dpnp.linalg.matrix_power"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.matrix_power</span></code></a></p></td>
 <td><p>Raise a square matrix to the (integer) power <cite>count</cite>.</p></td>
@@ -248,6 +256,12 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.linalg.eig.html#dpnp.linalg.eig" title="dpnp.linalg.eig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.eig</span></code></a></p></td>
+<td><p>Compute the eigenvalues and right eigenvectors of a square array.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.linalg.eigvals.html#dpnp.linalg.eigvals" title="dpnp.linalg.eigvals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.eigvals</span></code></a></p></td>
+<td><p>Compute the eigenvalues of a general matrix.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -303,7 +317,7 @@
         <a href="generated/dpnp.dot.html" class="btn btn-neutral float-right" title="dpnp.dot" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="binary.html" class="btn btn-neutral float-left" title="Binary Operations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="generated/dpnp.fft.fft.html" class="btn btn-neutral float-left" title="dpnp.fft.fft" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

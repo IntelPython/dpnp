@@ -37,7 +37,7 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.vdot" href="dpnp.vdot.html" />
+    <link rel="next" title="dpnp.linalg.multi_dot" href="dpnp.linalg.multi_dot.html" />
     <link rel="prev" title="Linear Algebra" href="../linalg.html" /> 
 </head>
 
@@ -95,6 +95,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../creation.html">Array Creation Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manipulation.html">Array Manipulation Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../binary.html">Binary Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../linalg.html">Linear Algebra</a><ul class="current">
 <li class="toctree-l4 current"><a class="reference internal" href="../linalg.html#matrix-and-vector-products">Matrix and vector products</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../linalg.html#decompositions">Decompositions</a></li>
@@ -114,6 +115,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../misc.html">Miscellaneous routines</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">C++ backend API Reference</a></li>
@@ -198,8 +200,8 @@
 <li><p>If both <cite>a</cite> and <cite>b</cite> are 1-D arrays, it is inner product of vectors
 (without complex conjugation).</p></li>
 <li><p>If both <cite>a</cite> and <cite>b</cite> are 2-D arrays, it is matrix multiplication,
-but using <a class="reference internal" href="dpnp.matmul.html#dpnp.matmul" title="dpnp.matmul"><code class="xref py py-func docutils literal notranslate"><span class="pre">matmul()</span></code></a> or <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">&#64;</span> <span class="pre">b</span></code> is preferred.</p></li>
-<li><p>If either <cite>a</cite> or <cite>b</cite> is 0-D (scalar), it is equivalent to <a class="reference internal" href="dpnp.multiply.html#dpnp.multiply" title="dpnp.multiply"><code class="xref py py-func docutils literal notranslate"><span class="pre">multiply()</span></code></a>
+but using <a class="reference internal" href="dpnp.matmul.html#dpnp.matmul" title="dpnp.matmul"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.matmul</span></code></a> or <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">&#64;</span> <span class="pre">b</span></code> is preferred.</p></li>
+<li><p>If either <cite>a</cite> or <cite>b</cite> is 0-D (scalar), it is equivalent to <a class="reference internal" href="dpnp.multiply.html#dpnp.multiply" title="dpnp.multiply"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.multiply</span></code></a>
 and using <code class="docutils literal notranslate"><span class="pre">numpy.multiply(a,</span> <span class="pre">b)</span></code> or <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">*</span> <span class="pre">b</span></code> is preferred.</p></li>
 <li><p>If <cite>a</cite> is an N-D array and <cite>b</cite> is a 1-D array, it is a sum product over
 the last axis of <cite>a</cite> and <cite>b</cite>.</p></li>
@@ -245,7 +247,7 @@ If <cite>out</cite> is given, then it is returned.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.vdot.html" class="btn btn-neutral float-right" title="dpnp.vdot" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.linalg.multi_dot.html" class="btn btn-neutral float-right" title="dpnp.linalg.multi_dot" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="../linalg.html" class="btn btn-neutral float-left" title="Linear Algebra" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
