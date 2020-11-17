@@ -182,7 +182,7 @@ def matrix_power(input, count):
 
     See Also
     --------
-    :meth:`numpy.linalg.matrix_power`
+    :func:`numpy.linalg.matrix_power`
 
     """
 

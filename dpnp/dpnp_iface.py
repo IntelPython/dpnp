@@ -165,7 +165,7 @@ def matmul(in_array1, in_array2, out=None):
     Returns:
         dpnp.dparray: Output array.
 
-    .. seealso:: :func:`numpy.matmul`
+    .. seealso:: :data:`numpy.matmul`
 
     """
 

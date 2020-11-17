@@ -136,7 +136,7 @@ def einsum(*args, **kwargs):
 
     See Also
     --------
-    :meth:`numpy.einsum`
+    :func:`numpy.einsum`
 
     """
 
@@ -233,7 +233,7 @@ def vdot(*args, **kwargs):
 
     See Also
     --------
-    :meth:`numpy.vdot`
+    :func:`numpy.vdot`
 
     """
 
