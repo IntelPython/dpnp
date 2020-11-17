@@ -392,3 +392,33 @@ def test_standard_normal_check_moments():
     mean = numpy.mean(dpnp.random.standard_normal(size=size))
     assert math.isclose(var, expected_var, abs_tol=0.003)
     assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
+def test_weibull_seed():
+    seed = 28041990
+    size = 100
+    a = 2.56
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.weibull(a, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.weibull(a, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_weibull_invalid_args():
+    size = 10
+    a = -1.0  # non-negative `a` is expected
+
+    with pytest.raises(ValueError):
+        dpnp.random.weibull(a=a, size=size)
+
+
+def test_weibull_check_extreme_value():
+    seed = 28041990
+    dpnp.random.seed(seed)
+
+    a = 0.0
+    res = numpy.asarray(dpnp.random.weibull(a=a, size=100))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == 0.0
