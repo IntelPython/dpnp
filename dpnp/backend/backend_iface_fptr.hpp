@@ -122,6 +122,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_MODF,               /**< Used in numpy.modf() implementation  */
     DPNP_FN_MULTIPLY,           /**< Used in numpy.multiply() implementation  */
     DPNP_FN_NEGATIVE_BINOMIAL,  /**< Used in numpy.random.negative_binomial() implementation  */
+    DPNP_FN_LAPLACE,            /**< Used in numpy.random.laplace() implementation  */
     DPNP_FN_POWER,              /**< Used in numpy.random.power() implementation  */
     DPNP_FN_PROD,               /**< Used in numpy.prod() implementation  */
     DPNP_FN_RADIANS,            /**< Used in numpy.radians() implementation  */
@@ -134,6 +135,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_SORT,               /**< Used in numpy.sort() implementation  */
     DPNP_FN_SQRT,               /**< Used in numpy.sqrt() implementation  */
     DPNP_FN_SQUARE,             /**< Used in numpy.square() implementation  */
+    DPNP_FN_STANDARD_CAUCHY,    /**< Used in numpy.random.standard_cauchy() implementation  */
     DPNP_FN_STD,                /**< Used in numpy.std() implementation  */
     DPNP_FN_SUBTRACT,           /**< Used in numpy.subtract() implementation  */
     DPNP_FN_SUM,                /**< Used in numpy.sum() implementation  */

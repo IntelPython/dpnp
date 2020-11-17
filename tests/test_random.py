@@ -250,6 +250,53 @@ def test_gamma_check_moments():
     assert math.isclose(mean, expected_mean, abs_tol=0.003)
 
 
+def test_laplace_seed():
+    seed = 28041990
+    size = 100
+    loc = 2.56
+    scale = 0.8
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.laplace(loc, scale, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.laplace(loc, scale, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_laplace_invalid_args():
+    size = 10
+
+    loc = 3.0     # OK
+    scale = -1.0  # positive `b` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.laplace(loc=loc, scale=scale, size=size)
+
+
+def test_laplace_check_moments():
+    seed = 28041995
+    dpnp.random.seed(seed)
+    loc = 2.56
+    scale = 0.8
+    size = 10**6
+    expected_mean = loc
+    expected_var = 2 * scale * scale
+    var = numpy.var(dpnp.random.laplace(loc=loc, scale=scale, size=size))
+    mean = numpy.mean(dpnp.random.laplace(loc=loc, scale=scale, size=size))
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
+def test_laplace_check_extreme_value():
+    seed = 28041990
+    dpnp.random.seed(seed)
+
+    loc = 5
+    scale = 0.0
+    res = numpy.asarray(dpnp.random.laplace(loc=loc, scale=scale, size=100))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == 0.0
+
+
 def test_negative_binomial_seed():
     seed = 28041990
     size = 100
@@ -311,6 +358,17 @@ def test_randn_normal_distribution():
     # dataset does not significantly deviate from normal.
     # If p > alpha, the null hypothesis cannot be rejected.
     assert p > alpha
+
+
+def test_standard_cauchy_seed():
+    seed = 28041990
+    size = 100
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.standard_cauchy(size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.standard_cauchy(size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
 def test_weibull_seed():
