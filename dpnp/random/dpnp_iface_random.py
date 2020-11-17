@@ -30,7 +30,7 @@ Module Intel NumPy Random
 
 Set of functions to implement NumPy random module API
 
-    .. seealso:: :meth:`numpy.random`
+    .. seealso:: :obj:`numpy.random`
 
 """
 

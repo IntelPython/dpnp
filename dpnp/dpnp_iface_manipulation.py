@@ -182,7 +182,7 @@ def ravel(a, order='C'):
 
     See Also
     --------
-    :func:`numpy.ravel`
+    :obj:`numpy.ravel`
 
     """
 

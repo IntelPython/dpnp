@@ -83,7 +83,7 @@ def arange(*args, **kwargs):
     -------
         inumpy.dparray: The 1-D array of range values.
 
-    .. seealso:: :func:`numpy.arange`
+    .. seealso:: :obj:`numpy.arange`
 
     """
 
@@ -125,7 +125,7 @@ def array(obj, dtype=None, copy=True, order='C', subok=False, ndmin=0):
 
     Args:
         obj: :class:`inumpy.dparray` object or any other object that can be
-            passed to :func:`numpy.array`.
+            passed to :obj:`numpy.array`.
         dtype: Data type specifier.
         copy (bool): If ``False``, this function returns ``obj`` if possible.
             Otherwise this function always returns a new array.
@@ -151,7 +151,7 @@ def array(obj, dtype=None, copy=True, order='C', subok=False, ndmin=0):
     .. note::
        This method currently does not support ``subok`` argument.
 
-    .. seealso:: :func:`numpy.array`
+    .. seealso:: :obj:`numpy.array`
 
     """
 
@@ -194,7 +194,7 @@ def asarray(input, dtype=None, order='C'):
     Returns:
         inumpy.dparray populated with input data
 
-    .. seealso:: :func:`numpy.asarray`
+    .. seealso:: :obj:`numpy.asarray`
 
     """
 

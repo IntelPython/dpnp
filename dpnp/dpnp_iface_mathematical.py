@@ -84,7 +84,7 @@ def abs(*args, **kwargs):
     """
     Calculate the absolute value element-wise.
 
-    .. seealso:: :func:`numpy.add`
+    .. seealso:: :obj:`numpy.add`
 
     """
 
@@ -135,7 +135,7 @@ def add(x1, x2, **kwargs):
 
     See Also
     --------
-    :data:`numpy.add`
+    :obj:`numpy.add`
 
     Notes
     -----
@@ -162,7 +162,7 @@ def ceil(x1, **kwargs):
     """
     Compute  the ceiling of the input, element-wise.
 
-    .. seealso:: :data:`numpy.ceil`
+    .. seealso:: :obj:`numpy.ceil`
 
     """
 
@@ -223,7 +223,7 @@ def divide(x1, x2, **kwargs):
         dpnp.dparray: The division of x1 and x2, element-wise.
         This is a scalar if both x1 and x2 are scalars.
 
-    .. seealso:: :data:`numpy.divide`
+    .. seealso:: :obj:`numpy.divide`
 
     """
 
@@ -246,7 +246,7 @@ def fabs(x1, **kwargs):
     """
     Compute the absolute values element-wise.
 
-    .. seealso:: :func:`numpy.fabs`
+    .. seealso:: :obj:`numpy.fabs`
 
     """
 
@@ -265,7 +265,7 @@ def floor(x1, **kwargs):
     Some spreadsheet programs calculate the “floor-towards-zero”, in other words floor(-2.5) == -2.
     dpNP instead uses the definition of floor where floor(-2.5) == -3.
 
-    .. seealso:: :data:`numpy.floor`
+    .. seealso:: :obj:`numpy.floor`
 
     """
 
@@ -281,7 +281,7 @@ def floor_divide(x1, x2, **kwargs):
     """
     Compute the largest integer smaller or equal to the division of the inputs.
 
-    .. seealso:: :data:`numpy.floor_divide`
+    .. seealso:: :obj:`numpy.floor_divide`
 
     """
 
@@ -298,7 +298,7 @@ def fmax(*args, **kwargs):
     """
     Element-wise maximum of array elements.
 
-    .. seealso:: :data:`numpy.fmax`
+    .. seealso:: :obj:`numpy.fmax`
 
     """
 
@@ -309,7 +309,7 @@ def fmin(*args, **kwargs):
     """
     Element-wise minimum of array elements.
 
-    .. seealso:: :data:`numpy.fmin`
+    .. seealso:: :obj:`numpy.fmin`
 
     """
 
@@ -320,7 +320,7 @@ def fmod(x1, x2, **kwargs):
     """
     Calculate the element-wise remainder of division.
 
-    .. seealso:: :data:`numpy.fmod`
+    .. seealso:: :obj:`numpy.fmod`
 
     """
 
@@ -370,7 +370,7 @@ def maximum(x1, x2, **kwargs):
     """
     Element-wise maximum of array elements.
 
-    .. seealso:: :data:`numpy.maximum`
+    .. seealso:: :obj:`numpy.maximum`
 
     """
 
@@ -393,7 +393,7 @@ def minimum(x1, x2, **kwargs):
     """
     Element-wise minimum of array elements.
 
-    .. seealso:: :data:`numpy.minimum`
+    .. seealso:: :obj:`numpy.minimum`
 
     """
 
@@ -416,9 +416,9 @@ def mod(*args, **kwargs):
     """
     Compute element-wise remainder of division.
 
-    Alias for :func:`dpnp.remainder`
+    Alias for :obj:`dpnp.remainder`
 
-    .. seealso:: :data:`numpy.mod`
+    .. seealso:: :obj:`numpy.mod`
 
     """
 
@@ -447,7 +447,7 @@ def modf(x, **kwargs):
 
     See Also
     --------
-    :data:`numpy.modf`
+    :obj:`numpy.modf`
 
     """
     if not use_origin_backend(x) and not kwargs:
@@ -475,7 +475,7 @@ def multiply(x1, x2, **kwargs):
         dpnp.dparray: The product of x1 and x2, element-wise.
         This is a scalar if both x1 and x2 are scalars.
 
-    .. seealso:: :data:`numpy.multiply`
+    .. seealso:: :obj:`numpy.multiply`
 
     """
 
@@ -498,7 +498,7 @@ def nanprod(x1, **kwargs):
     """
     Calculate prod() function treating 'Not a Numbers' (NaN) as ones.
 
-    .. seealso:: :func:`numpy.nanprod`
+    .. seealso:: :obj:`numpy.nanprod`
 
     """
 
@@ -514,7 +514,7 @@ def nansum(x1, **kwargs):
     """
     Calculate sum() function treating 'Not a Numbers' (NaN) as zero.
 
-    .. seealso:: :func:`numpy.nansum`
+    .. seealso:: :obj:`numpy.nansum`
 
     """
 
@@ -530,7 +530,7 @@ def negative(x1, **kwargs):
     """
     Negative element-wise.
 
-    .. seealso:: :data:`numpy.negative`
+    .. seealso:: :obj:`numpy.negative`
 
     """
 
@@ -558,7 +558,7 @@ def power(x1, x2, **kwargs):
         dpnp.dparray: The bases in x1 raised to the exponents in x2.
         This is a scalar if both x1 and x2 are scalars.
 
-    .. seealso:: :data:`numpy.power`
+    .. seealso:: :obj:`numpy.power`
 
     """
 
@@ -581,7 +581,7 @@ def prod(x1, **kwargs):
     """
     Calculate product of array elements over a given axis.
 
-    .. seealso:: :func:`numpy.prod`
+    .. seealso:: :obj:`numpy.prod`
 
     """
 
@@ -617,7 +617,7 @@ def sign(x1, **kwargs):
     """
     Compute the absolute values element-wise.
 
-    .. seealso:: :data:`numpy.sign`
+    .. seealso:: :obj:`numpy.sign`
 
     """
 
@@ -645,7 +645,7 @@ def subtract(x1, x2, **kwargs):
         dpnp.dparray: The difference of x1 and x2, element-wise.
         This is a scalar if both x1 and x2 are scalars.
 
-    .. seealso:: :data:`numpy.subtract`
+    .. seealso:: :obj:`numpy.subtract`
 
     """
 
@@ -669,7 +669,7 @@ def sum(x1, **kwargs):
     """
     Sum of array elements over a given axis.
 
-    .. seealso:: :func:`numpy.sum`
+    .. seealso:: :obj:`numpy.sum`
 
     """
 
@@ -693,7 +693,7 @@ def true_divide(*args, **kwargs):
     """
     Provide a true division of the inputs, element-wise.
 
-    .. seealso:: :data:`numpy.true_divide`
+    .. seealso:: :obj:`numpy.true_divide`
 
     """
 
@@ -704,7 +704,7 @@ def trunc(x1, **kwargs):
     """
     Compute the truncated value of the input, element-wise.
 
-    .. seealso:: :data:`numpy.trunc`
+    .. seealso:: :obj:`numpy.trunc`
 
     """
 

@@ -513,7 +513,7 @@ cdef class dparray:
         """ Repeat elements of an array.
 
         .. seealso::
-           :func:`dpnp.repeat` for full documentation,
+           :obj:`dpnp.repeat` for full documentation,
            :meth:`numpy.ndarray.repeat`
 
         """
@@ -523,7 +523,7 @@ cdef class dparray:
         """ Returns the variance of the array elements, along given axis.
 
         .. seealso::
-           :func:`dpnp.var` for full documentation,
+           :obj:`dpnp.var` for full documentation,
 
         """
         return std(self, axis, dtype, out, ddof, keepdims)
@@ -532,7 +532,7 @@ cdef class dparray:
         """ Returns a view of the array with axes permuted.
 
         .. seealso::
-           :func:`dpnp.transpose` for full documentation,
+           :obj:`dpnp.transpose` for full documentation,
            :meth:`numpy.ndarray.reshape`
 
         """
@@ -707,7 +707,7 @@ cdef class dparray:
         Returns the sum along a given axis.
 
         .. seealso::
-           :func:`dpnp.sum` for full documentation,
+           :obj:`dpnp.sum` for full documentation,
            :meth:`dpnp.dparray.sum`
 
         """
