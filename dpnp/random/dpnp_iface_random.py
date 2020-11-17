@@ -63,7 +63,7 @@ __all__ = [
     'seed',
     'standard_cauchy',
     'standard_normal',
-    'uniform'
+    'uniform',
     'weibull'
 ]
 
