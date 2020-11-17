@@ -62,6 +62,7 @@ __all__ = [
     'sample',
     'seed',
     'standard_cauchy',
+    'standard_normal',
     'uniform'
 ]
 
@@ -927,6 +928,41 @@ def standard_cauchy(size=None):
         return dpnp_standard_cauchy(size)
 
     return call_origin(numpy.random.standard_cauchy, size)
+
+
+def standard_normal(size=None):
+    """Standard normal distribution.
+
+    Draw samples from a standard Normal distribution (mean=0, stdev=1).
+
+    Parameters
+    ----------
+    size : int, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  Default is None, in which case a
+        single value is returned.
+ 
+    Returns
+    -------
+    out : float or ndarray
+        A floating-point array of shape ``size`` of drawn samples, or a
+        single sample if ``size`` was not specified.
+
+    """
+
+    if not use_origin_backend(size):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("standard_normal", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("standard_normal", "type(size)", type(size), int)
+
+        return dpnp_standard_normal(size)
+
+    return call_origin(numpy.random.standard_normal, size)
 
 
 def uniform(low=0.0, high=1.0, size=None):

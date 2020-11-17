@@ -183,6 +183,21 @@ void custom_rng_standard_cauchy_c(void* result, size_t size)
 }
 
 template <typename _DataType>
+void custom_rng_standard_normal_c(void* result, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    const _DataType mean =  _DataType(0.0);
+    const _DataType stddev =  _DataType(1.0);
+
+    custom_rng_gaussian_c(result, mean, stddev, size);
+}
+
+template <typename _DataType>
 void custom_rng_uniform_c(void* result, long low, long high, size_t size)
 {
     if (!size)
@@ -226,6 +241,8 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_NEGATIVE_BINOMIAL][eft_INT][eft_INT] = {eft_INT, (void*)custom_rng_negative_binomial_c<int>};
 
     fmap[DPNPFuncName::DPNP_FN_STANDARD_CAUCHY][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_standard_cauchy_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_STANDARD_NORMAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_standard_normal_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_uniform_c<double>};
     fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_rng_uniform_c<float>};
