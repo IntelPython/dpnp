@@ -371,7 +371,30 @@ def test_standard_cauchy_seed():
     assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
-def test_weibull_seed():
+def test_standard_normal_seed():
+    seed = 28041990
+    size = 100
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.standard_normal(size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.standard_normal(size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_standard_normal_check_moments():
+    seed = 28041995
+    dpnp.random.seed(seed)
+    size = 10**6
+    expected_mean = 0.0
+    expected_var = 1.0
+    var = numpy.var(dpnp.random.standard_normal(size=size))
+    mean = numpy.mean(dpnp.random.standard_normal(size=size))
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
+ def test_weibull_seed():
     seed = 28041990
     size = 100
     a = 2.56
@@ -391,7 +414,7 @@ def test_weibull_invalid_args():
         dpnp.random.weibull(a=a, size=size)
 
 
-def test_laplace_check_extreme_value():
+def test_weibull_check_extreme_value():
     seed = 28041990
     dpnp.random.seed(seed)
 

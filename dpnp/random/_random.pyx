@@ -54,7 +54,8 @@ __all__ = [
     "dpnp_random",
     "dpnp_srand",
     "dpnp_standard_cauchy",
-    "dpnp_uniform",
+    "dpnp_standard_normal",
+    "dpnp_uniform"
     "dpnp_weibull"
 ]
 
@@ -68,6 +69,7 @@ ctypedef void(*fptr_custom_rng_gaussian_c_1out_t)(void *, double, double, size_t
 ctypedef void(*fptr_custom_rng_laplace_c_1out_t)(void *, double, double, size_t)
 ctypedef void(*fptr_custom_rng_negative_binomial_c_1out_t)(void *, double, double, size_t)
 ctypedef void(*fptr_custom_rng_standard_cauchy_c_1out_t)(void *, size_t) except +
+ctypedef void(*fptr_custom_rng_standard_normal_c_1out_t)(void *, size_t) except +
 ctypedef void(*fptr_custom_rng_uniform_c_1out_t)(void *, long, long, size_t)
 ctypedef void(*fptr_custom_rng_weibull_c_1out_t)(void *, double, size_t) except +
 
@@ -370,6 +372,31 @@ cpdef dparray dpnp_standard_cauchy(size):
     cdef dparray result = dparray(size, dtype=result_type)
 
     cdef fptr_custom_rng_standard_cauchy_c_1out_t func = < fptr_custom_rng_standard_cauchy_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), result.size)
+
+    return result
+
+
+cpdef dparray dpnp_standard_normal(size):
+    """
+    Returns an array populated with samples from beta distribution.
+    `dpnp_standard_normal` generates a matrix filled with random floats sampled from a
+    univariate standard normal(Gaussian) distribution.
+
+    """
+
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_STANDARD_NORMAL, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray result = dparray(size, dtype=result_type)
+
+    cdef fptr_custom_rng_standard_normal_c_1out_t func = < fptr_custom_rng_standard_normal_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), result.size)
 

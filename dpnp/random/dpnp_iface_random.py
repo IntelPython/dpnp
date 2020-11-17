@@ -38,6 +38,7 @@ Set of functions to implement NumPy random module API
 import dpnp
 import numpy
 
+from dpnp.backend import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 from dpnp.random._random import *
@@ -61,7 +62,8 @@ __all__ = [
     'sample',
     'seed',
     'standard_cauchy',
-    'uniform',
+    'standard_normal',
+    'uniform'
     'weibull'
 ]
 
@@ -410,7 +412,7 @@ def gamma(shape, scale=1.0, size=None):
 
     # TODO:
     # array_like of floats for `scale` and `shape`
-    if not use_origin_backend(scale):
+    if not use_origin_backend(scale) and dpnp_queue_is_cpu():
         if size is None:
             size = 1
         elif isinstance(size, tuple):
@@ -927,6 +929,41 @@ def standard_cauchy(size=None):
         return dpnp_standard_cauchy(size)
 
     return call_origin(numpy.random.standard_cauchy, size)
+
+
+def standard_normal(size=None):
+    """Standard normal distribution.
+
+    Draw samples from a standard Normal distribution (mean=0, stdev=1).
+
+    Parameters
+    ----------
+    size : int, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  Default is None, in which case a
+        single value is returned.
+ 
+    Returns
+    -------
+    out : float or ndarray
+        A floating-point array of shape ``size`` of drawn samples, or a
+        single sample if ``size`` was not specified.
+
+    """
+
+    if not use_origin_backend(size):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("standard_normal", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("standard_normal", "type(size)", type(size), int)
+
+        return dpnp_standard_normal(size)
+
+    return call_origin(numpy.random.standard_normal, size)
 
 
 def uniform(low=0.0, high=1.0, size=None):
