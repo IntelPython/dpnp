@@ -365,10 +365,6 @@ def cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=N
     --------
     corrcoef : Normalized covariance matrix
 
-    Limitations
-    -----------
-    Some limitations.
-
     Notes
     -----
     Assume that the observations are in the columns of the observation
