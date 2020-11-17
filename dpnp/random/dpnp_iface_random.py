@@ -932,6 +932,21 @@ def standard_cauchy(size=None):
 def standard_normal(size=None):
     """Standard normal distribution.
 
+    Draw samples from a standard Normal distribution (mean=0, stdev=1).
+
+    Parameters
+    ----------
+    size : int, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  Default is None, in which case a
+        single value is returned.
+ 
+    Returns
+    -------
+    out : float or ndarray
+        A floating-point array of shape ``size`` of drawn samples, or a
+        single sample if ``size`` was not specified.
+
     """
 
     if not use_origin_backend(size):
