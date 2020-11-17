@@ -394,7 +394,7 @@ def test_standard_normal_check_moments():
     assert math.isclose(mean, expected_mean, abs_tol=0.003)
 
 
- def test_weibull_seed():
+def test_weibull_seed():
     seed = 28041990
     size = 100
     a = 2.56
