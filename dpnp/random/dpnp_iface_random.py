@@ -61,6 +61,7 @@ __all__ = [
     'sample',
     'seed',
     'standard_cauchy',
+    'standard_normal',
     'uniform'
 ]
 
@@ -926,6 +927,26 @@ def standard_cauchy(size=None):
         return dpnp_standard_cauchy(size)
 
     return call_origin(numpy.random.standard_cauchy, size)
+
+
+def standard_normal(size=None):
+    """Standard normal distribution.
+
+    """
+
+    if not use_origin_backend(size):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("standard_normal", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("standard_normal", "type(size)", type(size), int)
+
+        return dpnp_standard_normal(size)
+
+    return call_origin(numpy.random.standard_normal, size)
 
 
 def uniform(low=0.0, high=1.0, size=None):
