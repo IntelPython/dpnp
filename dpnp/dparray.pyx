@@ -418,7 +418,7 @@ cdef class dparray:
 
         See Also
         --------
-        ravel, flat
+        :obj:`dpnp.ravel`, :obj:`dpnp.flat`
 
         """
 
@@ -469,7 +469,7 @@ cdef class dparray:
 
         See Also
         --------
-        ravel, flat
+        :obj:`dpnp.ravel`, :obj:`dpnp.flat`
 
         """
         # TODO: don't copy the input array
@@ -513,7 +513,7 @@ cdef class dparray:
         """ Repeat elements of an array.
 
         .. seealso::
-           :func:`dpnp.repeat` for full documentation,
+           :obj:`dpnp.repeat` for full documentation,
            :meth:`numpy.ndarray.repeat`
 
         """
@@ -523,7 +523,7 @@ cdef class dparray:
         """ Returns the variance of the array elements, along given axis.
 
         .. seealso::
-           :func:`dpnp.var` for full documentation,
+           :obj:`dpnp.var` for full documentation,
 
         """
         return std(self, axis, dtype, out, ddof, keepdims)
@@ -532,7 +532,7 @@ cdef class dparray:
         """ Returns a view of the array with axes permuted.
 
         .. seealso::
-           :func:`dpnp.transpose` for full documentation,
+           :obj:`dpnp.transpose` for full documentation,
            :meth:`numpy.ndarray.reshape`
 
         """
@@ -549,8 +549,8 @@ cdef class dparray:
 
         See Also
         --------
-        numpy.ndarray.var : corresponding function for ndarrays
-        numpy.var : Equivalent function
+        :obj:`numpy.ndarray.var` : corresponding function for ndarrays
+        :obj:`numpy.var` : Equivalent function
         """
         return var(self, axis, dtype, out, ddof, keepdims)
 
@@ -707,7 +707,7 @@ cdef class dparray:
         Returns the sum along a given axis.
 
         .. seealso::
-           :func:`dpnp.sum` for full documentation,
+           :obj:`dpnp.sum` for full documentation,
            :meth:`dpnp.dparray.sum`
 
         """
@@ -775,8 +775,8 @@ cdef class dparray:
         See Also
         --------
         MaskedArray.sort : Describes sorting algorithms used.
-        lexsort : Indirect stable sort with multiple keys.
-        numpy.ndarray.sort : Inplace sort.
+        :obj:`dpnp.lexsort` : Indirect stable sort with multiple keys.
+        :obj:`numpy.ndarray.sort` : Inplace sort.
 
         Notes
         -----
@@ -810,10 +810,10 @@ cdef class dparray:
 
         See Also
         --------
-        numpy.ndarray.sort : Method to sort an array in-place.
-        argsort : Indirect sort.
-        lexsort : Indirect stable sort on multiple keys.
-        searchsorted : Find elements in a sorted array.
+        :obj:`numpy.ndarray.sort` : Method to sort an array in-place.
+        :obj:`dpnp.argsort` : Indirect sort.
+        :obj:`dpnp.lexsort` : Indirect stable sort on multiple keys.
+        :obj:`dpnp.searchsorted` : Find elements in a sorted array.
 
         Notes
         -----
@@ -895,7 +895,7 @@ cdef class dparray:
 
         See Also
         --------
-        numpy.all : equivalent function
+        :obj:`numpy.all` : equivalent function
 
         """
 
@@ -909,7 +909,7 @@ cdef class dparray:
 
         See Also
         --------
-        numpy.any : equivalent function
+        :obj:`numpy.any` : equivalent function
 
         """
 

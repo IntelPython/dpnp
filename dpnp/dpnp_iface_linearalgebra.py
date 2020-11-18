@@ -69,9 +69,9 @@ def dot(x1, x2, **kwargs):
       (without complex conjugation).
 
     - If both `a` and `b` are 2-D arrays, it is matrix multiplication,
-      but using :func:`matmul` or ``a @ b`` is preferred.
+      but using :obj:`dpnp.matmul` or ``a @ b`` is preferred.
 
-    - If either `a` or `b` is 0-D (scalar), it is equivalent to :func:`multiply`
+    - If either `a` or `b` is 0-D (scalar), it is equivalent to :obj:`dpnp.multiply`
       and using ``numpy.multiply(a, b)`` or ``a * b`` is preferred.
 
     - If `a` is an N-D array and `b` is a 1-D array, it is a sum product over
@@ -136,7 +136,7 @@ def einsum(*args, **kwargs):
 
     See Also
     --------
-    :meth:`numpy.einsum`
+    :obj:`numpy.einsum`
 
     """
 
@@ -152,7 +152,7 @@ def einsum_path(*args, **kwargs):
 
     See Also
     --------
-    :meth:`numpy.einsum_path`
+    :obj:`numpy.einsum_path`
 
     """
 
@@ -166,7 +166,7 @@ def inner(x1, x2, **kwargs):
     The input arrays are flattened into 1-D vectors and then it performs inner
     product of these vectors.
 
-    .. seealso:: :func:`numpy.inner`
+    .. seealso:: :obj:`numpy.inner`
 
     """
 
@@ -183,7 +183,7 @@ def kron(x1, x2, **kwargs):
     """
     Returns the kronecker product of two arrays.
 
-    .. seealso:: :func:`numpy.kron`
+    .. seealso:: :obj:`numpy.kron`
 
     """
 
@@ -197,7 +197,7 @@ def outer(x1, x2, **kwargs):
     The input arrays are flattened into 1-D vectors and then it performs outer
     product of these vectors.
 
-    .. seealso:: :func:`numpy.outer`
+    .. seealso:: :obj:`numpy.outer`
 
     """
 
@@ -214,7 +214,7 @@ def tensordot(x1, x2, axes=2):
     """
     Compute tensor dot product along specified axes.
 
-    .. seealso:: :func:`numpy.tensordot`
+    .. seealso:: :obj:`numpy.tensordot`
 
     """
 
@@ -233,7 +233,7 @@ def vdot(*args, **kwargs):
 
     See Also
     --------
-    :meth:`numpy.vdot`
+    :obj:`numpy.vdot`
 
     """
 

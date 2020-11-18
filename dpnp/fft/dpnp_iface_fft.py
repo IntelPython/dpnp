@@ -59,7 +59,7 @@ def fft(x1, n=None, axis=-1, norm=None):
 
     See Also
     --------
-    :meth:`numpy.fft.fft`
+    :obj:`numpy.fft.fft`
 
     """
 

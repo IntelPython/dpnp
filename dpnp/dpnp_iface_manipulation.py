@@ -182,7 +182,7 @@ def ravel(a, order='C'):
 
     See Also
     --------
-    flat, flatten, reshape
+    :obj:`numpy.ravel`
 
     """
 
@@ -250,7 +250,7 @@ def rollaxis(a, axis, start=0):
 
     See Also
     --------
-    moveaxis, roll
+    :obj:`dpnp.moveaxis`, :obj:`dpnp.roll`
 
     """
 

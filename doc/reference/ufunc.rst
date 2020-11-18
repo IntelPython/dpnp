@@ -28,7 +28,9 @@ Math operations
    dpnp.remainder
    dpnp.mod
    dpnp.fmod
+   dpnp.abs
    dpnp.absolute
+   dpnp.fabs
    dpnp.rint
    dpnp.sign
    dpnp.exp
