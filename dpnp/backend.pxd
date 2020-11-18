@@ -82,7 +82,6 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_LOG10
         DPNP_FN_LOG1P
         DPNP_FN_LOG2
-        DPNP_FN_LOGNORMAL
         DPNP_FN_MATMUL
         DPNP_FN_MATRIX_RANK
         DPNP_FN_MAX
@@ -102,6 +101,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_REMAINDER
         DPNP_FN_RECIP
         DPNP_FN_RIGHT_SHIFT
+        DPNP_FN_RNG_LOGNORMAL
         DPNP_FN_SIGN
         DPNP_FN_SIN
         DPNP_FN_SINH

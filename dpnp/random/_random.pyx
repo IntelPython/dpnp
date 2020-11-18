@@ -320,7 +320,7 @@ cpdef dparray dpnp_lognormal(double mean, double stddev, size):
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
         # get the FPTR data structure
-        kernel_data = get_dpnp_function_ptr(DPNP_FN_LOGNORMAL, param1_type, param1_type)
+        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_LOGNORMAL, param1_type, param1_type)
 
         result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
         # ceate result array with type given by FPTR data

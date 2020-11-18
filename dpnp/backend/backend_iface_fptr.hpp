@@ -111,7 +111,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_LOG10,              /**< Used in numpy.log10() implementation  */
     DPNP_FN_LOG2,               /**< Used in numpy.log2() implementation  */
     DPNP_FN_LOG1P,              /**< Used in numpy.log1p() implementation  */
-    DPNP_FN_LOGNORMAL,          /**< Used in numpy.random.lognormal() implementation  */
     DPNP_FN_MATMUL,             /**< Used in numpy.matmul() implementation  */
     DPNP_FN_MATRIX_RANK,        /**< Used in numpy.linalg.matrix_rank() implementation  */
     DPNP_FN_MAX,                /**< Used in numpy.max() implementation  */
@@ -130,6 +129,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_REMAINDER,          /**< Used in numpy.remainder() implementation  */
     DPNP_FN_RECIP,              /**< Used in numpy.recip() implementation  */
     DPNP_FN_RIGHT_SHIFT,        /**< Used in numpy.right_shift() implementation  */
+    DPNP_FN_RNG_LOGNORMAL,      /**< Used in numpy.random.lognormal() implementation  */
     DPNP_FN_SIGN,               /**< Used in numpy.sign() implementation  */
     DPNP_FN_SIN,                /**< Used in numpy.sin() implementation  */
     DPNP_FN_SINH,               /**< Used in numpy.sinh() implementation  */

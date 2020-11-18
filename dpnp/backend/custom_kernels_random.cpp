@@ -278,7 +278,7 @@ void func_map_init_random(func_map_t& fmap)
 
     fmap[DPNPFuncName::DPNP_FN_LAPLACE][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_laplace_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_LOGNORMAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_lognormal_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_LOGNORMAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_lognormal_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_NEGATIVE_BINOMIAL][eft_INT][eft_INT] = {eft_INT, (void*)custom_rng_negative_binomial_c<int>};
 
