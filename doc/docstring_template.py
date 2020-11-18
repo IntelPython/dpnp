@@ -56,7 +56,9 @@ def func(a, b=None, c=True):
 
     See Also
     --------
-    base_func, func2, func3
+    :obj:`numpy.func` : Short (one-line) description of the function `numpy.func`.
+    :obj:`dpnp.func2` : Short (one-line) description of the function `dpnp.func2`.
+    :obj:`dpnp.func3` : Short (one-line) description of the function `dpnp.func3`.
 
     Notes
     -----
@@ -66,11 +68,12 @@ def func(a, b=None, c=True):
     --------
     Some examples, ex:
 
+    >>> import dpnp as np
     >>> a = np.array([0, 1, 2])
     >>> b = np.array([2, 1, 0])
     >>> x = np.func(a, b=b, c=True)
-    >>> x
-    array([0, 1, 2, 2, 1, 0])
+    >>> [i for i in x]
+    [2, 2, 2]
 
     """
     pass
