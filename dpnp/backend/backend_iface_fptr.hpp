@@ -104,7 +104,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_FMOD,               /**< Used in numpy.fmod() implementation  */
     DPNP_FN_GAMMA,              /**< Used in numpy.random.gamma() implementation  */
     DPNP_FN_GAUSSIAN,           /**< Used in numpy.random.randn() implementation  */
-    DPNP_FN_GUMBEL,             /**< Used in numpy.random.gumbel() implementation  */
     DPNP_FN_HYPOT,              /**< Used in numpy.hypot() implementation  */
     DPNP_FN_INVERT,             /**< Used in numpy.invert() implementation  */
     DPNP_FN_LEFT_SHIFT,         /**< Used in numpy.left_shift() implementation  */
@@ -130,6 +129,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_REMAINDER,          /**< Used in numpy.remainder() implementation  */
     DPNP_FN_RECIP,              /**< Used in numpy.recip() implementation  */
     DPNP_FN_RIGHT_SHIFT,        /**< Used in numpy.right_shift() implementation  */
+    DPNP_FN_RNG_GUMBEL,         /**< Used in numpy.random.gumbel() implementation  */
     DPNP_FN_SIGN,               /**< Used in numpy.sign() implementation  */
     DPNP_FN_SIN,                /**< Used in numpy.sin() implementation  */
     DPNP_FN_SINH,               /**< Used in numpy.sinh() implementation  */

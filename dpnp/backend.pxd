@@ -75,7 +75,6 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_FMOD
         DPNP_FN_GAMMA
         DPNP_FN_GAUSSIAN
-        DPNP_FN_GUMBEL
         DPNP_FN_HYPOT
         DPNP_FN_INVERT
         DPNP_FN_LEFT_SHIFT
@@ -102,6 +101,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_REMAINDER
         DPNP_FN_RECIP
         DPNP_FN_RIGHT_SHIFT
+        DPNP_FN_RNG_GUMBEL
         DPNP_FN_SIGN
         DPNP_FN_SIN
         DPNP_FN_SINH

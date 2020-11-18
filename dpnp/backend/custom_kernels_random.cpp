@@ -236,7 +236,7 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_gaussian_c<double>};
     fmap[DPNPFuncName::DPNP_FN_GAUSSIAN][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_rng_gaussian_c<float>};
 
-    fmap[DPNPFuncName::DPNP_FN_GUMBEL][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_gumbel_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_GUMBEL][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_gumbel_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_LAPLACE][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_laplace_c<double>};
 
