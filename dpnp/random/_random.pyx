@@ -313,7 +313,7 @@ cpdef dparray dpnp_poisson(double lam, size):
 
     if lam == 0:
         result = dparray(size, dtype=dtype)
-        result.fill(0.0)
+        result.fill(0)
     else:
         # convert string type names (dparray.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
