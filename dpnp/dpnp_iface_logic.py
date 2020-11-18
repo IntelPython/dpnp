@@ -114,7 +114,7 @@ def all(in_array1, axis=None, out=None, keepdims=False):
     --------
     ndarray.all : equivalent method
 
-    any : Test whether any element along a given axis evaluates to True.
+    :obj:`dpnp.any` : Test whether any element along a given axis evaluates to True.
 
     Notes
     -----
@@ -192,7 +192,7 @@ def any(in_array1, axis=None, out=None, keepdims=False):
     --------
     ndarray.any : equivalent method
 
-    all : Test whether all elements along a given axis evaluate to True.
+    :obj:`dpnp.all` : Test whether all elements along a given axis evaluate to True.
 
     Notes
     -----
@@ -242,7 +242,8 @@ def equal(x1, x2):
 
     See Also
     --------
-    not_equal, greater_equal, less_equal, greater, less
+    :obj:`dpnp.not_equal`, :obj:`dpnp.greater_equal`, :obj:`dpnp.less_equal`,
+    :obj:`dpnp.greater`, :obj:`dpnp.less`
 
     """
 
@@ -350,7 +351,7 @@ def isfinite(in_array1, out=None, where=True, **kwargs):
 
     See Also
     --------
-    isinf, isneginf, isposinf, isnan
+    :obj:`dpnp.isinf`, :obj:`dpnp.isneginf`, :obj:`dpnp.isposinf`, :obj:`dpnp.isnan`
 
     Notes
     -----
@@ -415,7 +416,7 @@ def isinf(in_array1, out=None, where=True, **kwargs):
 
     See Also
     --------
-    isneginf, isposinf, isnan, isfinite
+    :obj:`dpnp.isneginf`, :obj:`dpnp.isposinf`, :obj:`dpnp.isnan`, :obj:`dpnp.isfinite`
 
     Notes
     -----
@@ -474,7 +475,7 @@ def isnan(in_array1, out=None, where=True, **kwargs):
 
     See Also
     --------
-    isinf, isneginf, isposinf, isfinite, isnat
+    :obj:`dpnp.isinf`, :obj:`dpnp.isneginf`, :obj:`dpnp.isposinf`, :obj:`dpnp.isfinite`, :obj:`dpnp.isnat`
 
     Notes
     -----
@@ -560,8 +561,7 @@ def logical_and(x1, x2, out=None, where=True, **kwargs):
 
     See Also
     --------
-    logical_or, logical_not, logical_xor
-    bitwise_and
+    :obj:`dpnp.logical_or`, :obj:`dpnp.logical_not`, :obj:`dpnp.logical_xor`, :obj:`dpnp.bitwise_and`
 
     """
 
@@ -614,7 +614,7 @@ def logical_not(x1, out=None, where=True, **kwargs):
 
     See Also
     --------
-    logical_and, logical_or, logical_xor
+    :obj:`dpnp.logical_and`, :obj:`dpnp.logical_or`, :obj:`dpnp.logical_xor`
 
     """
 
@@ -666,8 +666,7 @@ def logical_or(x1, x2, out=None, where=True, **kwargs):
 
     See Also
     --------
-    logical_and, logical_not, logical_xor
-    bitwise_or
+    :obj:`dpnp.logical_and`, :obj:`dpnp.logical_not`, :obj:`dpnp.logical_xor`, :obj:`dpnp.bitwise_or`
 
     """
 
@@ -720,7 +719,7 @@ def logical_xor(x1, x2, out=None, where=True, **kwargs):
 
     See Also
     --------
-    logical_and, logical_or, logical_not, bitwise_xor
+    :obj:`dpnp.logical_and`, :obj:`dpnp.logical_or`, :obj:`dpnp.logical_not`, :obj:`dpnp.bitwise_xor`
 
     """
 
