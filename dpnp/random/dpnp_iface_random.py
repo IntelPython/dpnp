@@ -593,7 +593,7 @@ def rand(d0, *dn):
 
     See Also
     --------
-    random
+    :obj:`dpnp.random.random`
 
     """
 
@@ -623,7 +623,7 @@ def ranf(size):
 
     See Also
     --------
-    random
+    :obj:`dpnp.random.random`
 
     """
 
@@ -668,9 +668,9 @@ def randint(low, high=None, size=None, dtype=int):
         distribution, or a single such random int if `size` not provided.
     See Also
     --------
-    random_integers : similar to `randint`, only for the closed
-        interval [`low`, `high`], and 1 is the lowest value if `high` is
-        omitted.
+    :obj:`dpnp.random.random_integers` : similar to `randint`, only for the closed
+                                         interval [`low`, `high`], and 1 is the
+                                         lowest value if `high` is omitted.
 
     """
 
@@ -723,8 +723,8 @@ def randn(d0, *dn):
 
     See Also
     --------
-    standard_normal
-    normal
+    :obj:`dpnp.random.standard_normal`
+    :obj:`dpnp.random.normal`
 
     """
 
@@ -754,7 +754,7 @@ def random(size):
 
     See Also
     --------
-    random
+    :obj:`dpnp.random.random`
 
     """
 
@@ -796,7 +796,7 @@ def random_integers(low, high=None, size=None):
         distribution, or a single such random int if `size` not provided.
     See Also
     --------
-    randint
+    :obj:`dpnp.random.randint`
 
     """
 
@@ -823,7 +823,7 @@ def random_sample(size):
 
     See Also
     --------
-    random
+    :obj:`dpnp.random.random`
 
     """
 
@@ -874,7 +874,7 @@ def sample(size):
 
     See Also
     --------
-    random
+    :obj:`dpnp.random.random`
 
     """
 
@@ -996,7 +996,7 @@ def uniform(low=0.0, high=1.0, size=None):
 
     See Also
     --------
-    random : Floats uniformly distributed over ``[0, 1)``.
+    :obj:`dpnp.random.random` : Floats uniformly distributed over ``[0, 1)``.
 
     """
 
