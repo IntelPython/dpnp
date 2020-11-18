@@ -47,6 +47,41 @@ cimport numpy
 cimport dpnp.dpnp_utils as utils
 
 
+# initially copyed from original
+cdef class _flagsobj:
+    aligned: bool
+    updateifcopy: bool
+    writeable: bool
+    writebackifcopy: bool
+    @property
+    def behaved(self) -> bool: ...
+    @property
+    def c_contiguous(self) -> bool:
+        return True
+    @property
+    def carray(self) -> bool: ...
+    @property
+    def contiguous(self) -> bool: ...
+    @property
+    def f_contiguous(self) -> bool:
+        return False
+    @property
+    def farray(self) -> bool: ...
+    @property
+    def fnc(self) -> bool: ...
+    @property
+    def forc(self) -> bool: ...
+    @property
+    def fortran(self) -> bool: ...
+    @property
+    def num(self) -> int: ...
+    @property
+    def owndata(self) -> bool:
+        return True
+    def __getitem__(self, key: str) -> bool: ...
+    def __setitem__(self, key: str, value: bool) -> None: ...
+
+
 cdef class dparray:
     """Multi-dimensional array using USM interface for an Intel GPU device.
 
@@ -199,7 +234,7 @@ cdef class dparray:
         self._dparray_shape = newshape  # TODO strides, enpty dimentions and etc.
 
     @property
-    def flags(self):
+    def flags(self) -> _flagsobj:
         """Object containing memory-layout information.
 
         It only contains ``c_contiguous``, ``f_contiguous``, and ``owndata`` attributes.
@@ -209,7 +244,7 @@ cdef class dparray:
 
         """
 
-        return (True, False, False)
+        return _flagsobj()
 
     @property
     def strides(self):
@@ -423,7 +458,7 @@ cdef class dparray:
         """
 
         if not utils.use_origin_backend(self):
-            c_order, fortran_order, _ = self.flags
+            c_order, fortran_order = self.flags.c_contiguous, self.flags.f_contiguous
 
             if order not in {'C', 'F', 'A', 'K'}:
                 pass
