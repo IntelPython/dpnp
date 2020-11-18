@@ -50,6 +50,7 @@ __all__ = [
     'chisquare',
     'exponential',
     'gamma',
+    'geometric',
     'laplace',
     'negative_binomial',
     'poisson',
@@ -227,6 +228,65 @@ def binomial(n, p, size=None):
         return dpnp_binomial(int(n), p, size)
 
     return call_origin(numpy.random.binomial, n, p, size)
+
+
+def geometric(p, size=None):
+    """Geometric distribution.
+
+    Draw samples from the geometric distribution.
+
+    Bernoulli trials are experiments with one of two outcomes:
+    success or failure (an example of such an experiment is flipping
+    a coin).  The geometric distribution models the number of trials
+    that must be run in order to achieve success.  It is therefore
+    supported on the positive integers, ``k = 1, 2, ...``.
+
+    The probability mass function of the geometric distribution is
+
+    .. math:: f(k) = (1 - p)^{k - 1} p
+
+    where `p` is the probability of success of an individual trial.
+
+    Parameters
+    ----------
+    p : float
+        The probability of success of an individual trial.
+    size : int or tuple of ints, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
+        a single value is returned if ``p`` is a scalar.
+
+    Returns
+    -------
+    out : dparray, int32
+        Drawn samples from the parameterized geometric distribution.
+
+    Examples
+    --------
+    Draw ten thousand values from the geometric distribution,
+    with the probability of an individual success equal to 0.35:
+    >>> z = dpnp.random.geometric(p=0.35, size=10000)
+
+    """
+
+    if not use_origin_backend(p):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("geometric", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("geometric", "type(size)", type(size), int)
+
+        # TODO:
+        # array_like of floats for `p` param
+        if p > 1 or p <= 0:
+            checker_throw_value_error("geometric", "p", p, "in (0, 1]")
+
+        return dpnp_geometric(p, size)
+
+    return call_origin(numpy.random.geometric, p, size)
 
 
 def chisquare(df, size=None):
