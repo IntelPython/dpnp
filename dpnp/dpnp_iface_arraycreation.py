@@ -64,7 +64,7 @@ __all__ = [
 ]
 
 
-def arange(*args, **kwargs):
+def arange(start, stop=None, step=1, dtype=None):
     """Returns an array with evenly spaced values within a given interval.
 
     Values are generated within the half-open interval [start, stop). The first
@@ -73,48 +73,64 @@ def arange(*args, **kwargs):
 
     Parameters
     ----------
-        start: Start of the interval.
-        stop: End of the interval.
-        step: Step width between each pair of consecutive values.
-        dtype: Data type specifier. It is inferred from other arguments by
-            default.
+    start : number, optional
+        Start of the interval.
+    stop : number
+        End of the interval.
+    step : number, optional
+        Step width between each pair of consecutive values.
+    dtype : dtype
+        Data type specifier. It is inferred from other arguments by default.
 
     Returns
     -------
-        inumpy.dparray: The 1-D array of range values.
+    arange : :obj:`dpnp.ndarray`
+        The 1-D array of range values.
 
-    .. seealso:: :obj:`numpy.arange`
+    Limitations
+    -----------
+    Parameter ``start`` is supported as integer only.
+    Parameters ``stop`` and ``step`` are supported as either integer or `None`.
+    Otherwise the function will be executed sequentially on CPU.
+
+    See Also
+    --------
+    :obj:`numpy.arange` : Return evenly spaced values within a given interval.
+    :obj:`dpnp.linspace` : Evenly spaced numbers with careful handling of endpoints.
+
+    Examples
+    --------
+
+    >>> import dpnp as np
+    >>> [i for i in np.arange(3)]
+    [0, 1, 2]
+    >>> [i for i in np.arange(3, 7)]
+    [3, 4, 5, 6]
+    >>> [i for i in np.arange(3, 7, 2)]
+    [3, 5]
 
     """
+    if use_origin_backend():
+        if not isinstance(start, int):
+            pass
+        if not isinstance(stop, int) or stop is not None:
+            pass
+        if not isinstance(step, int) or step is not None:
+            pass
+        else:
+            if dtype is None:
+                dtype = numpy.float64
 
-    if (use_origin_backend()):
-        return numpy.arange(*args, **kwargs)
+            if stop is None:
+                stop = start
+                start = 0
 
-    if not isinstance(args[0], (int)):
-        raise TypeError(f"DPNP arange(): scalar arguments expected. Given:{type(args[0])}")
+            if step is None:
+                step = 1
 
-    start_param = 0
-    stop_param = 0
-    step_param = 1
-    dtype_param = kwargs.pop("dtype", None)
-    if dtype_param is None:
-        dtype_param = numpy.float64
+            return dpnp_arange(start, stop, step, dtype)
 
-    if kwargs:
-        raise TypeError("DPNP arange(): unexpected keyword argument(s): %s" % ",".join(kwargs.keys()))
-
-    args_len = len(args)
-    if args_len == 1:
-        stop_param = args[0]
-    elif args_len == 2:
-        start_param = args[0]
-        stop_param = args[1]
-    elif args_len == 3:
-        start_param, stop_param, step_param = args
-    else:
-        raise TypeError("DPNP arange() takes 3 positional arguments: arange([start], stop, [step])")
-
-    return dpnp_arange(start_param, stop_param, step_param, dtype_param)
+    return call_origin(numpy.arange, start, stop=stop, step=step, dtype=dtype)
 
 
 def array(obj, dtype=None, copy=True, order='C', subok=False, ndmin=0):
