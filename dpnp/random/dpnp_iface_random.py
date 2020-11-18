@@ -30,7 +30,7 @@ Module Intel NumPy Random
 
 Set of functions to implement NumPy random module API
 
-    .. seealso:: :meth:`numpy.random`
+    .. seealso:: :obj:`numpy.random`
 
 """
 
@@ -38,6 +38,7 @@ Set of functions to implement NumPy random module API
 import dpnp
 import numpy
 
+from dpnp.backend import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 from dpnp.random._random import *
@@ -61,7 +62,9 @@ __all__ = [
     'sample',
     'seed',
     'standard_cauchy',
-    'uniform'
+    'standard_normal',
+    'uniform',
+    'weibull'
 ]
 
 
@@ -409,7 +412,7 @@ def gamma(shape, scale=1.0, size=None):
 
     # TODO:
     # array_like of floats for `scale` and `shape`
-    if not use_origin_backend(scale):
+    if not use_origin_backend(scale) and dpnp_queue_is_cpu():
         if size is None:
             size = 1
         elif isinstance(size, tuple):
@@ -928,6 +931,41 @@ def standard_cauchy(size=None):
     return call_origin(numpy.random.standard_cauchy, size)
 
 
+def standard_normal(size=None):
+    """Standard normal distribution.
+
+    Draw samples from a standard Normal distribution (mean=0, stdev=1).
+
+    Parameters
+    ----------
+    size : int, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  Default is None, in which case a
+        single value is returned.
+ 
+    Returns
+    -------
+    out : float or ndarray
+        A floating-point array of shape ``size`` of drawn samples, or a
+        single sample if ``size`` was not specified.
+
+    """
+
+    if not use_origin_backend(size):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("standard_normal", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("standard_normal", "type(size)", type(size), int)
+
+        return dpnp_standard_normal(size)
+
+    return call_origin(numpy.random.standard_normal, size)
+
+
 def uniform(low=0.0, high=1.0, size=None):
     """
     uniform(low=0.0, high=1.0, size=None)
@@ -977,3 +1015,58 @@ def uniform(low=0.0, high=1.0, size=None):
         return dpnp_uniform(low, high, size, dtype=numpy.float64)
 
     return call_origin(numpy.random.uniform, low, high, size)
+
+
+def weibull(a, size=None):
+    """
+
+    Draw samples from a Weibull distribution.
+
+    Draw samples from a 1-parameter Weibull distribution with the given
+    shape parameter `a`.
+
+    .. math:: X = (-ln(U))^{1/a}
+
+    Here, U is drawn from the uniform distribution over (0,1].
+    The more common 2-parameter Weibull, including a scale parameter
+    :math:`\\lambda` is just :math:`X = \\lambda(-ln(U))^{1/a}`.
+
+    Parameters
+    ----------
+    a : float
+        Shape parameter of the distribution.  Must be nonnegative.
+    size : int or tuple of ints, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
+        a single value is returned if ``a`` is a scalar.
+
+    Returns
+    -------
+    out : ndarray or scalar
+        Drawn samples from the parameterized Weibull distribution.
+
+    Examples
+    --------
+    >>> a = 5. # shape
+    >>> s = np.random.weibull(a, 1000)
+
+    """
+
+    if not use_origin_backend(a):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("weibull", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("weibull", "type(size)", type(size), int)
+
+        # TODO:
+        # array_like of floats for `a` params
+        if a < 0:
+            checker_throw_value_error("weibulla", "a", a, "non-negative")
+
+        return dpnp_weibull(a, size)
+
+    return call_origin(numpy.random.weibull, a, size)

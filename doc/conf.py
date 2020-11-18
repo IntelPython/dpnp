@@ -194,3 +194,4 @@ todo_include_todos = True
 # Napoleon settings
 napoleon_use_ivar = True
 napoleon_include_special_with_doc = True
+napoleon_custom_sections = ['limitations']

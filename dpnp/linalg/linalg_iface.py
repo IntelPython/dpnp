@@ -126,7 +126,7 @@ def eig(x1):
     """
     Compute the eigenvalues and right eigenvectors of a square array.
 
-    .. seealso:: :func:`numpy.linalg.eig`
+    .. seealso:: :obj:`numpy.linalg.eig`
 
     """
 
@@ -182,7 +182,7 @@ def matrix_power(input, count):
 
     See Also
     --------
-    :meth:`numpy.linalg.matrix_power`
+    :obj:`numpy.linalg.matrix_power`
 
     """
 
@@ -274,7 +274,7 @@ def multi_dot(arrays, out=None):
 
     See Also
     --------
-    :meth:`numpy.multi_dot`
+    :obj:`numpy.multi_dot`
 
     """
 

@@ -136,6 +136,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_SQRT,               /**< Used in numpy.sqrt() implementation  */
     DPNP_FN_SQUARE,             /**< Used in numpy.square() implementation  */
     DPNP_FN_STANDARD_CAUCHY,    /**< Used in numpy.random.standard_cauchy() implementation  */
+    DPNP_FN_STANDARD_NORMAL,    /**< Used in numpy.random.standard_normal() implementation  */
     DPNP_FN_STD,                /**< Used in numpy.std() implementation  */
     DPNP_FN_SUBTRACT,           /**< Used in numpy.subtract() implementation  */
     DPNP_FN_SUM,                /**< Used in numpy.sum() implementation  */
@@ -145,6 +146,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_TRUNC,              /**< Used in numpy.trunc() implementation  */
     DPNP_FN_UNIFORM,            /**< Used in numpy.random.uniform() implementation  */
     DPNP_FN_VAR,                /**< Used in numpy.var() implementation  */
+    DPNP_FN_WEIBULL,            /**< Used in numpy.random.weibull() implementation  */
     DPNP_FN_LAST                /**< The latest element of the enumeration */
 };
 
