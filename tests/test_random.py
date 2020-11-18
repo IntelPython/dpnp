@@ -250,6 +250,50 @@ def test_gamma_check_moments():
     assert math.isclose(mean, expected_mean, abs_tol=0.003)
 
 
+def test_geometric_seed():
+    seed = 28041990
+    size = 100
+    p = 0.8
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.geometric(p, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.geometric(p, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_geometric_invalid_args():
+    size = 10
+
+    p = -1.0  # `p` is expected from (0, 1]
+    with pytest.raises(ValueError):
+        dpnp.random.geometric(p=p, size=size)
+
+
+def test_geometric_check_moments():
+    seed = 28041995
+    dpnp.random.seed(seed)
+    p = 0.8
+    size = 10**6
+    expected_mean = 1 / p
+    expected_var = (1 - p) / (p**2)
+    var = numpy.var(dpnp.random.geometric(p=p, size=size))
+    mean = numpy.mean(dpnp.random.geometric(p=p, size=size))
+    assert math.isclose(var, expected_var, abs_tol=0.03)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
+def test_geometric_check_extreme_value():
+    seed = 28041990
+    dpnp.random.seed(seed)
+
+    p = 1.0
+    expected_val = 1.0
+    res = numpy.asarray(dpnp.random.geometric(p=p, size=100))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == expected_val
+
+
 def test_laplace_seed():
     seed = 28041990
     size = 100
