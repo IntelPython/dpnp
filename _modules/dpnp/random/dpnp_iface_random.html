@@ -207,6 +207,7 @@
     <span class="s1">&#39;gamma&#39;</span><span class="p">,</span>
     <span class="s1">&#39;geometric&#39;</span><span class="p">,</span>
     <span class="s1">&#39;laplace&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;lognormal&#39;</span><span class="p">,</span>
     <span class="s1">&#39;negative_binomial&#39;</span><span class="p">,</span>
     <span class="s1">&#39;poisson&#39;</span><span class="p">,</span>
     <span class="s1">&#39;rand&#39;</span><span class="p">,</span>
@@ -701,6 +702,87 @@
         <span class="k">return</span> <span class="n">dpnp_laplace</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">laplace</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="lognormal"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.lognormal.html#dpnp.random.lognormal">[docs]</a><span class="k">def</span> <span class="nf">lognormal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Lognormal distribution.</span>
+
+<span class="sd">    Draw samples from a log-normal distribution.</span>
+
+<span class="sd">    Draw samples from a log-normal distribution with specified mean,</span>
+<span class="sd">    standard deviation, and array shape.  Note that the mean and standard</span>
+<span class="sd">    deviation are not the values for the distribution itself, but of the</span>
+<span class="sd">    underlying normal distribution it is derived from.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mean : float, optional</span>
+<span class="sd">        Mean value of the underlying normal distribution. Default is 0.</span>
+<span class="sd">    sigma : float, optional</span>
+<span class="sd">        Standard deviation of the underlying normal distribution. Must be</span>
+<span class="sd">        non-negative. Default is 1.</span>
+<span class="sd">    size : int or tuple of ints, optional</span>
+<span class="sd">        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then</span>
+<span class="sd">        ``m * n * k`` samples are drawn.  If size is ``None`` (default),</span>
+<span class="sd">        a single value is returned if ``mean`` and ``sigma`` are both scalars.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dparray</span>
+<span class="sd">        Drawn samples from the parameterized log-normal distribution.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    A variable `x` has a log-normal distribution if `log(x)` is normally</span>
+<span class="sd">    distributed.  The probability density function for the log-normal</span>
+<span class="sd">    distribution is:</span>
+
+<span class="sd">    .. math:: p(x) = \\frac{1}{\\sigma x \\sqrt{2\\pi}}</span>
+<span class="sd">                     e^{(-\\frac{(ln(x)-\\mu)^2}{2\\sigma^2})}</span>
+
+<span class="sd">    where :math:`\\mu` is the mean and :math:`\\sigma` is the standard</span>
+<span class="sd">    deviation of the normally distributed logarithm of the variable.</span>
+<span class="sd">    A log-normal distribution results if a random variable is the *product*</span>
+<span class="sd">    of a large number of independent, identically-distributed variables in</span>
+<span class="sd">    the same way that a normal distribution results if the variable is the</span>
+<span class="sd">    *sum* of a large number of independent, identically-distributed</span>
+<span class="sd">    variables.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Limpert, E., Stahel, W. A., and Abbt, M., &quot;Log-normal</span>
+<span class="sd">           Distributions across the Sciences: Keys and Clues,&quot;</span>
+<span class="sd">           BioScience, Vol. 51, No. 5, May, 2001.</span>
+<span class="sd">           https://stat.ethz.ch/~stahel/lognormal/bioscience.pdf</span>
+<span class="sd">    .. [2] Reiss, R.D. and Thomas, M., &quot;Statistical Analysis of Extreme</span>
+<span class="sd">           Values,&quot; Basel: Birkhauser Verlag, 2001, pp. 31-32.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Draw samples from the distribution:</span>
+<span class="sd">    &gt;&gt;&gt; mu, sigma = 3., 1. # mean and standard deviation</span>
+<span class="sd">    &gt;&gt;&gt; s = dpnp.random.lognormal(mu, sigma, 1000)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">mean</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">size</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                    <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;lognormal&quot;</span><span class="p">,</span> <span class="s2">&quot;type(dim)&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">dim</span><span class="p">),</span> <span class="nb">int</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;lognormal&quot;</span><span class="p">,</span> <span class="s2">&quot;type(size)&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">size</span><span class="p">),</span> <span class="nb">int</span><span class="p">)</span>
+
+        <span class="c1"># TODO:</span>
+        <span class="c1"># array_like of floats for `mean` and `sigma` params</span>
+        <span class="k">if</span> <span class="n">sigma</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;lognormal&quot;</span><span class="p">,</span> <span class="s2">&quot;sigma&quot;</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="s2">&quot;non-negative&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp_lognormal</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">lognormal</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="negative_binomial"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.negative_binomial.html#dpnp.random.negative_binomial">[docs]</a><span class="k">def</span> <span class="nf">negative_binomial</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
