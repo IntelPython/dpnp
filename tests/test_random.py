@@ -250,6 +250,50 @@ def test_gamma_check_moments():
     assert math.isclose(mean, expected_mean, abs_tol=0.003)
 
 
+def test_geometric_seed():
+    seed = 28041990
+    size = 100
+    p = 0.8
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.geometric(p, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.geometric(p, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_geometric_invalid_args():
+    size = 10
+
+    p = -1.0  # `p` is expected from (0, 1]
+    with pytest.raises(ValueError):
+        dpnp.random.geometric(p=p, size=size)
+
+
+def test_geometric_check_moments():
+    seed = 28041995
+    dpnp.random.seed(seed)
+    p = 0.8
+    size = 10**6
+    expected_mean = (1 - p) / p
+    expected_var = (1 - p) / (p**2)
+    var = numpy.var(dpnp.random.geometric(p=p, size=size))
+    mean = numpy.mean(dpnp.random.geometric(p=p, size=size))
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
+def test_geometric_check_extreme_value():
+    seed = 28041990
+    dpnp.random.seed(seed)
+
+    p = 1.0
+    expected_val = 1.0
+    res = numpy.asarray(dpnp.random.geometric(p=p, size=100))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == expected_val
+
+
 def test_gumbel_seed():
     seed = 28041990
     size = 100
@@ -345,6 +389,54 @@ def test_laplace_check_extreme_value():
     assert numpy.unique(res)[0] == 0.0
 
 
+def test_lognormal_seed():
+    seed = 28041990
+    size = 100
+    mean = 0.0
+    sigma = 0.8
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.lognormal(mean, sigma, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.lognormal(mean, sigma, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_lognormal_invalid_args():
+    size = 10
+
+    mean = 0.0
+    sigma = -1.0  # non-negative `sigma` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.lognormal(mean=mean, sigma=sigma, size=size)
+
+
+def test_lognormal_check_moments():
+    seed = 28041995
+    dpnp.random.seed(seed)
+    mean = 0.5
+    sigma = 0.8
+    size = 10**6
+    expected_mean = numpy.exp(mean + (sigma ** 2) / 2)
+    expected_var = (numpy.exp(sigma**2) - 1) * numpy.exp(2 * mean + sigma**2)
+    var = numpy.var(dpnp.random.lognormal(mean=mean, sigma=sigma, size=size))
+    mean = numpy.mean(dpnp.random.lognormal(mean=mean, sigma=sigma, size=size))
+    assert math.isclose(var, expected_var, abs_tol=0.03)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
+def test_lognormal_check_extreme_value():
+    seed = 28041990
+    dpnp.random.seed(seed)
+
+    mean = 0.5
+    sigma = 0.0
+    expected_val = numpy.exp(mean + (sigma ** 2) / 2)
+    res = numpy.asarray(dpnp.random.lognormal(mean=mean, sigma=sigma, size=100))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == expected_val
+
+
 def test_negative_binomial_seed():
     seed = 28041990
     size = 100
@@ -387,6 +479,48 @@ def test_negative_binomial_check_extreme_value():
     assert numpy.unique(res)[0] == check_val
 
 
+def test_poisson_seed():
+    seed = 28041990
+    size = 100
+    lam = 0.8
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.poisson(lam, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.poisson(lam, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_poisson_invalid_args():
+    size = 10
+    lam = -1.0    # non-negative `lam` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.poisson(lam=lam, size=size)
+
+
+def test_poisson_check_moments():
+    seed = 28041995
+    dpnp.random.seed(seed)
+    lam = 0.8
+    size = 10**6
+    expected_mean = lam
+    expected_var = lam
+    var = numpy.var(dpnp.random.poisson(lam=lam, size=size))
+    mean = numpy.mean(dpnp.random.poisson(lam=lam, size=size))
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
+def test_poisson_check_extreme_value():
+    seed = 28041990
+    dpnp.random.seed(seed)
+
+    lam = 0.0
+    res = numpy.asarray(dpnp.random.poisson(lam=lam, size=100))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == 0.0
+
+
 def test_randn_normal_distribution():
     """ Check if the sample obtained from the dpnp.random.randn differs from
     the normal distribution.
@@ -417,3 +551,56 @@ def test_standard_cauchy_seed():
     dpnp.random.seed(seed)
     a2 = dpnp.random.standard_cauchy(size)
     assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_standard_normal_seed():
+    seed = 28041990
+    size = 100
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.standard_normal(size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.standard_normal(size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_standard_normal_check_moments():
+    seed = 28041995
+    dpnp.random.seed(seed)
+    size = 10**6
+    expected_mean = 0.0
+    expected_var = 1.0
+    var = numpy.var(dpnp.random.standard_normal(size=size))
+    mean = numpy.mean(dpnp.random.standard_normal(size=size))
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
+def test_weibull_seed():
+    seed = 28041990
+    size = 100
+    a = 2.56
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.weibull(a, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.weibull(a, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_weibull_invalid_args():
+    size = 10
+    a = -1.0  # non-negative `a` is expected
+
+    with pytest.raises(ValueError):
+        dpnp.random.weibull(a=a, size=size)
+
+
+def test_weibull_check_extreme_value():
+    seed = 28041990
+    dpnp.random.seed(seed)
+
+    a = 0.0
+    res = numpy.asarray(dpnp.random.weibull(a=a, size=100))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == 0.0

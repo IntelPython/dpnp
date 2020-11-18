@@ -30,7 +30,7 @@ Module Intel NumPy Random
 
 Set of functions to implement NumPy random module API
 
-    .. seealso:: :meth:`numpy.random`
+    .. seealso:: :obj:`numpy.random`
 
 """
 
@@ -38,6 +38,7 @@ Set of functions to implement NumPy random module API
 import dpnp
 import numpy
 
+from dpnp.backend import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 from dpnp.random._random import *
@@ -49,9 +50,12 @@ __all__ = [
     'chisquare',
     'exponential',
     'gamma',
+    'geometric',
     'gumbel',
     'laplace',
+    'lognormal',
     'negative_binomial',
+    'poisson',
     'rand',
     'ranf',
     'randint',
@@ -62,7 +66,9 @@ __all__ = [
     'sample',
     'seed',
     'standard_cauchy',
-    'uniform'
+    'standard_normal',
+    'uniform',
+    'weibull'
 ]
 
 
@@ -224,6 +230,65 @@ def binomial(n, p, size=None):
         return dpnp_binomial(int(n), p, size)
 
     return call_origin(numpy.random.binomial, n, p, size)
+
+
+def geometric(p, size=None):
+    """Geometric distribution.
+
+    Draw samples from the geometric distribution.
+
+    Bernoulli trials are experiments with one of two outcomes:
+    success or failure (an example of such an experiment is flipping
+    a coin).  The geometric distribution models the number of trials
+    that must be run in order to achieve success.  It is therefore
+    supported on the positive integers, ``k = 1, 2, ...``.
+
+    The probability mass function of the geometric distribution is
+
+    .. math:: f(k) = (1 - p)^{k - 1} p
+
+    where `p` is the probability of success of an individual trial.
+
+    Parameters
+    ----------
+    p : float
+        The probability of success of an individual trial.
+    size : int or tuple of ints, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
+        a single value is returned if ``p`` is a scalar.
+
+    Returns
+    -------
+    out : dparray, int32
+        Drawn samples from the parameterized geometric distribution.
+
+    Examples
+    --------
+    Draw ten thousand values from the geometric distribution,
+    with the probability of an individual success equal to 0.35:
+    >>> z = dpnp.random.geometric(p=0.35, size=10000)
+
+    """
+
+    if not use_origin_backend(p):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("geometric", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("geometric", "type(size)", type(size), int)
+
+        # TODO:
+        # array_like of floats for `p` param
+        if p > 1 or p <= 0:
+            checker_throw_value_error("geometric", "p", p, "in (0, 1]")
+
+        return dpnp_geometric(p, size)
+
+    return call_origin(numpy.random.geometric, p, size)
 
 
 def chisquare(df, size=None):
@@ -410,7 +475,7 @@ def gamma(shape, scale=1.0, size=None):
 
     # TODO:
     # array_like of floats for `scale` and `shape`
-    if not use_origin_backend(scale):
+    if not use_origin_backend(scale) and dpnp_queue_is_cpu():
         if size is None:
             size = 1
         elif isinstance(size, tuple):
@@ -538,6 +603,87 @@ def laplace(loc=0.0, scale=1.0, size=None):
     return call_origin(numpy.random.laplace, loc, scale, size)
 
 
+def lognormal(mean=0.0, sigma=1.0, size=None):
+    """Lognormal distribution.
+
+    Draw samples from a log-normal distribution.
+
+    Draw samples from a log-normal distribution with specified mean,
+    standard deviation, and array shape.  Note that the mean and standard
+    deviation are not the values for the distribution itself, but of the
+    underlying normal distribution it is derived from.
+
+    Parameters
+    ----------
+    mean : float, optional
+        Mean value of the underlying normal distribution. Default is 0.
+    sigma : float, optional
+        Standard deviation of the underlying normal distribution. Must be
+        non-negative. Default is 1.
+    size : int or tuple of ints, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
+        a single value is returned if ``mean`` and ``sigma`` are both scalars.
+
+    Returns
+    -------
+    out : dparray
+        Drawn samples from the parameterized log-normal distribution.
+
+    Notes
+    -----
+    A variable `x` has a log-normal distribution if `log(x)` is normally
+    distributed.  The probability density function for the log-normal
+    distribution is:
+
+    .. math:: p(x) = \\frac{1}{\\sigma x \\sqrt{2\\pi}}
+                     e^{(-\\frac{(ln(x)-\\mu)^2}{2\\sigma^2})}
+
+    where :math:`\\mu` is the mean and :math:`\\sigma` is the standard
+    deviation of the normally distributed logarithm of the variable.
+    A log-normal distribution results if a random variable is the *product*
+    of a large number of independent, identically-distributed variables in
+    the same way that a normal distribution results if the variable is the
+    *sum* of a large number of independent, identically-distributed
+    variables.
+
+    References
+    ----------
+    .. [1] Limpert, E., Stahel, W. A., and Abbt, M., "Log-normal
+           Distributions across the Sciences: Keys and Clues,"
+           BioScience, Vol. 51, No. 5, May, 2001.
+           https://stat.ethz.ch/~stahel/lognormal/bioscience.pdf
+    .. [2] Reiss, R.D. and Thomas, M., "Statistical Analysis of Extreme
+           Values," Basel: Birkhauser Verlag, 2001, pp. 31-32.
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> mu, sigma = 3., 1. # mean and standard deviation
+    >>> s = dpnp.random.lognormal(mu, sigma, 1000)
+
+    """
+
+    if not use_origin_backend(mean):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("lognormal", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("lognormal", "type(size)", type(size), int)
+
+        # TODO:
+        # array_like of floats for `mean` and `sigma` params
+        if sigma < 0:
+            checker_throw_value_error("lognormal", "sigma", sigma, "non-negative")
+
+        return dpnp_lognormal(mean, sigma, size)
+
+    return call_origin(numpy.random.lognormal, mean, sigma, size)
+
+
 def negative_binomial(n, p, size=None):
     """Negative binomial distribution.
 
@@ -629,6 +775,76 @@ def negative_binomial(n, p, size=None):
     return call_origin(numpy.random.negative_binomial, n, p, size)
 
 
+def poisson(lam=1.0, size=None):
+    """Poisson distribution.
+
+    Draw samples from a Poisson distribution.
+
+    The Poisson distribution is the limit of the binomial distribution
+    for large N.
+
+    Parameters
+    ----------
+    lam : float
+        Expectation of interval, must be >= 0. A sequence of expectation
+        intervals must be broadcastable over the requested size.
+    size : int, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
+        a single value is returned if ``lam`` is a scalar.
+
+    Returns
+    -------
+    out : dparray, int32
+        Drawn samples from the parameterized Poisson distribution.
+
+    Notes
+    -----
+    The Poisson distribution
+
+    .. math:: f(k; \\lambda)=\\frac{\\lambda^k e^{-\\lambda}}{k!}
+
+    For events with an expected separation :math:`\\lambda` the Poisson
+    distribution :math:`f(k; \\lambda)` describes the probability of
+    :math:`k` events occurring within the observed
+    interval :math:`\\lambda`.
+
+    References
+    ----------
+    .. [1] Weisstein, Eric W. "Poisson Distribution."
+           From MathWorld--A Wolfram Web Resource.
+           http://mathworld.wolfram.com/PoissonDistribution.html
+    .. [2] Wikipedia, "Poisson distribution",
+           https://en.wikipedia.org/wiki/Poisson_distribution
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> import numpy as np
+    >>> s = dpnp.random.poisson(5, 10000)
+
+    """
+
+    if not use_origin_backend(lam):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("poisson", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("poisson", "type(size)", type(size), int)
+
+        # TODO:
+        # array_like of floats for `lam` param
+        if lam < 0:
+            checker_throw_value_error("poisson", "lam", lam, "non-negative")
+
+        return dpnp_poisson(lam, size)
+
+    return call_origin(numpy.random.poisson, lam, size)
+
+
 def rand(d0, *dn):
     """
     Create an array of the given shape and populate it
@@ -644,7 +860,7 @@ def rand(d0, *dn):
 
     See Also
     --------
-    random
+    :obj:`dpnp.random.random`
 
     """
 
@@ -674,7 +890,7 @@ def ranf(size):
 
     See Also
     --------
-    random
+    :obj:`dpnp.random.random`
 
     """
 
@@ -719,9 +935,9 @@ def randint(low, high=None, size=None, dtype=int):
         distribution, or a single such random int if `size` not provided.
     See Also
     --------
-    random_integers : similar to `randint`, only for the closed
-        interval [`low`, `high`], and 1 is the lowest value if `high` is
-        omitted.
+    :obj:`dpnp.random.random_integers` : similar to `randint`, only for the closed
+                                         interval [`low`, `high`], and 1 is the
+                                         lowest value if `high` is omitted.
 
     """
 
@@ -774,8 +990,8 @@ def randn(d0, *dn):
 
     See Also
     --------
-    standard_normal
-    normal
+    :obj:`dpnp.random.standard_normal`
+    :obj:`dpnp.random.normal`
 
     """
 
@@ -805,7 +1021,7 @@ def random(size):
 
     See Also
     --------
-    random
+    :obj:`dpnp.random.random`
 
     """
 
@@ -847,7 +1063,7 @@ def random_integers(low, high=None, size=None):
         distribution, or a single such random int if `size` not provided.
     See Also
     --------
-    randint
+    :obj:`dpnp.random.randint`
 
     """
 
@@ -874,7 +1090,7 @@ def random_sample(size):
 
     See Also
     --------
-    random
+    :obj:`dpnp.random.random`
 
     """
 
@@ -925,7 +1141,7 @@ def sample(size):
 
     See Also
     --------
-    random
+    :obj:`dpnp.random.random`
 
     """
 
@@ -982,6 +1198,41 @@ def standard_cauchy(size=None):
     return call_origin(numpy.random.standard_cauchy, size)
 
 
+def standard_normal(size=None):
+    """Standard normal distribution.
+
+    Draw samples from a standard Normal distribution (mean=0, stdev=1).
+
+    Parameters
+    ----------
+    size : int, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  Default is None, in which case a
+        single value is returned.
+ 
+    Returns
+    -------
+    out : float or ndarray
+        A floating-point array of shape ``size`` of drawn samples, or a
+        single sample if ``size`` was not specified.
+
+    """
+
+    if not use_origin_backend(size):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("standard_normal", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("standard_normal", "type(size)", type(size), int)
+
+        return dpnp_standard_normal(size)
+
+    return call_origin(numpy.random.standard_normal, size)
+
+
 def uniform(low=0.0, high=1.0, size=None):
     """
     uniform(low=0.0, high=1.0, size=None)
@@ -1012,7 +1263,7 @@ def uniform(low=0.0, high=1.0, size=None):
 
     See Also
     --------
-    random : Floats uniformly distributed over ``[0, 1)``.
+    :obj:`dpnp.random.random` : Floats uniformly distributed over ``[0, 1)``.
 
     """
 
@@ -1031,3 +1282,58 @@ def uniform(low=0.0, high=1.0, size=None):
         return dpnp_uniform(low, high, size, dtype=numpy.float64)
 
     return call_origin(numpy.random.uniform, low, high, size)
+
+
+def weibull(a, size=None):
+    """
+
+    Draw samples from a Weibull distribution.
+
+    Draw samples from a 1-parameter Weibull distribution with the given
+    shape parameter `a`.
+
+    .. math:: X = (-ln(U))^{1/a}
+
+    Here, U is drawn from the uniform distribution over (0,1].
+    The more common 2-parameter Weibull, including a scale parameter
+    :math:`\\lambda` is just :math:`X = \\lambda(-ln(U))^{1/a}`.
+
+    Parameters
+    ----------
+    a : float
+        Shape parameter of the distribution.  Must be nonnegative.
+    size : int or tuple of ints, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
+        a single value is returned if ``a`` is a scalar.
+
+    Returns
+    -------
+    out : ndarray or scalar
+        Drawn samples from the parameterized Weibull distribution.
+
+    Examples
+    --------
+    >>> a = 5. # shape
+    >>> s = np.random.weibull(a, 1000)
+
+    """
+
+    if not use_origin_backend(a):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("weibull", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("weibull", "type(size)", type(size), int)
+
+        # TODO:
+        # array_like of floats for `a` params
+        if a < 0:
+            checker_throw_value_error("weibulla", "a", a, "non-negative")
+
+        return dpnp_weibull(a, size)
+
+    return call_origin(numpy.random.weibull, a, size)

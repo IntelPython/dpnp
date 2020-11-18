@@ -54,7 +54,7 @@ def erf(in_array1):
     """
     Return the 'error function' at in_array1.
 
-    .. seealso:: :func:`math.erf`
+    .. seealso:: :obj:`math.erf`
 
     """
 

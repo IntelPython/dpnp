@@ -12,6 +12,8 @@ Order statistics
 
    dpnp.amin
    dpnp.amax
+   dpnp.min
+   dpnp.max
    dpnp.nanmin
    dpnp.nanmax
    dpnp.percentile
@@ -24,6 +26,7 @@ Means and variances
    :toctree: generated/
    :nosignatures:
 
+   dpnp.median
    dpnp.average
    dpnp.mean
    dpnp.var
