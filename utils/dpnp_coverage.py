@@ -116,7 +116,7 @@ def print_data():
     print_header()
 
     symbol_id = 0
-    for symbol_name, symbol_values in name_dict.items():
+    for symbol_name, symbol_values in sorted(name_dict.items()):
         print(f"{symbol_id:<{col0_width}}", end=sep)
         symbol_id += 1
         print(f"{symbol_name:{col1_width}}", end=sep)
