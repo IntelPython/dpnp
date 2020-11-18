@@ -47,7 +47,7 @@ cimport numpy
 cimport dpnp.dpnp_utils as utils
 
 
-# initially copyed from original
+# initially copied from original
 cdef class _flagsobj:
     aligned: bool
     updateifcopy: bool
