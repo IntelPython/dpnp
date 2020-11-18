@@ -589,10 +589,10 @@ def poisson(lam=1.0, size=None):
 
     Parameters
     ----------
-    lam : float or array_like of floats
+    lam : float
         Expectation of interval, must be >= 0. A sequence of expectation
         intervals must be broadcastable over the requested size.
-    size : int or tuple of ints, optional
+    size : int, optional
         Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
         ``m * n * k`` samples are drawn.  If size is ``None`` (default),
         a single value is returned if ``lam`` is a scalar.
