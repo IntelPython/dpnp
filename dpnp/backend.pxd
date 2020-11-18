@@ -98,6 +98,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_RNG_EXPONENTIAL
         DPNP_FN_RNG_GAMMA
         DPNP_FN_RNG_GAUSSIAN
+        DPNP_FN_RNG_GEOMETRIC
         DPNP_FN_RNG_LAPLACE
         DPNP_FN_RNG_NEGATIVE_BINOMIAL
         DPNP_FN_RNG_POISSON
