@@ -275,11 +275,11 @@ def test_geometric_check_moments():
     dpnp.random.seed(seed)
     p = 0.8
     size = 10**6
-    expected_mean = 1 / p
+    expected_mean = (1 - p) / p
     expected_var = (1 - p) / (p**2)
     var = numpy.var(dpnp.random.geometric(p=p, size=size))
     mean = numpy.mean(dpnp.random.geometric(p=p, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.03)
+    assert math.isclose(var, expected_var, abs_tol=0.003)
     assert math.isclose(mean, expected_mean, abs_tol=0.003)
 
 
