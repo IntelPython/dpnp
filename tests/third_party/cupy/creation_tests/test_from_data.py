@@ -290,9 +290,9 @@ class TestFromData(unittest.TestCase):
     # @testing.multi_gpu(2)
     # def test_array_multi_device(self):
         # with cuda.Device(0):
-            # x = testing.shaped_arange((2, 3, 4), cupy, dtype='f')
+        # x = testing.shaped_arange((2, 3, 4), cupy, dtype='f')
         # with cuda.Device(1):
-            # y = cupy.array(x)
+        # y = cupy.array(x)
         # assert isinstance(y, cupy.ndarray)
         # assert x is not y  # Do copy
         # assert int(x.device) == 0
@@ -302,9 +302,9 @@ class TestFromData(unittest.TestCase):
     # @testing.multi_gpu(2)
     # def test_array_multi_device_zero_size(self):
         # with cuda.Device(0):
-            # x = testing.shaped_arange((0,), cupy, dtype='f')
+        # x = testing.shaped_arange((0,), cupy, dtype='f')
         # with cuda.Device(1):
-            # y = cupy.array(x)
+        # y = cupy.array(x)
         # assert isinstance(y, cupy.ndarray)
         # assert x is not y  # Do copy
         # assert x.device.id == 0
@@ -428,9 +428,9 @@ class TestFromData(unittest.TestCase):
     # @testing.for_all_dtypes()
     # def test_copy_multigpu(self, dtype, order):
         # with cuda.Device(0):
-            # src = cupy.random.uniform(-1, 1, (2, 3)).astype(dtype)
+        # src = cupy.random.uniform(-1, 1, (2, 3)).astype(dtype)
         # with cuda.Device(1):
-            # dst = cupy.copy(src, order)
+        # dst = cupy.copy(src, order)
         # testing.assert_allclose(src, dst, rtol=0, atol=0)
 
     @testing.for_CF_orders()
@@ -580,11 +580,11 @@ class TestFromData(unittest.TestCase):
         # }
         # if self.a.flags.c_contiguous:
             # if self.include_strides is True:
-                # desc['strides'] = self.a.strides
+            # desc['strides'] = self.a.strides
             # elif self.include_strides is None:
-                # desc['strides'] = None
+            # desc['strides'] = None
             # else:  # self.include_strides is False
-                # pass
+            # pass
         # else:  # F contiguous or neither
             # desc['strides'] = self.a.strides
         # if self.mask is not None:

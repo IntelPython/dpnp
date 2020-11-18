@@ -168,6 +168,7 @@ def test_random_seed_gamma():
     a2 = dpnp.random.gamma(shape=shape, size=size)
     assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
+
 def test_random_seed_negative_binomial():
     seed = 28041990
     size = 100
@@ -322,4 +323,3 @@ def test_check_extreme_value_negative_binomial():
     check_val = numpy.iinfo(res.dtype).min
     assert len(numpy.unique(res)) == 1
     assert numpy.unique(res)[0] == check_val
-
