@@ -32,7 +32,7 @@ Represents multi-dimensional array using USM interface for an Intel GPU device.
 
 
 from libcpp.vector cimport vector
-
+from dpctl cimport SyclQueue
 
 ctypedef vector.vector[long] dparray_shape_type
 
@@ -48,6 +48,8 @@ cdef class dparray:
         readonly object _dparray_dtype
         readonly char * _dparray_data
         size_t iter_idx
+        object base
+        SyclQueue queue
 
     cdef void * get_data(self)
 
