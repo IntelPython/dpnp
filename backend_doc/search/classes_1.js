@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['backend_5fsycl_181',['backend_sycl',['../classbackend__sycl.html',1,'']]]
+  ['backend_5fsycl_182',['backend_sycl',['../classbackend__sycl.html',1,'']]]
 ];

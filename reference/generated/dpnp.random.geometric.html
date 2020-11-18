@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.random.gamma &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.random.geometric &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.random.geometric" href="dpnp.random.geometric.html" />
-    <link rel="prev" title="dpnp.random.exponential" href="dpnp.random.exponential.html" /> 
+    <link rel="next" title="dpnp.random.laplace" href="dpnp.random.laplace.html" />
+    <link rel="prev" title="dpnp.random.gamma" href="dpnp.random.gamma.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -170,13 +170,13 @@
         
           <li><a href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a> &raquo;</li>
         
-      <li>dpnp.random.gamma</li>
+      <li>dpnp.random.geometric</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.random.gamma.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.random.geometric.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -189,60 +189,42 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-random-gamma">
-<h1>dpnp.random.gamma<a class="headerlink" href="#dpnp-random-gamma" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-random-geometric">
+<h1>dpnp.random.geometric<a class="headerlink" href="#dpnp-random-geometric" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.random.gamma">
-<code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">gamma</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shape</span></em>, <em class="sig-param"><span class="n">scale</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#gamma"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.gamma" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gamma distribution.</p>
-<p>Draw samples from a Gamma distribution.</p>
-<p>Samples are drawn from a Gamma distribution with specified parameters,
-<cite>shape</cite> (sometimes designated “k”) and <cite>scale</cite> (sometimes designated
-“theta”), where both parameters are &gt; 0.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>New code should use the <code class="docutils literal notranslate"><span class="pre">gamma</span></code> method of a <code class="docutils literal notranslate"><span class="pre">default_rng()</span></code>
-instance instead; please see the <a class="reference external" href="https://numpy.org/doc/stable/reference/random/index.html#random-quick-start" title="(in NumPy v1.19)"><span>Quick Start</span></a>.</p>
-</div>
+<dt id="dpnp.random.geometric">
+<code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">geometric</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#geometric"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.geometric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Geometric distribution.</p>
+<p>Draw samples from the geometric distribution.</p>
+<p>Bernoulli trials are experiments with one of two outcomes:
+success or failure (an example of such an experiment is flipping
+a coin).  The geometric distribution models the number of trials
+that must be run in order to achieve success.  It is therefore
+supported on the positive integers, <code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">=</span> <span class="pre">1,</span> <span class="pre">2,</span> <span class="pre">...</span></code>.</p>
+<p>The probability mass function of the geometric distribution is</p>
+<div class="math notranslate nohighlight">
+\[f(k) = (1 - p)^{k - 1} p\]</div>
+<p>where <cite>p</cite> is the probability of success of an individual trial.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>shape</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em> or </em><em>array_like of floats</em>) – The shape of the gamma distribution. Must be non-negative.</p></li>
-<li><p><strong>scale</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em> or </em><em>array_like of floats</em><em>, </em><em>optional</em>) – The scale of the gamma distribution. Must be non-negative.
-Default is equal to 1.</p></li>
+<li><p><strong>p</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – The probability of success of an individual trial.</p></li>
 <li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
 <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">*</span> <span class="pre">k</span></code> samples are drawn.  If size is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default),
-a single value is returned if <code class="docutils literal notranslate"><span class="pre">shape</span></code> and <code class="docutils literal notranslate"><span class="pre">scale</span></code> are both scalars.</p></li>
+a single value is returned if <code class="docutils literal notranslate"><span class="pre">p</span></code> is a scalar.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – Drawn samples from the parameterized gamma distribution.</p>
+<dd class="field-even"><p><strong>out</strong> – Drawn samples from the parameterized geometric distribution.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.dparray.dparray.html#dpnp.dparray.dparray" title="dpnp.dparray.dparray">dparray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="dpnp.dparray.dparray.html#dpnp.dparray.dparray" title="dpnp.dparray.dparray">dparray</a>, int32</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>The probability density for the Gamma distribution is</p>
-<div class="math notranslate nohighlight">
-\[p(x) = x^{k-1}\frac{e^{-x/\theta}}{\theta^k\Gamma(k)},\]</div>
-<p>where <span class="math notranslate nohighlight">\(k\)</span> is the shape and <span class="math notranslate nohighlight">\(\theta\)</span> the scale,
-and <span class="math notranslate nohighlight">\(\Gamma\)</span> is the Gamma function.</p>
-<p>The Gamma distribution is often used to model the times to failure of
-electronic components, and arises naturally in processes for which the
-waiting times between Poisson distributed events are relevant.</p>
-<p class="rubric">References</p>
-<dl class="footnote brackets">
-<dt class="label" id="id1"><span class="brackets">1</span></dt>
-<dd><p>Weisstein, Eric W. “Gamma Distribution.” From MathWorld–A
-Wolfram Web Resource.
-<a class="reference external" href="http://mathworld.wolfram.com/GammaDistribution.html">http://mathworld.wolfram.com/GammaDistribution.html</a></p>
-</dd>
-<dt class="label" id="id2"><span class="brackets">2</span></dt>
-<dd><p>Wikipedia, “Gamma distribution”,
-<a class="reference external" href="https://en.wikipedia.org/wiki/Gamma_distribution">https://en.wikipedia.org/wiki/Gamma_distribution</a></p>
-</dd>
-</dl>
+<p class="rubric">Examples</p>
+<p>Draw ten thousand values from the geometric distribution,
+with the probability of an individual success equal to 0.35:
+&gt;&gt;&gt; z = dpnp.random.geometric(p=0.35, size=10000)</p>
 </dd></dl>
 
 </div>
@@ -255,10 +237,10 @@ Wolfram Web Resource.
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.random.geometric.html" class="btn btn-neutral float-right" title="dpnp.random.geometric" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.random.laplace.html" class="btn btn-neutral float-right" title="dpnp.random.laplace" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.random.exponential.html" class="btn btn-neutral float-left" title="dpnp.random.exponential" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.random.gamma.html" class="btn btn-neutral float-left" title="dpnp.random.gamma" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

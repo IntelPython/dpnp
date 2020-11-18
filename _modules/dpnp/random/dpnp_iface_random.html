@@ -205,6 +205,7 @@
     <span class="s1">&#39;chisquare&#39;</span><span class="p">,</span>
     <span class="s1">&#39;exponential&#39;</span><span class="p">,</span>
     <span class="s1">&#39;gamma&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;geometric&#39;</span><span class="p">,</span>
     <span class="s1">&#39;laplace&#39;</span><span class="p">,</span>
     <span class="s1">&#39;negative_binomial&#39;</span><span class="p">,</span>
     <span class="s1">&#39;poisson&#39;</span><span class="p">,</span>
@@ -382,6 +383,65 @@
         <span class="k">return</span> <span class="n">dpnp_binomial</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">p</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">binomial</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="geometric"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.geometric.html#dpnp.random.geometric">[docs]</a><span class="k">def</span> <span class="nf">geometric</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Geometric distribution.</span>
+
+<span class="sd">    Draw samples from the geometric distribution.</span>
+
+<span class="sd">    Bernoulli trials are experiments with one of two outcomes:</span>
+<span class="sd">    success or failure (an example of such an experiment is flipping</span>
+<span class="sd">    a coin).  The geometric distribution models the number of trials</span>
+<span class="sd">    that must be run in order to achieve success.  It is therefore</span>
+<span class="sd">    supported on the positive integers, ``k = 1, 2, ...``.</span>
+
+<span class="sd">    The probability mass function of the geometric distribution is</span>
+
+<span class="sd">    .. math:: f(k) = (1 - p)^{k - 1} p</span>
+
+<span class="sd">    where `p` is the probability of success of an individual trial.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    p : float</span>
+<span class="sd">        The probability of success of an individual trial.</span>
+<span class="sd">    size : int or tuple of ints, optional</span>
+<span class="sd">        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then</span>
+<span class="sd">        ``m * n * k`` samples are drawn.  If size is ``None`` (default),</span>
+<span class="sd">        a single value is returned if ``p`` is a scalar.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dparray, int32</span>
+<span class="sd">        Drawn samples from the parameterized geometric distribution.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Draw ten thousand values from the geometric distribution,</span>
+<span class="sd">    with the probability of an individual success equal to 0.35:</span>
+<span class="sd">    &gt;&gt;&gt; z = dpnp.random.geometric(p=0.35, size=10000)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">size</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                    <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;geometric&quot;</span><span class="p">,</span> <span class="s2">&quot;type(dim)&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">dim</span><span class="p">),</span> <span class="nb">int</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;geometric&quot;</span><span class="p">,</span> <span class="s2">&quot;type(size)&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">size</span><span class="p">),</span> <span class="nb">int</span><span class="p">)</span>
+
+        <span class="c1"># TODO:</span>
+        <span class="c1"># array_like of floats for `p` param</span>
+        <span class="k">if</span> <span class="n">p</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">p</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;geometric&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="s2">&quot;in (0, 1]&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp_geometric</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">geometric</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="chisquare"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.chisquare.html#dpnp.random.chisquare">[docs]</a><span class="k">def</span> <span class="nf">chisquare</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
