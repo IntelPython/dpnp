@@ -98,10 +98,10 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_PROD
         DPNP_FN_UNIFORM
         DPNP_FN_RADIANS
-        DPNP_FN_RAYLEIGH
         DPNP_FN_REMAINDER
         DPNP_FN_RECIP
         DPNP_FN_RIGHT_SHIFT
+        DPNP_FN_RNG_RAYLEIGH
         DPNP_FN_SIGN
         DPNP_FN_SIN
         DPNP_FN_SINH

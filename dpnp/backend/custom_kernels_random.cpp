@@ -280,7 +280,7 @@ void func_map_init_random(func_map_t& fmap)
 
     fmap[DPNPFuncName::DPNP_FN_NEGATIVE_BINOMIAL][eft_INT][eft_INT] = {eft_INT, (void*)custom_rng_negative_binomial_c<int>};
 
-    fmap[DPNPFuncName::DPNP_FN_RAYLEIGH][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_rayleigh_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_RAYLEIGH][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_rayleigh_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_STANDARD_CAUCHY][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_standard_cauchy_c<double>};
 
