@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.random.standard_cauchy &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.random.rayleigh &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.random.standard_normal" href="dpnp.random.standard_normal.html" />
-    <link rel="prev" title="dpnp.random.rayleigh" href="dpnp.random.rayleigh.html" /> 
+    <link rel="next" title="dpnp.random.standard_cauchy" href="dpnp.random.standard_cauchy.html" />
+    <link rel="prev" title="dpnp.random.poisson" href="dpnp.random.poisson.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -170,13 +170,13 @@
         
           <li><a href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a> &raquo;</li>
         
-      <li>dpnp.random.standard_cauchy</li>
+      <li>dpnp.random.rayleigh</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.random.standard_cauchy.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.random.rayleigh.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -189,33 +189,31 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-random-standard-cauchy">
-<h1>dpnp.random.standard_cauchy<a class="headerlink" href="#dpnp-random-standard-cauchy" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-random-rayleigh">
+<h1>dpnp.random.rayleigh<a class="headerlink" href="#dpnp-random-rayleigh" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.random.standard_cauchy">
-<code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">standard_cauchy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#standard_cauchy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.standard_cauchy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Standard cauchy distribution.</p>
-<p>Draw samples from a standard Cauchy distribution with mode = 0.</p>
-<p>Also known as the Lorentz distribution.</p>
+<dt id="dpnp.random.rayleigh">
+<code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">rayleigh</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scale</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#rayleigh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.rayleigh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rayleigh distribution.</p>
+<p>Draw samples from a Rayleigh distribution.</p>
+<p>The <span class="math notranslate nohighlight">\(\chi\)</span> and Weibull distributions are generalizations of the
+Rayleigh.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
-<code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">*</span> <span class="pre">k</span></code> samples are drawn.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scale</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>optional</em>) – Scale, also equals the mode. Must be non-negative. Default is 1.</p></li>
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
+<code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">*</span> <span class="pre">k</span></code> samples are drawn.  If size is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default),
+a single value is returned if <code class="docutils literal notranslate"><span class="pre">scale</span></code> is a scalar.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>samples</strong> – The drawn samples.</p>
+<dd class="field-even"><p><strong>out</strong> – Drawn samples from the parameterized Rayleigh distribution.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="dpnp.dparray.dparray.html#dpnp.dparray.dparray" title="dpnp.dparray.dparray">dparray</a></p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<p>Draw samples and plot the distribution:
-&gt;&gt;&gt; import matplotlib.pyplot as plt
-&gt;&gt;&gt; s = dpnp.random.standard_cauchy(1000000)
-&gt;&gt;&gt; s = s[(s&gt;-25) &amp; (s&lt;25)]  # truncate distribution so it plots well
-&gt;&gt;&gt; plt.hist(s, bins=100)
-&gt;&gt;&gt; plt.show()</p>
 </dd></dl>
 
 </div>
@@ -228,10 +226,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.random.standard_normal.html" class="btn btn-neutral float-right" title="dpnp.random.standard_normal" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.random.standard_cauchy.html" class="btn btn-neutral float-right" title="dpnp.random.standard_cauchy" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.random.rayleigh.html" class="btn btn-neutral float-left" title="dpnp.random.rayleigh" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.random.poisson.html" class="btn btn-neutral float-left" title="dpnp.random.poisson" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -218,6 +218,7 @@
     <span class="s1">&#39;random&#39;</span><span class="p">,</span>
     <span class="s1">&#39;random_integers&#39;</span><span class="p">,</span>
     <span class="s1">&#39;random_sample&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;rayleigh&#39;</span><span class="p">,</span>
     <span class="s1">&#39;sample&#39;</span><span class="p">,</span>
     <span class="s1">&#39;seed&#39;</span><span class="p">,</span>
     <span class="s1">&#39;standard_cauchy&#39;</span><span class="p">,</span>
@@ -1256,6 +1257,50 @@
         <span class="k">return</span> <span class="n">dpnp_random</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_sample</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="rayleigh"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.rayleigh.html#dpnp.random.rayleigh">[docs]</a><span class="k">def</span> <span class="nf">rayleigh</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Rayleigh distribution.</span>
+
+<span class="sd">    Draw samples from a Rayleigh distribution.</span>
+
+<span class="sd">    The :math:`\\chi` and Weibull distributions are generalizations of the</span>
+<span class="sd">    Rayleigh.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    scale : float, optional</span>
+<span class="sd">        Scale, also equals the mode. Must be non-negative. Default is 1.</span>
+<span class="sd">    size : int or tuple of ints, optional</span>
+<span class="sd">        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then</span>
+<span class="sd">        ``m * n * k`` samples are drawn.  If size is ``None`` (default),</span>
+<span class="sd">        a single value is returned if ``scale`` is a scalar.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dparray</span>
+<span class="sd">        Drawn samples from the parameterized Rayleigh distribution.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">scale</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">size</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                    <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;rayleigh&quot;</span><span class="p">,</span> <span class="s2">&quot;type(dim)&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">dim</span><span class="p">),</span> <span class="nb">int</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;rayleigh&quot;</span><span class="p">,</span> <span class="s2">&quot;type(size)&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">size</span><span class="p">),</span> <span class="nb">int</span><span class="p">)</span>
+
+        <span class="c1"># TODO:</span>
+        <span class="c1"># array_like of floats for `scale` params</span>
+        <span class="k">if</span> <span class="n">scale</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;rayleigh&quot;</span><span class="p">,</span> <span class="s2">&quot;scale&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="s2">&quot;non-negative&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp_rayleigh</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rayleigh</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="seed"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.seed.html#dpnp.random.seed">[docs]</a><span class="k">def</span> <span class="nf">seed</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
