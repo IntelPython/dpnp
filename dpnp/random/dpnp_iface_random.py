@@ -257,7 +257,7 @@ def geometric(p, size=None):
 
     Returns
     -------
-    out : dparray
+    out : dparray, int32
         Drawn samples from the parameterized geometric distribution.
 
     Examples
