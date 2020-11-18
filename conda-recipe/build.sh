@@ -27,8 +27,9 @@ fi
 
 $PYTHON setup.py build_clib
 $PYTHON setup.py build_ext install
+
 # Build wheel package
-$PYTHON setup.py bdist_wheel -p manylinux1_x86_64
 if [ -n "${WHEELS_OUTPUT_FOLDER}" ]; then
+    $PYTHON setup.py bdist_wheel -p manylinux1_x86_64
     cp dist/dpnp*.whl ${WHEELS_OUTPUT_FOLDER}
 fi

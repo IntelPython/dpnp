@@ -12,6 +12,7 @@ requirements:
       - cython
       - dpctl >=0.3.7
       - mkl-devel >=2021.1b10
+      - wheel
     run:
       - python
       - dpctl >=0.3.7
