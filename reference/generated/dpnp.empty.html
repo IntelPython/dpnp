@@ -88,6 +88,7 @@
             
             
               <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
@@ -207,13 +208,13 @@ memory.</p></li>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="dpnp.empty_like.html#dpnp.empty_like" title="dpnp.empty_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">empty_like</span></code></a>, <a class="reference internal" href="dpnp.zeros.html#dpnp.zeros" title="dpnp.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zeros</span></code></a></p>
+<p><a class="reference internal" href="dpnp.empty_like.html#dpnp.empty_like" title="dpnp.empty_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.empty_like</span></code></a>, <a class="reference internal" href="dpnp.zeros.html#dpnp.zeros" title="dpnp.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.zeros</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
-<p><cite>empty</cite>, unlike <cite>zeros</cite>, does not set the matrix values to zero,
-and may therefore be marginally faster.  On the other hand, it requires
-the user to manually set all the values in the array, and should be
-used with caution.</p>
+<p><a class="reference internal" href="#dpnp.empty" title="dpnp.empty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.empty</span></code></a>, unlike <a class="reference internal" href="dpnp.zeros.html#dpnp.zeros" title="dpnp.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.zeros</span></code></a>, does not set the matrix values
+to zero, and may therefore be marginally faster.  On the other hand, it
+requires the user to manually set all the values in the array, and should
+be used with caution.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy.matlib</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">matlib</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>    <span class="c1"># filled with random data</span>

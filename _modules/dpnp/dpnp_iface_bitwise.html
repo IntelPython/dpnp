@@ -86,6 +86,7 @@
             
             
               <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../reference/index.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">C++ backend API Reference</a></li>
 </ul>
@@ -276,7 +277,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    ogical_and, bitwise_or, bitwise_xor, binary_repr</span>
+<span class="sd">    :obj:`dpnp.logical_and`, :obj:`dpnp.bitwise_or`, :obj:`dpnp.bitwise_xor`, :obj:`dpnp.binary_repr`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_check_nd_call</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">bitwise_and</span><span class="p">,</span> <span class="n">dpnp_bitwise_and</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span>
@@ -301,7 +302,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    logical_or, bitwise_and, bitwise_xor, binary_repr</span>
+<span class="sd">    :obj:`dpnp.logical_or`, :obj:`dpnp.bitwise_and`, :obj:`dpnp.bitwise_xor`, :obj:`dpnp.binary_repr`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_check_nd_call</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">bitwise_or</span><span class="p">,</span> <span class="n">dpnp_bitwise_or</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span>
@@ -326,7 +327,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    logical_xor, bitwise_and, bitwise_or, binary_repr</span>
+<span class="sd">    :obj:`dpnp.logical_xor`, :obj:`dpnp.bitwise_and`, :obj:`dpnp.bitwise_or`, :obj:`dpnp.binary_repr`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_check_nd_call</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">bitwise_xor</span><span class="p">,</span> <span class="n">dpnp_bitwise_xor</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span>
@@ -351,7 +352,8 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    bitwise_and, bitwise_or, bitwise_xor, logical_not, binary_repr</span>
+<span class="sd">    :obj:`dpnp.bitwise_and`, :obj:`dpnp.bitwise_or`, :obj:`dpnp.bitwise_xor`,</span>
+<span class="sd">    :obj:`dpnp.logical_not`, :obj:`dpnp.binary_repr`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_check_nd_call</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">invert</span><span class="p">,</span> <span class="n">dpnp_invert</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -380,7 +382,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    right_shift, binary_repr</span>
+<span class="sd">    :obj:`dpnp.right_shift`, :obj:`dpnp.binary_repr`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_check_nd_call</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">left_shift</span><span class="p">,</span> <span class="n">dpnp_left_shift</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span>
@@ -407,7 +409,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    left_shift, binary_repr</span>
+<span class="sd">    :obj:`dpnp.left_shift`, :obj:`dpnp.binary_repr`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_check_nd_call</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">right_shift</span><span class="p">,</span> <span class="n">dpnp_right_shift</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span>

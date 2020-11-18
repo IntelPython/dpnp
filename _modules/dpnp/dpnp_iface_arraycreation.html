@@ -86,6 +86,7 @@
             
             
               <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../reference/index.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">C++ backend API Reference</a></li>
 </ul>
@@ -375,14 +376,14 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    empty_like, zeros</span>
+<span class="sd">    :obj:`dpnp.empty_like`, :obj:`dpnp.zeros`</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    `empty`, unlike `zeros`, does not set the matrix values to zero,</span>
-<span class="sd">    and may therefore be marginally faster.  On the other hand, it requires</span>
-<span class="sd">    the user to manually set all the values in the array, and should be</span>
-<span class="sd">    used with caution.</span>
+<span class="sd">    :obj:`dpnp.empty`, unlike :obj:`dpnp.zeros`, does not set the matrix values</span>
+<span class="sd">    to zero, and may therefore be marginally faster.  On the other hand, it</span>
+<span class="sd">    requires the user to manually set all the values in the array, and should</span>
+<span class="sd">    be used with caution.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -441,15 +442,15 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    ones_like : Return an array of ones with shape and type of input.</span>
-<span class="sd">    zeros_like : Return an array of zeros with shape and type of input.</span>
-<span class="sd">    full_like : Return a new array with shape of input filled with value.</span>
-<span class="sd">    empty : Return a new uninitialized array.</span>
+<span class="sd">    :obj:`dpnp.ones_like` : Return an array of ones with shape and type of input.</span>
+<span class="sd">    :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of input.</span>
+<span class="sd">    :obj:`dpnp.full_like` : Return a new array with shape of input filled with value.</span>
+<span class="sd">    :obj:`dpnp.empty` : Return a new uninitialized array.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    This function does *not* initialize the returned array; to do that use</span>
-<span class="sd">    `zeros_like` or `ones_like` instead.  It may be marginally faster than</span>
+<span class="sd">    :obj:`dpnp.zeros_like` or :obj:`dpnp.ones_like` instead.  It may be marginally faster than</span>
 <span class="sd">    the functions that do set the array values.</span>
 
 <span class="sd">    Examples</span>
@@ -505,10 +506,10 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    full_like : Return a new array with shape of input filled with value.</span>
-<span class="sd">    empty : Return a new uninitialized array.</span>
-<span class="sd">    ones : Return a new array setting values to one.</span>
-<span class="sd">    zeros : Return a new array setting values to zero.</span>
+<span class="sd">    :obj:`dpnp.full_like` : Return a new array with shape of input filled with value.</span>
+<span class="sd">    :obj:`dpnp.empty` : Return a new uninitialized array.</span>
+<span class="sd">    :obj:`dpnp.ones` : Return a new array setting values to one.</span>
+<span class="sd">    :obj:`dpnp.zeros` : Return a new array setting values to zero.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -570,10 +571,10 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    empty_like : Return an empty array with shape and type of input.</span>
-<span class="sd">    ones_like : Return an array of ones with shape and type of input.</span>
-<span class="sd">    zeros_like : Return an array of zeros with shape and type of input.</span>
-<span class="sd">    full : Return a new array of given shape filled with value.</span>
+<span class="sd">    :obj:`dpnp.empty_like` : Return an empty array with shape and type of input.</span>
+<span class="sd">    :obj:`dpnp.ones_like` : Return an array of ones with shape and type of input.</span>
+<span class="sd">    :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of input.</span>
+<span class="sd">    :obj:`dpnp.full` : Return a new array of given shape filled with value.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -646,12 +647,12 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    logspace : Similar to geomspace, but with endpoints specified using log</span>
-<span class="sd">               and base.</span>
-<span class="sd">    linspace : Similar to geomspace, but with arithmetic instead of geometric</span>
-<span class="sd">               progression.</span>
-<span class="sd">    arange : Similar to linspace, with the step size specified instead of the</span>
-<span class="sd">             number of samples.</span>
+<span class="sd">    :obj:`dpnp.logspace` : Similar to geomspace, but with endpoints specified</span>
+<span class="sd">                           using log and base.</span>
+<span class="sd">    :obj:`dpnp.linspace` : Similar to geomspace, but with arithmetic instead of</span>
+<span class="sd">                           geometric progression.</span>
+<span class="sd">    :obj:`dpnp.arange` : Similar to linspace, with the step size specified</span>
+<span class="sd">                         instead of the number of samples.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -720,12 +721,12 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    arange : Similar to `linspace`, but uses a step size (instead of the</span>
-<span class="sd">             number of samples).</span>
-<span class="sd">    geomspace : Similar to `linspace`, but with numbers spaced evenly on a log</span>
-<span class="sd">                scale (a geometric progression).</span>
-<span class="sd">    logspace : Similar to `geomspace`, but with the end points specified as</span>
-<span class="sd">               logarithms.</span>
+<span class="sd">    :obj:`dpnp.arange` : Similar to `linspace`, but uses a step size (instead</span>
+<span class="sd">                         of the number of samples).</span>
+<span class="sd">    :obj:`dpnp.geomspace` : Similar to `linspace`, but with numbers spaced</span>
+<span class="sd">                            evenly on a log scale (a geometric progression).</span>
+<span class="sd">    :obj:`dpnp.logspace` : Similar to `geomspace`, but with the end points</span>
+<span class="sd">                           specified as logarithms.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">():</span>
@@ -789,12 +790,14 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    arange : Similar to linspace, with the step size specified instead of the</span>
-<span class="sd">             number of samples. Note that, when used with a float endpoint, the</span>
-<span class="sd">             endpoint may or may not be included.</span>
-<span class="sd">    linspace : Similar to logspace, but with the samples uniformly distributed</span>
-<span class="sd">               in linear space, instead of log space.</span>
-<span class="sd">    geomspace : Similar to logspace, but with endpoints specified directly.</span>
+<span class="sd">    :obj:`dpnp.arange` : Similar to linspace, with the step size specified</span>
+<span class="sd">                         instead of the number of samples. Note that, when used</span>
+<span class="sd">                         with a float endpoint, the endpoint may or may not be</span>
+<span class="sd">                         included.</span>
+<span class="sd">    :obj:`dpnp.inspace` : Similar to logspace, but with the samples uniformly</span>
+<span class="sd">                          distributed in linear space, instead of log space.</span>
+<span class="sd">    :obj:`dpnp.geomspace` : Similar to logspace, but with endpoints specified</span>
+<span class="sd">                            directly.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">():</span>
@@ -829,10 +832,10 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    ones_like : Return an array of ones with shape and type of input.</span>
-<span class="sd">    empty : Return a new uninitialized array.</span>
-<span class="sd">    zeros : Return a new array setting values to zero.</span>
-<span class="sd">    full : Return a new array of given shape filled with value.</span>
+<span class="sd">    :obj:`dpnp.ones_like` : Return an array of ones with shape and type of input.</span>
+<span class="sd">    :obj:`dpnp.empty` : Return a new uninitialized array.</span>
+<span class="sd">    :obj:`dpnp.zeros` : Return a new array setting values to zero.</span>
+<span class="sd">    :obj:`dpnp.full` : Return a new array of given shape filled with value.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -894,10 +897,10 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    empty_like : Return an empty array with shape and type of input.</span>
-<span class="sd">    zeros_like : Return an array of zeros with shape and type of input.</span>
-<span class="sd">    full_like : Return a new array with shape of input filled with value.</span>
-<span class="sd">    ones : Return a new array setting values to one.</span>
+<span class="sd">    :obj:`dpnp.empty_like` : Return an empty array with shape and type of input.</span>
+<span class="sd">    :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of input.</span>
+<span class="sd">    :obj:`dpnp.full_like` : Return a new array with shape of input filled with value.</span>
+<span class="sd">    :obj:`dpnp.ones` : Return a new array setting values to one.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -953,10 +956,10 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    zeros_like : Return an array of zeros with shape and type of input.</span>
-<span class="sd">    empty : Return a new uninitialized array.</span>
-<span class="sd">    ones : Return a new array setting values to one.</span>
-<span class="sd">    full : Return a new array of given shape filled with value.</span>
+<span class="sd">    :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of input.</span>
+<span class="sd">    :obj:`dpnp.empty` : Return a new uninitialized array.</span>
+<span class="sd">    :obj:`dpnp.ones` : Return a new array setting values to one.</span>
+<span class="sd">    :obj:`dpnp.full` : Return a new array of given shape filled with value.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1026,10 +1029,10 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    empty_like : Return an empty array with shape and type of input.</span>
-<span class="sd">    ones_like : Return an array of ones with shape and type of input.</span>
-<span class="sd">    full_like : Return a new array with shape of input filled with value.</span>
-<span class="sd">    zeros : Return a new array setting values to zero.</span>
+<span class="sd">    :obj:`dpnp.empty_like` : Return an empty array with shape and type of input.</span>
+<span class="sd">    :obj:`dpnp.ones_like` : Return an array of ones with shape and type of input.</span>
+<span class="sd">    :obj:`dpnp.full_like` : Return a new array with shape of input filled with value.</span>
+<span class="sd">    :obj:`dpnp.zeros` : Return a new array setting values to zero.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>

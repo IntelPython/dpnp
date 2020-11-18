@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.linalg.matrix_power &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.random.poisson &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.kron" href="dpnp.kron.html" />
-    <link rel="prev" title="dpnp.einsum_path" href="dpnp.einsum_path.html" /> 
+    <link rel="next" title="dpnp.random.standard_cauchy" href="dpnp.random.standard_cauchy.html" />
+    <link rel="prev" title="dpnp.random.negative_binomial" href="dpnp.random.negative_binomial.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -97,20 +97,18 @@
 <li class="toctree-l3"><a class="reference internal" href="../manipulation.html">Array Manipulation Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../binary.html">Binary Operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../linalg.html">Linear Algebra</a><ul class="current">
-<li class="toctree-l4 current"><a class="reference internal" href="../linalg.html#matrix-and-vector-products">Matrix and vector products</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../linalg.html#decompositions">Decompositions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../linalg.html#matrix-eigenvalues">Matrix eigenvalues</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../linalg.html#norms-etc">Norms etc.</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../linalg.html#solving-linear-equations">Solving linear equations</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../linalg.html#special-matrices">Special Matrices</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear Algebra</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pad.html">Padding</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../polynomials.html">Polynomials</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../random.html#simple-random-data">Simple random data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../random.html#permutations">Permutations</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../random.html#distributions">Distributions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../random.html#random-generator">Random generator</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../sorting.html">Sorting, Searching, and Counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistical Functions</a></li>
 </ul>
@@ -170,15 +168,15 @@
         
           <li><a href="../routines.html">Routines</a> &raquo;</li>
         
-          <li><a href="../linalg.html">Linear Algebra</a> &raquo;</li>
+          <li><a href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a> &raquo;</li>
         
-      <li>dpnp.linalg.matrix_power</li>
+      <li>dpnp.random.poisson</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.linalg.matrix_power.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.random.poisson.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -191,27 +189,56 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-linalg-matrix-power">
-<h1>dpnp.linalg.matrix_power<a class="headerlink" href="#dpnp-linalg-matrix-power" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-random-poisson">
+<h1>dpnp.random.poisson<a class="headerlink" href="#dpnp-random-poisson" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.linalg.matrix_power">
-<code class="sig-prename descclassname">dpnp.linalg.</code><code class="sig-name descname">matrix_power</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input</span></em>, <em class="sig-param"><span class="n">count</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/linalg_iface.html#matrix_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.linalg.matrix_power" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raise a square matrix to the (integer) power <cite>count</cite>.</p>
+<dt id="dpnp.random.poisson">
+<code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">poisson</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lam</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#poisson"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.poisson" title="Permalink to this definition">¶</a></dt>
+<dd><p>Poisson distribution.</p>
+<p>Draw samples from a Poisson distribution.</p>
+<p>The Poisson distribution is the limit of the binomial distribution
+for large N.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>input</strong> (<em>sequence of array_like</em>) – </p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lam</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Expectation of interval, must be &gt;= 0. A sequence of expectation
+intervals must be broadcastable over the requested size.</p></li>
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
+<code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">*</span> <span class="pre">k</span></code> samples are drawn.  If size is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default),
+a single value is returned if <code class="docutils literal notranslate"><span class="pre">lam</span></code> is a scalar.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>output</strong> – Returns the dot product of the supplied arrays.</p>
+<dd class="field-even"><p><strong>out</strong> – Drawn samples from the parameterized Poisson distribution.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.dparray.dparray.html#dpnp.dparray.dparray" title="dpnp.dparray.dparray">dparray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="dpnp.dparray.dparray.html#dpnp.dparray.dparray" title="dpnp.dparray.dparray">dparray</a>, int32</p>
 </dd>
 </dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.matrix_power.html#numpy.linalg.matrix_power" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.matrix_power</span></code></a></p>
-</div>
+<p class="rubric">Notes</p>
+<p>The Poisson distribution</p>
+<div class="math notranslate nohighlight">
+\[f(k; \lambda)=\frac{\lambda^k e^{-\lambda}}{k!}\]</div>
+<p>For events with an expected separation <span class="math notranslate nohighlight">\(\lambda\)</span> the Poisson
+distribution <span class="math notranslate nohighlight">\(f(k; \lambda)\)</span> describes the probability of
+<span class="math notranslate nohighlight">\(k\)</span> events occurring within the observed
+interval <span class="math notranslate nohighlight">\(\lambda\)</span>.</p>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id1"><span class="brackets">1</span></dt>
+<dd><p>Weisstein, Eric W. “Poisson Distribution.”
+From MathWorld–A Wolfram Web Resource.
+<a class="reference external" href="http://mathworld.wolfram.com/PoissonDistribution.html">http://mathworld.wolfram.com/PoissonDistribution.html</a></p>
+</dd>
+<dt class="label" id="id2"><span class="brackets">2</span></dt>
+<dd><p>Wikipedia, “Poisson distribution”,
+<a class="reference external" href="https://en.wikipedia.org/wiki/Poisson_distribution">https://en.wikipedia.org/wiki/Poisson_distribution</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Draw samples from the distribution:
+&gt;&gt;&gt; import numpy as np
+&gt;&gt;&gt; s = dpnp.random.poisson(5, 10000)</p>
 </dd></dl>
 
 </div>
@@ -224,10 +251,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.kron.html" class="btn btn-neutral float-right" title="dpnp.kron" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.random.standard_cauchy.html" class="btn btn-neutral float-right" title="dpnp.random.standard_cauchy" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.einsum_path.html" class="btn btn-neutral float-left" title="dpnp.einsum_path" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.random.negative_binomial.html" class="btn btn-neutral float-left" title="dpnp.random.negative_binomial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

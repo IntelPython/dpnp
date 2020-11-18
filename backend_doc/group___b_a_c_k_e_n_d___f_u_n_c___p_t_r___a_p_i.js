@@ -76,6 +76,7 @@ var group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i =
       [ "DPNP_FN_REMAINDER", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a028e932a6262fc8cbff6ab47412f6b71", null ],
       [ "DPNP_FN_RECIP", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a0dbb5104ccb3369e5088d8cd8356c95e", null ],
       [ "DPNP_FN_RIGHT_SHIFT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ab42ed2c36eba8a3ec79ba5f60f5f54de", null ],
+      [ "DPNP_FN_RNG_POISSON", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ac932383a1104d78d3c137a8688de68a0", null ],
       [ "DPNP_FN_SIGN", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a12ef46387104df46d7533d39d1902ae8", null ],
       [ "DPNP_FN_SIN", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a45620d825f2307be019fc259cde9b89b", null ],
       [ "DPNP_FN_SINH", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558acd54e3d88372fb5f571f071f4a570d43", null ],
