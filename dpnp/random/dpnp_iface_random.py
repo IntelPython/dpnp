@@ -51,6 +51,7 @@ __all__ = [
     'exponential',
     'gamma',
     'geometric',
+    'gumbel',
     'laplace',
     'lognormal',
     'negative_binomial',
@@ -492,6 +493,59 @@ def gamma(shape, scale=1.0, size=None):
         return dpnp_gamma(shape, scale, size)
 
     return call_origin(numpy.random.gamma, shape, scale, size)
+
+
+def gumbel(loc=0.0, scale=1.0, size=None):
+    """Gumbel distribution.
+
+    Draw samples from a Gumbel distribution.
+
+    Draw samples from a Gumbel distribution with specified location and
+    scale.
+
+    Parameters
+    ----------
+    loc : float, optional
+        The location of the mode of the distribution. Default is 0.
+    scale : float, optional
+        The scale parameter of the distribution. Default is 1. Must be non-
+        negative.
+    size : int or tuple of ints, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
+        a single value is returned if ``loc`` and ``scale`` are both scalars.
+
+    Returns
+    -------
+    out : dparray
+        Drawn samples from the parameterized Gumbel distribution.
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> mu, beta = 0, 0.1 # location and scale
+    >>> s = dpnp.random.gumbel(mu, beta, 1000)
+
+    """
+
+    if not use_origin_backend(loc):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("gumbel", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("gumbel", "type(size)", type(size), int)
+
+        # TODO:
+        # array_like of floats for `loc` and `scale` params
+        if scale < 0:
+            checker_throw_value_error("gumbel", "scale", scale, "non-negative")
+
+        return dpnp_gumbel(loc, scale, size)
+
+    return call_origin(numpy.random.gumbel, loc, scale, size)
 
 
 def laplace(loc=0.0, scale=1.0, size=None):
