@@ -44,14 +44,11 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_ARGMAX
         DPNP_FN_ARGMIN
         DPNP_FN_ARGSORT
-        DPNP_FN_BETA
-        DPNP_FN_BINOMIAL
         DPNP_FN_BITWISE_AND
         DPNP_FN_BITWISE_OR
         DPNP_FN_BITWISE_XOR
         DPNP_FN_CBRT
         DPNP_FN_CEIL
-        DPNP_FN_CHISQUARE
         DPNP_FN_CHOLESKY
         DPNP_FN_COPYSIGN
         DPNP_FN_CORRELATE
@@ -67,14 +64,11 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_EXP
         DPNP_FN_EXP2
         DPNP_FN_EXPM1
-        DPNP_FN_EXPONENTIAL
         DPNP_FN_FABS
         DPNP_FN_FFT_FFT
         DPNP_FN_FLOOR
         DPNP_FN_FLOOR_DIVIDE
         DPNP_FN_FMOD
-        DPNP_FN_GAMMA
-        DPNP_FN_GAUSSIAN
         DPNP_FN_HYPOT
         DPNP_FN_INVERT
         DPNP_FN_LEFT_SHIFT
@@ -92,25 +86,32 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_MINIMUM
         DPNP_FN_MODF
         DPNP_FN_MULTIPLY
-        DPNP_FN_NEGATIVE_BINOMIAL
-        DPNP_FN_LAPLACE
         DPNP_FN_POWER
         DPNP_FN_PROD
-        DPNP_FN_UNIFORM
         DPNP_FN_RADIANS
         DPNP_FN_REMAINDER
         DPNP_FN_RECIP
         DPNP_FN_RIGHT_SHIFT
+        DPNP_FN_RNG_BETA
+        DPNP_FN_RNG_BINOMIAL
+        DPNP_FN_RNG_CHISQUARE
+        DPNP_FN_RNG_EXPONENTIAL
+        DPNP_FN_RNG_GAMMA
+        DPNP_FN_RNG_GAUSSIAN
         DPNP_FN_RNG_GEOMETRIC
+        DPNP_FN_RNG_LAPLACE
+        DPNP_FN_RNG_NEGATIVE_BINOMIAL
         DPNP_FN_RNG_POISSON
+        DPNP_FN_RNG_STANDARD_CAUCHY
+        DPNP_FN_RNG_STANDARD_NORMAL
+        DPNP_FN_RNG_UNIFORM
+        DPNP_FN_RNG_WEIBULL
         DPNP_FN_SIGN
         DPNP_FN_SIN
         DPNP_FN_SINH
         DPNP_FN_SORT
         DPNP_FN_SQRT
         DPNP_FN_SQUARE
-        DPNP_FN_STANDARD_CAUCHY
-        DPNP_FN_STANDARD_NORMAL
         DPNP_FN_STD
         DPNP_FN_SUBTRACT
         DPNP_FN_SUM
@@ -119,7 +120,6 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_TRANSPOSE
         DPNP_FN_TRUNC
         DPNP_FN_VAR
-        DPNP_FN_WEIBULL
 
 cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
     cdef enum DPNPFuncType "DPNPFuncType":
