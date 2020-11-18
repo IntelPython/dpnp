@@ -202,6 +202,21 @@ void custom_rng_standard_cauchy_c(void* result, size_t size)
 }
 
 template <typename _DataType>
+void custom_rng_standard_normal_c(void* result, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    const _DataType mean =  _DataType(0.0);
+    const _DataType stddev =  _DataType(1.0);
+
+    custom_rng_gaussian_c(result, mean, stddev, size);
+}
+
+template <typename _DataType>
 void custom_rng_uniform_c(void* result, long low, long high, size_t size)
 {
     if (!size)
@@ -216,6 +231,27 @@ void custom_rng_uniform_c(void* result, long low, long high, size_t size)
     const _DataType b = (_DataType(high));
 
     mkl_rng::uniform<_DataType> distribution(a, b);
+    // perform generation
+    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+    event_out.wait();
+}
+
+template <typename _DataType>
+void custom_rng_weibull_c(void* result, double alpha, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    // set displacement a
+    const _DataType a = (_DataType(0.0));
+
+    // set beta
+    const _DataType beta = (_DataType(1.0));
+
+    mkl_rng::weibull<_DataType> distribution(alpha, a, beta);
     // perform generation
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
     event_out.wait();
@@ -248,9 +284,13 @@ void func_map_init_random(func_map_t& fmap)
 
     fmap[DPNPFuncName::DPNP_FN_STANDARD_CAUCHY][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_standard_cauchy_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_STANDARD_NORMAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_standard_normal_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_uniform_c<double>};
     fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_rng_uniform_c<float>};
     fmap[DPNPFuncName::DPNP_FN_UNIFORM][eft_INT][eft_INT] = {eft_INT, (void*)custom_rng_uniform_c<int>};
+
+    fmap[DPNPFuncName::DPNP_FN_WEIBULL][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_weibull_c<double>};
 
     return;
 }
