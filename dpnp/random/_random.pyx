@@ -60,14 +60,14 @@ __all__ = [
 ]
 
 
-ctypedef void(*fptr_custom_rng_beta_c_1out_t)(void *, double, double, size_t)
-ctypedef void(*fptr_custom_rng_binomial_c_1out_t)(void *, int, double, size_t)
-ctypedef void(*fptr_custom_rng_chi_square_c_1out_t)(void *, int, size_t)
-ctypedef void(*fptr_custom_rng_exponential_c_1out_t)(void *, double, size_t)
-ctypedef void(*fptr_custom_rng_gamma_c_1out_t)(void *, double, double, size_t)
-ctypedef void(*fptr_custom_rng_gaussian_c_1out_t)(void *, double, double, size_t)
-ctypedef void(*fptr_custom_rng_laplace_c_1out_t)(void *, double, double, size_t)
-ctypedef void(*fptr_custom_rng_negative_binomial_c_1out_t)(void *, double, double, size_t)
+ctypedef void(*fptr_custom_rng_beta_c_1out_t)(void *, double, double, size_t) except +
+ctypedef void(*fptr_custom_rng_binomial_c_1out_t)(void *, int, double, size_t) except +
+ctypedef void(*fptr_custom_rng_chi_square_c_1out_t)(void *, int, size_t) except +
+ctypedef void(*fptr_custom_rng_exponential_c_1out_t)(void *, double, size_t) except +
+ctypedef void(*fptr_custom_rng_gamma_c_1out_t)(void *, double, double, size_t) except +
+ctypedef void(*fptr_custom_rng_gaussian_c_1out_t)(void *, double, double, size_t) except +
+ctypedef void(*fptr_custom_rng_laplace_c_1out_t)(void *, double, double, size_t) except +
+ctypedef void(*fptr_custom_rng_negative_binomial_c_1out_t)(void *, double, double, size_t) except +
 ctypedef void(*fptr_custom_rng_standard_cauchy_c_1out_t)(void *, size_t) except +
 ctypedef void(*fptr_custom_rng_standard_normal_c_1out_t)(void *, size_t) except +
 ctypedef void(*fptr_custom_rng_uniform_c_1out_t)(void *, long, long, size_t)
