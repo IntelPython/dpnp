@@ -101,6 +101,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_REMAINDER
         DPNP_FN_RECIP
         DPNP_FN_RIGHT_SHIFT
+        DPNP_FN_RNG_POISSON
         DPNP_FN_SIGN
         DPNP_FN_SIN
         DPNP_FN_SINH
