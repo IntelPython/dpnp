@@ -341,6 +341,54 @@ def test_laplace_check_extreme_value():
     assert numpy.unique(res)[0] == 0.0
 
 
+def test_lognormal_seed():
+    seed = 28041990
+    size = 100
+    mean = 0.0
+    sigma = 0.8
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.lognormal(mean, sigma, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.lognormal(mean, sigma, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_lognormal_invalid_args():
+    size = 10
+
+    mean = 0.0
+    sigma = -1.0  # non-negative `sigma` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.lognormal(mean=mean, sigma=sigma, size=size)
+
+
+def test_lognormal_check_moments():
+    seed = 28041995
+    dpnp.random.seed(seed)
+    mean = 0.5
+    sigma = 0.8
+    size = 10**6
+    expected_mean = numpy.exp(mean + (sigma ** 2) / 2)
+    expected_var = (numpy.exp(sigma**2) - 1) * numpy.exp(2 * mean + sigma**2)
+    var = numpy.var(dpnp.random.lognormal(mean=mean, sigma=sigma, size=size))
+    mean = numpy.mean(dpnp.random.lognormal(mean=mean, sigma=sigma, size=size))
+    assert math.isclose(var, expected_var, abs_tol=0.03)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
+def test_lognormal_check_extreme_value():
+    seed = 28041990
+    dpnp.random.seed(seed)
+
+    mean = 0.5
+    sigma = 0.0
+    expected_val = numpy.exp(mean + (sigma ** 2) / 2)
+    res = numpy.asarray(dpnp.random.lognormal(mean=mean, sigma=sigma, size=100))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == expected_val
+
+
 def test_negative_binomial_seed():
     seed = 28041990
     size = 100

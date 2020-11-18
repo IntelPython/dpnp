@@ -50,6 +50,7 @@ __all__ = [
     "dpnp_gamma",
     "dpnp_geometric",
     "dpnp_laplace",
+    "dpnp_lognormal",
     "dpnp_negative_binomial",
     "dpnp_poisson",
     "dpnp_randn",
@@ -70,6 +71,7 @@ ctypedef void(*fptr_custom_rng_gamma_c_1out_t)(void *, double, double, size_t) e
 ctypedef void(*fptr_custom_rng_geometric_c_1out_t)(void *, float, size_t) except +
 ctypedef void(*fptr_custom_rng_gaussian_c_1out_t)(void *, double, double, size_t) except +
 ctypedef void(*fptr_custom_rng_laplace_c_1out_t)(void *, double, double, size_t) except +
+ctypedef void(*fptr_custom_rng_lognormal_c_1out_t)(void *, double, double, size_t) except +
 ctypedef void(*fptr_custom_rng_negative_binomial_c_1out_t)(void *, double, double, size_t) except +
 ctypedef void(*fptr_custom_rng_poisson_c_1out_t)(void *, double, size_t) except +
 ctypedef void(*fptr_custom_rng_standard_cauchy_c_1out_t)(void *, size_t) except +
@@ -331,6 +333,42 @@ cpdef dparray dpnp_laplace(double loc, double scale, size):
         func = <fptr_custom_rng_laplace_c_1out_t > kernel_data.ptr
         # call FPTR function
         func(result.get_data(), loc, scale, result.size)
+
+    return result
+
+
+cpdef dparray dpnp_lognormal(double mean, double stddev, size):
+    """
+    Returns an array populated with samples from beta distribution.
+    `dpnp_lognormal` generates a matrix filled with random floats sampled from a
+    univariate lognormal distribution.
+
+    """
+
+    dtype = numpy.float64
+    cdef dparray result
+    cdef DPNPFuncType param1_type
+    cdef DPNPFuncData kernel_data
+    cdef fptr_custom_rng_lognormal_c_1out_t func
+
+    if stddev == 0.0:
+        val = numpy.exp(mean + (stddev ** 2) / 2)
+        result = dparray(size, dtype=dtype)
+        result.fill(val)
+    else:
+        # convert string type names (dparray.dtype) to C enum DPNPFuncType
+        param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+
+        # get the FPTR data structure
+        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_LOGNORMAL, param1_type, param1_type)
+
+        result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+        # ceate result array with type given by FPTR data
+        result = dparray(size, dtype=result_type)
+
+        func = <fptr_custom_rng_lognormal_c_1out_t > kernel_data.ptr
+        # call FPTR function
+        func(result.get_data(), mean, stddev, result.size)
 
     return result
 
