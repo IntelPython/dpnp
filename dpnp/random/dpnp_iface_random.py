@@ -53,6 +53,7 @@ __all__ = [
     'geometric',
     'laplace',
     'negative_binomial',
+    'poisson',
     'rand',
     'ranf',
     'randint',
@@ -638,6 +639,76 @@ def negative_binomial(n, p, size=None):
     return call_origin(numpy.random.negative_binomial, n, p, size)
 
 
+def poisson(lam=1.0, size=None):
+    """Poisson distribution.
+
+    Draw samples from a Poisson distribution.
+
+    The Poisson distribution is the limit of the binomial distribution
+    for large N.
+
+    Parameters
+    ----------
+    lam : float
+        Expectation of interval, must be >= 0. A sequence of expectation
+        intervals must be broadcastable over the requested size.
+    size : int, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
+        a single value is returned if ``lam`` is a scalar.
+
+    Returns
+    -------
+    out : dparray, int32
+        Drawn samples from the parameterized Poisson distribution.
+
+    Notes
+    -----
+    The Poisson distribution
+
+    .. math:: f(k; \\lambda)=\\frac{\\lambda^k e^{-\\lambda}}{k!}
+
+    For events with an expected separation :math:`\\lambda` the Poisson
+    distribution :math:`f(k; \\lambda)` describes the probability of
+    :math:`k` events occurring within the observed
+    interval :math:`\\lambda`.
+
+    References
+    ----------
+    .. [1] Weisstein, Eric W. "Poisson Distribution."
+           From MathWorld--A Wolfram Web Resource.
+           http://mathworld.wolfram.com/PoissonDistribution.html
+    .. [2] Wikipedia, "Poisson distribution",
+           https://en.wikipedia.org/wiki/Poisson_distribution
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> import numpy as np
+    >>> s = dpnp.random.poisson(5, 10000)
+
+    """
+
+    if not use_origin_backend(lam):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("poisson", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("poisson", "type(size)", type(size), int)
+
+        # TODO:
+        # array_like of floats for `lam` param
+        if lam < 0:
+            checker_throw_value_error("poisson", "lam", lam, "non-negative")
+
+        return dpnp_poisson(lam, size)
+
+    return call_origin(numpy.random.poisson, lam, size)
+
+
 def rand(d0, *dn):
     """
     Create an array of the given shape and populate it
@@ -653,7 +724,7 @@ def rand(d0, *dn):
 
     See Also
     --------
-    random
+    :obj:`dpnp.random.random`
 
     """
 
@@ -683,7 +754,7 @@ def ranf(size):
 
     See Also
     --------
-    random
+    :obj:`dpnp.random.random`
 
     """
 
@@ -728,9 +799,9 @@ def randint(low, high=None, size=None, dtype=int):
         distribution, or a single such random int if `size` not provided.
     See Also
     --------
-    random_integers : similar to `randint`, only for the closed
-        interval [`low`, `high`], and 1 is the lowest value if `high` is
-        omitted.
+    :obj:`dpnp.random.random_integers` : similar to `randint`, only for the closed
+                                         interval [`low`, `high`], and 1 is the
+                                         lowest value if `high` is omitted.
 
     """
 
@@ -783,8 +854,8 @@ def randn(d0, *dn):
 
     See Also
     --------
-    standard_normal
-    normal
+    :obj:`dpnp.random.standard_normal`
+    :obj:`dpnp.random.normal`
 
     """
 
@@ -814,7 +885,7 @@ def random(size):
 
     See Also
     --------
-    random
+    :obj:`dpnp.random.random`
 
     """
 
@@ -856,7 +927,7 @@ def random_integers(low, high=None, size=None):
         distribution, or a single such random int if `size` not provided.
     See Also
     --------
-    randint
+    :obj:`dpnp.random.randint`
 
     """
 
@@ -883,7 +954,7 @@ def random_sample(size):
 
     See Also
     --------
-    random
+    :obj:`dpnp.random.random`
 
     """
 
@@ -934,7 +1005,7 @@ def sample(size):
 
     See Also
     --------
-    random
+    :obj:`dpnp.random.random`
 
     """
 
@@ -1056,7 +1127,7 @@ def uniform(low=0.0, high=1.0, size=None):
 
     See Also
     --------
-    random : Floats uniformly distributed over ``[0, 1)``.
+    :obj:`dpnp.random.random` : Floats uniformly distributed over ``[0, 1)``.
 
     """
 

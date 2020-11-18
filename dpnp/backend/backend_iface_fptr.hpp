@@ -130,6 +130,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RECIP,              /**< Used in numpy.recip() implementation  */
     DPNP_FN_RIGHT_SHIFT,        /**< Used in numpy.right_shift() implementation  */
     DPNP_FN_RNG_GEOMETRIC,      /**< Used in numpy.random.geometric() implementation  */
+    DPNP_FN_RNG_POISSON,        /**< Used in numpy.random.poisson() implementation  */
     DPNP_FN_SIGN,               /**< Used in numpy.sign() implementation  */
     DPNP_FN_SIN,                /**< Used in numpy.sin() implementation  */
     DPNP_FN_SINH,               /**< Used in numpy.sinh() implementation  */
