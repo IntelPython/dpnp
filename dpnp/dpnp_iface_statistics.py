@@ -204,8 +204,8 @@ def average(a, axis=None, weights=None, returned=False):
 
     ma.average : average for masked arrays -- useful if your data contains
                  "missing" values
-    numpy.result_type : Returns the type that results from applying the
-                        numpy type promotion rules to the arguments.
+    :obj:`numpy.result_type` : Returns the type that results from applying the
+                               numpy type promotion rules to the arguments.
 
     """
     if not use_origin_backend(a):
@@ -253,7 +253,7 @@ def correlate(a, v, mode='valid'):
 
     See Also
     --------
-    convolve : Discrete, linear convolution of two one-dimensional sequences.
+    :obj:`dpnp.convolve` : Discrete, linear convolution of two one-dimensional sequences.
     multiarray.correlate : Old, no conjugate, version of correlate.
 
     Notes
@@ -363,7 +363,7 @@ def cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=N
 
     See Also
     --------
-    corrcoef : Normalized covariance matrix
+    :obj:`dpnp.corrcoef` : Normalized covariance matrix
 
     Notes
     -----
@@ -585,7 +585,7 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
 
     See Also
     --------
-    mean, percentile
+    :obj:`dpnp.mean`, :obj:`dpnp.percentile`
 
     Notes
     -----
@@ -708,8 +708,8 @@ def std(a, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue):
 
     See Also
     --------
-    var, mean, nanmean, nanstd, nanvar
-    ufuncs-output-type
+    :obj:`dpnp.var`, :obj:`dpnp.mean`, :obj:`dpnp.nanmean`,
+    :obj:`dpnp.nanstd`, :obj:`dpnp.nanvar`, ufuncs-output-type
 
     """
 
@@ -746,8 +746,8 @@ def var(a, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue):
 
     See Also
     --------
-    std, mean, nanmean, nanstd, nanvar
-    ufuncs-output-type
+    :obj:`dpnp.std`, :obj:`dpnp.mean`, :obj:`dpnp.nanmean`,
+    :obj:`dpnp.nanstd`, :obj:`dpnp.nanvar`, ufuncs-output-type
 
     """
 

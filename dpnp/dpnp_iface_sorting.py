@@ -97,8 +97,8 @@ def argsort(in_array1, axis=-1, kind=None, order=None):
     See Also
     --------
     MaskedArray.sort : Describes sorting algorithms used.
-    lexsort : Indirect stable sort with multiple keys.
-    numpy.ndarray.sort : Inplace sort.
+    :obj:`dpnp.lexsort` : Indirect stable sort with multiple keys.
+    :obj:`numpy.ndarray.sort` : Inplace sort.
 
     Notes
     -----
@@ -166,10 +166,10 @@ def sort(x1, **kwargs):
     See Also
     --------
     ndarray.sort : Method to sort an array in-place.
-    argsort : Indirect sort.
-    lexsort : Indirect stable sort on multiple keys.
-    searchsorted : Find elements in a sorted array.
-    partition : Partial sort.
+    :obj:`dpnp.argsort` : Indirect sort.
+    :obj:`dpnp.lexsort` : Indirect stable sort on multiple keys.
+    :obj:`dpnp.searchsorted` : Find elements in a sorted array.
+    :obj:`dpnp.partition` : Partial sort.
 
     Notes
     -----

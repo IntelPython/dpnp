@@ -221,14 +221,14 @@ def empty(shape, dtype=numpy.float64, order='C'):
 
     See Also
     --------
-    empty_like, zeros
+    :obj:`dpnp.empty_like`, :obj:`dpnp.zeros`
 
     Notes
     -----
-    `empty`, unlike `zeros`, does not set the matrix values to zero,
-    and may therefore be marginally faster.  On the other hand, it requires
-    the user to manually set all the values in the array, and should be
-    used with caution.
+    :obj:`dpnp.empty`, unlike :obj:`dpnp.zeros`, does not set the matrix values
+    to zero, and may therefore be marginally faster.  On the other hand, it
+    requires the user to manually set all the values in the array, and should
+    be used with caution.
 
     Examples
     --------
@@ -287,15 +287,15 @@ def empty_like(prototype, dtype=None, order='C', subok=False, shape=None):
 
     See Also
     --------
-    ones_like : Return an array of ones with shape and type of input.
-    zeros_like : Return an array of zeros with shape and type of input.
-    full_like : Return a new array with shape of input filled with value.
-    empty : Return a new uninitialized array.
+    :obj:`dpnp.ones_like` : Return an array of ones with shape and type of input.
+    :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of input.
+    :obj:`dpnp.full_like` : Return a new array with shape of input filled with value.
+    :obj:`dpnp.empty` : Return a new uninitialized array.
 
     Notes
     -----
     This function does *not* initialize the returned array; to do that use
-    `zeros_like` or `ones_like` instead.  It may be marginally faster than
+    :obj:`dpnp.zeros_like` or :obj:`dpnp.ones_like` instead.  It may be marginally faster than
     the functions that do set the array values.
 
     Examples
@@ -351,10 +351,10 @@ def full(shape, fill_value, dtype=None, order='C'):
 
     See Also
     --------
-    full_like : Return a new array with shape of input filled with value.
-    empty : Return a new uninitialized array.
-    ones : Return a new array setting values to one.
-    zeros : Return a new array setting values to zero.
+    :obj:`dpnp.full_like` : Return a new array with shape of input filled with value.
+    :obj:`dpnp.empty` : Return a new uninitialized array.
+    :obj:`dpnp.ones` : Return a new array setting values to one.
+    :obj:`dpnp.zeros` : Return a new array setting values to zero.
 
     Examples
     --------
@@ -416,10 +416,10 @@ def full_like(prototype, fill_value, dtype=None, order='C', subok=False, shape=N
 
     See Also
     --------
-    empty_like : Return an empty array with shape and type of input.
-    ones_like : Return an array of ones with shape and type of input.
-    zeros_like : Return an array of zeros with shape and type of input.
-    full : Return a new array of given shape filled with value.
+    :obj:`dpnp.empty_like` : Return an empty array with shape and type of input.
+    :obj:`dpnp.ones_like` : Return an array of ones with shape and type of input.
+    :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of input.
+    :obj:`dpnp.full` : Return a new array of given shape filled with value.
 
     Examples
     --------
@@ -492,12 +492,12 @@ def geomspace(start, stop, num=50, endpoint=True, dtype=None, axis=0):
 
     See Also
     --------
-    logspace : Similar to geomspace, but with endpoints specified using log
-               and base.
-    linspace : Similar to geomspace, but with arithmetic instead of geometric
-               progression.
-    arange : Similar to linspace, with the step size specified instead of the
-             number of samples.
+    :obj:`dpnp.logspace` : Similar to geomspace, but with endpoints specified
+                           using log and base.
+    :obj:`dpnp.linspace` : Similar to geomspace, but with arithmetic instead of
+                           geometric progression.
+    :obj:`dpnp.arange` : Similar to linspace, with the step size specified
+                         instead of the number of samples.
 
     """
 
@@ -566,12 +566,12 @@ def linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis
 
     See Also
     --------
-    arange : Similar to `linspace`, but uses a step size (instead of the
-             number of samples).
-    geomspace : Similar to `linspace`, but with numbers spaced evenly on a log
-                scale (a geometric progression).
-    logspace : Similar to `geomspace`, but with the end points specified as
-               logarithms.
+    :obj:`dpnp.arange` : Similar to `linspace`, but uses a step size (instead
+                         of the number of samples).
+    :obj:`dpnp.geomspace` : Similar to `linspace`, but with numbers spaced
+                            evenly on a log scale (a geometric progression).
+    :obj:`dpnp.logspace` : Similar to `geomspace`, but with the end points
+                           specified as logarithms.
     """
 
     if not use_origin_backend():
@@ -635,12 +635,14 @@ def logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0):
 
     See Also
     --------
-    arange : Similar to linspace, with the step size specified instead of the
-             number of samples. Note that, when used with a float endpoint, the
-             endpoint may or may not be included.
-    linspace : Similar to logspace, but with the samples uniformly distributed
-               in linear space, instead of log space.
-    geomspace : Similar to logspace, but with endpoints specified directly.
+    :obj:`dpnp.arange` : Similar to linspace, with the step size specified
+                         instead of the number of samples. Note that, when used
+                         with a float endpoint, the endpoint may or may not be
+                         included.
+    :obj:`dpnp.inspace` : Similar to logspace, but with the samples uniformly
+                          distributed in linear space, instead of log space.
+    :obj:`dpnp.geomspace` : Similar to logspace, but with endpoints specified
+                            directly.
     """
 
     if not use_origin_backend():
@@ -675,10 +677,10 @@ def ones(shape, dtype=None, order='C'):
 
     See Also
     --------
-    ones_like : Return an array of ones with shape and type of input.
-    empty : Return a new uninitialized array.
-    zeros : Return a new array setting values to zero.
-    full : Return a new array of given shape filled with value.
+    :obj:`dpnp.ones_like` : Return an array of ones with shape and type of input.
+    :obj:`dpnp.empty` : Return a new uninitialized array.
+    :obj:`dpnp.zeros` : Return a new array setting values to zero.
+    :obj:`dpnp.full` : Return a new array of given shape filled with value.
 
     Examples
     --------
@@ -740,10 +742,10 @@ def ones_like(prototype, dtype=None, order='C', subok=False, shape=None):
 
     See Also
     --------
-    empty_like : Return an empty array with shape and type of input.
-    zeros_like : Return an array of zeros with shape and type of input.
-    full_like : Return a new array with shape of input filled with value.
-    ones : Return a new array setting values to one.
+    :obj:`dpnp.empty_like` : Return an empty array with shape and type of input.
+    :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of input.
+    :obj:`dpnp.full_like` : Return a new array with shape of input filled with value.
+    :obj:`dpnp.ones` : Return a new array setting values to one.
 
     Examples
     --------
@@ -799,10 +801,10 @@ def zeros(shape, dtype=None, order='C'):
 
     See Also
     --------
-    zeros_like : Return an array of zeros with shape and type of input.
-    empty : Return a new uninitialized array.
-    ones : Return a new array setting values to one.
-    full : Return a new array of given shape filled with value.
+    :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of input.
+    :obj:`dpnp.empty` : Return a new uninitialized array.
+    :obj:`dpnp.ones` : Return a new array setting values to one.
+    :obj:`dpnp.full` : Return a new array of given shape filled with value.
 
     Examples
     --------
@@ -872,10 +874,10 @@ def zeros_like(prototype, dtype=None, order='C', subok=False, shape=None):
 
     See Also
     --------
-    empty_like : Return an empty array with shape and type of input.
-    ones_like : Return an array of ones with shape and type of input.
-    full_like : Return a new array with shape of input filled with value.
-    zeros : Return a new array setting values to zero.
+    :obj:`dpnp.empty_like` : Return an empty array with shape and type of input.
+    :obj:`dpnp.ones_like` : Return an array of ones with shape and type of input.
+    :obj:`dpnp.full_like` : Return a new array with shape of input filled with value.
+    :obj:`dpnp.zeros` : Return a new array setting values to zero.
 
     Examples
     --------
