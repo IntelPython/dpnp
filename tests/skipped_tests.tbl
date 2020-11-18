@@ -1,4 +1,5 @@
 tests/test_random.py::test_randn_normal_distribution
+tests/test_random.py::test_rayleigh_check_moments
 tests/test_random.py::test_gumbel_check_moments
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_and
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_or
