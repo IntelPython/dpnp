@@ -234,7 +234,7 @@ cpdef dparray dpnp_geometric(float p, size):
 
     if p == 1.0:
         result = dparray(size, dtype=dtype)
-        result.fill(1.0)
+        result.fill(1)
     else:
         # convert string type names (dparray.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
@@ -275,7 +275,7 @@ cpdef dparray dpnp_negative_binomial(double a, double p, size):
         result.fill(filled_val)
     elif p == 1.0:
         result = dparray(size, dtype=dtype)
-        result.fill(0.0)
+        result.fill(0)
     else:
         # convert string type names (dparray.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
