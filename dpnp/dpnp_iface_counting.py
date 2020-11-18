@@ -85,7 +85,7 @@ def count_nonzero(in_array1, axis=None, *, keepdims=False):
 
     See Also
     --------
-    nonzero : Return the coordinates of all the non-zero values.
+    :obj:`numpy.count_nonzero`
 
     Examples
     --------

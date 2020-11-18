@@ -93,11 +93,12 @@ def arccos(x1):
 
     Returns
     -------
-    out : The angle of the ray intersecting the unit circle at the given x-coordinate in radians [0, pi]. This is a scalar if x is a scalar.
+    out : The angle of the ray intersecting the unit circle at the given x-coordinate in radians [0, pi].
+          This is a scalar if x is a scalar.
 
     See Also
     --------
-    cos, arctan, arcsin
+    :obj:`dpnp.cos`, :obj:`dpnp.arctan`, :obj:`dpnp.arcsin`
 
     """
 
@@ -135,11 +136,13 @@ def arcsin(x1):
 
     Returns
     -------
-    out : The inverse sine of each element in x, in radians and in the closed interval [-pi/2, pi/2]. This is a scalar if x is a scalar.
+    out : The inverse sine of each element in x, in radians and in the closed interval [-pi/2, pi/2].
+          This is a scalar if x is a scalar.
 
     See Also
     --------
-    sin, cos, arccos, tan, arctan, arctan2
+    :obj:`dpnp.sin`, :obj:`dpnp.cos`, :obj:`dpnp.arccos`,
+    :obj:`dpnp.tan`, :obj:`dpnp.arctan1, :obj:`dpnp.arctan2`
 
     """
 
@@ -179,11 +182,12 @@ def arctan(x1):
 
     Returns
     -------
-    out : Out has the same shape as x. Its real part is in [-pi/2, pi/2] (arctan(+/-inf) returns +/-pi/2). This is a scalar if x is a scalar.
+    out : Out has the same shape as x. Its real part is in [-pi/2, pi/2] (arctan(+/-inf) returns +/-pi/2).
+          This is a scalar if x is a scalar.
 
     See Also
     --------
-    arctan2, angle
+    :obj:`dpnp.arctan2`, :obj:`dpnp.angle`
 
     """
 
@@ -246,7 +250,7 @@ def arctan2(x1, x2, out=None):
 
     See Also
     --------
-    arctan, tan, angle
+    :obj:`dpnp.arctan`, :obj:`dpnp.tan`, :obj:`dpnp.angle`
 
     """
 
@@ -283,7 +287,7 @@ def cos(x1):
 
     See Also
     --------
-    arccos, cosh, sin
+    :obj:`dpnp.arccos`, :obj:`dpnp.cosh`, :obj:`dpnp.sin`
 
     """
 
@@ -326,7 +330,7 @@ def deg2rad(x1):
 
     See Also
     --------
-    rad2deg, unwrap
+    :obj:`dpnp.rad2deg`, :obj:`dpnp.unwrap`
 
     """
 
@@ -350,7 +354,7 @@ def degrees(x1):
 
     See Also
     --------
-    rad2deg
+    :obj:`dpnp.rad2deg`
 
     """
 
@@ -544,7 +548,7 @@ def rad2deg(x1):
 
     See Also
     --------
-    deg2rad, unwrap
+    :obj:`dpnp.deg2rad`, :obj:`dpnp.unwrap`
 
     """
 
@@ -571,7 +575,7 @@ def radians(x1):
 
     See Also
     --------
-    deg2rad
+    :obj:`dpnp.deg2rad`
 
     """
 
@@ -599,7 +603,7 @@ def sin(x1):
 
     See Also
     --------
-    arcsin, sinh, cos
+    :obj:`dpnp.arcsin`, :obj:`dpnp.sinh`, :obj:`dpnp.cos`
 
     """
 
@@ -713,7 +717,7 @@ def unwrap(x1):
 
     See Also
     --------
-    rad2deg, deg2rad
+    :obj:`dpnp.rad2deg`, :obj:`dpnp.deg2rad`
 
     """
 

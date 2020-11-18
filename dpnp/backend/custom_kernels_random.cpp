@@ -164,6 +164,21 @@ void custom_rng_negative_binomial_c(void* result, double a, double p, size_t siz
 }
 
 template <typename _DataType>
+void custom_rng_poisson_c(void* result, double lambda, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    mkl_rng::poisson<_DataType> distribution(lambda);
+    // perform generation
+    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+    event_out.wait();
+}
+
+template <typename _DataType>
 void custom_rng_standard_cauchy_c(void* result, size_t size)
 {
     if (!size)
@@ -261,6 +276,8 @@ void func_map_init_random(func_map_t& fmap)
 
     fmap[DPNPFuncName::DPNP_FN_RNG_NEGATIVE_BINOMIAL][eft_INT][eft_INT] = {eft_INT, (void*)custom_rng_negative_binomial_c<int>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_POISSON][eft_INT][eft_INT] = {eft_INT, (void*)custom_rng_poisson_c<int>};
+  
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_CAUCHY][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_standard_cauchy_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_NORMAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_standard_normal_c<double>};

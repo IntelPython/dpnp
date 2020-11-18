@@ -122,7 +122,7 @@ def bitwise_and(x1, x2, **kwargs):
 
     See Also
     --------
-    ogical_and, bitwise_or, bitwise_xor, binary_repr
+    :obj:`dpnp.logical_and`, :obj:`dpnp.bitwise_or`, :obj:`dpnp.bitwise_xor`, :obj:`dpnp.binary_repr`
 
     """
     return _check_nd_call(numpy.bitwise_and, dpnp_bitwise_and, x1, x2,
@@ -147,7 +147,7 @@ def bitwise_or(x1, x2, **kwargs):
 
     See Also
     --------
-    logical_or, bitwise_and, bitwise_xor, binary_repr
+    :obj:`dpnp.logical_or`, :obj:`dpnp.bitwise_and`, :obj:`dpnp.bitwise_xor`, :obj:`dpnp.binary_repr`
 
     """
     return _check_nd_call(numpy.bitwise_or, dpnp_bitwise_or, x1, x2,
@@ -172,7 +172,7 @@ def bitwise_xor(x1, x2, **kwargs):
 
     See Also
     --------
-    logical_xor, bitwise_and, bitwise_or, binary_repr
+    :obj:`dpnp.logical_xor`, :obj:`dpnp.bitwise_and`, :obj:`dpnp.bitwise_or`, :obj:`dpnp.binary_repr`
 
     """
     return _check_nd_call(numpy.bitwise_xor, dpnp_bitwise_xor, x1, x2,
@@ -197,7 +197,8 @@ def invert(x, **kwargs):
 
     See Also
     --------
-    bitwise_and, bitwise_or, bitwise_xor, logical_not, binary_repr
+    :obj:`dpnp.bitwise_and`, :obj:`dpnp.bitwise_or`, :obj:`dpnp.bitwise_xor`,
+    :obj:`dpnp.logical_not`, :obj:`dpnp.binary_repr`
 
     """
     return _check_nd_call(numpy.invert, dpnp_invert, x, **kwargs)
@@ -226,7 +227,7 @@ def left_shift(x1, x2, **kwargs):
 
     See Also
     --------
-    right_shift, binary_repr
+    :obj:`dpnp.right_shift`, :obj:`dpnp.binary_repr`
 
     """
     return _check_nd_call(numpy.left_shift, dpnp_left_shift, x1, x2,
@@ -253,7 +254,7 @@ def right_shift(x1, x2, **kwargs):
 
     See Also
     --------
-    left_shift, binary_repr
+    :obj:`dpnp.left_shift`, :obj:`dpnp.binary_repr`
 
     """
     return _check_nd_call(numpy.right_shift, dpnp_right_shift, x1, x2,

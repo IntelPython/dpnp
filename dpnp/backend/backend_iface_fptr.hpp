@@ -129,6 +129,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RNG_GAUSSIAN,           /**< Used in numpy.random.randn() implementation  */
     DPNP_FN_RNG_LAPLACE,            /**< Used in numpy.random.laplace() implementation  */
     DPNP_FN_RNG_NEGATIVE_BINOMIAL,  /**< Used in numpy.random.negative_binomial() implementation  */
+    DPNP_FN_RNG_POISSON,        /**< Used in numpy.random.poisson() implementation  */
     DPNP_FN_RNG_STANDARD_CAUCHY,    /**< Used in numpy.random.standard_cauchy() implementation  */
     DPNP_FN_RNG_STANDARD_NORMAL,    /**< Used in numpy.random.standard_normal() implementation  */
     DPNP_FN_RNG_UNIFORM,            /**< Used in numpy.random.uniform() implementation  */
