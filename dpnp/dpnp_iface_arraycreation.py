@@ -214,11 +214,14 @@ def empty(shape, dtype=numpy.float64, order='C'):
     shape : int or tuple of int
         Shape of the empty array.
     dtype : data-type, optional
-        Desired output data-type.
+        Data type specifier.
     order : {'C', 'F'}, optional
-        Whether to store multi-dimensional data in row-major
-        (C-style) or column-major (Fortran-style) order in
-        memory.
+        Row-major (C-style) or column-major (Fortran-style) order.
+
+    Returns
+    -------
+    out : :obj:`dpnp.ndarray`
+        A new array with elements not initialized.
 
     Limitations
     -----------
@@ -265,20 +268,19 @@ def empty_like(prototype, dtype=None, order='C', subok=False, shape=None):
         Overrides the memory layout of the result.
     subok : bool, optional.
         If True, then the newly created array will use the sub-class
-        type of 'a', otherwise it will be a base-class array. Defaults
-        to True.
+        type of 'a', otherwise it will be a base-class array.
     shape : int or sequence of ints, optional.
         Overrides the shape of the result.
 
     Returns
     -------
-    out : ndarray
+    out : :obj:`dpnp.ndarray`
         A new array with same shape and dtype of `prototype` with elements not initialized.
 
     Limitations
     -----------
     Parameter ``order`` is supported only with default value `'C'`.
-    Parameter ``subok`` is currently unsupported.
+    Parameter ``subok`` is supported only with default value `False`.
 
     See Also
     --------
