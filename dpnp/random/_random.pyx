@@ -80,7 +80,7 @@ ctypedef void(*fptr_custom_rng_poisson_c_1out_t)(void *, double, size_t) except 
 ctypedef void(*fptr_custom_rng_rayleigh_c_1out_t)(void *, double, size_t) except +
 ctypedef void(*fptr_custom_rng_standard_cauchy_c_1out_t)(void *, size_t) except +
 ctypedef void(*fptr_custom_rng_standard_normal_c_1out_t)(void *, size_t) except +
-ctypedef void(*fptr_custom_rng_uniform_c_1out_t)(void *, long, long, size_t)
+ctypedef void(*fptr_custom_rng_uniform_c_1out_t)(void *, long, long, size_t) except +
 ctypedef void(*fptr_custom_rng_weibull_c_1out_t)(void *, double, size_t) except +
 
 
