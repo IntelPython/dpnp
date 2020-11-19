@@ -32,6 +32,9 @@
 
 namespace mkl_dft = oneapi::mkl::dft;
 
+template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2>
+class dpnp_fft_fft_c_kernel;
+
 template <typename _DataType_input, typename _DataType_output>
 void dpnp_fft_fft_c(void* array1_in, void* result1, size_t size)
 {
@@ -45,12 +48,43 @@ void dpnp_fft_fft_c(void* array1_in, void* result1, size_t size)
     _DataType_input* array_1 = reinterpret_cast<_DataType_input*>(array1_in);
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
 
+#if 1
+    cl::sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        size_t id = global_id[0];
+
+        double sumreal = 0.0;
+        double sumimag = 0.0;
+        for (size_t it = 0; it < size; ++it)
+        {
+            double angle = 2 * M_PI * it * id / size;
+            double inreal = array_1[it];
+            double inimag = 0.0;
+            double angle_cos = cl::sycl::cos(angle);
+            double angle_sin = cl::sycl::sin(angle);
+
+            sumreal += inreal * angle_cos + inimag * angle_sin;
+            sumimag += -inreal * angle_sin + inimag * angle_cos;
+        }
+
+        result[id] = _DataType_output(sumreal, sumimag);
+    };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_fft_fft_c_kernel<_DataType_input, _DataType_output>>(gws, kernel_parallel_for_func);
+    };
+
+    event = DPNP_QUEUE.submit(kernel_func);
+
+#else
     oneapi::mkl::dft::descriptor<mkl_dft::precision::DOUBLE, mkl_dft::domain::COMPLEX> desc(size);
     desc.set_value(mkl_dft::config_param::FORWARD_SCALE, static_cast<double>(size));
     desc.set_value(mkl_dft::config_param::PLACEMENT, DFTI_NOT_INPLACE); // enum value from MKL C interface
     desc.commit(DPNP_QUEUE);
 
     event = mkl_dft::compute_forward(desc, array_1, result);
+#endif
+
     event.wait();
 
     return;
@@ -58,8 +92,14 @@ void dpnp_fft_fft_c(void* array1_in, void* result1, size_t size)
 
 void func_map_init_fft_func(func_map_t& fmap)
 {
-    // fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_fft_fft_c<float, std::complex<double>>};
-    fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_fft_fft_c<double, double>};
+    fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_INT][eft_INT] = {eft_C128,
+                                                             (void*)dpnp_fft_fft_c<int, std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_LNG][eft_LNG] = {eft_C128,
+                                                             (void*)dpnp_fft_fft_c<long, std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_FLT][eft_FLT] = {eft_C128,
+                                                             (void*)dpnp_fft_fft_c<float, std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_DBL][eft_DBL] = {eft_C128,
+                                                             (void*)dpnp_fft_fft_c<double, std::complex<double>>};
 
     return;
 }

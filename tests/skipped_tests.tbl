@@ -319,7 +319,6 @@ tests/third_party/cupy/fft_tests/test_fft.py::TestFft_param_28_{n=5, norm='ortho
 tests/third_party/cupy/fft_tests/test_fft.py::TestFft_param_28_{n=5, norm='ortho', shape=(0,)}::test_ifft
 tests/third_party/cupy/fft_tests/test_fft.py::TestFft_param_29_{n=5, norm='ortho', shape=(10, 0)}::test_fft
 tests/third_party/cupy/fft_tests/test_fft.py::TestFft_param_29_{n=5, norm='ortho', shape=(10, 0)}::test_ifft
-tests/third_party/cupy/fft_tests/test_fft.py::TestFft_param_2_{n=None, norm=None, shape=(10,)}::test_fft
 tests/third_party/cupy/fft_tests/test_fft.py::TestFft_param_2_{n=None, norm=None, shape=(10,)}::test_ifft
 tests/third_party/cupy/fft_tests/test_fft.py::TestFft_param_30_{n=5, norm='ortho', shape=(10,)}::test_fft
 tests/third_party/cupy/fft_tests/test_fft.py::TestFft_param_30_{n=5, norm='ortho', shape=(10,)}::test_ifft
