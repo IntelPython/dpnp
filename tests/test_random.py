@@ -342,6 +342,97 @@ def test_gumbel_check_extreme_value():
     assert numpy.unique(res)[0] == loc
 
 
+def test_hypergeometric_seed():
+    seed = 28041990
+
+    size = 100
+
+    ngood = 100
+    nbad = 2
+    nsample = 10
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_hypergeometric_invalid_args():
+    size = 10
+
+    ngood = 100    # OK
+    nbad = 2       # OK
+    nsample = -10  # non-negative `nsamp` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size)
+
+    ngood = 100    # OK
+    nbad = -2      # non-negative `nbad` is expected
+    nsample = 10   # OK
+    with pytest.raises(ValueError):
+        dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size)
+
+    ngood = -100   # non-negative `ngood` is expected
+    nbad = 2       # OK
+    nsample = 10   # OK
+    with pytest.raises(ValueError):
+        dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size)
+
+    ngood = 10
+    nbad = 2
+    nsample = 100
+    # ngood + nbad >= nsample expected
+    with pytest.raises(ValueError):
+        dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size)
+
+    ngood = 10   # OK
+    nbad = 2     # OK
+    nsample = 0  # `nsample` is expected > 0
+    with pytest.raises(ValueError):
+        dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size)
+
+
+def test_hypergeometric_check_moments():
+    seed = 28041995
+    dpnp.random.seed(seed)
+    ngood = 100
+    nbad = 2
+    nsample = 10
+
+    size = 10**5
+    expected_mean = nsample * (ngood / (ngood + nbad))
+    expected_var = nsample * (ngood / (ngood + nbad)) * (nbad / (ngood + nbad)) * (((ngood + nbad) - nsample) / ((ngood + nbad) - 1))
+
+    var = numpy.var(dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size))
+    mean = numpy.mean(dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size))
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
+def test_hypergeometric_check_extreme_value():
+    seed = 28041990
+    dpnp.random.seed(seed)
+
+    ngood = 100
+    nbad = 0
+    nsample = 10
+
+    expected_val = nsample
+    res = numpy.asarray(dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=100))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == expected_val
+
+    ngood = 0
+    nbad = 11
+    nsample = 10
+
+    expected_val = 0
+    res = numpy.asarray(dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=100))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == expected_val
+
+
 def test_laplace_seed():
     seed = 28041990
     size = 100

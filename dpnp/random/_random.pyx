@@ -319,6 +319,9 @@ cpdef dparray dpnp_hypergeometric(int l, int s, int m,  size):
     if m == 0:
         result = dparray(size, dtype=dtype)
         result.fill(0)
+    if l == m:
+        result = dparray(size, dtype=dtype)
+        result.fill(s)
     else:
         # convert string type names (dparray.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
