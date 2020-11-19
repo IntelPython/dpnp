@@ -272,7 +272,6 @@ void custom_rng_standard_normal_c(void* result, size_t size)
     {
         return;
     }
-    _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
     const _DataType mean =  _DataType(0.0);
     const _DataType stddev =  _DataType(1.0);
