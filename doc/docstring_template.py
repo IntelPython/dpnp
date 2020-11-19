@@ -51,8 +51,8 @@ def func(a, b=None, c=True):
     Limitations
     -----------
     Some limitations in comparison to baseline, ex:
-    Prameters `c` is supported only with default value `True`.
-    Otherwise the functions will be executed sequentially on CPU.
+    Prameters ``c`` is supported only with default value `True`.
+    Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
