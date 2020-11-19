@@ -206,12 +206,13 @@ def asarray(input, dtype=None, order='C'):
 
 # numpy.empty(shape, dtype=float, order='C')
 def empty(shape, dtype=numpy.float64, order='C'):
-    """Return a new matrix of given shape and type, without initializing entries.
+    """
+    Return a new array of given shape and type, without initializing entries.
 
     Parameters
     ----------
     shape : int or tuple of int
-        Shape of the empty matrix.
+        Shape of the empty array.
     dtype : data-type, optional
         Desired output data-type.
     order : {'C', 'F'}, optional
@@ -219,26 +220,25 @@ def empty(shape, dtype=numpy.float64, order='C'):
         (C-style) or column-major (Fortran-style) order in
         memory.
 
+    Limitations
+    -----------
+    Parameter ``order`` is supported only with default value `'C'`.
+
     See Also
     --------
-    :obj:`dpnp.empty_like`, :obj:`dpnp.zeros`
-
-    Notes
-    -----
-    :obj:`dpnp.empty`, unlike :obj:`dpnp.zeros`, does not set the matrix values
-    to zero, and may therefore be marginally faster.  On the other hand, it
-    requires the user to manually set all the values in the array, and should
-    be used with caution.
+    :obj:`numpy.empty` : Return a new array of given shape and type, without initializing entries.
+    :obj:`dpnp.empty_like` : Return an empty array with shape and type of input.
+    :obj:`dpnp.ones` : Return a new array setting values to one.
+    :obj:`dpnp.zeros` : Return a new array setting values to zero.
+    :obj:`dpnp.full` : Return a new array of given shape filled with value.
 
     Examples
     --------
-    >>> import numpy.matlib
-    >>> np.matlib.empty((2, 2))    # filled with random data
-    matrix([[  6.76425276e-320,   9.79033856e-307], # random
-            [  7.39337286e-309,   3.22135945e-309]])
-    >>> np.matlib.empty((2, 2), dtype=int)
-    matrix([[ 6600475,        0], # random
-            [ 6586976, 22740995]])
+    >>> import dpnp as np
+    >>> x = np.empty(4)
+    >>> [i for i in x]
+    [0.0, 0.0, 1e-323, -3.5935729608842025e+22]
+
     """
 
     if (not use_origin_backend()):
