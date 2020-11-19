@@ -332,25 +332,27 @@ def full(shape, fill_value, dtype=None, order='C'):
     Parameters
     ----------
     shape : int or sequence of ints
-        Shape of the new array, e.g., ``(2, 3)`` or ``2``.
+        Shape of the new array.
     fill_value : scalar or array_like
         Fill value.
     dtype : data-type, optional
-        The desired data-type for the array  The default, None, means
-         `np.array(fill_value).dtype`.
+        The desired data-type for the array.
     order : {'C', 'F'}, optional
         Whether to store multidimensional data in C- or Fortran-contiguous
         (row- or column-wise) order in memory.
-    ${ARRAY_FUNCTION_LIKE}
-        .. versionadded:: 1.20.0
 
     Returns
     -------
-    out : ndarray
+    out : :obj:`dpnp.ndarray`
         Array of `fill_value` with the given shape, dtype, and order.
+
+    Limitations
+    -----------
+    Parameter ``order`` is supported only with default value `'C'`.
 
     See Also
     --------
+    :obj:`numpy.full` : Return a new array of given shape and type, filled with `fill_value`.
     :obj:`dpnp.full_like` : Return a new array with shape of input filled with value.
     :obj:`dpnp.empty` : Return a new uninitialized array.
     :obj:`dpnp.ones` : Return a new array setting values to one.
@@ -358,15 +360,11 @@ def full(shape, fill_value, dtype=None, order='C'):
 
     Examples
     --------
-    >>> np.full((2, 2), np.inf)
-    array([[inf, inf],
-           [inf, inf]])
-    >>> np.full((2, 2), 10)
-    array([[10, 10],
-           [10, 10]])
-    >>> np.full((2, 2), [1, 2])
-    array([[1, 2],
-           [1, 2]])
+    >>> import dpnp as np
+    >>> x = np.full(4, 10)
+    >>> [i for i in x]
+    [10, 10, 10, 10]
+
     """
 
     if (not use_origin_backend()):
@@ -381,41 +379,39 @@ def full(shape, fill_value, dtype=None, order='C'):
 
 
 # numpy.full_like(a, fill_value, dtype=None, order='K', subok=True, shape=None)
-def full_like(prototype, fill_value, dtype=None, order='C', subok=False, shape=None):
+def full_like(a, fill_value, dtype=None, order='C', subok=False, shape=None):
     """
     Return a full array with the same shape and type as a given array.
 
     Parameters
     ----------
     a : array_like
-        The shape and data-type of `a` define these same attributes of
-        the returned array.
+        Base array.
     fill_value : scalar
         Fill value.
     dtype : data-type, optional
         Overrides the data type of the result.
     order : {'C', 'F', 'A', or 'K'}, optional
-        Overrides the memory layout of the result. 'C' means C-order,
-        'F' means F-order, 'A' means 'F' if `a` is Fortran contiguous,
-        'C' otherwise. 'K' means match the layout of `a` as closely
-        as possible.
+        Overrides the memory layout of the result.
     subok : bool, optional.
         If True, then the newly created array will use the sub-class
-        type of 'a', otherwise it will be a base-class array. Defaults
-        to True.
+        type of 'a', otherwise it will be a base-class array.
     shape : int or sequence of ints, optional.
-        Overrides the shape of the result. If order='K' and the number of
-        dimensions is unchanged, will try to keep order, otherwise,
-        order='C' is implied.
-        .. versionadded:: 1.17.0
+        Overrides the shape of the result.
 
     Returns
     -------
-    out : ndarray
+    out : :obj:`dpnp.ndarray`
         Array of `fill_value` with the same shape and type as `a`.
+
+    Limitations
+    -----------
+    Parameter ``order`` is supported only with default value `'C'`.
+    Parameter ``subok`` is supported only with default value `False`.
 
     See Also
     --------
+    :obj:`numpy.full_like` : Return a full array with the same shape and type as a given array.
     :obj:`dpnp.empty_like` : Return an empty array with shape and type of input.
     :obj:`dpnp.ones_like` : Return an array of ones with shape and type of input.
     :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of input.
@@ -423,18 +419,12 @@ def full_like(prototype, fill_value, dtype=None, order='C', subok=False, shape=N
 
     Examples
     --------
-    >>> x = np.arange(6, dtype=int)
-    >>> np.full_like(x, 1)
-    array([1, 1, 1, 1, 1, 1])
-    >>> np.full_like(x, 0.1)
-    array([0, 0, 0, 0, 0, 0])
-    >>> np.full_like(x, 0.1, dtype=np.double)
-    array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
-    >>> np.full_like(x, np.nan, dtype=np.double)
-    array([nan, nan, nan, nan, nan, nan])
-    >>> y = np.arange(6, dtype=np.double)
-    >>> np.full_like(y, 0.1)
-    array([0.1,  0.1,  0.1,  0.1,  0.1,  0.1])
+    >>> import dpnp as np
+    >>> a = np.arange(6)
+    >>> x = np.full_like(a, 1)
+    >>> [i for i in x]
+    [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+
     """
 
     if (not use_origin_backend()):
@@ -443,12 +433,12 @@ def full_like(prototype, fill_value, dtype=None, order='C', subok=False, shape=N
         if subok is not False:
             checker_throw_value_error("full_like", "subok", subok, False)
 
-        _shape = shape if shape is not None else prototype.shape
-        _dtype = dtype if dtype is not None else prototype.dtype
+        _shape = shape if shape is not None else a.shape
+        _dtype = dtype if dtype is not None else a.dtype
 
         return dpnp_init_val(_shape, _dtype, fill_value)
 
-    return numpy.full_like(prototype, fill_value, dtype, order, subok, shape)
+    return numpy.full_like(a, fill_value, dtype, order, subok, shape)
 
 
 def geomspace(start, stop, num=50, endpoint=True, dtype=None, axis=0):
