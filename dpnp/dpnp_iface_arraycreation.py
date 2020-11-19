@@ -123,22 +123,22 @@ def array(obj, dtype=None, copy=True, order='C', subok=False, ndmin=0):
 
     Parameters
     ----------
-        obj : array_like
-            Array-like object.
-        dtype: data-type, optional
-            Data type specifier.
-        copy : bool, optional
-            If ``False``, this function returns ``obj`` if possible.
-            Otherwise this function always returns a new array.
-        order : {'K', 'A', 'C', 'F'}, optional
-            Specify the memory layout of the array.
-        subok : bool, optional
-            If True, then sub-classes will be passed-through,
-            otherwise the returned array will be forced to be a base-class
-            array (default).
-        ndmin : int, optional
-            Minimum number of dimensions. Ones are inserted to the
-            head of the shape if needed.
+    obj : array_like
+        Array-like object.
+    dtype: data-type, optional
+        Data type specifier.
+    copy : bool, optional
+        If ``False``, this function returns ``obj`` if possible.
+        Otherwise this function always returns a new array.
+    order : {'K', 'A', 'C', 'F'}, optional
+        Specify the memory layout of the array.
+    subok : bool, optional
+        If True, then sub-classes will be passed-through,
+        otherwise the returned array will be forced to be a base-class
+        array (default).
+    ndmin : int, optional
+        Minimum number of dimensions. Ones are inserted to the
+        head of the shape if needed.
 
     Returns
     -------
@@ -149,7 +149,7 @@ def array(obj, dtype=None, copy=True, order='C', subok=False, ndmin=0):
     -----------
     Parameter ``copy`` is supported only with default value `True`.
     Parameter ``order`` is supported only with default value `'C'`.
-    Parameter ``subok`` is currently unsupported by.
+    Parameter ``subok`` is currently unsupported.
     Parameter ``ndmin`` is supported only with default value `0`.
 
     See Also
@@ -166,7 +166,6 @@ def array(obj, dtype=None, copy=True, order='C', subok=False, ndmin=0):
 
     Examples
     --------
-
     >>> import dpnp as np
     >>> x = np.array([1, 2, 3])
     >>> x.ndim, x.size, x.shape
