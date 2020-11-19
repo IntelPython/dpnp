@@ -52,6 +52,7 @@ __all__ = [
     'gamma',
     'geometric',
     'gumbel',
+    'hypergeometric',
     'laplace',
     'lognormal',
     'negative_binomial',
@@ -547,6 +548,39 @@ def gumbel(loc=0.0, scale=1.0, size=None):
         return dpnp_gumbel(loc, scale, size)
 
     return call_origin(numpy.random.gumbel, loc, scale, size)
+
+
+def hypergeometric(ngood, nbad, nsample, size=None):
+    """Hypergeometric distribution.
+
+    """
+
+    if not use_origin_backend(ngood) and dpnp_queue_is_cpu():
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("hypergeometric", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("hypergeometric", "type(size)", type(size), int)
+
+        # TODO:
+        # array_like of ints for `ngood`, `nbad`, `nsample` param
+        if ngood < 0:
+            checker_throw_value_error("hypergeometric", "ngood", ngood, "non-negative")
+        if nbad < 0:
+            checker_throw_value_error("hypergeometric", "nbad", nbad, "non-negative")
+        if nsample < 0:
+            checker_throw_value_error("hypergeometric", "nsample", nsample, "non-negative")
+
+        m = int(ngood)
+        l = int(ngood) + int(nbad)
+        s = int(nsample)
+
+        return dpnp_hypergeometric(l, s, m, size)
+
+    return call_origin(numpy.random.hypergeometric, ngood, nbad, nsample, size)
 
 
 def laplace(loc=0.0, scale=1.0, size=None):
