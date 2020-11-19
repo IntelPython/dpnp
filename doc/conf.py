@@ -11,10 +11,17 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+
+import os
+import sys
+sys.path.insert(0, os.path.abspath('.'))
+
+import comparison_generator
+
+
+# Generate comparison table.
+with open('reference/comparison_table.rst.inc', 'w') as fd:
+    fd.write(comparison_generator.generate())
 
 
 # -- Project information -----------------------------------------------------
@@ -187,3 +194,4 @@ todo_include_todos = True
 # Napoleon settings
 napoleon_use_ivar = True
 napoleon_include_special_with_doc = True
+napoleon_custom_sections = ['limitations']

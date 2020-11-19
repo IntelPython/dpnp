@@ -1,5 +1,4 @@
 # cython: language_level=3
-# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2020, Intel Corporation
@@ -26,53 +25,55 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""
-Interface of the Discrete Fourier Transform part of the DPNP
-
-Notes
------
-This module is a face or public interface file for the library
-it contains:
- - Interface functions
- - documentation for the functions
- - The functions parameters check
-
-"""
-
-
-import dpnp
-import numpy
-
-from dpnp.dparray import dparray
-from dpnp.dpnp_utils import *
-from dpnp.fft.dpnp_algo_fft import *
-
-
-__all__ = [
-    "fft"
-]
-
-
-def fft(x1, n=None, axis=-1, norm=None):
+def func(a, b=None, c=True):
     """
-    Compute the one-dimensional discrete Fourier Transform.
+    Short (one-line) description.
+
+    Long (perhaps multi-line) description.
+    Both short and long descriptions,
+    descriptions of input parameters and outputs 
+    maybe partially taken from baseline docstring.
+
+    Parameters
+    ----------
+    a : array_like
+        Description of the parameter `a`.
+    b : array_like, optional
+        Description of the parameter `b`.
+    c : bool, optional
+        Description of the parameter `c`.
+
+    Returns
+    -------
+    out : dparray
+        Description of the output.
+
+    Limitations
+    -----------
+    Some limitations in comparison to baseline, ex:
+    Prameters `c` is supported only with default value `True`.
+    Otherwise the functions will be executed sequentially on CPU.
 
     See Also
     --------
-    :obj:`numpy.fft.fft`
+    :obj:`numpy.func` : Short (one-line) description of the function `numpy.func`.
+    :obj:`dpnp.func2` : Short (one-line) description of the function `dpnp.func2`.
+    :obj:`dpnp.func3` : Short (one-line) description of the function `dpnp.func3`.
+
+    Notes
+    -----
+    Some notes if required.
+
+    Examples
+    --------
+    Some examples, ex:
+
+    >>> import dpnp as np
+    >>> a = np.array([0, 1, 2])
+    >>> b = np.array([2, 1, 0])
+    >>> x = np.func(a, b=b, c=True)
+    >>> [i for i in x]
+    [2, 2, 2]
 
     """
-
-    is_x1_dparray = isinstance(x1, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray and 0):
-        if n is not None:
-            pass
-        if axis != -1:
-            pass
-        if norm is not None:
-            pass
-        else:
-            return dpnp_fft(x1)
-
-    return call_origin(numpy.fft.fft, x1, n, axis, norm)
+    pass

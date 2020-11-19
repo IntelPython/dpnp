@@ -119,7 +119,7 @@ def array_equal(a1, a2, equal_nan=False):
         b: bool
             Returns True if the arrays are equal.
 
-    .. seealso:: :func:`numpy.allclose` :func:`numpy.array_equiv`
+    .. seealso:: :obj:`numpy.allclose` :obj:`numpy.array_equiv`
 
     """
 
@@ -155,7 +155,7 @@ def matmul(in_array1, in_array2, out=None):
     the `@` operator introduced in Python 3.5 following PEP465.
 
     The main difference against dpnp.dot are the handling of arrays with more
-    than 2 dimensions. For more information see :func:`numpy.matmul`.
+    than 2 dimensions. For more information see :obj:`numpy.matmul`.
 
     .. note::
         The out array as input is currently not supported.
@@ -168,7 +168,7 @@ def matmul(in_array1, in_array2, out=None):
     Returns:
         dpnp.dparray: Output array.
 
-    .. seealso:: :func:`numpy.matmul`
+    .. seealso:: :obj:`numpy.matmul`
 
     """
 

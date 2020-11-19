@@ -47,6 +47,7 @@ Numerical ranges
    dpnp.arange
    dpnp.linspace
    dpnp.logspace
+   dpnp.geomspace
    dpnp.meshgrid
    dpnp.mgrid
    dpnp.ogrid

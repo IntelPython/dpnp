@@ -45,6 +45,85 @@ import numpy
 cimport numpy
 
 cimport dpnp.dpnp_utils as utils
+cimport dpctl as c_dpctl
+cimport dpctl.memory as c_dpctl_mem
+import dpctl
+
+cdef class _ArrayInterfaceData:
+    cdef int nd
+    cdef char * pointer
+    cdef Py_ssize_t itemsize
+    cdef int writeable
+    cdef tuple shape
+    cdef tuple strides
+    cdef object dtype
+    cdef c_dpctl.SyclQueue queue
+
+    @staticmethod
+    cdef _ArrayInterfaceData parse_sycl_usm_array_interface(object memory):
+        cdef dict iface
+        cdef _ArrayInterfaceData res_iface
+        cdef sycl_ctx
+        cdef char * iface_pointer
+        
+        if not hasattr(memory, "__sycl_usm_array_interface__"):
+            raise TypeError("Memory object does not expose __sycl_usm_array_interface__")
+        iface = memory.__sycl_usm_array_interface__
+        iface_ver = iface['version']
+        if (iface_ver != 1):
+            raise TypeError("Memory object exposes __sycl_usm_array_interface__ of version {}, version 1 is expected".format(iface_ver))
+        data_obj = iface.get('data', None)
+        if (not isinstance(data_obj, (tuple, list)) or len(data_obj) != 2):
+            raise TypeError("'data' entries in __sycl_usm_array_interface__ dictionary is not a tuple of length 2")
+        
+        iface_pointer = <char *>(<Py_ssize_t>data_obj[0]);
+        writeable = (<int>data_obj[1])
+        typestr = iface.get('typestr')
+        dtype = numpy.dtype(typestr)
+        if (dtype.kind == 'V'): # follow NumPy here
+            typedescr = iface.get('descr', None)
+            dtype = numpy.dtype((typestr, typedescr))
+        shape = iface['shape']
+        if not isinstance(shape, (list, tuple)):
+            raise TypeError("'shape' entry in __sycl_usm_array_interface__ dictionary is not a list or a tuple")
+        nd = len(shape)
+        strides = iface.get('strides', None)
+        if (strides is not None):
+            if not isinstance(strides, (list, tuple)) or len(strides) != nd or nd == 0:
+                raise TypeError("'shape' entry in __sycl_usm_array_interface__ dictionary is not a list or a tuple")
+            
+        offsets = iface.get('offsets', 0)
+        syclobj = iface.get('syclobj')
+        if not isinstance(syclobj, (dpctl.SyclQueue, dpctl.SyclContext)):
+            raise TypeError("'syclobj' entry in __sycl_usm_array_interface__ dictionary is not "
+                            "dpctl.SyclQueue or dpctl.SyclContext")
+        if isinstance(syclobj, dpctl.SyclQueue):
+            iface_queue = <c_dpctl.SyclQueue> syclobj
+            usm_type = c_dpctl_mem._Memory.get_pointer_type(
+                <c_dpctl.DPPLSyclUSMRef>iface_pointer, iface_queue.get_sycl_context())
+            if (usm_type != b'shared'):
+                raise TypeError("Expecting USM shared memory.")
+        else:
+            # Obtain device from pointer and context
+            sycl_ctx = <c_dpctl.SyclContext> syclobj
+            sycl_dev = c_dpctl_mem._Memory.get_pointer_device(<c_dpctl.DPPLSyclUSMRef>iface_pointer, ctx)
+            usm_type = c_dpctl_mem._Memory.get_pointer_type(<c_dpctl.DPPLSyclUSMRef>iface_pointer, ctx)
+            if (usm_type != b'shared'):
+                raise TypeError("Expecting USM shared memory.")
+            # Use context and device to create a queue to
+            # be able to copy memory
+            iface_queue = c_dpcl.SyclQueue._create_from_context_and_device(sycl_ctx, sycl_dev)
+
+
+        res_iface = _ArrayInterfaceData.__new__(_ArrayInterfaceData)
+        res_iface.pointer = iface_pointer
+        res_iface.writeable = writeable
+        res_iface.dtype = dtype
+        res_iface.itemsize = dtype.itemsize
+        res_iface.nd = nd
+        res_iface.queue = iface_queue
+
+        return res_iface
 
 
 # initially copied from original
@@ -92,13 +171,13 @@ cdef class dparray:
     """Multi-dimensional array using USM interface for an Intel GPU device.
 
     This class implements a subset of methods of :class:`numpy.ndarray`.
-    The difference is that this class allocates the array content useing
+    The difference is that this class allocates the array content using
     USM interface on the current GPU device.
 
     Args:
         shape (tuple of ints): Length of axes.
         dtype: Data type. It must be an argument of :class:`numpy.dtype`.
-        memptr (char *): Pointer to the array content head.
+        memory: Python object exposing `__sycl_usm_array_interface__`` or None.
         strides (tuple of ints or None): Strides of data in memory.
         order ({'C', 'F'}): Row-major (C-style) or column-major (Fortran-style) order.
 
@@ -118,9 +197,10 @@ cdef class dparray:
 
     """
 
-    def __init__(self, shape, dtype=float64, memptr=None, strides=None, order=b'C'):
+    def __init__(self, shape, dtype=float64, memory=None, strides=None, order=b'C'):
         cdef Py_ssize_t shape_it = 0
         cdef Py_ssize_t strides_it = 0
+        cdef _ArrayInterfaceData iface_parsed
 
         if order != b'C':
             order = utils._normalize_order(order)
@@ -154,17 +234,27 @@ cdef class dparray:
             self._dparray_strides.push_back(strides_it)
 
         # data
-        if memptr is None:
+        if memory is None:
             self._dparray_data = dpnp_memory_alloc_c(self.nbytes)
+            self.queue = c_dpctl.get_current_queue()
+            self.base = None
         else:
-            self._dparray_data = memptr
+            iface_parsed = _ArrayInterfaceData.parse_sycl_usm_array_interface(memory)
+            if iface_parsed:
+                self._dparray_data = iface_parsed.pointer
+                self.queue = iface_parsed.queue
+                self.base = memory
+            
 
     def __dealloc__(self):
         """ Release owned memory
 
         """
 
-        dpnp_memory_free_c(self._dparray_data)
+        if (self.base is None):
+            dpnp_memory_free_c(self._dparray_data)
+        self.base = None
+
 
     def __repr__(self):
         """ Output information about the array to standard output
@@ -198,6 +288,7 @@ cdef class dparray:
 
         return "<__str__ TODO>"
 
+    
     # The definition order of attributes and methods are borrowed from the
     # order of documentation at the following NumPy document.
     # https://docs.scipy.org/doc/numpy/reference/arrays.ndarray.html
@@ -322,6 +413,25 @@ cdef class dparray:
 
         return interface_dict
 
+
+    @property
+    def __sycl_usm_array_interface__(self):
+        iface = {
+            "data": (<Py_ssize_t>(<void *>self._dparray_data), False),
+            "shape": self.shape,
+            "strides": self.strides,
+            "typestr": (lambda dt: dt.byteorder + dt.kind + str(dt.itemsize))(self._dparray_dtype),
+            "version": 1,
+            "syclobj": self.queue
+        }
+        return iface
+
+
+    @property
+    def _queue(self):
+        return self.queue
+
+    
     def __iter__(self):
         self.iter_idx = 0
 
@@ -459,7 +569,7 @@ cdef class dparray:
 
         See Also
         --------
-        ravel, flat
+        :obj:`dpnp.ravel`, :obj:`dpnp.flat`
 
         """
 
@@ -510,7 +620,7 @@ cdef class dparray:
 
         See Also
         --------
-        ravel, flat
+        :obj:`dpnp.ravel`, :obj:`dpnp.flat`
 
         """
         # TODO: don't copy the input array
@@ -554,7 +664,7 @@ cdef class dparray:
         """ Repeat elements of an array.
 
         .. seealso::
-           :func:`dpnp.repeat` for full documentation,
+           :obj:`dpnp.repeat` for full documentation,
            :meth:`numpy.ndarray.repeat`
 
         """
@@ -564,7 +674,7 @@ cdef class dparray:
         """ Returns the variance of the array elements, along given axis.
 
         .. seealso::
-           :func:`dpnp.var` for full documentation,
+           :obj:`dpnp.var` for full documentation,
 
         """
         return std(self, axis, dtype, out, ddof, keepdims)
@@ -573,7 +683,7 @@ cdef class dparray:
         """ Returns a view of the array with axes permuted.
 
         .. seealso::
-           :func:`dpnp.transpose` for full documentation,
+           :obj:`dpnp.transpose` for full documentation,
            :meth:`numpy.ndarray.reshape`
 
         """
@@ -590,8 +700,8 @@ cdef class dparray:
 
         See Also
         --------
-        numpy.ndarray.var : corresponding function for ndarrays
-        numpy.var : Equivalent function
+        :obj:`numpy.ndarray.var` : corresponding function for ndarrays
+        :obj:`numpy.var` : Equivalent function
         """
         return var(self, axis, dtype, out, ddof, keepdims)
 
@@ -748,7 +858,7 @@ cdef class dparray:
         Returns the sum along a given axis.
 
         .. seealso::
-           :func:`dpnp.sum` for full documentation,
+           :obj:`dpnp.sum` for full documentation,
            :meth:`dpnp.dparray.sum`
 
         """
@@ -816,8 +926,8 @@ cdef class dparray:
         See Also
         --------
         MaskedArray.sort : Describes sorting algorithms used.
-        lexsort : Indirect stable sort with multiple keys.
-        numpy.ndarray.sort : Inplace sort.
+        :obj:`dpnp.lexsort` : Indirect stable sort with multiple keys.
+        :obj:`numpy.ndarray.sort` : Inplace sort.
 
         Notes
         -----
@@ -851,10 +961,10 @@ cdef class dparray:
 
         See Also
         --------
-        numpy.ndarray.sort : Method to sort an array in-place.
-        argsort : Indirect sort.
-        lexsort : Indirect stable sort on multiple keys.
-        searchsorted : Find elements in a sorted array.
+        :obj:`numpy.ndarray.sort` : Method to sort an array in-place.
+        :obj:`dpnp.argsort` : Indirect sort.
+        :obj:`dpnp.lexsort` : Indirect stable sort on multiple keys.
+        :obj:`dpnp.searchsorted` : Find elements in a sorted array.
 
         Notes
         -----
@@ -936,7 +1046,7 @@ cdef class dparray:
 
         See Also
         --------
-        numpy.all : equivalent function
+        :obj:`numpy.all` : equivalent function
 
         """
 
@@ -950,7 +1060,7 @@ cdef class dparray:
 
         See Also
         --------
-        numpy.any : equivalent function
+        :obj:`numpy.any` : equivalent function
 
         """
 
