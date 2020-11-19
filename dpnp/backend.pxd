@@ -102,6 +102,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_RNG_GUMBEL
         DPNP_FN_RNG_LAPLACE
         DPNP_FN_RNG_LOGNORMAL
+        DPNP_FN_RNG_MULTINOMIAL
         DPNP_FN_RNG_NEGATIVE_BINOMIAL
         DPNP_FN_RNG_POISSON
         DPNP_FN_RNG_RAYLEIGH

@@ -28,6 +28,8 @@
 #include "backend_utils.hpp"
 #include "queue_sycl.hpp"
 
+#include <vector>
+
 namespace mkl_rng = oneapi::mkl::rng;
 
 template <typename _DataType>
@@ -198,6 +200,24 @@ void custom_rng_lognormal_c(void* result, _DataType mean, _DataType stddev, size
 }
 
 template <typename _DataType>
+void custom_rng_multinomial_c(void* result, int ntrial, void* p_src, int p_size, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+    double* p_src1 = reinterpret_cast<double*>(p_src);
+
+    std::vector<double> p(p_src1, p_src1 + p_size);
+
+    mkl_rng::multinomial<_DataType> distribution(ntrial, p);
+    // perform generation
+    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+    event_out.wait();
+}
+
+template <typename _DataType>
 void custom_rng_negative_binomial_c(void* result, double a, double p, size_t size)
 {
     if (!size)
@@ -347,6 +367,8 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_RNG_LAPLACE][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_laplace_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_LOGNORMAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_lognormal_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_MULTINOMIAL][eft_INT][eft_INT] = {eft_INT, (void*)custom_rng_multinomial_c<int>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_NEGATIVE_BINOMIAL][eft_INT][eft_INT] = {eft_INT, (void*)custom_rng_negative_binomial_c<int>};
 

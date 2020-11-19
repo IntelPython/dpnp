@@ -54,6 +54,7 @@ __all__ = [
     'gumbel',
     'laplace',
     'lognormal',
+    'multinomial',
     'negative_binomial',
     'poisson',
     'rand',
@@ -683,6 +684,29 @@ def lognormal(mean=0.0, sigma=1.0, size=None):
         return dpnp_lognormal(mean, sigma, size)
 
     return call_origin(numpy.random.lognormal, mean, sigma, size)
+
+
+def multinomial(n, pvals, size=None):
+    """Multinomial distribution.
+
+    """
+
+    if not use_origin_backend(n) and dpnp_queue_is_cpu():
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("multinomial", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("multinomial", "type(size)", type(size), int)
+
+        if n < 0:
+            checker_throw_value_error("multinomial", "n", n, "non-negative")
+
+        return dpnp_multinomial(int(n), pvals, size)
+
+    return call_origin(numpy.random.multinomial, n, pvals, size)
 
 
 def negative_binomial(n, p, size=None):
