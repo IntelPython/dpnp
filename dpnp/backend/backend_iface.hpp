@@ -643,6 +643,20 @@ INP_DLLEXPORT void custom_rng_gaussian_c(void* result, _DataType mean, _DataType
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (standard gamma distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ *
+ * @param [in]  shape  Shape value.
+ *
+ * @param [out] result Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_rng_standard_gamma_c(void* result, _DataType shape, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of random number generator (uniform distribution)
  *
  * @param [in]  low    Left bound of array values.

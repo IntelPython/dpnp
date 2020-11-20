@@ -266,6 +266,20 @@ void custom_rng_standard_cauchy_c(void* result, size_t size)
 }
 
 template <typename _DataType>
+void custom_rng_standard_gamma_c(void* result, _DataType shape, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+
+    const _DataType scale = _DataType(1.0);
+
+    custom_rng_gamma_c(result, shape, scale, size);
+
+}
+
+template <typename _DataType>
 void custom_rng_standard_normal_c(void* result, size_t size)
 {
     if (!size)
@@ -355,6 +369,8 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_RNG_RAYLEIGH][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_rayleigh_c<double>};
   
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_CAUCHY][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_standard_cauchy_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_GAMMA][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_standard_gamma_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_NORMAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_standard_normal_c<double>};
 
