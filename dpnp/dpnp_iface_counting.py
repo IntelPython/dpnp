@@ -53,28 +53,17 @@ __all__ = [
 
 def count_nonzero(in_array1, axis=None, *, keepdims=False):
     """
-    Counts the number of non-zero values in the array ``a``.
-
-    The word "non-zero" is in reference to the Python 2.x
-    built-in method ``__nonzero__()`` (renamed ``__bool__()``
-    in Python 3.x) of Python objects that tests an object's
-    "truthfulness". For example, any number is considered
-    truthful if it is nonzero, whereas any string is considered
-    truthful if it is not the empty string. Thus, this function
-    (recursively) counts how many elements in ``a`` (and in
-    sub-arrays thereof) have their ``__nonzero__()`` or ``__bool__()``
-    method evaluated to ``True``.
+    Counts the number of non-zero values in the array ``in_array1``.
 
     Parameters
     ----------
     a : array_like
-        The array for which to count non-zeros.
+        Input data. The array for which to count non-zeros.
     axis : int or tuple, optional
         Axis or tuple of axes along which to count non-zeros.
-        Default is None, meaning that non-zeros will be counted
-        along a flattened version of ``a``.
-
-        .. versionadded:: 1.12.0
+    keepdims : bool, optional
+        If this is set to `True`, the axes that are counted
+        are left in the result as dimensions with size one. 
 
     Returns
     -------
@@ -83,20 +72,22 @@ def count_nonzero(in_array1, axis=None, *, keepdims=False):
         Otherwise, the total number of non-zero values in the array
         is returned.
 
-    See Also
-    --------
-    :obj:`numpy.count_nonzero`
+    Limitations
+    -----------
+        Parameter ``in_array1`` is supported as :obj:`dpnp.ndarray`.
+        Parameter ``axis`` is supported only with default value `None`.
+        Parameter ``keepdims`` is supported only with default value `False`.
+        Otherwise the functions will be executed sequentially on CPU.
+
+    .. seealso:: :obj:`numpy.count_nonzero`
 
     Examples
     --------
-    >>> np.count_nonzero(np.eye(4))
-    4
-    >>> np.count_nonzero([[0,1,7,0,0],[3,0,0,2,19]])
+    >>> import dpnp as np
+    >>> np.count_nonzero(np.array([1, 0, 3, 0, 5])
+    3
+    >>> np.count_nonzero(np.array([[1, 0, 3, 0, 5],[0, 9, 0, 7, 0]]))
     5
-    >>> np.count_nonzero([[0,1,7,0,0],[3,0,0,2,19]], axis=0)
-    array([1, 1, 1, 1, 1])
-    >>> np.count_nonzero([[0,1,7,0,0],[3,0,0,2,19]], axis=1)
-    array([2, 3])
 
     """
 
