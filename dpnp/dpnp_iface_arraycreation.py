@@ -379,13 +379,13 @@ def full(shape, fill_value, dtype=None, order='C'):
 
 
 # numpy.full_like(a, fill_value, dtype=None, order='K', subok=True, shape=None)
-def full_like(a, fill_value, dtype=None, order='C', subok=False, shape=None):
+def full_like(x1, fill_value, dtype=None, order='C', subok=False, shape=None):
     """
     Return a full array with the same shape and type as a given array.
 
     Parameters
     ----------
-    a : array_like
+    x1 : array_like
         Base array.
     fill_value : scalar
         Fill value.
@@ -395,14 +395,14 @@ def full_like(a, fill_value, dtype=None, order='C', subok=False, shape=None):
         Overrides the memory layout of the result.
     subok : bool, optional.
         If True, then the newly created array will use the sub-class
-        type of 'a', otherwise it will be a base-class array.
+        type of `x1`, otherwise it will be a base-class array.
     shape : int or sequence of ints, optional.
         Overrides the shape of the result.
 
     Returns
     -------
     out : :obj:`dpnp.ndarray`
-        Array of `fill_value` with the same shape and type as `a`.
+        Array of `fill_value` with the same shape and type as `x1`.
 
     Limitations
     -----------
@@ -433,12 +433,12 @@ def full_like(a, fill_value, dtype=None, order='C', subok=False, shape=None):
         if subok is not False:
             checker_throw_value_error("full_like", "subok", subok, False)
 
-        _shape = shape if shape is not None else a.shape
-        _dtype = dtype if dtype is not None else a.dtype
+        _shape = shape if shape is not None else x1.shape
+        _dtype = dtype if dtype is not None else x1.dtype
 
         return dpnp_init_val(_shape, _dtype, fill_value)
 
-    return numpy.full_like(a, fill_value, dtype, order, subok, shape)
+    return numpy.full_like(x1, fill_value, dtype, order, subok, shape)
 
 
 def geomspace(start, stop, num=50, endpoint=True, dtype=None, axis=0):
