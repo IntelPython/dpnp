@@ -25,6 +25,48 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+"""
+This is template that should be used when writing docstrings in the project.
+
+According to this template docstrings should consist of below sections:
+1. Short description.
+2. Long description, optional.
+3. Parameters.
+4. Returns.
+5. Limitations is a special section that should describe:
+   - the limited functionality relative to `numpy` (exception raised)
+   - cases when the functionality will be executed sequentially on CPU
+     (fallback to `numpy`)
+6. See Also
+7. Notes, optional
+8. Examples
+
+Recommendations:
+1. Short/Long descriptions, parameters, returns and notes
+   maybe partially taken/combinated from `numpy` and `cupy` docstrings.
+2. Limitations basically should be described according to the code,
+   paying attention to raised exceptions and fallback to `numpy`.
+3. See Also should include link to related functionality in `numpy` and
+   optionally links to similar functionality in `dpnp` with short description.
+   In case of only one link better to use one-line section:
+   .. seealso:: :func:`numpy.func`
+4. Examples maybe partially taken from `numpy` docstrings
+   with some modifications, ex:
+
+   >>> import dpnp as np
+   >>> a = np.array([0, 1, 2])
+   >>> a  # prints strange result <DPNP DParray:...
+
+   So the array may be printed through iterating:
+
+   >>> [i for i in a]
+   [0, 1, 2]
+
+`dpnp.array` contains a good example of docstring. 
+
+"""
+
+
 def func(a, b=None, c=True):
     """
     Short (one-line) description.
