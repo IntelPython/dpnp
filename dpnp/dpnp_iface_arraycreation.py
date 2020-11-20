@@ -458,9 +458,6 @@ def geomspace(start, stop, num=50, endpoint=True, dtype=None, axis=0):
     This is similar to `logspace`, but with endpoints specified directly.
     Each output sample is a constant multiple of the previous.
 
-    .. versionchanged:: 1.16.0
-        Non-scalar `start` and `stop` are now supported.
-
     Parameters
     ----------
     start : array_like
@@ -471,33 +468,44 @@ def geomspace(start, stop, num=50, endpoint=True, dtype=None, axis=0):
         interval in log-space, of which all but the last (a sequence of
         length `num`) are returned.
     num : integer, optional
-        Number of samples to generate.  Default is 50.
+        Number of samples to generate. Default is 50.
     endpoint : boolean, optional
         If true, `stop` is the last sample. Otherwise, it is not included.
         Default is True.
     dtype : dtype
-        The type of the output array.  If `dtype` is not given, infer the data
-        type from the other input arguments.
+        The type of the output array.
     axis : int, optional
-        The axis in the result to store the samples.  Relevant only if start
-        or stop are array-like.  By default (0), the samples will be along a
-        new axis inserted at the beginning. Use -1 to get an axis at the end.
-
-        .. versionadded:: 1.16.0
+        The axis in the result to store the samples.
 
     Returns
     -------
-    samples : ndarray
+    samples : :obj:`dpnp.ndarray`
         `num` samples, equally spaced on a log scale.
+
+    Limitations
+    -----------
+    Parameter ``axis`` is supported only with default value `0`.
 
     See Also
     --------
+    :obj:`numpy.geomspace` : Return numbers spaced evenly on a log scale
+                             (a geometric progression).
     :obj:`dpnp.logspace` : Similar to geomspace, but with endpoints specified
                            using log and base.
     :obj:`dpnp.linspace` : Similar to geomspace, but with arithmetic instead of
                            geometric progression.
     :obj:`dpnp.arange` : Similar to linspace, with the step size specified
                          instead of the number of samples.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.geomspace(1, 1000, num=4)
+    >>> [i for i in x]
+    [1.0, 10.0, 100.0, 1000.0]
+    >>> x2 = np.geomspace(1, 1000, num=4, endpoint=False)
+    >>> [i for i in x2]
+    [1.0, 5.62341325, 31.6227766, 177.827941]
 
     """
 
@@ -519,9 +527,6 @@ def linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis
 
     The endpoint of the interval can optionally be excluded.
 
-    .. versionchanged:: 1.16.0
-        Non-scalar `start` and `stop` are now supported.
-
     Parameters
     ----------
     start : array_like
@@ -540,38 +545,47 @@ def linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis
         If True, return (`samples`, `step`), where `step` is the spacing
         between samples.
     dtype : dtype, optional
-        The type of the output array.  If `dtype` is not given, infer the data
-        type from the other input arguments.
-
-        .. versionadded:: 1.9.0
-
+        The type of the output array.
     axis : int, optional
-        The axis in the result to store the samples.  Relevant only if start
-        or stop are array-like.  By default (0), the samples will be along a
-        new axis inserted at the beginning. Use -1 to get an axis at the end.
-
-        .. versionadded:: 1.16.0
+        The axis in the result to store the samples.
 
     Returns
     -------
-    samples : ndarray
+    samples : :obj:`dpnp.ndarray`
         There are `num` equally spaced samples in the closed interval
         ``[start, stop]`` or the half-open interval ``[start, stop)``
         (depending on whether `endpoint` is True or False).
     step : float, optional
-        Only returned if `retstep` is True
-
+        Only returned if `retstep` is True.
         Size of spacing between samples.
 
+    Limitations
+    -----------
+    Parameter ``axis`` is supported only with default value `0`.
 
     See Also
     --------
+    :obj:`numpy.linspace` : Return evenly spaced numbers over a specified interval.
     :obj:`dpnp.arange` : Similar to `linspace`, but uses a step size (instead
                          of the number of samples).
     :obj:`dpnp.geomspace` : Similar to `linspace`, but with numbers spaced
                             evenly on a log scale (a geometric progression).
     :obj:`dpnp.logspace` : Similar to `geomspace`, but with the end points
                            specified as logarithms.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.linspace(2.0, 3.0, num=5)
+    >>> [i for i in x]
+    [2.0, 2.25, 2.5, 2.75, 3.0]
+    >>> x2 = np.linspace(2.0, 3.0, num=5, endpoint=False)
+    >>> [i for i in x2]
+    [2.0, 2.2, 2.4, 2.6, 2.8]
+    >>> x3, step = np.linspace(2.0, 3.0, num=5, retstep=True)
+    >>> [i for i in x3], step
+    ([2.0, 2.25, 2.5, 2.75, 3.0], 0.25)
+
     """
 
     if not use_origin_backend():
@@ -596,9 +610,6 @@ def logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0):
     (`base` to the power of `start`) and ends with ``base ** stop``
     (see `endpoint` below).
 
-    .. versionchanged:: 1.16.0
-        Non-scalar `start` and `stop` are now supported.
-
     Parameters
     ----------
     start : array_like
@@ -609,7 +620,7 @@ def logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0):
         interval in log-space, of which all but the last (a sequence of
         length `num`) are returned.
     num : integer, optional
-        Number of samples to generate.  Default is 50.
+        Number of samples to generate. Default is 50.
     endpoint : boolean, optional
         If true, `stop` is the last sample. Otherwise, it is not included.
         Default is True.
@@ -618,23 +629,22 @@ def logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0):
         ``ln(samples) / ln(base)`` (or ``log_base(samples)``) is uniform.
         Default is 10.0.
     dtype : dtype
-        The type of the output array.  If `dtype` is not given, infer the data
-        type from the other input arguments.
+        The type of the output array.
     axis : int, optional
-        The axis in the result to store the samples.  Relevant only if start
-        or stop are array-like.  By default (0), the samples will be along a
-        new axis inserted at the beginning. Use -1 to get an axis at the end.
-
-        .. versionadded:: 1.16.0
-
+        The axis in the result to store the samples.
 
     Returns
     -------
-    samples : ndarray
+    samples : :obj:`dpnp.ndarray`
         `num` samples, equally spaced on a log scale.
+
+    Limitations
+    -----------
+    Parameter ``axis`` is supported only with default value `0`.
 
     See Also
     --------
+    :obj:`numpy.logspace` : Return numbers spaced evenly on a log scale.
     :obj:`dpnp.arange` : Similar to linspace, with the step size specified
                          instead of the number of samples. Note that, when used
                          with a float endpoint, the endpoint may or may not be
@@ -643,6 +653,20 @@ def logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0):
                           distributed in linear space, instead of log space.
     :obj:`dpnp.geomspace` : Similar to logspace, but with endpoints specified
                             directly.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.logspace(2.0, 3.0, num=4)
+    >>> [i for i in x]
+    [100.0, 215.443469, 464.15888336, 1000.0]
+    >>> x2 = np.logspace(2.0, 3.0, num=4, endpoint=False)
+    >>> [i for i in x2]
+    [100.0, 177.827941, 316.22776602, 562.34132519]
+    >>> x3 = np.logspace(2.0, 3.0, num=4, base=2.0)
+    >>> [i for i in x3]
+    [4.0, 5.0396842, 6.34960421, 8.0]
+
     """
 
     if not use_origin_backend():
