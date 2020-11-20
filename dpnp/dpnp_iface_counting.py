@@ -57,7 +57,7 @@ def count_nonzero(in_array1, axis=None, *, keepdims=False):
 
     Parameters
     ----------
-    a : array_like
+    in_array1 : array_like
         Input data. The array for which to count non-zeros.
     axis : int or tuple, optional
         Axis or tuple of axes along which to count non-zeros.
@@ -75,10 +75,10 @@ def count_nonzero(in_array1, axis=None, *, keepdims=False):
     Limitations
     -----------
         Parameter ``in_array1`` is supported as :obj:`dpnp.ndarray`.
+        Otherwise the function will be executed sequentially on CPU.
         Parameter ``axis`` is supported only with default value `None`.
         Parameter ``keepdims`` is supported only with default value `False`.
-        Otherwise the functions will be executed sequentially on CPU.
-
+        
     .. seealso:: :obj:`numpy.count_nonzero`
 
     Examples
