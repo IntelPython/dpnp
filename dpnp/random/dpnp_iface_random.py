@@ -47,6 +47,7 @@ from dpnp.random._random import *
 __all__ = [
     'beta',
     'binomial',
+    'bytes',
     'chisquare',
     'exponential',
     'gamma',
@@ -231,6 +232,17 @@ def binomial(n, p, size=None):
         return dpnp_binomial(int(n), p, size)
 
     return call_origin(numpy.random.binomial, n, p, size)
+
+
+def bytes(length):
+    """Bytes
+
+    """
+
+    if not use_origin_backend(length):
+        return dpnp_bytes(int(length))
+
+    return call_origin(numpy.random.bytes, length)
 
 
 def geometric(p, size=None):

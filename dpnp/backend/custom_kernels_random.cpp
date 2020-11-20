@@ -66,6 +66,21 @@ void custom_rng_binomial_c(void* result, int ntrial, double p, size_t size)
 }
 
 template <typename _DataType>
+void custom_rng_bytes_c(void* result, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    mkl_rng::bits<_DataType> distribution(size);
+    // perform generation
+    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+    event_out.wait();
+}
+
+template <typename _DataType>
 void custom_rng_chi_square_c(void* result, int df, size_t size)
 {
     if (!size)
@@ -327,6 +342,8 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_RNG_BETA][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_rng_beta_c<float>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_BINOMIAL][eft_INT][eft_INT] = {eft_INT, (void*)custom_rng_binomial_c<int>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_BYTES][eft_INT][eft_INT] = {eft_INT, (void*)custom_rng_bytes_c<int>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_CHISQUARE][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_chi_square_c<double>};
     fmap[DPNPFuncName::DPNP_FN_RNG_CHISQUARE][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_rng_chi_square_c<float>};
