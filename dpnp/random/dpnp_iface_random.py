@@ -67,6 +67,7 @@ __all__ = [
     'sample',
     'seed',
     'standard_cauchy',
+    'standard_exponential',
     'standard_normal',
     'uniform',
     'weibull'
@@ -1241,6 +1242,26 @@ def standard_cauchy(size=None):
         return dpnp_standard_cauchy(size)
 
     return call_origin(numpy.random.standard_cauchy, size)
+
+
+def standard_exponential(size=None):
+    """Standard exponential distribution.
+
+    """
+
+    if not use_origin_backend(size):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("standard_exponential", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("standard_exponential", "type(size)", type(size), int)
+
+        return dpnp_standard_exponential(size)
+
+    return call_origin(numpy.random.standard_exponential, size)
 
 
 def standard_normal(size=None):
