@@ -643,6 +643,24 @@ INP_DLLEXPORT void custom_rng_gaussian_c(void* result, _DataType mean, _DataType
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (hypergeometric distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ *
+ * @param [in]  l      Lot size of l.
+ *
+ * @param [in]  s      Size of sampling without replacement.
+ *
+ * @param [in]  m      Number of marked elements m.
+ *
+ * @param [out] result Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_rng_hypergeometric_c(void* result, int l, int s, int m, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of random number generator (uniform distribution)
  *
  * @param [in]  low    Left bound of array values.
