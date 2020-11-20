@@ -627,6 +627,82 @@ INP_DLLEXPORT void custom_elemwise_transpose_c(void* array1_in,
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (beta distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ *
+ * @param [in]  a      Alpha, shape param.
+ *
+ * @param [in]  b      Beta, scalefactor.
+ *
+ * @param [out] result Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_rng_beta_c(void* result, _DataType a, _DataType b, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (binomial distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ *
+ * @param [in]  ntrial Number of independent trials.
+ *
+ * @param [in]  p      Success probability p of a single trial.
+ *
+ * @param [out] result Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_rng_binomial_c(void* result, int ntrial, double p, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (chi-square distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ *
+ * @param [in]  df     Degrees of freedom.
+ *
+ * @param [out] result Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_rng_chi_square_c(void* result, int df, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (exponential distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ *
+ * @param [in]  beta   Beta, scalefactor.
+ *
+ * @param [out] result Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_rng_exponential_c(void* result, _DataType beta, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (gamma distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ *
+ * @param [in]  shape  The shape of the gamma distribution.
+ *
+ * @param [in]  scale  The scale of the gamma distribution.
+ *
+ * @param [out] result Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_rng_gamma_c(void* result, _DataType shape, _DataType scale, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of random number generator (gaussian continious distribution)
  *
  * @param [in]  size   Number of elements in `result` arrays.
@@ -643,6 +719,136 @@ INP_DLLEXPORT void custom_rng_gaussian_c(void* result, _DataType mean, _DataType
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (geometric distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ *
+ * @param [in]  p      Success probability p of a trial.
+ *
+ * @param [out] result Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_rng_geometric_c(void* result, float p, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (gumbel distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ *
+ * @param [in]  loc    The location of the mode of the distribution.
+ *
+ * @param [in]  scale  The scale parameter of the distribution.
+ *
+ * @param [out] result Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_rng_gumbel_c(void* result, double loc, double scale, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (laplace distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ *
+ * @param [in]  loc    The position of the distribution peak.
+ *
+ * @param [in]  scale  The exponential decay.
+ *
+ * @param [out] result Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_rng_laplace_c(void* result, double loc, double scale, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (lognormal distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ *
+ * @param [in]  mean   Mean value.
+ *
+ * @param [in]  stddev Standard deviation.
+ *
+ * @param [out] result Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_rng_lognormal_c(void* result, _DataType mean, _DataType stddev, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (negative binomial distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ *
+ * @param [in]  a      The first distribution parameter a, > 0.
+ *
+ * @param [in]  p      The second distribution parameter p, >= 0 and <=1.
+ *
+ * @param [out] result Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_rng_negative_binomial_c(void* result, double a, double p, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (poisson distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ *
+ * @param [in]  lambda Distribution parameter lambda.
+ *
+ * @param [out] result Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_rng_poisson_c(void* result, double lambda, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (rayleigh distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ *
+ * @param [in]  scale  Distribution parameter, scalefactor.
+ *
+ * @param [out] result Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_rng_rayleigh_c(void* result, _DataType scale, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (standard cauchy distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ *
+ * @param [out] result Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_rng_standard_cauchy_c(void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (standard normal distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ *
+ * @param [out] result Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_rng_standard_normal_c(void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of random number generator (uniform distribution)
  *
  * @param [in]  low    Left bound of array values.
@@ -656,6 +862,20 @@ INP_DLLEXPORT void custom_rng_gaussian_c(void* result, _DataType mean, _DataType
  */
 template <typename _DataType>
 INP_DLLEXPORT void custom_rng_uniform_c(void* result, long low, long high, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (weibull distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ *
+ * @param [in]  alpha  Shape parameter of the distribution, alpha.
+ *
+ * @param [out] result Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_rng_weibull_c(void* result, double alpha, size_t size);
 
 /**
  * @ingroup BACKEND_API
