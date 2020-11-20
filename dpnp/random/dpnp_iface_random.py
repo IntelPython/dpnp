@@ -55,6 +55,7 @@ __all__ = [
     'laplace',
     'lognormal',
     'negative_binomial',
+    'normal',
     'poisson',
     'rand',
     'ranf',
@@ -774,6 +775,91 @@ def negative_binomial(n, p, size=None):
         return dpnp_negative_binomial(n, p, size)
 
     return call_origin(numpy.random.negative_binomial, n, p, size)
+
+
+def normal(loc=0.0, scale=1.0, size=None):
+    """Normal distribution.
+
+    Draw random samples from a normal (Gaussian) distribution.
+
+    The probability density function of the normal distribution, first
+    derived by De Moivre and 200 years later by both Gauss and Laplace
+    independently [2]_, is often called the bell curve because of
+    its characteristic shape (see the example below).
+
+    The normal distributions occurs often in nature.  For example, it
+    describes the commonly occurring distribution of samples influenced
+    by a large number of tiny, random disturbances, each with its own
+    unique distribution [2]_.
+
+    Parameters
+    ----------
+    loc : float
+        Mean ("centre") of the distribution.
+    scale : float
+        Standard deviation (spread or "width") of the distribution. Must be
+        non-negative.
+    size : int or tuple of ints, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
+        a single value is returned if ``loc`` and ``scale`` are both scalars.
+
+    Returns
+    -------
+    out : dparray
+        Drawn samples from the parameterized normal distribution.
+
+    Notes
+    -----
+    The probability density for the Gaussian distribution is
+
+    .. math:: p(x) = \\frac{1}{\\sqrt{ 2 \\pi \\sigma^2 }}
+                     e^{ - \\frac{ (x - \\mu)^2 } {2 \\sigma^2} },
+
+    where :math:`\\mu` is the mean and :math:`\\sigma` the standard
+    deviation. The square of the standard deviation, :math:`\\sigma^2`,
+    is called the variance.
+
+    The function has its peak at the mean, and its "spread" increases with
+    the standard deviation (the function reaches 0.607 times its maximum at
+    :math:`x + \\sigma` and :math:`x - \\sigma` [2]_).  This implies that
+    normal is more likely to return samples lying close to the mean, rather
+    than those far away.
+
+    References
+    ----------
+    .. [1] Wikipedia, "Normal distribution",
+           https://en.wikipedia.org/wiki/Normal_distribution
+    .. [2] P. R. Peebles Jr., "Central Limit Theorem" in "Probability,
+           Random Variables and Random Signal Principles", 4th ed., 2001,
+           pp. 51, 51, 125.
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> mu, sigma = 0, 0.1 # mean and standard deviation
+    >>> s = dpnp.random.normal(mu, sigma, 1000)
+
+    """
+
+    if not use_origin_backend(loc):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("normal", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("normal", "type(size)", type(size), int)
+
+        # TODO:
+        # array_like of floats for `loc` and `scale` params
+        if scale < 0:
+            checker_throw_value_error("normal", "scale", scale, "non-negative")
+
+        return dpnp_normal(loc, scale, size)
+
+    return call_origin(numpy.random.normal, loc, scale, size)
 
 
 def poisson(lam=1.0, size=None):
