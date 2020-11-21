@@ -52,6 +52,7 @@ __all__ = [
     'gamma',
     'geometric',
     'gumbel',
+    'hypergeometric',
     'laplace',
     'lognormal',
     'negative_binomial',
@@ -548,6 +549,112 @@ def gumbel(loc=0.0, scale=1.0, size=None):
         return dpnp_gumbel(loc, scale, size)
 
     return call_origin(numpy.random.gumbel, loc, scale, size)
+
+
+def hypergeometric(ngood, nbad, nsample, size=None):
+    """Hypergeometric distribution.
+
+    Draw samples from a Hypergeometric distribution.
+
+    Samples are drawn from a hypergeometric distribution with specified
+    parameters, `ngood` (ways to make a good selection), `nbad` (ways to make
+    a bad selection), and `nsample` (number of items sampled, which is less
+    than or equal to the sum ``ngood + nbad``).
+
+    Parameters
+    ----------
+    ngood : int
+        Number of ways to make a good selection.  Must be nonnegative.
+    nbad : int
+        Number of ways to make a bad selection.  Must be nonnegative.
+    nsample : int
+        Number of items sampled.  Must be at least 1 and at most
+        ``ngood + nbad``.
+    size : int or tuple of ints, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
+        a single value is returned if `ngood`, `nbad`, and `nsample`
+        are all scalars.
+
+    Returns
+    -------
+    out : dparray
+        Drawn samples from the parameterized hypergeometric distribution. Each
+        sample is the number of good items within a randomly selected subset of
+        size `nsample` taken from a set of `ngood` good items and `nbad` bad items.
+
+    Notes
+    -----
+    The probability density for the Hypergeometric distribution is
+
+    .. math:: P(x) = \\frac{\\binom{g}{x}\\binom{b}{n-x}}{\\binom{g+b}{n}},
+
+    where :math:`0 \\le x \\le n` and :math:`n-b \\le x \\le g`
+
+    for P(x) the probability of ``x`` good results in the drawn sample,
+    g = `ngood`, b = `nbad`, and n = `nsample`.
+
+    Consider an urn with black and white marbles in it, `ngood` of them
+    are black and `nbad` are white. If you draw `nsample` balls without
+    replacement, then the hypergeometric distribution describes the
+    distribution of black balls in the drawn sample.
+
+    Note that this distribution is very similar to the binomial
+    distribution, except that in this case, samples are drawn without
+    replacement, whereas in the Binomial case samples are drawn with
+    replacement (or the sample space is infinite). As the sample space
+    becomes large, this distribution approaches the binomial.
+
+    References
+    ----------
+    .. [1] Lentner, Marvin, "Elementary Applied Statistics", Bogden
+           and Quigley, 1972.
+    .. [2] Weisstein, Eric W. "Hypergeometric Distribution." From
+           MathWorld--A Wolfram Web Resource.
+           http://mathworld.wolfram.com/HypergeometricDistribution.html
+    .. [3] Wikipedia, "Hypergeometric distribution",
+           https://en.wikipedia.org/wiki/Hypergeometric_distribution
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> ngood, nbad, nsamp = 100, 2, 10
+    # number of good, number of bad, and number of samples
+    >>> s = dpnp.random.hypergeometric(ngood, nbad, nsamp, 1000)
+
+    """
+
+    if not use_origin_backend(ngood) and dpnp_queue_is_cpu():
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("hypergeometric", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("hypergeometric", "type(size)", type(size), int)
+
+        # TODO:
+        # array_like of ints for `ngood`, `nbad`, `nsample` param
+        if ngood < 0:
+            checker_throw_value_error("hypergeometric", "ngood", ngood, "non-negative")
+        if nbad < 0:
+            checker_throw_value_error("hypergeometric", "nbad", nbad, "non-negative")
+        if nsample < 0:
+            checker_throw_value_error("hypergeometric", "nsample", nsample, "non-negative")
+        if ngood + nbad < nsample:
+            checker_throw_value_error("hypergeometric", "nsample", nsample, "ngood + nbad >= nsample")
+        if nsample < 1:
+            checker_throw_value_error("hypergeometric", "nsample", nsample, ">= 1")
+
+
+        m = int(ngood)
+        l = int(ngood) + int(nbad)
+        s = int(nsample)
+
+        return dpnp_hypergeometric(l, s, m, size)
+
+    return call_origin(numpy.random.hypergeometric, ngood, nbad, nsample, size)
 
 
 def laplace(loc=0.0, scale=1.0, size=None):
