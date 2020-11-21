@@ -164,6 +164,21 @@ void custom_rng_gumbel_c(void* result, double loc, double scale, size_t size)
 }
 
 template <typename _DataType>
+void custom_rng_hypergeometric_c(void* result, int l, int s, int m, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    mkl_rng::hypergeometric<_DataType> distribution(l, s, m);
+    // perform generation
+    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+    event_out.wait();
+}
+
+template <typename _DataType>
 void custom_rng_laplace_c(void* result, double loc, double scale, size_t size)
 {
     if (!size)
@@ -281,13 +296,26 @@ void custom_rng_standard_cauchy_c(void* result, size_t size)
 }
 
 template <typename _DataType>
+void custom_rng_standard_exponential_c(void* result, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+
+    // set displacement a
+    const _DataType beta = (_DataType(1.0));
+
+    custom_rng_exponential_c(result, beta, size);
+}
+
+template <typename _DataType>
 void custom_rng_standard_normal_c(void* result, size_t size)
 {
     if (!size)
     {
         return;
     }
-    _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
     const _DataType mean =  _DataType(0.0);
     const _DataType stddev =  _DataType(1.0);
@@ -359,6 +387,8 @@ void func_map_init_random(func_map_t& fmap)
 
     fmap[DPNPFuncName::DPNP_FN_RNG_GUMBEL][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_gumbel_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_HYPERGEOMETRIC][eft_INT][eft_INT] = {eft_INT, (void*)custom_rng_hypergeometric_c<int>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_LAPLACE][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_laplace_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_LOGNORMAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_lognormal_c<double>};
@@ -372,6 +402,8 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_RNG_RAYLEIGH][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_rayleigh_c<double>};
   
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_CAUCHY][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_standard_cauchy_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_EXPONENTIAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_standard_exponential_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_NORMAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_standard_normal_c<double>};
 
