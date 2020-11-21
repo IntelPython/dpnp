@@ -1595,6 +1595,28 @@
 <div class="viewcode-block" id="standard_exponential"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.standard_exponential.html#dpnp.random.standard_exponential">[docs]</a><span class="k">def</span> <span class="nf">standard_exponential</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Standard exponential distribution.</span>
 
+<span class="sd">    Draw samples from the standard exponential distribution.</span>
+
+<span class="sd">    `standard_exponential` is identical to the exponential distribution</span>
+<span class="sd">    with a scale parameter of 1.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    size : int or tuple of ints, optional</span>
+<span class="sd">        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then</span>
+<span class="sd">        ``m * n * k`` samples are drawn.  Default is None, in which case a</span>
+<span class="sd">        single value is returned.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dparray</span>
+<span class="sd">        Drawn samples.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Output a 3x8000 array:</span>
+<span class="sd">    &gt;&gt;&gt; n = dpnp.random.standard_exponential((3, 8000))</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
