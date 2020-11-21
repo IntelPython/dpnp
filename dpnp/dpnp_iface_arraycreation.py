@@ -839,22 +839,24 @@ def zeros(shape, dtype=None, order='C'):
     Parameters
     ----------
     shape : int or tuple of ints
-        Shape of the new array, e.g., ``(2, 3)`` or ``2``.
+        The shape of the output array.
     dtype : data-type, optional
-        The desired data-type for the array, e.g., `numpy.int8`.  Default is
-        `numpy.float64`.
-    order : {'C', 'F'}, optional, default: 'C'
-        Whether to store multi-dimensional data in row-major
-        (C-style) or column-major (Fortran-style) order in
-        memory.
+        The type of the output array.
+    order : {'C', 'F'}, optional
+        Row-major (C-style) or column-major (Fortran-style) order.
 
     Returns
     -------
-    out : ndarray
+    out : :obj:`dpnp.ndarray`
         Array of zeros with the given shape, dtype, and order.
+
+    Limitations
+    -----------
+    Parameter ``order`` is supported only with default value `'C'`.
 
     See Also
     --------
+    :obj:`numpy.zeros` : Return a new array of given shape and type, filled with zeros.
     :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of input.
     :obj:`dpnp.empty` : Return a new uninitialized array.
     :obj:`dpnp.ones` : Return a new array setting values to one.
@@ -862,24 +864,15 @@ def zeros(shape, dtype=None, order='C'):
 
     Examples
     --------
-    >>> np.zeros(5)
-    array([ 0.,  0.,  0.,  0.,  0.])
+    >>> import dpnp as np
+    >>> [i for i in np.zeros(5)]
+    [0.0, 0.0, 0.0, 0.0, 0.0]
+    >>> x = np.zeros((2, 1))
+    >>> x.ndim, x.size, x.shape
+    (2, 2, (2, 1))  
+    >>> [i for i in x]
+    [0.0, 0.0]
 
-    >>> np.zeros((5,), dtype=int)
-    array([0, 0, 0, 0, 0])
-
-    >>> np.zeros((2, 1))
-    array([[ 0.],
-           [ 0.]])
-
-    >>> s = (2,2)
-    >>> np.zeros(s)
-    array([[ 0.,  0.],
-           [ 0.,  0.]])
-
-    >>> np.zeros((2,), dtype=[('x', 'i4'), ('y', 'i4')]) # custom dtype
-    array([(0, 0), (0, 0)],
-          dtype=[('x', '<i4'), ('y', '<i4')])
     """
 
     if (not use_origin_backend()):
@@ -892,42 +885,34 @@ def zeros(shape, dtype=None, order='C'):
 
 
 # numpy.zeros_like(a, dtype=None, order='K', subok=True, shape=None)
-def zeros_like(prototype, dtype=None, order='C', subok=False, shape=None):
+def zeros_like(x1, dtype=None, order='C', subok=False, shape=None):
     """
     Return an array of zeros with the same shape and type as a given array.
 
     Parameters
     ----------
-    a : array_like
-        The shape and data-type of `a` define these same attributes of
-        the returned array.
+    x1 : array_like
+        Base array.
     dtype : data-type, optional
-        Overrides the data type of the result.
-        .. versionadded:: 1.6.0
+        The type of the output array.
     order : {'C', 'F', 'A', or 'K'}, optional
-        Overrides the memory layout of the result. 'C' means C-order,
-        'F' means F-order, 'A' means 'F' if `a` is Fortran contiguous,
-        'C' otherwise. 'K' means match the layout of `a` as closely
-        as possible.
-        .. versionadded:: 1.6.0
+        Overrides the memory layout of the result.
     subok : bool, optional.
         If True, then the newly created array will use the sub-class
-        type of 'a', otherwise it will be a base-class array. Defaults
+        type of 'x1', otherwise it will be a base-class array. Defaults
         to True.
     shape : int or sequence of ints, optional.
-        Overrides the shape of the result. If order='K' and the number of
-        dimensions is unchanged, will try to keep order, otherwise,
-        order='C' is implied.
-
-        .. versionadded:: 1.17.0
+        The shape of the output array.
 
     Returns
     -------
-    out : ndarray
-        Array of zeros with the same shape and type as `a`.
+    out : :obj:`dpnp.ndarray`
+        Array of zeros with the same shape and type as `x1`.
 
     See Also
     --------
+    :obj:`numpy.zeros_like` : Return an array of zeros
+                              with the same shape and type as a given array.
     :obj:`dpnp.empty_like` : Return an empty array with shape and type of input.
     :obj:`dpnp.ones_like` : Return an array of ones with shape and type of input.
     :obj:`dpnp.full_like` : Return a new array with shape of input filled with value.
@@ -935,19 +920,13 @@ def zeros_like(prototype, dtype=None, order='C', subok=False, shape=None):
 
     Examples
     --------
+    >>> import dpnp as np
     >>> x = np.arange(6)
-    >>> x = x.reshape((2, 3))
-    >>> x
-    array([[0, 1, 2],
-           [3, 4, 5]])
-    >>> np.zeros_like(x)
-    array([[0, 0, 0],
-           [0, 0, 0]])
-    >>> y = np.arange(3, dtype=float)
-    >>> y
-    array([0., 1., 2.])
-    >>> np.zeros_like(y)
-    array([0.,  0.,  0.])
+    >>> [i for i in x]
+    [0.0, 1.0, 2.0, 3.0, 4.0, 5.0]
+    >>> [i for i in np.zeros_like(x)]
+    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
     """
 
     if (not use_origin_backend()):
@@ -956,9 +935,9 @@ def zeros_like(prototype, dtype=None, order='C', subok=False, shape=None):
         if subok is not False:
             checker_throw_value_error("zeros_like", "subok", subok, False)
 
-        _shape = shape if shape is not None else prototype.shape
-        _dtype = dtype if dtype is not None else prototype.dtype
+        _shape = shape if shape is not None else x1.shape
+        _dtype = dtype if dtype is not None else x1.dtype
 
         return dpnp_init_val(_shape, _dtype, 0)
 
-    return numpy.zeros_like(prototype, dtype, order, subok, shape)
+    return numpy.zeros_like(x1, dtype, order, subok, shape)
