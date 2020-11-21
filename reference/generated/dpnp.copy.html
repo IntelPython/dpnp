@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.arange &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.copy &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.linspace" href="dpnp.linspace.html" />
-    <link rel="prev" title="dpnp.copy" href="dpnp.copy.html" /> 
+    <link rel="next" title="dpnp.arange" href="dpnp.arange.html" />
+    <link rel="prev" title="dpnp.ascontiguousarray" href="dpnp.ascontiguousarray.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -95,8 +95,8 @@
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../creation.html">Array Creation Routines</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../creation.html#basic-creation-routines">Basic creation routines</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../creation.html#creation-from-other-data">Creation from other data</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../creation.html#numerical-ranges">Numerical ranges</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../creation.html#creation-from-other-data">Creation from other data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../creation.html#numerical-ranges">Numerical ranges</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../creation.html#matrix-creation">Matrix creation</a></li>
 </ul>
 </li>
@@ -170,13 +170,13 @@
         
           <li><a href="../creation.html">Array Creation Routines</a> &raquo;</li>
         
-      <li>dpnp.arange</li>
+      <li>dpnp.copy</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.arange.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.copy.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -189,53 +189,43 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-arange">
-<h1>dpnp.arange<a class="headerlink" href="#dpnp-arange" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-copy">
+<h1>dpnp.copy<a class="headerlink" href="#dpnp-copy" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.arange">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">arange</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">stop</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">step</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#arange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.arange" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns an array with evenly spaced values within a given interval.</p>
-<p>Values are generated within the half-open interval [start, stop). The first
-three arguments are mapped like the <code class="docutils literal notranslate"><span class="pre">range</span></code> built-in function, i.e. start
-and step are optional.</p>
+<dt id="dpnp.copy">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">copy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">'C'</span></em>, <em class="sig-param"><span class="n">subok</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an array copy of the given object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>start</strong> (<em>number</em><em>, </em><em>optional</em>) – Start of the interval.</p></li>
-<li><p><strong>stop</strong> (<em>number</em>) – End of the interval.</p></li>
-<li><p><strong>step</strong> (<em>number</em><em>, </em><em>optional</em>) – Step width between each pair of consecutive values.</p></li>
-<li><p><strong>dtype</strong> (<em>dtype</em>) – Data type specifier. It is inferred from other arguments by default.</p></li>
+<li><p><strong>a</strong> (<em>array_like</em>) – Input data.</p></li>
+<li><p><strong>order</strong> (<em>{'C'</em><em>, </em><em>'F'</em><em>, </em><em>'A'</em><em>, </em><em>'K'}</em><em>, </em><em>optional</em>) – Controls the memory layout of the copy. ‘C’ means C-order,
+‘F’ means F-order, ‘A’ means ‘F’ if <cite>a</cite> is Fortran contiguous,
+‘C’ otherwise. ‘K’ means match the layout of <cite>a</cite> as closely
+as possible. (Note that this function and <code class="xref py py-meth docutils literal notranslate"><span class="pre">ndarray.copy()</span></code> are very
+similar, but have different default values for their order=
+arguments.)</p></li>
+<li><p><strong>subok</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – <p>If True, then sub-classes will be passed-through, otherwise the
+returned array will be forced to be a base-class array (defaults to False).</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.19.0.</span></p>
+</div>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>arange</strong> – The 1-D array of range values.</p>
+<dd class="field-even"><p><strong>arr</strong> – Array interpretation of <cite>a</cite>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a></p>
+<dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
-<p class="rubric">Limitations</p>
-<p>Parameter <code class="docutils literal notranslate"><span class="pre">start</span></code> is supported as integer only.
-Parameters <code class="docutils literal notranslate"><span class="pre">stop</span></code> and <code class="docutils literal notranslate"><span class="pre">step</span></code> are supported as either integer or <cite>None</cite>.
-Otherwise the function will be executed sequentially on CPU.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.arange</span></code></a></dt><dd><p>Return evenly spaced values within a given interval.</p>
-</dd>
-<dt><a class="reference internal" href="dpnp.linspace.html#dpnp.linspace" title="dpnp.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linspace</span></code></a></dt><dd><p>Evenly spaced numbers with careful handling of endpoints.</p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray.copy</span></code></dt><dd><p>Preferred method for creating an array copy</p>
 </dd>
 </dl>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
-<span class="go">[0, 1, 2]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">)]</span>
-<span class="go">[3, 4, 5, 6]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]</span>
-<span class="go">[3, 5]</span>
-</pre></div>
 </div>
 </dd></dl>
 
@@ -249,10 +239,10 @@ Otherwise the function will be executed sequentially on CPU.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.linspace.html" class="btn btn-neutral float-right" title="dpnp.linspace" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.arange.html" class="btn btn-neutral float-right" title="dpnp.arange" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.copy.html" class="btn btn-neutral float-left" title="dpnp.copy" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.ascontiguousarray.html" class="btn btn-neutral float-left" title="dpnp.ascontiguousarray" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

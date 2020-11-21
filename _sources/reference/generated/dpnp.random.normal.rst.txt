@@ -1,0 +1,6 @@
+﻿dpnp.random.normal
+==================
+
+.. currentmodule:: dpnp.random
+
+.. autofunction:: normal

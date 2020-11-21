@@ -1,4 +1,4 @@
 <map id="custom_rng_standard_normal_c" name="custom_rng_standard_normal_c">
 <area shape="rect" id="node1" title="math library implementation of random number generator (standard normal distribution)" alt="" coords="5,5,152,47"/>
-<area shape="rect" id="node2" href="$group___b_a_c_k_e_n_d___a_p_i.html#gaa7bca3ce07f3cba8ca9d63d93287ad91" title="math library implementation of random number generator (gaussian continious distribution)" alt="" coords="200,13,363,39"/>
+<area shape="rect" id="node2" href="$group___b_a_c_k_e_n_d___a_p_i.html#ga8c3c5b177ffc3f86e63b3e4ec80b3eb7" title="math library implementation of random number generator (normal continious distribution)" alt="" coords="200,13,351,39"/>
 </map>

@@ -21,6 +21,7 @@ var annotated_dup =
     [ "dpnp_arange_c_kernel", "classdpnp__arange__c__kernel.html", null ],
     [ "dpnp_correlate_c_kernel", "classdpnp__correlate__c__kernel.html", null ],
     [ "dpnp_dot_c_kernel", "classdpnp__dot__c__kernel.html", null ],
+    [ "dpnp_fft_fft_c_kernel", "classdpnp__fft__fft__c__kernel.html", null ],
     [ "dpnp_floor_divide_c_kernel", "classdpnp__floor__divide__c__kernel.html", null ],
     [ "dpnp_invert_c_kernel", "classdpnp__invert__c__kernel.html", null ],
     [ "dpnp_matmul_c_kernel", "classdpnp__matmul__c__kernel.html", null ],

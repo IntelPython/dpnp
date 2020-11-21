@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.arange &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.asanyarray &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.linspace" href="dpnp.linspace.html" />
-    <link rel="prev" title="dpnp.copy" href="dpnp.copy.html" /> 
+    <link rel="next" title="dpnp.ascontiguousarray" href="dpnp.ascontiguousarray.html" />
+    <link rel="prev" title="dpnp.asarray" href="dpnp.asarray.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -93,14 +93,20 @@
 <li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="../creation.html">Array Creation Routines</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../creation.html#basic-creation-routines">Basic creation routines</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../creation.html#creation-from-other-data">Creation from other data</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../creation.html#numerical-ranges">Numerical ranges</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../creation.html#matrix-creation">Matrix creation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../creation.html">Array Creation Routines</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../manipulation.html">Array Manipulation Routines</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#basic-operations">Basic operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#changing-array-shape">Changing array shape</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#transpose-like-operations">Transpose-like operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#changing-number-of-dimensions">Changing number of dimensions</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../manipulation.html#changing-kind-of-array">Changing kind of array</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#joining-arrays">Joining arrays</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#splitting-arrays">Splitting arrays</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#tiling-arrays">Tiling arrays</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#adding-and-removing-elements">Adding and removing elements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#rearranging-elements">Rearranging elements</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../manipulation.html">Array Manipulation Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../binary.html">Binary Operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear Algebra</a></li>
@@ -170,13 +176,13 @@
         
           <li><a href="../creation.html">Array Creation Routines</a> &raquo;</li>
         
-      <li>dpnp.arange</li>
+      <li>dpnp.asanyarray</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.arange.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.asanyarray.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -189,53 +195,49 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-arange">
-<h1>dpnp.arange<a class="headerlink" href="#dpnp-arange" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-asanyarray">
+<h1>dpnp.asanyarray<a class="headerlink" href="#dpnp-asanyarray" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.arange">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">arange</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">stop</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">step</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#arange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.arange" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns an array with evenly spaced values within a given interval.</p>
-<p>Values are generated within the half-open interval [start, stop). The first
-three arguments are mapped like the <code class="docutils literal notranslate"><span class="pre">range</span></code> built-in function, i.e. start
-and step are optional.</p>
+<dt id="dpnp.asanyarray">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">asanyarray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#asanyarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.asanyarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the input to an ndarray, but pass ndarray subclasses through.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>start</strong> (<em>number</em><em>, </em><em>optional</em>) – Start of the interval.</p></li>
-<li><p><strong>stop</strong> (<em>number</em>) – End of the interval.</p></li>
-<li><p><strong>step</strong> (<em>number</em><em>, </em><em>optional</em>) – Step width between each pair of consecutive values.</p></li>
-<li><p><strong>dtype</strong> (<em>dtype</em>) – Data type specifier. It is inferred from other arguments by default.</p></li>
+<li><p><strong>a</strong> (<em>array_like</em>) – Input data, in any form that can be converted to an array.  This
+includes scalars, lists, lists of tuples, tuples, tuples of tuples,
+tuples of lists, and ndarrays.</p></li>
+<li><p><strong>dtype</strong> (<em>data-type</em><em>, </em><em>optional</em>) – By default, the data-type is inferred from the input data.</p></li>
+<li><p><strong>order</strong> (<em>{'C'</em><em>, </em><em>'F'}</em><em>, </em><em>optional</em>) – Whether to use row-major (C-style) or column-major
+(Fortran-style) memory representation.  Defaults to ‘C’.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>arange</strong> – The 1-D array of range values.</p>
+<dd class="field-even"><p><strong>out</strong> – Array interpretation of <cite>a</cite>.  If <cite>a</cite> is an ndarray or a subclass
+of ndarray, it is returned as-is and no copy is performed.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a></p>
+<dd class="field-odd"><p>ndarray or an ndarray subclass</p>
 </dd>
 </dl>
-<p class="rubric">Limitations</p>
-<p>Parameter <code class="docutils literal notranslate"><span class="pre">start</span></code> is supported as integer only.
-Parameters <code class="docutils literal notranslate"><span class="pre">stop</span></code> and <code class="docutils literal notranslate"><span class="pre">step</span></code> are supported as either integer or <cite>None</cite>.
-Otherwise the function will be executed sequentially on CPU.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.arange</span></code></a></dt><dd><p>Return evenly spaced values within a given interval.</p>
+<dt><a class="reference internal" href="dpnp.asarray.html#dpnp.asarray" title="dpnp.asarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">asarray</span></code></a></dt><dd><p>Similar function which always returns ndarrays.</p>
 </dd>
-<dt><a class="reference internal" href="dpnp.linspace.html#dpnp.linspace" title="dpnp.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linspace</span></code></a></dt><dd><p>Evenly spaced numbers with careful handling of endpoints.</p>
+<dt><a class="reference internal" href="dpnp.ascontiguousarray.html#dpnp.ascontiguousarray" title="dpnp.ascontiguousarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ascontiguousarray</span></code></a></dt><dd><p>Convert input to a contiguous array.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">asfarray</span></code></dt><dd><p>Convert input to a floating point ndarray.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">asfortranarray</span></code></dt><dd><p>Convert input to an ndarray with column-major memory order.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">asarray_chkfinite</span></code></dt><dd><p>Similar function which checks input for NaNs and Infs.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">fromiter</span></code></dt><dd><p>Create an array from an iterator.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">fromfunction</span></code></dt><dd><p>Construct an array by executing a function on grid positions.</p>
 </dd>
 </dl>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
-<span class="go">[0, 1, 2]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">)]</span>
-<span class="go">[3, 4, 5, 6]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]</span>
-<span class="go">[3, 5]</span>
-</pre></div>
 </div>
 </dd></dl>
 
@@ -249,10 +251,10 @@ Otherwise the function will be executed sequentially on CPU.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.linspace.html" class="btn btn-neutral float-right" title="dpnp.linspace" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.ascontiguousarray.html" class="btn btn-neutral float-right" title="dpnp.ascontiguousarray" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.copy.html" class="btn btn-neutral float-left" title="dpnp.copy" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.asarray.html" class="btn btn-neutral float-left" title="dpnp.asarray" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

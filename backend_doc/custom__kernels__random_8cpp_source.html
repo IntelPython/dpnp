@@ -316,7 +316,7 @@ $(document).ready(function(){initNavTree('custom__kernels__random_8cpp_source.ht
 <div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;}</div>
 <div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160; </div>
 <div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> _DataType&gt;</div>
-<div class="line"><a name="l00231"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#gaeee97f774cb0c2a1d94b8a3c53c1569b">  231</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gaeee97f774cb0c2a1d94b8a3c53c1569b">custom_rng_poisson_c</a>(<span class="keywordtype">void</span>* result, <span class="keywordtype">double</span> lambda, <span class="keywordtype">size_t</span> size)</div>
+<div class="line"><a name="l00231"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga8c3c5b177ffc3f86e63b3e4ec80b3eb7">  231</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga8c3c5b177ffc3f86e63b3e4ec80b3eb7">custom_rng_normal_c</a>(<span class="keywordtype">void</span>* result, _DataType mean, _DataType stddev, <span class="keywordtype">size_t</span> size)</div>
 <div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;{</div>
 <div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;    <span class="keywordflow">if</span> (!size)</div>
 <div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    {</div>
@@ -324,187 +324,205 @@ $(document).ready(function(){initNavTree('custom__kernels__random_8cpp_source.ht
 <div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;    }</div>
 <div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;    _DataType* result1 = <span class="keyword">reinterpret_cast&lt;</span>_DataType*<span class="keyword">&gt;</span>(result);</div>
 <div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160; </div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;    mkl_rng::poisson&lt;_DataType&gt; distribution(lambda);</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;    mkl_rng::gaussian&lt;_DataType&gt; distribution(mean, stddev);</div>
 <div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;    <span class="comment">// perform generation</span></div>
 <div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    <span class="keyword">auto</span> event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);</div>
 <div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    event_out.wait();</div>
 <div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;}</div>
 <div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160; </div>
 <div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> _DataType&gt;</div>
-<div class="line"><a name="l00246"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#gab06869284ed9e49802c78beeb5c45b2b">  246</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gab06869284ed9e49802c78beeb5c45b2b">custom_rng_rayleigh_c</a>(<span class="keywordtype">void</span>* result, _DataType scale, <span class="keywordtype">size_t</span> size)</div>
+<div class="line"><a name="l00246"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#gaeee97f774cb0c2a1d94b8a3c53c1569b">  246</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gaeee97f774cb0c2a1d94b8a3c53c1569b">custom_rng_poisson_c</a>(<span class="keywordtype">void</span>* result, <span class="keywordtype">double</span> lambda, <span class="keywordtype">size_t</span> size)</div>
 <div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;{</div>
 <div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;    <span class="keywordflow">if</span> (!size)</div>
 <div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    {</div>
 <div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;        <span class="keywordflow">return</span>;</div>
 <div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    }</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160; </div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    <span class="comment">// set displacement a</span></div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;    <span class="keyword">const</span> _DataType a = (_DataType(0.0));</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160; </div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;    _DataType* result1 = <span class="keyword">reinterpret_cast&lt;</span>_DataType*<span class="keyword">&gt;</span>(result);</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160; </div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    mkl_rng::rayleigh&lt;_DataType&gt; distribution(a, scale);</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    <span class="comment">// perform generation</span></div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    <span class="keyword">auto</span> event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;    event_out.wait();</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;}</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160; </div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> _DataType&gt;</div>
-<div class="line"><a name="l00265"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga53916dde01da3ca3ec30168344ec6dba">  265</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga53916dde01da3ca3ec30168344ec6dba">custom_rng_standard_cauchy_c</a>(<span class="keywordtype">void</span>* result, <span class="keywordtype">size_t</span> size)</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;{</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;    <span class="keywordflow">if</span> (!size)</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;    {</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;        <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;    }</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;    _DataType* result1 = <span class="keyword">reinterpret_cast&lt;</span>_DataType*<span class="keyword">&gt;</span>(result);</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160; </div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;    mkl_rng::poisson&lt;_DataType&gt; distribution(lambda);</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;    <span class="comment">// perform generation</span></div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;    <span class="keyword">auto</span> event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;    event_out.wait();</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;}</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160; </div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> _DataType&gt;</div>
+<div class="line"><a name="l00261"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#gab06869284ed9e49802c78beeb5c45b2b">  261</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gab06869284ed9e49802c78beeb5c45b2b">custom_rng_rayleigh_c</a>(<span class="keywordtype">void</span>* result, _DataType scale, <span class="keywordtype">size_t</span> size)</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;{</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;    <span class="keywordflow">if</span> (!size)</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;    {</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;        <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;    }</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160; </div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;    <span class="comment">// set displacement a</span></div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;    <span class="keyword">const</span> _DataType a = (_DataType(0.0));</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160; </div>
 <div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;    _DataType* result1 = <span class="keyword">reinterpret_cast&lt;</span>_DataType*<span class="keyword">&gt;</span>(result);</div>
 <div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160; </div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;    <span class="keyword">const</span> _DataType displacement = _DataType(0.0);</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160; </div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;    <span class="keyword">const</span> _DataType scalefactor = _DataType(1.0);</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160; </div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;    mkl_rng::cauchy&lt;_DataType&gt; distribution(displacement, scalefactor);</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;    <span class="comment">// perform generation</span></div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;    <span class="keyword">auto</span> event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;    event_out.wait();</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;}</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160; </div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> _DataType&gt;</div>
-<div class="line"><a name="l00284"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga2387eec54944a73d1b110b0b5fb4d9d7">  284</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga2387eec54944a73d1b110b0b5fb4d9d7">custom_rng_standard_exponential_c</a>(<span class="keywordtype">void</span>* result, <span class="keywordtype">size_t</span> size)</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;{</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;    <span class="keywordflow">if</span> (!size)</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;    {</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;        <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;    }</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160; </div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;    <span class="comment">// set displacement a</span></div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;    <span class="keyword">const</span> _DataType beta = (_DataType(1.0));</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160; </div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    <a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga35f44efec33f3065ce4ba68150446232">custom_rng_exponential_c</a>(result, beta, size);</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;}</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160; </div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> _DataType&gt;</div>
-<div class="line"><a name="l00298"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga5c1a01fc4236f2c3f25bd79e7fee50a9">  298</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga5c1a01fc4236f2c3f25bd79e7fee50a9">custom_rng_standard_normal_c</a>(<span class="keywordtype">void</span>* result, <span class="keywordtype">size_t</span> size)</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;{</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;    <span class="keywordflow">if</span> (!size)</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;    {</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;        <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;    }</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160; </div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;    <span class="keyword">const</span> _DataType mean =  _DataType(0.0);</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;    <span class="keyword">const</span> _DataType stddev =  _DataType(1.0);</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160; </div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;    <a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gaa7bca3ce07f3cba8ca9d63d93287ad91">custom_rng_gaussian_c</a>(result, mean, stddev, size);</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;}</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160; </div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> _DataType&gt;</div>
-<div class="line"><a name="l00312"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga00ec0600e9458837339fcf362e90b9ef">  312</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga00ec0600e9458837339fcf362e90b9ef">custom_rng_uniform_c</a>(<span class="keywordtype">void</span>* result, <span class="keywordtype">long</span> low, <span class="keywordtype">long</span> high, <span class="keywordtype">size_t</span> size)</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;{</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;    <span class="keywordflow">if</span> (!size)</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;    {</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;        <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;    }</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;    _DataType* result1 = <span class="keyword">reinterpret_cast&lt;</span>_DataType*<span class="keyword">&gt;</span>(result);</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;    mkl_rng::rayleigh&lt;_DataType&gt; distribution(a, scale);</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;    <span class="comment">// perform generation</span></div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;    <span class="keyword">auto</span> event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;    event_out.wait();</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;}</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160; </div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> _DataType&gt;</div>
+<div class="line"><a name="l00280"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga53916dde01da3ca3ec30168344ec6dba">  280</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga53916dde01da3ca3ec30168344ec6dba">custom_rng_standard_cauchy_c</a>(<span class="keywordtype">void</span>* result, <span class="keywordtype">size_t</span> size)</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;{</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;    <span class="keywordflow">if</span> (!size)</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;    {</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;        <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;    }</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;    _DataType* result1 = <span class="keyword">reinterpret_cast&lt;</span>_DataType*<span class="keyword">&gt;</span>(result);</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160; </div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;    <span class="keyword">const</span> _DataType displacement = _DataType(0.0);</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160; </div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;    <span class="keyword">const</span> _DataType scalefactor = _DataType(1.0);</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160; </div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;    mkl_rng::cauchy&lt;_DataType&gt; distribution(displacement, scalefactor);</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;    <span class="comment">// perform generation</span></div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    <span class="keyword">auto</span> event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    event_out.wait();</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;}</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160; </div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> _DataType&gt;</div>
+<div class="line"><a name="l00299"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga2387eec54944a73d1b110b0b5fb4d9d7">  299</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga2387eec54944a73d1b110b0b5fb4d9d7">custom_rng_standard_exponential_c</a>(<span class="keywordtype">void</span>* result, <span class="keywordtype">size_t</span> size)</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;{</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;    <span class="keywordflow">if</span> (!size)</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;    {</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;        <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;    }</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160; </div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;    <span class="comment">// set displacement a</span></div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;    <span class="keyword">const</span> _DataType beta = (_DataType(1.0));</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160; </div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;    <a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga35f44efec33f3065ce4ba68150446232">custom_rng_exponential_c</a>(result, beta, size);</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;}</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160; </div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> _DataType&gt;</div>
+<div class="line"><a name="l00313"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga5c1a01fc4236f2c3f25bd79e7fee50a9">  313</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga5c1a01fc4236f2c3f25bd79e7fee50a9">custom_rng_standard_normal_c</a>(<span class="keywordtype">void</span>* result, <span class="keywordtype">size_t</span> size)</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;{</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;    <span class="keywordflow">if</span> (!size)</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;    {</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;        <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;    }</div>
 <div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160; </div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;    <span class="comment">// set left bound of distribution</span></div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    <span class="keyword">const</span> _DataType a = (_DataType(low));</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;    <span class="comment">// set right bound of distribution</span></div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    <span class="keyword">const</span> _DataType b = (_DataType(high));</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160; </div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;    mkl_rng::uniform&lt;_DataType&gt; distribution(a, b);</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;    <span class="comment">// perform generation</span></div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    <span class="keyword">auto</span> event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    event_out.wait();</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;}</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160; </div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> _DataType&gt;</div>
-<div class="line"><a name="l00332"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga94c5cc366d24a3a9dbbca2799009adc5">  332</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga94c5cc366d24a3a9dbbca2799009adc5">custom_rng_weibull_c</a>(<span class="keywordtype">void</span>* result, <span class="keywordtype">double</span> alpha, <span class="keywordtype">size_t</span> size)</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;{</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;    <span class="keywordflow">if</span> (!size)</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;    {</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;        <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;    }</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;    _DataType* result1 = <span class="keyword">reinterpret_cast&lt;</span>_DataType*<span class="keyword">&gt;</span>(result);</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;    <span class="keyword">const</span> _DataType mean =  _DataType(0.0);</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    <span class="keyword">const</span> _DataType stddev =  _DataType(1.0);</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160; </div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    <a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga8c3c5b177ffc3f86e63b3e4ec80b3eb7">custom_rng_normal_c</a>(result, mean, stddev, size);</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;}</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160; </div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> _DataType&gt;</div>
+<div class="line"><a name="l00327"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga00ec0600e9458837339fcf362e90b9ef">  327</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga00ec0600e9458837339fcf362e90b9ef">custom_rng_uniform_c</a>(<span class="keywordtype">void</span>* result, <span class="keywordtype">long</span> low, <span class="keywordtype">long</span> high, <span class="keywordtype">size_t</span> size)</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;{</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    <span class="keywordflow">if</span> (!size)</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    {</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;        <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;    }</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;    _DataType* result1 = <span class="keyword">reinterpret_cast&lt;</span>_DataType*<span class="keyword">&gt;</span>(result);</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160; </div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;    <span class="comment">// set left bound of distribution</span></div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;    <span class="keyword">const</span> _DataType a = (_DataType(low));</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;    <span class="comment">// set right bound of distribution</span></div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;    <span class="keyword">const</span> _DataType b = (_DataType(high));</div>
 <div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160; </div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;    <span class="comment">// set displacement a</span></div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    <span class="keyword">const</span> _DataType a = (_DataType(0.0));</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160; </div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;    <span class="comment">// set beta</span></div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;    <span class="keyword">const</span> _DataType beta = (_DataType(1.0));</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;    mkl_rng::uniform&lt;_DataType&gt; distribution(a, b);</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    <span class="comment">// perform generation</span></div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;    <span class="keyword">auto</span> event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;    event_out.wait();</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;}</div>
 <div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160; </div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;    mkl_rng::weibull&lt;_DataType&gt; distribution(alpha, a, beta);</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;    <span class="comment">// perform generation</span></div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;    <span class="keyword">auto</span> event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;    event_out.wait();</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;}</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160; </div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;<span class="keywordtype">void</span> func_map_init_random(func_map_t&amp; fmap)</div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;{</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_BETA][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_beta_c&lt;double&gt;};</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_BETA][eft_FLT][eft_FLT] = {eft_FLT, (<span class="keywordtype">void</span>*)custom_rng_beta_c&lt;float&gt;};</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160; </div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_BINOMIAL][eft_INT][eft_INT] = {eft_INT, (<span class="keywordtype">void</span>*)custom_rng_binomial_c&lt;int&gt;};</div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160; </div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_CHISQUARE][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_chi_square_c&lt;double&gt;};</div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_CHISQUARE][eft_FLT][eft_FLT] = {eft_FLT, (<span class="keywordtype">void</span>*)custom_rng_chi_square_c&lt;float&gt;};</div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160; </div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_EXPONENTIAL][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_exponential_c&lt;double&gt;};</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_EXPONENTIAL][eft_FLT][eft_FLT] = {eft_FLT, (<span class="keywordtype">void</span>*)custom_rng_exponential_c&lt;float&gt;};</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160; </div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_GAMMA][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_gamma_c&lt;double&gt;};</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_GAMMA][eft_FLT][eft_FLT] = {eft_FLT, (<span class="keywordtype">void</span>*)custom_rng_gamma_c&lt;float&gt;};</div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160; </div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_GAUSSIAN][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_gaussian_c&lt;double&gt;};</div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_GAUSSIAN][eft_FLT][eft_FLT] = {eft_FLT, (<span class="keywordtype">void</span>*)custom_rng_gaussian_c&lt;float&gt;};</div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160; </div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_GEOMETRIC][eft_INT][eft_INT] = {eft_INT, (<span class="keywordtype">void</span>*)custom_rng_geometric_c&lt;int&gt;};</div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160; </div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_GUMBEL][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_gumbel_c&lt;double&gt;};</div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160; </div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_HYPERGEOMETRIC][eft_INT][eft_INT] = {eft_INT, (<span class="keywordtype">void</span>*)custom_rng_hypergeometric_c&lt;int&gt;};</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> _DataType&gt;</div>
+<div class="line"><a name="l00347"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga94c5cc366d24a3a9dbbca2799009adc5">  347</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga94c5cc366d24a3a9dbbca2799009adc5">custom_rng_weibull_c</a>(<span class="keywordtype">void</span>* result, <span class="keywordtype">double</span> alpha, <span class="keywordtype">size_t</span> size)</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;{</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;    <span class="keywordflow">if</span> (!size)</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;    {</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;        <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;    }</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;    _DataType* result1 = <span class="keyword">reinterpret_cast&lt;</span>_DataType*<span class="keyword">&gt;</span>(result);</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160; </div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;    <span class="comment">// set displacement a</span></div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;    <span class="keyword">const</span> _DataType a = (_DataType(0.0));</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160; </div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;    <span class="comment">// set beta</span></div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;    <span class="keyword">const</span> _DataType beta = (_DataType(1.0));</div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160; </div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;    mkl_rng::weibull&lt;_DataType&gt; distribution(alpha, a, beta);</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;    <span class="comment">// perform generation</span></div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;    <span class="keyword">auto</span> event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);</div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;    event_out.wait();</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;}</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160; </div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;<span class="keywordtype">void</span> func_map_init_random(func_map_t&amp; fmap)</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;{</div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_BETA][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_beta_c&lt;double&gt;};</div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_BETA][eft_FLT][eft_FLT] = {eft_FLT, (<span class="keywordtype">void</span>*)custom_rng_beta_c&lt;float&gt;};</div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160; </div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_BINOMIAL][eft_INT][eft_INT] = {eft_INT, (<span class="keywordtype">void</span>*)custom_rng_binomial_c&lt;int&gt;};</div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160; </div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_CHISQUARE][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_chi_square_c&lt;double&gt;};</div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_CHISQUARE][eft_FLT][eft_FLT] = {eft_FLT, (<span class="keywordtype">void</span>*)custom_rng_chi_square_c&lt;float&gt;};</div>
 <div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160; </div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_LAPLACE][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_laplace_c&lt;double&gt;};</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160; </div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_LOGNORMAL][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_lognormal_c&lt;double&gt;};</div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160; </div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_NEGATIVE_BINOMIAL][eft_INT][eft_INT] = {eft_INT, (<span class="keywordtype">void</span>*)custom_rng_negative_binomial_c&lt;int&gt;};</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_EXPONENTIAL][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_exponential_c&lt;double&gt;};</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_EXPONENTIAL][eft_FLT][eft_FLT] = {eft_FLT, (<span class="keywordtype">void</span>*)custom_rng_exponential_c&lt;float&gt;};</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160; </div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_GAMMA][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_gamma_c&lt;double&gt;};</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_GAMMA][eft_FLT][eft_FLT] = {eft_FLT, (<span class="keywordtype">void</span>*)custom_rng_gamma_c&lt;float&gt;};</div>
 <div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160; </div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_POISSON][eft_INT][eft_INT] = {eft_INT, (<span class="keywordtype">void</span>*)custom_rng_poisson_c&lt;int&gt;};</div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160; </div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_RAYLEIGH][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_rayleigh_c&lt;double&gt;};</div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;  </div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_CAUCHY][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_standard_cauchy_c&lt;double&gt;};</div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160; </div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_EXPONENTIAL][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_standard_exponential_c&lt;double&gt;};</div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160; </div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_NORMAL][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_standard_normal_c&lt;double&gt;};</div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160; </div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_uniform_c&lt;double&gt;};</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_FLT][eft_FLT] = {eft_FLT, (<span class="keywordtype">void</span>*)custom_rng_uniform_c&lt;float&gt;};</div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_INT][eft_INT] = {eft_INT, (<span class="keywordtype">void</span>*)custom_rng_uniform_c&lt;int&gt;};</div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160; </div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_WEIBULL][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_weibull_c&lt;double&gt;};</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160; </div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;}</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_GAUSSIAN][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_gaussian_c&lt;double&gt;};</div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_GAUSSIAN][eft_FLT][eft_FLT] = {eft_FLT, (<span class="keywordtype">void</span>*)custom_rng_gaussian_c&lt;float&gt;};</div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160; </div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_GEOMETRIC][eft_INT][eft_INT] = {eft_INT, (<span class="keywordtype">void</span>*)custom_rng_geometric_c&lt;int&gt;};</div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160; </div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_GUMBEL][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_gumbel_c&lt;double&gt;};</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160; </div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_HYPERGEOMETRIC][eft_INT][eft_INT] = {eft_INT, (<span class="keywordtype">void</span>*)custom_rng_hypergeometric_c&lt;int&gt;};</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160; </div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_LAPLACE][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_laplace_c&lt;double&gt;};</div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160; </div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_LOGNORMAL][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_lognormal_c&lt;double&gt;};</div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160; </div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_NEGATIVE_BINOMIAL][eft_INT][eft_INT] = {eft_INT, (<span class="keywordtype">void</span>*)custom_rng_negative_binomial_c&lt;int&gt;};</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160; </div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_NORMAL][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_normal_c&lt;double&gt;};</div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160; </div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_POISSON][eft_INT][eft_INT] = {eft_INT, (<span class="keywordtype">void</span>*)custom_rng_poisson_c&lt;int&gt;};</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160; </div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_RAYLEIGH][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_rayleigh_c&lt;double&gt;};</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;  </div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_CAUCHY][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_standard_cauchy_c&lt;double&gt;};</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160; </div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_EXPONENTIAL][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_standard_exponential_c&lt;double&gt;};</div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160; </div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_NORMAL][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_standard_normal_c&lt;double&gt;};</div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160; </div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_uniform_c&lt;double&gt;};</div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_FLT][eft_FLT] = {eft_FLT, (<span class="keywordtype">void</span>*)custom_rng_uniform_c&lt;float&gt;};</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_INT][eft_INT] = {eft_INT, (<span class="keywordtype">void</span>*)custom_rng_uniform_c&lt;int&gt;};</div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160; </div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;    fmap[DPNPFuncName::DPNP_FN_RNG_WEIBULL][eft_DBL][eft_DBL] = {eft_DBL, (<span class="keywordtype">void</span>*)custom_rng_weibull_c&lt;double&gt;};</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160; </div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;}</div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga614afeb47001aadd191c2f52289722dc"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga614afeb47001aadd191c2f52289722dc">custom_rng_negative_binomial_c</a></div><div class="ttdeci">void custom_rng_negative_binomial_c(void *result, double a, double p, size_t size)</div><div class="ttdoc">math library implementation of random number generator (negative binomial distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00216">custom_kernels_random.cpp:216</a></div></div>
 <div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga484cf6c8463e95b2663031445e8b6f43"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga484cf6c8463e95b2663031445e8b6f43">custom_rng_binomial_c</a></div><div class="ttdeci">void custom_rng_binomial_c(void *result, int ntrial, double p, size_t size)</div><div class="ttdoc">math library implementation of random number generator (binomial distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00054">custom_kernels_random.cpp:54</a></div></div>
 <div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga2444c336ba277444e6383aa1b0119341"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga2444c336ba277444e6383aa1b0119341">custom_rng_hypergeometric_c</a></div><div class="ttdeci">void custom_rng_hypergeometric_c(void *result, int l, int s, int m, size_t size)</div><div class="ttdoc">math library implementation of random number generator (hypergeometric distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00167">custom_kernels_random.cpp:167</a></div></div>
 <div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga2f6d4b4c9e0c39abb5dd8ef952bccb44"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga2f6d4b4c9e0c39abb5dd8ef952bccb44">custom_rng_chi_square_c</a></div><div class="ttdeci">void custom_rng_chi_square_c(void *result, int df, size_t size)</div><div class="ttdoc">math library implementation of random number generator (chi-square distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00069">custom_kernels_random.cpp:69</a></div></div>
-<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga5c1a01fc4236f2c3f25bd79e7fee50a9"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga5c1a01fc4236f2c3f25bd79e7fee50a9">custom_rng_standard_normal_c</a></div><div class="ttdeci">void custom_rng_standard_normal_c(void *result, size_t size)</div><div class="ttdoc">math library implementation of random number generator (standard normal distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00298">custom_kernels_random.cpp:298</a></div></div>
-<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga00ec0600e9458837339fcf362e90b9ef"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga00ec0600e9458837339fcf362e90b9ef">custom_rng_uniform_c</a></div><div class="ttdeci">void custom_rng_uniform_c(void *result, long low, long high, size_t size)</div><div class="ttdoc">math library implementation of random number generator (uniform distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00312">custom_kernels_random.cpp:312</a></div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga5c1a01fc4236f2c3f25bd79e7fee50a9"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga5c1a01fc4236f2c3f25bd79e7fee50a9">custom_rng_standard_normal_c</a></div><div class="ttdeci">void custom_rng_standard_normal_c(void *result, size_t size)</div><div class="ttdoc">math library implementation of random number generator (standard normal distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00313">custom_kernels_random.cpp:313</a></div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga00ec0600e9458837339fcf362e90b9ef"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga00ec0600e9458837339fcf362e90b9ef">custom_rng_uniform_c</a></div><div class="ttdeci">void custom_rng_uniform_c(void *result, long low, long high, size_t size)</div><div class="ttdoc">math library implementation of random number generator (uniform distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00327">custom_kernels_random.cpp:327</a></div></div>
 <div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_gae1af0aa0c8644f44d92d3f09cac4ff23"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#gae1af0aa0c8644f44d92d3f09cac4ff23">custom_rng_gamma_c</a></div><div class="ttdeci">void custom_rng_gamma_c(void *result, _DataType shape, _DataType scale, size_t size)</div><div class="ttdoc">math library implementation of random number generator (gamma distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00103">custom_kernels_random.cpp:103</a></div></div>
-<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga53916dde01da3ca3ec30168344ec6dba"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga53916dde01da3ca3ec30168344ec6dba">custom_rng_standard_cauchy_c</a></div><div class="ttdeci">void custom_rng_standard_cauchy_c(void *result, size_t size)</div><div class="ttdoc">math library implementation of random number generator (standard cauchy distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00265">custom_kernels_random.cpp:265</a></div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga53916dde01da3ca3ec30168344ec6dba"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga53916dde01da3ca3ec30168344ec6dba">custom_rng_standard_cauchy_c</a></div><div class="ttdeci">void custom_rng_standard_cauchy_c(void *result, size_t size)</div><div class="ttdoc">math library implementation of random number generator (standard cauchy distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00280">custom_kernels_random.cpp:280</a></div></div>
 <div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga35f44efec33f3065ce4ba68150446232"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga35f44efec33f3065ce4ba68150446232">custom_rng_exponential_c</a></div><div class="ttdeci">void custom_rng_exponential_c(void *result, _DataType beta, size_t size)</div><div class="ttdoc">math library implementation of random number generator (exponential distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00084">custom_kernels_random.cpp:84</a></div></div>
-<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_gab06869284ed9e49802c78beeb5c45b2b"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#gab06869284ed9e49802c78beeb5c45b2b">custom_rng_rayleigh_c</a></div><div class="ttdeci">void custom_rng_rayleigh_c(void *result, _DataType scale, size_t size)</div><div class="ttdoc">math library implementation of random number generator (rayleigh distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00246">custom_kernels_random.cpp:246</a></div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_gab06869284ed9e49802c78beeb5c45b2b"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#gab06869284ed9e49802c78beeb5c45b2b">custom_rng_rayleigh_c</a></div><div class="ttdeci">void custom_rng_rayleigh_c(void *result, _DataType scale, size_t size)</div><div class="ttdoc">math library implementation of random number generator (rayleigh distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00261">custom_kernels_random.cpp:261</a></div></div>
 <div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_gaa7bca3ce07f3cba8ca9d63d93287ad91"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#gaa7bca3ce07f3cba8ca9d63d93287ad91">custom_rng_gaussian_c</a></div><div class="ttdeci">void custom_rng_gaussian_c(void *result, _DataType mean, _DataType stddev, size_t size)</div><div class="ttdoc">math library implementation of random number generator (gaussian continious distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00122">custom_kernels_random.cpp:122</a></div></div>
-<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga2387eec54944a73d1b110b0b5fb4d9d7"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga2387eec54944a73d1b110b0b5fb4d9d7">custom_rng_standard_exponential_c</a></div><div class="ttdeci">void custom_rng_standard_exponential_c(void *result, size_t size)</div><div class="ttdoc">math library implementation of random number generator (standard exponential distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00284">custom_kernels_random.cpp:284</a></div></div>
-<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga94c5cc366d24a3a9dbbca2799009adc5"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga94c5cc366d24a3a9dbbca2799009adc5">custom_rng_weibull_c</a></div><div class="ttdeci">void custom_rng_weibull_c(void *result, double alpha, size_t size)</div><div class="ttdoc">math library implementation of random number generator (weibull distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00332">custom_kernels_random.cpp:332</a></div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga2387eec54944a73d1b110b0b5fb4d9d7"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga2387eec54944a73d1b110b0b5fb4d9d7">custom_rng_standard_exponential_c</a></div><div class="ttdeci">void custom_rng_standard_exponential_c(void *result, size_t size)</div><div class="ttdoc">math library implementation of random number generator (standard exponential distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00299">custom_kernels_random.cpp:299</a></div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga94c5cc366d24a3a9dbbca2799009adc5"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga94c5cc366d24a3a9dbbca2799009adc5">custom_rng_weibull_c</a></div><div class="ttdeci">void custom_rng_weibull_c(void *result, double alpha, size_t size)</div><div class="ttdoc">math library implementation of random number generator (weibull distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00347">custom_kernels_random.cpp:347</a></div></div>
 <div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga6b4652f56d6c29954dfab895c63acc57"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga6b4652f56d6c29954dfab895c63acc57">custom_rng_beta_c</a></div><div class="ttdeci">void custom_rng_beta_c(void *result, _DataType a, _DataType b, size_t size)</div><div class="ttdoc">math library implementation of random number generator (beta distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00034">custom_kernels_random.cpp:34</a></div></div>
 <div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga8fb73b244c6fb5b457d293f0a19ee2f3"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga8fb73b244c6fb5b457d293f0a19ee2f3">custom_rng_gumbel_c</a></div><div class="ttdeci">void custom_rng_gumbel_c(void *result, double loc, double scale, size_t size)</div><div class="ttdoc">math library implementation of random number generator (gumbel distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00152">custom_kernels_random.cpp:152</a></div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga8c3c5b177ffc3f86e63b3e4ec80b3eb7"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga8c3c5b177ffc3f86e63b3e4ec80b3eb7">custom_rng_normal_c</a></div><div class="ttdeci">void custom_rng_normal_c(void *result, _DataType mean, _DataType stddev, size_t size)</div><div class="ttdoc">math library implementation of random number generator (normal continious distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00231">custom_kernels_random.cpp:231</a></div></div>
 <div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_gadcf7f5e3d983619656c72b942e2bc075"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#gadcf7f5e3d983619656c72b942e2bc075">custom_rng_lognormal_c</a></div><div class="ttdeci">void custom_rng_lognormal_c(void *result, _DataType mean, _DataType stddev, size_t size)</div><div class="ttdoc">math library implementation of random number generator (lognormal distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00197">custom_kernels_random.cpp:197</a></div></div>
-<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_gaeee97f774cb0c2a1d94b8a3c53c1569b"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#gaeee97f774cb0c2a1d94b8a3c53c1569b">custom_rng_poisson_c</a></div><div class="ttdeci">void custom_rng_poisson_c(void *result, double lambda, size_t size)</div><div class="ttdoc">math library implementation of random number generator (poisson distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00231">custom_kernels_random.cpp:231</a></div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_gaeee97f774cb0c2a1d94b8a3c53c1569b"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#gaeee97f774cb0c2a1d94b8a3c53c1569b">custom_rng_poisson_c</a></div><div class="ttdeci">void custom_rng_poisson_c(void *result, double lambda, size_t size)</div><div class="ttdoc">math library implementation of random number generator (poisson distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00246">custom_kernels_random.cpp:246</a></div></div>
 <div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga212577539487a7c6018e95ba6eb25b40"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga212577539487a7c6018e95ba6eb25b40">custom_rng_geometric_c</a></div><div class="ttdeci">void custom_rng_geometric_c(void *result, float p, size_t size)</div><div class="ttdoc">math library implementation of random number generator (geometric distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00137">custom_kernels_random.cpp:137</a></div></div>
 <div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga5f9688ac0e6ce2686965df03e37757ae"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga5f9688ac0e6ce2686965df03e37757ae">custom_rng_laplace_c</a></div><div class="ttdeci">void custom_rng_laplace_c(void *result, double loc, double scale, size_t size)</div><div class="ttdoc">math library implementation of random number generator (laplace distribution)</div><div class="ttdef"><b>Definition:</b> <a href="custom__kernels__random_8cpp_source.html#l00182">custom_kernels_random.cpp:182</a></div></div>
 <!-- start footer part -->

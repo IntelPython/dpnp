@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.random.poisson &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.random.normal &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.random.rayleigh" href="dpnp.random.rayleigh.html" />
-    <link rel="prev" title="dpnp.random.normal" href="dpnp.random.normal.html" /> 
+    <link rel="next" title="dpnp.random.poisson" href="dpnp.random.poisson.html" />
+    <link rel="prev" title="dpnp.random.negative_binomial" href="dpnp.random.negative_binomial.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -170,13 +170,13 @@
         
           <li><a href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a> &raquo;</li>
         
-      <li>dpnp.random.poisson</li>
+      <li>dpnp.random.normal</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.random.poisson.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.random.normal.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -189,56 +189,68 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-random-poisson">
-<h1>dpnp.random.poisson<a class="headerlink" href="#dpnp-random-poisson" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-random-normal">
+<h1>dpnp.random.normal<a class="headerlink" href="#dpnp-random-normal" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.random.poisson">
-<code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">poisson</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lam</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#poisson"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.poisson" title="Permalink to this definition">¶</a></dt>
-<dd><p>Poisson distribution.</p>
-<p>Draw samples from a Poisson distribution.</p>
-<p>The Poisson distribution is the limit of the binomial distribution
-for large N.</p>
+<dt id="dpnp.random.normal">
+<code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">normal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">loc</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">scale</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#normal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.normal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normal distribution.</p>
+<p>Draw random samples from a normal (Gaussian) distribution.</p>
+<p>The probability density function of the normal distribution, first
+derived by De Moivre and 200 years later by both Gauss and Laplace
+independently <a class="footnote-reference brackets" href="#id5" id="id1">2</a>, is often called the bell curve because of
+its characteristic shape (see the example below).</p>
+<p>The normal distributions occurs often in nature.  For example, it
+describes the commonly occurring distribution of samples influenced
+by a large number of tiny, random disturbances, each with its own
+unique distribution <a class="footnote-reference brackets" href="#id5" id="id2">2</a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>lam</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Expectation of interval, must be &gt;= 0. A sequence of expectation
-intervals must be broadcastable over the requested size.</p></li>
-<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
+<li><p><strong>loc</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Mean (“centre”) of the distribution.</p></li>
+<li><p><strong>scale</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Standard deviation (spread or “width”) of the distribution. Must be
+non-negative.</p></li>
+<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
 <code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">*</span> <span class="pre">k</span></code> samples are drawn.  If size is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default),
-a single value is returned if <code class="docutils literal notranslate"><span class="pre">lam</span></code> is a scalar.</p></li>
+a single value is returned if <code class="docutils literal notranslate"><span class="pre">loc</span></code> and <code class="docutils literal notranslate"><span class="pre">scale</span></code> are both scalars.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – Drawn samples from the parameterized Poisson distribution.</p>
+<dd class="field-even"><p><strong>out</strong> – Drawn samples from the parameterized normal distribution.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.dparray.dparray.html#dpnp.dparray.dparray" title="dpnp.dparray.dparray">dparray</a>, int32</p>
+<dd class="field-odd"><p><a class="reference internal" href="dpnp.dparray.dparray.html#dpnp.dparray.dparray" title="dpnp.dparray.dparray">dparray</a></p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The Poisson distribution</p>
+<p>The probability density for the Gaussian distribution is</p>
 <div class="math notranslate nohighlight">
-\[f(k; \lambda)=\frac{\lambda^k e^{-\lambda}}{k!}\]</div>
-<p>For events with an expected separation <span class="math notranslate nohighlight">\(\lambda\)</span> the Poisson
-distribution <span class="math notranslate nohighlight">\(f(k; \lambda)\)</span> describes the probability of
-<span class="math notranslate nohighlight">\(k\)</span> events occurring within the observed
-interval <span class="math notranslate nohighlight">\(\lambda\)</span>.</p>
+\[p(x) = \frac{1}{\sqrt{ 2 \pi \sigma^2 }}
+e^{ - \frac{ (x - \mu)^2 } {2 \sigma^2} },\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mu\)</span> is the mean and <span class="math notranslate nohighlight">\(\sigma\)</span> the standard
+deviation. The square of the standard deviation, <span class="math notranslate nohighlight">\(\sigma^2\)</span>,
+is called the variance.</p>
+<p>The function has its peak at the mean, and its “spread” increases with
+the standard deviation (the function reaches 0.607 times its maximum at
+<span class="math notranslate nohighlight">\(x + \sigma\)</span> and <span class="math notranslate nohighlight">\(x - \sigma\)</span> <a class="footnote-reference brackets" href="#id5" id="id3">2</a>).  This implies that
+normal is more likely to return samples lying close to the mean, rather
+than those far away.</p>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id1"><span class="brackets">1</span></dt>
-<dd><p>Weisstein, Eric W. “Poisson Distribution.”
-From MathWorld–A Wolfram Web Resource.
-<a class="reference external" href="http://mathworld.wolfram.com/PoissonDistribution.html">http://mathworld.wolfram.com/PoissonDistribution.html</a></p>
+<dt class="label" id="id4"><span class="brackets">1</span></dt>
+<dd><p>Wikipedia, “Normal distribution”,
+<a class="reference external" href="https://en.wikipedia.org/wiki/Normal_distribution">https://en.wikipedia.org/wiki/Normal_distribution</a></p>
 </dd>
-<dt class="label" id="id2"><span class="brackets">2</span></dt>
-<dd><p>Wikipedia, “Poisson distribution”,
-<a class="reference external" href="https://en.wikipedia.org/wiki/Poisson_distribution">https://en.wikipedia.org/wiki/Poisson_distribution</a></p>
+<dt class="label" id="id5"><span class="brackets">2</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id2">2</a>,<a href="#id3">3</a>)</span></dt>
+<dd><p>P. R. Peebles Jr., “Central Limit Theorem” in “Probability,
+Random Variables and Random Signal Principles”, 4th ed., 2001,
+pp. 51, 51, 125.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
 <p>Draw samples from the distribution:
-&gt;&gt;&gt; import numpy as np
-&gt;&gt;&gt; s = dpnp.random.poisson(5, 10000)</p>
+&gt;&gt;&gt; mu, sigma = 0, 0.1 # mean and standard deviation
+&gt;&gt;&gt; s = dpnp.random.normal(mu, sigma, 1000)</p>
 </dd></dl>
 
 </div>
@@ -251,10 +263,10 @@ From MathWorld–A Wolfram Web Resource.
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.random.rayleigh.html" class="btn btn-neutral float-right" title="dpnp.random.rayleigh" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.random.poisson.html" class="btn btn-neutral float-right" title="dpnp.random.poisson" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.random.normal.html" class="btn btn-neutral float-left" title="dpnp.random.normal" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.random.negative_binomial.html" class="btn btn-neutral float-left" title="dpnp.random.negative_binomial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -255,6 +255,10 @@ Functions</h2></td></tr>
 <tr class="memitem:gaa7bca3ce07f3cba8ca9d63d93287ad91"><td class="memTemplItemLeft" align="right" valign="top">INP_DLLEXPORT void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaa7bca3ce07f3cba8ca9d63d93287ad91">custom_rng_gaussian_c</a> (void *result, _DataType mean, _DataType stddev, size_t size)</td></tr>
 <tr class="memdesc:gaa7bca3ce07f3cba8ca9d63d93287ad91"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of random number generator (gaussian continious distribution)  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gaa7bca3ce07f3cba8ca9d63d93287ad91">More...</a><br /></td></tr>
 <tr class="separator:gaa7bca3ce07f3cba8ca9d63d93287ad91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8c3c5b177ffc3f86e63b3e4ec80b3eb7"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
+<tr class="memitem:ga8c3c5b177ffc3f86e63b3e4ec80b3eb7"><td class="memTemplItemLeft" align="right" valign="top">INP_DLLEXPORT void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga8c3c5b177ffc3f86e63b3e4ec80b3eb7">custom_rng_normal_c</a> (void *result, _DataType mean, _DataType stddev, size_t size)</td></tr>
+<tr class="memdesc:ga8c3c5b177ffc3f86e63b3e4ec80b3eb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of random number generator (normal continious distribution)  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga8c3c5b177ffc3f86e63b3e4ec80b3eb7">More...</a><br /></td></tr>
+<tr class="separator:ga8c3c5b177ffc3f86e63b3e4ec80b3eb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2444c336ba277444e6383aa1b0119341"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:ga2444c336ba277444e6383aa1b0119341"><td class="memTemplItemLeft" align="right" valign="top">INP_DLLEXPORT void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga2444c336ba277444e6383aa1b0119341">custom_rng_hypergeometric_c</a> (void *result, int l, int s, int m, size_t size)</td></tr>
 <tr class="memdesc:ga2444c336ba277444e6383aa1b0119341"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of random number generator (hypergeometric distribution)  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga2444c336ba277444e6383aa1b0119341">More...</a><br /></td></tr>
@@ -1602,15 +1606,6 @@ template&lt;typename _DataType &gt; </div>
 </dl>
 
 <p class="definition">Definition at line <a class="el" href="custom__kernels__random_8cpp_source.html#l00122">122</a> of file <a class="el" href="custom__kernels__random_8cpp_source.html">custom_kernels_random.cpp</a>.</p>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="group___b_a_c_k_e_n_d___a_p_i_gaa7bca3ce07f3cba8ca9d63d93287ad91_icgraph.png" border="0" usemap="#agroup___b_a_c_k_e_n_d___a_p_i_gaa7bca3ce07f3cba8ca9d63d93287ad91_icgraph" alt=""/></div>
-<map name="group___b_a_c_k_e_n_d___a_p_i_gaa7bca3ce07f3cba8ca9d63d93287ad91_icgraph" id="agroup___b_a_c_k_e_n_d___a_p_i_gaa7bca3ce07f3cba8ca9d63d93287ad91_icgraph">
-<area shape="rect" title="math library implementation of random number generator (gaussian continious distribution)" alt="" coords="200,13,363,39"/>
-<area shape="rect" href="group___b_a_c_k_e_n_d___a_p_i.html#ga5c1a01fc4236f2c3f25bd79e7fee50a9" title="math library implementation of random number generator (standard normal distribution)" alt="" coords="5,5,152,47"/>
-</map>
-</div>
 
 </div>
 </div>
@@ -1944,6 +1939,70 @@ template&lt;typename _DataType &gt; </div>
 
 </div>
 </div>
+<a id="ga8c3c5b177ffc3f86e63b3e4ec80b3eb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8c3c5b177ffc3f86e63b3e4ec80b3eb7">&#9670;&nbsp;</a></span>custom_rng_normal_c()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename _DataType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">INP_DLLEXPORT void custom_rng_normal_c </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>result</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">_DataType&#160;</td>
+          <td class="paramname"><em>mean</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">_DataType&#160;</td>
+          <td class="paramname"><em>stddev</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>math library implementation of random number generator (normal continious distribution) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in <code>result</code> arrays.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">mean</td><td>Mean value.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">stddev</td><td>Standard deviation.</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="custom__kernels__random_8cpp_source.html#l00231">231</a> of file <a class="el" href="custom__kernels__random_8cpp_source.html">custom_kernels_random.cpp</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="group___b_a_c_k_e_n_d___a_p_i_ga8c3c5b177ffc3f86e63b3e4ec80b3eb7_icgraph.png" border="0" usemap="#agroup___b_a_c_k_e_n_d___a_p_i_ga8c3c5b177ffc3f86e63b3e4ec80b3eb7_icgraph" alt=""/></div>
+<map name="group___b_a_c_k_e_n_d___a_p_i_ga8c3c5b177ffc3f86e63b3e4ec80b3eb7_icgraph" id="agroup___b_a_c_k_e_n_d___a_p_i_ga8c3c5b177ffc3f86e63b3e4ec80b3eb7_icgraph">
+<area shape="rect" title="math library implementation of random number generator (normal continious distribution)" alt="" coords="200,13,351,39"/>
+<area shape="rect" href="group___b_a_c_k_e_n_d___a_p_i.html#ga5c1a01fc4236f2c3f25bd79e7fee50a9" title="math library implementation of random number generator (standard normal distribution)" alt="" coords="5,5,152,47"/>
+</map>
+</div>
+
+</div>
+</div>
 <a id="gaeee97f774cb0c2a1d94b8a3c53c1569b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gaeee97f774cb0c2a1d94b8a3c53c1569b">&#9670;&nbsp;</a></span>custom_rng_poisson_c()</h2>
 
@@ -1988,7 +2047,7 @@ template&lt;typename _DataType &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="custom__kernels__random_8cpp_source.html#l00231">231</a> of file <a class="el" href="custom__kernels__random_8cpp_source.html">custom_kernels_random.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="custom__kernels__random_8cpp_source.html#l00246">246</a> of file <a class="el" href="custom__kernels__random_8cpp_source.html">custom_kernels_random.cpp</a>.</p>
 
 </div>
 </div>
@@ -2036,7 +2095,7 @@ template&lt;typename _DataType &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="custom__kernels__random_8cpp_source.html#l00246">246</a> of file <a class="el" href="custom__kernels__random_8cpp_source.html">custom_kernels_random.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="custom__kernels__random_8cpp_source.html#l00261">261</a> of file <a class="el" href="custom__kernels__random_8cpp_source.html">custom_kernels_random.cpp</a>.</p>
 
 </div>
 </div>
@@ -2077,7 +2136,7 @@ template&lt;typename _DataType &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="custom__kernels__random_8cpp_source.html#l00265">265</a> of file <a class="el" href="custom__kernels__random_8cpp_source.html">custom_kernels_random.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="custom__kernels__random_8cpp_source.html#l00280">280</a> of file <a class="el" href="custom__kernels__random_8cpp_source.html">custom_kernels_random.cpp</a>.</p>
 
 </div>
 </div>
@@ -2118,7 +2177,7 @@ template&lt;typename _DataType &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="custom__kernels__random_8cpp_source.html#l00284">284</a> of file <a class="el" href="custom__kernels__random_8cpp_source.html">custom_kernels_random.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="custom__kernels__random_8cpp_source.html#l00299">299</a> of file <a class="el" href="custom__kernels__random_8cpp_source.html">custom_kernels_random.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2168,14 +2227,14 @@ template&lt;typename _DataType &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="custom__kernels__random_8cpp_source.html#l00298">298</a> of file <a class="el" href="custom__kernels__random_8cpp_source.html">custom_kernels_random.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="custom__kernels__random_8cpp_source.html#l00313">313</a> of file <a class="el" href="custom__kernels__random_8cpp_source.html">custom_kernels_random.cpp</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="group___b_a_c_k_e_n_d___a_p_i_ga5c1a01fc4236f2c3f25bd79e7fee50a9_cgraph.png" border="0" usemap="#agroup___b_a_c_k_e_n_d___a_p_i_ga5c1a01fc4236f2c3f25bd79e7fee50a9_cgraph" alt=""/></div>
 <map name="group___b_a_c_k_e_n_d___a_p_i_ga5c1a01fc4236f2c3f25bd79e7fee50a9_cgraph" id="agroup___b_a_c_k_e_n_d___a_p_i_ga5c1a01fc4236f2c3f25bd79e7fee50a9_cgraph">
 <area shape="rect" title="math library implementation of random number generator (standard normal distribution)" alt="" coords="5,5,152,47"/>
-<area shape="rect" href="group___b_a_c_k_e_n_d___a_p_i.html#gaa7bca3ce07f3cba8ca9d63d93287ad91" title="math library implementation of random number generator (gaussian continious distribution)" alt="" coords="200,13,363,39"/>
+<area shape="rect" href="group___b_a_c_k_e_n_d___a_p_i.html#ga8c3c5b177ffc3f86e63b3e4ec80b3eb7" title="math library implementation of random number generator (normal continious distribution)" alt="" coords="200,13,351,39"/>
 </map>
 </div>
 
@@ -2232,7 +2291,7 @@ template&lt;typename _DataType &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="custom__kernels__random_8cpp_source.html#l00312">312</a> of file <a class="el" href="custom__kernels__random_8cpp_source.html">custom_kernels_random.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="custom__kernels__random_8cpp_source.html#l00327">327</a> of file <a class="el" href="custom__kernels__random_8cpp_source.html">custom_kernels_random.cpp</a>.</p>
 
 </div>
 </div>
@@ -2280,7 +2339,7 @@ template&lt;typename _DataType &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="custom__kernels__random_8cpp_source.html#l00332">332</a> of file <a class="el" href="custom__kernels__random_8cpp_source.html">custom_kernels_random.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="custom__kernels__random_8cpp_source.html#l00347">347</a> of file <a class="el" href="custom__kernels__random_8cpp_source.html">custom_kernels_random.cpp</a>.</p>
 
 </div>
 </div>

@@ -80,6 +80,7 @@ var group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i =
       [ "DPNP_FN_RNG_LAPLACE", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a52addc8e50547e5ed5829ec8cfb96b0b", null ],
       [ "DPNP_FN_RNG_LOGNORMAL", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a71e9d9eae39bfc079094c1244fb8bfbd", null ],
       [ "DPNP_FN_RNG_NEGATIVE_BINOMIAL", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a9a2fb54e875d4c304e60e8747164df9e", null ],
+      [ "DPNP_FN_RNG_NORMAL", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a3fd78fcac1e00c5c8ae1ba0eed23122d", null ],
       [ "DPNP_FN_RNG_POISSON", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ac932383a1104d78d3c137a8688de68a0", null ],
       [ "DPNP_FN_RNG_RAYLEIGH", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558acc272cc4ecbe0b0e5705041af58249c6", null ],
       [ "DPNP_FN_RNG_STANDARD_CAUCHY", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558aa14ca7c1b83bc295bebb629e28e80dfc", null ],
@@ -108,6 +109,7 @@ var group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i =
       [ "DPNP_FT_INT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15a2ca75eef4ff62b379b29390b6efe736f", null ],
       [ "DPNP_FT_LONG", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15a8160fd9c1c7bd64515ffa60b8140f208", null ],
       [ "DPNP_FT_FLOAT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15aea1ca4f8f623afaaf6072b0b6eb56c76", null ],
-      [ "DPNP_FT_DOUBLE", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15ac84f19e1412dd40492153e4cb0e27739", null ]
+      [ "DPNP_FT_DOUBLE", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15ac84f19e1412dd40492153e4cb0e27739", null ],
+      [ "DPNP_FT_CMPLX128", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15a599b693823273a797188b9beb8018052", null ]
     ] ]
 ];

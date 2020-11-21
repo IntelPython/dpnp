@@ -1,0 +1,6 @@
+﻿dpnp.copy
+=========
+
+.. currentmodule:: dpnp
+
+.. autofunction:: copy
