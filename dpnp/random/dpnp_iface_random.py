@@ -1440,6 +1440,28 @@ def standard_cauchy(size=None):
 def standard_exponential(size=None):
     """Standard exponential distribution.
 
+    Draw samples from the standard exponential distribution.
+
+    `standard_exponential` is identical to the exponential distribution
+    with a scale parameter of 1.
+
+    Parameters
+    ----------
+    size : int or tuple of ints, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  Default is None, in which case a
+        single value is returned.
+
+    Returns
+    -------
+    out : dparray
+        Drawn samples.
+
+    Examples
+    --------
+    Output a 3x8000 array:
+    >>> n = dpnp.random.standard_exponential((3, 8000))
+
     """
 
     if not use_origin_backend(size):
