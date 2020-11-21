@@ -723,22 +723,24 @@ def ones(shape, dtype=None, order='C'):
     Parameters
     ----------
     shape : int or sequence of ints
-        Shape of the new array, e.g., ``(2, 3)`` or ``2``.
+        The shape of the output array.
     dtype : data-type, optional
-        The desired data-type for the array, e.g., `numpy.int64`.  Default is
-        `numpy.float64`.
-    order : {'C', 'F'}, optional, default: C
-        Whether to store multi-dimensional data in row-major
-        (C-style) or column-major (Fortran-style) order in
-        memory.
+        The type of the output array.
+    order : {'C', 'F'}, optional
+        Row-major (C-style) or column-major (Fortran-style) order.
 
     Returns
     -------
-    out : dparray
+    out : :obj:`dpnp.ndarray`
         Array of ones with the given shape, dtype, and order.
+
+    Limitations
+    -----------
+    Parameter ``order`` is supported only with default value `'C'`.
 
     See Also
     --------
+    :obj:`numpy.ones` : Return a new array of given shape and type, filled with ones.
     :obj:`dpnp.ones_like` : Return an array of ones with shape and type of input.
     :obj:`dpnp.empty` : Return a new uninitialized array.
     :obj:`dpnp.zeros` : Return a new array setting values to zero.
@@ -746,17 +748,15 @@ def ones(shape, dtype=None, order='C'):
 
     Examples
     --------
-    >>> np.ones(5)
-    array([1., 1., 1., 1., 1.])
-    >>> np.ones((5,), dtype=int64)
-    array([1, 1, 1, 1, 1])
-    >>> np.ones((2, 1))
-    array([[1.],
-           [1.]])
-    >>> s = (2,2)
-    >>> np.ones(s)
-    array([[1.,  1.],
-           [1.,  1.]])
+    >>> import dpnp as np
+    >>> [i for i in np.ones(5)]
+    [1.0, 1.0, 1.0, 1.0, 1.0]
+    >>> x = np.ones((2, 1))
+    >>> x.ndim, x.size, x.shape
+    (2, 2, (2, 1))
+    >>> [i for i in x]
+    [1.0, 1.0]
+
     """
 
     if (not use_origin_backend()):
@@ -769,41 +769,39 @@ def ones(shape, dtype=None, order='C'):
 
 
 # numpy.ones_like(a, dtype=None, order='K', subok=True, shape=None)
-def ones_like(prototype, dtype=None, order='C', subok=False, shape=None):
+def ones_like(x1, dtype=None, order='C', subok=False, shape=None):
     """
     Return an array of ones with the same shape and type as a given array.
 
     Parameters
     ----------
-    a : array_like
-        The shape and data-type of `a` define these same attributes of
-        the returned array.
+    x1 : array_like
+        Base array.
     dtype : data-type, optional
-        Overrides the data type of the result.
-        .. versionadded:: 1.6.0
+        The type of the output array.
     order : {'C', 'F', 'A', or 'K'}, optional
-        Overrides the memory layout of the result. 'C' means C-order,
-        'F' means F-order, 'A' means 'F' if `a` is Fortran contiguous,
-        'C' otherwise. 'K' means match the layout of `a` as closely
-        as possible.
-        .. versionadded:: 1.6.0
+        Overrides the memory layout of the result.
     subok : bool, optional.
         If True, then the newly created array will use the sub-class
         type of 'a', otherwise it will be a base-class array. Defaults
         to True.
     shape : int or sequence of ints, optional.
-        Overrides the shape of the result. If order='K' and the number of
-        dimensions is unchanged, will try to keep order, otherwise,
-        order='C' is implied.
-        .. versionadded:: 1.17.0
+        The shape of the output array.
 
     Returns
     -------
-    out : ndarray
-        Array of ones with the same shape and type as `a`.
+    out : :obj:`dpnp.ndarray`
+        Array of ones with the same shape and type as `x1`.
+
+    Limitations
+    -----------
+    Parameter ``order`` is supported only with default value `'C'`.
+    Parameter ``subok`` is supported only with default value `False`.
 
     See Also
     --------
+    :obj:`numpy.ones_like` : Return an array of ones
+                             with the same shape and type as a given array.
     :obj:`dpnp.empty_like` : Return an empty array with shape and type of input.
     :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of input.
     :obj:`dpnp.full_like` : Return a new array with shape of input filled with value.
@@ -811,19 +809,13 @@ def ones_like(prototype, dtype=None, order='C', subok=False, shape=None):
 
     Examples
     --------
+    >>> import dpnp as np
     >>> x = np.arange(6)
-    >>> x = x.reshape((2, 3))
-    >>> x
-    array([[0, 1, 2],
-           [3, 4, 5]])
-    >>> np.ones_like(x)
-    array([[1, 1, 1],
-           [1, 1, 1]])
-    >>> y = np.arange(3, dtype=float)
-    >>> y
-    array([0., 1., 2.])
-    >>> np.ones_like(y)
-    array([1.,  1.,  1.])
+    >>> [i for i in x]
+    [0.0, 1.0, 2.0, 3.0, 4.0, 5.0]
+    >>> [i for i in np.ones_like(x)]
+    [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+
     """
 
     if (not use_origin_backend()):
@@ -832,12 +824,12 @@ def ones_like(prototype, dtype=None, order='C', subok=False, shape=None):
         if subok is not False:
             checker_throw_value_error("ones_like", "subok", subok, False)
 
-        _shape = shape if shape is not None else prototype.shape
-        _dtype = dtype if dtype is not None else prototype.dtype
+        _shape = shape if shape is not None else x1.shape
+        _dtype = dtype if dtype is not None else x1.dtype
 
         return dpnp_init_val(_shape, _dtype, 1)
 
-    return numpy.ones_like(prototype, dtype, order, subok, shape)
+    return numpy.ones_like(x1, dtype, order, subok, shape)
 
 
 def zeros(shape, dtype=None, order='C'):
