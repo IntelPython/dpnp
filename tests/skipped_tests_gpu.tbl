@@ -154,14 +154,6 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_identity
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_ones_like_subok
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_zeros_like_subok
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_zeros_strides
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange3
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange4
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange5
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange8
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange9
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange_negative_size
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange_no_dtype_float
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange_no_dtype_int
 tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_array_start_stop
 tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_array_start_stop_axis1
 tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_float_underflow
@@ -2112,9 +2104,6 @@ tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargm
 tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_zero_size
 tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_zero_size_axis0
 tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_zero_size_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestNonzero_param_0_{array=array([], dtype=float64)}::test_nonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestNonzero_param_1_{array=array([], shape=(0, 2), dtype=float64)}::test_nonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestNonzero_param_2_{array=array([], shape=(0, 2, 0), dtype=float64)}::test_nonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_0_{array=array(0)}::test_nonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_1_{array=array(1)}::test_nonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSortedInvalid::test_searchsorted_ndbins

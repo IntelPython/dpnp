@@ -58,16 +58,17 @@ __all__ = [
     'negative_binomial',
     'poisson',
     'rand',
-    'ranf',
     'randint',
     'randn',
     'random',
     'random_integers',
     'random_sample',
+    'ranf',
     'rayleigh',
     'sample',
     'seed',
     'standard_cauchy',
+    'standard_exponential',
     'standard_normal',
     'uniform',
     'weibull'
@@ -232,65 +233,6 @@ def binomial(n, p, size=None):
         return dpnp_binomial(int(n), p, size)
 
     return call_origin(numpy.random.binomial, n, p, size)
-
-
-def geometric(p, size=None):
-    """Geometric distribution.
-
-    Draw samples from the geometric distribution.
-
-    Bernoulli trials are experiments with one of two outcomes:
-    success or failure (an example of such an experiment is flipping
-    a coin).  The geometric distribution models the number of trials
-    that must be run in order to achieve success.  It is therefore
-    supported on the positive integers, ``k = 1, 2, ...``.
-
-    The probability mass function of the geometric distribution is
-
-    .. math:: f(k) = (1 - p)^{k - 1} p
-
-    where `p` is the probability of success of an individual trial.
-
-    Parameters
-    ----------
-    p : float
-        The probability of success of an individual trial.
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
-        a single value is returned if ``p`` is a scalar.
-
-    Returns
-    -------
-    out : dparray, int32
-        Drawn samples from the parameterized geometric distribution.
-
-    Examples
-    --------
-    Draw ten thousand values from the geometric distribution,
-    with the probability of an individual success equal to 0.35:
-    >>> z = dpnp.random.geometric(p=0.35, size=10000)
-
-    """
-
-    if not use_origin_backend(p):
-        if size is None:
-            size = 1
-        elif isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    checker_throw_value_error("geometric", "type(dim)", type(dim), int)
-        elif not isinstance(size, int):
-            checker_throw_value_error("geometric", "type(size)", type(size), int)
-
-        # TODO:
-        # array_like of floats for `p` param
-        if p > 1 or p <= 0:
-            checker_throw_value_error("geometric", "p", p, "in (0, 1]")
-
-        return dpnp_geometric(p, size)
-
-    return call_origin(numpy.random.geometric, p, size)
 
 
 def chisquare(df, size=None):
@@ -495,6 +437,65 @@ def gamma(shape, scale=1.0, size=None):
         return dpnp_gamma(shape, scale, size)
 
     return call_origin(numpy.random.gamma, shape, scale, size)
+
+
+def geometric(p, size=None):
+    """Geometric distribution.
+
+    Draw samples from the geometric distribution.
+
+    Bernoulli trials are experiments with one of two outcomes:
+    success or failure (an example of such an experiment is flipping
+    a coin).  The geometric distribution models the number of trials
+    that must be run in order to achieve success.  It is therefore
+    supported on the positive integers, ``k = 1, 2, ...``.
+
+    The probability mass function of the geometric distribution is
+
+    .. math:: f(k) = (1 - p)^{k - 1} p
+
+    where `p` is the probability of success of an individual trial.
+
+    Parameters
+    ----------
+    p : float
+        The probability of success of an individual trial.
+    size : int or tuple of ints, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
+        a single value is returned if ``p`` is a scalar.
+
+    Returns
+    -------
+    out : dparray, int32
+        Drawn samples from the parameterized geometric distribution.
+
+    Examples
+    --------
+    Draw ten thousand values from the geometric distribution,
+    with the probability of an individual success equal to 0.35:
+    >>> z = dpnp.random.geometric(p=0.35, size=10000)
+
+    """
+
+    if not use_origin_backend(p):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("geometric", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("geometric", "type(size)", type(size), int)
+
+        # TODO:
+        # array_like of floats for `p` param
+        if p > 1 or p <= 0:
+            checker_throw_value_error("geometric", "p", p, "in (0, 1]")
+
+        return dpnp_geometric(p, size)
+
+    return call_origin(numpy.random.geometric, p, size)
 
 
 def gumbel(loc=0.0, scale=1.0, size=None):
@@ -983,34 +984,6 @@ def rand(d0, *dn):
     return call_origin(numpy.random.rand, d0, *dn)
 
 
-def ranf(size):
-    """
-    Return random floats in the half-open interval [0.0, 1.0).
-    This is an alias of random_sample.
-
-    Parameters
-    ----------
-    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
-
-    Returns
-    -------
-    out : Array of random floats of shape size.
-
-    See Also
-    --------
-    :obj:`dpnp.random.random`
-
-    """
-
-    if not use_origin_backend(size):
-        for dim in size:
-            if not isinstance(dim, int):
-                checker_throw_value_error("ranf", "type(dim)", type(dim), int)
-        return dpnp_random(size)
-
-    return call_origin(numpy.random.ranf, size)
-
-
 def randint(low, high=None, size=None, dtype=int):
     """
     randint(low, high=None, size=None, dtype=int)
@@ -1211,6 +1184,34 @@ def random_sample(size):
     return call_origin(numpy.random.random_sample, size)
 
 
+def ranf(size):
+    """
+    Return random floats in the half-open interval [0.0, 1.0).
+    This is an alias of random_sample.
+
+    Parameters
+    ----------
+    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
+
+    Returns
+    -------
+    out : Array of random floats of shape size.
+
+    See Also
+    --------
+    :obj:`dpnp.random.random`
+
+    """
+
+    if not use_origin_backend(size):
+        for dim in size:
+            if not isinstance(dim, int):
+                checker_throw_value_error("ranf", "type(dim)", type(dim), int)
+        return dpnp_random(size)
+
+    return call_origin(numpy.random.ranf, size)
+
+
 def rayleigh(scale=1.0, size=None):
     """Rayleigh distribution.
 
@@ -1255,29 +1256,6 @@ def rayleigh(scale=1.0, size=None):
     return call_origin(numpy.random.rayleigh, scale, size)
 
 
-def seed(seed=None):
-    """
-    Reseed a legacy philox4x32x10 random number generator engine
-
-    Parameters
-    ----------
-    seed : {None, int}, optional
-
-    """
-    if not use_origin_backend(seed):
-        # TODO:
-        # implement seed default value as is in numpy
-        if seed is None:
-            seed = 1
-        elif not isinstance(seed, int):
-            checker_throw_value_error("seed", "type(seed)", type(seed), int)
-        elif seed < 0:
-            checker_throw_value_error("seed", "seed", seed, "non-negative")
-        return dpnp_srand(seed)
-
-    return call_origin(numpy.random.seed, seed)
-
-
 def sample(size):
     """
     Return random floats in the half-open interval [0.0, 1.0).
@@ -1304,6 +1282,29 @@ def sample(size):
         return dpnp_random(size)
 
     return call_origin(numpy.random.sample, size)
+
+
+def seed(seed=None):
+    """
+    Reseed a legacy philox4x32x10 random number generator engine
+
+    Parameters
+    ----------
+    seed : {None, int}, optional
+
+    """
+    if not use_origin_backend(seed):
+        # TODO:
+        # implement seed default value as is in numpy
+        if seed is None:
+            seed = 1
+        elif not isinstance(seed, int):
+            checker_throw_value_error("seed", "type(seed)", type(seed), int)
+        elif seed < 0:
+            checker_throw_value_error("seed", "seed", seed, "non-negative")
+        return dpnp_srand(seed)
+
+    return call_origin(numpy.random.seed, seed)
 
 
 def standard_cauchy(size=None):
@@ -1348,6 +1349,26 @@ def standard_cauchy(size=None):
         return dpnp_standard_cauchy(size)
 
     return call_origin(numpy.random.standard_cauchy, size)
+
+
+def standard_exponential(size=None):
+    """Standard exponential distribution.
+
+    """
+
+    if not use_origin_backend(size):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("standard_exponential", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("standard_exponential", "type(size)", type(size), int)
+
+        return dpnp_standard_exponential(size)
+
+    return call_origin(numpy.random.standard_exponential, size)
 
 
 def standard_normal(size=None):
