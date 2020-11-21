@@ -264,39 +264,42 @@ def asarray(input, dtype=None, order='C'):
 
 # numpy.empty(shape, dtype=float, order='C')
 def empty(shape, dtype=numpy.float64, order='C'):
-    """Return a new matrix of given shape and type, without initializing entries.
+    """
+    Return a new array of given shape and type, without initializing entries.
 
     Parameters
     ----------
     shape : int or tuple of int
-        Shape of the empty matrix.
+        Shape of the empty array.
     dtype : data-type, optional
-        Desired output data-type.
+        Data type specifier.
     order : {'C', 'F'}, optional
-        Whether to store multi-dimensional data in row-major
-        (C-style) or column-major (Fortran-style) order in
-        memory.
+        Row-major (C-style) or column-major (Fortran-style) order.
+
+    Returns
+    -------
+    out : :obj:`dpnp.ndarray`
+        A new array with elements not initialized.
+
+    Limitations
+    -----------
+    Parameter ``order`` is supported only with default value `'C'`.
 
     See Also
     --------
-    :obj:`dpnp.empty_like`, :obj:`dpnp.zeros`
-
-    Notes
-    -----
-    :obj:`dpnp.empty`, unlike :obj:`dpnp.zeros`, does not set the matrix values
-    to zero, and may therefore be marginally faster.  On the other hand, it
-    requires the user to manually set all the values in the array, and should
-    be used with caution.
+    :obj:`numpy.empty` : Return a new array of given shape and type, without initializing entries.
+    :obj:`dpnp.empty_like` : Return an empty array with shape and type of input.
+    :obj:`dpnp.ones` : Return a new array setting values to one.
+    :obj:`dpnp.zeros` : Return a new array setting values to zero.
+    :obj:`dpnp.full` : Return a new array of given shape filled with value.
 
     Examples
     --------
-    >>> import numpy.matlib
-    >>> np.matlib.empty((2, 2))    # filled with random data
-    matrix([[  6.76425276e-320,   9.79033856e-307], # random
-            [  7.39337286e-309,   3.22135945e-309]])
-    >>> np.matlib.empty((2, 2), dtype=int)
-    matrix([[ 6600475,        0], # random
-            [ 6586976, 22740995]])
+    >>> import dpnp as np
+    >>> x = np.empty(4)
+    >>> [i for i in x]
+    [0.0, 0.0, 1e-323, -3.5935729608842025e+22]
+
     """
 
     if (not use_origin_backend()):
@@ -316,56 +319,43 @@ def empty_like(prototype, dtype=None, order='C', subok=False, shape=None):
     Parameters
     ----------
     prototype : array_like
-        The shape and data-type of `prototype` define these same attributes
-        of the returned array.
+        Base array.
     dtype : data-type, optional
-        Overrides the data type of the result.
-        .. versionadded:: 1.6.0
+        Data type specifier.
     order : {'C', 'F', 'A', or 'K'}, optional
-        Overrides the memory layout of the result. 'C' means C-order,
-        'F' means F-order, 'A' means 'F' if ``prototype`` is Fortran
-        contiguous, 'C' otherwise. 'K' means match the layout of ``prototype``
-        as closely as possible.
-        .. versionadded:: 1.6.0
+        Overrides the memory layout of the result.
     subok : bool, optional.
         If True, then the newly created array will use the sub-class
-        type of 'a', otherwise it will be a base-class array. Defaults
-        to True.
+        type of 'a', otherwise it will be a base-class array.
     shape : int or sequence of ints, optional.
-        Overrides the shape of the result. If order='K' and the number of
-        dimensions is unchanged, will try to keep order, otherwise,
-        order='C' is implied.
-        .. versionadded:: 1.17.0
+        Overrides the shape of the result.
 
     Returns
     -------
-    out : ndarray
-        Array of uninitialized (arbitrary) data with the same
-        shape and type as `prototype`.
+    out : :obj:`dpnp.ndarray`
+        A new array with same shape and dtype of `prototype` with elements not initialized.
+
+    Limitations
+    -----------
+    Parameter ``order`` is supported only with default value `'C'`.
+    Parameter ``subok`` is supported only with default value `False`.
 
     See Also
     --------
+    :obj:`numpy.empty_like` : Return a new array with the same shape and type as a given array.
     :obj:`dpnp.ones_like` : Return an array of ones with shape and type of input.
     :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of input.
     :obj:`dpnp.full_like` : Return a new array with shape of input filled with value.
     :obj:`dpnp.empty` : Return a new uninitialized array.
 
-    Notes
-    -----
-    This function does *not* initialize the returned array; to do that use
-    :obj:`dpnp.zeros_like` or :obj:`dpnp.ones_like` instead.  It may be marginally faster than
-    the functions that do set the array values.
-
     Examples
     --------
-    >>> a = ([1,2,3], [4,5,6])                         # a is array-like
-    >>> np.empty_like(a)
-    array([[-1073741821, -1073741821,           3],    # uninitialized
-           [          0,           0, -1073741821]])
-    >>> a = np.array([[1., 2., 3.],[4.,5.,6.]])
-    >>> np.empty_like(a)
-    array([[ -2.00000715e+000,   1.48219694e-323,  -2.00000572e+000], # uninitialized
-           [  4.38791518e-305,  -2.00000715e+000,   4.17269252e-309]])
+    >>> import dpnp as np
+    >>> prototype = np.array([1, 2, 3])
+    >>> x = np.empty_like(prototype)
+    >>> [i for i in x]
+    [0, 0, 0]
+
     """
 
     if (not use_origin_backend()):
