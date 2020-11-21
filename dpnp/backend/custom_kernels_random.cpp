@@ -266,13 +266,26 @@ void custom_rng_standard_cauchy_c(void* result, size_t size)
 }
 
 template <typename _DataType>
+void custom_rng_standard_exponential_c(void* result, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+
+    // set displacement a
+    const _DataType beta = (_DataType(1.0));
+
+    custom_rng_exponential_c(result, beta, size);
+}
+
+template <typename _DataType>
 void custom_rng_standard_normal_c(void* result, size_t size)
 {
     if (!size)
     {
         return;
     }
-    _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
     const _DataType mean =  _DataType(0.0);
     const _DataType stddev =  _DataType(1.0);
@@ -355,6 +368,8 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_RNG_RAYLEIGH][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_rayleigh_c<double>};
   
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_CAUCHY][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_standard_cauchy_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_EXPONENTIAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_standard_exponential_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_NORMAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_standard_normal_c<double>};
 

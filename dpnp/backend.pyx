@@ -56,6 +56,7 @@ __all__ = [
 include "backend_arraycreation.pyx"
 include "backend_bitwise.pyx"
 include "backend_counting.pyx"
+include "backend_indexing.pyx"
 include "backend_linearalgebra.pyx"
 include "backend_logic.pyx"
 include "backend_manipulation.pyx"

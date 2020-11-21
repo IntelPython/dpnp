@@ -25,31 +25,41 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""Module DParray
-Represents multi-dimensional array using USM interface for an Intel GPU device.
+"""Module Backend (Indexing part)
+
+This module contains interface functions between C backend layer
+and the rest of the library
 
 """
 
 
-from libcpp.vector cimport vector
+import numpy
+from dpnp.dpnp_utils cimport *
+from dpnp.dpnp_iface_counting import count_nonzero
 
 
-ctypedef vector.vector[long] dparray_shape_type
+__all__ += [
+    "dpnp_nonzero",
+]
 
-cdef class dparray:
-    """Multi-dimensional array using USM interface for an Intel GPU device.
 
-    """
+cpdef tuple dpnp_nonzero(dparray in_array1):
+    res_count = in_array1.ndim
 
-    cdef:
-        readonly Py_ssize_t _dparray_size
-        public dparray_shape_type _dparray_shape
-        public dparray_shape_type _dparray_strides
-        readonly object _dparray_dtype
-        readonly char * _dparray_data
-        size_t iter_idx
+    # have to go through array one extra time to count size of result arrays
+    res_size = count_nonzero(in_array1)
 
-    cdef void * get_data(self)
+    res_list = []
+    for i in range(res_count):
+        res_list.append(dparray((res_size, ), dtype=dpnp.int64))
+    result = _object_to_tuple(res_list)
 
-    cpdef item(self, size_t id)
-    cpdef dparray astype(self, dtype, order=*, casting=*, subok=*, copy=*)
+    idx = 0
+    for i in range(in_array1.size):
+        if in_array1[i] == 0:
+            ids = get_axis_indeces(i, in_array1.shape)
+            for j in range(res_count):
+                result[j][idx] = ids[j]
+            idx = idx + 1
+
+    return result
