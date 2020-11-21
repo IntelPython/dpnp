@@ -99,6 +99,16 @@ cpdef long _get_linear_index(key, tuple shape, int ndim)
 Compute linear index of an element in memory from array indices
 """
 
+cpdef tuple get_axis_indeces(idx, shape)
+"""
+Compute axis indices of an element in array from array linear index
+"""
+
+cpdef tuple get_axis_offsets(shape)
+"""
+Compute axis offsets in the linear array memory
+"""
+
 cpdef dp2nd_array(arr)
 """
 Convert dparray to ndarray
