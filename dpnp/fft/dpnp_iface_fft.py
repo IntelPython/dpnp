@@ -65,12 +65,15 @@ def fft(x1, n=None, axis=-1, norm=None):
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and 0):
+    if (not use_origin_backend(x1) and is_x1_dparray):
         if n is not None:
             pass
-        if axis != -1:
+        elif axis != -1:
             pass
-        if norm is not None:
+        elif norm is not None:
+            pass
+        elif x1.size < 1:
+            # need to properly raise an exception. let's pass it to fallback
             pass
         else:
             return dpnp_fft(x1)

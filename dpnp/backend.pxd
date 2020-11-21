@@ -134,6 +134,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncType":  # n
         DPNP_FT_LONG
         DPNP_FT_FLOAT
         DPNP_FT_DOUBLE
+        DPNP_FT_CMPLX128
 
 cdef extern from "backend/backend_iface_fptr.hpp":
     struct DPNPFuncData:
