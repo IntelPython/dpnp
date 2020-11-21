@@ -137,37 +137,65 @@ def array(obj, dtype=None, copy=True, order='C', subok=False, ndmin=0):
     """
     Creates an array.
 
-    This function currently does not support the ``subok`` option.
+    Parameters
+    ----------
+    obj : array_like
+        Array-like object.
+    dtype: data-type, optional
+        Data type specifier.
+    copy : bool, optional
+        If ``False``, this function returns ``obj`` if possible.
+        Otherwise this function always returns a new array.
+    order : {'K', 'A', 'C', 'F'}, optional
+        Specify the memory layout of the array.
+    subok : bool, optional
+        If True, then sub-classes will be passed-through,
+        otherwise the returned array will be forced to be a base-class
+        array (default).
+    ndmin : int, optional
+        Minimum number of dimensions. Ones are inserted to the
+        head of the shape if needed.
 
-    Args:
-        obj: :class:`inumpy.dparray` object or any other object that can be
-            passed to :obj:`numpy.array`.
-        dtype: Data type specifier.
-        copy (bool): If ``False``, this function returns ``obj`` if possible.
-            Otherwise this function always returns a new array.
-        order ({'C', 'F', 'A', 'K'}): Row-major (C-style) or column-major
-            (Fortran-style) order.
-            When ``order`` is 'A', it uses 'F' if ``a`` is column-major and
-            uses 'C' otherwise.
-            And when ``order`` is 'K', it keeps strides as closely as
-            possible.
-            If ``obj`` is :class:`numpy.ndarray`, the function returns 'C' or
-            'F' order array.
-        subok (bool): If True, then sub-classes will be passed-through,
-            otherwise the returned array will be forced to be a base-class
-            array (default).
-        ndmin (int): Minimum number of dimensions. Ones are inserted to the
-            head of the shape if needed.
+    Returns
+    -------
+        out : :obj:`dpnp.ndarray`
+            An array object.
 
-    Returns:
-        inumpy.dparray: An array on the current device.
+    Limitations
+    -----------
+    Parameter ``copy`` is supported only with default value `True`.
+    Parameter ``order`` is supported only with default value `'C'`.
+    Parameter ``subok`` is currently unsupported.
+    Parameter ``ndmin`` is supported only with default value `0`.
 
+    See Also
+    --------
+    :obj:`numpy.array` : Create an array.
+    :obj:`dpnp.empty_like` : Return an empty array with shape and type of input.
+    :obj:`dpnp.ones_like` : Return an array of ones with shape and type of input.
+    :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of input.
+    :obj:`dpnp.full_like` : Return a new array with shape of input filled with value.
+    :obj:`dpnp.empty` : Return a new uninitialized array.
+    :obj:`dpnp.ones` : Return a new array setting values to one.
+    :obj:`dpnp.zeros` : Return a new array setting values to zero.
+    :obj:`dpnp.full` : Return a new array of given shape filled with value.
 
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 2, 3])
+    >>> x.ndim, x.size, x.shape
+    (1, 3, (3,))
+    >>> [i for i in x]
+    [1, 2, 3]
 
-    .. note::
-       This method currently does not support ``subok`` argument.
+    More than one dimension:
 
-    .. seealso:: :obj:`numpy.array`
+    >>> x2 = np.array([[1, 2], [3, 4]])
+    >>> x2.ndim, x2.size, x2.shape
+    (2, 4, (2, 2))
+    >>> [i for i in x2]
+    [1, 2, 3, 4]
 
     """
 
@@ -187,7 +215,7 @@ def array(obj, dtype=None, copy=True, order='C', subok=False, ndmin=0):
         checker_throw_value_error("array", "copy", copy, True)
 
     if order != 'C':
-        checker_throw_value_error("array", "order", order, 'K')
+        checker_throw_value_error("array", "order", order, 'C')
 
     if ndmin != 0:
         checker_throw_value_error("array", "ndmin", ndmin, 0)
