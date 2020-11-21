@@ -78,7 +78,7 @@ def count_nonzero(in_array1, axis=None, *, keepdims=False):
         Otherwise the function will be executed sequentially on CPU.
         Parameter ``axis`` is supported only with default value `None`.
         Parameter ``keepdims`` is supported only with default value `False`.
-        
+
     .. seealso:: :obj:`numpy.count_nonzero`
 
     Examples
