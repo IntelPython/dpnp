@@ -54,6 +54,7 @@ __all__ = [
     "dpnp_laplace",
     "dpnp_lognormal",
     "dpnp_negative_binomial",
+    "dpnp_normal",
     "dpnp_poisson",
     "dpnp_randn",
     "dpnp_random",
@@ -79,6 +80,7 @@ ctypedef void(*fptr_custom_rng_hypergeometric_c_1out_t)(void *, int, int, int, s
 ctypedef void(*fptr_custom_rng_laplace_c_1out_t)(void *, double, double, size_t) except +
 ctypedef void(*fptr_custom_rng_lognormal_c_1out_t)(void *, double, double, size_t) except +
 ctypedef void(*fptr_custom_rng_negative_binomial_c_1out_t)(void *, double, double, size_t) except +
+ctypedef void(*fptr_custom_rng_normal_c_1out_t)(void *, double, double, size_t) except +
 ctypedef void(*fptr_custom_rng_poisson_c_1out_t)(void *, double, size_t) except +
 ctypedef void(*fptr_custom_rng_rayleigh_c_1out_t)(void *, double, size_t) except +
 ctypedef void(*fptr_custom_rng_standard_cauchy_c_1out_t)(void *, size_t) except +
@@ -338,6 +340,41 @@ cpdef dparray dpnp_hypergeometric(int l, int s, int m,  size):
         func = <fptr_custom_rng_hypergeometric_c_1out_t > kernel_data.ptr
         # call FPTR function
         func(result.get_data(), l, s, m, result.size)
+
+    return result
+
+
+cpdef dparray dpnp_normal(double loc, double scale, size):
+    """
+    Returns an array populated with samples from normal distribution.
+    `dpnp_normal` generates a matrix filled with random floats sampled from a
+    normal distribution.
+
+    """
+
+    dtype = numpy.float64
+    cdef dparray result
+    cdef DPNPFuncType param1_type
+    cdef DPNPFuncData kernel_data
+    cdef fptr_custom_rng_normal_c_1out_t func
+
+    if scale == 0.0:
+        result = dparray(size, dtype=dtype)
+        result.fill(loc)
+    else:
+        # convert string type names (dparray.dtype) to C enum DPNPFuncType
+        param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+
+        # get the FPTR data structure
+        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_NORMAL, param1_type, param1_type)
+
+        result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+        # ceate result array with type given by FPTR data
+        result = dparray(size, dtype=result_type)
+
+        func = <fptr_custom_rng_normal_c_1out_t > kernel_data.ptr
+        # call FPTR function
+        func(result.get_data(), loc, scale, result.size)
 
     return result
 

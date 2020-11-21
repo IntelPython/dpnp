@@ -570,6 +570,54 @@ def test_negative_binomial_check_extreme_value():
     assert numpy.unique(res)[0] == check_val
 
 
+def test_normal_seed():
+    seed = 28041990
+    size = 100
+    loc = 2.56
+    scale = 0.8
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.normal(loc, scale, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.normal(loc, scale, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_normal_invalid_args():
+    size = 10
+
+    loc = 3.0     # OK
+    scale = -1.0  # non-negative `scale` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.normal(loc=loc, scale=scale, size=size)
+
+
+def test_normal_check_moments():
+    seed = 28041995
+    dpnp.random.seed(seed)
+    loc = 2.56
+    scale = 0.8
+    size = 10**6
+    expected_mean = loc
+    expected_var = scale**2
+    var = numpy.var(dpnp.random.normal(loc=loc, scale=scale, size=size))
+    mean = numpy.mean(dpnp.random.normal(loc=loc, scale=scale, size=size))
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
+def test_normal_check_extreme_value():
+    seed = 28041990
+    dpnp.random.seed(seed)
+
+    loc = 5
+    scale = 0.0
+    expected_val = loc
+    res = numpy.asarray(dpnp.random.normal(loc=loc, scale=scale, size=100))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == expected_val
+
+
 def test_poisson_seed():
     seed = 28041990
     size = 100
