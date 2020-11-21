@@ -28,6 +28,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "custom_rng_gaussian_c", "group___b_a_c_k_e_n_d___a_p_i.html#gaa7bca3ce07f3cba8ca9d63d93287ad91", null ],
     [ "custom_rng_geometric_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga212577539487a7c6018e95ba6eb25b40", null ],
     [ "custom_rng_gumbel_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga8fb73b244c6fb5b457d293f0a19ee2f3", null ],
+    [ "custom_rng_hypergeometric_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga2444c336ba277444e6383aa1b0119341", null ],
     [ "custom_rng_laplace_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga5f9688ac0e6ce2686965df03e37757ae", null ],
     [ "custom_rng_lognormal_c", "group___b_a_c_k_e_n_d___a_p_i.html#gadcf7f5e3d983619656c72b942e2bc075", null ],
     [ "custom_rng_negative_binomial_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga614afeb47001aadd191c2f52289722dc", null ],

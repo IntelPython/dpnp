@@ -207,6 +207,7 @@
     <span class="s1">&#39;gamma&#39;</span><span class="p">,</span>
     <span class="s1">&#39;geometric&#39;</span><span class="p">,</span>
     <span class="s1">&#39;gumbel&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;hypergeometric&#39;</span><span class="p">,</span>
     <span class="s1">&#39;laplace&#39;</span><span class="p">,</span>
     <span class="s1">&#39;lognormal&#39;</span><span class="p">,</span>
     <span class="s1">&#39;negative_binomial&#39;</span><span class="p">,</span>
@@ -703,6 +704,112 @@
         <span class="k">return</span> <span class="n">dpnp_gumbel</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">gumbel</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">scale</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="hypergeometric"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.hypergeometric.html#dpnp.random.hypergeometric">[docs]</a><span class="k">def</span> <span class="nf">hypergeometric</span><span class="p">(</span><span class="n">ngood</span><span class="p">,</span> <span class="n">nbad</span><span class="p">,</span> <span class="n">nsample</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Hypergeometric distribution.</span>
+
+<span class="sd">    Draw samples from a Hypergeometric distribution.</span>
+
+<span class="sd">    Samples are drawn from a hypergeometric distribution with specified</span>
+<span class="sd">    parameters, `ngood` (ways to make a good selection), `nbad` (ways to make</span>
+<span class="sd">    a bad selection), and `nsample` (number of items sampled, which is less</span>
+<span class="sd">    than or equal to the sum ``ngood + nbad``).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ngood : int</span>
+<span class="sd">        Number of ways to make a good selection.  Must be nonnegative.</span>
+<span class="sd">    nbad : int</span>
+<span class="sd">        Number of ways to make a bad selection.  Must be nonnegative.</span>
+<span class="sd">    nsample : int</span>
+<span class="sd">        Number of items sampled.  Must be at least 1 and at most</span>
+<span class="sd">        ``ngood + nbad``.</span>
+<span class="sd">    size : int or tuple of ints, optional</span>
+<span class="sd">        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then</span>
+<span class="sd">        ``m * n * k`` samples are drawn.  If size is ``None`` (default),</span>
+<span class="sd">        a single value is returned if `ngood`, `nbad`, and `nsample`</span>
+<span class="sd">        are all scalars.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dparray</span>
+<span class="sd">        Drawn samples from the parameterized hypergeometric distribution. Each</span>
+<span class="sd">        sample is the number of good items within a randomly selected subset of</span>
+<span class="sd">        size `nsample` taken from a set of `ngood` good items and `nbad` bad items.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The probability density for the Hypergeometric distribution is</span>
+
+<span class="sd">    .. math:: P(x) = \\frac{\\binom{g}{x}\\binom{b}{n-x}}{\\binom{g+b}{n}},</span>
+
+<span class="sd">    where :math:`0 \\le x \\le n` and :math:`n-b \\le x \\le g`</span>
+
+<span class="sd">    for P(x) the probability of ``x`` good results in the drawn sample,</span>
+<span class="sd">    g = `ngood`, b = `nbad`, and n = `nsample`.</span>
+
+<span class="sd">    Consider an urn with black and white marbles in it, `ngood` of them</span>
+<span class="sd">    are black and `nbad` are white. If you draw `nsample` balls without</span>
+<span class="sd">    replacement, then the hypergeometric distribution describes the</span>
+<span class="sd">    distribution of black balls in the drawn sample.</span>
+
+<span class="sd">    Note that this distribution is very similar to the binomial</span>
+<span class="sd">    distribution, except that in this case, samples are drawn without</span>
+<span class="sd">    replacement, whereas in the Binomial case samples are drawn with</span>
+<span class="sd">    replacement (or the sample space is infinite). As the sample space</span>
+<span class="sd">    becomes large, this distribution approaches the binomial.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Lentner, Marvin, &quot;Elementary Applied Statistics&quot;, Bogden</span>
+<span class="sd">           and Quigley, 1972.</span>
+<span class="sd">    .. [2] Weisstein, Eric W. &quot;Hypergeometric Distribution.&quot; From</span>
+<span class="sd">           MathWorld--A Wolfram Web Resource.</span>
+<span class="sd">           http://mathworld.wolfram.com/HypergeometricDistribution.html</span>
+<span class="sd">    .. [3] Wikipedia, &quot;Hypergeometric distribution&quot;,</span>
+<span class="sd">           https://en.wikipedia.org/wiki/Hypergeometric_distribution</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Draw samples from the distribution:</span>
+<span class="sd">    &gt;&gt;&gt; ngood, nbad, nsamp = 100, 2, 10</span>
+<span class="sd">    # number of good, number of bad, and number of samples</span>
+<span class="sd">    &gt;&gt;&gt; s = dpnp.random.hypergeometric(ngood, nbad, nsamp, 1000)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">ngood</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dpnp_queue_is_cpu</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">size</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                    <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;hypergeometric&quot;</span><span class="p">,</span> <span class="s2">&quot;type(dim)&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">dim</span><span class="p">),</span> <span class="nb">int</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;hypergeometric&quot;</span><span class="p">,</span> <span class="s2">&quot;type(size)&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">size</span><span class="p">),</span> <span class="nb">int</span><span class="p">)</span>
+
+        <span class="c1"># TODO:</span>
+        <span class="c1"># array_like of ints for `ngood`, `nbad`, `nsample` param</span>
+        <span class="k">if</span> <span class="n">ngood</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;hypergeometric&quot;</span><span class="p">,</span> <span class="s2">&quot;ngood&quot;</span><span class="p">,</span> <span class="n">ngood</span><span class="p">,</span> <span class="s2">&quot;non-negative&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nbad</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;hypergeometric&quot;</span><span class="p">,</span> <span class="s2">&quot;nbad&quot;</span><span class="p">,</span> <span class="n">nbad</span><span class="p">,</span> <span class="s2">&quot;non-negative&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nsample</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;hypergeometric&quot;</span><span class="p">,</span> <span class="s2">&quot;nsample&quot;</span><span class="p">,</span> <span class="n">nsample</span><span class="p">,</span> <span class="s2">&quot;non-negative&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ngood</span> <span class="o">+</span> <span class="n">nbad</span> <span class="o">&lt;</span> <span class="n">nsample</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;hypergeometric&quot;</span><span class="p">,</span> <span class="s2">&quot;nsample&quot;</span><span class="p">,</span> <span class="n">nsample</span><span class="p">,</span> <span class="s2">&quot;ngood + nbad &gt;= nsample&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nsample</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;hypergeometric&quot;</span><span class="p">,</span> <span class="s2">&quot;nsample&quot;</span><span class="p">,</span> <span class="n">nsample</span><span class="p">,</span> <span class="s2">&quot;&gt;= 1&quot;</span><span class="p">)</span>
+
+
+        <span class="n">m</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ngood</span><span class="p">)</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ngood</span><span class="p">)</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">nbad</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nsample</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp_hypergeometric</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">hypergeometric</span><span class="p">,</span> <span class="n">ngood</span><span class="p">,</span> <span class="n">nbad</span><span class="p">,</span> <span class="n">nsample</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="laplace"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.laplace.html#dpnp.random.laplace">[docs]</a><span class="k">def</span> <span class="nf">laplace</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
