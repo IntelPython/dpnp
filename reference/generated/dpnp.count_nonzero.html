@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Statistical Functions" href="../statistics.html" />
-    <link rel="prev" title="dpnp.argmin" href="dpnp.argmin.html" /> 
+    <link rel="prev" title="dpnp.nonzero" href="dpnp.nonzero.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -193,27 +193,14 @@
 <dl class="py function">
 <dt id="dpnp.count_nonzero">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">count_nonzero</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_array1</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">keepdims</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_counting.html#count_nonzero"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.count_nonzero" title="Permalink to this definition">¶</a></dt>
-<dd><p>Counts the number of non-zero values in the array <code class="docutils literal notranslate"><span class="pre">a</span></code>.</p>
-<p>The word “non-zero” is in reference to the Python 2.x
-built-in method <code class="docutils literal notranslate"><span class="pre">__nonzero__()</span></code> (renamed <code class="docutils literal notranslate"><span class="pre">__bool__()</span></code>
-in Python 3.x) of Python objects that tests an object’s
-“truthfulness”. For example, any number is considered
-truthful if it is nonzero, whereas any string is considered
-truthful if it is not the empty string. Thus, this function
-(recursively) counts how many elements in <code class="docutils literal notranslate"><span class="pre">a</span></code> (and in
-sub-arrays thereof) have their <code class="docutils literal notranslate"><span class="pre">__nonzero__()</span></code> or <code class="docutils literal notranslate"><span class="pre">__bool__()</span></code>
-method evaluated to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<dd><p>Counts the number of non-zero values in the array <code class="docutils literal notranslate"><span class="pre">in_array1</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>array_like</em>) – The array for which to count non-zeros.</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>, </em><em>optional</em>) – <p>Axis or tuple of axes along which to count non-zeros.
-Default is None, meaning that non-zeros will be counted
-along a flattened version of <code class="docutils literal notranslate"><span class="pre">a</span></code>.</p>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 1.12.0.</span></p>
-</div>
-</p></li>
+<li><p><strong>in_array1</strong> (<em>array_like</em>) – Input data. The array for which to count non-zeros.</p></li>
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>, </em><em>optional</em>) – Axis or tuple of axes along which to count non-zeros.</p></li>
+<li><p><strong>keepdims</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – If this is set to <cite>True</cite>, the axes that are counted
+are left in the result as dimensions with size one.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -225,19 +212,21 @@ is returned.</p>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a> or array of int</p>
 </dd>
 </dl>
+<p class="rubric">Limitations</p>
+<p>Parameter <code class="docutils literal notranslate"><span class="pre">in_array1</span></code> is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Otherwise the function will be executed sequentially on CPU.
+Parameter <code class="docutils literal notranslate"><span class="pre">axis</span></code> is supported only with default value <cite>None</cite>.
+Parameter <code class="docutils literal notranslate"><span class="pre">keepdims</span></code> is supported only with default value <cite>False</cite>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.count_nonzero.html#numpy.count_nonzero" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.count_nonzero</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
-<span class="go">4</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">19</span><span class="p">]])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="go">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]))</span>
 <span class="go">5</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">19</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="go">array([1, 1, 1, 1, 1])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">19</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="go">array([2, 3])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -255,7 +244,7 @@ is returned.</p>
         <a href="../statistics.html" class="btn btn-neutral float-right" title="Statistical Functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.argmin.html" class="btn btn-neutral float-left" title="dpnp.argmin" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.nonzero.html" class="btn btn-neutral float-left" title="dpnp.nonzero" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

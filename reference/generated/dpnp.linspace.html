@@ -198,9 +198,6 @@
 <p>Returns <cite>num</cite> evenly spaced samples, calculated over the
 interval [<cite>start</cite>, <cite>stop</cite>].</p>
 <p>The endpoint of the interval can optionally be excluded.</p>
-<div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 1.16.0: </span>Non-scalar <cite>start</cite> and <cite>stop</cite> are now supported.</p>
-</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -214,36 +211,28 @@ size changes when <cite>endpoint</cite> is False.</p></li>
 Default is True.</p></li>
 <li><p><strong>retstep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, return (<cite>samples</cite>, <cite>step</cite>), where <cite>step</cite> is the spacing
 between samples.</p></li>
-<li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><em>optional</em>) – <p>The type of the output array.  If <cite>dtype</cite> is not given, infer the data
-type from the other input arguments.</p>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 1.9.0.</span></p>
-</div>
-</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – <p>The axis in the result to store the samples.  Relevant only if start
-or stop are array-like.  By default (0), the samples will be along a
-new axis inserted at the beginning. Use -1 to get an axis at the end.</p>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 1.16.0.</span></p>
-</div>
-</p></li>
+<li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><em>optional</em>) – The type of the output array.</p></li>
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – The axis in the result to store the samples.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul>
-<li><p><strong>samples</strong> (<em>ndarray</em>) – There are <cite>num</cite> equally spaced samples in the closed interval
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>samples</strong> (<a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>) – There are <cite>num</cite> equally spaced samples in the closed interval
 <code class="docutils literal notranslate"><span class="pre">[start,</span> <span class="pre">stop]</span></code> or the half-open interval <code class="docutils literal notranslate"><span class="pre">[start,</span> <span class="pre">stop)</span></code>
 (depending on whether <cite>endpoint</cite> is True or False).</p></li>
-<li><p><strong>step</strong> (<em>float, optional</em>) – Only returned if <cite>retstep</cite> is True</p>
-<p>Size of spacing between samples.</p>
-</li>
+<li><p><strong>step</strong> (<em>float, optional</em>) – Only returned if <cite>retstep</cite> is True.
+Size of spacing between samples.</p></li>
 </ul>
 </p>
 </dd>
 </dl>
+<p class="rubric">Limitations</p>
+<p>Parameter <code class="docutils literal notranslate"><span class="pre">axis</span></code> is supported only with default value <cite>0</cite>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html#numpy.linspace" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linspace</span></code></a></dt><dd><p>Return evenly spaced numbers over a specified interval.</p>
+</dd>
 <dt><a class="reference internal" href="dpnp.arange.html#dpnp.arange" title="dpnp.arange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.arange</span></code></a></dt><dd><p>Similar to <cite>linspace</cite>, but uses a step size (instead of the number of samples).</p>
 </dd>
 <dt><a class="reference internal" href="dpnp.geomspace.html#dpnp.geomspace" title="dpnp.geomspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.geomspace</span></code></a></dt><dd><p>Similar to <cite>linspace</cite>, but with numbers spaced evenly on a log scale (a geometric progression).</p>
@@ -251,6 +240,19 @@ new axis inserted at the beginning. Use -1 to get an axis at the end.</p>
 <dt><a class="reference internal" href="dpnp.logspace.html#dpnp.logspace" title="dpnp.logspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.logspace</span></code></a></dt><dd><p>Similar to <cite>geomspace</cite>, but with the end points specified as logarithms.</p>
 </dd>
 </dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+<span class="go">[2.0, 2.25, 2.5, 2.75, 3.0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x2</span><span class="p">]</span>
+<span class="go">[2.0, 2.2, 2.4, 2.6, 2.8]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x3</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">retstep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x3</span><span class="p">],</span> <span class="n">step</span>
+<span class="go">([2.0, 2.25, 2.5, 2.75, 3.0], 0.25)</span>
+</pre></div>
 </div>
 </dd></dl>
 

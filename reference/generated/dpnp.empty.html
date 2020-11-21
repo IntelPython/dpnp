@@ -194,35 +194,44 @@
 <dl class="py function">
 <dt id="dpnp.empty">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">empty</code><span class="sig-paren">(</span><em class="sig-param">shape</em>, <em class="sig-param">dtype=&lt;class 'numpy.float64'&gt;</em>, <em class="sig-param">order='C'</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#empty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.empty" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a new matrix of given shape and type, without initializing entries.</p>
+<dd><p>Return a new array of given shape and type, without initializing entries.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>shape</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>tuple of int</em>) – Shape of the empty matrix.</p></li>
-<li><p><strong>dtype</strong> (<em>data-type</em><em>, </em><em>optional</em>) – Desired output data-type.</p></li>
-<li><p><strong>order</strong> (<em>{'C'</em><em>, </em><em>'F'}</em><em>, </em><em>optional</em>) – Whether to store multi-dimensional data in row-major
-(C-style) or column-major (Fortran-style) order in
-memory.</p></li>
+<li><p><strong>shape</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>tuple of int</em>) – Shape of the empty array.</p></li>
+<li><p><strong>dtype</strong> (<em>data-type</em><em>, </em><em>optional</em>) – Data type specifier.</p></li>
+<li><p><strong>order</strong> (<em>{'C'</em><em>, </em><em>'F'}</em><em>, </em><em>optional</em>) – Row-major (C-style) or column-major (Fortran-style) order.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – A new array with elements not initialized.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a></p>
+</dd>
 </dl>
+<p class="rubric">Limitations</p>
+<p>Parameter <code class="docutils literal notranslate"><span class="pre">order</span></code> is supported only with default value <cite>‘C’</cite>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="dpnp.empty_like.html#dpnp.empty_like" title="dpnp.empty_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.empty_like</span></code></a>, <a class="reference internal" href="dpnp.zeros.html#dpnp.zeros" title="dpnp.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.zeros</span></code></a></p>
+<dl class="simple">
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.empty.html#numpy.empty" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.empty</span></code></a></dt><dd><p>Return a new array of given shape and type, without initializing entries.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.empty_like.html#dpnp.empty_like" title="dpnp.empty_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.empty_like</span></code></a></dt><dd><p>Return an empty array with shape and type of input.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.ones.html#dpnp.ones" title="dpnp.ones"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ones</span></code></a></dt><dd><p>Return a new array setting values to one.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.zeros.html#dpnp.zeros" title="dpnp.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.zeros</span></code></a></dt><dd><p>Return a new array setting values to zero.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.full.html#dpnp.full" title="dpnp.full"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.full</span></code></a></dt><dd><p>Return a new array of given shape filled with value.</p>
+</dd>
+</dl>
 </div>
-<p class="rubric">Notes</p>
-<p><a class="reference internal" href="#dpnp.empty" title="dpnp.empty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.empty</span></code></a>, unlike <a class="reference internal" href="dpnp.zeros.html#dpnp.zeros" title="dpnp.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.zeros</span></code></a>, does not set the matrix values
-to zero, and may therefore be marginally faster.  On the other hand, it
-requires the user to manually set all the values in the array, and should
-be used with caution.</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy.matlib</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">matlib</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>    <span class="c1"># filled with random data</span>
-<span class="go">matrix([[  6.76425276e-320,   9.79033856e-307], # random</span>
-<span class="go">        [  7.39337286e-309,   3.22135945e-309]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">matlib</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-<span class="go">matrix([[ 6600475,        0], # random</span>
-<span class="go">        [ 6586976, 22740995]])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+<span class="go">[0.0, 0.0, 1e-323, -3.5935729608842025e+22]</span>
 </pre></div>
 </div>
 </dd></dl>

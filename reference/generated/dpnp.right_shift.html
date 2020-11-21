@@ -183,26 +183,45 @@
 <dt id="dpnp.right_shift">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">right_shift</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_bitwise.html#right_shift"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.right_shift" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shift the bits of an integer to the right.</p>
-<p>Bits are shifted to the right x2.</p>
+<p>Bits are shifted to the right <cite>x2</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x1</strong> (<em>array_like</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Input values.</p></li>
-<li><p><strong>x2</strong> (<em>array_like</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Input values.</p></li>
-<li><p><strong>x1</strong> – Number of bits to remove at the right of x1.</p></li>
-<li><p><strong>x2</strong> – Number of bits to remove at the right of x1.</p></li>
+<li><p><strong>x1</strong> (<em>array_like</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Input arrays or scalars.</p></li>
+<li><p><strong>x2</strong> (<em>array_like</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Input arrays or scalars.</p></li>
+<li><p><strong>**kwargs</strong> – For other keyword-only arguments.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – Output array or scalar if both x1 and x2 are scalars.</p>
+<dd class="field-even"><p><strong>out</strong> – Output array or scalar if both <cite>x1</cite> and <cite>x2</cite> are scalars.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray or <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> or scalar</p>
 </dd>
 </dl>
+<p class="rubric">Limitations</p>
+<p>Parameters <cite>x1</cite> and <cite>x2</cite> are supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Sizes, shapes and data types of input arrays <cite>x1</cite> and <cite>x2</cite> are supported to be equal.
+Keyword arguments <cite>kwargs</cite> are currently unsupported.
+Otherwise the function will be executed sequentially on CPU.
+Input arrays <cite>x1</cite> and <cite>x2</cite> are supported as integer <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> only.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="dpnp.left_shift.html#dpnp.left_shift" title="dpnp.left_shift"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.left_shift</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.binary_repr</span></code></p>
+<dl class="simple">
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.right_shift.html#numpy.right_shift" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.right_shift</span></code></a></dt><dd><p>Shift the bits of an integer to the right.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.left_shift.html#dpnp.left_shift" title="dpnp.left_shift"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.left_shift</span></code></a></dt><dd><p>Shift the bits of an integer to the left.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">right_shift</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">out</span><span class="p">]</span>
+<span class="go">[5, 2, 1]</span>
+</pre></div>
 </div>
 </dd></dl>
 

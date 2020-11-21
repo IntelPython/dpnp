@@ -193,39 +193,35 @@
 <h1>dpnp.ones_like<a class="headerlink" href="#dpnp-ones-like" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="dpnp.ones_like">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">ones_like</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prototype</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">'C'</span></em>, <em class="sig-param"><span class="n">subok</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">shape</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#ones_like"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.ones_like" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">ones_like</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">'C'</span></em>, <em class="sig-param"><span class="n">subok</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">shape</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#ones_like"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.ones_like" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an array of ones with the same shape and type as a given array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>array_like</em>) – The shape and data-type of <cite>a</cite> define these same attributes of
-the returned array.</p></li>
-<li><p><strong>dtype</strong> (<em>data-type</em><em>, </em><em>optional</em>) – Overrides the data type of the result.
-.. versionadded:: 1.6.0</p></li>
-<li><p><strong>order</strong> (<em>{'C'</em><em>, </em><em>'F'</em><em>, </em><em>'A'</em><em>, or </em><em>'K'}</em><em>, </em><em>optional</em>) – Overrides the memory layout of the result. ‘C’ means C-order,
-‘F’ means F-order, ‘A’ means ‘F’ if <cite>a</cite> is Fortran contiguous,
-‘C’ otherwise. ‘K’ means match the layout of <cite>a</cite> as closely
-as possible.
-.. versionadded:: 1.6.0</p></li>
+<li><p><strong>x1</strong> (<em>array_like</em>) – Base array.</p></li>
+<li><p><strong>dtype</strong> (<em>data-type</em><em>, </em><em>optional</em>) – The type of the output array.</p></li>
+<li><p><strong>order</strong> (<em>{'C'</em><em>, </em><em>'F'</em><em>, </em><em>'A'</em><em>, or </em><em>'K'}</em><em>, </em><em>optional</em>) – Overrides the memory layout of the result.</p></li>
 <li><p><strong>subok</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional.</em>) – If True, then the newly created array will use the sub-class
 type of ‘a’, otherwise it will be a base-class array. Defaults
 to True.</p></li>
-<li><p><strong>shape</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>sequence of ints</em><em>, </em><em>optional.</em>) – Overrides the shape of the result. If order=’K’ and the number of
-dimensions is unchanged, will try to keep order, otherwise,
-order=’C’ is implied.
-.. versionadded:: 1.17.0</p></li>
+<li><p><strong>shape</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>sequence of ints</em><em>, </em><em>optional.</em>) – The shape of the output array.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – Array of ones with the same shape and type as <cite>a</cite>.</p>
+<dd class="field-even"><p><strong>out</strong> – Array of ones with the same shape and type as <cite>x1</cite>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray</p>
+<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a></p>
 </dd>
 </dl>
+<p class="rubric">Limitations</p>
+<p>Parameter <code class="docutils literal notranslate"><span class="pre">order</span></code> is supported only with default value <cite>‘C’</cite>.
+Parameter <code class="docutils literal notranslate"><span class="pre">subok</span></code> is supported only with default value <cite>False</cite>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ones_like.html#numpy.ones_like" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ones_like</span></code></a></dt><dd><p>Return an array of ones with the same shape and type as a given array.</p>
+</dd>
 <dt><a class="reference internal" href="dpnp.empty_like.html#dpnp.empty_like" title="dpnp.empty_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.empty_like</span></code></a></dt><dd><p>Return an empty array with shape and type of input.</p>
 </dd>
 <dt><a class="reference internal" href="dpnp.zeros_like.html#dpnp.zeros_like" title="dpnp.zeros_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.zeros_like</span></code></a></dt><dd><p>Return an array of zeros with shape and type of input.</p>
@@ -237,19 +233,12 @@ order=’C’ is implied.
 </dl>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
-<span class="go">array([[0, 1, 2],</span>
-<span class="go">       [3, 4, 5]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="go">array([[1, 1, 1],</span>
-<span class="go">       [1, 1, 1]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span>
-<span class="go">array([0., 1., 2.])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-<span class="go">array([1.,  1.,  1.])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+<span class="go">[0.0, 1.0, 2.0, 3.0, 4.0, 5.0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span>
+<span class="go">[1.0, 1.0, 1.0, 1.0, 1.0, 1.0]</span>
 </pre></div>
 </div>
 </dd></dl>

@@ -198,31 +198,27 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>shape</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>sequence of ints</em>) – Shape of the new array, e.g., <code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">3)</span></code> or <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p></li>
+<li><p><strong>shape</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>sequence of ints</em>) – Shape of the new array.</p></li>
 <li><p><strong>fill_value</strong> (<em>scalar</em><em> or </em><em>array_like</em>) – Fill value.</p></li>
-<li><p><strong>dtype</strong> (<em>data-type</em><em>, </em><em>optional</em>) – <dl class="simple">
-<dt>The desired data-type for the array  The default, None, means</dt><dd><p><cite>np.array(fill_value).dtype</cite>.</p>
-</dd>
-</dl>
-</p></li>
+<li><p><strong>dtype</strong> (<em>data-type</em><em>, </em><em>optional</em>) – The desired data-type for the array.</p></li>
 <li><p><strong>order</strong> (<em>{'C'</em><em>, </em><em>'F'}</em><em>, </em><em>optional</em>) – Whether to store multidimensional data in C- or Fortran-contiguous
 (row- or column-wise) order in memory.</p></li>
-<li><p><strong>${ARRAY_FUNCTION_LIKE}</strong> – <div class="versionadded">
-<p><span class="versionmodified added">New in version 1.20.0.</span></p>
-</div>
-</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>out</strong> – Array of <cite>fill_value</cite> with the given shape, dtype, and order.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray</p>
+<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a></p>
 </dd>
 </dl>
+<p class="rubric">Limitations</p>
+<p>Parameter <code class="docutils literal notranslate"><span class="pre">order</span></code> is supported only with default value <cite>‘C’</cite>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.full.html#numpy.full" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.full</span></code></a></dt><dd><p>Return a new array of given shape and type, filled with <cite>fill_value</cite>.</p>
+</dd>
 <dt><a class="reference internal" href="dpnp.full_like.html#dpnp.full_like" title="dpnp.full_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.full_like</span></code></a></dt><dd><p>Return a new array with shape of input filled with value.</p>
 </dd>
 <dt><a class="reference internal" href="dpnp.empty.html#dpnp.empty" title="dpnp.empty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.empty</span></code></a></dt><dd><p>Return a new uninitialized array.</p>
@@ -234,15 +230,10 @@
 </dl>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
-<span class="go">array([[inf, inf],</span>
-<span class="go">       [inf, inf]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">10</span><span class="p">)</span>
-<span class="go">array([[10, 10],</span>
-<span class="go">       [10, 10]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
-<span class="go">array([[1, 2],</span>
-<span class="go">       [1, 2]])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+<span class="go">[10, 10, 10, 10]</span>
 </pre></div>
 </div>
 </dd></dl>

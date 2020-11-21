@@ -1,0 +1,6 @@
+﻿dpnp.nonzero
+============
+
+.. currentmodule:: dpnp
+
+.. autofunction:: nonzero

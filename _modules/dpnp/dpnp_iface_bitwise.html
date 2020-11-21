@@ -268,16 +268,38 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    x1, x2: array_like or scalar</span>
-<span class="sd">        Input arrays or scalars. Only integer and boolean types are handled.</span>
+<span class="sd">        Input arrays or scalars.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        For other keyword-only arguments.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    out: ndarray or scalar</span>
-<span class="sd">        Output array or scalar if both x1 and x2 are scalars.</span>
+<span class="sd">    out: :obj:`dpnp.ndarray` or scalar</span>
+<span class="sd">        Output array or scalar if both `x1` and `x2` are scalars.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameters `x1` and `x2` are supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Sizes, shapes and data types of input arrays `x1` and `x2` are supported to be equal.</span>
+<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Input arrays `x1` and `x2` are supported as integer :obj:`dpnp.ndarray` only.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.logical_and`, :obj:`dpnp.bitwise_or`, :obj:`dpnp.bitwise_xor`, :obj:`dpnp.binary_repr`</span>
+<span class="sd">    :obj:`numpy.bitwise_and` : Compute the bit-wise AND of two arrays element-wise.</span>
+<span class="sd">    :obj:`dpnp.logical_and` : Compute the truth value of `x1` AND `x2` element-wise.</span>
+<span class="sd">    :obj:`dpnp.bitwise_or`: Compute the bit-wise OR of two arrays element-wise.</span>
+<span class="sd">    :obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x1 = np.array([2, 5, 255])</span>
+<span class="sd">    &gt;&gt;&gt; x2 = np.array([3,14,16])</span>
+<span class="sd">    &gt;&gt;&gt; out = np.bitwise_and(x1, x2)</span>
+<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
+<span class="sd">    [2, 4, 16]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_check_nd_call</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">bitwise_and</span><span class="p">,</span> <span class="n">dpnp_bitwise_and</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span>
@@ -293,16 +315,38 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    x1, x2: array_like or scalar</span>
-<span class="sd">        Input arrays or scalars. Only integer and boolean types are handled.</span>
+<span class="sd">        Input arrays or scalars.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        For other keyword-only arguments.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    out: ndarray or scalar</span>
-<span class="sd">        Output array or scalar if both x1 and x2 are scalars.</span>
+<span class="sd">    out: :obj:`dpnp.ndarray` or scalar</span>
+<span class="sd">        Output array or scalar if both `x1` and `x2` are scalars.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameters `x1` and `x2` are supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Sizes, shapes and data types of input arrays `x1` and `x2` are supported to be equal.</span>
+<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Input arrays `x1` and `x2` are supported as integer :obj:`dpnp.ndarray` only.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.logical_or`, :obj:`dpnp.bitwise_and`, :obj:`dpnp.bitwise_xor`, :obj:`dpnp.binary_repr`</span>
+<span class="sd">    :obj:`numpy.bitwise_or` : Compute the bit-wise OR of two arrays element-wise.</span>
+<span class="sd">    :obj:`dpnp.logical_or` : Compute the truth value of `x1` OR `x2` element-wise.</span>
+<span class="sd">    :obj:`dpnp.bitwise_and`: Compute the bit-wise AND of two arrays element-wise.</span>
+<span class="sd">    :obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x1 = np.array([2, 5, 255])</span>
+<span class="sd">    &gt;&gt;&gt; x2 = np.array([4, 4, 4])</span>
+<span class="sd">    &gt;&gt;&gt; out = np.bitwise_or(x1, x2)</span>
+<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
+<span class="sd">    [6, 5, 255]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_check_nd_call</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">bitwise_or</span><span class="p">,</span> <span class="n">dpnp_bitwise_or</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span>
@@ -318,16 +362,38 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    x1, x2: array_like or scalar</span>
-<span class="sd">        Input arrays or scalars. Only integer and boolean types are handled.</span>
+<span class="sd">        Input arrays or scalars.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        For other keyword-only arguments.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    out: ndarray or scalar</span>
-<span class="sd">        Output array or scalar if both x1 and x2 are scalars.</span>
+<span class="sd">    out: :obj:`dpnp.ndarray` or scalar</span>
+<span class="sd">        Output array or scalar if both `x1` and `x2` are scalars.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameters `x1` and `x2` are supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Sizes, shapes and data types of input arrays `x1` and `x2` are supported to be equal.</span>
+<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Input arrays `x1` and `x2` are supported as integer :obj:`dpnp.ndarray` only.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.logical_xor`, :obj:`dpnp.bitwise_and`, :obj:`dpnp.bitwise_or`, :obj:`dpnp.binary_repr`</span>
+<span class="sd">    :obj:`numpy.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.</span>
+<span class="sd">    :obj:`dpnp.logical_xor` : Compute the truth value of `x1` XOR `x2`, element-wise.</span>
+<span class="sd">    :obj:`dpnp.bitwise_and`: Compute the bit-wise AND of two arrays element-wise.</span>
+<span class="sd">    :obj:`dpnp.bitwise_or` : Compute the bit-wise OR of two arrays element-wise.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x1 = np.array([31, 3])</span>
+<span class="sd">    &gt;&gt;&gt; x2 = np.array([5, 6])</span>
+<span class="sd">    &gt;&gt;&gt; out = np.bitwise_xor(x1, x2)</span>
+<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
+<span class="sd">    [26, 5]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_check_nd_call</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">bitwise_xor</span><span class="p">,</span> <span class="n">dpnp_bitwise_xor</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span>
@@ -342,18 +408,38 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    x1, x2: array_like or scalar</span>
-<span class="sd">        Input arrays or scalars. Only integer and boolean types are handled.</span>
+<span class="sd">    x: array_like or scalar</span>
+<span class="sd">        Input array or scalar.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        For other keyword-only arguments.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    out: ndarray or scalar</span>
-<span class="sd">        Output array or scalar if both x1 and x2 are scalars.</span>
+<span class="sd">    out: :obj:`dpnp.ndarray` or scalar</span>
+<span class="sd">        Output array or scalar if both `x` is scalar.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameters `x` is supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Input array `x` is supported as integer :obj:`dpnp.ndarray` only.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.bitwise_and`, :obj:`dpnp.bitwise_or`, :obj:`dpnp.bitwise_xor`,</span>
-<span class="sd">    :obj:`dpnp.logical_not`, :obj:`dpnp.binary_repr`</span>
+<span class="sd">    :obj:`numpy.invert` : Compute bit-wise inversion, or bit-wise NOT, element-wise.</span>
+<span class="sd">    :obj:`dpnp.bitwise_and`: Compute the bit-wise AND of two arrays element-wise.</span>
+<span class="sd">    :obj:`dpnp.bitwise_or` : Compute the bit-wise OR of two arrays element-wise.</span>
+<span class="sd">    :obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.</span>
+<span class="sd">    :obj:`dpnp.logical_not` : Compute the truth value of NOT x element-wise.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([13])</span>
+<span class="sd">    &gt;&gt;&gt; out = np.invert(x)</span>
+<span class="sd">    &gt;&gt;&gt; out[0]</span>
+<span class="sd">    -14</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_check_nd_call</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">invert</span><span class="p">,</span> <span class="n">dpnp_invert</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -366,23 +452,41 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Shift the bits of an integer to the left.</span>
 
-<span class="sd">    Bits are shifted to the left by appending x2 0s at the right of x1.</span>
+<span class="sd">    Bits are shifted to the left by appending `x2` 0s at the right of `x1`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    x1, x2: array_like or int</span>
-<span class="sd">        Input values.</span>
-<span class="sd">    x1, x2: array_like or int</span>
-<span class="sd">        Number of zeros to append to x1. Has to be non-negative.</span>
+<span class="sd">        Input arrays or scalars.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        For other keyword-only arguments.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    out: ndarray or int</span>
-<span class="sd">        Output array or scalar if both x1 and x2 are scalars.</span>
+<span class="sd">    out: :obj:`dpnp.ndarray` or scalar</span>
+<span class="sd">        Output array or scalar if both `x1` and `x2` are scalars.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameters `x1` and `x2` are supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Sizes, shapes and data types of input arrays `x1` and `x2` are supported to be equal.</span>
+<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Input arrays `x1` and `x2` are supported as integer :obj:`dpnp.ndarray` only.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.right_shift`, :obj:`dpnp.binary_repr`</span>
+<span class="sd">    :obj:`numpy.left_shift` : Shift the bits of an integer to the left.</span>
+<span class="sd">    :obj:`dpnp.right_shift` : Shift the bits of an integer to the right.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x1 = np.array([5, 5, 5])</span>
+<span class="sd">    &gt;&gt;&gt; x2 = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; out = np.left_shift(x1, x2)</span>
+<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
+<span class="sd">    [10, 20, 40]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_check_nd_call</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">left_shift</span><span class="p">,</span> <span class="n">dpnp_left_shift</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span>
@@ -393,23 +497,41 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Shift the bits of an integer to the right.</span>
 
-<span class="sd">    Bits are shifted to the right x2.</span>
+<span class="sd">    Bits are shifted to the right `x2`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    x1, x2: array_like or int</span>
-<span class="sd">        Input values.</span>
-<span class="sd">    x1, x2: array_like or int</span>
-<span class="sd">        Number of bits to remove at the right of x1.</span>
+<span class="sd">        Input arrays or scalars.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        For other keyword-only arguments.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    out: ndarray or int</span>
-<span class="sd">        Output array or scalar if both x1 and x2 are scalars.</span>
+<span class="sd">    out: :obj:`dpnp.ndarray` or scalar</span>
+<span class="sd">        Output array or scalar if both `x1` and `x2` are scalars.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameters `x1` and `x2` are supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Sizes, shapes and data types of input arrays `x1` and `x2` are supported to be equal.</span>
+<span class="sd">    Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Input arrays `x1` and `x2` are supported as integer :obj:`dpnp.ndarray` only.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.left_shift`, :obj:`dpnp.binary_repr`</span>
+<span class="sd">    :obj:`numpy.right_shift` : Shift the bits of an integer to the right.</span>
+<span class="sd">    :obj:`dpnp.left_shift` : Shift the bits of an integer to the left.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x1 = np.array([10, 10, 10])</span>
+<span class="sd">    &gt;&gt;&gt; x2 = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; out = np.right_shift(x1, x2)</span>
+<span class="sd">    &gt;&gt;&gt; [i for i in out]</span>
+<span class="sd">    [5, 2, 1]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_check_nd_call</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">right_shift</span><span class="p">,</span> <span class="n">dpnp_right_shift</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span>

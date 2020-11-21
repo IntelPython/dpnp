@@ -198,24 +198,25 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>shape</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>sequence of ints</em>) – Shape of the new array, e.g., <code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">3)</span></code> or <code class="docutils literal notranslate"><span class="pre">2</span></code>.</p></li>
-<li><p><strong>dtype</strong> (<em>data-type</em><em>, </em><em>optional</em>) – The desired data-type for the array, e.g., <cite>numpy.int64</cite>.  Default is
-<cite>numpy.float64</cite>.</p></li>
-<li><p><strong>order</strong> (<em>{'C'</em><em>, </em><em>'F'}</em><em>, </em><em>optional</em><em>, </em><em>default: C</em>) – Whether to store multi-dimensional data in row-major
-(C-style) or column-major (Fortran-style) order in
-memory.</p></li>
+<li><p><strong>shape</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>sequence of ints</em>) – The shape of the output array.</p></li>
+<li><p><strong>dtype</strong> (<em>data-type</em><em>, </em><em>optional</em>) – The type of the output array.</p></li>
+<li><p><strong>order</strong> (<em>{'C'</em><em>, </em><em>'F'}</em><em>, </em><em>optional</em>) – Row-major (C-style) or column-major (Fortran-style) order.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>out</strong> – Array of ones with the given shape, dtype, and order.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.dparray.dparray.html#dpnp.dparray.dparray" title="dpnp.dparray.dparray">dparray</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a></p>
 </dd>
 </dl>
+<p class="rubric">Limitations</p>
+<p>Parameter <code class="docutils literal notranslate"><span class="pre">order</span></code> is supported only with default value <cite>‘C’</cite>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ones.html#numpy.ones" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ones</span></code></a></dt><dd><p>Return a new array of given shape and type, filled with ones.</p>
+</dd>
 <dt><a class="reference internal" href="dpnp.ones_like.html#dpnp.ones_like" title="dpnp.ones_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ones_like</span></code></a></dt><dd><p>Return an array of ones with shape and type of input.</p>
 </dd>
 <dt><a class="reference internal" href="dpnp.empty.html#dpnp.empty" title="dpnp.empty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.empty</span></code></a></dt><dd><p>Return a new uninitialized array.</p>
@@ -227,17 +228,14 @@ memory.</p></li>
 </dl>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-<span class="go">array([1., 1., 1., 1., 1.])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">5</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int64</span><span class="p">)</span>
-<span class="go">array([1, 1, 1, 1, 1])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-<span class="go">array([[1.],</span>
-<span class="go">       [1.]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
-<span class="go">array([[1.,  1.],</span>
-<span class="go">       [1.,  1.]])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">5</span><span class="p">)]</span>
+<span class="go">[1.0, 1.0, 1.0, 1.0, 1.0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(2, 2, (2, 1))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+<span class="go">[1.0, 1.0]</span>
 </pre></div>
 </div>
 </dd></dl>

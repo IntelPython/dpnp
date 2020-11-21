@@ -187,20 +187,45 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x1</strong> (<em>array_like</em><em> or </em><em>scalar</em>) – Input arrays or scalars. Only integer and boolean types are handled.</p></li>
-<li><p><strong>x2</strong> (<em>array_like</em><em> or </em><em>scalar</em>) – Input arrays or scalars. Only integer and boolean types are handled.</p></li>
+<li><p><strong>x1</strong> (<em>array_like</em><em> or </em><em>scalar</em>) – Input arrays or scalars.</p></li>
+<li><p><strong>x2</strong> (<em>array_like</em><em> or </em><em>scalar</em>) – Input arrays or scalars.</p></li>
+<li><p><strong>**kwargs</strong> – For other keyword-only arguments.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – Output array or scalar if both x1 and x2 are scalars.</p>
+<dd class="field-even"><p><strong>out</strong> – Output array or scalar if both <cite>x1</cite> and <cite>x2</cite> are scalars.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray or scalar</p>
+<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> or scalar</p>
 </dd>
 </dl>
+<p class="rubric">Limitations</p>
+<p>Parameters <cite>x1</cite> and <cite>x2</cite> are supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Sizes, shapes and data types of input arrays <cite>x1</cite> and <cite>x2</cite> are supported to be equal.
+Keyword arguments <cite>kwargs</cite> are currently unsupported.
+Otherwise the function will be executed sequentially on CPU.
+Input arrays <cite>x1</cite> and <cite>x2</cite> are supported as integer <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> only.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="dpnp.logical_or.html#dpnp.logical_or" title="dpnp.logical_or"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.logical_or</span></code></a>, <a class="reference internal" href="dpnp.bitwise_and.html#dpnp.bitwise_and" title="dpnp.bitwise_and"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.bitwise_and</span></code></a>, <a class="reference internal" href="dpnp.bitwise_xor.html#dpnp.bitwise_xor" title="dpnp.bitwise_xor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.bitwise_xor</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.binary_repr</span></code></p>
+<dl class="simple">
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.bitwise_or.html#numpy.bitwise_or" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.bitwise_or</span></code></a></dt><dd><p>Compute the bit-wise OR of two arrays element-wise.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.logical_or.html#dpnp.logical_or" title="dpnp.logical_or"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.logical_or</span></code></a></dt><dd><p>Compute the truth value of <cite>x1</cite> OR <cite>x2</cite> element-wise.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.bitwise_and.html#dpnp.bitwise_and" title="dpnp.bitwise_and"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.bitwise_and</span></code></a></dt><dd><p>Compute the bit-wise AND of two arrays element-wise.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.bitwise_xor.html#dpnp.bitwise_xor" title="dpnp.bitwise_xor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.bitwise_xor</span></code></a></dt><dd><p>Compute the bit-wise XOR of two arrays element-wise.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">255</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bitwise_or</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">out</span><span class="p">]</span>
+<span class="go">[6, 5, 255]</span>
+</pre></div>
 </div>
 </dd></dl>
 

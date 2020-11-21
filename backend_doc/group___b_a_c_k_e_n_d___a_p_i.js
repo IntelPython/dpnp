@@ -21,6 +21,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "custom_min_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga59bfcff1eed86fd6231190f4df0d63b2", null ],
     [ "custom_prod_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga67727c217c9e86877da1dbbe78050982", null ],
     [ "custom_rng_gaussian_c", "group___b_a_c_k_e_n_d___a_p_i.html#gaa7bca3ce07f3cba8ca9d63d93287ad91", null ],
+    [ "custom_rng_standard_exponential_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga2387eec54944a73d1b110b0b5fb4d9d7", null ],
     [ "custom_rng_uniform_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga00ec0600e9458837339fcf362e90b9ef", null ],
     [ "custom_sort_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga45f2d808e399bd7776ec76dc14d4ee8d", null ],
     [ "custom_std_c", "group___b_a_c_k_e_n_d___a_p_i.html#gab285878b25ce10f6e484f7b3cd0ac7d7", null ],

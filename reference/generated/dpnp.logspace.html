@@ -198,9 +198,6 @@
 <p>In linear space, the sequence starts at <code class="docutils literal notranslate"><span class="pre">base</span> <span class="pre">**</span> <span class="pre">start</span></code>
 (<cite>base</cite> to the power of <cite>start</cite>) and ends with <code class="docutils literal notranslate"><span class="pre">base</span> <span class="pre">**</span> <span class="pre">stop</span></code>
 (see <cite>endpoint</cite> below).</p>
-<div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 1.16.0: </span>Non-scalar <cite>start</cite> and <cite>stop</cite> are now supported.</p>
-</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -209,33 +206,30 @@
 is False.  In that case, <code class="docutils literal notranslate"><span class="pre">num</span> <span class="pre">+</span> <span class="pre">1</span></code> values are spaced over the
 interval in log-space, of which all but the last (a sequence of
 length <cite>num</cite>) are returned.</p></li>
-<li><p><strong>num</strong> (<em>integer</em><em>, </em><em>optional</em>) – Number of samples to generate.  Default is 50.</p></li>
+<li><p><strong>num</strong> (<em>integer</em><em>, </em><em>optional</em>) – Number of samples to generate. Default is 50.</p></li>
 <li><p><strong>endpoint</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If true, <cite>stop</cite> is the last sample. Otherwise, it is not included.
 Default is True.</p></li>
 <li><p><strong>base</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>optional</em>) – The base of the log space. The step size between the elements in
 <code class="docutils literal notranslate"><span class="pre">ln(samples)</span> <span class="pre">/</span> <span class="pre">ln(base)</span></code> (or <code class="docutils literal notranslate"><span class="pre">log_base(samples)</span></code>) is uniform.
 Default is 10.0.</p></li>
-<li><p><strong>dtype</strong> (<em>dtype</em>) – The type of the output array.  If <cite>dtype</cite> is not given, infer the data
-type from the other input arguments.</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – <p>The axis in the result to store the samples.  Relevant only if start
-or stop are array-like.  By default (0), the samples will be along a
-new axis inserted at the beginning. Use -1 to get an axis at the end.</p>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 1.16.0.</span></p>
-</div>
-</p></li>
+<li><p><strong>dtype</strong> (<em>dtype</em>) – The type of the output array.</p></li>
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – The axis in the result to store the samples.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>samples</strong> – <cite>num</cite> samples, equally spaced on a log scale.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray</p>
+<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a></p>
 </dd>
 </dl>
+<p class="rubric">Limitations</p>
+<p>Parameter <code class="docutils literal notranslate"><span class="pre">axis</span></code> is supported only with default value <cite>0</cite>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.logspace.html#numpy.logspace" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.logspace</span></code></a></dt><dd><p>Return numbers spaced evenly on a log scale.</p>
+</dd>
 <dt><a class="reference internal" href="dpnp.arange.html#dpnp.arange" title="dpnp.arange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.arange</span></code></a></dt><dd><p>Similar to linspace, with the step size specified instead of the number of samples. Note that, when used with a float endpoint, the endpoint may or may not be included.</p>
 </dd>
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.inspace</span></code></dt><dd><p>Similar to logspace, but with the samples uniformly distributed in linear space, instead of log space.</p>
@@ -243,6 +237,19 @@ new axis inserted at the beginning. Use -1 to get an axis at the end.</p>
 <dt><a class="reference internal" href="dpnp.geomspace.html#dpnp.geomspace" title="dpnp.geomspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.geomspace</span></code></a></dt><dd><p>Similar to logspace, but with endpoints specified directly.</p>
 </dd>
 </dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+<span class="go">[100.0, 215.443469, 464.15888336, 1000.0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x2</span><span class="p">]</span>
+<span class="go">[100.0, 177.827941, 316.22776602, 562.34132519]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x3</span><span class="p">]</span>
+<span class="go">[4.0, 5.0396842, 6.34960421, 8.0]</span>
+</pre></div>
 </div>
 </dd></dl>
 
