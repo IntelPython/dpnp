@@ -47,6 +47,47 @@ cimport numpy
 cimport dpnp.dpnp_utils as utils
 
 
+# initially copied from original
+cdef class _flagsobj:
+    aligned: bool
+    updateifcopy: bool
+    writeable: bool
+    writebackifcopy: bool
+    @property
+    def behaved(self) -> bool: ...
+
+    @property
+    def c_contiguous(self) -> bool:
+        return True
+
+    @property
+    def carray(self) -> bool: ...
+    @property
+    def contiguous(self) -> bool: ...
+
+    @property
+    def f_contiguous(self) -> bool:
+        return False
+
+    @property
+    def farray(self) -> bool: ...
+    @property
+    def fnc(self) -> bool: ...
+    @property
+    def forc(self) -> bool: ...
+    @property
+    def fortran(self) -> bool: ...
+    @property
+    def num(self) -> int: ...
+
+    @property
+    def owndata(self) -> bool:
+        return True
+
+    def __getitem__(self, key: str) -> bool: ...
+    def __setitem__(self, key: str, value: bool) -> None: ...
+
+
 cdef class dparray:
     """Multi-dimensional array using USM interface for an Intel GPU device.
 
@@ -134,7 +175,7 @@ cdef class dparray:
         """
 
         string = "<DPNP DParray:name={}".format(self.__class__.__name__)
-        string += ": mem=0x{:x}".format(< size_t > self._dparray_data)
+        string += ": mem=0x{:x}".format( < size_t > self._dparray_data)
         string += ": size={}".format(self.size)
         string += ": shape={}".format(self.shape)
         string += ": type={}".format(self.dtype)
@@ -199,7 +240,7 @@ cdef class dparray:
         self._dparray_shape = newshape  # TODO strides, enpty dimentions and etc.
 
     @property
-    def flags(self):
+    def flags(self) -> _flagsobj:
         """Object containing memory-layout information.
 
         It only contains ``c_contiguous``, ``f_contiguous``, and ``owndata`` attributes.
@@ -209,7 +250,7 @@ cdef class dparray:
 
         """
 
-        return (True, False, False)
+        return _flagsobj()
 
     @property
     def strides(self):
@@ -271,7 +312,7 @@ cdef class dparray:
     def __array_interface__(self):
         # print(f"====__array_interface__====self._dparray_data={ < size_t > self._dparray_data}")
         interface_dict = {
-            "data": (< size_t > self._dparray_data, False),  # last parameter is "Writable"
+            "data": ( < size_t > self._dparray_data, False),  # last parameter is "Writable"
             "strides": self.strides,
             "descr": None,
             "typestr": self.dtype.str,
@@ -339,15 +380,15 @@ cdef class dparray:
             raise utils.checker_throw_index_error("__getitem__", lin_idx, self.size)
 
         if self.dtype == numpy.float64:
-            return (< double * > self._dparray_data)[lin_idx]
+            return ( < double * > self._dparray_data)[lin_idx]
         elif self.dtype == numpy.float32:
-            return (< float * > self._dparray_data)[lin_idx]
+            return ( < float * > self._dparray_data)[lin_idx]
         elif self.dtype == numpy.int64:
-            return (< long * > self._dparray_data)[lin_idx]
+            return ( < long * > self._dparray_data)[lin_idx]
         elif self.dtype == numpy.int32:
-            return (< int * > self._dparray_data)[lin_idx]
+            return ( < int * > self._dparray_data)[lin_idx]
         elif self.dtype == numpy.bool:
-            return (< cpp_bool * > self._dparray_data)[lin_idx]
+            return ( < cpp_bool * > self._dparray_data)[lin_idx]
 
         utils.checker_throw_type_error("__getitem__", self.dtype)
 
@@ -364,15 +405,15 @@ cdef class dparray:
             raise utils.checker_throw_index_error("__setitem__", lin_idx, self.size)
 
         if self.dtype == numpy.float64:
-            (< double * > self._dparray_data)[lin_idx] = <double > value
+            ( < double * > self._dparray_data)[lin_idx] = <double > value
         elif self.dtype == numpy.float32:
-            (< float * > self._dparray_data)[lin_idx] = <float > value
+            ( < float * > self._dparray_data)[lin_idx] = <float > value
         elif self.dtype == numpy.int64:
-            (< long * > self._dparray_data)[lin_idx] = <long > value
+            ( < long * > self._dparray_data)[lin_idx] = <long > value
         elif self.dtype == numpy.int32:
-            (< int * > self._dparray_data)[lin_idx] = <int > value
+            ( < int * > self._dparray_data)[lin_idx] = <int > value
         elif self.dtype == numpy.bool:
-            (< cpp_bool * > self._dparray_data)[lin_idx] = < cpp_bool > value
+            ( < cpp_bool * > self._dparray_data)[lin_idx] = < cpp_bool > value
         else:
             utils.checker_throw_type_error("__setitem__", self.dtype)
 
@@ -423,7 +464,7 @@ cdef class dparray:
         """
 
         if not utils.use_origin_backend(self):
-            c_order, fortran_order, _ = self.flags
+            c_order, fortran_order = self.flags.c_contiguous, self.flags.f_contiguous
 
             if order not in {'C', 'F', 'A', 'K'}:
                 pass

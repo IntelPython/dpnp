@@ -61,6 +61,7 @@ __all__ = [
 ]
 
 from dpnp.dpnp_iface_arraycreation import *
+from dpnp.dpnp_iface_arraymanipulation import *
 from dpnp.dpnp_iface_bitwise import *
 from dpnp.dpnp_iface_counting import *
 from dpnp.dpnp_iface_indexing import *
@@ -75,6 +76,7 @@ from dpnp.dpnp_iface_statistics import *
 from dpnp.dpnp_iface_trigonometric import *
 
 from dpnp.dpnp_iface_arraycreation import __all__ as __all__arraycreation
+from dpnp.dpnp_iface_arraymanipulation import __all__ as __all__arraymanipulation
 from dpnp.dpnp_iface_bitwise import __all__ as __all__bitwise
 from dpnp.dpnp_iface_counting import __all__ as __all__counting
 from dpnp.dpnp_iface_indexing import __all__ as __all__indexing
@@ -89,6 +91,7 @@ from dpnp.dpnp_iface_statistics import __all__ as __all__statistics
 from dpnp.dpnp_iface_trigonometric import __all__ as __all__trigonometric
 
 __all__ += __all__arraycreation
+__all__ += __all__arraymanipulation
 __all__ += __all__bitwise
 __all__ += __all__counting
 __all__ += __all__indexing

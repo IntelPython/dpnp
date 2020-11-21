@@ -41,6 +41,7 @@ it contains:
 
 
 import numpy
+import dpnp
 
 from dpnp.backend import *
 from dpnp.dparray import dparray
@@ -49,7 +50,10 @@ from dpnp.dpnp_utils import *
 __all__ = [
     "arange",
     "array",
+    "asanyarray",
     "asarray",
+    "ascontiguousarray",
+    "copy",
     "empty",
     "empty_like",
     "full",
@@ -223,6 +227,56 @@ def array(obj, dtype=None, copy=True, order='C', subok=False, ndmin=0):
     return dpnp_array(obj, dtype)
 
 
+def asanyarray(a, dtype=None, order=None):
+    """
+    Convert the input to an ndarray, but pass ndarray subclasses through.
+
+    Parameters
+    ----------
+    a : array_like
+        Input data, in any form that can be converted to an array.  This
+        includes scalars, lists, lists of tuples, tuples, tuples of tuples,
+        tuples of lists, and ndarrays.
+    dtype : data-type, optional
+        By default, the data-type is inferred from the input data.
+    order : {'C', 'F'}, optional
+        Whether to use row-major (C-style) or column-major
+        (Fortran-style) memory representation.  Defaults to 'C'.
+
+    Returns
+    -------
+    out : ndarray or an ndarray subclass
+        Array interpretation of `a`.  If `a` is an ndarray or a subclass
+        of ndarray, it is returned as-is and no copy is performed.
+
+    See Also
+    --------
+    asarray : Similar function which always returns ndarrays.
+    ascontiguousarray : Convert input to a contiguous array.
+    asfarray : Convert input to a floating point ndarray.
+    asfortranarray : Convert input to an ndarray with column-major
+                     memory order.
+    asarray_chkfinite : Similar function which checks input for NaNs and
+                        Infs.
+    fromiter : Create an array from an iterator.
+    fromfunction : Construct an array by executing a function on grid
+                   positions.
+
+    """
+
+    if not use_origin_backend(a):
+        # if it is already dpnp.ndarray then same object should be returned
+        if isinstance(a, dpnp.ndarray):
+            return a
+
+        if order not in ('C', 'c', None):
+            checker_throw_value_error("asanyarray", "order", order, 'C')
+
+        return array(a, dtype=dtype, order=order)
+
+    return call_origin(numpy.asanyarray, a, dtype, order)
+
+
 def asarray(input, dtype=None, order='C'):
     """Converts an input object into array.
 
@@ -260,6 +314,82 @@ def asarray(input, dtype=None, order='C'):
         return numpy.asarray(input, dtype=dtype, order=order)
 
     return array(input, dtype=dtype, order=order)
+
+
+def ascontiguousarray(a, dtype=None):
+    """
+    Return a contiguous array (ndim >= 1) in memory (C order).
+
+    Parameters
+    ----------
+    a : array_like
+        Input array.
+    dtype : str or dtype object, optional
+        Data-type of returned array.
+
+    Returns
+    -------
+    out : ndarray
+        Contiguous array of same shape and content as `a`, with type `dtype`
+        if specified.
+
+    See Also
+    --------
+    asfortranarray : Convert input to an ndarray with column-major
+                     memory order.
+    require : Return an ndarray that satisfies requirements.
+    ndarray.flags : Information about the memory layout of the array.
+
+    """
+
+    if not use_origin_backend(a):
+        # we support only c-contiguous arrays for now
+        # if type is the same then same object should be returned
+        if isinstance(a, dpnp.ndarray) and a.dtype == dtype:
+            return a
+
+        return array(a, dtype=dtype)
+
+    return call_origin(numpy.ascontiguousarray, a, dtype)
+
+
+# numpy.copy(a, order='K', subok=False)
+def copy(a, order='C', subok=False):
+    """
+    Return an array copy of the given object.
+
+    Parameters
+    ----------
+    a : array_like
+        Input data.
+    order : {'C', 'F', 'A', 'K'}, optional
+        Controls the memory layout of the copy. 'C' means C-order,
+        'F' means F-order, 'A' means 'F' if `a` is Fortran contiguous,
+        'C' otherwise. 'K' means match the layout of `a` as closely
+        as possible. (Note that this function and :meth:`ndarray.copy` are very
+        similar, but have different default values for their order=
+        arguments.)
+    subok : bool, optional
+        If True, then sub-classes will be passed-through, otherwise the
+        returned array will be forced to be a base-class array (defaults to False).
+
+        .. versionadded:: 1.19.0
+
+    Returns
+    -------
+    arr : ndarray
+        Array interpretation of `a`.
+
+    See Also
+    --------
+    ndarray.copy : Preferred method for creating an array copy
+
+    """
+
+    if not use_origin_backend(a):
+        return array(a, order=order, subok=subok)
+
+    return call_origin(numpy.copy, a, order, subok)
 
 
 # numpy.empty(shape, dtype=float, order='C')
