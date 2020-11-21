@@ -27,7 +27,7 @@
 # *****************************************************************************
 
 """
-Interface of the Discrete Fourier Transform part of the DPNP
+Interface of the Indexing part of the DPNP
 
 Notes
 -----
@@ -40,42 +40,71 @@ it contains:
 """
 
 
-import dpnp
 import numpy
 
+from dpnp.backend import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
-from dpnp.fft.dpnp_algo_fft import *
+import dpnp
 
 
 __all__ = [
-    "fft"
+    "nonzero",
 ]
 
 
-def fft(x1, n=None, axis=-1, norm=None):
+def nonzero(a):
     """
-    Compute the one-dimensional discrete Fourier Transform.
+    Return the indices of the elements that are non-zero.
+
+    Returns a tuple of arrays, one for each dimension of `a`,
+    containing the indices of the non-zero elements in that
+    dimension. The values in `a` are always tested and returned in
+    row-major, C-style order.
+
+    To group the indices by element, rather than dimension, use `argwhere`,
+    which returns a row for each non-zero element.
+
+    .. note::
+
+       When called on a zero-d array or scalar, ``nonzero(a)`` is treated
+       as ``nonzero(atleast1d(a))``.
+
+       .. deprecated:: 1.17.0
+
+          Use `atleast1d` explicitly if this behavior is deliberate.
+
+    Parameters
+    ----------
+    a : array_like
+        Input array.
+
+    Returns
+    -------
+    tuple_of_arrays : tuple
+        Indices of elements that are non-zero.
 
     See Also
     --------
-    :obj:`numpy.fft.fft`
+    flatnonzero :
+        Return indices that are non-zero in the flattened version of the input
+        array.
+    ndarray.nonzero :
+        Equivalent ndarray method.
+    count_nonzero :
+        Counts the number of non-zero elements in the input array.
+
+    Notes
+    -----
+    While the nonzero values can be obtained with ``a[nonzero(a)]``, it is
+    recommended to use ``x[x.astype(bool)]`` or ``x[x != 0]`` instead, which
+    will correctly handle 0-d arrays.
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
+    is_a_dparray = isinstance(a, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray):
-        if n is not None:
-            pass
-        elif axis != -1:
-            pass
-        elif norm is not None:
-            pass
-        elif x1.size < 1:
-            # need to properly raise an exception. let's pass it to fallback
-            pass
-        else:
-            return dpnp_fft(x1)
+    if (not use_origin_backend(a) and is_a_dparray):
+        return dpnp_nonzero(a)
 
-    return call_origin(numpy.fft.fft, x1, n, axis, norm)
+    return call_origin(numpy.nonzero, a)

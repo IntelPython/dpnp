@@ -1,5 +1,4 @@
 # cython: language_level=3
-# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2020, Intel Corporation
@@ -26,56 +25,41 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""
-Interface of the Discrete Fourier Transform part of the DPNP
+"""Module Backend (Indexing part)
 
-Notes
------
-This module is a face or public interface file for the library
-it contains:
- - Interface functions
- - documentation for the functions
- - The functions parameters check
+This module contains interface functions between C backend layer
+and the rest of the library
 
 """
 
 
-import dpnp
 import numpy
-
-from dpnp.dparray import dparray
-from dpnp.dpnp_utils import *
-from dpnp.fft.dpnp_algo_fft import *
+from dpnp.dpnp_utils cimport *
+from dpnp.dpnp_iface_counting import count_nonzero
 
 
-__all__ = [
-    "fft"
+__all__ += [
+    "dpnp_nonzero",
 ]
 
 
-def fft(x1, n=None, axis=-1, norm=None):
-    """
-    Compute the one-dimensional discrete Fourier Transform.
+cpdef tuple dpnp_nonzero(dparray in_array1):
+    res_count = in_array1.ndim
 
-    See Also
-    --------
-    :obj:`numpy.fft.fft`
+    # have to go through array one extra time to count size of result arrays
+    res_size = count_nonzero(in_array1)
 
-    """
+    res_list = []
+    for i in range(res_count):
+        res_list.append(dparray((res_size, ), dtype=dpnp.int64))
+    result = _object_to_tuple(res_list)
 
-    is_x1_dparray = isinstance(x1, dparray)
+    idx = 0
+    for i in range(in_array1.size):
+        if in_array1[i] == 0:
+            ids = get_axis_indeces(i, in_array1.shape)
+            for j in range(res_count):
+                result[j][idx] = ids[j]
+            idx = idx + 1
 
-    if (not use_origin_backend(x1) and is_x1_dparray):
-        if n is not None:
-            pass
-        elif axis != -1:
-            pass
-        elif norm is not None:
-            pass
-        elif x1.size < 1:
-            # need to properly raise an exception. let's pass it to fallback
-            pass
-        else:
-            return dpnp_fft(x1)
-
-    return call_origin(numpy.fft.fft, x1, n, axis, norm)
+    return result
