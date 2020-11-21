@@ -226,19 +226,33 @@ def array(obj, dtype=None, copy=True, order='C', subok=False, ndmin=0):
 def asarray(input, dtype=None, order='C'):
     """Converts an input object into array.
 
-    This is equivalent to ``array(a, dtype, copy=False)``.
+    Parameters
+    ----------
+    input : array_like
+        Input data.
+    dtype: data-type, optional
+        By default, the data-type is inferred from the input data.
+    order : {'C', 'F'}, optional
+        Whether to use row-major (C-style) or column-major (Fortran-style) memory representation.
+        Defaults to 'C'.
 
-    Args:
-        input: The source object.
-        dtype: Data type specifier. It is inferred from the input by default.
-        order{‘C’, ‘F’}, optional
-            Whether to use row-major (C-style) or column-major (Fortran-style) memory representation.
-            Defaults to ‘C’.
+    Returns
+    -------
+        out : :obj:`dpnp.ndarray`
+            Array interpretation of `input`.
 
-    Returns:
-        inumpy.dparray populated with input data
+    Limitations
+    -----------
+    Parameter ``order`` is supported only with default value `'C'`.
 
     .. seealso:: :obj:`numpy.asarray`
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.asarray([1, 2])
+    >>> [i for i in x]
+    [1, 2]
 
     """
 
