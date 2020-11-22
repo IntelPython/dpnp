@@ -389,6 +389,8 @@ cdef class dparray:
             return ( < int * > self._dparray_data)[lin_idx]
         elif self.dtype == numpy.bool:
             return ( < cpp_bool * > self._dparray_data)[lin_idx]
+        elif self.dtype == numpy.complex128:
+            return ( < double complex * > self._dparray_data)[lin_idx]
 
         utils.checker_throw_type_error("__getitem__", self.dtype)
 
@@ -414,6 +416,8 @@ cdef class dparray:
             ( < int * > self._dparray_data)[lin_idx] = <int > value
         elif self.dtype == numpy.bool:
             ( < cpp_bool * > self._dparray_data)[lin_idx] = < cpp_bool > value
+        elif self.dtype == numpy.complex128:
+            ( < double complex * > self._dparray_data)[lin_idx] = <double complex > value
         else:
             utils.checker_throw_type_error("__setitem__", self.dtype)
 
