@@ -124,9 +124,9 @@ $(document).ready(function(){initNavTree('dpnp__kernels__fft_8cpp_source.html','
 <div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="classdpnp__fft__fft__c__kernel.html">   36</a></span>&#160;<span class="keyword">class </span><a class="code" href="classdpnp__fft__fft__c__kernel.html">dpnp_fft_fft_c_kernel</a>;</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> _DataType_input, <span class="keyword">typename</span> _DataType_output&gt;</div>
-<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga3f45cd98fb4a8a36f26277d5a4872b88">   39</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga3f45cd98fb4a8a36f26277d5a4872b88">dpnp_fft_fft_c</a>(<span class="keywordtype">void</span>* array1_in, <span class="keywordtype">void</span>* result1, <span class="keywordtype">size_t</span> size)</div>
+<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga946829790944d58cb7c157e05672e6df">   39</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga946829790944d58cb7c157e05672e6df">dpnp_fft_fft_c</a>(<span class="keywordtype">void</span>* array1_in, <span class="keywordtype">void</span>* result1, <span class="keywordtype">size_t</span> input_size, <span class="keywordtype">size_t</span> output_size)</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;{</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keywordflow">if</span> (!size)</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keywordflow">if</span> (!output_size)</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    {</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        <span class="keywordflow">return</span>;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    }</div>
@@ -137,64 +137,70 @@ $(document).ready(function(){initNavTree('dpnp__kernels__fft_8cpp_source.html','
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    _DataType_output* result = <span class="keyword">reinterpret_cast&lt;</span>_DataType_output*<span class="keyword">&gt;</span>(result1);</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="preprocessor">#if 1</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    cl::sycl::range&lt;1&gt; gws(size);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    cl::sycl::range&lt;1&gt; gws(output_size);</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keyword">auto</span> kernel_parallel_for_func = [=](cl::sycl::id&lt;1&gt; global_id) {</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        <span class="keywordtype">size_t</span> <span class="keywordtype">id</span> = global_id[0];</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <span class="keywordtype">double</span> sumreal = 0.0;</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <span class="keywordtype">double</span> sumimag = 0.0;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> it = 0; it &lt; size; ++it)</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> it = 0; it &lt; output_size; ++it)</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        {</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;            <span class="keywordtype">double</span> angle = 2 * M_PI * it * <span class="keywordtype">id</span> / size;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;            <span class="keywordtype">double</span> inreal = array_1[it];</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;            <span class="keywordtype">double</span> angle = 2 * M_PI * it * <span class="keywordtype">id</span> / output_size;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;            <span class="keywordtype">double</span> inreal = 0.0;</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;            <span class="keywordtype">double</span> inimag = 0.0;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;            <span class="keywordtype">double</span> angle_cos = cl::sycl::cos(angle);</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;            <span class="keywordtype">double</span> angle_sin = cl::sycl::sin(angle);</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;            sumreal += inreal * angle_cos + inimag * angle_sin;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;            sumimag += -inreal * angle_sin + inimag * angle_cos;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        }</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        result[id] = _DataType_output(sumreal, sumimag);</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    };</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keyword">auto</span> kernel_func = [&amp;](cl::sycl::handler&amp; cgh) {</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        cgh.parallel_for&lt;<span class="keyword">class </span><a class="code" href="classdpnp__fft__fft__c__kernel.html">dpnp_fft_fft_c_kernel</a>&lt;_DataType_input, _DataType_output&gt;&gt;(gws, kernel_parallel_for_func);</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    };</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; </div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keyword">event</span> = DPNP_QUEUE.submit(kernel_func);</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;            <span class="keywordflow">if</span> (it &lt; input_size)</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;            {</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                inreal = array_1[it];</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;            }</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;            <span class="keywordtype">double</span> angle_cos = cl::sycl::cos(angle);</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;            <span class="keywordtype">double</span> angle_sin = cl::sycl::sin(angle);</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;            sumreal += inreal * angle_cos + inimag * angle_sin;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;            sumimag += -inreal * angle_sin + inimag * angle_cos;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        }</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        result[id] = _DataType_output(sumreal, sumimag);</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    };</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    oneapi::mkl::dft::descriptor&lt;mkl_dft::precision::DOUBLE, mkl_dft::domain::COMPLEX&gt; desc(size);</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    desc.set_value(mkl_dft::config_param::FORWARD_SCALE, <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(size));</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    desc.set_value(mkl_dft::config_param::PLACEMENT, DFTI_NOT_INPLACE); <span class="comment">// enum value from MKL C interface</span></div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    desc.commit(DPNP_QUEUE);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="keyword">auto</span> kernel_func = [&amp;](cl::sycl::handler&amp; cgh) {</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        cgh.parallel_for&lt;<span class="keyword">class </span><a class="code" href="classdpnp__fft__fft__c__kernel.html">dpnp_fft_fft_c_kernel</a>&lt;_DataType_input, _DataType_output&gt;&gt;(gws, kernel_parallel_for_func);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    };</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keyword">event</span> = DPNP_QUEUE.submit(kernel_func);</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; </div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keyword">event</span> = mkl_dft::compute_forward(desc, array_1, result);</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keyword">event</span>.wait();</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;}</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160; </div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="keywordtype">void</span> func_map_init_fft_func(func_map_t&amp; fmap)</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;{</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_INT][eft_INT] = {eft_C128,</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;                                                             (<span class="keywordtype">void</span>*)<a class="code" href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga3f45cd98fb4a8a36f26277d5a4872b88">dpnp_fft_fft_c</a>&lt;<span class="keywordtype">int</span>, std::complex&lt;double&gt;&gt;};</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_LNG][eft_LNG] = {eft_C128,</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;                                                             (<span class="keywordtype">void</span>*)<a class="code" href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga3f45cd98fb4a8a36f26277d5a4872b88">dpnp_fft_fft_c</a>&lt;<span class="keywordtype">long</span>, std::complex&lt;double&gt;&gt;};</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_FLT][eft_FLT] = {eft_C128,</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;                                                             (<span class="keywordtype">void</span>*)<a class="code" href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga3f45cd98fb4a8a36f26277d5a4872b88">dpnp_fft_fft_c</a>&lt;<span class="keywordtype">float</span>, std::complex&lt;double&gt;&gt;};</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_DBL][eft_DBL] = {eft_C128,</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;                                                             (<span class="keywordtype">void</span>*)<a class="code" href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga3f45cd98fb4a8a36f26277d5a4872b88">dpnp_fft_fft_c</a>&lt;<span class="keywordtype">double</span>, std::complex&lt;double&gt;&gt;};</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; </div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;}</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    oneapi::mkl::dft::descriptor&lt;mkl_dft::precision::DOUBLE, mkl_dft::domain::COMPLEX&gt; desc(output_size);</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    desc.set_value(mkl_dft::config_param::FORWARD_SCALE, <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(output_size));</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    desc.set_value(mkl_dft::config_param::PLACEMENT, DFTI_NOT_INPLACE); <span class="comment">// enum value from MKL C interface</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    desc.commit(DPNP_QUEUE);</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="keyword">event</span> = mkl_dft::compute_forward(desc, array_1, result);</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; </div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keyword">event</span>.wait();</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;}</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160; </div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="keywordtype">void</span> func_map_init_fft_func(func_map_t&amp; fmap)</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;{</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_INT][eft_INT] = {eft_C128,</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;                                                             (<span class="keywordtype">void</span>*)<a class="code" href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga946829790944d58cb7c157e05672e6df">dpnp_fft_fft_c</a>&lt;<span class="keywordtype">int</span>, std::complex&lt;double&gt;&gt;};</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_LNG][eft_LNG] = {eft_C128,</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;                                                             (<span class="keywordtype">void</span>*)<a class="code" href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga946829790944d58cb7c157e05672e6df">dpnp_fft_fft_c</a>&lt;<span class="keywordtype">long</span>, std::complex&lt;double&gt;&gt;};</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_FLT][eft_FLT] = {eft_C128,</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;                                                             (<span class="keywordtype">void</span>*)<a class="code" href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga946829790944d58cb7c157e05672e6df">dpnp_fft_fft_c</a>&lt;<span class="keywordtype">float</span>, std::complex&lt;double&gt;&gt;};</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_DBL][eft_DBL] = {eft_C128,</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;                                                             (<span class="keywordtype">void</span>*)<a class="code" href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga946829790944d58cb7c157e05672e6df">dpnp_fft_fft_c</a>&lt;<span class="keywordtype">double</span>, std::complex&lt;double&gt;&gt;};</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160; </div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;}</div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <div class="ttc" id="aclassdpnp__fft__fft__c__kernel_html"><div class="ttname"><a href="classdpnp__fft__fft__c__kernel.html">dpnp_fft_fft_c_kernel</a></div><div class="ttdef"><b>Definition:</b> <a href="dpnp__kernels__fft_8cpp_source.html#l00036">dpnp_kernels_fft.cpp:36</a></div></div>
-<div class="ttc" id="agroup___b_a_c_k_e_n_d___f_f_t___a_p_i_html_ga3f45cd98fb4a8a36f26277d5a4872b88"><div class="ttname"><a href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga3f45cd98fb4a8a36f26277d5a4872b88">dpnp_fft_fft_c</a></div><div class="ttdeci">void dpnp_fft_fft_c(void *array1_in, void *result1, size_t size)</div><div class="ttdoc">1D discrete Fourier Transform.</div><div class="ttdef"><b>Definition:</b> <a href="dpnp__kernels__fft_8cpp_source.html#l00039">dpnp_kernels_fft.cpp:39</a></div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___f_f_t___a_p_i_html_ga946829790944d58cb7c157e05672e6df"><div class="ttname"><a href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga946829790944d58cb7c157e05672e6df">dpnp_fft_fft_c</a></div><div class="ttdeci">void dpnp_fft_fft_c(void *array1_in, void *result1, size_t input_size, size_t output_size)</div><div class="ttdoc">1D discrete Fourier Transform.</div><div class="ttdef"><b>Definition:</b> <a href="dpnp__kernels__fft_8cpp_source.html#l00039">dpnp_kernels_fft.cpp:39</a></div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

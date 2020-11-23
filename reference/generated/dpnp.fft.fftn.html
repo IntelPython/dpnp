@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.fft.fft &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.fft.fftn &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.fft.fft2" href="dpnp.fft.fft2.html" />
-    <link rel="prev" title="FFT Functions" href="../fft.html" /> 
+    <link rel="next" title="Linear Algebra" href="../linalg.html" />
+    <link rel="prev" title="dpnp.fft.fft2" href="dpnp.fft.fft2.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -170,13 +170,13 @@
         
           <li><a href="../fft.html">FFT Functions</a> &raquo;</li>
         
-      <li>dpnp.fft.fft</li>
+      <li>dpnp.fft.fftn</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.fft.fft.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.fft.fftn.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -189,23 +189,23 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-fft-fft">
-<h1>dpnp.fft.fft<a class="headerlink" href="#dpnp-fft-fft" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-fft-fftn">
+<h1>dpnp.fft.fftn<a class="headerlink" href="#dpnp-fft-fftn" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.fft.fft">
-<code class="sig-prename descclassname">dpnp.fft.</code><code class="sig-name descname">fft</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">n</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">norm</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/fft/dpnp_iface_fft.html#fft"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.fft.fft" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the one-dimensional discrete Fourier Transform.</p>
-<p>Compute the one-dimensional discrete Fourier Transform.
+<dt id="dpnp.fft.fftn">
+<code class="sig-prename descclassname">dpnp.fft.</code><code class="sig-name descname">fftn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">s</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">axes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">norm</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/fft/dpnp_iface_fft.html#fftn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.fft.fftn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the N-dimensional FFT.</p>
+<p>Compute the N-dimensional FFT.
 Multi-dimensional arrays computed as batch of 1-D arrays</p>
 <p class="rubric">Limitations</p>
-<p>Parameter <code class="docutils literal notranslate"><span class="pre">axis</span></code> is unsupported.
+<p>Parameter <code class="docutils literal notranslate"><span class="pre">axes</span></code> is unsupported.
 Parameter <code class="docutils literal notranslate"><span class="pre">norm</span></code> is unsupported.
 Parameter <code class="docutils literal notranslate"><span class="pre">x1</span></code> supports 1-D arrays only.
 Parameter <code class="docutils literal notranslate"><span class="pre">x1</span></code> supports <cite>dpnp.int32</cite>, <cite>dpnp.int64</cite>, <cite>dpnp.float32</cite> and <cite>dpnp.float64</cite> datatypes only.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.fft.fft.html#numpy.fft.fft" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fft.fft</span></code></a></dt><dd><p>Compute the one-dimensional discrete Fourier Transform.</p>
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.fft.fftn.html#numpy.fft.fftn" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fft.fftn</span></code></a></dt><dd><p>Compute the N-dimensional FFT.</p>
 </dd>
 </dl>
 </div>
@@ -221,10 +221,10 @@ Parameter <code class="docutils literal notranslate"><span class="pre">x1</span>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.fft.fft2.html" class="btn btn-neutral float-right" title="dpnp.fft.fft2" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../linalg.html" class="btn btn-neutral float-right" title="Linear Algebra" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../fft.html" class="btn btn-neutral float-left" title="FFT Functions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.fft.fft2.html" class="btn btn-neutral float-left" title="dpnp.fft.fft2" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

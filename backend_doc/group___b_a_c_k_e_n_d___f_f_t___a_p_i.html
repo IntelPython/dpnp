@@ -91,16 +91,16 @@ $(document).ready(function(){initNavTree('group___b_a_c_k_e_n_d___f_f_t___a_p_i.
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga3f45cd98fb4a8a36f26277d5a4872b88"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
-<tr class="memitem:ga3f45cd98fb4a8a36f26277d5a4872b88"><td class="memTemplItemLeft" align="right" valign="top">INP_DLLEXPORT void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga3f45cd98fb4a8a36f26277d5a4872b88">dpnp_fft_fft_c</a> (void *array1_in, void *result1, size_t size)</td></tr>
-<tr class="memdesc:ga3f45cd98fb4a8a36f26277d5a4872b88"><td class="mdescLeft">&#160;</td><td class="mdescRight">1D discrete Fourier Transform.  <a href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga3f45cd98fb4a8a36f26277d5a4872b88">More...</a><br /></td></tr>
-<tr class="separator:ga3f45cd98fb4a8a36f26277d5a4872b88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga946829790944d58cb7c157e05672e6df"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
+<tr class="memitem:ga946829790944d58cb7c157e05672e6df"><td class="memTemplItemLeft" align="right" valign="top">INP_DLLEXPORT void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga946829790944d58cb7c157e05672e6df">dpnp_fft_fft_c</a> (void *array1_in, void *result1, size_t input_size, size_t output_size)</td></tr>
+<tr class="memdesc:ga946829790944d58cb7c157e05672e6df"><td class="mdescLeft">&#160;</td><td class="mdescRight">1D discrete Fourier Transform.  <a href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga946829790944d58cb7c157e05672e6df">More...</a><br /></td></tr>
+<tr class="separator:ga946829790944d58cb7c157e05672e6df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>This section describes Backend API for Discrete Fourier Transform (DFT) part. </p>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ga3f45cd98fb4a8a36f26277d5a4872b88"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga3f45cd98fb4a8a36f26277d5a4872b88">&#9670;&nbsp;</a></span>dpnp_fft_fft_c()</h2>
+<a id="ga946829790944d58cb7c157e05672e6df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga946829790944d58cb7c157e05672e6df">&#9670;&nbsp;</a></span>dpnp_fft_fft_c()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -123,7 +123,13 @@ template&lt;typename _DataType &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>size</em>&#160;</td>
+          <td class="paramname"><em>input_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>output_size</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -139,7 +145,8 @@ template&lt;typename _DataType &gt; </div>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">array1_in</td><td>Input array 1.</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">result1</td><td>Output array.</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in input arrays. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input_size</td><td>Number of elements in input array.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">output_size</td><td>Number of elements in output array. </td></tr>
   </table>
   </dd>
 </dl>
