@@ -25,7 +25,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""Module Backend (FFT part)
+"""Module Backend (Indexing part)
 
 This module contains interface functions between C backend layer
 and the rest of the library
@@ -33,39 +33,33 @@ and the rest of the library
 """
 
 
-import dpnp
-from dpnp.backend cimport *
+import numpy
 from dpnp.dpnp_utils cimport *
+from dpnp.dpnp_iface_counting import count_nonzero
 
 
-__all__ = [
-    "dpnp_fft"
+__all__ += [
+    "dpnp_nonzero",
 ]
 
 
-ctypedef void(*fptr_dpnp_fft_fft_t)(void * , void * , size_t, size_t)
+cpdef tuple dpnp_nonzero(dparray in_array1):
+    res_count = in_array1.ndim
 
+    # have to go through array one extra time to count size of result arrays
+    res_size = count_nonzero(in_array1)
 
-cpdef dparray dpnp_fft(dparray input, size_t output_size):
-    cdef dparray_shape_type output_shape = input.shape
-    cdef size_t input_shape_size = input.ndim
+    res_list = []
+    for i in range(res_count):
+        res_list.append(dparray((res_size, ), dtype=dpnp.int64))
+    result = _object_to_tuple(res_list)
 
-    cdef size_t last_axis_size = output_shape.back()
-    if (output_size != last_axis_size):
-        output_shape[input.ndim - 1] = output_size
-
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
-
-    # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FFT_FFT, param1_type, param1_type)
-
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-    # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(output_shape, dtype=result_type)
-
-    cdef fptr_dpnp_fft_fft_t func = <fptr_dpnp_fft_fft_t > kernel_data.ptr
-    # call FPTR function
-    func(input.get_data(), result.get_data(), input.size, result.size)
+    idx = 0
+    for i in range(in_array1.size):
+        if in_array1[i] == 0:
+            ids = get_axis_indeces(i, in_array1.shape)
+            for j in range(res_count):
+                result[j][idx] = ids[j]
+            idx = idx + 1
 
     return result
