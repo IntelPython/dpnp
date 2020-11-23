@@ -47,6 +47,7 @@ from dpnp.random._random import *
 __all__ = [
     'beta',
     'binomial',
+    'bytes',
     'chisquare',
     'exponential',
     'gamma',
@@ -70,6 +71,7 @@ __all__ = [
     'seed',
     'standard_cauchy',
     'standard_exponential',
+    'standard_gamma',
     'standard_normal',
     'uniform',
     'weibull'
@@ -234,6 +236,31 @@ def binomial(n, p, size=None):
         return dpnp_binomial(int(n), p, size)
 
     return call_origin(numpy.random.binomial, n, p, size)
+
+
+def bytes(length):
+    """Bytes
+
+    Return random bytes.
+
+    Parameters
+    ----------
+    length : int
+        Number of random bytes.
+
+    Returns
+    -------
+    out : str
+        String of length `length`.
+
+    Examples
+    --------
+    >>> dpnp.random.bytes(10)
+    ' eh\\x85\\x022SZ\\xbf\\xa4' #random
+
+    """
+
+    return call_origin(numpy.random.bytes, length)
 
 
 def chisquare(df, size=None):
@@ -1388,7 +1415,7 @@ def seed(seed=None):
             checker_throw_value_error("seed", "type(seed)", type(seed), int)
         elif seed < 0:
             checker_throw_value_error("seed", "seed", seed, "non-negative")
-        return dpnp_srand(seed)
+        dpnp_srand(seed)
 
     return call_origin(numpy.random.seed, seed)
 
@@ -1477,6 +1504,77 @@ def standard_exponential(size=None):
         return dpnp_standard_exponential(size)
 
     return call_origin(numpy.random.standard_exponential, size)
+
+
+def standard_gamma(shape, size=None):
+    """Standard gamma distribution.
+
+    Draw samples from a standard Gamma distribution.
+
+    Samples are drawn from a Gamma distribution with specified parameters,
+    shape (sometimes designated "k") and scale=1.
+
+    Parameters
+    ----------
+    shape : float
+        Parameter, must be non-negative.
+    size : int or tuple of ints, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
+        a single value is returned if ``shape`` is a scalar.
+
+    Returns
+    -------
+    out : dparray
+        Drawn samples from the parameterized standard gamma distribution.
+
+    Notes
+    -----
+    The probability density for the Gamma distribution is
+
+    .. math:: p(x) = x^{k-1}\\frac{e^{-x/\\theta}}{\\theta^k\\Gamma(k)},
+
+    where :math:`k` is the shape and :math:`\\theta` the scale,
+    and :math:`\\Gamma` is the Gamma function.
+
+    The Gamma distribution is often used to model the times to failure of
+    electronic components, and arises naturally in processes for which the
+    waiting times between Poisson distributed events are relevant.
+
+    References
+    ----------
+    .. [1] Weisstein, Eric W. "Gamma Distribution." From MathWorld--A
+           Wolfram Web Resource.
+           http://mathworld.wolfram.com/GammaDistribution.html
+    .. [2] Wikipedia, "Gamma distribution",
+           https://en.wikipedia.org/wiki/Gamma_distribution
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> shape = 2. # mean and width
+    >>> s = dpnp.random.standard_gamma(shape, 1000000)
+
+    """
+
+    # TODO:
+    # array_like of floats for and `shape`
+    if not use_origin_backend(shape) and dpnp_queue_is_cpu():
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("standard_gamma", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("standard_gamma", "type(size)", type(size), int)
+
+        if shape < 0:
+            checker_throw_value_error("standard_gamma", "shape", shape, "non-negative")
+    
+        return dpnp_standard_gamma(shape, size)
+
+    return call_origin(numpy.random.standard_gamma, shape, size)
 
 
 def standard_normal(size=None):

@@ -62,6 +62,7 @@ __all__ = [
     "dpnp_srand",
     "dpnp_standard_cauchy",
     "dpnp_standard_exponential",
+    "dpnp_standard_gamma",
     "dpnp_standard_normal",
     "dpnp_uniform",
     "dpnp_weibull"
@@ -85,6 +86,7 @@ ctypedef void(*fptr_custom_rng_poisson_c_1out_t)(void *, double, size_t) except 
 ctypedef void(*fptr_custom_rng_rayleigh_c_1out_t)(void *, double, size_t) except +
 ctypedef void(*fptr_custom_rng_standard_cauchy_c_1out_t)(void *, size_t) except +
 ctypedef void(*fptr_custom_rng_standard_exponential_c_1out_t)(void *, size_t) except +
+ctypedef void(*fptr_custom_rng_standard_gamma_c_1out_t)(void *, double, size_t) except +
 ctypedef void(*fptr_custom_rng_standard_normal_c_1out_t)(void *, size_t) except +
 ctypedef void(*fptr_custom_rng_uniform_c_1out_t)(void *, long, long, size_t) except +
 ctypedef void(*fptr_custom_rng_weibull_c_1out_t)(void *, double, size_t) except +
@@ -665,6 +667,41 @@ cpdef dparray dpnp_standard_exponential(size):
     cdef fptr_custom_rng_standard_exponential_c_1out_t func = < fptr_custom_rng_standard_exponential_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), result.size)
+
+    return result
+
+
+cpdef dparray dpnp_standard_gamma(double shape, size):
+    """
+    Returns an array populated with samples from standard gamma distribution.
+    `dpnp_standard_gamma` generates a matrix filled with random floats sampled from a
+    univariate standard gamma distribution.
+
+    """
+
+    dtype = numpy.float64
+    cdef dparray result
+    cdef DPNPFuncType param1_type
+    cdef DPNPFuncData kernel_data
+    cdef fptr_custom_rng_standard_gamma_c_1out_t func
+
+    if shape == 0.0:
+        result = dparray(size, dtype=dtype)
+        result.fill(0.0)
+    else:
+        # convert string type names (dparray.dtype) to C enum DPNPFuncType
+        param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+
+        # get the FPTR data structure
+        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_GAMMA, param1_type, param1_type)
+
+        result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+        # ceate result array with type given by FPTR data
+        result = dparray(size, dtype=result_type)
+
+        func = <fptr_custom_rng_standard_gamma_c_1out_t > kernel_data.ptr
+        # call FPTR function
+        func(result.get_data(), shape, result.size)
 
     return result
 
