@@ -47,6 +47,7 @@ from dpnp.random._random import *
 __all__ = [
     'beta',
     'binomial',
+    'bytes',
     'chisquare',
     'exponential',
     'gamma',
@@ -234,6 +235,31 @@ def binomial(n, p, size=None):
         return dpnp_binomial(int(n), p, size)
 
     return call_origin(numpy.random.binomial, n, p, size)
+
+
+def bytes(length):
+    """Bytes
+
+    Return random bytes.
+
+    Parameters
+    ----------
+    length : int
+        Number of random bytes.
+
+    Returns
+    -------
+    out : str
+        String of length `length`.
+
+    Examples
+    --------
+    >>> dpnp.random.bytes(10)
+    ' eh\\x85\\x022SZ\\xbf\\xa4' #random
+
+    """
+
+    return call_origin(numpy.random.bytes, length)
 
 
 def chisquare(df, size=None):
