@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.random.beta &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.random.bytes &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.random.binomial" href="dpnp.random.binomial.html" />
-    <link rel="prev" title="dpnp.random.bytes" href="dpnp.random.bytes.html" /> 
+    <link rel="next" title="dpnp.random.beta" href="dpnp.random.beta.html" />
+    <link rel="prev" title="dpnp.random.sample" href="dpnp.random.sample.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -103,9 +103,9 @@
 <li class="toctree-l3"><a class="reference internal" href="../pad.html">Padding</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../polynomials.html">Polynomials</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../random.html#simple-random-data">Simple random data</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../random.html#simple-random-data">Simple random data</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../random.html#permutations">Permutations</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../random.html#distributions">Distributions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../random.html#distributions">Distributions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../random.html#random-generator">Random generator</a></li>
 </ul>
 </li>
@@ -170,13 +170,13 @@
         
           <li><a href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a> &raquo;</li>
         
-      <li>dpnp.random.beta</li>
+      <li>dpnp.random.bytes</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.random.beta.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.random.bytes.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -189,46 +189,29 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-random-beta">
-<h1>dpnp.random.beta<a class="headerlink" href="#dpnp-random-beta" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-random-bytes">
+<h1>dpnp.random.bytes<a class="headerlink" href="#dpnp-random-bytes" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.random.beta">
-<code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">beta</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#beta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.beta" title="Permalink to this definition">¶</a></dt>
-<dd><p>Beta distribution.</p>
-<p>Draw samples from a Beta distribution.</p>
-<p>The Beta distribution is a special case of the Dirichlet distribution,
-and is related to the Gamma distribution.  It has the probability
-distribution function</p>
-<div class="math notranslate nohighlight">
-\[f(x; a,b) = \frac{1}{B(\alpha, \beta)} x^{\alpha - 1}
-(1 - x)^{\beta - 1},\]</div>
-<p>where the normalization, B, is the beta function,</p>
-<div class="math notranslate nohighlight">
-\[B(\alpha, \beta) = \int_0^1 t^{\alpha - 1}
-(1 - t)^{\beta - 1} dt.\]</div>
-<p>It is often seen in Bayesian inference and order statistics.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>New code should use the <code class="docutils literal notranslate"><span class="pre">beta</span></code> method of a <code class="docutils literal notranslate"><span class="pre">default_rng()</span></code>
-instance instead; please see the <a class="reference external" href="https://numpy.org/doc/stable/reference/random/index.html#random-quick-start" title="(in NumPy v1.19)"><span>Quick Start</span></a>.</p>
-</div>
+<dt id="dpnp.random.bytes">
+<code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">bytes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">length</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#bytes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.bytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bytes</p>
+<p>Return random bytes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Alpha, positive (&gt;0).</p></li>
-<li><p><strong>b</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Beta, positive (&gt;0).</p></li>
-<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
-<code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">*</span> <span class="pre">k</span></code> samples are drawn.  If size is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default),
-a single value is returned if <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> are both scalars.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Number of random bytes.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – Drawn samples from the parameterized beta distribution.</p>
+<dd class="field-even"><p><strong>out</strong> – String of length <cite>length</cite>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.dparray.dparray.html#dpnp.dparray.dparray" title="dpnp.dparray.dparray">dparray</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dpnp</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">bytes</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="go">&#39; eh\x85\x022SZ\xbf\xa4&#39; #random</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>
@@ -241,10 +224,10 @@ a single value is returned if <code class="docutils literal notranslate"><span c
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.random.binomial.html" class="btn btn-neutral float-right" title="dpnp.random.binomial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.random.beta.html" class="btn btn-neutral float-right" title="dpnp.random.beta" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.random.bytes.html" class="btn btn-neutral float-left" title="dpnp.random.bytes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.random.sample.html" class="btn btn-neutral float-left" title="dpnp.random.sample" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

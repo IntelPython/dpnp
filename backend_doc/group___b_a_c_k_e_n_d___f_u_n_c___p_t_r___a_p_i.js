@@ -85,6 +85,7 @@ var group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i =
       [ "DPNP_FN_RNG_RAYLEIGH", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558acc272cc4ecbe0b0e5705041af58249c6", null ],
       [ "DPNP_FN_RNG_STANDARD_CAUCHY", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558aa14ca7c1b83bc295bebb629e28e80dfc", null ],
       [ "DPNP_FN_RNG_STANDARD_EXPONENTIAL", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a1989558074799d28289de9919eb55c48", null ],
+      [ "DPNP_FN_RNG_STANDARD_GAMMA", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a8f9b10a503f1c853fc633ce370e252d1", null ],
       [ "DPNP_FN_RNG_STANDARD_NORMAL", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558aa47904a3ff27ca35a2c69d09d897c29d", null ],
       [ "DPNP_FN_RNG_UNIFORM", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558aa43c5be689c64f6e058fee732c71d549", null ],
       [ "DPNP_FN_RNG_WEIBULL", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a390dd8fed5f213b251eb2c92af0211c6", null ],

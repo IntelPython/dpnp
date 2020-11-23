@@ -37,6 +37,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "custom_rng_rayleigh_c", "group___b_a_c_k_e_n_d___a_p_i.html#gab06869284ed9e49802c78beeb5c45b2b", null ],
     [ "custom_rng_standard_cauchy_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga53916dde01da3ca3ec30168344ec6dba", null ],
     [ "custom_rng_standard_exponential_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga2387eec54944a73d1b110b0b5fb4d9d7", null ],
+    [ "custom_rng_standard_gamma_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga1e1d9bc3c4f5c3a29e7375840f18197a", null ],
     [ "custom_rng_standard_normal_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga5c1a01fc4236f2c3f25bd79e7fee50a9", null ],
     [ "custom_rng_uniform_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga00ec0600e9458837339fcf362e90b9ef", null ],
     [ "custom_rng_weibull_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga94c5cc366d24a3a9dbbca2799009adc5", null ],
