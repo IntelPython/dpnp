@@ -1388,7 +1388,7 @@ def seed(seed=None):
             checker_throw_value_error("seed", "type(seed)", type(seed), int)
         elif seed < 0:
             checker_throw_value_error("seed", "seed", seed, "non-negative")
-        return dpnp_srand(seed)
+        dpnp_srand(seed)
 
     return call_origin(numpy.random.seed, seed)
 

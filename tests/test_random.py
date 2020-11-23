@@ -238,7 +238,7 @@ def test_gamma_invalid_args():
 
 
 def test_gamma_check_moments():
-    seed = 28041990
+    seed = 28041991
     dpnp.random.seed(seed)
     shape = 2.56
     scale = 0.8
