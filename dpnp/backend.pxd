@@ -94,7 +94,6 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_RIGHT_SHIFT
         DPNP_FN_RNG_BETA
         DPNP_FN_RNG_BINOMIAL
-        DPNP_FN_RNG_BYTES
         DPNP_FN_RNG_CHISQUARE
         DPNP_FN_RNG_EXPONENTIAL
         DPNP_FN_RNG_GAMMA

@@ -237,10 +237,24 @@ def binomial(n, p, size=None):
 def bytes(length):
     """Bytes
 
-    """
+    Return random bytes.
 
-    if not use_origin_backend(length):
-        return dpnp_bytes(int(length))
+    Parameters
+    ----------
+    length : int
+        Number of random bytes.
+
+    Returns
+    -------
+    out : str
+        String of length `length`.
+
+    Examples
+    --------
+    >>> dpnp.random.bytes(10)
+    ' eh\\x85\\x022SZ\\xbf\\xa4' #random
+
+    """
 
     return call_origin(numpy.random.bytes, length)
 

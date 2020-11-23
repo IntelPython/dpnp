@@ -123,7 +123,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RIGHT_SHIFT,            /**< Used in numpy.right_shift() implementation  */
     DPNP_FN_RNG_BETA,               /**< Used in numpy.random.beta() implementation  */
     DPNP_FN_RNG_BINOMIAL,           /**< Used in numpy.random.binomial() implementation  */
-    DPNP_FN_RNG_BYTES,              /**< Used in numpy.random.bytes() implementation  */
     DPNP_FN_RNG_CHISQUARE,          /**< Used in numpy.random.chisquare() implementation  */
     DPNP_FN_RNG_EXPONENTIAL,        /**< Used in numpy.random.exponential() implementation  */
     DPNP_FN_RNG_GAMMA,              /**< Used in numpy.random.gamma() implementation  */
