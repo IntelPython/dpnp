@@ -202,7 +202,7 @@ cpdef dparray dpnp_logical_and(dparray input1, dparray input2)
 cpdef dparray dpnp_logical_not(dparray input1)
 cpdef dparray dpnp_logical_or(dparray input1, dparray input2)
 cpdef dparray dpnp_logical_xor(dparray input1, dparray input2)
-cpdef dparray dpnp_not_equal(dparray input1, dparray input2)
+cpdef dparray dpnp_not_equal(dparray input1, input2)
 
 
 """
