@@ -758,6 +758,49 @@ def test_standard_exponential_check_moments():
     assert math.isclose(mean, expected_mean, abs_tol=0.003)
 
 
+def test_standard_gamma_seed():
+    seed = 28041990
+    size = 100
+    shape = 3.0  # shape param for gamma distr
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.standard_gamma(shape=shape, size=size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.standard_gamma(shape=shape, size=size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_standard_gamma_invalid_args():
+    size = 10
+    shape = -1   # non-negative `shape` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.standard_gamma(shape=shape, size=size)
+
+
+def test_standard_gamma_check_moments():
+    seed = 28041990
+    dpnp.random.seed(seed)
+    shape = 0.8
+
+    expected_mean = shape
+    expected_var = shape
+    var = numpy.var(dpnp.random.gamma(shape=shape, size=10**6))
+    mean = numpy.mean(dpnp.random.gamma(shape=shape, size=10**6))
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
+def test_standard_gamma_check_extreme_value():
+    seed = 28041990
+    dpnp.random.seed(seed)
+
+    shape = 0.0
+
+    res = numpy.asarray(dpnp.random.gamma(shape=shape, size=100))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == 0.0
+
+
 def test_standard_normal_seed():
     seed = 28041990
     size = 100
