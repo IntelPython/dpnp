@@ -43,12 +43,16 @@ __all__ = [
 ]
 
 
-ctypedef void(*fptr_dpnp_fft_fft_t)(void * , void * , size_t)
+ctypedef void(*fptr_dpnp_fft_fft_t)(void * , void * , size_t, size_t)
 
 
-cpdef dparray dpnp_fft(dparray input):
-    cdef dparray_shape_type input_shape = input.shape
+cpdef dparray dpnp_fft(dparray input, size_t output_size):
+    cdef dparray_shape_type output_shape = input.shape
     cdef size_t input_shape_size = input.ndim
+
+    cdef size_t last_axis_size = output_shape.back()
+    if (output_size != last_axis_size):
+        output_shape[input.ndim - 1] = output_size
 
     # convert string type names (dparray.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
@@ -58,10 +62,10 @@ cpdef dparray dpnp_fft(dparray input):
 
     result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(input_shape, dtype=result_type)
+    cdef dparray result = dparray(output_shape, dtype=result_type)
 
     cdef fptr_dpnp_fft_fft_t func = <fptr_dpnp_fft_fft_t > kernel_data.ptr
     # call FPTR function
-    func(input.get_data(), result.get_data(), input.size)
+    func(input.get_data(), result.get_data(), input.size, result.size)
 
     return result

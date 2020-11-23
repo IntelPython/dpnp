@@ -36,9 +36,9 @@ template <typename _KernelNameSpecialization1, typename _KernelNameSpecializatio
 class dpnp_fft_fft_c_kernel;
 
 template <typename _DataType_input, typename _DataType_output>
-void dpnp_fft_fft_c(void* array1_in, void* result1, size_t size)
+void dpnp_fft_fft_c(void* array1_in, void* result1, size_t input_size, size_t output_size)
 {
-    if (!size)
+    if (!output_size)
     {
         return;
     }
@@ -49,17 +49,23 @@ void dpnp_fft_fft_c(void* array1_in, void* result1, size_t size)
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
 
 #if 1
-    cl::sycl::range<1> gws(size);
+    cl::sycl::range<1> gws(output_size);
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
         size_t id = global_id[0];
 
         double sumreal = 0.0;
         double sumimag = 0.0;
-        for (size_t it = 0; it < size; ++it)
+        for (size_t it = 0; it < output_size; ++it)
         {
-            double angle = 2 * M_PI * it * id / size;
-            double inreal = array_1[it];
+            double angle = 2 * M_PI * it * id / output_size;
+            double inreal = 0.0;
             double inimag = 0.0;
+
+            if (it < input_size)
+            {
+                inreal = array_1[it];
+            }
+
             double angle_cos = cl::sycl::cos(angle);
             double angle_sin = cl::sycl::sin(angle);
 
@@ -77,8 +83,8 @@ void dpnp_fft_fft_c(void* array1_in, void* result1, size_t size)
     event = DPNP_QUEUE.submit(kernel_func);
 
 #else
-    oneapi::mkl::dft::descriptor<mkl_dft::precision::DOUBLE, mkl_dft::domain::COMPLEX> desc(size);
-    desc.set_value(mkl_dft::config_param::FORWARD_SCALE, static_cast<double>(size));
+    oneapi::mkl::dft::descriptor<mkl_dft::precision::DOUBLE, mkl_dft::domain::COMPLEX> desc(output_size);
+    desc.set_value(mkl_dft::config_param::FORWARD_SCALE, static_cast<double>(output_size));
     desc.set_value(mkl_dft::config_param::PLACEMENT, DFTI_NOT_INPLACE); // enum value from MKL C interface
     desc.commit(DPNP_QUEUE);
 
