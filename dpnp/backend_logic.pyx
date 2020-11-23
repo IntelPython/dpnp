@@ -210,15 +210,15 @@ cpdef dparray dpnp_logical_xor(dparray input1, dparray input2):
 
 
 cpdef dparray dpnp_not_equal(dparray input1, input2):
-    input2_is_scalar = numpy.isscalar(input2)
+    input2_is_scalar = dpnp.isscalar(input2)
 
     cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
 
     if input2_is_scalar:
         for i in range(result.size):
-            result[i] = numpy.bool(input1[i] != input2)
+            result[i] = dpnp.bool(input1[i] != input2)
     else:
         for i in range(result.size):
-            result[i] = numpy.bool(input1[i] != input2[i])
+            result[i] = dpnp.bool(input1[i] != input2[i])
 
     return result
