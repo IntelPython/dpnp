@@ -53,21 +53,24 @@ __all__ = [
     'gamma',
     'geometric',
     'gumbel',
+    'hypergeometric',
     'laplace',
     'lognormal',
     'negative_binomial',
+    'normal',
     'poisson',
     'rand',
-    'ranf',
     'randint',
     'randn',
     'random',
     'random_integers',
     'random_sample',
+    'ranf',
     'rayleigh',
     'sample',
     'seed',
     'standard_cauchy',
+    'standard_exponential',
     'standard_normal',
     'uniform',
     'weibull'
@@ -257,65 +260,6 @@ def bytes(length):
     """
 
     return call_origin(numpy.random.bytes, length)
-
-
-def geometric(p, size=None):
-    """Geometric distribution.
-
-    Draw samples from the geometric distribution.
-
-    Bernoulli trials are experiments with one of two outcomes:
-    success or failure (an example of such an experiment is flipping
-    a coin).  The geometric distribution models the number of trials
-    that must be run in order to achieve success.  It is therefore
-    supported on the positive integers, ``k = 1, 2, ...``.
-
-    The probability mass function of the geometric distribution is
-
-    .. math:: f(k) = (1 - p)^{k - 1} p
-
-    where `p` is the probability of success of an individual trial.
-
-    Parameters
-    ----------
-    p : float
-        The probability of success of an individual trial.
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
-        a single value is returned if ``p`` is a scalar.
-
-    Returns
-    -------
-    out : dparray, int32
-        Drawn samples from the parameterized geometric distribution.
-
-    Examples
-    --------
-    Draw ten thousand values from the geometric distribution,
-    with the probability of an individual success equal to 0.35:
-    >>> z = dpnp.random.geometric(p=0.35, size=10000)
-
-    """
-
-    if not use_origin_backend(p):
-        if size is None:
-            size = 1
-        elif isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    checker_throw_value_error("geometric", "type(dim)", type(dim), int)
-        elif not isinstance(size, int):
-            checker_throw_value_error("geometric", "type(size)", type(size), int)
-
-        # TODO:
-        # array_like of floats for `p` param
-        if p > 1 or p <= 0:
-            checker_throw_value_error("geometric", "p", p, "in (0, 1]")
-
-        return dpnp_geometric(p, size)
-
-    return call_origin(numpy.random.geometric, p, size)
 
 
 def chisquare(df, size=None):
@@ -522,6 +466,65 @@ def gamma(shape, scale=1.0, size=None):
     return call_origin(numpy.random.gamma, shape, scale, size)
 
 
+def geometric(p, size=None):
+    """Geometric distribution.
+
+    Draw samples from the geometric distribution.
+
+    Bernoulli trials are experiments with one of two outcomes:
+    success or failure (an example of such an experiment is flipping
+    a coin).  The geometric distribution models the number of trials
+    that must be run in order to achieve success.  It is therefore
+    supported on the positive integers, ``k = 1, 2, ...``.
+
+    The probability mass function of the geometric distribution is
+
+    .. math:: f(k) = (1 - p)^{k - 1} p
+
+    where `p` is the probability of success of an individual trial.
+
+    Parameters
+    ----------
+    p : float
+        The probability of success of an individual trial.
+    size : int or tuple of ints, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
+        a single value is returned if ``p`` is a scalar.
+
+    Returns
+    -------
+    out : dparray, int32
+        Drawn samples from the parameterized geometric distribution.
+
+    Examples
+    --------
+    Draw ten thousand values from the geometric distribution,
+    with the probability of an individual success equal to 0.35:
+    >>> z = dpnp.random.geometric(p=0.35, size=10000)
+
+    """
+
+    if not use_origin_backend(p):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("geometric", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("geometric", "type(size)", type(size), int)
+
+        # TODO:
+        # array_like of floats for `p` param
+        if p > 1 or p <= 0:
+            checker_throw_value_error("geometric", "p", p, "in (0, 1]")
+
+        return dpnp_geometric(p, size)
+
+    return call_origin(numpy.random.geometric, p, size)
+
+
 def gumbel(loc=0.0, scale=1.0, size=None):
     """Gumbel distribution.
 
@@ -573,6 +576,112 @@ def gumbel(loc=0.0, scale=1.0, size=None):
         return dpnp_gumbel(loc, scale, size)
 
     return call_origin(numpy.random.gumbel, loc, scale, size)
+
+
+def hypergeometric(ngood, nbad, nsample, size=None):
+    """Hypergeometric distribution.
+
+    Draw samples from a Hypergeometric distribution.
+
+    Samples are drawn from a hypergeometric distribution with specified
+    parameters, `ngood` (ways to make a good selection), `nbad` (ways to make
+    a bad selection), and `nsample` (number of items sampled, which is less
+    than or equal to the sum ``ngood + nbad``).
+
+    Parameters
+    ----------
+    ngood : int
+        Number of ways to make a good selection.  Must be nonnegative.
+    nbad : int
+        Number of ways to make a bad selection.  Must be nonnegative.
+    nsample : int
+        Number of items sampled.  Must be at least 1 and at most
+        ``ngood + nbad``.
+    size : int or tuple of ints, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
+        a single value is returned if `ngood`, `nbad`, and `nsample`
+        are all scalars.
+
+    Returns
+    -------
+    out : dparray
+        Drawn samples from the parameterized hypergeometric distribution. Each
+        sample is the number of good items within a randomly selected subset of
+        size `nsample` taken from a set of `ngood` good items and `nbad` bad items.
+
+    Notes
+    -----
+    The probability density for the Hypergeometric distribution is
+
+    .. math:: P(x) = \\frac{\\binom{g}{x}\\binom{b}{n-x}}{\\binom{g+b}{n}},
+
+    where :math:`0 \\le x \\le n` and :math:`n-b \\le x \\le g`
+
+    for P(x) the probability of ``x`` good results in the drawn sample,
+    g = `ngood`, b = `nbad`, and n = `nsample`.
+
+    Consider an urn with black and white marbles in it, `ngood` of them
+    are black and `nbad` are white. If you draw `nsample` balls without
+    replacement, then the hypergeometric distribution describes the
+    distribution of black balls in the drawn sample.
+
+    Note that this distribution is very similar to the binomial
+    distribution, except that in this case, samples are drawn without
+    replacement, whereas in the Binomial case samples are drawn with
+    replacement (or the sample space is infinite). As the sample space
+    becomes large, this distribution approaches the binomial.
+
+    References
+    ----------
+    .. [1] Lentner, Marvin, "Elementary Applied Statistics", Bogden
+           and Quigley, 1972.
+    .. [2] Weisstein, Eric W. "Hypergeometric Distribution." From
+           MathWorld--A Wolfram Web Resource.
+           http://mathworld.wolfram.com/HypergeometricDistribution.html
+    .. [3] Wikipedia, "Hypergeometric distribution",
+           https://en.wikipedia.org/wiki/Hypergeometric_distribution
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> ngood, nbad, nsamp = 100, 2, 10
+    # number of good, number of bad, and number of samples
+    >>> s = dpnp.random.hypergeometric(ngood, nbad, nsamp, 1000)
+
+    """
+
+    if not use_origin_backend(ngood) and dpnp_queue_is_cpu():
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("hypergeometric", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("hypergeometric", "type(size)", type(size), int)
+
+        # TODO:
+        # array_like of ints for `ngood`, `nbad`, `nsample` param
+        if ngood < 0:
+            checker_throw_value_error("hypergeometric", "ngood", ngood, "non-negative")
+        if nbad < 0:
+            checker_throw_value_error("hypergeometric", "nbad", nbad, "non-negative")
+        if nsample < 0:
+            checker_throw_value_error("hypergeometric", "nsample", nsample, "non-negative")
+        if ngood + nbad < nsample:
+            checker_throw_value_error("hypergeometric", "nsample", nsample, "ngood + nbad >= nsample")
+        if nsample < 1:
+            checker_throw_value_error("hypergeometric", "nsample", nsample, ">= 1")
+
+
+        m = int(ngood)
+        l = int(ngood) + int(nbad)
+        s = int(nsample)
+
+        return dpnp_hypergeometric(l, s, m, size)
+
+    return call_origin(numpy.random.hypergeometric, ngood, nbad, nsample, size)
 
 
 def laplace(loc=0.0, scale=1.0, size=None):
@@ -802,6 +911,91 @@ def negative_binomial(n, p, size=None):
     return call_origin(numpy.random.negative_binomial, n, p, size)
 
 
+def normal(loc=0.0, scale=1.0, size=None):
+    """Normal distribution.
+
+    Draw random samples from a normal (Gaussian) distribution.
+
+    The probability density function of the normal distribution, first
+    derived by De Moivre and 200 years later by both Gauss and Laplace
+    independently [2]_, is often called the bell curve because of
+    its characteristic shape (see the example below).
+
+    The normal distributions occurs often in nature.  For example, it
+    describes the commonly occurring distribution of samples influenced
+    by a large number of tiny, random disturbances, each with its own
+    unique distribution [2]_.
+
+    Parameters
+    ----------
+    loc : float
+        Mean ("centre") of the distribution.
+    scale : float
+        Standard deviation (spread or "width") of the distribution. Must be
+        non-negative.
+    size : int or tuple of ints, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
+        a single value is returned if ``loc`` and ``scale`` are both scalars.
+
+    Returns
+    -------
+    out : dparray
+        Drawn samples from the parameterized normal distribution.
+
+    Notes
+    -----
+    The probability density for the Gaussian distribution is
+
+    .. math:: p(x) = \\frac{1}{\\sqrt{ 2 \\pi \\sigma^2 }}
+                     e^{ - \\frac{ (x - \\mu)^2 } {2 \\sigma^2} },
+
+    where :math:`\\mu` is the mean and :math:`\\sigma` the standard
+    deviation. The square of the standard deviation, :math:`\\sigma^2`,
+    is called the variance.
+
+    The function has its peak at the mean, and its "spread" increases with
+    the standard deviation (the function reaches 0.607 times its maximum at
+    :math:`x + \\sigma` and :math:`x - \\sigma` [2]_).  This implies that
+    normal is more likely to return samples lying close to the mean, rather
+    than those far away.
+
+    References
+    ----------
+    .. [1] Wikipedia, "Normal distribution",
+           https://en.wikipedia.org/wiki/Normal_distribution
+    .. [2] P. R. Peebles Jr., "Central Limit Theorem" in "Probability,
+           Random Variables and Random Signal Principles", 4th ed., 2001,
+           pp. 51, 51, 125.
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> mu, sigma = 0, 0.1 # mean and standard deviation
+    >>> s = dpnp.random.normal(mu, sigma, 1000)
+
+    """
+
+    if not use_origin_backend(loc):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("normal", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("normal", "type(size)", type(size), int)
+
+        # TODO:
+        # array_like of floats for `loc` and `scale` params
+        if scale < 0:
+            checker_throw_value_error("normal", "scale", scale, "non-negative")
+
+        return dpnp_normal(loc, scale, size)
+
+    return call_origin(numpy.random.normal, loc, scale, size)
+
+
 def poisson(lam=1.0, size=None):
     """Poisson distribution.
 
@@ -900,34 +1094,6 @@ def rand(d0, *dn):
         return dpnp_random(dims)
 
     return call_origin(numpy.random.rand, d0, *dn)
-
-
-def ranf(size):
-    """
-    Return random floats in the half-open interval [0.0, 1.0).
-    This is an alias of random_sample.
-
-    Parameters
-    ----------
-    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
-
-    Returns
-    -------
-    out : Array of random floats of shape size.
-
-    See Also
-    --------
-    :obj:`dpnp.random.random`
-
-    """
-
-    if not use_origin_backend(size):
-        for dim in size:
-            if not isinstance(dim, int):
-                checker_throw_value_error("ranf", "type(dim)", type(dim), int)
-        return dpnp_random(size)
-
-    return call_origin(numpy.random.ranf, size)
 
 
 def randint(low, high=None, size=None, dtype=int):
@@ -1130,6 +1296,34 @@ def random_sample(size):
     return call_origin(numpy.random.random_sample, size)
 
 
+def ranf(size):
+    """
+    Return random floats in the half-open interval [0.0, 1.0).
+    This is an alias of random_sample.
+
+    Parameters
+    ----------
+    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
+
+    Returns
+    -------
+    out : Array of random floats of shape size.
+
+    See Also
+    --------
+    :obj:`dpnp.random.random`
+
+    """
+
+    if not use_origin_backend(size):
+        for dim in size:
+            if not isinstance(dim, int):
+                checker_throw_value_error("ranf", "type(dim)", type(dim), int)
+        return dpnp_random(size)
+
+    return call_origin(numpy.random.ranf, size)
+
+
 def rayleigh(scale=1.0, size=None):
     """Rayleigh distribution.
 
@@ -1174,29 +1368,6 @@ def rayleigh(scale=1.0, size=None):
     return call_origin(numpy.random.rayleigh, scale, size)
 
 
-def seed(seed=None):
-    """
-    Reseed a legacy philox4x32x10 random number generator engine
-
-    Parameters
-    ----------
-    seed : {None, int}, optional
-
-    """
-    if not use_origin_backend(seed):
-        # TODO:
-        # implement seed default value as is in numpy
-        if seed is None:
-            seed = 1
-        elif not isinstance(seed, int):
-            checker_throw_value_error("seed", "type(seed)", type(seed), int)
-        elif seed < 0:
-            checker_throw_value_error("seed", "seed", seed, "non-negative")
-        return dpnp_srand(seed)
-
-    return call_origin(numpy.random.seed, seed)
-
-
 def sample(size):
     """
     Return random floats in the half-open interval [0.0, 1.0).
@@ -1223,6 +1394,29 @@ def sample(size):
         return dpnp_random(size)
 
     return call_origin(numpy.random.sample, size)
+
+
+def seed(seed=None):
+    """
+    Reseed a legacy philox4x32x10 random number generator engine
+
+    Parameters
+    ----------
+    seed : {None, int}, optional
+
+    """
+    if not use_origin_backend(seed):
+        # TODO:
+        # implement seed default value as is in numpy
+        if seed is None:
+            seed = 1
+        elif not isinstance(seed, int):
+            checker_throw_value_error("seed", "type(seed)", type(seed), int)
+        elif seed < 0:
+            checker_throw_value_error("seed", "seed", seed, "non-negative")
+        return dpnp_srand(seed)
+
+    return call_origin(numpy.random.seed, seed)
 
 
 def standard_cauchy(size=None):
@@ -1267,6 +1461,48 @@ def standard_cauchy(size=None):
         return dpnp_standard_cauchy(size)
 
     return call_origin(numpy.random.standard_cauchy, size)
+
+
+def standard_exponential(size=None):
+    """Standard exponential distribution.
+
+    Draw samples from the standard exponential distribution.
+
+    `standard_exponential` is identical to the exponential distribution
+    with a scale parameter of 1.
+
+    Parameters
+    ----------
+    size : int or tuple of ints, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  Default is None, in which case a
+        single value is returned.
+
+    Returns
+    -------
+    out : dparray
+        Drawn samples.
+
+    Examples
+    --------
+    Output a 3x8000 array:
+    >>> n = dpnp.random.standard_exponential((3, 8000))
+
+    """
+
+    if not use_origin_backend(size):
+        if size is None:
+            size = 1
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("standard_exponential", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("standard_exponential", "type(size)", type(size), int)
+
+        return dpnp_standard_exponential(size)
+
+    return call_origin(numpy.random.standard_exponential, size)
 
 
 def standard_normal(size=None):

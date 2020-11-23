@@ -62,14 +62,16 @@
  *
  * Compute the one-dimensional discrete Fourier Transform.
  *
- * @param [in]  array1_in    Input array 1.
+ * @param[in]  array1_in    Input array 1.
  *
- * @param [out] result1      Output array.
+ * @param[out] result1      Output array.
  *
- * @param [in]  size         Number of elements in input arrays.
+ * @param[in]  input_size   Number of elements in input array.
+ *
+ * @param[in]  output_size  Number of elements in output array.
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_fft_fft_c(void* array1_in, void* result1, size_t size);
+INP_DLLEXPORT void dpnp_fft_fft_c(void* array1_in, void* result1, size_t input_size, size_t output_size);
 
 #endif // BACKEND_IFACE_FFT_H

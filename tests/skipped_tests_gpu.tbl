@@ -15,7 +15,11 @@ tests/test_random.py::test_gamma_check_moments
 tests/test_random.py::test_negative_binomial_seed
 tests/test_random.py::test_rayleigh_check_moments 
 tests/test_random.py::test_randn_normal_distribution
-tests/test_random.py::test_gumbel_check_moments 
+tests/test_random.py::test_gumbel_check_moments
+tests/test_random.py::test_hypergeometric_seed
+tests/test_random.py::test_hypergeometric_invalid_args
+tests/test_random.py::test_hypergeometric_check_moments
+tests/test_random.py::test_hypergeometric_check_extreme_value
 tests/test_statistics.py::test_median[2-float32]
 tests/test_statistics.py::test_median[2-float64]
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_and
@@ -150,6 +154,61 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_identity
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_ones_like_subok
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_zeros_like_subok
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_zeros_strides
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_copy_list_of_cupy_with_dtype
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_copy_list_of_cupy_with_dtype_char
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_copy_list_of_numpy_with_dtype
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_copy_list_of_numpy_with_dtype_char
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_f_contiguous_input
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_f_contiguous_output
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_from_list_of_cupy
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_from_list_of_cupy_scalar
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_from_list_of_cupy_view
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_from_list_of_numpy
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_from_list_of_numpy_scalar
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_from_list_of_numpy_view
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_from_nested_list_of_cupy
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_from_nested_list_of_numpy
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_from_numpy_scalar
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_no_copy
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_no_copy_ndmin
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asarray_cuda_array_zero_dim
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asarray_cuda_array_zero_dim_dtype
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asarray_is_not_copied
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asarray_with_order_copy_behavior
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_ascontiguousarray_on_noncontiguous_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asfortranarray_cuda_array_zero_dim
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asfortranarray_cuda_array_zero_dim_dtype
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_fromfile
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayPreservationOfShape_param_2_{copy=True, ndmin=1, xp=numpy}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayPreservationOfShape_param_3_{copy=True, ndmin=1, xp=dpnp}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayPreservationOfShape_param_4_{copy=True, ndmin=2, xp=numpy}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayPreservationOfShape_param_5_{copy=True, ndmin=2, xp=dpnp}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayPreservationOfShape_param_6_{copy=True, ndmin=3, xp=numpy}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayPreservationOfShape_param_7_{copy=True, ndmin=3, xp=dpnp}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayPreservationOfShape_param_8_{copy=False, ndmin=0, xp=numpy}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayPreservationOfShape_param_9_{copy=False, ndmin=0, xp=dpnp}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayPreservationOfShape_param_10_{copy=False, ndmin=1, xp=numpy}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayPreservationOfShape_param_11_{copy=False, ndmin=1, xp=dpnp}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayPreservationOfShape_param_12_{copy=False, ndmin=2, xp=numpy}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayPreservationOfShape_param_13_{copy=False, ndmin=2, xp=dpnp}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayPreservationOfShape_param_14_{copy=False, ndmin=3, xp=numpy}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayPreservationOfShape_param_15_{copy=False, ndmin=3, xp=dpnp}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayCopy_param_0_{copy=True, ndmin=0, xp=numpy}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayCopy_param_1_{copy=True, ndmin=0, xp=dpnp}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayCopy_param_2_{copy=True, ndmin=1, xp=numpy}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayCopy_param_3_{copy=True, ndmin=1, xp=dpnp}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayCopy_param_4_{copy=True, ndmin=2, xp=numpy}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayCopy_param_5_{copy=True, ndmin=2, xp=dpnp}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayCopy_param_6_{copy=True, ndmin=3, xp=numpy}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayCopy_param_7_{copy=True, ndmin=3, xp=dpnp}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayCopy_param_8_{copy=False, ndmin=0, xp=numpy}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayCopy_param_9_{copy=False, ndmin=0, xp=dpnp}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayCopy_param_10_{copy=False, ndmin=1, xp=numpy}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayCopy_param_11_{copy=False, ndmin=1, xp=dpnp}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayCopy_param_12_{copy=False, ndmin=2, xp=numpy}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayCopy_param_13_{copy=False, ndmin=2, xp=dpnp}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayCopy_param_14_{copy=False, ndmin=3, xp=numpy}::test_cupy_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestArrayCopy_param_15_{copy=False, ndmin=3, xp=dpnp}::test_cupy_array
 tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange3
 tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange4
 tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange5
@@ -2108,9 +2167,6 @@ tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargm
 tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_zero_size
 tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_zero_size_axis0
 tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_zero_size_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestNonzero_param_0_{array=array([], dtype=float64)}::test_nonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestNonzero_param_1_{array=array([], shape=(0, 2), dtype=float64)}::test_nonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestNonzero_param_2_{array=array([], shape=(0, 2, 0), dtype=float64)}::test_nonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_0_{array=array(0)}::test_nonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_1_{array=array(1)}::test_nonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSortedInvalid::test_searchsorted_ndbins
