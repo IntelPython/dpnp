@@ -1420,7 +1420,6 @@ def seed(seed=None):
     return call_origin(numpy.random.seed, seed)
 
 
-
 def standard_cauchy(size=None):
     """Standard cauchy distribution.
 
