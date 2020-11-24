@@ -42,13 +42,14 @@ it contains:
 
 import os
 import numpy
+import collections
 
 from dpnp.backend import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
+from dpnp.fft import *
 from dpnp.linalg import *
 from dpnp.random import *
-import collections
 
 __all__ = [
     "array_equal",
@@ -60,8 +61,10 @@ __all__ = [
 ]
 
 from dpnp.dpnp_iface_arraycreation import *
+from dpnp.dpnp_iface_arraymanipulation import *
 from dpnp.dpnp_iface_bitwise import *
 from dpnp.dpnp_iface_counting import *
+from dpnp.dpnp_iface_indexing import *
 from dpnp.dpnp_iface_libmath import *
 from dpnp.dpnp_iface_linearalgebra import *
 from dpnp.dpnp_iface_logic import *
@@ -73,8 +76,10 @@ from dpnp.dpnp_iface_statistics import *
 from dpnp.dpnp_iface_trigonometric import *
 
 from dpnp.dpnp_iface_arraycreation import __all__ as __all__arraycreation
+from dpnp.dpnp_iface_arraymanipulation import __all__ as __all__arraymanipulation
 from dpnp.dpnp_iface_bitwise import __all__ as __all__bitwise
 from dpnp.dpnp_iface_counting import __all__ as __all__counting
+from dpnp.dpnp_iface_indexing import __all__ as __all__indexing
 from dpnp.dpnp_iface_libmath import __all__ as __all__libmath
 from dpnp.dpnp_iface_linearalgebra import __all__ as __all__linearalgebra
 from dpnp.dpnp_iface_logic import __all__ as __all__logic
@@ -86,8 +91,10 @@ from dpnp.dpnp_iface_statistics import __all__ as __all__statistics
 from dpnp.dpnp_iface_trigonometric import __all__ as __all__trigonometric
 
 __all__ += __all__arraycreation
+__all__ += __all__arraymanipulation
 __all__ += __all__bitwise
 __all__ += __all__counting
+__all__ += __all__indexing
 __all__ += __all__libmath
 __all__ += __all__linearalgebra
 __all__ += __all__logic
@@ -115,7 +122,7 @@ def array_equal(a1, a2, equal_nan=False):
         b: bool
             Returns True if the arrays are equal.
 
-    .. seealso:: :func:`numpy.allclose` :func:`numpy.array_equiv`
+    .. seealso:: :obj:`numpy.allclose` :obj:`numpy.array_equiv`
 
     """
 
@@ -151,7 +158,7 @@ def matmul(in_array1, in_array2, out=None):
     the `@` operator introduced in Python 3.5 following PEP465.
 
     The main difference against dpnp.dot are the handling of arrays with more
-    than 2 dimensions. For more information see :func:`numpy.matmul`.
+    than 2 dimensions. For more information see :obj:`numpy.matmul`.
 
     .. note::
         The out array as input is currently not supported.
@@ -164,7 +171,7 @@ def matmul(in_array1, in_array2, out=None):
     Returns:
         dpnp.dparray: Output array.
 
-    .. seealso:: :func:`numpy.matmul`
+    .. seealso:: :obj:`numpy.matmul`
 
     """
 

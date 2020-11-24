@@ -11,10 +11,16 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+
+import comparison_generator
+import os
+import sys
+sys.path.insert(0, os.path.abspath('.'))
+
+
+# Generate comparison table.
+with open('reference/comparison_table.rst.inc', 'w') as fd:
+    fd.write(comparison_generator.generate())
 
 
 # -- Project information -----------------------------------------------------
@@ -43,6 +49,7 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
+    'sphinx.ext.intersphinx',
     'sphinx.ext.napoleon',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
@@ -174,5 +181,16 @@ texinfo_documents = [
 
 autosummary_generate = True
 
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3/', None),
+    'numpy': ('https://docs.scipy.org/doc/numpy/', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
+}
+
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
+
+# Napoleon settings
+napoleon_use_ivar = True
+napoleon_include_special_with_doc = True
+napoleon_custom_sections = ['limitations']

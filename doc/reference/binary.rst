@@ -11,6 +11,7 @@ Elementwise bit operations
    :nosignatures:
 
    dpnp.bitwise_and
+   dpnp.bitwise_not
    dpnp.bitwise_or
    dpnp.bitwise_xor
    dpnp.invert

@@ -60,12 +60,14 @@ const DPNPFuncType eft_INT = DPNPFuncType::DPNP_FT_INT;
 const DPNPFuncType eft_LNG = DPNPFuncType::DPNP_FT_LONG;
 const DPNPFuncType eft_FLT = DPNPFuncType::DPNP_FT_FLOAT;
 const DPNPFuncType eft_DBL = DPNPFuncType::DPNP_FT_DOUBLE;
+const DPNPFuncType eft_C128 = DPNPFuncType::DPNP_FT_CMPLX128;
 
 /**
  * FPTR interface initialization functions
  */
 void func_map_init_bitwise(func_map_t& fmap);
 void func_map_init_elemwise(func_map_t& fmap);
+void func_map_init_fft_func(func_map_t& fmap);
 void func_map_init_linalg(func_map_t& fmap);
 void func_map_init_linalg_func(func_map_t& fmap);
 void func_map_init_manipulation(func_map_t& fmap);

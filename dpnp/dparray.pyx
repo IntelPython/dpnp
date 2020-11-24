@@ -47,6 +47,47 @@ cimport numpy
 cimport dpnp.dpnp_utils as utils
 
 
+# initially copied from original
+cdef class _flagsobj:
+    aligned: bool
+    updateifcopy: bool
+    writeable: bool
+    writebackifcopy: bool
+    @property
+    def behaved(self) -> bool: ...
+
+    @property
+    def c_contiguous(self) -> bool:
+        return True
+
+    @property
+    def carray(self) -> bool: ...
+    @property
+    def contiguous(self) -> bool: ...
+
+    @property
+    def f_contiguous(self) -> bool:
+        return False
+
+    @property
+    def farray(self) -> bool: ...
+    @property
+    def fnc(self) -> bool: ...
+    @property
+    def forc(self) -> bool: ...
+    @property
+    def fortran(self) -> bool: ...
+    @property
+    def num(self) -> int: ...
+
+    @property
+    def owndata(self) -> bool:
+        return True
+
+    def __getitem__(self, key: str) -> bool: ...
+    def __setitem__(self, key: str, value: bool) -> None: ...
+
+
 cdef class dparray:
     """Multi-dimensional array using USM interface for an Intel GPU device.
 
@@ -69,8 +110,8 @@ cdef class dparray:
             .. seealso::
                `Data type objects (dtype) \
                <https://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html>`_
-
         ~dparray.size (int): Number of elements this array holds.
+
             This is equivalent to product over the shape tuple.
 
             .. seealso:: :attr:`numpy.ndarray.size`
@@ -134,7 +175,7 @@ cdef class dparray:
         """
 
         string = "<DPNP DParray:name={}".format(self.__class__.__name__)
-        string += ": mem=0x{:x}".format(< size_t > self._dparray_data)
+        string += ": mem=0x{:x}".format( < size_t > self._dparray_data)
         string += ": size={}".format(self.size)
         string += ": shape={}".format(self.shape)
         string += ": type={}".format(self.dtype)
@@ -199,7 +240,7 @@ cdef class dparray:
         self._dparray_shape = newshape  # TODO strides, enpty dimentions and etc.
 
     @property
-    def flags(self):
+    def flags(self) -> _flagsobj:
         """Object containing memory-layout information.
 
         It only contains ``c_contiguous``, ``f_contiguous``, and ``owndata`` attributes.
@@ -209,7 +250,7 @@ cdef class dparray:
 
         """
 
-        return (True, False, False)
+        return _flagsobj()
 
     @property
     def strides(self):
@@ -271,7 +312,7 @@ cdef class dparray:
     def __array_interface__(self):
         # print(f"====__array_interface__====self._dparray_data={ < size_t > self._dparray_data}")
         interface_dict = {
-            "data": (< size_t > self._dparray_data, False),  # last parameter is "Writable"
+            "data": ( < size_t > self._dparray_data, False),  # last parameter is "Writable"
             "strides": self.strides,
             "descr": None,
             "typestr": self.dtype.str,
@@ -339,15 +380,17 @@ cdef class dparray:
             raise utils.checker_throw_index_error("__getitem__", lin_idx, self.size)
 
         if self.dtype == numpy.float64:
-            return (< double * > self._dparray_data)[lin_idx]
+            return ( < double * > self._dparray_data)[lin_idx]
         elif self.dtype == numpy.float32:
-            return (< float * > self._dparray_data)[lin_idx]
+            return ( < float * > self._dparray_data)[lin_idx]
         elif self.dtype == numpy.int64:
-            return (< long * > self._dparray_data)[lin_idx]
+            return ( < long * > self._dparray_data)[lin_idx]
         elif self.dtype == numpy.int32:
-            return (< int * > self._dparray_data)[lin_idx]
+            return ( < int * > self._dparray_data)[lin_idx]
         elif self.dtype == numpy.bool:
-            return (< cpp_bool * > self._dparray_data)[lin_idx]
+            return ( < cpp_bool * > self._dparray_data)[lin_idx]
+        elif self.dtype == numpy.complex128:
+            return ( < double complex * > self._dparray_data)[lin_idx]
 
         utils.checker_throw_type_error("__getitem__", self.dtype)
 
@@ -364,15 +407,17 @@ cdef class dparray:
             raise utils.checker_throw_index_error("__setitem__", lin_idx, self.size)
 
         if self.dtype == numpy.float64:
-            (< double * > self._dparray_data)[lin_idx] = <double > value
+            ( < double * > self._dparray_data)[lin_idx] = <double > value
         elif self.dtype == numpy.float32:
-            (< float * > self._dparray_data)[lin_idx] = <float > value
+            ( < float * > self._dparray_data)[lin_idx] = <float > value
         elif self.dtype == numpy.int64:
-            (< long * > self._dparray_data)[lin_idx] = <long > value
+            ( < long * > self._dparray_data)[lin_idx] = <long > value
         elif self.dtype == numpy.int32:
-            (< int * > self._dparray_data)[lin_idx] = <int > value
+            ( < int * > self._dparray_data)[lin_idx] = <int > value
         elif self.dtype == numpy.bool:
-            (< cpp_bool * > self._dparray_data)[lin_idx] = < cpp_bool > value
+            ( < cpp_bool * > self._dparray_data)[lin_idx] = < cpp_bool > value
+        elif self.dtype == numpy.complex128:
+            ( < double complex * > self._dparray_data)[lin_idx] = <double complex > value
         else:
             utils.checker_throw_type_error("__setitem__", self.dtype)
 
@@ -396,6 +441,7 @@ cdef class dparray:
 
     @property
     def flat(self):
+        """ Return a flat iterator, or set a flattened version of self to value. """
         return self
 
     def flatten(self, order='C'):
@@ -417,12 +463,12 @@ cdef class dparray:
 
         See Also
         --------
-        ravel, flat
+        :obj:`dpnp.ravel`, :obj:`dpnp.flat`
 
         """
 
         if not utils.use_origin_backend(self):
-            c_order, fortran_order, _ = self.flags
+            c_order, fortran_order = self.flags.c_contiguous, self.flags.f_contiguous
 
             if order not in {'C', 'F', 'A', 'K'}:
                 pass
@@ -468,7 +514,7 @@ cdef class dparray:
 
         See Also
         --------
-        ravel, flat
+        :obj:`dpnp.ravel`, :obj:`dpnp.flat`
 
         """
         # TODO: don't copy the input array
@@ -512,7 +558,7 @@ cdef class dparray:
         """ Repeat elements of an array.
 
         .. seealso::
-           :func:`dpnp.repeat` for full documentation,
+           :obj:`dpnp.repeat` for full documentation,
            :meth:`numpy.ndarray.repeat`
 
         """
@@ -522,7 +568,7 @@ cdef class dparray:
         """ Returns the variance of the array elements, along given axis.
 
         .. seealso::
-           :func:`dpnp.var` for full documentation,
+           :obj:`dpnp.var` for full documentation,
 
         """
         return std(self, axis, dtype, out, ddof, keepdims)
@@ -531,18 +577,25 @@ cdef class dparray:
         """ Returns a view of the array with axes permuted.
 
         .. seealso::
-           :func:`dpnp.transpose` for full documentation,
+           :obj:`dpnp.transpose` for full documentation,
            :meth:`numpy.ndarray.reshape`
 
         """
         return transpose(self, axes)
 
     def var(self, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
-        """ Returns the standard deviation of the array elements along given axis.
+        """
+        Returns the variance of the array elements along given axis.
 
-        .. seealso::
-           :func:`dpnp.std` for full documentation,
+        Masked entries are ignored, and result elements which are not
+        finite will be masked.
 
+        Refer to `numpy.var` for full documentation.
+
+        See Also
+        --------
+        :obj:`numpy.ndarray.var` : corresponding function for ndarrays
+        :obj:`numpy.var` : Equivalent function
         """
         return var(self, axis, dtype, out, ddof, keepdims)
 
@@ -699,7 +752,7 @@ cdef class dparray:
         Returns the sum along a given axis.
 
         .. seealso::
-           :func:`dpnp.sum` for full documentation,
+           :obj:`dpnp.sum` for full documentation,
            :meth:`dpnp.dparray.sum`
 
         """
@@ -738,8 +791,7 @@ cdef class dparray:
     def argsort(self, axis=-1, kind=None, order=None):
         """
         Return an ndarray of indices that sort the array along the
-        specified axis.  Masked values are filled beforehand to
-        `fill_value`.
+        specified axis.
 
         Parameters
         ----------
@@ -758,15 +810,6 @@ cdef class dparray:
             When `a` is an array with fields defined, this argument specifies
             which fields to compare first, second, etc.  Not all fields need be
             specified.
-        endwith : {True, False}, optional
-            Whether missing values (if any) should be treated as the largest values
-            (True) or the smallest values (False)
-            When the array contains unmasked values at the same extremes of the
-            datatype, the ordering of these values and the masked values is
-            undefined.
-        fill_value : {var}, optional
-            Value used internally for the masked values.
-            If ``fill_value`` is not None, it supersedes ``endwith``.
 
         Returns
         -------
@@ -777,147 +820,51 @@ cdef class dparray:
         See Also
         --------
         MaskedArray.sort : Describes sorting algorithms used.
-        lexsort : Indirect stable sort with multiple keys.
-        numpy.ndarray.sort : Inplace sort.
+        :obj:`dpnp.lexsort` : Indirect stable sort with multiple keys.
+        :obj:`numpy.ndarray.sort` : Inplace sort.
 
         Notes
         -----
         See `sort` for notes on the different sorting algorithms.
 
-        Examples
-        --------
-        >>> a = np.ma.array([3,2,1], mask=[False, False, True])
-        >>> a
-        masked_array(data=[3, 2, --],
-                     mask=[False, False,  True],
-               fill_value=999999)
-        >>> a.argsort()
-        array([1, 0, 2])
-
         """
-
         return argsort(self, axis, kind, order)
 
     def sort(self, axis=-1, kind=None, order=None):
         """
-        Return a sorted copy of an array.
+        Sort the array
+
         Parameters
         ----------
         a : array_like
             Array to be sorted.
-        axis : int or None, optional
+        axis : int, optional
             Axis along which to sort. If None, the array is flattened before
             sorting. The default is -1, which sorts along the last axis.
         kind : {'quicksort', 'mergesort', 'heapsort', 'stable'}, optional
-            Sorting algorithm. The default is 'quicksort'. Note that both 'stable'
-            and 'mergesort' use timsort or radix sort under the covers and, in general,
-            the actual implementation will vary with data type. The 'mergesort' option
-            is retained for backwards compatibility.
-            .. versionchanged:: 1.15.0.
-               The 'stable' option was added.
-        order : str or list of str, optional
-            When `a` is an array with fields defined, this argument specifies
-            which fields to compare first, second, etc.  A single field can
-            be specified as a string, and not all fields need be specified,
-            but unspecified fields will still be used, in the order in which
-            they come up in the dtype, to break ties.
+            The sorting algorithm used.
+        order : list, optional
+            When `a` is a structured array, this argument specifies which fields
+            to compare first, second, and so on.  This list does not need to
+            include all of the fields.
+
         Returns
         -------
         sorted_array : ndarray
             Array of the same type and shape as `a`.
+
         See Also
         --------
-        ndarray.sort : Method to sort an array in-place.
-        argsort : Indirect sort.
-        lexsort : Indirect stable sort on multiple keys.
-        searchsorted : Find elements in a sorted array.
-        partition : Partial sort.
+        :obj:`numpy.ndarray.sort` : Method to sort an array in-place.
+        :obj:`dpnp.argsort` : Indirect sort.
+        :obj:`dpnp.lexsort` : Indirect stable sort on multiple keys.
+        :obj:`dpnp.searchsorted` : Find elements in a sorted array.
+
         Notes
         -----
-        The various sorting algorithms are characterized by their average speed,
-        worst case performance, work space size, and whether they are stable. A
-        stable sort keeps items with the same key in the same relative
-        order. The four algorithms implemented in NumPy have the following
-        properties:
-        =========== ======= ============= ============ ========
-           kind      speed   worst case    work space   stable
-        =========== ======= ============= ============ ========
-        'quicksort'    1     O(n^2)            0          no
-        'heapsort'     3     O(n*log(n))       0          no
-        'mergesort'    2     O(n*log(n))      ~n/2        yes
-        'timsort'      2     O(n*log(n))      ~n/2        yes
-        =========== ======= ============= ============ ========
-        .. note:: The datatype determines which of 'mergesort' or 'timsort'
-           is actually used, even if 'mergesort' is specified. User selection
-           at a finer scale is not currently available.
-        All the sort algorithms make temporary copies of the data when
-        sorting along any but the last axis.  Consequently, sorting along
-        the last axis is faster and uses less space than sorting along
-        any other axis.
-        The sort order for complex numbers is lexicographic. If both the real
-        and imaginary parts are non-nan then the order is determined by the
-        real parts except when they are equal, in which case the order is
-        determined by the imaginary parts.
-        Previous to numpy 1.4.0 sorting real and complex arrays containing nan
-        values led to undefined behaviour. In numpy versions >= 1.4.0 nan
-        values are sorted to the end. The extended sort order is:
-          * Real: [R, nan]
-          * Complex: [R + Rj, R + nanj, nan + Rj, nan + nanj]
-        where R is a non-nan real value. Complex values with the same nan
-        placements are sorted according to the non-nan part if it exists.
-        Non-nan values are sorted as before.
-        .. versionadded:: 1.12.0
-        quicksort has been changed to `introsort <https://en.wikipedia.org/wiki/Introsort>`_.
-        When sorting does not make enough progress it switches to
-        `heapsort <https://en.wikipedia.org/wiki/Heapsort>`_.
-        This implementation makes quicksort O(n*log(n)) in the worst case.
-        'stable' automatically chooses the best stable sorting algorithm
-        for the data type being sorted.
-        It, along with 'mergesort' is currently mapped to
-        `timsort <https://en.wikipedia.org/wiki/Timsort>`_
-        or `radix sort <https://en.wikipedia.org/wiki/Radix_sort>`_
-        depending on the data type.
-        API forward compatibility currently limits the
-        ability to select the implementation and it is hardwired for the different
-        data types.
-        .. versionadded:: 1.17.0
-        Timsort is added for better performance on already or nearly
-        sorted data. On random data timsort is almost identical to
-        mergesort. It is now used for stable sort while quicksort is still the
-        default sort if none is chosen. For timsort details, refer to
-        `CPython listsort.txt <https://github.com/python/cpython/blob/3.7/Objects/listsort.txt>`_.
-        'mergesort' and 'stable' are mapped to radix sort for integer data types. Radix sort is an
-        O(n) sort instead of O(n log n).
-        .. versionchanged:: 1.18.0
-        NaT now sorts to the end of arrays for consistency with NaN.
-        Examples
-        --------
-        >>> a = np.array([[1,4],[3,1]])
-        >>> np.sort(a)                # sort along the last axis
-        array([[1, 4],
-               [1, 3]])
-        >>> np.sort(a, axis=None)     # sort the flattened array
-        array([1, 1, 3, 4])
-        >>> np.sort(a, axis=0)        # sort along the first axis
-        array([[1, 1],
-               [3, 4]])
-        Use the `order` keyword to specify a field to use when sorting a
-        structured array:
-        >>> dtype = [('name', 'S10'), ('height', float), ('age', int)]
-        >>> values = [('Arthur', 1.8, 41), ('Lancelot', 1.9, 38),
-        ...           ('Galahad', 1.7, 38)]
-        >>> a = np.array(values, dtype=dtype)       # create a structured array
-        >>> np.sort(a, order='height')                        # doctest: +SKIP
-        array([('Galahad', 1.7, 38), ('Arthur', 1.8, 41),
-               ('Lancelot', 1.8999999999999999, 38)],
-              dtype=[('name', '|S10'), ('height', '<f8'), ('age', '<i4')])
-        Sort by age, then height if ages are equal:
-        >>> np.sort(a, order=['age', 'height'])               # doctest: +SKIP
-        array([('Galahad', 1.7, 38), ('Lancelot', 1.8999999999999999, 38),
-               ('Arthur', 1.8, 41)],
-              dtype=[('name', '|S10'), ('height', '<f8'), ('age', '<i4')])
-        """
+        See ``sort`` for notes on the different sorting algorithms.
 
+        """
         return sort(self, axis, kind, order)
 
     """
@@ -928,134 +875,55 @@ cdef class dparray:
 
     def argmax(self, axis=None, out=None):
         """
-        Returns the indices of the maximum values along an axis.
+        Returns array of indices of the maximum values along the given axis.
+
         Parameters
         ----------
-        a : array_like
-            Input array.
-        axis : int, optional
-            By default, the index is into the flattened array, otherwise
-            along the specified axis.
-        out : array, optional
-            If provided, the result will be inserted into this array. It should
-            be of the appropriate shape and dtype.
+        axis : {None, integer}
+            If None, the index is into the flattened array, otherwise along
+            the specified axis
+        out : {None, array}, optional
+            Array into which the result can be placed. Its type is preserved
+            and it must be of the right shape to hold the output.
+
         Returns
         -------
-        index_array : ndarray of ints
-            Array of indices into the array. It has the same shape as `a.shape`
-            with the dimension along `axis` removed.
-        See Also
-        --------
-        ndarray.argmax, argmin
-        amax : The maximum value along a given axis.
-        unravel_index : Convert a flat index into an index tuple.
-        take_along_axis : Apply ``np.expand_dims(index_array, axis)``
-                          from argmax to an array as if by calling max.
-        Notes
-        -----
-        In case of multiple occurrences of the maximum values, the indices
-        corresponding to the first occurrence are returned.
+        index_array : {integer_array}
+
         Examples
         --------
-        >>> a = np.arange(6).reshape(2,3) + 10
-        >>> a
-        array([[10, 11, 12],
-               [13, 14, 15]])
-        >>> np.argmax(a)
+        >>> a = np.arange(6).reshape(2,3)
+        >>> a.argmax()
         5
-        >>> np.argmax(a, axis=0)
+        >>> a.argmax(0)
         array([1, 1, 1])
-        >>> np.argmax(a, axis=1)
+        >>> a.argmax(1)
         array([2, 2])
-        Indexes of the maximal elements of a N-dimensional array:
-        >>> ind = np.unravel_index(np.argmax(a, axis=None), a.shape)
-        >>> ind
-        (1, 2)
-        >>> a[ind]
-        15
-        >>> b = np.arange(6)
-        >>> b[1] = 5
-        >>> b
-        array([0, 5, 2, 3, 4, 5])
-        >>> np.argmax(b)  # Only the first occurrence is returned.
-        1
-        >>> x = np.array([[4,2,3], [1,0,3]])
-        >>> index_array = np.argmax(x, axis=-1)
-        >>> # Same as np.max(x, axis=-1, keepdims=True)
-        >>> np.take_along_axis(x, np.expand_dims(index_array, axis=-1), axis=-1)
-        array([[4],
-               [3]])
-        >>> # Same as np.max(x, axis=-1)
-        >>> np.take_along_axis(x, np.expand_dims(index_array, axis=-1), axis=-1).squeeze(axis=-1)
-        array([4, 3])
-        """
 
+        """
         return argmax(self, axis, out)
 
     def argmin(self, axis=None, out=None):
         """
-        Returns the indices of the minimum values along an axis.
+        Return array of indices to the minimum values along the given axis.
+
         Parameters
         ----------
-        a : array_like
-            Input array.
-        axis : int, optional
-            By default, the index is into the flattened array, otherwise
-            along the specified axis.
-        out : array, optional
-            If provided, the result will be inserted into this array. It should
-            be of the appropriate shape and dtype.
+        axis : {None, integer}
+            If None, the index is into the flattened array, otherwise along
+            the specified axis
+        out : {None, array}, optional
+            Array into which the result can be placed. Its type is preserved
+            and it must be of the right shape to hold the output.
+
         Returns
         -------
-        index_array : ndarray of ints
-            Array of indices into the array. It has the same shape as `a.shape`
-            with the dimension along `axis` removed.
-        See Also
-        --------
-        ndarray.argmin, argmax
-        amin : The minimum value along a given axis.
-        unravel_index : Convert a flat index into an index tuple.
-        take_along_axis : Apply ``np.expand_dims(index_array, axis)``
-                          from argmin to an array as if by calling min.
-        Notes
-        -----
-        In case of multiple occurrences of the minimum values, the indices
-        corresponding to the first occurrence are returned.
-        Examples
-        --------
-        >>> a = np.arange(6).reshape(2,3) + 10
-        >>> a
-        array([[10, 11, 12],
-               [13, 14, 15]])
-        >>> np.argmin(a)
-        0
-        >>> np.argmin(a, axis=0)
-        array([0, 0, 0])
-        >>> np.argmin(a, axis=1)
-        array([0, 0])
-        Indices of the minimum elements of a N-dimensional array:
-        >>> ind = np.unravel_index(np.argmin(a, axis=None), a.shape)
-        >>> ind
-        (0, 0)
-        >>> a[ind]
-        10
-        >>> b = np.arange(6) + 10
-        >>> b[4] = 10
-        >>> b
-        array([10, 11, 12, 13, 10, 15])
-        >>> np.argmin(b)  # Only the first occurrence is returned.
-        0
-        >>> x = np.array([[4,2,3], [1,0,3]])
-        >>> index_array = np.argmin(x, axis=-1)
-        >>> # Same as np.min(x, axis=-1, keepdims=True)
-        >>> np.take_along_axis(x, np.expand_dims(index_array, axis=-1), axis=-1)
-        array([[2],
-               [0]])
-        >>> # Same as np.max(x, axis=-1)
-        >>> np.take_along_axis(x, np.expand_dims(index_array, axis=-1), axis=-1).squeeze(axis=-1)
-        array([2, 0])
-        """
+        ndarray or scalar
+            If multi-dimension input, returns a new ndarray of indices to the
+            minimum values along the given axis.  Otherwise, returns a scalar
+            of index to the minimum values along the given axis.
 
+        """
         return argmin(self, axis, out)
 
     """
@@ -1072,7 +940,7 @@ cdef class dparray:
 
         See Also
         --------
-        numpy.all : equivalent function
+        :obj:`numpy.all` : equivalent function
 
         """
 
@@ -1086,7 +954,7 @@ cdef class dparray:
 
         See Also
         --------
-        numpy.any : equivalent function
+        :obj:`numpy.any` : equivalent function
 
         """
 
@@ -1111,6 +979,7 @@ cdef class dparray:
             return transpose(self)
 
     cpdef item(self, size_t id):
+        """Return the item described by id."""
         return self[id]
 
     cdef void * get_data(self):

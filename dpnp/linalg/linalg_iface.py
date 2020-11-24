@@ -52,6 +52,7 @@ __all__ = [
     "cholesky",
     "det",
     "eig",
+    "eigvals",
     "matrix_power",
     "matrix_rank",
     "multi_dot",
@@ -126,7 +127,7 @@ def eig(x1):
     """
     Compute the eigenvalues and right eigenvectors of a square array.
 
-    .. seealso:: :func:`numpy.linalg.eig`
+    .. seealso:: :obj:`numpy.linalg.eig`
 
     """
 
@@ -137,6 +138,34 @@ def eig(x1):
             return dpnp_eig(x1)
 
     return call_origin(numpy.linalg.eig, x1)
+
+
+def eigvals(input):
+    """
+    Compute the eigenvalues of a general matrix.
+    Main difference between `eigvals` and `eig`: the eigenvectors aren't
+    returned.
+
+    Parameters
+    ----------
+    input : (..., M, M) array_like
+        A complex- or real-valued matrix whose eigenvalues will be computed.
+
+    Returns
+    -------
+    w : (..., M,) ndarray
+        The eigenvalues, each repeated according to its multiplicity.
+        They are not necessarily ordered, nor are they necessarily
+        real for real matrices.
+    """
+
+    is_input_dparray = isinstance(input, dparray)
+
+    if (not use_origin_backend(input) and is_input_dparray):
+        if (input.size > 0):
+            return dpnp_eigvals(input)
+
+    return call_origin(numpy.linalg.eigvals, input)
 
 
 def matrix_power(input, count):
@@ -154,7 +183,7 @@ def matrix_power(input, count):
 
     See Also
     --------
-    :meth:`numpy.linalg.matrix_power`
+    :obj:`numpy.linalg.matrix_power`
 
     """
 
@@ -246,7 +275,7 @@ def multi_dot(arrays, out=None):
 
     See Also
     --------
-    :meth:`numpy.multi_dot`
+    :obj:`numpy.multi_dot`
 
     """
 
