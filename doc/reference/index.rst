@@ -16,6 +16,7 @@ This is the official DPNP API reference.
    ndarray
    ufunc
    routines
+   special
    scipy
    sparse
    ndimage
