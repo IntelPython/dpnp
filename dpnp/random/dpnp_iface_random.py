@@ -1406,18 +1406,19 @@ def seed(seed=None):
     seed : {None, int}, optional
 
     """
+
     if not use_origin_backend(seed):
-        # TODO:
-        # implement seed default value as is in numpy
-        if seed is None:
-            seed = 1
-        elif not isinstance(seed, int):
-            checker_throw_value_error("seed", "type(seed)", type(seed), int)
+        if not isinstance(seed, int):
+            pass
         elif seed < 0:
-            checker_throw_value_error("seed", "seed", seed, "non-negative")
-        dpnp_srand(seed)
+            pass
+        else:
+            if seed is None:
+                seed = 1
+            dpnp_srand(seed)
 
     return call_origin(numpy.random.seed, seed)
+
 
 
 def standard_cauchy(size=None):
