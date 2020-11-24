@@ -52,6 +52,8 @@ __all__ = [
     "checker_throw_value_error",
     "dp2nd_array",
     "_get_linear_index",
+    "get_axis_indeces",
+    "get_axis_offsets",
     "nd2dp_array",
     "normalize_axis",
     "_object_to_tuple",
@@ -168,6 +170,36 @@ cpdef long _get_linear_index(key, tuple shape, int ndim):
     else:
         li = key
     return li
+
+
+cpdef tuple get_axis_indeces(idx, shape):
+    """
+    Compute axis indices of an element in array from array linear index
+    """
+
+    ids = []
+    remainder = idx
+    offsets = get_axis_offsets(shape)
+    for i in offsets:
+        quotient, remainder = divmod(remainder, i)
+        ids.append(quotient)
+
+    return _object_to_tuple(ids)
+
+
+cpdef tuple get_axis_offsets(shape):
+    """
+    Compute axis offsets in the linear array memory
+    """
+
+    res_size = len(shape)
+    result = [0] * res_size
+    acc = 1
+    for i in range(res_size - 1, -1, -1):
+        result[i] = acc
+        acc *= shape[i]
+
+    return _object_to_tuple(result)
 
 
 cdef tuple get_shape_dtype(object input_obj):

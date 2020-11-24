@@ -342,6 +342,97 @@ def test_gumbel_check_extreme_value():
     assert numpy.unique(res)[0] == loc
 
 
+def test_hypergeometric_seed():
+    seed = 28041990
+
+    size = 100
+
+    ngood = 100
+    nbad = 2
+    nsample = 10
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_hypergeometric_invalid_args():
+    size = 10
+
+    ngood = 100    # OK
+    nbad = 2       # OK
+    nsample = -10  # non-negative `nsamp` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size)
+
+    ngood = 100    # OK
+    nbad = -2      # non-negative `nbad` is expected
+    nsample = 10   # OK
+    with pytest.raises(ValueError):
+        dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size)
+
+    ngood = -100   # non-negative `ngood` is expected
+    nbad = 2       # OK
+    nsample = 10   # OK
+    with pytest.raises(ValueError):
+        dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size)
+
+    ngood = 10
+    nbad = 2
+    nsample = 100
+    # ngood + nbad >= nsample expected
+    with pytest.raises(ValueError):
+        dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size)
+
+    ngood = 10   # OK
+    nbad = 2     # OK
+    nsample = 0  # `nsample` is expected > 0
+    with pytest.raises(ValueError):
+        dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size)
+
+
+def test_hypergeometric_check_moments():
+    seed = 28041995
+    dpnp.random.seed(seed)
+    ngood = 100
+    nbad = 2
+    nsample = 10
+
+    size = 10**5
+    expected_mean = nsample * (ngood / (ngood + nbad))
+    expected_var = nsample * (ngood / (ngood + nbad)) * (nbad / (ngood + nbad)) * (((ngood + nbad) - nsample) / ((ngood + nbad) - 1))
+
+    var = numpy.var(dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size))
+    mean = numpy.mean(dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size))
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
+def test_hypergeometric_check_extreme_value():
+    seed = 28041990
+    dpnp.random.seed(seed)
+
+    ngood = 100
+    nbad = 0
+    nsample = 10
+
+    expected_val = nsample
+    res = numpy.asarray(dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=100))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == expected_val
+
+    ngood = 0
+    nbad = 11
+    nsample = 10
+
+    expected_val = 0
+    res = numpy.asarray(dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=100))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == expected_val
+
+
 def test_laplace_seed():
     seed = 28041990
     size = 100
@@ -479,6 +570,54 @@ def test_negative_binomial_check_extreme_value():
     assert numpy.unique(res)[0] == check_val
 
 
+def test_normal_seed():
+    seed = 28041990
+    size = 100
+    loc = 2.56
+    scale = 0.8
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.normal(loc, scale, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.normal(loc, scale, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_normal_invalid_args():
+    size = 10
+
+    loc = 3.0     # OK
+    scale = -1.0  # non-negative `scale` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.normal(loc=loc, scale=scale, size=size)
+
+
+def test_normal_check_moments():
+    seed = 28041995
+    dpnp.random.seed(seed)
+    loc = 2.56
+    scale = 0.8
+    size = 10**6
+    expected_mean = loc
+    expected_var = scale**2
+    var = numpy.var(dpnp.random.normal(loc=loc, scale=scale, size=size))
+    mean = numpy.mean(dpnp.random.normal(loc=loc, scale=scale, size=size))
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
+def test_normal_check_extreme_value():
+    seed = 28041990
+    dpnp.random.seed(seed)
+
+    loc = 5
+    scale = 0.0
+    expected_val = loc
+    res = numpy.asarray(dpnp.random.normal(loc=loc, scale=scale, size=100))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == expected_val
+
+
 def test_poisson_seed():
     seed = 28041990
     size = 100
@@ -594,6 +733,72 @@ def test_standard_cauchy_seed():
     dpnp.random.seed(seed)
     a2 = dpnp.random.standard_cauchy(size)
     assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_standard_exponential_seed():
+    seed = 28041990
+    size = 100
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.standard_exponential(size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.standard_exponential(size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_standard_exponential_check_moments():
+    seed = 28041995
+    dpnp.random.seed(seed)
+    size = 10**6
+    expected_mean = 1.0
+    expected_var = 1.0
+    var = numpy.var(dpnp.random.standard_exponential(size=size))
+    mean = numpy.mean(dpnp.random.standard_exponential(size=size))
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
+def test_standard_gamma_seed():
+    seed = 28041990
+    size = 100
+    shape = 3.0  # shape param for gamma distr
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.standard_gamma(shape=shape, size=size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.standard_gamma(shape=shape, size=size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_standard_gamma_invalid_args():
+    size = 10
+    shape = -1   # non-negative `shape` is expected
+    with pytest.raises(ValueError):
+        dpnp.random.standard_gamma(shape=shape, size=size)
+
+
+def test_standard_gamma_check_moments():
+    seed = 28041990
+    dpnp.random.seed(seed)
+    shape = 0.8
+
+    expected_mean = shape
+    expected_var = shape
+    var = numpy.var(dpnp.random.gamma(shape=shape, size=10**6))
+    mean = numpy.mean(dpnp.random.gamma(shape=shape, size=10**6))
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
+def test_standard_gamma_check_extreme_value():
+    seed = 28041990
+    dpnp.random.seed(seed)
+
+    shape = 0.0
+
+    res = numpy.asarray(dpnp.random.gamma(shape=shape, size=100))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == 0.0
 
 
 def test_standard_normal_seed():

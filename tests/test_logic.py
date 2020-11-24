@@ -69,3 +69,12 @@ def test_any(type, shape):
         np_res = a.any()
         dpnp_res = ia.any()
         numpy.testing.assert_allclose(dpnp_res, np_res)
+
+
+def test_not_equal():
+    a = numpy.array([1, 2, 3, 4, 5, 6, 7, 8])
+    ia = dpnp.array(a)
+    for i in range(len(a)):
+        np_res = (a != i)
+        dpnp_res = (ia != i)
+        numpy.testing.assert_equal(dpnp_res, np_res)

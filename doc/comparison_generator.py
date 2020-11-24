@@ -60,7 +60,7 @@ def generate_comparison_rst(base_mod, ref_mods, base_type, ref_types, cls):
     rows = []
     for f in sorted(base_funcs):
         base_cell = base_fmt.format(f)
-        
+
         ref_cells = []
         for ref_mod in ref_mods:
             ref_obj, ref_fmt = import_mod(ref_mod, cls)
