@@ -30,32 +30,33 @@ This is template that should be used when writing docstrings in the project.
 
 According to this template docstrings should consist of below sections:
 1. Short description.
-2. Long description, optional.
-3. Parameters.
-4. Returns.
-5. Limitations is a special section that should describe:
+2. Link to related functionality in `numpy` for full documentation.
+3. Limitations is a special section that should describe:
    - the limited functionality relative to `numpy` (exception raised)
    - cases when the functionality will be executed sequentially on CPU
      (fallback to `numpy`)
-6. See Also
-7. Notes, optional
-8. Examples
+   - list of supported data types for input array
+4. See Also
+5. Notes, optional
+6. Examples
 
 Recommendations:
-1. Short/Long descriptions, parameters, returns and notes
+1. Short description
    maybe partially taken/combinated from `numpy` and `cupy` docstrings.
 2. Limitations basically should be described according to the code,
    paying attention to raised exceptions and fallback to `numpy`.
-3. See Also should include link to related functionality in `numpy` and
-   optionally links to similar functionality in `dpnp` with short description.
+3. See Also may include links to similar functionality in `dpnp`
+   with short description.
+
    In case of only one link better to use one-line section:
-   .. seealso:: :func:`numpy.func`
+   .. seealso:: :func:`numpy.func` : short description.
+
 4. Examples maybe partially taken from `numpy` docstrings
    with some modifications, ex:
 
    >>> import dpnp as np
    >>> a = np.array([0, 1, 2])
-   >>> a  # prints strange result <DPNP DParray:...
+   >>> a  # prints unclear result <DPNP DParray:...
 
    So the array may be printed through iterating:
 
@@ -71,34 +72,17 @@ def func(a, b=None, c=True):
     """
     Short (one-line) description.
 
-    Long (perhaps multi-line) description.
-    Both short and long descriptions,
-    descriptions of input parameters and outputs 
-    maybe partially taken from baseline docstring.
-
-    Parameters
-    ----------
-    a : array_like
-        Description of the parameter `a`.
-    b : array_like, optional
-        Description of the parameter `b`.
-    c : bool, optional
-        Description of the parameter `c`.
-
-    Returns
-    -------
-    out : dparray
-        Description of the output.
+    For full documentation refer to :obj:`numpy.func`.
 
     Limitations
     -----------
     Some limitations in comparison to baseline, ex:
+    Input array data types are limited by supported DPNP :ref:`Data types`.
     Prameters ``c`` is supported only with default value `True`.
     Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
-    :obj:`numpy.func` : Short (one-line) description of the function `numpy.func`.
     :obj:`dpnp.func2` : Short (one-line) description of the function `dpnp.func2`.
     :obj:`dpnp.func3` : Short (one-line) description of the function `dpnp.func3`.
 

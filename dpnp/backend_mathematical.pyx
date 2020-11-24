@@ -295,13 +295,11 @@ cpdef dparray dpnp_sum(dparray input, axis=None):
     output_shape_offsets = [None] * len(shape_input)
     acc = 1
 
-    for i in range(len(output_shape)):
-        ind = len(output_shape) - 1 - i
-        output_shape_offsets[ind] = acc
-        acc *= output_shape[ind]
-        result_offsets = input_shape_offsets[:]  # need copy. not a reference
-    for i in axis_:
-        result_offsets[i] = 0
+    if len(output_shape) > 0:
+        for i in range(len(output_shape)):
+            ind = len(output_shape) - 1 - i
+            output_shape_offsets[ind] = acc
+            acc *= output_shape[ind]
 
     for source_idx in range(size_input):
 
