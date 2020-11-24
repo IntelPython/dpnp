@@ -77,8 +77,7 @@ def func(a, b=None, c=True):
     Limitations
     -----------
     Some limitations in comparison to baseline, ex:
-    Input array data types are limited by supported DPNP types,
-    see :ref:`Data types` for details.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
     Prameters ``c`` is supported only with default value `True`.
     Otherwise the function will be executed sequentially on CPU.
 
