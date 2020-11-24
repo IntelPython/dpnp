@@ -113,6 +113,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistical Functions</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../difference.html">Difference between DPNP and NumPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../misc.html">Miscellaneous routines</a></li>
 </ul>
@@ -195,34 +196,22 @@
 <dt id="dpnp.arange">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">arange</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">stop</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">step</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#arange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.arange" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns an array with evenly spaced values within a given interval.</p>
-<p>Values are generated within the half-open interval [start, stop). The first
-three arguments are mapped like the <code class="docutils literal notranslate"><span class="pre">range</span></code> built-in function, i.e. start
-and step are optional.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.arange</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>start</strong> (<em>number</em><em>, </em><em>optional</em>) – Start of the interval.</p></li>
-<li><p><strong>stop</strong> (<em>number</em>) – End of the interval.</p></li>
-<li><p><strong>step</strong> (<em>number</em><em>, </em><em>optional</em>) – Step width between each pair of consecutive values.</p></li>
-<li><p><strong>dtype</strong> (<em>dtype</em>) – Data type specifier. It is inferred from other arguments by default.</p></li>
-</ul>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>arange</strong> – The 1-D array of range values.</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>arange</strong> – The 1-D array of range values.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a></p>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a></p>
 </dd>
 </dl>
 <p class="rubric">Limitations</p>
 <p>Parameter <code class="docutils literal notranslate"><span class="pre">start</span></code> is supported as integer only.
-Parameters <code class="docutils literal notranslate"><span class="pre">stop</span></code> and <code class="docutils literal notranslate"><span class="pre">step</span></code> are supported as either integer or <cite>None</cite>.
+Parameters <code class="docutils literal notranslate"><span class="pre">stop</span></code> and <code class="docutils literal notranslate"><span class="pre">step</span></code> are supported as either integer or <code class="docutils literal notranslate"><span class="pre">None</span></code>.
 Otherwise the function will be executed sequentially on CPU.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.arange.html#numpy.arange" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.arange</span></code></a></dt><dd><p>Return evenly spaced values within a given interval.</p>
-</dd>
 <dt><a class="reference internal" href="dpnp.linspace.html#dpnp.linspace" title="dpnp.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linspace</span></code></a></dt><dd><p>Evenly spaced numbers with careful handling of endpoints.</p>
 </dd>
 </dl>

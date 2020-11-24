@@ -113,6 +113,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistical Functions</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../difference.html">Difference between DPNP and NumPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../misc.html">Miscellaneous routines</a></li>
 </ul>
@@ -195,44 +196,12 @@
 <dt id="dpnp.linspace">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">linspace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">stop</span></em>, <em class="sig-param"><span class="n">num</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">endpoint</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">retstep</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#linspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.linspace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return evenly spaced numbers over a specified interval.</p>
-<p>Returns <cite>num</cite> evenly spaced samples, calculated over the
-interval [<cite>start</cite>, <cite>stop</cite>].</p>
-<p>The endpoint of the interval can optionally be excluded.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>start</strong> (<em>array_like</em>) – The starting value of the sequence.</p></li>
-<li><p><strong>stop</strong> (<em>array_like</em>) – The end value of the sequence, unless <cite>endpoint</cite> is set to False.
-In that case, the sequence consists of all but the last of <code class="docutils literal notranslate"><span class="pre">num</span> <span class="pre">+</span> <span class="pre">1</span></code>
-evenly spaced samples, so that <cite>stop</cite> is excluded.  Note that the step
-size changes when <cite>endpoint</cite> is False.</p></li>
-<li><p><strong>num</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Number of samples to generate. Default is 50. Must be non-negative.</p></li>
-<li><p><strong>endpoint</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, <cite>stop</cite> is the last sample. Otherwise, it is not included.
-Default is True.</p></li>
-<li><p><strong>retstep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, return (<cite>samples</cite>, <cite>step</cite>), where <cite>step</cite> is the spacing
-between samples.</p></li>
-<li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><em>optional</em>) – The type of the output array.</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – The axis in the result to store the samples.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>samples</strong> (<a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>) – There are <cite>num</cite> equally spaced samples in the closed interval
-<code class="docutils literal notranslate"><span class="pre">[start,</span> <span class="pre">stop]</span></code> or the half-open interval <code class="docutils literal notranslate"><span class="pre">[start,</span> <span class="pre">stop)</span></code>
-(depending on whether <cite>endpoint</cite> is True or False).</p></li>
-<li><p><strong>step</strong> (<em>float, optional</em>) – Only returned if <cite>retstep</cite> is True.
-Size of spacing between samples.</p></li>
-</ul>
-</p>
-</dd>
-</dl>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html#numpy.linspace" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linspace</span></code></a>.</p>
 <p class="rubric">Limitations</p>
-<p>Parameter <code class="docutils literal notranslate"><span class="pre">axis</span></code> is supported only with default value <cite>0</cite>.</p>
+<p>Parameter <code class="docutils literal notranslate"><span class="pre">axis</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html#numpy.linspace" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linspace</span></code></a></dt><dd><p>Return evenly spaced numbers over a specified interval.</p>
-</dd>
 <dt><a class="reference internal" href="dpnp.arange.html#dpnp.arange" title="dpnp.arange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.arange</span></code></a></dt><dd><p>Similar to <cite>linspace</cite>, but uses a step size (instead of the number of samples).</p>
 </dd>
 <dt><a class="reference internal" href="dpnp.geomspace.html#dpnp.geomspace" title="dpnp.geomspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.geomspace</span></code></a></dt><dd><p>Similar to <cite>linspace</cite>, but with numbers spaced evenly on a log scale (a geometric progression).</p>

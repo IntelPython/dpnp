@@ -119,6 +119,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistical Functions</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../difference.html">Difference between DPNP and NumPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../misc.html">Miscellaneous routines</a></li>
 </ul>
@@ -199,45 +200,36 @@
 <h1>dpnp.asanyarray<a class="headerlink" href="#dpnp-asanyarray" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="dpnp.asanyarray">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">asanyarray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#asanyarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.asanyarray" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">asanyarray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">'C'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#asanyarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.asanyarray" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert the input to an ndarray, but pass ndarray subclasses through.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>array_like</em>) – Input data, in any form that can be converted to an array.  This
-includes scalars, lists, lists of tuples, tuples, tuples of tuples,
-tuples of lists, and ndarrays.</p></li>
-<li><p><strong>dtype</strong> (<em>data-type</em><em>, </em><em>optional</em>) – By default, the data-type is inferred from the input data.</p></li>
-<li><p><strong>order</strong> (<em>{'C'</em><em>, </em><em>'F'}</em><em>, </em><em>optional</em>) – Whether to use row-major (C-style) or column-major
-(Fortran-style) memory representation.  Defaults to ‘C’.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – Array interpretation of <cite>a</cite>.  If <cite>a</cite> is an ndarray or a subclass
-of ndarray, it is returned as-is and no copy is performed.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray or an ndarray subclass</p>
-</dd>
-</dl>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.asanyarray.html#numpy.asanyarray" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.asanyarray</span></code></a>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="dpnp.asarray.html#dpnp.asarray" title="dpnp.asarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">asarray</span></code></a></dt><dd><p>Similar function which always returns ndarrays.</p>
+<dt><a class="reference internal" href="dpnp.asarray.html#dpnp.asarray" title="dpnp.asarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.asarray</span></code></a></dt><dd><p>Similar function which always returns ndarrays.</p>
 </dd>
-<dt><a class="reference internal" href="dpnp.ascontiguousarray.html#dpnp.ascontiguousarray" title="dpnp.ascontiguousarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ascontiguousarray</span></code></a></dt><dd><p>Convert input to a contiguous array.</p>
+<dt><a class="reference internal" href="dpnp.ascontiguousarray.html#dpnp.ascontiguousarray" title="dpnp.ascontiguousarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ascontiguousarray</span></code></a></dt><dd><p>Convert input to a contiguous array.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">asfarray</span></code></dt><dd><p>Convert input to a floating point ndarray.</p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.asfarray</span></code></dt><dd><p>Convert input to a floating point ndarray.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">asfortranarray</span></code></dt><dd><p>Convert input to an ndarray with column-major memory order.</p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.asfortranarray</span></code></dt><dd><p>Convert input to an ndarray with column-major memory order.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">asarray_chkfinite</span></code></dt><dd><p>Similar function which checks input for NaNs and Infs.</p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.asarray_chkfinite</span></code></dt><dd><p>Similar function which checks input for NaNs and Infs.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">fromiter</span></code></dt><dd><p>Create an array from an iterator.</p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fromiter</span></code></dt><dd><p>Create an array from an iterator.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">fromfunction</span></code></dt><dd><p>Construct an array by executing a function on grid positions.</p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fromfunction</span></code></dt><dd><p>Construct an array by executing a function on grid positions.</p>
 </dd>
 </dl>
+</div>
+<p class="rubric">Limitations</p>
+<p>Parameter <code class="docutils literal notranslate"><span class="pre">order</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code>.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+<span class="go">[1, 2, 3]</span>
+</pre></div>
 </div>
 </dd></dl>
 

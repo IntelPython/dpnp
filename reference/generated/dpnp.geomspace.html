@@ -113,6 +113,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistical Functions</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../difference.html">Difference between DPNP and NumPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../misc.html">Miscellaneous routines</a></li>
 </ul>
@@ -195,37 +196,12 @@
 <dt id="dpnp.geomspace">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">geomspace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">stop</span></em>, <em class="sig-param"><span class="n">num</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">endpoint</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#geomspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.geomspace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return numbers spaced evenly on a log scale (a geometric progression).</p>
-<p>This is similar to <cite>logspace</cite>, but with endpoints specified directly.
-Each output sample is a constant multiple of the previous.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>start</strong> (<em>array_like</em>) – The starting value of the sequence.</p></li>
-<li><p><strong>stop</strong> (<em>array_like</em>) – The final value of the sequence, unless <cite>endpoint</cite> is False.
-In that case, <code class="docutils literal notranslate"><span class="pre">num</span> <span class="pre">+</span> <span class="pre">1</span></code> values are spaced over the
-interval in log-space, of which all but the last (a sequence of
-length <cite>num</cite>) are returned.</p></li>
-<li><p><strong>num</strong> (<em>integer</em><em>, </em><em>optional</em>) – Number of samples to generate. Default is 50.</p></li>
-<li><p><strong>endpoint</strong> (<em>boolean</em><em>, </em><em>optional</em>) – If true, <cite>stop</cite> is the last sample. Otherwise, it is not included.
-Default is True.</p></li>
-<li><p><strong>dtype</strong> (<em>dtype</em>) – The type of the output array.</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – The axis in the result to store the samples.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>samples</strong> – <cite>num</cite> samples, equally spaced on a log scale.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a></p>
-</dd>
-</dl>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.geomspace.html#numpy.geomspace" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.geomspace</span></code></a>.</p>
 <p class="rubric">Limitations</p>
-<p>Parameter <code class="docutils literal notranslate"><span class="pre">axis</span></code> is supported only with default value <cite>0</cite>.</p>
+<p>Parameter <code class="docutils literal notranslate"><span class="pre">axis</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.geomspace.html#numpy.geomspace" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.geomspace</span></code></a></dt><dd><p>Return numbers spaced evenly on a log scale (a geometric progression).</p>
-</dd>
 <dt><a class="reference internal" href="dpnp.logspace.html#dpnp.logspace" title="dpnp.logspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.logspace</span></code></a></dt><dd><p>Similar to geomspace, but with endpoints specified using log and base.</p>
 </dd>
 <dt><a class="reference internal" href="dpnp.linspace.html#dpnp.linspace" title="dpnp.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linspace</span></code></a></dt><dd><p>Similar to geomspace, but with arithmetic instead of geometric progression.</p>

@@ -119,6 +119,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistical Functions</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../difference.html">Difference between DPNP and NumPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../misc.html">Miscellaneous routines</a></li>
 </ul>
@@ -201,31 +202,25 @@
 <dt id="dpnp.ascontiguousarray">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">ascontiguousarray</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#ascontiguousarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.ascontiguousarray" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a contiguous array (ndim &gt;= 1) in memory (C order).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>array_like</em>) – Input array.</p></li>
-<li><p><strong>dtype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><em>dtype object</em><em>, </em><em>optional</em>) – Data-type of returned array.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – Contiguous array of same shape and content as <cite>a</cite>, with type <cite>dtype</cite>
-if specified.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray</p>
-</dd>
-</dl>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ascontiguousarray.html#numpy.ascontiguousarray" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ascontiguousarray</span></code></a>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">asfortranarray</span></code></dt><dd><p>Convert input to an ndarray with column-major memory order.</p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.asfortranarray</span></code></dt><dd><p>Convert input to an ndarray with column-major memory order.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">require</span></code></dt><dd><p>Return an ndarray that satisfies requirements.</p>
-</dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray.flags</span></code></dt><dd><p>Information about the memory layout of the array.</p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.require</span></code></dt><dd><p>Return an ndarray that satisfies requirements.</p>
 </dd>
 </dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(2, 3)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">out</span><span class="p">]</span>
+<span class="go">[0, 1, 2, 3, 4, 5]</span>
+</pre></div>
 </div>
 </dd></dl>
 
