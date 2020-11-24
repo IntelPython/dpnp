@@ -108,32 +108,19 @@ def bitwise_and(x1, x2, **kwargs):
     """
     Compute the bit-wise AND of two arrays element-wise.
 
-    Computes the bit-wise AND of the underlying binary representation of the integers in the input arrays.
-
-    Parameters
-    ----------
-    x1, x2: array_like or scalar
-        Input arrays or scalars.
-    **kwargs
-        For other keyword-only arguments.
-
-    Returns
-    -------
-    out: :obj:`dpnp.ndarray` or scalar
-        Output array or scalar if both `x1` and `x2` are scalars.
+    For full documentation refer to :obj:`numpy.bitwise_and`.
 
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as :obj:`dpnp.ndarray`.
-    Sizes, shapes and data types of input arrays `x1` and `x2` are supported to be equal.
-    Keyword arguments `kwargs` are currently unsupported.
+    Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
+    Sizes, shapes and data types of input arrays ``x1`` and ``x2`` are supported to be equal.
+    Keyword arguments ``kwargs`` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input arrays `x1` and `x2` are supported as integer :obj:`dpnp.ndarray` only.
+    Input arrays ``x1`` and ``x2`` are supported as integer :obj:`dpnp.ndarray` only.
 
     See Also
     --------
-    :obj:`numpy.bitwise_and` : Compute the bit-wise AND of two arrays element-wise.
-    :obj:`dpnp.logical_and` : Compute the truth value of `x1` AND `x2` element-wise.
+    :obj:`dpnp.logical_and` : Compute the truth value of ``x1`` AND ``x2`` element-wise.
     :obj:`dpnp.bitwise_or`: Compute the bit-wise OR of two arrays element-wise.
     :obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.
 
@@ -155,32 +142,19 @@ def bitwise_or(x1, x2, **kwargs):
     """
     Compute the bit-wise OR of two arrays element-wise.
 
-    Computes the bit-wise OR of the underlying binary representation of the integers in the input arrays.
-
-    Parameters
-    ----------
-    x1, x2: array_like or scalar
-        Input arrays or scalars.
-    **kwargs
-        For other keyword-only arguments.
-
-    Returns
-    -------
-    out: :obj:`dpnp.ndarray` or scalar
-        Output array or scalar if both `x1` and `x2` are scalars.
+    For full documentation refer to :obj:`numpy.bitwise_or`.
 
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as :obj:`dpnp.ndarray`.
-    Sizes, shapes and data types of input arrays `x1` and `x2` are supported to be equal.
-    Keyword arguments `kwargs` are currently unsupported.
+    Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
+    Sizes, shapes and data types of input arrays ``x1`` and ``x2`` are supported to be equal.
+    Keyword arguments ``kwargs`` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input arrays `x1` and `x2` are supported as integer :obj:`dpnp.ndarray` only.
+    Input arrays ``x1`` and ``x2`` are supported as integer :obj:`dpnp.ndarray` only.
 
     See Also
     --------
-    :obj:`numpy.bitwise_or` : Compute the bit-wise OR of two arrays element-wise.
-    :obj:`dpnp.logical_or` : Compute the truth value of `x1` OR `x2` element-wise.
+    :obj:`dpnp.logical_or` : Compute the truth value of ``x1`` OR ``x2`` element-wise.
     :obj:`dpnp.bitwise_and`: Compute the bit-wise AND of two arrays element-wise.
     :obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.
 
@@ -202,32 +176,19 @@ def bitwise_xor(x1, x2, **kwargs):
     """
     Compute the bit-wise XOR of two arrays element-wise.
 
-    Computes the bit-wise XOR of the underlying binary representation of the integers in the input arrays.
-
-    Parameters
-    ----------
-    x1, x2: array_like or scalar
-        Input arrays or scalars.
-    **kwargs
-        For other keyword-only arguments.
-
-    Returns
-    -------
-    out: :obj:`dpnp.ndarray` or scalar
-        Output array or scalar if both `x1` and `x2` are scalars.
+    For full documentation refer to :obj:`numpy.bitwise_xor`.
 
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as :obj:`dpnp.ndarray`.
-    Sizes, shapes and data types of input arrays `x1` and `x2` are supported to be equal.
-    Keyword arguments `kwargs` are currently unsupported.
+    Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
+    Sizes, shapes and data types of input arrays ``x1`` and ``x2`` are supported to be equal.
+    Keyword arguments ``kwargs`` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input arrays `x1` and `x2` are supported as integer :obj:`dpnp.ndarray` only.
+    Input arrays ``x1`` and ``x2`` are supported as integer :obj:`dpnp.ndarray` only.
 
     See Also
     --------
-    :obj:`numpy.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.
-    :obj:`dpnp.logical_xor` : Compute the truth value of `x1` XOR `x2`, element-wise.
+    :obj:`dpnp.logical_xor` : Compute the truth value of ``x1`` XOR `x2`, element-wise.
     :obj:`dpnp.bitwise_and`: Compute the bit-wise AND of two arrays element-wise.
     :obj:`dpnp.bitwise_or` : Compute the bit-wise OR of two arrays element-wise.
 
@@ -249,30 +210,17 @@ def invert(x, **kwargs):
     """
     Compute bit-wise inversion, or bit-wise NOT, element-wise.
 
-    Computes the bit-wise NOT of the underlying binary representation of the integers in the input arrays.
-
-    Parameters
-    ----------
-    x: array_like or scalar
-        Input array or scalar.
-    **kwargs
-        For other keyword-only arguments.
-
-    Returns
-    -------
-    out: :obj:`dpnp.ndarray` or scalar
-        Output array or scalar if both `x` is scalar.
+    For full documentation refer to :obj:`numpy.invert`.
 
     Limitations
     -----------
-    Parameters `x` is supported as :obj:`dpnp.ndarray`.
-    Keyword arguments `kwargs` are currently unsupported.
+    Parameters ``x`` is supported as :obj:`dpnp.ndarray`.
+    Keyword arguments ``kwargs`` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input array `x` is supported as integer :obj:`dpnp.ndarray` only.
+    Input array ``x`` is supported as integer :obj:`dpnp.ndarray` only.
 
     See Also
     --------
-    :obj:`numpy.invert` : Compute bit-wise inversion, or bit-wise NOT, element-wise.
     :obj:`dpnp.bitwise_and`: Compute the bit-wise AND of two arrays element-wise.
     :obj:`dpnp.bitwise_or` : Compute the bit-wise OR of two arrays element-wise.
     :obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.
@@ -297,31 +245,18 @@ def left_shift(x1, x2, **kwargs):
     """
     Shift the bits of an integer to the left.
 
-    Bits are shifted to the left by appending `x2` 0s at the right of `x1`.
-
-    Parameters
-    ----------
-    x1, x2: array_like or int
-        Input arrays or scalars.
-    **kwargs
-        For other keyword-only arguments.
-
-    Returns
-    -------
-    out: :obj:`dpnp.ndarray` or scalar
-        Output array or scalar if both `x1` and `x2` are scalars.
+    For full documentation refer to :obj:`numpy.left_shift`.
 
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as :obj:`dpnp.ndarray`.
-    Sizes, shapes and data types of input arrays `x1` and `x2` are supported to be equal.
-    Keyword arguments `kwargs` are currently unsupported.
+    Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
+    Sizes, shapes and data types of input arrays ``x1`` and ``x2`` are supported to be equal.
+    Keyword arguments ``kwargs`` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input arrays `x1` and `x2` are supported as integer :obj:`dpnp.ndarray` only.
+    Input arrays ``x1`` and ``x2`` are supported as integer :obj:`dpnp.ndarray` only.
 
     See Also
     --------
-    :obj:`numpy.left_shift` : Shift the bits of an integer to the left.
     :obj:`dpnp.right_shift` : Shift the bits of an integer to the right.
 
     Examples
@@ -342,31 +277,18 @@ def right_shift(x1, x2, **kwargs):
     """
     Shift the bits of an integer to the right.
 
-    Bits are shifted to the right `x2`.
-
-    Parameters
-    ----------
-    x1, x2: array_like or int
-        Input arrays or scalars.
-    **kwargs
-        For other keyword-only arguments.
-
-    Returns
-    -------
-    out: :obj:`dpnp.ndarray` or scalar
-        Output array or scalar if both `x1` and `x2` are scalars.
+    For full documentation refer to :obj:`numpy.right_shift`.
 
     Limitations
     -----------
-    Parameters `x1` and `x2` are supported as :obj:`dpnp.ndarray`.
-    Sizes, shapes and data types of input arrays `x1` and `x2` are supported to be equal.
-    Keyword arguments `kwargs` are currently unsupported.
+    Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
+    Sizes, shapes and data types of input arrays ``x1`` and ``x2`` are supported to be equal.
+    Keyword arguments ``kwargs`` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input arrays `x1` and `x2` are supported as integer :obj:`dpnp.ndarray` only.
+    Input arrays ``x1`` and ``x2`` are supported as integer :obj:`dpnp.ndarray` only.
 
     See Also
     --------
-    :obj:`numpy.right_shift` : Shift the bits of an integer to the right.
     :obj:`dpnp.left_shift` : Shift the bits of an integer to the left.
 
     Examples
