@@ -69,22 +69,10 @@ __all__ = [
 
 
 def arange(start, stop=None, step=1, dtype=None):
-    """Returns an array with evenly spaced values within a given interval.
+    """
+    Returns an array with evenly spaced values within a given interval.
 
-    Values are generated within the half-open interval [start, stop). The first
-    three arguments are mapped like the ``range`` built-in function, i.e. start
-    and step are optional.
-
-    Parameters
-    ----------
-    start : number, optional
-        Start of the interval.
-    stop : number
-        End of the interval.
-    step : number, optional
-        Step width between each pair of consecutive values.
-    dtype : dtype
-        Data type specifier. It is inferred from other arguments by default.
+    For full documentation refer to :obj:`numpy.arange`.
 
     Returns
     -------
@@ -94,12 +82,11 @@ def arange(start, stop=None, step=1, dtype=None):
     Limitations
     -----------
     Parameter ``start`` is supported as integer only.
-    Parameters ``stop`` and ``step`` are supported as either integer or `None`.
+    Parameters ``stop`` and ``step`` are supported as either integer or ``None``.
     Otherwise the function will be executed sequentially on CPU.
 
     See Also
     --------
-    :obj:`numpy.arange` : Return evenly spaced values within a given interval.
     :obj:`dpnp.linspace` : Evenly spaced numbers with careful handling of endpoints.
 
     Examples
@@ -141,40 +128,17 @@ def array(obj, dtype=None, copy=True, order='C', subok=False, ndmin=0):
     """
     Creates an array.
 
-    Parameters
-    ----------
-    obj : array_like
-        Array-like object.
-    dtype: data-type, optional
-        Data type specifier.
-    copy : bool, optional
-        If ``False``, this function returns ``obj`` if possible.
-        Otherwise this function always returns a new array.
-    order : {'K', 'A', 'C', 'F'}, optional
-        Specify the memory layout of the array.
-    subok : bool, optional
-        If True, then sub-classes will be passed-through,
-        otherwise the returned array will be forced to be a base-class
-        array (default).
-    ndmin : int, optional
-        Minimum number of dimensions. Ones are inserted to the
-        head of the shape if needed.
-
-    Returns
-    -------
-        out : :obj:`dpnp.ndarray`
-            An array object.
+    For full documentation refer to :obj:`numpy.array`.
 
     Limitations
     -----------
-    Parameter ``copy`` is supported only with default value `True`.
-    Parameter ``order`` is supported only with default value `'C'`.
-    Parameter ``subok`` is currently unsupported.
-    Parameter ``ndmin`` is supported only with default value `0`.
+    Parameter ``copy`` is supported only with default value ``True``.
+    Parameter ``order`` is supported only with default value ``"C"``.
+    Parameter ``subok`` is supported only with default value ``False``.
+    Parameter ``ndmin`` is supported only with default value ``0``.
 
     See Also
     --------
-    :obj:`numpy.array` : Create an array.
     :obj:`dpnp.empty_like` : Return an empty array with shape and type of input.
     :obj:`dpnp.ones_like` : Return an array of ones with shape and type of input.
     :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of input.
@@ -227,40 +191,35 @@ def array(obj, dtype=None, copy=True, order='C', subok=False, ndmin=0):
     return dpnp_array(obj, dtype)
 
 
-def asanyarray(a, dtype=None, order=None):
+def asanyarray(a, dtype=None, order='C'):
     """
     Convert the input to an ndarray, but pass ndarray subclasses through.
 
-    Parameters
-    ----------
-    a : array_like
-        Input data, in any form that can be converted to an array.  This
-        includes scalars, lists, lists of tuples, tuples, tuples of tuples,
-        tuples of lists, and ndarrays.
-    dtype : data-type, optional
-        By default, the data-type is inferred from the input data.
-    order : {'C', 'F'}, optional
-        Whether to use row-major (C-style) or column-major
-        (Fortran-style) memory representation.  Defaults to 'C'.
-
-    Returns
-    -------
-    out : ndarray or an ndarray subclass
-        Array interpretation of `a`.  If `a` is an ndarray or a subclass
-        of ndarray, it is returned as-is and no copy is performed.
+    For full documentation refer to :obj:`numpy.asanyarray`.
 
     See Also
     --------
-    asarray : Similar function which always returns ndarrays.
-    ascontiguousarray : Convert input to a contiguous array.
-    asfarray : Convert input to a floating point ndarray.
-    asfortranarray : Convert input to an ndarray with column-major
-                     memory order.
-    asarray_chkfinite : Similar function which checks input for NaNs and
-                        Infs.
-    fromiter : Create an array from an iterator.
-    fromfunction : Construct an array by executing a function on grid
-                   positions.
+    :obj:`dpnp.asarray` : Similar function which always returns ndarrays.
+    :obj:`dpnp.ascontiguousarray` : Convert input to a contiguous array.
+    :obj:`dpnp.asfarray` : Convert input to a floating point ndarray.
+    :obj:`dpnp.asfortranarray` : Convert input to an ndarray with column-major
+                                 memory order.
+    :obj:`dpnp.asarray_chkfinite` : Similar function which checks input
+                                    for NaNs and Infs.
+    :obj:`dpnp.fromiter` : Create an array from an iterator.
+    :obj:`dpnp.fromfunction` : Construct an array by executing a function
+                               on grid positions.
+
+    Limitations
+    -----------
+    Parameter ``order`` is supported only with default value ``"C"``.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.asanyarray([1, 2, 3])
+    >>> [i for i in x]
+    [1, 2, 3]
 
     """
 
@@ -269,7 +228,7 @@ def asanyarray(a, dtype=None, order=None):
         if isinstance(a, dpnp.ndarray):
             return a
 
-        if order not in ('C', 'c', None):
+        if order != 'C':
             checker_throw_value_error("asanyarray", "order", order, 'C')
 
         return array(a, dtype=dtype, order=order)
@@ -278,35 +237,34 @@ def asanyarray(a, dtype=None, order=None):
 
 
 def asarray(input, dtype=None, order='C'):
-    """Converts an input object into array.
+    """
+    Converts an input object into array.
 
-    Parameters
-    ----------
-    input : array_like
-        Input data.
-    dtype: data-type, optional
-        By default, the data-type is inferred from the input data.
-    order : {'C', 'F'}, optional
-        Whether to use row-major (C-style) or column-major (Fortran-style) memory representation.
-        Defaults to 'C'.
-
-    Returns
-    -------
-        out : :obj:`dpnp.ndarray`
-            Array interpretation of `input`.
+    For full documentation refer to :obj:`numpy.asarray`.
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value `'C'`.
+    Parameter ``order`` is supported only with default value ``"C"``.
 
-    .. seealso:: :obj:`numpy.asarray`
+    See Also
+    --------
+    :obj:`dpnp.asanyarray` : Similar function which passes through subclasses.
+    :obj:`dpnp.ascontiguousarray` : Convert input to a contiguous array.
+    :obj:`dpnp.asfarray` : Convert input to a floating point ndarray.
+    :obj:`dpnp.asfortranarray` : Convert input to an ndarray with column-major
+                                 memory order.
+    :obj:`dpnp.asarray_chkfinite` : Similar function which checks input
+                                    for NaNs and Infs.
+    :obj:`dpnp.fromiter` : Create an array from an iterator.
+    :obj:`dpnp.fromfunction` : Construct an array by executing a function
+                               on grid positions.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.asarray([1, 2])
+    >>> x = np.asarray([1, 2, 3])
     >>> [i for i in x]
-    [1, 2]
+    [1, 2, 3]
 
     """
 
@@ -320,25 +278,23 @@ def ascontiguousarray(a, dtype=None):
     """
     Return a contiguous array (ndim >= 1) in memory (C order).
 
-    Parameters
-    ----------
-    a : array_like
-        Input array.
-    dtype : str or dtype object, optional
-        Data-type of returned array.
-
-    Returns
-    -------
-    out : ndarray
-        Contiguous array of same shape and content as `a`, with type `dtype`
-        if specified.
+    For full documentation refer to :obj:`numpy.ascontiguousarray`.
 
     See Also
     --------
-    asfortranarray : Convert input to an ndarray with column-major
+    :obj:`dpnp.asfortranarray` : Convert input to an ndarray with column-major
                      memory order.
-    require : Return an ndarray that satisfies requirements.
-    ndarray.flags : Information about the memory layout of the array.
+    :obj:`dpnp.require` : Return an ndarray that satisfies requirements.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(6).reshape((2, 3))
+    >>> out = np.ascontiguousarray(x)
+    >>> out.shape
+    (2, 3)
+    >>> [i for i in out]
+    [0, 1, 2, 3, 4, 5]
 
     """
 
@@ -358,31 +314,24 @@ def copy(a, order='C', subok=False):
     """
     Return an array copy of the given object.
 
-    Parameters
-    ----------
-    a : array_like
-        Input data.
-    order : {'C', 'F', 'A', 'K'}, optional
-        Controls the memory layout of the copy. 'C' means C-order,
-        'F' means F-order, 'A' means 'F' if `a` is Fortran contiguous,
-        'C' otherwise. 'K' means match the layout of `a` as closely
-        as possible. (Note that this function and :meth:`ndarray.copy` are very
-        similar, but have different default values for their order=
-        arguments.)
-    subok : bool, optional
-        If True, then sub-classes will be passed-through, otherwise the
-        returned array will be forced to be a base-class array (defaults to False).
+    For full documentation refer to :obj:`numpy.copy`.
 
-        .. versionadded:: 1.19.0
+    Limitations
+    -----------
+    Parameter ``order`` is supported only with default value ``"C"``.
+    Parameter ``subok`` is supported only with default value ``False``.
 
-    Returns
-    -------
-    arr : ndarray
-        Array interpretation of `a`.
-
-    See Also
+    Examples
     --------
-    ndarray.copy : Preferred method for creating an array copy
+    >>> import dpnp as np
+    >>> x = np.array([1, 2, 3])
+    >>> y = x
+    >>> z = np.copy(x)
+    >>> x[0] = 10
+    >>> x[0] == y[0]
+    True
+    >>> x[0] == z[0]
+    False
 
     """
 
@@ -397,27 +346,14 @@ def empty(shape, dtype=numpy.float64, order='C'):
     """
     Return a new array of given shape and type, without initializing entries.
 
-    Parameters
-    ----------
-    shape : int or tuple of int
-        Shape of the empty array.
-    dtype : data-type, optional
-        Data type specifier.
-    order : {'C', 'F'}, optional
-        Row-major (C-style) or column-major (Fortran-style) order.
-
-    Returns
-    -------
-    out : :obj:`dpnp.ndarray`
-        A new array with elements not initialized.
+    For full documentation refer to :obj:`numpy.empty`.
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value `'C'`.
+    Parameter ``order`` is supported only with default value ``"C"``.
 
     See Also
     --------
-    :obj:`numpy.empty` : Return a new array of given shape and type, without initializing entries.
     :obj:`dpnp.empty_like` : Return an empty array with shape and type of input.
     :obj:`dpnp.ones` : Return a new array setting values to one.
     :obj:`dpnp.zeros` : Return a new array setting values to zero.
@@ -446,33 +382,15 @@ def empty_like(prototype, dtype=None, order='C', subok=False, shape=None):
     """
     Return a new array with the same shape and type as a given array.
 
-    Parameters
-    ----------
-    prototype : array_like
-        Base array.
-    dtype : data-type, optional
-        Data type specifier.
-    order : {'C', 'F', 'A', or 'K'}, optional
-        Overrides the memory layout of the result.
-    subok : bool, optional.
-        If True, then the newly created array will use the sub-class
-        type of 'a', otherwise it will be a base-class array.
-    shape : int or sequence of ints, optional.
-        Overrides the shape of the result.
-
-    Returns
-    -------
-    out : :obj:`dpnp.ndarray`
-        A new array with same shape and dtype of `prototype` with elements not initialized.
+    For full documentation refer to :obj:`numpy.empty_like`.
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value `'C'`.
-    Parameter ``subok`` is supported only with default value `False`.
+    Parameter ``order`` is supported only with default value ``"C"``.
+    Parameter ``subok`` is supported only with default value ``False``.
 
     See Also
     --------
-    :obj:`numpy.empty_like` : Return a new array with the same shape and type as a given array.
     :obj:`dpnp.ones_like` : Return an array of ones with shape and type of input.
     :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of input.
     :obj:`dpnp.full_like` : Return a new array with shape of input filled with value.
@@ -507,30 +425,14 @@ def full(shape, fill_value, dtype=None, order='C'):
     """
     Return a new array of given shape and type, filled with `fill_value`.
 
-    Parameters
-    ----------
-    shape : int or sequence of ints
-        Shape of the new array.
-    fill_value : scalar or array_like
-        Fill value.
-    dtype : data-type, optional
-        The desired data-type for the array.
-    order : {'C', 'F'}, optional
-        Whether to store multidimensional data in C- or Fortran-contiguous
-        (row- or column-wise) order in memory.
-
-    Returns
-    -------
-    out : :obj:`dpnp.ndarray`
-        Array of `fill_value` with the given shape, dtype, and order.
+    For full documentation refer to :obj:`numpy.full`.
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value `'C'`.
+    Parameter ``order`` is supported only with default value ``"C"``.
 
     See Also
     --------
-    :obj:`numpy.full` : Return a new array of given shape and type, filled with `fill_value`.
     :obj:`dpnp.full_like` : Return a new array with shape of input filled with value.
     :obj:`dpnp.empty` : Return a new uninitialized array.
     :obj:`dpnp.ones` : Return a new array setting values to one.
@@ -561,35 +463,15 @@ def full_like(x1, fill_value, dtype=None, order='C', subok=False, shape=None):
     """
     Return a full array with the same shape and type as a given array.
 
-    Parameters
-    ----------
-    x1 : array_like
-        Base array.
-    fill_value : scalar
-        Fill value.
-    dtype : data-type, optional
-        Overrides the data type of the result.
-    order : {'C', 'F', 'A', or 'K'}, optional
-        Overrides the memory layout of the result.
-    subok : bool, optional.
-        If True, then the newly created array will use the sub-class
-        type of `x1`, otherwise it will be a base-class array.
-    shape : int or sequence of ints, optional.
-        Overrides the shape of the result.
-
-    Returns
-    -------
-    out : :obj:`dpnp.ndarray`
-        Array of `fill_value` with the same shape and type as `x1`.
+    For full documentation refer to :obj:`numpy.full_like`.
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value `'C'`.
-    Parameter ``subok`` is supported only with default value `False`.
+    Parameter ``order`` is supported only with default value ``"C"``.
+    Parameter ``subok`` is supported only with default value ``False``.
 
     See Also
     --------
-    :obj:`numpy.full_like` : Return a full array with the same shape and type as a given array.
     :obj:`dpnp.empty_like` : Return an empty array with shape and type of input.
     :obj:`dpnp.ones_like` : Return an array of ones with shape and type of input.
     :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of input.
@@ -623,41 +505,14 @@ def geomspace(start, stop, num=50, endpoint=True, dtype=None, axis=0):
     """
     Return numbers spaced evenly on a log scale (a geometric progression).
 
-    This is similar to `logspace`, but with endpoints specified directly.
-    Each output sample is a constant multiple of the previous.
-
-    Parameters
-    ----------
-    start : array_like
-        The starting value of the sequence.
-    stop : array_like
-        The final value of the sequence, unless `endpoint` is False.
-        In that case, ``num + 1`` values are spaced over the
-        interval in log-space, of which all but the last (a sequence of
-        length `num`) are returned.
-    num : integer, optional
-        Number of samples to generate. Default is 50.
-    endpoint : boolean, optional
-        If true, `stop` is the last sample. Otherwise, it is not included.
-        Default is True.
-    dtype : dtype
-        The type of the output array.
-    axis : int, optional
-        The axis in the result to store the samples.
-
-    Returns
-    -------
-    samples : :obj:`dpnp.ndarray`
-        `num` samples, equally spaced on a log scale.
+    For full documentation refer to :obj:`numpy.geomspace`.
 
     Limitations
     -----------
-    Parameter ``axis`` is supported only with default value `0`.
+    Parameter ``axis`` is supported only with default value ``0``.
 
     See Also
     --------
-    :obj:`numpy.geomspace` : Return numbers spaced evenly on a log scale
-                             (a geometric progression).
     :obj:`dpnp.logspace` : Similar to geomspace, but with endpoints specified
                            using log and base.
     :obj:`dpnp.linspace` : Similar to geomspace, but with arithmetic instead of
@@ -690,50 +545,14 @@ def linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis
     """
     Return evenly spaced numbers over a specified interval.
 
-    Returns `num` evenly spaced samples, calculated over the
-    interval [`start`, `stop`].
-
-    The endpoint of the interval can optionally be excluded.
-
-    Parameters
-    ----------
-    start : array_like
-        The starting value of the sequence.
-    stop : array_like
-        The end value of the sequence, unless `endpoint` is set to False.
-        In that case, the sequence consists of all but the last of ``num + 1``
-        evenly spaced samples, so that `stop` is excluded.  Note that the step
-        size changes when `endpoint` is False.
-    num : int, optional
-        Number of samples to generate. Default is 50. Must be non-negative.
-    endpoint : bool, optional
-        If True, `stop` is the last sample. Otherwise, it is not included.
-        Default is True.
-    retstep : bool, optional
-        If True, return (`samples`, `step`), where `step` is the spacing
-        between samples.
-    dtype : dtype, optional
-        The type of the output array.
-    axis : int, optional
-        The axis in the result to store the samples.
-
-    Returns
-    -------
-    samples : :obj:`dpnp.ndarray`
-        There are `num` equally spaced samples in the closed interval
-        ``[start, stop]`` or the half-open interval ``[start, stop)``
-        (depending on whether `endpoint` is True or False).
-    step : float, optional
-        Only returned if `retstep` is True.
-        Size of spacing between samples.
+    For full documentation refer to :obj:`numpy.linspace`.
 
     Limitations
     -----------
-    Parameter ``axis`` is supported only with default value `0`.
+    Parameter ``axis`` is supported only with default value ``0``.
 
     See Also
     --------
-    :obj:`numpy.linspace` : Return evenly spaced numbers over a specified interval.
     :obj:`dpnp.arange` : Similar to `linspace`, but uses a step size (instead
                          of the number of samples).
     :obj:`dpnp.geomspace` : Similar to `linspace`, but with numbers spaced
@@ -774,51 +593,20 @@ def logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0):
     """
     Return numbers spaced evenly on a log scale.
 
-    In linear space, the sequence starts at ``base ** start``
-    (`base` to the power of `start`) and ends with ``base ** stop``
-    (see `endpoint` below).
-
-    Parameters
-    ----------
-    start : array_like
-        ``base ** start`` is the starting value of the sequence.
-    stop : array_like
-        ``base ** stop`` is the final value of the sequence, unless `endpoint`
-        is False.  In that case, ``num + 1`` values are spaced over the
-        interval in log-space, of which all but the last (a sequence of
-        length `num`) are returned.
-    num : integer, optional
-        Number of samples to generate. Default is 50.
-    endpoint : boolean, optional
-        If true, `stop` is the last sample. Otherwise, it is not included.
-        Default is True.
-    base : float, optional
-        The base of the log space. The step size between the elements in
-        ``ln(samples) / ln(base)`` (or ``log_base(samples)``) is uniform.
-        Default is 10.0.
-    dtype : dtype
-        The type of the output array.
-    axis : int, optional
-        The axis in the result to store the samples.
-
-    Returns
-    -------
-    samples : :obj:`dpnp.ndarray`
-        `num` samples, equally spaced on a log scale.
+    For full documentation refer to :obj:`numpy.logspace`.
 
     Limitations
     -----------
-    Parameter ``axis`` is supported only with default value `0`.
+    Parameter ``axis`` is supported only with default value ``0``.
 
     See Also
     --------
-    :obj:`numpy.logspace` : Return numbers spaced evenly on a log scale.
     :obj:`dpnp.arange` : Similar to linspace, with the step size specified
                          instead of the number of samples. Note that, when used
                          with a float endpoint, the endpoint may or may not be
                          included.
-    :obj:`dpnp.inspace` : Similar to logspace, but with the samples uniformly
-                          distributed in linear space, instead of log space.
+    :obj:`dpnp.linspace` : Similar to logspace, but with the samples uniformly
+                           distributed in linear space, instead of log space.
     :obj:`dpnp.geomspace` : Similar to logspace, but with endpoints specified
                             directly.
 
@@ -850,27 +638,14 @@ def ones(shape, dtype=None, order='C'):
     """
     Return a new array of given shape and type, filled with ones.
 
-    Parameters
-    ----------
-    shape : int or sequence of ints
-        The shape of the output array.
-    dtype : data-type, optional
-        The type of the output array.
-    order : {'C', 'F'}, optional
-        Row-major (C-style) or column-major (Fortran-style) order.
-
-    Returns
-    -------
-    out : :obj:`dpnp.ndarray`
-        Array of ones with the given shape, dtype, and order.
+    For full documentation refer to :obj:`numpy.ones`.
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value `'C'`.
+    Parameter ``order`` is supported only with default value ``"C"``.
 
     See Also
     --------
-    :obj:`numpy.ones` : Return a new array of given shape and type, filled with ones.
     :obj:`dpnp.ones_like` : Return an array of ones with shape and type of input.
     :obj:`dpnp.empty` : Return a new uninitialized array.
     :obj:`dpnp.zeros` : Return a new array setting values to zero.
@@ -903,35 +678,15 @@ def ones_like(x1, dtype=None, order='C', subok=False, shape=None):
     """
     Return an array of ones with the same shape and type as a given array.
 
-    Parameters
-    ----------
-    x1 : array_like
-        Base array.
-    dtype : data-type, optional
-        The type of the output array.
-    order : {'C', 'F', 'A', or 'K'}, optional
-        Overrides the memory layout of the result.
-    subok : bool, optional.
-        If True, then the newly created array will use the sub-class
-        type of 'a', otherwise it will be a base-class array. Defaults
-        to True.
-    shape : int or sequence of ints, optional.
-        The shape of the output array.
-
-    Returns
-    -------
-    out : :obj:`dpnp.ndarray`
-        Array of ones with the same shape and type as `x1`.
+    For full documentation refer to :obj:`numpy.ones_like`.
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value `'C'`.
-    Parameter ``subok`` is supported only with default value `False`.
+    Parameter ``order`` is supported only with default value ``"C"``.
+    Parameter ``subok`` is supported only with default value ``False``.
 
     See Also
     --------
-    :obj:`numpy.ones_like` : Return an array of ones
-                             with the same shape and type as a given array.
     :obj:`dpnp.empty_like` : Return an empty array with shape and type of input.
     :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of input.
     :obj:`dpnp.full_like` : Return a new array with shape of input filled with value.
@@ -966,27 +721,14 @@ def zeros(shape, dtype=None, order='C'):
     """
     Return a new array of given shape and type, filled with zeros.
 
-    Parameters
-    ----------
-    shape : int or tuple of ints
-        The shape of the output array.
-    dtype : data-type, optional
-        The type of the output array.
-    order : {'C', 'F'}, optional
-        Row-major (C-style) or column-major (Fortran-style) order.
-
-    Returns
-    -------
-    out : :obj:`dpnp.ndarray`
-        Array of zeros with the given shape, dtype, and order.
+    For full documentation refer to :obj:`numpy.zeros`.
 
     Limitations
     -----------
-    Parameter ``order`` is supported only with default value `'C'`.
+    Parameter ``order`` is supported only with default value ``"C"``.
 
     See Also
     --------
-    :obj:`numpy.zeros` : Return a new array of given shape and type, filled with zeros.
     :obj:`dpnp.zeros_like` : Return an array of zeros with shape and type of input.
     :obj:`dpnp.empty` : Return a new uninitialized array.
     :obj:`dpnp.ones` : Return a new array setting values to one.
@@ -1019,30 +761,15 @@ def zeros_like(x1, dtype=None, order='C', subok=False, shape=None):
     """
     Return an array of zeros with the same shape and type as a given array.
 
-    Parameters
-    ----------
-    x1 : array_like
-        Base array.
-    dtype : data-type, optional
-        The type of the output array.
-    order : {'C', 'F', 'A', or 'K'}, optional
-        Overrides the memory layout of the result.
-    subok : bool, optional.
-        If True, then the newly created array will use the sub-class
-        type of 'x1', otherwise it will be a base-class array. Defaults
-        to True.
-    shape : int or sequence of ints, optional.
-        The shape of the output array.
+    For full documentation refer to :obj:`numpy.zeros_like`.
 
-    Returns
-    -------
-    out : :obj:`dpnp.ndarray`
-        Array of zeros with the same shape and type as `x1`.
+    Limitations
+    -----------
+    Parameter ``order`` is supported only with default value ``"C"``.
+    Parameter ``subok`` is supported only with default value ``False``.
 
     See Also
     --------
-    :obj:`numpy.zeros_like` : Return an array of zeros
-                              with the same shape and type as a given array.
     :obj:`dpnp.empty_like` : Return an empty array with shape and type of input.
     :obj:`dpnp.ones_like` : Return an array of ones with shape and type of input.
     :obj:`dpnp.full_like` : Return a new array with shape of input filled with value.
