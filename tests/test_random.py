@@ -402,7 +402,7 @@ def test_hypergeometric_check_moments():
 
     size = 10**5
     expected_mean = nsample * (ngood / (ngood + nbad))
-    expected_var = nsample * (ngood / (ngood + nbad)) * (nbad / (ngood + nbad)) * (((ngood + nbad) - nsample) / ((ngood + nbad) - 1))
+    expected_var = expected_mean * (nbad / (ngood + nbad)) * (((ngood + nbad) - nsample) / ((ngood + nbad) - 1))
 
     var = numpy.var(dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size))
     mean = numpy.mean(dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size))
