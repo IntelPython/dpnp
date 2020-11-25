@@ -829,18 +829,29 @@ def multinomial(n, pvals, size=None):
 
     if not use_origin_backend(n) and dpnp_queue_is_cpu():
         if size is None:
-            size = 1
+            size = (1,)
         elif isinstance(size, tuple):
             for dim in size:
                 if not isinstance(dim, int):
                     checker_throw_value_error("multinomial", "type(dim)", type(dim), int)
         elif not isinstance(size, int):
             checker_throw_value_error("multinomial", "type(size)", type(size), int)
+        else:
+            size = (size,)
+        pvals_sum = sum(pvals[:-1])
 
         if n < 0:
             checker_throw_value_error("multinomial", "n", n, "non-negative")
-
-        return dpnp_multinomial(int(n), pvals, size)
+        elif n > numpy.iinfo(numpy.int32).max:
+            checker_throw_value_error("multinomial", "n", n, "n <= int32 max (2147483647)")
+        elif pvals_sum >= 1.0:
+            checker_throw_value_error("multinomial", "sum(pvals[:-1])", sum(pvals[:-1]), "sum(pvals[:-1]) < 1.0")
+        elif pvals_sum < 0.0:
+            # TODO
+            # doesn't work for list len 1
+            checker_throw_value_error("multinomial", "sum(pvals[:-1])", sum(pvals[:-1]), "sum(pvals[:-1]) >= 0.0")
+        else:
+            return dpnp_multinomial(int(n), pvals, size)
 
     return call_origin(numpy.random.multinomial, n, pvals, size)
 
