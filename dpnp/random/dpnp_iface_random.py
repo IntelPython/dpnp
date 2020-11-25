@@ -825,6 +825,44 @@ def lognormal(mean=0.0, sigma=1.0, size=None):
 def multinomial(n, pvals, size=None):
     """Multinomial distribution.
 
+    Draw samples from a multinomial distribution.
+
+    The multinomial distribution is a multivariate generalization of the
+    binomial distribution.  Take an experiment with one of ``p``
+    possible outcomes.  An example of such an experiment is throwing a dice,
+    where the outcome can be 1 through 6.  Each sample drawn from the
+    distribution represents `n` such experiments.  Its values,
+    ``X_i = [X_0, X_1, ..., X_p]``, represent the number of times the
+    outcome was ``i``.
+
+    Parameters
+    ----------
+    n : int
+        Number of experiments.
+    pvals : sequence of floats, length p
+        Probabilities of each of the ``p`` different outcomes.  These
+        must sum to 1 (however, the last element is always assumed to
+        account for the remaining probability, as long as
+        ``sum(pvals[:-1]) <= 1)``.
+    size : int or tuple of ints, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  Default is None, in which case a
+        single value is returned.
+
+    Returns
+    -------
+    out : dparray, int32
+        The drawn samples, of shape *size*, if that was provided.  If not,
+        the shape is ``(N,)``.
+        In other words, each entry ``out[i,j,...,:]`` is an N-dimensional
+        value drawn from the distribution.
+
+    Examples
+    --------
+    Throw a dice 20 times:
+    >>> dpnp.random.multinomial(20, [1/6.]*6, size=1)
+    array([[4, 1, 7, 5, 2, 1]]) # random
+
     """
 
     if not use_origin_backend(n) and dpnp_queue_is_cpu():
@@ -838,18 +876,16 @@ def multinomial(n, pvals, size=None):
             checker_throw_value_error("multinomial", "type(size)", type(size), int)
         else:
             size = (size,)
-        pvals_sum = sum(pvals[:-1])
+        pvals_sum = sum(pvals)
 
         if n < 0:
             checker_throw_value_error("multinomial", "n", n, "non-negative")
         elif n > numpy.iinfo(numpy.int32).max:
             checker_throw_value_error("multinomial", "n", n, "n <= int32 max (2147483647)")
-        elif pvals_sum >= 1.0:
-            checker_throw_value_error("multinomial", "sum(pvals[:-1])", sum(pvals[:-1]), "sum(pvals[:-1]) < 1.0")
+        elif pvals_sum > 1.0:
+            checker_throw_value_error("multinomial", "sum(pvals)", pvals_sum, "sum(pvals) <= 1.0")
         elif pvals_sum < 0.0:
-            # TODO
-            # doesn't work for list len 1
-            checker_throw_value_error("multinomial", "sum(pvals[:-1])", sum(pvals[:-1]), "sum(pvals[:-1]) >= 0.0")
+            checker_throw_value_error("multinomial", "sum(pvals)", pvals_sum, "sum(pvals) >= 0.0")
         else:
             return dpnp_multinomial(int(n), pvals, size)
 

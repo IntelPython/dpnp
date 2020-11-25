@@ -224,8 +224,14 @@ void custom_rng_multinomial_c(void* result, int ntrial, std::vector<double>& p_v
     std::int32_t* result1 = reinterpret_cast<std::int32_t*>(result);
 
     mkl_rng::multinomial<std::int32_t> distribution(ntrial, p_vector);
+
+    // size = size
+    // `result` is a array for random numbers
+    // `size` is a `result`'s len. `size = n * p_vector.size()`
+    // `n` is a number of random values to be generated.
+    size_t n = size / p_vector.size();
     // perform generation
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, n, result1);
     event_out.wait();
 }
 

@@ -457,7 +457,11 @@ cpdef dparray dpnp_lognormal(double mean, double stddev, size):
 
 cpdef dparray dpnp_multinomial(int ntrial, p, size):
     """
-    SMth
+    Returns an array populated with samples from multinomial distribution.
+
+    `dpnp_multinomial` generates a matrix filled with random floats sampled from a
+    univariate multinomial distribution for a given number of independent trials and
+    probabilities of each of the ``p`` different outcome.
 
     """
 
