@@ -100,12 +100,16 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncName":  # n
         DPNP_FN_RNG_GAUSSIAN
         DPNP_FN_RNG_GEOMETRIC
         DPNP_FN_RNG_GUMBEL
+        DPNP_FN_RNG_HYPERGEOMETRIC
         DPNP_FN_RNG_LAPLACE
         DPNP_FN_RNG_LOGNORMAL
         DPNP_FN_RNG_NEGATIVE_BINOMIAL
+        DPNP_FN_RNG_NORMAL
         DPNP_FN_RNG_POISSON
         DPNP_FN_RNG_RAYLEIGH
         DPNP_FN_RNG_STANDARD_CAUCHY
+        DPNP_FN_RNG_STANDARD_EXPONENTIAL
+        DPNP_FN_RNG_STANDARD_GAMMA
         DPNP_FN_RNG_STANDARD_NORMAL
         DPNP_FN_RNG_UNIFORM
         DPNP_FN_RNG_WEIBULL
@@ -131,6 +135,7 @@ cdef extern from "backend/backend_iface_fptr.hpp" namespace "DPNPFuncType":  # n
         DPNP_FT_LONG
         DPNP_FT_FLOAT
         DPNP_FT_DOUBLE
+        DPNP_FT_CMPLX128
 
 cdef extern from "backend/backend_iface_fptr.hpp":
     struct DPNPFuncData:
@@ -198,7 +203,7 @@ cpdef dparray dpnp_logical_and(dparray input1, dparray input2)
 cpdef dparray dpnp_logical_not(dparray input1)
 cpdef dparray dpnp_logical_or(dparray input1, dparray input2)
 cpdef dparray dpnp_logical_xor(dparray input1, dparray input2)
-cpdef dparray dpnp_not_equal(dparray input1, dparray input2)
+cpdef dparray dpnp_not_equal(dparray input1, input2)
 
 
 """

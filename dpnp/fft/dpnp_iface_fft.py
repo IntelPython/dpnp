@@ -49,7 +49,9 @@ from dpnp.fft.dpnp_algo_fft import *
 
 
 __all__ = [
-    "fft"
+    "fft",
+    "fft2",
+    "fftn"
 ]
 
 
@@ -57,22 +59,123 @@ def fft(x1, n=None, axis=-1, norm=None):
     """
     Compute the one-dimensional discrete Fourier Transform.
 
+    Compute the one-dimensional discrete Fourier Transform.
+    Multi-dimensional arrays computed as batch of 1-D arrays
+
+    Limitations
+    -----------
+    Parameter ``axis`` is unsupported.
+    Parameter ``norm`` is unsupported.
+    Parameter ``x1`` supports 1-D arrays only.
+    Parameter ``x1`` supports `dpnp.int32`, `dpnp.int64`, `dpnp.float32` and `dpnp.float64` datatypes only.
+
     See Also
     --------
-    :obj:`numpy.fft.fft`
+    :obj:`numpy.fft.fft` : Compute the one-dimensional discrete Fourier Transform.
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray):
+        if n is None:
+            output_size = x1.size
+        else:
+            output_size = n
+
+        if output_size < 1:
+            pass
+        elif axis != -1:
+            pass
+        elif norm is not None:
+            pass
+        elif x1.ndim > 1:
+            pass
+        else:
+            return dpnp_fft(x1, output_size)
+
+    return call_origin(numpy.fft.fft, x1, n, axis, norm)
+
+
+def fft2(x1, s=None, axes=(-2, -1), norm=None):
+    """
+    Compute the 2-dimensional discrete Fourier Transform
+
+    Compute the 2-dimensional discrete Fourier Transform
+    Multi-dimensional arrays computed as batch of 1-D arrays
+
+    Limitations
+    -----------
+    Parameter ``axes`` is unsupported.
+    Parameter ``norm`` is unsupported.
+    Parameter ``x1`` supports 1-D arrays only.
+    Parameter ``x1`` supports `dpnp.int32`, `dpnp.int64`, `dpnp.float32` and `dpnp.float64` datatypes only.
+
+    See Also
+    --------
+    :obj:`numpy.fft.fft2` : Compute the 2-dimensional discrete Fourier Transform
 
     """
 
     is_x1_dparray = isinstance(x1, dparray)
 
     if (not use_origin_backend(x1) and is_x1_dparray and 0):
-        if n is not None:
+        if s is None:
+            output_size = x1.size
+        else:
+            output_size = n
+
+        if output_size < 1:
             pass
-        if axis != -1:
+        elif axes != (-2, -1):
             pass
-        if norm is not None:
+        elif norm is not None:
+            pass
+        elif x1.ndim > 1:
             pass
         else:
-            return dpnp_fft(x1)
+            return dpnp_fft(x1, output_size)
 
-    return call_origin(numpy.fft.fft, x1, n, axis, norm)
+    return call_origin(numpy.fft.fft2, x1, s, axes, norm)
+
+
+def fftn(x1, s=None, axes=None, norm=None):
+    """
+    Compute the N-dimensional FFT.
+
+    Compute the N-dimensional FFT.
+    Multi-dimensional arrays computed as batch of 1-D arrays
+
+    Limitations
+    -----------
+    Parameter ``axes`` is unsupported.
+    Parameter ``norm`` is unsupported.
+    Parameter ``x1`` supports 1-D arrays only.
+    Parameter ``x1`` supports `dpnp.int32`, `dpnp.int64`, `dpnp.float32` and `dpnp.float64` datatypes only.
+
+    See Also
+    --------
+    :obj:`numpy.fft.fftn` : Compute the N-dimensional FFT.
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray and 0):
+        if s is None:
+            output_size = x1.size
+        else:
+            output_size = n
+
+        if output_size < 1:
+            pass
+        elif axes is not None:
+            pass
+        elif norm is not None:
+            pass
+        elif x1.ndim > 1:
+            pass
+        else:
+            return dpnp_fft(x1, output_size)
+
+    return call_origin(numpy.fft.fftn, x1, s, axes, norm)

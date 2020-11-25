@@ -56,6 +56,7 @@ __all__ = [
 include "backend_arraycreation.pyx"
 include "backend_bitwise.pyx"
 include "backend_counting.pyx"
+include "backend_indexing.pyx"
 include "backend_linearalgebra.pyx"
 include "backend_logic.pyx"
 include "backend_manipulation.pyx"
@@ -246,6 +247,8 @@ cpdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype):
         return DPNP_FT_LONG
     elif dtype == numpy.int32:
         return DPNP_FT_INT
+    elif dtype == numpy.complex128:
+        return DPNP_FT_CMPLX128
     else:
         checker_throw_type_error("dpnp_dtype_to_DPNPFuncType", dtype)
 
@@ -262,6 +265,8 @@ cpdef dpnp_DPNPFuncType_to_dtype(size_t type):
         return numpy.int64
     elif type == <size_t > DPNP_FT_INT:
         return numpy.int32
+    elif type == <size_t > DPNP_FT_CMPLX128:
+        return numpy.complex128
     else:
         checker_throw_type_error("dpnp_DPNPFuncType_to_dtype", type)
 
