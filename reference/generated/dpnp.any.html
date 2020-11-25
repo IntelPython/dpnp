@@ -198,50 +198,17 @@
 <dt id="dpnp.any">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">any</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_array1</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keepdims</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_logic.html#any"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.any" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test whether any array element along a given axis evaluates to True.</p>
-<p>Returns single boolean unless <cite>axis</cite> is not <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>array_like</em>) – Input array or object that can be converted to an array.</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – <p>Axis or axes along which a logical OR reduction is performed.
-The default (<code class="docutils literal notranslate"><span class="pre">axis=None</span></code>) is to perform a logical OR over all
-the dimensions of the input array. <cite>axis</cite> may be negative, in
-which case it counts from the last to the first axis.</p>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 1.7.0.</span></p>
-</div>
-<p>If this is a tuple of ints, a reduction is performed on multiple
-axes, instead of a single axis or all the axes as before.</p>
-</p></li>
-<li><p><strong>out</strong> (<em>ndarray</em><em>, </em><em>optional</em>) – Alternate output array in which to place the result.  It must have
-the same shape as the expected output and its type is preserved
-(e.g., if it is of type float, then it will remain so, returning
-1.0 for True and 0.0 for False, regardless of the type of <cite>a</cite>).
-See <cite>ufuncs-output-type</cite> for more details.</p></li>
-<li><p><strong>keepdims</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – <p>If this is set to True, the axes which are reduced are left
-in the result as dimensions with size one. With this option,
-the result will broadcast correctly against the input array.</p>
-<p>If the default value is passed, then <cite>keepdims</cite> will not be
-passed through to the <cite>any</cite> method of sub-classes of
-<cite>ndarray</cite>, however any non-default value will be.  If the
-sub-class’ method does not implement <cite>keepdims</cite> any
-exceptions will be raised.</p>
-</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>any</strong> – A new boolean or <cite>ndarray</cite> is returned unless <cite>out</cite> is specified,
-in which case a reference to <cite>out</cite> is returned.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a> or ndarray</p>
-</dd>
-</dl>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.any.html#numpy.any" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.any</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Input array is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Otherwise the function will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.
+Parameter <code class="docutils literal notranslate"><span class="pre">axis</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Parameter <code class="docutils literal notranslate"><span class="pre">out</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Parameter <code class="docutils literal notranslate"><span class="pre">keepdims</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray.any</span></code></dt><dd><p>equivalent method</p>
-</dd>
 <dt><a class="reference internal" href="dpnp.all.html#dpnp.all" title="dpnp.all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.all</span></code></a></dt><dd><p>Test whether all elements along a given axis evaluate to True.</p>
 </dd>
 </dl>
@@ -249,6 +216,19 @@ in which case a reference to <cite>out</cite> is returned.</p>
 <p class="rubric">Notes</p>
 <p>Not a Number (NaN), positive infinity and negative infinity evaluate
 to <cite>True</cite> because these are not equal to zero.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">x3</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>

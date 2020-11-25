@@ -185,26 +185,35 @@
 <dt id="dpnp.equal">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">equal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_logic.html#equal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.equal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return (x1 == x2) element-wise.</p>
-<p>Unlike <cite>numpy.equal</cite>, this comparison is performed by first
-stripping whitespace characters from the end of the string.  This
-behavior is provided for backward-compatibility with numarray.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x1</strong> (<em>array_like of str</em><em> or </em><em>unicode</em>) – Input arrays of the same shape.</p></li>
-<li><p><strong>x2</strong> (<em>array_like of str</em><em> or </em><em>unicode</em>) – Input arrays of the same shape.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – Output array of bools, or a single bool if x1 and x2 are scalars.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray or <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
-</dd>
-</dl>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.equal.html#numpy.equal" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.equal</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Parameter <code class="docutils literal notranslate"><span class="pre">x1</span></code> is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Parameter <code class="docutils literal notranslate"><span class="pre">x2</span></code> is supported as either <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> or int.
+Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.
+Sizes, shapes and data types of input arrays <code class="docutils literal notranslate"><span class="pre">x1</span></code> and <code class="docutils literal notranslate"><span class="pre">x2</span></code> are supported to be equal.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="dpnp.not_equal.html#dpnp.not_equal" title="dpnp.not_equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.not_equal</span></code></a>, <a class="reference internal" href="dpnp.greater_equal.html#dpnp.greater_equal" title="dpnp.greater_equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.greater_equal</span></code></a>, <a class="reference internal" href="dpnp.less_equal.html#dpnp.less_equal" title="dpnp.less_equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.less_equal</span></code></a>, <a class="reference internal" href="dpnp.greater.html#dpnp.greater" title="dpnp.greater"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.greater</span></code></a>, <a class="reference internal" href="dpnp.less.html#dpnp.less" title="dpnp.less"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.less</span></code></a></p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.not_equal.html#dpnp.not_equal" title="dpnp.not_equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.not_equal</span></code></a></dt><dd><p>Return (x1 != x2) element-wise.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.greater_equal.html#dpnp.greater_equal" title="dpnp.greater_equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.greater_equal</span></code></a></dt><dd><p>Return the truth value of (x1 &gt;= x2) element-wise.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.less_equal.html#dpnp.less_equal" title="dpnp.less_equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.less_equal</span></code></a></dt><dd><p>Return the truth value of (x1 =&lt; x2) element-wise.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.greater.html#dpnp.greater" title="dpnp.greater"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.greater</span></code></a></dt><dd><p>Return the truth value of (x1 &gt; x2) element-wise.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.less.html#dpnp.less" title="dpnp.less"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.less</span></code></a></dt><dd><p>Return the truth value of (x1 &lt; x2) element-wise.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">out</span><span class="p">]</span>
+<span class="go">[True, True, False]</span>
+</pre></div>
 </div>
 </dd></dl>
 

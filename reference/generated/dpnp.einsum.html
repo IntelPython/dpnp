@@ -197,14 +197,23 @@
 <h1>dpnp.einsum<a class="headerlink" href="#dpnp-einsum" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="dpnp.einsum">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">einsum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subscripts</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">operands</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_linearalgebra.html#einsum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.einsum" title="Permalink to this definition">¶</a></dt>
-<dd><p>Evaluates the Einstein summation convention on the operands.
-Using the Einstein summation convention, many common multi-dimensional
-array operations can be represented in a simple fashion. This function
-provides a way to compute such summations.</p>
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">einsum</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_linearalgebra.html#einsum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.einsum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates the Einstein summation convention on the operands.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.einsum.html#numpy.einsum" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.einsum</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Function is executed sequentially on CPU.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.einsum.html#numpy.einsum" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.einsum</span></code></a></p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.einsum_path.html#dpnp.einsum_path" title="dpnp.einsum_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.einsum_path</span></code></a></dt><dd><p>Evaluates the lowest cost contraction order for an einsum expression.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.dot.html#dpnp.dot" title="dpnp.dot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.dot</span></code></a></dt><dd><p>Returns the dot product of two arrays.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.inner.html#dpnp.inner" title="dpnp.inner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.inner</span></code></a></dt><dd><p>Returns the inner product of two arrays.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.outer.html#dpnp.outer" title="dpnp.outer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.outer</span></code></a></dt><dd><p>Returns the outer product of two arrays.</p>
+</dd>
+</dl>
 </div>
 </dd></dl>
 

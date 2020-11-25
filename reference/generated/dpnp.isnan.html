@@ -185,38 +185,37 @@
 <dt id="dpnp.isnan">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">isnan</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_array1</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">where</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_logic.html#isnan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.isnan" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test element-wise for NaN and return result as a boolean array.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>array_like</em>) – Input array.</p></li>
-<li><p><strong>out</strong> (<em>ndarray</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em>, or </em><em>tuple of ndarray and None</em><em>, </em><em>optional</em>) – A location into which the result is stored. If provided, it must have
-a shape that the inputs broadcast to. If not provided or None,
-a freshly-allocated array is returned. A tuple (possible only as a
-keyword argument) must have length equal to the number of outputs.</p></li>
-<li><p><strong>where</strong> (<em>array_like</em><em>, </em><em>optional</em>) – This condition is broadcast over the input. At locations where the
-condition is True, the <cite>out</cite> array will be set to the ufunc result.
-Elsewhere, the <cite>out</cite> array will retain its original value.
-Note that if an uninitialized <cite>out</cite> array is created via the default
-<code class="docutils literal notranslate"><span class="pre">out=None</span></code>, locations within it where the condition is False will
-remain uninitialized.</p></li>
-<li><p><strong>**kwargs</strong> – For other keyword-only arguments.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>y</strong> – True where <code class="docutils literal notranslate"><span class="pre">x</span></code> is NaN, false otherwise.
-This is a scalar if <cite>x</cite> is a scalar.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray or <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
-</dd>
-</dl>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.isnan.html#numpy.isnan" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.isnan</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Input array is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Otherwise the function will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.
+Parameter <code class="docutils literal notranslate"><span class="pre">out</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Parameter <code class="docutils literal notranslate"><span class="pre">where</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="dpnp.isinf.html#dpnp.isinf" title="dpnp.isinf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isinf</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isneginf</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isposinf</span></code>, <a class="reference internal" href="dpnp.isfinite.html#dpnp.isfinite" title="dpnp.isfinite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isfinite</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isnat</span></code></p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.isinf.html#dpnp.isinf" title="dpnp.isinf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isinf</span></code></a></dt><dd><p>Test element-wise for positive or negative infinity.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isneginf</span></code></dt><dd><p>Test element-wise for negative infinity, return result as bool array.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isposinf</span></code></dt><dd><p>Test element-wise for positive infinity, return result as bool array.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.isfinite.html#dpnp.isfinite" title="dpnp.isfinite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isfinite</span></code></a></dt><dd><p>Test element-wise for finiteness.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isnat</span></code></dt><dd><p>Test element-wise for NaT (not a time) and return result as a boolean array.</p>
+</dd>
+</dl>
 </div>
-<p class="rubric">Notes</p>
-<p>NumPy uses the IEEE Standard for Binary Floating-Point for Arithmetic
-(IEEE 754). This means that Not a Number is not equivalent to infinity.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">numpy</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">out</span><span class="p">]</span>
+<span class="go">[False, False, True]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>

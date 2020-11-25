@@ -198,46 +198,32 @@
 <dl class="py function">
 <dt id="dpnp.dot">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">dot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_linearalgebra.html#dot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.dot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dot product of two arrays. Specifically,</p>
-<ul>
-<li><p>If both <cite>a</cite> and <cite>b</cite> are 1-D arrays, it is inner product of vectors
-(without complex conjugation).</p></li>
-<li><p>If both <cite>a</cite> and <cite>b</cite> are 2-D arrays, it is matrix multiplication,
-but using <a class="reference internal" href="dpnp.matmul.html#dpnp.matmul" title="dpnp.matmul"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.matmul</span></code></a> or <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">&#64;</span> <span class="pre">b</span></code> is preferred.</p></li>
-<li><p>If either <cite>a</cite> or <cite>b</cite> is 0-D (scalar), it is equivalent to <a class="reference internal" href="dpnp.multiply.html#dpnp.multiply" title="dpnp.multiply"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.multiply</span></code></a>
-and using <code class="docutils literal notranslate"><span class="pre">numpy.multiply(a,</span> <span class="pre">b)</span></code> or <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">*</span> <span class="pre">b</span></code> is preferred.</p></li>
-<li><p>If <cite>a</cite> is an N-D array and <cite>b</cite> is a 1-D array, it is a sum product over
-the last axis of <cite>a</cite> and <cite>b</cite>.</p></li>
-<li><p>If <cite>a</cite> is an N-D array and <cite>b</cite> is an M-D array (where <code class="docutils literal notranslate"><span class="pre">M&gt;=2</span></code>), it is a
-sum product over the last axis of <cite>a</cite> and the second-to-last axis of <cite>b</cite>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,:]</span> <span class="o">*</span> <span class="n">b</span><span class="p">[</span><span class="n">k</span><span class="p">,:,</span><span class="n">m</span><span class="p">])</span>
-</pre></div>
-</div>
-</li>
-</ul>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>array_like</em>) – First argument.</p></li>
-<li><p><strong>b</strong> (<em>array_like</em>) – Second argument.</p></li>
-<li><p><strong>out</strong> (<em>ndarray</em><em>, </em><em>optional</em>) – Output argument. This must have the exact kind that would be returned
-if it was not used. In particular, it must have the right type, must be
-C-contiguous, and its dtype must be the dtype that would be returned
-for <cite>dot(a,b)</cite>. This is a performance feature. Therefore, if these
-conditions are not met, an exception is raised, instead of attempting
-to be flexible.</p></li>
-</ul>
+<dd><p>Returns the dot product of <cite>x1</cite> and <cite>x2</cite>.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dot.html#numpy.dot" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.dot</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Parameters <code class="docutils literal notranslate"><span class="pre">x1</span></code> and <code class="docutils literal notranslate"><span class="pre">x2</span></code> are supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> of the same type.
+Keyword arguments <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are currently unsupported.
+Otherwise the functions will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.tensordot.html#dpnp.tensordot" title="dpnp.tensordot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.tensordot</span></code></a></dt><dd><p>Sum products over arbitrary axes.</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>output</strong> – Returns the dot product of <cite>a</cite> and <cite>b</cite>.  If <cite>a</cite> and <cite>b</cite> are both
-scalars or both 1-D arrays then a scalar is returned; otherwise
-an array is returned.
-If <cite>out</cite> is given, then it is returned.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray</p>
+<dt><a class="reference internal" href="dpnp.vdot.html#dpnp.vdot" title="dpnp.vdot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.vdot</span></code></a></dt><dd><p>Complex-conjugating dot product.</p>
 </dd>
 </dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="go">12</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="go">14</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>

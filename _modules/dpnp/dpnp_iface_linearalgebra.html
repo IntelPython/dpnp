@@ -218,46 +218,31 @@
 
 <div class="viewcode-block" id="dot"><a class="viewcode-back" href="../../reference/generated/dpnp.dot.html#dpnp.dot">[docs]</a><span class="k">def</span> <span class="nf">dot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Dot product of two arrays. Specifically,</span>
+<span class="sd">    Returns the dot product of `x1` and `x2`.</span>
 
-<span class="sd">    - If both `a` and `b` are 1-D arrays, it is inner product of vectors</span>
-<span class="sd">      (without complex conjugation).</span>
+<span class="sd">    For full documentation refer to :obj:`numpy.dot`.</span>
 
-<span class="sd">    - If both `a` and `b` are 2-D arrays, it is matrix multiplication,</span>
-<span class="sd">      but using :obj:`dpnp.matmul` or ``a @ b`` is preferred.</span>
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray` of the same type.</span>
+<span class="sd">        Keyword arguments ``kwargs`` are currently unsupported.</span>
+<span class="sd">        Otherwise the functions will be executed sequentially on CPU.</span>
+<span class="sd">        Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
-<span class="sd">    - If either `a` or `b` is 0-D (scalar), it is equivalent to :obj:`dpnp.multiply`</span>
-<span class="sd">      and using ``numpy.multiply(a, b)`` or ``a * b`` is preferred.</span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.tensordot` : Sum products over arbitrary axes.</span>
+<span class="sd">    :obj:`dpnp.vdot` : Complex-conjugating dot product.</span>
 
-<span class="sd">    - If `a` is an N-D array and `b` is a 1-D array, it is a sum product over</span>
-<span class="sd">      the last axis of `a` and `b`.</span>
-
-<span class="sd">    - If `a` is an N-D array and `b` is an M-D array (where ``M&gt;=2``), it is a</span>
-<span class="sd">      sum product over the last axis of `a` and the second-to-last axis of `b`::</span>
-
-<span class="sd">        dot(a, b)[i,j,k,m] = sum(a[i,j,:] * b[k,:,m])</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    a : array_like</span>
-<span class="sd">        First argument.</span>
-<span class="sd">    b : array_like</span>
-<span class="sd">        Second argument.</span>
-<span class="sd">    out : ndarray, optional</span>
-<span class="sd">        Output argument. This must have the exact kind that would be returned</span>
-<span class="sd">        if it was not used. In particular, it must have the right type, must be</span>
-<span class="sd">        C-contiguous, and its dtype must be the dtype that would be returned</span>
-<span class="sd">        for `dot(a,b)`. This is a performance feature. Therefore, if these</span>
-<span class="sd">        conditions are not met, an exception is raised, instead of attempting</span>
-<span class="sd">        to be flexible.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    output : ndarray</span>
-<span class="sd">        Returns the dot product of `a` and `b`.  If `a` and `b` are both</span>
-<span class="sd">        scalars or both 1-D arrays then a scalar is returned; otherwise</span>
-<span class="sd">        an array is returned.</span>
-<span class="sd">        If `out` is given, then it is returned.</span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.dot(3, 4)</span>
+<span class="sd">    12</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; np.dot(a, b)</span>
+<span class="sd">    14</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -282,16 +267,20 @@
 
 <div class="viewcode-block" id="einsum"><a class="viewcode-back" href="../../reference/generated/dpnp.einsum.html#dpnp.einsum">[docs]</a><span class="k">def</span> <span class="nf">einsum</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    einsum(subscripts, *operands, dtype=False)</span>
-
 <span class="sd">    Evaluates the Einstein summation convention on the operands.</span>
-<span class="sd">    Using the Einstein summation convention, many common multi-dimensional</span>
-<span class="sd">    array operations can be represented in a simple fashion. This function</span>
-<span class="sd">    provides a way to compute such summations.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.einsum`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Function is executed sequentially on CPU.</span>
 
 <span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`numpy.einsum`</span>
+<span class="sd">    -------</span>
+<span class="sd">    :obj:`dpnp.einsum_path` : Evaluates the lowest cost contraction order for an einsum expression.</span>
+<span class="sd">    :obj:`dpnp.dot` : Returns the dot product of two arrays.</span>
+<span class="sd">    :obj:`dpnp.inner` : Returns the inner product of two arrays.</span>
+<span class="sd">    :obj:`dpnp.outer` : Returns the outer product of two arrays.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -300,14 +289,21 @@
 
 <div class="viewcode-block" id="einsum_path"><a class="viewcode-back" href="../../reference/generated/dpnp.einsum_path.html#dpnp.einsum_path">[docs]</a><span class="k">def</span> <span class="nf">einsum_path</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    einsum_path(subscripts, *operands, optimize=&#39;greedy&#39;)</span>
+<span class="sd">    Evaluates the lowest cost contraction order for an einsum expression </span>
+<span class="sd">    by considering the creation of intermediate arrays.</span>
 
-<span class="sd">    Evaluates the lowest cost contraction order for an einsum expression by</span>
-<span class="sd">    considering the creation of intermediate arrays.</span>
+<span class="sd">    For full documentation refer to :obj:`numpy.einsum_path`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Function is executed sequentially on CPU.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`numpy.einsum_path`</span>
+<span class="sd">    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention on the operands.</span>
+<span class="sd">    :obj:`dpnp.dot` : Returns the dot product of two arrays.</span>
+<span class="sd">    :obj:`dpnp.inner` : Returns the inner product of two arrays.</span>
+<span class="sd">    :obj:`dpnp.outer` : Returns the outer product of two arrays.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -316,12 +312,31 @@
 
 <div class="viewcode-block" id="inner"><a class="viewcode-back" href="../../reference/generated/dpnp.inner.html#dpnp.inner">[docs]</a><span class="k">def</span> <span class="nf">inner</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns the inner product of two vectors.</span>
+<span class="sd">    Returns the inner product of two arrays.</span>
 
-<span class="sd">    The input arrays are flattened into 1-D vectors and then it performs inner</span>
-<span class="sd">    product of these vectors.</span>
+<span class="sd">    For full documentation refer to :obj:`numpy.inner`.</span>
 
-<span class="sd">    .. seealso:: :obj:`numpy.inner`</span>
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">        Keyword arguments ``kwargs`` are currently unsupported.</span>
+<span class="sd">        Otherwise the functions will be executed sequentially on CPU.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention on the operands.</span>
+<span class="sd">    :obj:`dpnp.dot` : Returns the dot product of two arrays.</span>
+<span class="sd">    :obj:`dpnp.tensordot` : Compute tensor dot product along specified axes.</span>
+<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1,2,3])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([0, 1, 0])</span>
+<span class="sd">    &gt;&gt;&gt; result = np.inner(a, b)</span>
+<span class="sd">    &gt;&gt;&gt; [x for x in result]</span>
+<span class="sd">    [2]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -338,7 +353,13 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the kronecker product of two arrays.</span>
 
-<span class="sd">    .. seealso:: :obj:`numpy.kron`</span>
+<span class="sd">    For full documentation refer to :obj:`numpy.kron`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Function is executed sequentially on CPU.</span>
+
+<span class="sd">    .. seealso:: :obj:`dpnp.outer` : Returns the outer product of two arrays.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -347,12 +368,30 @@
 
 <div class="viewcode-block" id="outer"><a class="viewcode-back" href="../../reference/generated/dpnp.outer.html#dpnp.outer">[docs]</a><span class="k">def</span> <span class="nf">outer</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns the outer product of two vectors.</span>
+<span class="sd">    Returns the outer product of two arrays.</span>
+<span class="sd">    </span>
+<span class="sd">    For full documentation refer to :obj:`numpy.outer`.</span>
 
-<span class="sd">    The input arrays are flattened into 1-D vectors and then it performs outer</span>
-<span class="sd">    product of these vectors.</span>
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">        Keyword arguments ``kwargs`` are currently unsupported.</span>
+<span class="sd">        Otherwise the functions will be executed sequentially on CPU.</span>
+<span class="sd">        Input array data types are limited by supported DPNP :ref:`Data types`.</span>
 
-<span class="sd">    .. seealso:: :obj:`numpy.outer`</span>
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention on the operands.</span>
+<span class="sd">    :obj:`dpnp.inner` : Returns the inner product of two arrays.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 1, 1])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; result = np.outer(a, b)</span>
+<span class="sd">    &gt;&gt;&gt; [x for x in result]</span>
+<span class="sd">    [1, 2, 3, 1, 2, 3, 1, 2, 3]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -369,7 +408,29 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute tensor dot product along specified axes.</span>
 
-<span class="sd">    .. seealso:: :obj:`numpy.tensordot`</span>
+<span class="sd">    For full documentation refer to :obj:`numpy.tensordot`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">        Keyword arguments ``kwargs`` are currently unsupported.</span>
+<span class="sd">        Parameter ``axes`` is supported only with value ``1``.</span>
+<span class="sd">        Otherwise the functions will be executed sequentially on CPU.</span>
+<span class="sd">        Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.dot` : Returns the dot product.</span>
+<span class="sd">    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention on the operands.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; result = np.tensordot(a, b, 1)</span>
+<span class="sd">    &gt;&gt;&gt; [x for x in result]</span>
+<span class="sd">    [14, 32, 50]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -386,12 +447,17 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the dot product of two vectors.</span>
 
+<span class="sd">    For full documentation refer to :obj:`numpy.vdot`.</span>
+
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`numpy.vdot`</span>
+<span class="sd">    :obj:`dpnp.dot` : Returns the dot product.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function works the same as :obj:`dpnp.dot`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 </pre></div>
 

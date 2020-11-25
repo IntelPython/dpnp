@@ -185,36 +185,34 @@
 <dt id="dpnp.logical_xor">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">logical_xor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">where</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_logic.html#logical_xor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.logical_xor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the truth value of x1 XOR x2, element-wise.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x1</strong> (<em>array_like</em>) – Logical XOR is applied to the elements of <cite>x1</cite> and <cite>x2</cite>. If <code class="docutils literal notranslate"><span class="pre">x1.shape</span> <span class="pre">!=</span> <span class="pre">x2.shape</span></code>, they must be broadcastable to a common shape (which becomes the shape of the output).</p></li>
-<li><p><strong>x2</strong> (<em>array_like</em>) – Logical XOR is applied to the elements of <cite>x1</cite> and <cite>x2</cite>. If <code class="docutils literal notranslate"><span class="pre">x1.shape</span> <span class="pre">!=</span> <span class="pre">x2.shape</span></code>, they must be broadcastable to a common shape (which becomes the shape of the output).</p></li>
-<li><p><strong>out</strong> (<em>ndarray</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em>, or </em><em>tuple of ndarray and None</em><em>, </em><em>optional</em>) – A location into which the result is stored. If provided, it must have
-a shape that the inputs broadcast to. If not provided or None,
-a freshly-allocated array is returned. A tuple (possible only as a
-keyword argument) must have length equal to the number of outputs.</p></li>
-<li><p><strong>where</strong> (<em>array_like</em><em>, </em><em>optional</em>) – This condition is broadcast over the input. At locations where the
-condition is True, the <cite>out</cite> array will be set to the ufunc result.
-Elsewhere, the <cite>out</cite> array will retain its original value.
-Note that if an uninitialized <cite>out</cite> array is created via the default
-<code class="docutils literal notranslate"><span class="pre">out=None</span></code>, locations within it where the condition is False will
-remain uninitialized.</p></li>
-<li><p><strong>**kwargs</strong> – For other keyword-only arguments.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>y</strong> – Boolean result of the logical XOR operation applied to the elements
-of <cite>x1</cite> and <cite>x2</cite>; the shape is determined by broadcasting.
-This is a scalar if both <cite>x1</cite> and <cite>x2</cite> are scalars.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a> or ndarray of bool</p>
-</dd>
-</dl>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.logical_xor.html#numpy.logical_xor" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.logical_xor</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Input arrays are supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Otherwise the function will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.
+Parameter <code class="docutils literal notranslate"><span class="pre">out</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Parameter <code class="docutils literal notranslate"><span class="pre">where</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="dpnp.logical_and.html#dpnp.logical_and" title="dpnp.logical_and"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.logical_and</span></code></a>, <a class="reference internal" href="dpnp.logical_or.html#dpnp.logical_or" title="dpnp.logical_or"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.logical_or</span></code></a>, <a class="reference internal" href="dpnp.logical_not.html#dpnp.logical_not" title="dpnp.logical_not"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.logical_not</span></code></a>, <a class="reference internal" href="dpnp.bitwise_xor.html#dpnp.bitwise_xor" title="dpnp.bitwise_xor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.bitwise_xor</span></code></a></p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.logical_and.html#dpnp.logical_and" title="dpnp.logical_and"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.logical_and</span></code></a></dt><dd><p>Compute the truth value of x1 AND x2 element-wise.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.logical_or.html#dpnp.logical_or" title="dpnp.logical_or"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.logical_or</span></code></a></dt><dd><p>Compute the truth value of x1 OR x2 element-wise.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.logical_not.html#dpnp.logical_not" title="dpnp.logical_not"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.logical_not</span></code></a></dt><dd><p>Compute the truth value of NOT x element-wise.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.bitwise_xor.html#dpnp.bitwise_xor" title="dpnp.bitwise_xor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.bitwise_xor</span></code></a></dt><dd><p>Compute the bit-wise XOR of two arrays element-wise.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_xor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">out</span><span class="p">]</span>
+<span class="go">[False, True, True, False]</span>
+</pre></div>
 </div>
 </dd></dl>
 
