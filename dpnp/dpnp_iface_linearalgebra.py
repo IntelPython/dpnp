@@ -255,7 +255,7 @@ def tensordot(x1, x2, axes=2):
     Limitations
     -----------
         Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
-        Arguments ``**kwargs`` is supported only with value `None`.
+        Keyword arguments ``kwargs`` are currently unsupported.
         Parameter ``axes`` is supported only with value ``1``.
         Otherwise the functions will be executed sequentially on CPU.
 
