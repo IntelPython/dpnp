@@ -55,12 +55,12 @@ def count_nonzero(in_array1, axis=None, *, keepdims=False):
     """
     Counts the number of non-zero values in the array ``in_array1``.
 
-    For full documentation refer to :obj:`numpy.count_nonzero`
+    For full documentation refer to :obj:`numpy.count_nonzero`.
 
     Limitations
-    -------
+    -----------
         Parameter ``in_array1`` is supported as :obj:`dpnp.ndarray`.
-        Otherwise the functions will be executed sequentially on CPU.
+        Otherwise the function will be executed sequentially on CPU.
         Parameter ``axis`` is supported only with default value `None`.
         Parameter ``keepdims`` is supported only with default value `False`.
 
