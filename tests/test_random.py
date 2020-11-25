@@ -528,6 +528,74 @@ def test_lognormal_check_extreme_value():
     assert numpy.unique(res)[0] == expected_val
 
 
+def test_multinomial_seed():
+    seed = 28041990
+    size = 100
+    n = 20
+    pvals = [1 / 6.] * 6
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.multinomial(n, pvals, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.multinomial(n, pvals, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_multinomial_check_sum():
+    seed = 28041990
+    size = 1
+    n = 20
+    pvals = [1 / 6.] * 6
+
+    dpnp.random.seed(seed)
+    res = dpnp.random.multinomial(n, pvals, size)
+    assert_allclose(n, sum(res), rtol=1e-07, atol=0)
+
+
+def test_multinomial_invalid_args():
+    size = 10
+    n = -10                # parameter `n`, non-negative expected
+    pvals = [1 / 6.] * 6   # parameter `pvals`, OK
+    with pytest.raises(ValueError):
+        dpnp.random.multinomial(n, pvals, size)
+    n = 10                 # parameter `n`, OK
+    pvals = [-1 / 6.] * 6  # parameter `pvals`, sum(pvals) expected between [0, 1]
+    with pytest.raises(ValueError):
+        dpnp.random.multinomial(n, pvals, size)
+    n = 10                          # parameter `n`, OK
+    pvals = [1 / 6.] * 6 + [1 / 6.]  # parameter `pvals`, sum(pvals) expected between [0, 1]
+    with pytest.raises(ValueError):
+        dpnp.random.multinomial(n, pvals, size)
+
+
+def test_multinomial_check_extreme_value():
+    seed = 28041990
+    dpnp.random.seed(seed)
+
+    n = 0
+    pvals = [1 / 6.] * 6
+
+    res = numpy.asarray(dpnp.random.multinomial(n, pvals, size=1))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == 0.0
+
+
+def test_multinomial_check_moments():
+    seed = 28041995
+    dpnp.random.seed(seed)
+    n = 10
+    pvals = [1 / 6.] * 6
+    size = 10**5
+
+    expected_mean = n * pvals[0]
+    expected_var = n * pvals[0] * (1 - pvals[0])
+
+    var = numpy.var(dpnp.random.multinomial(n=n, pvals=pvals, size=size))
+    mean = numpy.mean(dpnp.random.multinomial(n=n, pvals=pvals, size=size))
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
 def test_negative_binomial_seed():
     seed = 28041990
     size = 100

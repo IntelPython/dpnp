@@ -815,6 +815,22 @@ INP_DLLEXPORT void custom_rng_lognormal_c(void* result, _DataType mean, _DataTyp
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (multinomial distribution)
+ *
+ * @param [in]  size     Number of elements in `result` arrays.
+ *
+ * @param [in]  ntrial   Number of independent trials.
+ *
+ * @param [in]  p_vector Probability vector of possible outcomes (k length).
+ *
+ * @param [out] result   Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_rng_multinomial_c(void* result, int ntrial, std::vector<double>& p_vector, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of random number generator (negative binomial distribution)
  *
  * @param [in]  size   Number of elements in `result` arrays.
