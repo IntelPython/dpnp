@@ -27,7 +27,7 @@
 # *****************************************************************************
 
 """
-Interface of the counting function of the dpnp
+Interface of the Indexing part of the DPNP
 
 Notes
 -----
@@ -45,49 +45,66 @@ import numpy
 from dpnp.backend import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
+import dpnp
+
 
 __all__ = [
-    'count_nonzero'
+    "nonzero",
 ]
 
 
-def count_nonzero(in_array1, axis=None, *, keepdims=False):
+def nonzero(a):
     """
-    Counts the number of non-zero values in the array ``in_array1``.
+    Return the indices of the elements that are non-zero.
 
-    For full documentation refer to :obj:`numpy.count_nonzero`
+    Returns a tuple of arrays, one for each dimension of `a`,
+    containing the indices of the non-zero elements in that
+    dimension. The values in `a` are always tested and returned in
+    row-major, C-style order.
 
-    Limitations
+    To group the indices by element, rather than dimension, use `argwhere`,
+    which returns a row for each non-zero element.
+
+    .. note::
+
+       When called on a zero-d array or scalar, ``nonzero(a)`` is treated
+       as ``nonzero(atleast1d(a))``.
+
+       .. deprecated:: 1.17.0
+
+          Use `atleast1d` explicitly if this behavior is deliberate.
+
+    Parameters
+    ----------
+    a : array_like
+        Input array.
+
+    Returns
     -------
-        Parameter ``in_array1`` is supported as :obj:`dpnp.ndarray`.
-        Otherwise the functions will be executed sequentially on CPU.
-        Parameter ``axis`` is supported only with default value `None`.
-        Parameter ``keepdims`` is supported only with default value `False`.
+    tuple_of_arrays : tuple
+        Indices of elements that are non-zero.
 
-    Examples
+    See Also
     --------
-    >>> import dpnp as np
-    >>> np.count_nonzero(np.array([1, 0, 3, 0, 5])
-    3
-    >>> np.count_nonzero(np.array([[1, 0, 3, 0, 5],[0, 9, 0, 7, 0]]))
-    5
+    flatnonzero :
+        Return indices that are non-zero in the flattened version of the input
+        array.
+    ndarray.nonzero :
+        Equivalent ndarray method.
+    count_nonzero :
+        Counts the number of non-zero elements in the input array.
+
+    Notes
+    -----
+    While the nonzero values can be obtained with ``a[nonzero(a)]``, it is
+    recommended to use ``x[x.astype(bool)]`` or ``x[x != 0]`` instead, which
+    will correctly handle 0-d arrays.
 
     """
 
-    is_dparray1 = isinstance(in_array1, dparray)
+    is_a_dparray = isinstance(a, dparray)
 
-    if (not use_origin_backend(in_array1) and is_dparray1):
-        if axis is not None:
-            checker_throw_value_error("count_nonzero", "axis", type(axis), None)
-        if keepdims is not False:
-            checker_throw_value_error("count_nonzero", "keepdims", keepdims, False)
+    if (not use_origin_backend(a) and is_a_dparray):
+        return dpnp_nonzero(a)
 
-        result = dpnp_count_nonzero(in_array1)
-
-        # scalar returned
-        if result.shape == (1,):
-            return result.dtype.type(result[0])
-
-        return result
-
-    return numpy.count_nonzero(in_array1, axis, keepdims=keepdims)
+    return call_origin(numpy.nonzero, a)

@@ -1,4 +1,5 @@
 # cython: language_level=3
+# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2020, Intel Corporation
@@ -25,47 +26,61 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""Module Backend (FFT part)
+"""
+Interface of the array manipulation function of the dpnp
 
-This module contains interface functions between C backend layer
-and the rest of the library
+Notes
+-----
+This module is a face or public interface file for the library
+it contains:
+ - Interface functions
+ - documentation for the functions
+ - The functions parameters check
 
 """
 
 
+import numpy
 import dpnp
-from dpnp.backend cimport *
-from dpnp.dpnp_utils cimport *
 
+from dpnp.backend import *
+from dpnp.dparray import dparray
+from dpnp.dpnp_utils import *
+from dpnp.dpnp_iface_arraycreation import array
 
 __all__ = [
-    "dpnp_fft"
+    "asfarray",
 ]
 
 
-ctypedef void(*fptr_dpnp_fft_fft_t)(void * , void * , size_t, size_t)
+def asfarray(a, dtype=numpy.float64):
+    """
+    Return an array converted to a float type.
 
+    Parameters
+    ----------
+    a : array_like
+        The input array.
+    dtype : str or dtype object, optional
+        Float type code to coerce input array `a`.  If `dtype` is one of the
+        'int' dtypes, it is replaced with float64.
 
-cpdef dparray dpnp_fft(dparray input, size_t output_size):
-    cdef dparray_shape_type output_shape = input.shape
-    cdef size_t input_shape_size = input.ndim
+    Returns
+    -------
+    out : ndarray
+        The input `a` as a float ndarray.
 
-    cdef size_t last_axis_size = output_shape.back()
-    if (output_size != last_axis_size):
-        output_shape[input.ndim - 1] = output_size
+    """
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
+    if not use_origin_backend(a):
+        # behavior of original function: int types replaced with float64
+        if numpy.issubdtype(dtype, numpy.integer):
+            dtype = numpy.float64
 
-    # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FFT_FFT, param1_type, param1_type)
+        # if type is the same then same object should be returned
+        if isinstance(a, dpnp.ndarray) and a.dtype == dtype:
+            return a
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-    # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(output_shape, dtype=result_type)
+        return array(a, dtype=dtype)
 
-    cdef fptr_dpnp_fft_fft_t func = <fptr_dpnp_fft_fft_t > kernel_data.ptr
-    # call FPTR function
-    func(input.get_data(), result.get_data(), input.size, result.size)
-
-    return result
+    return call_origin(numpy.asfarray, a, dtype)
