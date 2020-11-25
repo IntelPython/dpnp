@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.random.negative_binomial &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.random.multinomial &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.random.normal" href="dpnp.random.normal.html" />
-    <link rel="prev" title="dpnp.random.multinomial" href="dpnp.random.multinomial.html" /> 
+    <link rel="next" title="dpnp.random.negative_binomial" href="dpnp.random.negative_binomial.html" />
+    <link rel="prev" title="dpnp.random.lognormal" href="dpnp.random.lognormal.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -172,13 +172,13 @@
         
           <li><a href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a> &raquo;</li>
         
-      <li>dpnp.random.negative_binomial</li>
+      <li>dpnp.random.multinomial</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.random.negative_binomial.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.random.multinomial.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -191,74 +191,47 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-random-negative-binomial">
-<h1>dpnp.random.negative_binomial<a class="headerlink" href="#dpnp-random-negative-binomial" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-random-multinomial">
+<h1>dpnp.random.multinomial<a class="headerlink" href="#dpnp-random-multinomial" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.random.negative_binomial">
-<code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">negative_binomial</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">p</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#negative_binomial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.negative_binomial" title="Permalink to this definition">¶</a></dt>
-<dd><p>Negative binomial distribution.</p>
-<p>Draw samples from a negative binomial distribution.</p>
-<p>Samples are drawn from a negative binomial distribution with specified
-parameters, <cite>n</cite> successes and <cite>p</cite> probability of success where <cite>n</cite>
-is &gt; 0 and <cite>p</cite> is in the interval [0, 1].</p>
+<dt id="dpnp.random.multinomial">
+<code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">multinomial</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">pvals</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#multinomial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.multinomial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multinomial distribution.</p>
+<p>Draw samples from a multinomial distribution.</p>
+<p>The multinomial distribution is a multivariate generalization of the
+binomial distribution.  Take an experiment with one of <code class="docutils literal notranslate"><span class="pre">p</span></code>
+possible outcomes.  An example of such an experiment is throwing a dice,
+where the outcome can be 1 through 6.  Each sample drawn from the
+distribution represents <cite>n</cite> such experiments.  Its values,
+<code class="docutils literal notranslate"><span class="pre">X_i</span> <span class="pre">=</span> <span class="pre">[X_0,</span> <span class="pre">X_1,</span> <span class="pre">...,</span> <span class="pre">X_p]</span></code>, represent the number of times the
+outcome was <code class="docutils literal notranslate"><span class="pre">i</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Parameter of the distribution, &gt; 0.</p></li>
-<li><p><strong>p</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Parameter of the distribution, &gt;= 0 and &lt;=1.</p></li>
+<li><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Number of experiments.</p></li>
+<li><p><strong>pvals</strong> (<em>sequence of floats</em><em>, </em><em>length p</em>) – Probabilities of each of the <code class="docutils literal notranslate"><span class="pre">p</span></code> different outcomes.  These
+must sum to 1 (however, the last element is always assumed to
+account for the remaining probability, as long as
+<code class="docutils literal notranslate"><span class="pre">sum(pvals[:-1])</span> <span class="pre">&lt;=</span> <span class="pre">1)</span></code>.</p></li>
 <li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
-<code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">*</span> <span class="pre">k</span></code> samples are drawn.  If size is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default),
-a single value is returned if <code class="docutils literal notranslate"><span class="pre">n</span></code> and <code class="docutils literal notranslate"><span class="pre">p</span></code> are both scalars.</p></li>
+<code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">*</span> <span class="pre">k</span></code> samples are drawn.  Default is None, in which case a
+single value is returned.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – Drawn samples from the parameterized negative binomial distribution,
-where each sample is equal to N, the number of failures that
-occurred before a total of n successes was reached.</p>
+<dd class="field-even"><p><strong>out</strong> – The drawn samples, of shape <em>size</em>, if that was provided.  If not,
+the shape is <code class="docutils literal notranslate"><span class="pre">(N,)</span></code>.
+In other words, each entry <code class="docutils literal notranslate"><span class="pre">out[i,j,...,:]</span></code> is an N-dimensional
+value drawn from the distribution.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="dpnp.dparray.dparray.html#dpnp.dparray.dparray" title="dpnp.dparray.dparray">dparray</a>, int32</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>The probability mass function of the negative binomial distribution is</p>
-<div class="math notranslate nohighlight">
-\[P(N;n,p) = \frac{\Gamma(N+n)}{N!\Gamma(n)}p^{n}(1-p)^{N},\]</div>
-<p>where <span class="math notranslate nohighlight">\(n\)</span> is the number of successes, <span class="math notranslate nohighlight">\(p\)</span> is the
-probability of success, <span class="math notranslate nohighlight">\(N+n\)</span> is the number of trials, and
-<span class="math notranslate nohighlight">\(\Gamma\)</span> is the gamma function. When <span class="math notranslate nohighlight">\(n\)</span> is an integer,
-<span class="math notranslate nohighlight">\(\frac{\Gamma(N+n)}{N!\Gamma(n)} = \binom{N+n-1}{N}\)</span>, which is
-the more common form of this term in the the pmf. The negative
-binomial distribution gives the probability of N failures given n
-successes, with a success on the last trial.</p>
-<p>If one throws a die repeatedly until the third time a “1” appears,
-then the probability distribution of the number of non-“1”s that
-appear before the third “1” is a negative binomial distribution.</p>
-<p class="rubric">References</p>
-<dl class="footnote brackets">
-<dt class="label" id="id1"><span class="brackets">1</span></dt>
-<dd><p>Weisstein, Eric W. “Negative Binomial Distribution.” From
-MathWorld–A Wolfram Web Resource.
-<a class="reference external" href="http://mathworld.wolfram.com/NegativeBinomialDistribution.html">http://mathworld.wolfram.com/NegativeBinomialDistribution.html</a></p>
-</dd>
-<dt class="label" id="id2"><span class="brackets">2</span></dt>
-<dd><p>Wikipedia, “Negative binomial distribution”,
-<a class="reference external" href="https://en.wikipedia.org/wiki/Negative_binomial_distribution">https://en.wikipedia.org/wiki/Negative_binomial_distribution</a></p>
-</dd>
-</dl>
 <p class="rubric">Examples</p>
-<p>Draw samples from the distribution:
-A real world example. A company drills wild-cat oil
-exploration wells, each with an estimated probability of
-success of 0.1.  What is the probability of having one success
-for each successive well, that is what is the probability of a
-single success after drilling 5 wells, after 6 wells, etc.?</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">negative_binomial</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">100000</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">):</span> 
-<span class="gp">... </span>   <span class="n">probability</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">s</span><span class="o">&lt;</span><span class="n">i</span><span class="p">)</span> <span class="o">/</span> <span class="mf">100000.</span>
-<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;wells drilled, probability of one success =&quot;</span><span class="p">,</span> <span class="n">probability</span><span class="p">)</span>
-</pre></div>
-</div>
+<p>Throw a dice 20 times:
+&gt;&gt;&gt; dpnp.random.multinomial(20, [1/6.]*6, size=1)
+array([[4, 1, 7, 5, 2, 1]]) # random</p>
 </dd></dl>
 
 </div>
@@ -271,10 +244,10 @@ single success after drilling 5 wells, after 6 wells, etc.?</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.random.normal.html" class="btn btn-neutral float-right" title="dpnp.random.normal" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.random.negative_binomial.html" class="btn btn-neutral float-right" title="dpnp.random.negative_binomial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.random.multinomial.html" class="btn btn-neutral float-left" title="dpnp.random.multinomial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.random.lognormal.html" class="btn btn-neutral float-left" title="dpnp.random.lognormal" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
