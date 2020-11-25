@@ -63,18 +63,23 @@ __all__ = [
 
 def dot(x1, x2, **kwargs):
     """
-    For full documentation refer to :obj:`numpy.dot`
+    Returns the dot product of `x1` and `x2`.
 
-    Returns the dot product of `x1` and `x2`. 
+    For full documentation refer to :obj:`numpy.dot`.
 
     Limitations
-    -------
-        Parameters ``x1`` and ``x2`` is supported as :obj:`dpnp.ndarray` and the same type.
-        Arguments ``**kwargs`` is supported only with value `None`.
+    -----------
+        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray` of the same type.
+        Keyword arguments ``kwargs`` are currently unsupported.
         Otherwise the functions will be executed sequentially on CPU.
 
+    See Also
+    --------
+    :obj:`dpnp.tensordot` : Sum products over arbitrary axes.
+    :obj:`dpnp.vdot` : Complex-conjugating dot product.
+
     Examples
-    -------
+    --------
     >>> import dpnp as np
     >>> np.dot(3, 4)
     12
@@ -82,11 +87,6 @@ def dot(x1, x2, **kwargs):
     >>> b = np.array([1, 2, 3])
     >>> np.dot(a, b)
     14
-
-    See Also
-    --------
-    :obj:`dpnp.tensordot` : Sum products over arbitrary axes.
-    :obj:`dpnp.vdot` : Complex-conjugating dot product.
 
     """
 
@@ -99,7 +99,6 @@ def dot(x1, x2, **kwargs):
 
         if not (dim1 >= 2 and dim2 == 1) and not (dim1 >= 2 and dim2 >= 2) and (x1.dtype == x2.dtype):
             result = dpnp_dot(x1, x2)
-            print("hello")
 
             # scalar returned
             if result.shape == (1,):
@@ -114,10 +113,10 @@ def einsum(*args, **kwargs):
     """
     Evaluates the Einstein summation convention on the operands.
 
-    For full documentation refer to :obj:`numpy.einsum`
+    For full documentation refer to :obj:`numpy.einsum`.
 
     Limitations
-    -------
+    -----------
     Function is executed sequentially on CPU.
 
     See Also
@@ -137,14 +136,14 @@ def einsum_path(*args, **kwargs):
     Evaluates the lowest cost contraction order for an einsum expression 
     by considering the creation of intermediate arrays.
 
-    For full documentation refer to :obj:`numpy.einsum_path`
+    For full documentation refer to :obj:`numpy.einsum_path`.
 
     Limitations
-    -------
+    -----------
     Function is executed sequentially on CPU.
 
     See Also
-    -------
+    --------
     :obj:`dpnp.einsum` : Evaluates the Einstein summation convention on the operands.
     :obj:`dpnp.dot` : Returns the dot product of two arrays.
     :obj:`dpnp.inner` : Returns the inner product of two arrays.
@@ -159,28 +158,28 @@ def inner(x1, x2, **kwargs):
     """
     Returns the inner product of two arrays.
 
-    For full documentation refer to :obj:`numpy.inner`
+    For full documentation refer to :obj:`numpy.inner`.
 
     Limitations
-    --------
-        Parameters ``x1`` and ``x2`` is supported as :obj:`dpnp.ndarray` and the same type.
+    -----------
+        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray` of the same type.
         Arguments ``**kwargs`` is supported only with value `None`.
         Otherwise the functions will be executed sequentially on CPU.
 
+    See Also
+    --------
+    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention on the operands.
+    :obj:`dpnp.dot` : Returns the dot product of two arrays.
+    :obj:`dpnp.tensordot` : Compute tensor dot product along specified axes.
+
     Examples
-    -------
+    --------
     >>> import dpnp as np
     >>> a = np.array([1,2,3])
     >>> b = np.array([0, 1, 0])
     >>> result = np.inner(a, b)
     >>> [x for x in result]
     [2]
-
-    See Also
-    -------
-    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention on the operands.
-    :obj:`dpnp.dot` : Returns the dot product of two arrays.
-    :obj:`dpnp.tensordot` : Compute tensor dot product along specified axes..
 
     """
 
@@ -197,10 +196,10 @@ def kron(x1, x2, **kwargs):
     """
     Returns the kronecker product of two arrays.
 
-    For full documentation refer to :obj:`numpy.einsum_path`
+    For full documentation refer to :obj:`numpy.kron`.
 
     Limitations
-    -------
+    -----------
     Function is executed sequentially on CPU.
 
     .. seealso:: :obj:`dpnp.outer` : Returns the outer product of two arrays.
@@ -214,27 +213,27 @@ def outer(x1, x2, **kwargs):
     """
     Returns the outer product of two arrays.
     
-    For full documentation refer to :obj:`numpy.outer`
+    For full documentation refer to :obj:`numpy.outer`.
 
     Limitations
-    --------
-        Parameters ``x1`` and ``x2`` is supported as :obj:`dpnp.ndarray` and the same type.
+    -----------
+        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray` of the same type.
         Arguments ``**kwargs`` is supported only with value `None`.
         Otherwise the functions will be executed sequentially on CPU.
 
+    See Also
+    --------
+    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention on the operands.
+    :obj:`dpnp.inner` : Returns the inner product of two arrays.
+
     Examples
-    -------
+    --------
     >>> import dpnp as np
     >>> a = np.array([1, 1, 1])
     >>> b = np.array([1, 2, 3])
     >>> result = np.outer(a, b)
     >>> [x for x in result]
     [1, 2, 3, 1, 2, 3, 1, 2, 3]
-
-    See Also
-    -------
-    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention on the operands.
-    :obj:`dpnp.inner` : Returns the inner product of two arrays.
 
     """
 
@@ -251,17 +250,22 @@ def tensordot(x1, x2, axes=2):
     """
     Compute tensor dot product along specified axes.
 
-    For full documentation refer to :obj:`numpy.tensordot`
+    For full documentation refer to :obj:`numpy.tensordot`.
 
     Limitations
-    --------
-        Parameters ``x1`` and ``x2`` is supported as :obj:`dpnp.ndarray` and the same type.
+    -----------
+        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray` of the same type.
         Arguments ``**kwargs`` is supported only with value `None`.
-        Parameter ``axes`` is supported only with value `1`.
+        Parameter ``axes`` is supported only with value ``1``.
         Otherwise the functions will be executed sequentially on CPU.
 
+    See Also
+    --------
+    :obj:`dpnp.dot` : Returns the dot product.
+    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention on the operands.
+
     Examples
-    -------
+    --------
     >>> import dpnp as np
     >>> a = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
     >>> b = np.array([1, 2, 3])
@@ -269,11 +273,6 @@ def tensordot(x1, x2, axes=2):
     >>> result = np.tensordot(a, b, 1)
     >>> [x for x in result]
     [14, 32, 50]
-
-    See Also
-    -------
-    :obj:`dpnp.dot` : Returns the dot product.
-    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention on the operands.
 
     """
 
@@ -292,8 +291,12 @@ def vdot(*args, **kwargs):
 
     For full documentation refer to :obj:`numpy.vdot`.
 
+    Notes
+    -----
+    This function works the same as :obj:`dpnp.dot`
+
     See Also
-    ---------
+    --------
     :obj:`dpnp.dot` : Returns the dot product.
 
     """
