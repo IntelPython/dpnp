@@ -57,26 +57,19 @@ def argmax(in_array1, axis=None, out=None):
     """
     Returns the indices of the maximum values along an axis.
 
-    Parameters
-    ----------
-    a : array_like
-        Input array.
-    axis : int, optional
-        By default, the index is into the flattened array, otherwise
-        along the specified axis.
-    out : array, optional
-        If provided, the result will be inserted into this array. It should
-        be of the appropriate shape and dtype.
+    For full documentation refer to :obj:`numpy.argmax`.
 
-    Returns
-    -------
-    index_array : ndarray of ints
-        Array of indices into the array. It has the same shape as `a.shape`
-        with the dimension along `axis` removed.
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Prameters ``axis`` is supported only with default value ``None``.
+    Prameters ``out`` is supported only with default value ``None``.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    ndarray.argmax, :obj:`dpnp.argmin`
+    :obj:`dpnp.argmin` : Returns the indices of the minimum values along an axis.
     :obj:`dpnp.amax` : The maximum value along a given axis.
     :obj:`dpnp.unravel_index` : Convert a flat index into an index tuple.
     :obj:`dpnp.take_along_axis` : Apply ``np.expand_dims(index_array, axis)``
@@ -89,37 +82,15 @@ def argmax(in_array1, axis=None, out=None):
 
     Examples
     --------
-    >>> a = np.arange(6).reshape(2,3) + 10
-    >>> a
-    array([[10, 11, 12],
-           [13, 14, 15]])
+    >>> import dpnp as np
+    >>> a = np.arange(6).reshape((2, 3)) + 10
+    >>> a.shape
+    (2, 3)
+    >>> [i for i in a]
+    [10, 11, 12, 13, 14, 15]
     >>> np.argmax(a)
     5
-    >>> np.argmax(a, axis=0)
-    array([1, 1, 1])
-    >>> np.argmax(a, axis=1)
-    array([2, 2])
-    Indexes of the maximal elements of a N-dimensional array:
-    >>> ind = np.unravel_index(np.argmax(a, axis=None), a.shape)
-    >>> ind
-    (1, 2)
-    >>> a[ind]
-    15
-    >>> b = np.arange(6)
-    >>> b[1] = 5
-    >>> b
-    array([0, 5, 2, 3, 4, 5])
-    >>> np.argmax(b)  # Only the first occurrence is returned.
-    1
-    >>> x = np.array([[4,2,3], [1,0,3]])
-    >>> index_array = np.argmax(x, axis=-1)
-    >>> # Same as np.max(x, axis=-1, keepdims=True)
-    >>> np.take_along_axis(x, np.expand_dims(index_array, axis=-1), axis=-1)
-    array([[4],
-           [3]])
-    >>> # Same as np.max(x, axis=-1)
-    >>> np.take_along_axis(x, np.expand_dims(index_array, axis=-1), axis=-1).squeeze(axis=-1)
-    array([4, 3])
+
     """
 
     is_dparray1 = isinstance(in_array1, dparray)
@@ -145,26 +116,19 @@ def argmin(in_array1, axis=None, out=None):
     """
     Returns the indices of the minimum values along an axis.
 
-    Parameters
-    ----------
-    a : array_like
-        Input array.
-    axis : int, optional
-        By default, the index is into the flattened array, otherwise
-        along the specified axis.
-    out : array, optional
-        If provided, the result will be inserted into this array. It should
-        be of the appropriate shape and dtype.
+    For full documentation refer to :obj:`numpy.argmin`.
 
-    Returns
-    -------
-    index_array : ndarray of ints
-        Array of indices into the array. It has the same shape as `a.shape`
-        with the dimension along `axis` removed.
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Prameters ``axis`` is supported only with default value ``None``.
+    Prameters ``out`` is supported only with default value ``None``.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    ndarray.argmin, :obj:`dpnp.argmax`
+    :obj:`dpnp.argmax` : Returns the indices of the maximum values along an axis.
     :obj:`dpnp.amin` : The minimum value along a given axis.
     :obj:`dpnp.unravel_index` : Convert a flat index into an index tuple.
     :obj:`dpnp.take_along_axis` : Apply ``np.expand_dims(index_array, axis)``
@@ -177,37 +141,15 @@ def argmin(in_array1, axis=None, out=None):
 
     Examples
     --------
-    >>> a = np.arange(6).reshape(2,3) + 10
-    >>> a
-    array([[10, 11, 12],
-           [13, 14, 15]])
+    >>> import dpnp as np
+    >>> a = np.arange(6).reshape((2, 3)) + 10
+    >>> a.shape
+    (2, 3)
+    >>> [i for i in a]
+    [10, 11, 12, 13, 14, 15]
     >>> np.argmin(a)
     0
-    >>> np.argmin(a, axis=0)
-    array([0, 0, 0])
-    >>> np.argmin(a, axis=1)
-    array([0, 0])
-    Indices of the minimum elements of a N-dimensional array:
-    >>> ind = np.unravel_index(np.argmin(a, axis=None), a.shape)
-    >>> ind
-    (0, 0)
-    >>> a[ind]
-    10
-    >>> b = np.arange(6) + 10
-    >>> b[4] = 10
-    >>> b
-    array([10, 11, 12, 13, 10, 15])
-    >>> np.argmin(b)  # Only the first occurrence is returned.
-    0
-    >>> x = np.array([[4,2,3], [1,0,3]])
-    >>> index_array = np.argmin(x, axis=-1)
-    >>> # Same as np.min(x, axis=-1, keepdims=True)
-    >>> np.take_along_axis(x, np.expand_dims(index_array, axis=-1), axis=-1)
-    array([[2],
-           [0]])
-    >>> # Same as np.max(x, axis=-1)
-    >>> np.take_along_axis(x, np.expand_dims(index_array, axis=-1), axis=-1).squeeze(axis=-1)
-    array([2, 0])
+
     """
 
     is_dparray1 = isinstance(in_array1, dparray)
