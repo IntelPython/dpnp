@@ -195,7 +195,18 @@ cpdef dparray dpnp_norm(dparray input, ord=None, axis=None):
         elif ord == -numpy.inf:
             return dpnp.array([dpnp.abs(input).min(axis=axis)])
         elif ord == 0:
-            return dpnp.array([(input != 0).astype(input.real.dtype).sum(axis=axis)])
+            return dpnp.array([(input != 0).astype(input.dtype).sum(axis=axis)])
+        elif ord is None or ord == 2:
+            s = input * input
+            return dpnp.sqrt(dpnp.sum(s, axis=axis))
+        elif isinstance(ord, str):
+            raise ValueError(f"Invalid norm order '{ord}' for vectors")
+        else:
+            absx = dpnp.abs(input)
+            absx **= ord
+            ret = dpnp.sum(absx, axis=axis)
+            ret **= (1 / ord)
+            return ret
 
     if axis_ is None:
         output_shape = dparray(1, dtype=numpy.int64)
