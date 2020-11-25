@@ -72,6 +72,7 @@ def dot(x1, x2, **kwargs):
         Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray` of the same type.
         Keyword arguments ``kwargs`` are currently unsupported.
         Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -171,6 +172,7 @@ def inner(x1, x2, **kwargs):
     :obj:`dpnp.einsum` : Evaluates the Einstein summation convention on the operands.
     :obj:`dpnp.dot` : Returns the dot product of two arrays.
     :obj:`dpnp.tensordot` : Compute tensor dot product along specified axes.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
@@ -220,6 +222,7 @@ def outer(x1, x2, **kwargs):
         Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
         Keyword arguments ``kwargs`` are currently unsupported.
         Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -258,6 +261,7 @@ def tensordot(x1, x2, axes=2):
         Keyword arguments ``kwargs`` are currently unsupported.
         Parameter ``axes`` is supported only with value ``1``.
         Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
