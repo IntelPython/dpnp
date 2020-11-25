@@ -121,7 +121,7 @@ def einsum(*args, **kwargs):
 
     See Also
     -------
-    :obj:`dpnp.einsum_path`
+    :obj:`dpnp.einsum_path` : Evaluates the lowest cost contraction order for an einsum expression.
     :obj:`dpnp.dot` : Returns the dot product of two arrays.
     :obj:`dpnp.inner` : Returns the inner product of two arrays.
     :obj:`dpnp.outer` : Returns the outer product of two arrays.
@@ -162,8 +162,8 @@ def inner(x1, x2, **kwargs):
 
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray` of the same type.
-        Arguments ``**kwargs`` is supported only with value `None`.
+        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
         Otherwise the functions will be executed sequentially on CPU.
 
     See Also
@@ -217,8 +217,8 @@ def outer(x1, x2, **kwargs):
 
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray` of the same type.
-        Arguments ``**kwargs`` is supported only with value `None`.
+        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
         Otherwise the functions will be executed sequentially on CPU.
 
     See Also
@@ -254,7 +254,7 @@ def tensordot(x1, x2, axes=2):
 
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray` of the same type.
+        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
         Arguments ``**kwargs`` is supported only with value `None`.
         Parameter ``axes`` is supported only with value ``1``.
         Otherwise the functions will be executed sequentially on CPU.
@@ -269,7 +269,6 @@ def tensordot(x1, x2, axes=2):
     >>> import dpnp as np
     >>> a = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
     >>> b = np.array([1, 2, 3])
-    >>> np.tensordot(a, b, 1)
     >>> result = np.tensordot(a, b, 1)
     >>> [x for x in result]
     [14, 32, 50]
@@ -291,13 +290,13 @@ def vdot(*args, **kwargs):
 
     For full documentation refer to :obj:`numpy.vdot`.
 
-    Notes
-    -----
-    This function works the same as :obj:`dpnp.dot`
-
     See Also
     --------
     :obj:`dpnp.dot` : Returns the dot product.
+
+    Notes
+    -----
+    This function works the same as :obj:`dpnp.dot`.
 
     """
     return dpnp.dot(*args, **kwargs)
