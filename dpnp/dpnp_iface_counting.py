@@ -55,22 +55,7 @@ def count_nonzero(in_array1, axis=None, *, keepdims=False):
     """
     Counts the number of non-zero values in the array ``in_array1``.
 
-    Parameters
-    ----------
-    in_array1 : array_like
-        Input data. The array for which to count non-zeros.
-    axis : int or tuple, optional
-        Axis or tuple of axes along which to count non-zeros.
-    keepdims : bool, optional
-        If this is set to `True`, the axes that are counted
-        are left in the result as dimensions with size one. 
-
-    Returns
-    -------
-    count : int or array of int
-        Number of non-zero values in the array along a given axis.
-        Otherwise, the total number of non-zero values in the array
-        is returned.
+    For full documentation refer to :obj:`numpy.count_nonzero`.
 
     Limitations
     -----------
@@ -78,8 +63,6 @@ def count_nonzero(in_array1, axis=None, *, keepdims=False):
         Otherwise the function will be executed sequentially on CPU.
         Parameter ``axis`` is supported only with default value `None`.
         Parameter ``keepdims`` is supported only with default value `False`.
-
-    .. seealso:: :obj:`numpy.count_nonzero`
 
     Examples
     --------
