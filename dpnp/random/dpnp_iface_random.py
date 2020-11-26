@@ -98,10 +98,6 @@ def beta(a, b, size=None):
 
     It is often seen in Bayesian inference and order statistics.
 
-    .. note::
-        New code should use the ``beta`` method of a ``default_rng()``
-        instance instead; please see the :ref:`random-quick-start`.
-
     Parameters
     ----------
     a : float
@@ -344,10 +340,6 @@ def exponential(scale=1.0, size=None):
     the size of raindrops measured over many rainstorms [1]_, or the time
     between page requests to Wikipedia [2]_.
 
-    .. note::
-        New code should use the ``exponential`` method of a ``default_rng()``
-        instance instead; please see the :ref:`random-quick-start`.
-
     Parameters
     ----------
     scale : float
@@ -401,10 +393,6 @@ def gamma(shape, scale=1.0, size=None):
     Samples are drawn from a Gamma distribution with specified parameters,
     `shape` (sometimes designated "k") and `scale` (sometimes designated
     "theta"), where both parameters are > 0.
-
-    .. note::
-        New code should use the ``gamma`` method of a ``default_rng()``
-        instance instead; please see the :ref:`random-quick-start`.
 
     Parameters
     ----------
@@ -675,7 +663,6 @@ def hypergeometric(ngood, nbad, nsample, size=None):
             checker_throw_value_error("hypergeometric", "nsample", nsample, "ngood + nbad >= nsample")
         if nsample < 1:
             checker_throw_value_error("hypergeometric", "nsample", nsample, ">= 1")
-
 
         m = int(ngood)
         l = int(ngood) + int(nbad)
@@ -1193,11 +1180,13 @@ def randint(low, high=None, size=None, dtype=int):
     dtype : dtype, optional
         Desired dtype of the result. Byteorder must be native.
         The default value is int.
+
     Returns
     -------
     out : array of random ints
         `size`-shaped array of random integers from the appropriate
         distribution, or a single such random int if `size` not provided.
+
     See Also
     --------
     :obj:`dpnp.random.random_integers` : similar to `randint`, only for the closed
@@ -1321,11 +1310,13 @@ def random_integers(low, high=None, size=None):
         Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
         ``m * n * k`` samples are drawn.  Default is None, in which case a
         single value is returned.
+
     Returns
     -------
     out : array of random ints
         `size`-shaped array of random integers from the appropriate
         distribution, or a single such random int if `size` not provided.
+
     See Also
     --------
     :obj:`dpnp.random.randint`
@@ -1470,7 +1461,7 @@ def sample(size):
 
 def seed(seed=None):
     """
-    Reseed a legacy philox4x32x10 random number generator engine
+    Reseed a legacy philox4x32x10 random number generator engine.
 
     Parameters
     ----------
@@ -1642,7 +1633,7 @@ def standard_gamma(shape, size=None):
 
         if shape < 0:
             checker_throw_value_error("standard_gamma", "shape", shape, "non-negative")
-    
+
         return dpnp_standard_gamma(shape, size)
 
     return call_origin(numpy.random.standard_gamma, shape, size)
@@ -1659,7 +1650,7 @@ def standard_normal(size=None):
         Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
         ``m * n * k`` samples are drawn.  Default is None, in which case a
         single value is returned.
- 
+
     Returns
     -------
     out : float or ndarray

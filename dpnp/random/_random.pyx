@@ -99,6 +99,7 @@ cpdef dparray dpnp_beta(double a, double b, size):
     Returns an array populated with samples from beta distribution.
     `dpnp_beta` generates a matrix filled with random floats sampled from a
     univariate beta distribution.
+
     """
 
     # convert string type names (dparray.dtype) to C enum DPNPFuncType
@@ -124,6 +125,7 @@ cpdef dparray dpnp_binomial(int ntrial, double p, size):
     `dpnp_binomial` generates a matrix filled with random floats sampled from a
     univariate binomial distribution for a given number of independent trials and
     success probability p of a single trial.
+
     """
 
     dtype = numpy.int32
@@ -161,6 +163,7 @@ cpdef dparray dpnp_chisquare(int df, size):
     Returns an array populated with samples from chi-square distribution.
     `dpnp_chisquare` generates a matrix filled with random floats sampled from a
     univariate chi-square distribution for a given number of degrees of freedom.
+
     """
 
     # convert string type names (dparray.dtype) to C enum DPNPFuncType
@@ -185,6 +188,7 @@ cpdef dparray dpnp_exponential(double beta, size):
     Returns an array populated with samples from exponential distribution.
     `dpnp_exponential` generates a matrix filled with random floats sampled from a
     univariate exponential distribution of `beta`.
+
     """
 
     dtype = numpy.float64
@@ -210,6 +214,7 @@ cpdef dparray dpnp_gamma(double shape, double scale, size):
     Returns an array populated with samples from gamma distribution.
     `dpnp_gamma` generates a matrix filled with random floats sampled from a
     univariate gamma distribution of `shape` and `scale`.
+
     """
 
     dtype = numpy.float64
@@ -277,7 +282,7 @@ cpdef dparray dpnp_geometric(float p, size):
 
 cpdef dparray dpnp_gumbel(double loc, double scale, size):
     """
-    Returns an array populated with samples from beta distribution.
+    Returns an array populated with samples from gumbel distribution.
     `dpnp_gumbel` generates a matrix filled with random floats sampled from a
     univariate Gumbel distribution.
 
@@ -310,7 +315,7 @@ cpdef dparray dpnp_gumbel(double loc, double scale, size):
     return result
 
 
-cpdef dparray dpnp_hypergeometric(int l, int s, int m,  size):
+cpdef dparray dpnp_hypergeometric(int l, int s, int m, size):
     """
     Returns an array populated with samples from hypergeometric distribution.
     `dpnp_hypergeometric` generates a matrix filled with random floats sampled from a
@@ -350,7 +355,7 @@ cpdef dparray dpnp_hypergeometric(int l, int s, int m,  size):
 
 cpdef dparray dpnp_laplace(double loc, double scale, size):
     """
-    Returns an array populated with samples from beta distribution.
+    Returns an array populated with samples from laplace distribution.
     `dpnp_laplace` generates a matrix filled with random floats sampled from a
     univariate laplace distribution.
 
@@ -385,7 +390,7 @@ cpdef dparray dpnp_laplace(double loc, double scale, size):
 
 cpdef dparray dpnp_lognormal(double mean, double stddev, size):
     """
-    Returns an array populated with samples from beta distribution.
+    Returns an array populated with samples from lognormal distribution.
     `dpnp_lognormal` generates a matrix filled with random floats sampled from a
     univariate lognormal distribution.
 
@@ -543,6 +548,7 @@ cpdef dparray dpnp_poisson(double lam, size):
     `dpnp_poisson` generates a matrix filled with random floats sampled from a
     univariate Poisson distribution for a given number of independent trials and
     success probability p of a single trial.
+
     """
 
     dtype = numpy.int32
@@ -577,6 +583,7 @@ cpdef dparray dpnp_randn(dims):
     Returns an array populated with samples from standard normal distribution.
     `dpnp_randn` generates a matrix filled with random floats sampled from a
     univariate normal (Gaussian) distribution of mean 0 and variance 1.
+
     """
     cdef double mean = 0.0
     cdef double stddev = 1.0
@@ -602,6 +609,7 @@ cpdef dparray dpnp_random(dims):
     """
     Create an array of the given shape and populate it
     with random samples from a uniform distribution over [0, 1).
+
     """
     cdef long low = 0
     cdef long high = 1
@@ -661,13 +669,15 @@ cpdef dparray dpnp_rayleigh(double scale, size):
 cpdef dpnp_srand(seed):
     """
     Initialize basic random number generator.
+
     """
+
     dpnp_srand_c(seed)
 
 
 cpdef dparray dpnp_standard_cauchy(size):
     """
-    Returns an array populated with samples from beta distribution.
+    Returns an array populated with samples from standard cauchy distribution.
     `dpnp_standard_cauchy` generates a matrix filled with random floats sampled from a
     univariate standard cauchy distribution.
 
@@ -698,6 +708,8 @@ cpdef dparray dpnp_standard_exponential(size):
 
     """
 
+    cdef fptr_custom_rng_standard_exponential_c_1out_t func
+
     # convert string type names (dparray.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
@@ -708,7 +720,7 @@ cpdef dparray dpnp_standard_exponential(size):
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(size, dtype=result_type)
 
-    cdef fptr_custom_rng_standard_exponential_c_1out_t func = < fptr_custom_rng_standard_exponential_c_1out_t > kernel_data.ptr
+    func = < fptr_custom_rng_standard_exponential_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), result.size)
 
@@ -752,7 +764,7 @@ cpdef dparray dpnp_standard_gamma(double shape, size):
 
 cpdef dparray dpnp_standard_normal(size):
     """
-    Returns an array populated with samples from beta distribution.
+    Returns an array populated with samples from standard normal(Gaussian) distribution.
     `dpnp_standard_normal` generates a matrix filled with random floats sampled from a
     univariate standard normal(Gaussian) distribution.
 
@@ -781,6 +793,7 @@ cpdef dparray dpnp_uniform(long low, long high, size, dtype=numpy.int32):
     Generates a matrix filled with random numbers sampled from a
     uniform distribution of the certain left (low) and right (high)
     bounds.
+
     """
     # convert string type names (dparray.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
@@ -801,9 +814,10 @@ cpdef dparray dpnp_uniform(long low, long high, size, dtype=numpy.int32):
 
 cpdef dparray dpnp_weibull(double a, size):
     """
-    Returns an array populated with samples from beta distribution.
+    Returns an array populated with samples from weibull distribution.
     `dpnp_weibull` generates a matrix filled with random floats sampled from a
     univariate weibull distribution.
+
     """
 
     dtype = numpy.float64
