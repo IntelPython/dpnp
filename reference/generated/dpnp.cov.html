@@ -197,115 +197,35 @@
 <dt id="dpnp.cov">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">cov</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">m</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rowvar</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">bias</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">ddof</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fweights</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">aweights</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_statistics.html#cov"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.cov" title="Permalink to this definition">¶</a></dt>
 <dd><p>Estimate a covariance matrix, given data and weights.</p>
-<p>Covariance indicates the level to which two variables vary together.
-If we examine N-dimensional samples, <span class="math notranslate nohighlight">\(X = [x_1, x_2, ... x_N]^T\)</span>,
-then the covariance matrix element <span class="math notranslate nohighlight">\(C_{ij}\)</span> is the covariance of
-<span class="math notranslate nohighlight">\(x_i\)</span> and <span class="math notranslate nohighlight">\(x_j\)</span>. The element <span class="math notranslate nohighlight">\(C_{ii}\)</span> is the variance
-of <span class="math notranslate nohighlight">\(x_i\)</span>.</p>
-<p>See the notes for an outline of the algorithm.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>m</strong> (<em>array_like</em>) – A 1-D or 2-D array containing multiple variables and observations.
-Each row of <cite>m</cite> represents a variable, and each column a single
-observation of all those variables. Also see <cite>rowvar</cite> below.</p></li>
-<li><p><strong>y</strong> (<em>array_like</em><em>, </em><em>optional</em>) – An additional set of variables and observations. <cite>y</cite> has the same form
-as that of <cite>m</cite>.</p></li>
-<li><p><strong>rowvar</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – If <cite>rowvar</cite> is True (default), then each row represents a
-variable, with observations in the columns. Otherwise, the relationship
-is transposed: each column represents a variable, while the rows
-contain observations.</p></li>
-<li><p><strong>bias</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Default normalization (False) is by <code class="docutils literal notranslate"><span class="pre">(N</span> <span class="pre">-</span> <span class="pre">1)</span></code>, where <code class="docutils literal notranslate"><span class="pre">N</span></code> is the
-number of observations given (unbiased estimate). If <cite>bias</cite> is True,
-then normalization is by <code class="docutils literal notranslate"><span class="pre">N</span></code>. These values can be overridden by using
-the keyword <code class="docutils literal notranslate"><span class="pre">ddof</span></code> in numpy versions &gt;= 1.5.</p></li>
-<li><p><strong>ddof</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – <p>If not <code class="docutils literal notranslate"><span class="pre">None</span></code> the default value implied by <cite>bias</cite> is overridden.
-Note that <code class="docutils literal notranslate"><span class="pre">ddof=1</span></code> will return the unbiased estimate, even if both
-<cite>fweights</cite> and <cite>aweights</cite> are specified, and <code class="docutils literal notranslate"><span class="pre">ddof=0</span></code> will return
-the simple average. See the notes for the details. The default value
-is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 1.5.</span></p>
-</div>
-</p></li>
-<li><p><strong>fweights</strong> (<em>array_like</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – <p>1-D array of integer frequency weights; the number of times each
-observation vector should be repeated.</p>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 1.10.</span></p>
-</div>
-</p></li>
-<li><p><strong>aweights</strong> (<em>array_like</em><em>, </em><em>optional</em>) – <p>1-D array of observation vector weights. These relative weights are
-typically large for observations considered “important” and smaller for
-observations considered less “important”. If <code class="docutils literal notranslate"><span class="pre">ddof=0</span></code> the array of
-weights can be used to assign probabilities to observation vectors.</p>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 1.10.</span></p>
-</div>
-</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – The covariance matrix of the variables.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray</p>
-</dd>
-</dl>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.cov.html#numpy.cov" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.cov</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Input array <code class="docutils literal notranslate"><span class="pre">m</span></code> is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Dimension of input array <code class="docutils literal notranslate"><span class="pre">m</span></code> is limited by <code class="docutils literal notranslate"><span class="pre">m.ndim</span> <span class="pre">&gt;</span> <span class="pre">2</span></code>.
+Size and shape of input arrays are supported to be equal.
+Prameters <code class="docutils literal notranslate"><span class="pre">y</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Prameters <code class="docutils literal notranslate"><span class="pre">rowvar</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">True</span></code>.
+Prameters <code class="docutils literal notranslate"><span class="pre">bias</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">False</span></code>.
+Prameters <code class="docutils literal notranslate"><span class="pre">ddof</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Prameters <code class="docutils literal notranslate"><span class="pre">fweights</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Prameters <code class="docutils literal notranslate"><span class="pre">aweights</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Otherwise the function will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.corrcoef</span></code></dt><dd><p>Normalized covariance matrix</p>
-</dd>
-</dl>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.corrcoef</span></code> : Normalized covariance matrix.</p>
 </div>
-<p class="rubric">Notes</p>
-<p>Assume that the observations are in the columns of the observation
-array <cite>m</cite> and let <code class="docutils literal notranslate"><span class="pre">f</span> <span class="pre">=</span> <span class="pre">fweights</span></code> and <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">aweights</span></code> for brevity. The
-steps to compute the weighted covariance are as follows:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="o">**</span> <span class="mf">2.</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ddof</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">f</span> <span class="o">*</span> <span class="n">a</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">v1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">v2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">w</span> <span class="o">*</span> <span class="n">a</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">m</span> <span class="o">*</span> <span class="n">w</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">/</span> <span class="n">v1</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">m</span> <span class="o">*</span> <span class="n">w</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">*</span> <span class="n">v1</span> <span class="o">/</span> <span class="p">(</span><span class="n">v1</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">ddof</span> <span class="o">*</span> <span class="n">v2</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Note that when <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">==</span> <span class="pre">1</span></code>, the normalization factor
-<code class="docutils literal notranslate"><span class="pre">v1</span> <span class="pre">/</span> <span class="pre">(v1**2</span> <span class="pre">-</span> <span class="pre">ddof</span> <span class="pre">*</span> <span class="pre">v2)</span></code> goes over to <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">(np.sum(f)</span> <span class="pre">-</span> <span class="pre">ddof)</span></code>
-as it should.</p>
 <p class="rubric">Examples</p>
-<p>Consider two variables, <span class="math notranslate nohighlight">\(x_0\)</span> and <span class="math notranslate nohighlight">\(x_1\)</span>, which
-correlate perfectly, but in opposite directions:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
-<span class="go">array([[0, 1, 2],</span>
-<span class="go">       [2, 1, 0]])</span>
-</pre></div>
-</div>
-<p>Note how <span class="math notranslate nohighlight">\(x_0\)</span> increases while <span class="math notranslate nohighlight">\(x_1\)</span> decreases. The covariance
-matrix shows this clearly:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="go">array([[ 1., -1.],</span>
-<span class="go">       [-1.,  1.]])</span>
-</pre></div>
-</div>
-<p>Note that element <span class="math notranslate nohighlight">\(C_{0,1}\)</span>, which shows the correlation between
-<span class="math notranslate nohighlight">\(x_0\)</span> and <span class="math notranslate nohighlight">\(x_1\)</span>, is negative.</p>
-<p>Further, note how <cite>x</cite> and <cite>y</cite> are combined:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="mf">4.3</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span>  <span class="mf">1.1</span><span class="p">,</span>  <span class="mf">0.12</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-<span class="go">array([[11.71      , -4.286     ], # may vary</span>
-<span class="go">       [-4.286     ,  2.144133]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="go">array([[11.71      , -4.286     ], # may vary</span>
-<span class="go">       [-4.286     ,  2.144133]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="go">array(11.71)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(2, 3)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+<span class="go">[0, 1, 2, 2, 1, 0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(2, 2)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">out</span><span class="p">]</span>
+<span class="go">[1.0, -1.0, -1.0, 1.0]</span>
 </pre></div>
 </div>
 </dd></dl>

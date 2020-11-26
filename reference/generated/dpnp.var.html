@@ -197,12 +197,37 @@
 <dt id="dpnp.var">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">var</code><span class="sig-paren">(</span><em class="sig-param">a</em>, <em class="sig-param">axis=None</em>, <em class="sig-param">dtype=None</em>, <em class="sig-param">out=None</em>, <em class="sig-param">ddof=0</em>, <em class="sig-param">keepdims=&lt;no value&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_statistics.html#var"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.var" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the variance along the specified axis.</p>
-<p>Returns the variance of the array elements, a measure of the spread of a
-distribution.  The variance is computed for the flattened array by
-default, otherwise over the specified axis.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.var.html#numpy.var" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.var</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Input array is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Size of input array is limited by <code class="docutils literal notranslate"><span class="pre">a.size</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>.
+Prameters <code class="docutils literal notranslate"><span class="pre">axis</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Prameters <code class="docutils literal notranslate"><span class="pre">dtype</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Prameters <code class="docutils literal notranslate"><span class="pre">out</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Prameters <code class="docutils literal notranslate"><span class="pre">keepdims</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">numpy._NoValue</span></code>.
+Otherwise the function will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="dpnp.std.html#dpnp.std" title="dpnp.std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.std</span></code></a>, <a class="reference internal" href="dpnp.mean.html#dpnp.mean" title="dpnp.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.mean</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanmean</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanstd</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanvar</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">ufuncs-output-type</span></code></p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.std.html#dpnp.std" title="dpnp.std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.std</span></code></a></dt><dd><p>Compute the standard deviation along the specified axis.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.mean.html#dpnp.mean" title="dpnp.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.mean</span></code></a></dt><dd><p>Compute the arithmetic mean along the specified axis.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanmean</span></code></dt><dd><p>Compute the arithmetic mean along the specified axis, ignoring NaNs.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanstd</span></code></dt><dd><p>Compute the standard deviation along the specified axis, while ignoring NaNs.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanvar</span></code></dt><dd><p>Compute the variance along the specified axis, while ignoring NaNs.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">1.25</span>
+</pre></div>
 </div>
 </dd></dl>
 

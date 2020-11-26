@@ -196,39 +196,16 @@
 <dt id="dpnp.sort">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">sort</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_sorting.html#sort"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.sort" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a sorted copy of an array.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x1</strong> (<em>array_like</em>) – Array to be sorted.</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em>, </em><em>optional</em>) – Axis along which to sort. If None, the array is flattened before
-sorting. The default is -1, which sorts along the last axis.</p></li>
-<li><p><strong>kind</strong> (<em>{'quicksort'</em><em>, </em><em>'mergesort'</em><em>, </em><em>'heapsort'</em><em>, </em><em>'stable'}</em><em>, </em><em>optional</em>) – <p>Sorting algorithm. The default is ‘quicksort’. Note that both ‘stable’
-and ‘mergesort’ use timsort or radix sort under the covers and, in general,
-the actual implementation will vary with data type. The ‘mergesort’ option
-is retained for backwards compatibility.</p>
-<div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 1.15.0.: </span>The ‘stable’ option was added.</p>
-</div>
-</p></li>
-<li><p><strong>order</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><em>list of str</em><em>, </em><em>optional</em>) – When <cite>a</cite> is an array with fields defined, this argument specifies
-which fields to compare first, second, etc.  A single field can
-be specified as a string, and not all fields need be specified,
-but unspecified fields will still be used, in the order in which
-they come up in the dtype, to break ties.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>sorted_array</strong> – Array of the same type and shape as <cite>a</cite>.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray</p>
-</dd>
-</dl>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.sort.html#numpy.sort" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.sort</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Input array is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Keyword arguments <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are currently unsupported.
+Dimension of input array is supported to be equal to <code class="docutils literal notranslate"><span class="pre">1</span></code>.
+Otherwise the function will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray.sort</span></code></dt><dd><p>Method to sort an array in-place.</p>
-</dd>
 <dt><a class="reference internal" href="dpnp.argsort.html#dpnp.argsort" title="dpnp.argsort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.argsort</span></code></a></dt><dd><p>Indirect sort.</p>
 </dd>
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.lexsort</span></code></dt><dd><p>Indirect stable sort on multiple keys.</p>
@@ -239,140 +216,12 @@ they come up in the dtype, to break ties.</p></li>
 </dd>
 </dl>
 </div>
-<p class="rubric">Notes</p>
-<p>The various sorting algorithms are characterized by their average speed,
-worst case performance, work space size, and whether they are stable. A
-stable sort keeps items with the same key in the same relative
-order. The four algorithms implemented in NumPy have the following
-properties:</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 22%" />
-<col style="width: 14%" />
-<col style="width: 25%" />
-<col style="width: 24%" />
-<col style="width: 16%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>kind</p></th>
-<th class="head"><p>speed</p></th>
-<th class="head"><p>worst case</p></th>
-<th class="head"><p>work space</p></th>
-<th class="head"><p>stable</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>‘quicksort’</p></td>
-<td><p>1</p></td>
-<td><p>O(n^2)</p></td>
-<td><p>0</p></td>
-<td><p>no</p></td>
-</tr>
-<tr class="row-odd"><td><p>‘heapsort’</p></td>
-<td><p>3</p></td>
-<td><p>O(n*log(n))</p></td>
-<td><p>0</p></td>
-<td><p>no</p></td>
-</tr>
-<tr class="row-even"><td><p>‘mergesort’</p></td>
-<td><p>2</p></td>
-<td><p>O(n*log(n))</p></td>
-<td><p>~n/2</p></td>
-<td><p>yes</p></td>
-</tr>
-<tr class="row-odd"><td><p>‘timsort’</p></td>
-<td><p>2</p></td>
-<td><p>O(n*log(n))</p></td>
-<td><p>~n/2</p></td>
-<td><p>yes</p></td>
-</tr>
-</tbody>
-</table>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The datatype determines which of ‘mergesort’ or ‘timsort’
-is actually used, even if ‘mergesort’ is specified. User selection
-at a finer scale is not currently available.</p>
-</div>
-<p>All the sort algorithms make temporary copies of the data when
-sorting along any but the last axis.  Consequently, sorting along
-the last axis is faster and uses less space than sorting along
-any other axis.</p>
-<p>The sort order for complex numbers is lexicographic. If both the real
-and imaginary parts are non-nan then the order is determined by the
-real parts except when they are equal, in which case the order is
-determined by the imaginary parts.</p>
-<p>Previous to numpy 1.4.0 sorting real and complex arrays containing nan
-values led to undefined behaviour. In numpy versions &gt;= 1.4.0 nan
-values are sorted to the end. The extended sort order is:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>Real: [R, nan]</p></li>
-<li><p>Complex: [R + Rj, R + nanj, nan + Rj, nan + nanj]</p></li>
-</ul>
-</div></blockquote>
-<p>where R is a non-nan real value. Complex values with the same nan
-placements are sorted according to the non-nan part if it exists.
-Non-nan values are sorted as before.</p>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 1.12.0.</span></p>
-</div>
-<p>quicksort has been changed to <a class="reference external" href="https://en.wikipedia.org/wiki/Introsort">introsort</a>.
-When sorting does not make enough progress it switches to
-<a class="reference external" href="https://en.wikipedia.org/wiki/Heapsort">heapsort</a>.
-This implementation makes quicksort O(n*log(n)) in the worst case.</p>
-<p>‘stable’ automatically chooses the best stable sorting algorithm
-for the data type being sorted.
-It, along with ‘mergesort’ is currently mapped to
-<a class="reference external" href="https://en.wikipedia.org/wiki/Timsort">timsort</a>
-or <a class="reference external" href="https://en.wikipedia.org/wiki/Radix_sort">radix sort</a>
-depending on the data type.
-API forward compatibility currently limits the
-ability to select the implementation and it is hardwired for the different
-data types.</p>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 1.17.0.</span></p>
-</div>
-<p>Timsort is added for better performance on already or nearly
-sorted data. On random data timsort is almost identical to
-mergesort. It is now used for stable sort while quicksort is still the
-default sort if none is chosen. For timsort details, refer to
-<a class="reference external" href="https://github.com/python/cpython/blob/3.7/Objects/listsort.txt">CPython listsort.txt</a>.
-‘mergesort’ and ‘stable’ are mapped to radix sort for integer data types. Radix sort is an
-O(n) sort instead of O(n log n).</p>
-<div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 1.18.0.</span></p>
-</div>
-<p>NaT now sorts to the end of arrays for consistency with NaN.</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>                <span class="c1"># sort along the last axis</span>
-<span class="go">array([[1, 4],</span>
-<span class="go">       [1, 3]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>     <span class="c1"># sort the flattened array</span>
-<span class="go">array([1, 1, 3, 4])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>        <span class="c1"># sort along the first axis</span>
-<span class="go">array([[1, 1],</span>
-<span class="go">       [3, 4]])</span>
-</pre></div>
-</div>
-<p>Use the <cite>order</cite> keyword to specify a field to use when sorting a
-structured array:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dtype</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;S10&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;height&#39;</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">values</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;Arthur&#39;</span><span class="p">,</span> <span class="mf">1.8</span><span class="p">,</span> <span class="mi">41</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;Lancelot&#39;</span><span class="p">,</span> <span class="mf">1.9</span><span class="p">,</span> <span class="mi">38</span><span class="p">),</span>
-<span class="gp">... </span>          <span class="p">(</span><span class="s1">&#39;Galahad&#39;</span><span class="p">,</span> <span class="mf">1.7</span><span class="p">,</span> <span class="mi">38</span><span class="p">)]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>       <span class="c1"># create a structured array</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;height&#39;</span><span class="p">)</span>                        
-<span class="go">array([(&#39;Galahad&#39;, 1.7, 38), (&#39;Arthur&#39;, 1.8, 41),</span>
-<span class="go">       (&#39;Lancelot&#39;, 1.8999999999999999, 38)],</span>
-<span class="go">      dtype=[(&#39;name&#39;, &#39;|S10&#39;), (&#39;height&#39;, &#39;&lt;f8&#39;), (&#39;age&#39;, &#39;&lt;i4&#39;)])</span>
-</pre></div>
-</div>
-<p>Sort by age, then height if ages are equal:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="s1">&#39;height&#39;</span><span class="p">])</span>               
-<span class="go">array([(&#39;Galahad&#39;, 1.7, 38), (&#39;Lancelot&#39;, 1.8999999999999999, 38),</span>
-<span class="go">       (&#39;Arthur&#39;, 1.8, 41)],</span>
-<span class="go">      dtype=[(&#39;name&#39;, &#39;|S10&#39;), (&#39;height&#39;, &#39;&lt;f8&#39;), (&#39;age&#39;, &#39;&lt;i4&#39;)])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">out</span><span class="p">]</span>
+<span class="go">[1, 1, 3, 4]</span>
 </pre></div>
 </div>
 </dd></dl>

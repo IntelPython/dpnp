@@ -197,66 +197,25 @@
 <dt id="dpnp.correlate">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">correlate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">v</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'valid'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_statistics.html#correlate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.correlate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cross-correlation of two 1-dimensional sequences.</p>
-<p>This function computes the correlation as generally defined in signal
-processing texts:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">c_</span><span class="p">{</span><span class="n">av</span><span class="p">}[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">sum_n</span> <span class="n">a</span><span class="p">[</span><span class="n">n</span><span class="o">+</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">conj</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
-</pre></div>
-</div>
-<p>with a and v sequences being zero-padded where necessary and conj being
-the conjugate.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>array_like</em>) – Input sequences.</p></li>
-<li><p><strong>v</strong> (<em>array_like</em>) – Input sequences.</p></li>
-<li><p><strong>mode</strong> (<em>{'valid'</em><em>, </em><em>'same'</em><em>, </em><em>'full'}</em><em>, </em><em>optional</em>) – Refer to the <cite>convolve</cite> docstring.  Note that the default
-is ‘valid’, unlike <cite>convolve</cite>, which uses ‘full’.</p></li>
-<li><p><strong>old_behavior</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – <cite>old_behavior</cite> was removed in NumPy 1.10. If you need the old
-behavior, use <cite>multiarray.correlate</cite>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – Discrete cross-correlation of <cite>a</cite> and <cite>v</cite>.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray</p>
-</dd>
-</dl>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.correlate.html#numpy.correlate" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.correlate</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Input arrays are supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Size and shape of input arrays are supported to be equal.
+Prameters <code class="docutils literal notranslate"><span class="pre">mode</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">&quot;valid</span></code>.
+Otherwise the function will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.convolve</span></code></dt><dd><p>Discrete, linear convolution of two one-dimensional sequences.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">multiarray.correlate</span></code></dt><dd><p>Old, no conjugate, version of correlate.</p>
-</dd>
 </dl>
 </div>
-<p class="rubric">Notes</p>
-<p>The definition of correlation above is not unique and sometimes correlation
-may be defined differently. Another common definition is:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">c</span><span class="s1">&#39;_</span><span class="si">{av}</span><span class="s1">[k] = sum_n a[n] conj(v[n+k])</span>
-</pre></div>
-</div>
-<p>which is related to <code class="docutils literal notranslate"><span class="pre">c_{av}[k]</span></code> by <code class="docutils literal notranslate"><span class="pre">c'_{av}[k]</span> <span class="pre">=</span> <span class="pre">c_{av}[-k]</span></code>.</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">correlate</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
-<span class="go">array([3.5])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">correlate</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="s2">&quot;same&quot;</span><span class="p">)</span>
-<span class="go">array([2. ,  3.5,  3. ])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">correlate</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="s2">&quot;full&quot;</span><span class="p">)</span>
-<span class="go">array([0.5,  2. ,  3.5,  3. ,  0. ])</span>
-</pre></div>
-</div>
-<p>Using complex sequences:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">correlate</span><span class="p">([</span><span class="mi">1</span><span class="o">+</span><span class="mi">1</span><span class="n">j</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="o">-</span><span class="mi">1</span><span class="n">j</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="n">j</span><span class="p">],</span> <span class="s1">&#39;full&#39;</span><span class="p">)</span>
-<span class="go">array([ 0.5-0.5j,  1.0+0.j ,  1.5-1.5j,  3.0-1.j ,  0.0+0.j ])</span>
-</pre></div>
-</div>
-<p>Note that you get the time reversed, complex conjugated result
-when the two input sequences change places, i.e.,
-<code class="docutils literal notranslate"><span class="pre">c_{va}[k]</span> <span class="pre">=</span> <span class="pre">c^{*}_{av}[-k]</span></code>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">correlate</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="n">j</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="o">+</span><span class="mi">1</span><span class="n">j</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="o">-</span><span class="mi">1</span><span class="n">j</span><span class="p">],</span> <span class="s1">&#39;full&#39;</span><span class="p">)</span>
-<span class="go">array([ 0.0+0.j ,  3.0+1.j ,  1.5+1.5j,  1.0+0.j ,  0.5+0.5j])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">correlate</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+<span class="go">[3.5]</span>
 </pre></div>
 </div>
 </dd></dl>

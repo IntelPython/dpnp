@@ -195,64 +195,34 @@
 <dl class="py function">
 <dt id="dpnp.argsort">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">argsort</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_array1</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_sorting.html#argsort"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.argsort" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an ndarray of indices that sort the array along the
-specified axis.  Masked values are filled beforehand to
-<cite>fill_value</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – <p>Axis along which to sort. If None, the default, the flattened array
-is used.</p>
-<div class="versionchanged">
-<p><span class="versionmodified changed">Changed in version 1.13.0: </span>Previously, the default was documented to be -1, but that was
-in error. At some future date, the default will change to -1, as
-originally intended.
-Until then, the axis should be given explicitly when
-<code class="docutils literal notranslate"><span class="pre">arr.ndim</span> <span class="pre">&gt;</span> <span class="pre">1</span></code>, to avoid a FutureWarning.</p>
-</div>
-</p></li>
-<li><p><strong>kind</strong> (<em>{'quicksort'</em><em>, </em><em>'mergesort'</em><em>, </em><em>'heapsort'</em><em>, </em><em>'stable'}</em><em>, </em><em>optional</em>) – The sorting algorithm used.</p></li>
-<li><p><strong>order</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)"><em>list</em></a><em>, </em><em>optional</em>) – When <cite>a</cite> is an array with fields defined, this argument specifies
-which fields to compare first, second, etc.  Not all fields need be
-specified.</p></li>
-<li><p><strong>endwith</strong> (<em>{True</em><em>, </em><em>False}</em><em>, </em><em>optional</em>) – Whether missing values (if any) should be treated as the largest values
-(True) or the smallest values (False)
-When the array contains unmasked values at the same extremes of the
-datatype, the ordering of these values and the masked values is
-undefined.</p></li>
-<li><p><strong>fill_value</strong> (<em>{var}</em><em>, </em><em>optional</em>) – Value used internally for the masked values.
-If <code class="docutils literal notranslate"><span class="pre">fill_value</span></code> is not None, it supersedes <code class="docutils literal notranslate"><span class="pre">endwith</span></code>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>index_array</strong> – Array of indices that sort <cite>a</cite> along the specified axis.
-In other words, <code class="docutils literal notranslate"><span class="pre">a[index_array]</span></code> yields a sorted <cite>a</cite>.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
-</dd>
-</dl>
+<dd><p>Returns the indices that would sort an array.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.argsort.html#numpy.argsort" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.argsort</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Input array is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Otherwise the function will be executed sequentially on CPU.
+Prameters <code class="docutils literal notranslate"><span class="pre">axis</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">-1</span></code>.
+Prameters <code class="docutils literal notranslate"><span class="pre">kind</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Prameters <code class="docutils literal notranslate"><span class="pre">order</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">MaskedArray.sort</span></code></dt><dd><p>Describes sorting algorithms used.</p>
+<dt><a class="reference internal" href="dpnp.sort.html#dpnp.sort" title="dpnp.sort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.sort</span></code></a></dt><dd><p>Describes sorting algorithms used.</p>
 </dd>
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.lexsort</span></code></dt><dd><p>Indirect stable sort with multiple keys.</p>
 </dd>
-<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.sort.html#numpy.ndarray.sort" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.sort</span></code></a></dt><dd><p>Inplace sort.</p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.argpartition</span></code></dt><dd><p>Indirect partial sort.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.take_along_axis</span></code></dt><dd><p>Apply <code class="docutils literal notranslate"><span class="pre">index_array</span></code> from argsort to an array as if by calling sort.</p>
 </dd>
 </dl>
 </div>
-<p class="rubric">Notes</p>
-<p>See <cite>sort</cite> for notes on the different sorting algorithms.</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">mask</span><span class="o">=</span><span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
-<span class="go">masked_array(data=[3, 2, --],</span>
-<span class="go">             mask=[False, False,  True],</span>
-<span class="go">       fill_value=999999)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">argsort</span><span class="p">()</span>
-<span class="go">array([1, 0, 2])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">out</span><span class="p">]</span>
+<span class="go">[1, 2, 0]</span>
 </pre></div>
 </div>
 </dd></dl>

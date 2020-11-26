@@ -197,71 +197,29 @@
 <dt id="dpnp.average">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">average</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">weights</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">returned</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_statistics.html#average"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.average" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the weighted average along the specified axis.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>array_like</em>) – Array containing data to be averaged. If <cite>a</cite> is not an array, a
-conversion is attempted.</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – <p>Axis or axes along which to average <cite>a</cite>.  The default,
-axis=None, will average over all of the elements of the input array.
-If axis is negative it counts from the last to the first axis.</p>
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 1.7.0.</span></p>
-</div>
-<p>If axis is a tuple of ints, averaging is performed on all of the axes
-specified in the tuple instead of a single axis or all the axes as
-before.</p>
-</p></li>
-<li><p><strong>weights</strong> (<em>array_like</em><em>, </em><em>optional</em>) – <p>An array of weights associated with the values in <cite>a</cite>. Each value in
-<cite>a</cite> contributes to the average according to its associated weight.
-The weights array can either be 1-D (in which case its length must be
-the size of <cite>a</cite> along the given axis) or of the same shape as <cite>a</cite>.
-If <cite>weights=None</cite>, then all data in <cite>a</cite> are assumed to have a
-weight equal to one.  The 1-D calculation is:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">avg</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">weights</span><span class="p">)</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The only constraint on <cite>weights</cite> is that <cite>sum(weights)</cite> must not be 0.</p>
-</p></li>
-<li><p><strong>returned</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Default is <cite>False</cite>. If <cite>True</cite>, the tuple (<cite>average</cite>, <cite>sum_of_weights</cite>)
-is returned, otherwise only the average is returned.
-If <cite>weights=None</cite>, <cite>sum_of_weights</cite> is equivalent to the number of
-elements over which the average is taken.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>retval, [sum_of_weights]</strong> – Return the average along the specified axis. When <cite>returned</cite> is <cite>True</cite>,
-return a tuple with the average as the first element and the sum
-of the weights as the second element. <cite>sum_of_weights</cite> is of the
-same type as <cite>retval</cite>. The result dtype follows a genereal pattern.
-If <cite>weights</cite> is None, the result dtype will be that of <cite>a</cite> , or <code class="docutils literal notranslate"><span class="pre">float64</span></code>
-if <cite>a</cite> is integral. Otherwise, if <cite>weights</cite> is not None and <cite>a</cite> is non-
-integral, the result type will be the type of lowest precision capable of
-representing values of both <cite>a</cite> and <cite>weights</cite>. If <cite>a</cite> happens to be
-integral, the previous rules still applies but the result dtype will
-at least be <code class="docutils literal notranslate"><span class="pre">float64</span></code>.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>array_type or double</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ZeroDivisionError" title="(in Python v3.9)"><strong>ZeroDivisionError</strong></a> – When all weights along axis are zero. See <cite>numpy.ma.average</cite> for a
-    version robust to this type of error.</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.9)"><strong>TypeError</strong></a> – When the length of 1D <cite>weights</cite> is not the same as the shape of <cite>a</cite>
-    along axis.</p></li>
-</ul>
-</dd>
-</dl>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.average.html#numpy.average" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.average</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Input array is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Prameters <code class="docutils literal notranslate"><span class="pre">axis</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Prameters <code class="docutils literal notranslate"><span class="pre">weights</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Prameters <code class="docutils literal notranslate"><span class="pre">returned</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">False</span></code>.
+Otherwise the function will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="dpnp.mean.html#dpnp.mean" title="dpnp.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean</span></code></a></p>
 <dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">ma.average</span></code></dt><dd><p>average for masked arrays – useful if your data contains “missing” values</p>
-</dd>
-<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.result_type.html#numpy.result_type" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.result_type</span></code></a></dt><dd><p>Returns the type that results from applying the numpy type promotion rules to the arguments.</p>
+<dt><a class="reference internal" href="dpnp.mean.html#dpnp.mean" title="dpnp.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.mean</span></code></a></dt><dd><p>Compute the arithmetic mean along the specified axis.</p>
 </dd>
 </dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+<span class="go">[1, 2, 3, 4]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="go">2.5</span>
+</pre></div>
 </div>
 </dd></dl>
 

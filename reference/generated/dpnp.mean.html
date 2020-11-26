@@ -197,28 +197,37 @@
 <dt id="dpnp.mean">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">mean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_statistics.html#mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.mean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the arithmetic mean along the specified axis.</p>
-<p>Returns the average of the array elements.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>array_like</em>) – Array containing numbers whose mean is desired. If <cite>input</cite> is not an
-array, a conversion is attempted.</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Axis or axes along which the means are computed. The default is to
-compute the mean of the flattened array.
-.. versionadded:: 1.7.0
-If this is a tuple of ints, a mean is performed over multiple axes,
-instead of a single axis or all the axes as before.</p></li>
-<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Remaining input parameters of the function.</p></li>
-</ul>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.mean.html#numpy.mean" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.mean</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Input array is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Keyword arguments <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are currently unsupported.
+Size of input array is limited by <code class="docutils literal notranslate"><span class="pre">a.size</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>.
+Otherwise the function will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.average.html#dpnp.average" title="dpnp.average"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.average</span></code></a></dt><dd><p>Weighted average.</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>m</strong> – If <cite>out=None</cite>, returns a new array containing the mean values,
-otherwise a reference to the output array is returned.</p>
+<dt><a class="reference internal" href="dpnp.std.html#dpnp.std" title="dpnp.std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.std</span></code></a></dt><dd><p>Compute the standard deviation along the specified axis.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray, see dtype parameter above</p>
+<dt><a class="reference internal" href="dpnp.var.html#dpnp.var" title="dpnp.var"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.var</span></code></a></dt><dd><p>Compute the variance along the specified axis.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanmean</span></code></dt><dd><p>Compute the arithmetic mean along the specified axis, ignoring NaNs.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanstd</span></code></dt><dd><p>Compute the standard deviation along the specified axis, while ignoring NaNs.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanvar</span></code></dt><dd><p>Compute the variance along the specified axis, while ignoring NaNs.</p>
 </dd>
 </dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">2.5</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>
