@@ -67,27 +67,27 @@ def amax(input, axis=None, out=None):
     """
     Return the maximum of an array or maximum along an axis.
 
-    Parameters
-    ----------
-    input : array_like
-        Input data.
-    axis : None or int or tuple of ints, optional
-        Axis or axes along which to operate.  By default, flattened input is
-        used.
-        .. versionadded:: 1.7.0
-        If this is a tuple of ints, the maximum is selected over multiple axes,
-        instead of a single axis or all the axes as before.
-    out : ndarray, optional
-        Alternative output array in which to place the result.  Must
-        be of the same shape and buffer length as the expected output.
-        See `ufuncs-output-type` for more details.
+    For full documentation refer to :obj:`numpy.amax`.
 
-    Returns
-    -------
-    amax : ndarray or scalar
-        Maximum of `a`. If `axis` is None, the result is a scalar value.
-        If `axis` is given, the result is an array of dimension
-        ``a.ndim - 1``.
+    See Also
+    --------
+    :obj:`dpnp.amin` : The minimum value of an array along a given axis,
+                       propagating any NaNs.
+    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis,
+                         ignoring any NaNs.
+    :obj:`dpnp.maximum` : Element-wise maximum of two arrays,
+                          propagating any NaNs.
+    :obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignoring any NaNs.
+    :obj:`dpnp.argmax` : Return the indices of the maximum values.
+    :obj:`dpnp.nanmin` : Return minimum of an array or minimum along an axis,
+                         ignoring any NaNs.
+    :obj:`dpnp.minimum` : Element-wise minimum of array elements.
+    :obj:`dpnp.fmin` : Element-wise minimum of array elements.
+
+    Notes
+    -----
+    This function works exactly the same as :obj:`dpnp.max`.
+
     """
     return max(input, axis=axis, out=out)
 
@@ -96,44 +96,27 @@ def amin(input, axis=None, out=None):
     """
     Return the minimum of an array or minimum along an axis.
 
-    Parameters
-    ----------
-    input : array_like
-        Input data.
-    axis : None or int or tuple of ints, optional
-        Axis or axes along which to operate.  By default, flattened input is
-        used.
-        .. versionadded:: 1.7.0
-        If this is a tuple of ints, the minimum is selected over multiple axes,
-        instead of a single axis or all the axes as before.
-    out : ndarray, optional
-        Alternative output array in which to place the result.  Must
-        be of the same shape and buffer length as the expected output.
-        See `ufuncs-output-type` for more details.
-    keepdims : bool, optional
-        If this is set to True, the axes which are reduced are left
-        in the result as dimensions with size one. With this option,
-        the result will broadcast correctly against the input array.
-        If the default value is passed, then `keepdims` will not be
-        passed through to the `amin` method of sub-classes of
-        `ndarray`, however any non-default value will be.  If the
-        sub-class' method does not implement `keepdims` any
-        exceptions will be raised.
-    initial : scalar, optional
-        The maximum value of an output element. Must be present to allow
-        computation on empty slice. See `~numpy.ufunc.reduce` for details.
-        .. versionadded:: 1.15.0
-    where : array_like of bool, optional
-        Elements to compare for the minimum. See `~numpy.ufunc.reduce`
-        for details.
-        .. versionadded:: 1.17.0
+    For full documentation refer to :obj:`numpy.amin`.
 
-    Returns
-    -------
-    amin : ndarray or scalar
-        Minimum of `input`. If `axis` is None, the result is a scalar value.
-        If `axis` is given, the result is an array of dimension
-        ``input.ndim - 1``.
+    See Also
+    --------
+    :obj:`dpnp.amax` : The maximum value of an array along a given axis,
+                       propagating any NaNs.
+    :obj:`dpnp.nanmin` : Return minimum of an array or minimum along an axis,
+                         ignoring any NaNs.
+    :obj:`dpnp.minimum` : Element-wise minimum of array elements.
+    :obj:`dpnp.fmin` : Element-wise minimum of array elements.
+    :obj:`dpnp.argmin` : Return the indices of the minimum values.
+    :obj:`dpnp.nanmax` : The maximum value of an array along a given axis,
+                         ignoring any NaNs.
+    :obj:`dpnp.maximum` : Element-wise maximum of two arrays,
+                          propagating any NaNs.
+    :obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignoring any NaNs.
+
+    Notes
+    -----
+    This function works exactly the same as :obj:`dpnp.min`.
+
     """
 
     return min(input, axis=axis, out=out)
@@ -143,69 +126,29 @@ def average(a, axis=None, weights=None, returned=False):
     """
     Compute the weighted average along the specified axis.
 
-    Parameters
-    ----------
-    a : array_like
-        Array containing data to be averaged. If `a` is not an array, a
-        conversion is attempted.
-    axis : None or int or tuple of ints, optional
-        Axis or axes along which to average `a`.  The default,
-        axis=None, will average over all of the elements of the input array.
-        If axis is negative it counts from the last to the first axis.
+    For full documentation refer to :obj:`numpy.average`.
 
-        .. versionadded:: 1.7.0
-
-        If axis is a tuple of ints, averaging is performed on all of the axes
-        specified in the tuple instead of a single axis or all the axes as
-        before.
-    weights : array_like, optional
-        An array of weights associated with the values in `a`. Each value in
-        `a` contributes to the average according to its associated weight.
-        The weights array can either be 1-D (in which case its length must be
-        the size of `a` along the given axis) or of the same shape as `a`.
-        If `weights=None`, then all data in `a` are assumed to have a
-        weight equal to one.  The 1-D calculation is::
-
-            avg = sum(a * weights) / sum(weights)
-
-        The only constraint on `weights` is that `sum(weights)` must not be 0.
-    returned : bool, optional
-        Default is `False`. If `True`, the tuple (`average`, `sum_of_weights`)
-        is returned, otherwise only the average is returned.
-        If `weights=None`, `sum_of_weights` is equivalent to the number of
-        elements over which the average is taken.
-
-    Returns
-    -------
-    retval, [sum_of_weights] : array_type or double
-        Return the average along the specified axis. When `returned` is `True`,
-        return a tuple with the average as the first element and the sum
-        of the weights as the second element. `sum_of_weights` is of the
-        same type as `retval`. The result dtype follows a genereal pattern.
-        If `weights` is None, the result dtype will be that of `a` , or ``float64``
-        if `a` is integral. Otherwise, if `weights` is not None and `a` is non-
-        integral, the result type will be the type of lowest precision capable of
-        representing values of both `a` and `weights`. If `a` happens to be
-        integral, the previous rules still applies but the result dtype will
-        at least be ``float64``.
-
-    Raises
-    ------
-    ZeroDivisionError
-        When all weights along axis are zero. See `numpy.ma.average` for a
-        version robust to this type of error.
-    TypeError
-        When the length of 1D `weights` is not the same as the shape of `a`
-        along axis.
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Prameters ``axis`` is supported only with default value ``None``.
+    Prameters ``weights`` is supported only with default value ``None``.
+    Prameters ``returned`` is supported only with default value ``False``.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    mean
+    :obj:`dpnp.mean` : Compute the arithmetic mean along the specified axis.
 
-    ma.average : average for masked arrays -- useful if your data contains
-                 "missing" values
-    :obj:`numpy.result_type` : Returns the type that results from applying the
-                               numpy type promotion rules to the arguments.
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> data = np.arange(1, 5)
+    >>> [i for i in data]
+    [1, 2, 3, 4]
+    >>> np.average(data)
+    2.5
 
     """
     if not use_origin_backend(a):
@@ -218,7 +161,13 @@ def average(a, axis=None, weights=None, returned=False):
         elif returned:
             pass
         else:
-            return dpnp_average(a)
+            array_avg = dpnp_average(a)
+
+            # scalar returned
+            if array_avg.shape == (1,):
+                return array_avg.dtype.type(array_avg[0])  
+
+            return array_avg
 
     return call_origin(numpy.average, a, axis, weights, returned)
 
@@ -227,64 +176,27 @@ def correlate(a, v, mode='valid'):
     """
     Cross-correlation of two 1-dimensional sequences.
 
-    This function computes the correlation as generally defined in signal
-    processing texts::
+    For full documentation refer to :obj:`numpy.correlate`.
 
-        c_{av}[k] = sum_n a[n+k] * conj(v[n])
-
-    with a and v sequences being zero-padded where necessary and conj being
-    the conjugate.
-
-    Parameters
-    ----------
-    a, v : array_like
-        Input sequences.
-    mode : {'valid', 'same', 'full'}, optional
-        Refer to the `convolve` docstring.  Note that the default
-        is 'valid', unlike `convolve`, which uses 'full'.
-    old_behavior : bool
-        `old_behavior` was removed in NumPy 1.10. If you need the old
-        behavior, use `multiarray.correlate`.
-
-    Returns
-    -------
-    out : ndarray
-        Discrete cross-correlation of `a` and `v`.
+    Limitations
+    -----------
+    Input arrays are supported as :obj:`dpnp.ndarray`.
+    Size and shape of input arrays are supported to be equal.
+    Prameters ``mode`` is supported only with default value ``"valid``.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.convolve` : Discrete, linear convolution of two one-dimensional sequences.
-    multiarray.correlate : Old, no conjugate, version of correlate.
-
-    Notes
-    -----
-    The definition of correlation above is not unique and sometimes correlation
-    may be defined differently. Another common definition is::
-
-        c'_{av}[k] = sum_n a[n] conj(v[n+k])
-
-    which is related to ``c_{av}[k]`` by ``c'_{av}[k] = c_{av}[-k]``.
+    :obj:`dpnp.convolve` : Discrete, linear convolution of
+                           two one-dimensional sequences.
 
     Examples
     --------
-    >>> np.correlate([1, 2, 3], [0, 1, 0.5])
-    array([3.5])
-    >>> np.correlate([1, 2, 3], [0, 1, 0.5], "same")
-    array([2. ,  3.5,  3. ])
-    >>> np.correlate([1, 2, 3], [0, 1, 0.5], "full")
-    array([0.5,  2. ,  3.5,  3. ,  0. ])
-
-    Using complex sequences:
-
-    >>> np.correlate([1+1j, 2, 3-1j], [0, 1, 0.5j], 'full')
-    array([ 0.5-0.5j,  1.0+0.j ,  1.5-1.5j,  3.0-1.j ,  0.0+0.j ])
-
-    Note that you get the time reversed, complex conjugated result
-    when the two input sequences change places, i.e.,
-    ``c_{va}[k] = c^{*}_{av}[-k]``:
-
-    >>> np.correlate([0, 1, 0.5j], [1+1j, 2, 3-1j], 'full')
-    array([ 0.0+0.j ,  3.0+1.j ,  1.5+1.5j,  1.0+0.j ,  0.5+0.5j])
+    >>> import dpnp as np
+    >>> x = np.correlate([1, 2, 3], [0, 1, 0.5])
+    >>> [i for i in x]
+    [3.5]
 
     """
     if not use_origin_backend(a):
@@ -308,116 +220,37 @@ def cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=N
     """
     Estimate a covariance matrix, given data and weights.
 
-    Covariance indicates the level to which two variables vary together.
-    If we examine N-dimensional samples, :math:`X = [x_1, x_2, ... x_N]^T`,
-    then the covariance matrix element :math:`C_{ij}` is the covariance of
-    :math:`x_i` and :math:`x_j`. The element :math:`C_{ii}` is the variance
-    of :math:`x_i`.
+    For full documentation refer to :obj:`numpy.cov`.
 
-    See the notes for an outline of the algorithm.
+    Limitations
+    -----------
+    Input array ``m`` is supported as :obj:`dpnp.ndarray`.
+    Dimension of input array ``m`` is limited by ``m.ndim > 2``.
+    Size and shape of input arrays are supported to be equal.
+    Prameters ``y`` is supported only with default value ``None``.
+    Prameters ``rowvar`` is supported only with default value ``True``.
+    Prameters ``bias`` is supported only with default value ``False``.
+    Prameters ``ddof`` is supported only with default value ``None``.
+    Prameters ``fweights`` is supported only with default value ``None``.
+    Prameters ``aweights`` is supported only with default value ``None``.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    Parameters
-    ----------
-    m : array_like
-        A 1-D or 2-D array containing multiple variables and observations.
-        Each row of `m` represents a variable, and each column a single
-        observation of all those variables. Also see `rowvar` below.
-    y : array_like, optional
-        An additional set of variables and observations. `y` has the same form
-        as that of `m`.
-    rowvar : bool, optional
-        If `rowvar` is True (default), then each row represents a
-        variable, with observations in the columns. Otherwise, the relationship
-        is transposed: each column represents a variable, while the rows
-        contain observations.
-    bias : bool, optional
-        Default normalization (False) is by ``(N - 1)``, where ``N`` is the
-        number of observations given (unbiased estimate). If `bias` is True,
-        then normalization is by ``N``. These values can be overridden by using
-        the keyword ``ddof`` in numpy versions >= 1.5.
-    ddof : int, optional
-        If not ``None`` the default value implied by `bias` is overridden.
-        Note that ``ddof=1`` will return the unbiased estimate, even if both
-        `fweights` and `aweights` are specified, and ``ddof=0`` will return
-        the simple average. See the notes for the details. The default value
-        is ``None``.
-
-        .. versionadded:: 1.5
-    fweights : array_like, int, optional
-        1-D array of integer frequency weights; the number of times each
-        observation vector should be repeated.
-
-        .. versionadded:: 1.10
-    aweights : array_like, optional
-        1-D array of observation vector weights. These relative weights are
-        typically large for observations considered "important" and smaller for
-        observations considered less "important". If ``ddof=0`` the array of
-        weights can be used to assign probabilities to observation vectors.
-
-        .. versionadded:: 1.10
-
-    Returns
-    -------
-    out : ndarray
-        The covariance matrix of the variables.
-
-    See Also
-    --------
-    :obj:`dpnp.corrcoef` : Normalized covariance matrix
-
-    Notes
-    -----
-    Assume that the observations are in the columns of the observation
-    array `m` and let ``f = fweights`` and ``a = aweights`` for brevity. The
-    steps to compute the weighted covariance are as follows::
-
-        >>> m = np.arange(10, dtype=np.float64)
-        >>> f = np.arange(10) * 2
-        >>> a = np.arange(10) ** 2.
-        >>> ddof = 1
-        >>> w = f * a
-        >>> v1 = np.sum(w)
-        >>> v2 = np.sum(w * a)
-        >>> m -= np.sum(m * w, axis=None, keepdims=True) / v1
-        >>> cov = np.dot(m * w, m.T) * v1 / (v1**2 - ddof * v2)
-
-    Note that when ``a == 1``, the normalization factor
-    ``v1 / (v1**2 - ddof * v2)`` goes over to ``1 / (np.sum(f) - ddof)``
-    as it should.
+    .. seealso:: :obj:`dpnp.corrcoef` : Normalized covariance matrix.
 
     Examples
     --------
-    Consider two variables, :math:`x_0` and :math:`x_1`, which
-    correlate perfectly, but in opposite directions:
-
+    >>> import dpnp as np
     >>> x = np.array([[0, 2], [1, 1], [2, 0]]).T
-    >>> x
-    array([[0, 1, 2],
-           [2, 1, 0]])
-
-    Note how :math:`x_0` increases while :math:`x_1` decreases. The covariance
-    matrix shows this clearly:
-
-    >>> np.cov(x)
-    array([[ 1., -1.],
-           [-1.,  1.]])
-
-    Note that element :math:`C_{0,1}`, which shows the correlation between
-    :math:`x_0` and :math:`x_1`, is negative.
-
-    Further, note how `x` and `y` are combined:
-
-    >>> x = [-2.1, -1,  4.3]
-    >>> y = [3,  1.1,  0.12]
-    >>> X = np.stack((x, y), axis=0)
-    >>> np.cov(X)
-    array([[11.71      , -4.286     ], # may vary
-           [-4.286     ,  2.144133]])
-    >>> np.cov(x, y)
-    array([[11.71      , -4.286     ], # may vary
-           [-4.286     ,  2.144133]])
-    >>> np.cov(x)
-    array(11.71)
+    >>> x.shape
+    (2, 3)
+    >>> [i for i in x]
+    [0, 1, 2, 2, 1, 0]
+    >>> out = np.cov(x)
+    >>> out.shape
+    (2, 2)
+    >>> [i for i in out]
+    [1.0, -1.0, -1.0, 1.0]
 
     """
     if not use_origin_backend(m):
@@ -447,27 +280,24 @@ def max(input, axis=None, out=None):
     """
     Return the maximum of an array or maximum along an axis.
 
-    Parameters
-    ----------
-    input : array_like
-        Input data.
-    axis : None or int or tuple of ints, optional
-        Axis or axes along which to operate.  By default, flattened input is
-        used.
-        .. versionadded:: 1.7.0
-        If this is a tuple of ints, the maximum is selected over multiple axes,
-        instead of a single axis or all the axes as before.
-    out : ndarray, optional
-        Alternative output array in which to place the result.  Must
-        be of the same shape and buffer length as the expected output.
-        See `ufuncs-output-type` for more details.
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Prameters ``out`` is supported only with default value ``None``.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    Returns
-    -------
-    amax : ndarray or scalar
-        Maximum of `a`. If `axis` is None, the result is a scalar value.
-        If `axis` is given, the result is an array of dimension
-        ``a.ndim - 1``.
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.arange(4).reshape((2,2))
+    >>> a.shape
+    (2, 2)
+    >>> [i for i in a]
+    [0, 1, 2, 3]
+    >>> np.max(a)
+    3
+
     """
 
     dim_input = input.ndim
@@ -503,27 +333,34 @@ def mean(a, axis=None, **kwargs):
     """
     Compute the arithmetic mean along the specified axis.
 
-    Returns the average of the array elements.
+    For full documentation refer to :obj:`numpy.mean`.
 
-    Parameters
-    ----------
-    a : array_like
-        Array containing numbers whose mean is desired. If `input` is not an
-        array, a conversion is attempted.
-    axis : None or int or tuple of ints, optional
-        Axis or axes along which the means are computed. The default is to
-        compute the mean of the flattened array.
-        .. versionadded:: 1.7.0
-        If this is a tuple of ints, a mean is performed over multiple axes,
-        instead of a single axis or all the axes as before.
-    kwargs : dict
-        Remaining input parameters of the function.
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Keyword arguments ``kwargs`` are currently unsupported.
+    Size of input array is limited by ``a.size > 0``.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    Returns
-    -------
-    m : ndarray, see dtype parameter above
-        If `out=None`, returns a new array containing the mean values,
-        otherwise a reference to the output array is returned.
+    See Also
+    --------
+    :obj:`dpnp.average` : Weighted average.
+    :obj:`dpnp.std` : Compute the standard deviation along the specified axis.
+    :obj:`dpnp.var` : Compute the variance along the specified axis.
+    :obj:`dpnp.nanmean` : Compute the arithmetic mean along the specified axis,
+                          ignoring NaNs.
+    :obj:`dpnp.nanstd` : Compute the standard deviation along
+                         the specified axis, while ignoring NaNs.
+    :obj:`dpnp.nanvar` : Compute the variance along the specified axis,
+                         while ignoring NaNs.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([[1, 2], [3, 4]])
+    >>> np.mean(a)
+    2.5
 
     """
     if not use_origin_backend(a) and not kwargs:
@@ -546,80 +383,32 @@ def mean(a, axis=None, **kwargs):
 def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
     """
     Compute the median along the specified axis.
-    Returns the median of the array elements.
 
-    Parameters
-    ----------
-    a : array_like
-        Input array or object that can be converted to an array.
-    axis : {int, sequence of int, None}, optional
-        Axis or axes along which the medians are computed. The default
-        is to compute the median along a flattened version of the array.
-        A sequence of axes is supported since version 1.9.0.
-    out : ndarray, optional
-        Alternative output array in which to place the result. It must
-        have the same shape and buffer length as the expected output,
-        but the type (of the output) will be cast if necessary.
-    overwrite_input : bool, optional
-       If True, then allow use of memory of input array `a` for
-       calculations. The input array will be modified by the call to
-       `median`. This will save memory when you do not need to preserve
-       the contents of the input array. Treat the input as undefined,
-       but it will probably be fully or partially sorted. Default is
-       False. If `overwrite_input` is ``True`` and `a` is not already an
-       `ndarray`, an error will be raised.
-    keepdims : bool, optional
-        If this is set to True, the axes which are reduced are left
-        in the result as dimensions with size one. With this option,
-        the result will broadcast correctly against the original `arr`.
-        .. versionadded:: 1.9.0
+    For full documentation refer to :obj:`numpy.median`.
 
-    Returns
-    -------
-    median : ndarray
-        A new array holding the result. If the input contains integers
-        or floats smaller than ``float64``, then the output data-type is
-        ``np.float64``.  Otherwise, the data-type of the output is the
-        same as that of the input. If `out` is specified, that array is
-        returned instead.
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Prameters ``axis`` is supported only with default value ``None``.
+    Prameters ``out`` is supported only with default value ``None``.
+    Prameters ``overwrite_input`` is supported only with default value ``False``.
+    Prameters ``keepdims`` is supported only with default value ``False``.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.mean`, :obj:`dpnp.percentile`
-
-    Notes
-    -----
-    Given a vector ``V`` of length ``N``, the median of ``V`` is the
-    middle value of a sorted copy of ``V``, ``V_sorted`` - i
-    e., ``V_sorted[(N-1)/2]``, when ``N`` is odd, and the average of the
-    two middle values of ``V_sorted`` when ``N`` is even.
+    :obj:`dpnp.mean` : Compute the arithmetic mean along the specified axis.
+    :obj:`dpnp.percentile` : Compute the q-th percentile of the data
+                             along the specified axis.
 
     Examples
     --------
+    >>> import dpnp as np
     >>> a = np.array([[10, 7, 4], [3, 2, 1]])
-    >>> a
-    array([[10,  7,  4],
-           [ 3,  2,  1]])
     >>> np.median(a)
     3.5
-    >>> np.median(a, axis=0)
-    array([6.5, 4.5, 2.5])
-    >>> np.median(a, axis=1)
-    array([7.,  2.])
-    >>> m = np.median(a, axis=0)
-    >>> out = np.zeros_like(m)
-    >>> np.median(a, axis=0, out=m)
-    array([6.5,  4.5,  2.5])
-    >>> m
-    array([6.5,  4.5,  2.5])
-    >>> b = a.copy()
-    >>> np.median(b, axis=1, overwrite_input=True)
-    array([7.,  2.])
-    >>> assert not np.all(a==b)
-    >>> b = a.copy()
-    >>> np.median(b, axis=None, overwrite_input=True)
-    3.5
-    >>> assert not np.all(a==b)
+
     """
     if not use_origin_backend(a):
         if not isinstance(a, dparray):
@@ -648,25 +437,24 @@ def min(input, axis=None, out=None):
     """
     Return the minimum along a given axis.
 
-    Parameters
-    ----------
-    input : array_like
-        Input data.
-    axis : None or int or tuple of ints, optional
-        Axis or axes along which to operate. By default, flattened input is used.
-        New in version 1.7.0.
-        If this is a tuple of ints, the minimum is selected over multiple axes,
-        instead of a single axis or all the axes as before.
-    out : ndarray, optional
-        Alternative output array in which to place the result. Must be of the
-        same shape and buffer length as the expected output.
-        See ufuncs-output-type for more details.
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Prameters ``out`` is supported only with default value ``None``.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    Returns
-    -------
-    m : ndarray, see dtype parameter above
-        Minimum of a. If axis is None, the result is a scalar value.
-        If axis is given, the result is an array of dimension a.ndim - 1.
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.arange(4).reshape((2,2))
+    >>> a.shape
+    (2, 2)
+    >>> [i for i in a]
+    [0, 1, 2, 3]
+    >>> np.min(a)
+    0
+
     """
 
     dim_input = input.ndim
@@ -702,14 +490,36 @@ def std(a, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue):
     """
     Compute the standard deviation along the specified axis.
 
-    Returns the standard deviation, a measure of the spread of a distribution,
-    of the array elements. The standard deviation is computed for the
-    flattened array by default, otherwise over the specified axis.
+    For full documentation refer to :obj:`numpy.std`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Size of input array is limited by ``a.size > 0``.
+    Prameters ``axis`` is supported only with default value ``None``.
+    Prameters ``dtype`` is supported only with default value ``None``.
+    Prameters ``out`` is supported only with default value ``None``.
+    Prameters ``keepdims`` is supported only with default value ``numpy._NoValue``.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.var`, :obj:`dpnp.mean`, :obj:`dpnp.nanmean`,
-    :obj:`dpnp.nanstd`, :obj:`dpnp.nanvar`, ufuncs-output-type
+    :obj:`dpnp.var` : Compute the variance along the specified axis.
+    :obj:`dpnp.mean` : Compute the arithmetic mean along the specified axis.
+    :obj:`dpnp.nanmean` : Compute the arithmetic mean along the specified axis,
+                          ignoring NaNs.
+    :obj:`dpnp.nanstd` : Compute the standard deviation along
+                         the specified axis, while ignoring NaNs.
+    :obj:`dpnp.nanvar` : Compute the variance along the specified axis,
+                         while ignoring NaNs.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([[1, 2], [3, 4]])
+    >>> np.std(a)
+    1.118033988749895
 
     """
 
@@ -740,14 +550,36 @@ def var(a, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue):
     """
     Compute the variance along the specified axis.
 
-    Returns the variance of the array elements, a measure of the spread of a
-    distribution.  The variance is computed for the flattened array by
-    default, otherwise over the specified axis.
+    For full documentation refer to :obj:`numpy.var`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Size of input array is limited by ``a.size > 0``.
+    Prameters ``axis`` is supported only with default value ``None``.
+    Prameters ``dtype`` is supported only with default value ``None``.
+    Prameters ``out`` is supported only with default value ``None``.
+    Prameters ``keepdims`` is supported only with default value ``numpy._NoValue``.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    :obj:`dpnp.std`, :obj:`dpnp.mean`, :obj:`dpnp.nanmean`,
-    :obj:`dpnp.nanstd`, :obj:`dpnp.nanvar`, ufuncs-output-type
+    :obj:`dpnp.std` : Compute the standard deviation along the specified axis.
+    :obj:`dpnp.mean` : Compute the arithmetic mean along the specified axis.
+    :obj:`dpnp.nanmean` : Compute the arithmetic mean along the specified axis,
+                          ignoring NaNs.
+    :obj:`dpnp.nanstd` : Compute the standard deviation along
+                         the specified axis, while ignoring NaNs.
+    :obj:`dpnp.nanvar` : Compute the variance along the specified axis,
+                         while ignoring NaNs.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([[1, 2], [3, 4]])
+    >>> np.var(a)
+    1.25
 
     """
 
