@@ -215,21 +215,21 @@ void custom_rng_lognormal_c(void* result, _DataType mean, _DataType stddev, size
 }
 
 template <typename _DataType>
-void custom_rng_multinomial_c(void* result, int ntrial, std::vector<double>& p_vector, size_t size)
+void custom_rng_multinomial_c(void* result, int ntrial, const double* p_vector, const size_t p_vector_size, size_t size)
 {
     if (!size)
     {
         return;
     }
     std::int32_t* result1 = reinterpret_cast<std::int32_t*>(result);
+    std::vector<double> p(p_vector, p_vector + p_vector_size);
 
-    mkl_rng::multinomial<std::int32_t> distribution(ntrial, p_vector);
-
+    mkl_rng::multinomial<std::int32_t> distribution(ntrial, p);
     // size = size
     // `result` is a array for random numbers
-    // `size` is a `result`'s len. `size = n * p_vector.size()`
+    // `size` is a `result`'s len. `size = n * p.size()`
     // `n` is a number of random values to be generated.
-    size_t n = size / p_vector.size();
+    size_t n = size / p.size();
     // perform generation
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, n, result1);
     event_out.wait();
