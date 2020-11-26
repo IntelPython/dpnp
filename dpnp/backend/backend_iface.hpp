@@ -813,11 +813,11 @@ INP_DLLEXPORT void custom_rng_lognormal_c(void* result, _DataType mean, _DataTyp
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_rng_multinomial_ccustom_rng_multinomial_c(void* result,
-                                                                    int ntrial,
-                                                                    const double* p_vector,
-                                                                    const size_t p_vector_size,
-                                                                    size_t size);
+INP_DLLEXPORT void custom_rng_multinomial_c(void* result,
+                                            int ntrial,
+                                            const double* p_vector,
+                                            const size_t p_vector_size,
+                                            size_t size);
 
 /**
  * @ingroup BACKEND_API
