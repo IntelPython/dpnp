@@ -65,6 +65,7 @@ Changing kind of array
 
    dpnp.asarray
    dpnp.asanyarray
+   dpnp.asfarray
    dpnp.asfortranarray
    dpnp.ascontiguousarray
    dpnp.require
