@@ -57,6 +57,7 @@ __all__ = [
     'laplace',
     'lognormal',
     'multinomial',
+    'multivariate_normal',
     'negative_binomial',
     'normal',
     'poisson',
@@ -877,6 +878,22 @@ def multinomial(n, pvals, size=None):
             return dpnp_multinomial(int(n), pvals, size)
 
     return call_origin(numpy.random.multinomial, n, pvals, size)
+
+
+def multivariate_normal(mean, cov, size=None, check_valid='warn', tol=1e-8):
+    """Multivariate distributions.
+
+    Draw random samples from a multivariate normal distribution.
+
+    """
+
+    if not use_origin_backend(mean) and dpnp_queue_is_cpu():
+        size = size + (len(mean),)
+        # TODO
+        # other shapes of size: None and int
+        return dpnp_multivariate_normal(mean, cov, size)
+
+    return call_origin(numpy.random.multivariate_normal, mean, cov, size, check_valid, tol)
 
 
 def negative_binomial(n, p, size=None):

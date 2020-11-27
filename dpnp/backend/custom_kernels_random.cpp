@@ -236,6 +236,34 @@ void custom_rng_multinomial_c(void* result, int ntrial, const double* p_vector, 
 }
 
 template <typename _DataType>
+void custom_rng_multivariate_normal_c(void* result,
+                                      const int dimen,
+                                      const double* mean_vector,
+                                      const size_t mean_vector_size,
+                                      const double* cov_vector,
+                                      const size_t cov_vector_size,
+                                      size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    std::vector<double> mean(mean_vector, mean_vector + mean_vector_size);
+    std::vector<double> cov(cov_vector, cov_vector + cov_vector_size);
+
+    // `result` is a array for random numbers
+    // `size` is a `result`'s len.
+    // `size1` is a number of random values to be generated for each dimension.
+    mkl_rng::gaussian_mv<_DataType> distribution(dimen, mean, cov);
+    size_t size1 = size / dimen;
+
+    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size1, result1);
+    event_out.wait();
+}
+
+template <typename _DataType>
 void custom_rng_negative_binomial_c(void* result, double a, double p, size_t size)
 {
     if (!size)
@@ -431,6 +459,8 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_RNG_LOGNORMAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_lognormal_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_MULTINOMIAL][eft_INT][eft_INT] = {eft_INT, (void*)custom_rng_multinomial_c<int>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_MULTIVARIATE_NORMAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_rng_multivariate_normal_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_NEGATIVE_BINOMIAL][eft_INT][eft_INT] = {eft_INT, (void*)custom_rng_negative_binomial_c<int>};
 

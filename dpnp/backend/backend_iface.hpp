@@ -821,6 +821,21 @@ INP_DLLEXPORT void custom_rng_multinomial_ccustom_rng_multinomial_c(void* result
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (multinomial distribution)
+ * TODO
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_rng_multivariate_normal_c(void* result,
+                                                    const int dimen,
+                                                    const double* mean_vector,
+                                                    const size_t mean_vector_size,
+                                                    const double* cov_vector,
+                                                    const size_t cov_vector_size,
+                                                    size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of random number generator (negative binomial distribution)
  *
  * @param [in]  size   Number of elements in `result` arrays.
