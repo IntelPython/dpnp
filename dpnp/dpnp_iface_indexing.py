@@ -57,48 +57,42 @@ def nonzero(a):
     """
     Return the indices of the elements that are non-zero.
 
-    Returns a tuple of arrays, one for each dimension of `a`,
-    containing the indices of the non-zero elements in that
-    dimension. The values in `a` are always tested and returned in
-    row-major, C-style order.
+    For full documentation refer to :obj:`numpy.nonzero`.
 
-    To group the indices by element, rather than dimension, use `argwhere`,
-    which returns a row for each non-zero element.
-
-    .. note::
-
-       When called on a zero-d array or scalar, ``nonzero(a)`` is treated
-       as ``nonzero(atleast1d(a))``.
-
-       .. deprecated:: 1.17.0
-
-          Use `atleast1d` explicitly if this behavior is deliberate.
-
-    Parameters
-    ----------
-    a : array_like
-        Input array.
-
-    Returns
-    -------
-    tuple_of_arrays : tuple
-        Indices of elements that are non-zero.
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    flatnonzero :
-        Return indices that are non-zero in the flattened version of the input
-        array.
-    ndarray.nonzero :
-        Equivalent ndarray method.
-    count_nonzero :
-        Counts the number of non-zero elements in the input array.
+    :obj:`dpnp.flatnonzero` : Return indices that are non-zero in
+                              the flattened version of the input array.
+    :obj:`dpnp.count_nonzero` : Counts the number of non-zero elements
+                                in the input array.
 
     Notes
     -----
     While the nonzero values can be obtained with ``a[nonzero(a)]``, it is
     recommended to use ``x[x.astype(bool)]`` or ``x[x != 0]`` instead, which
     will correctly handle 0-d arrays.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([[3, 0, 0], [0, 4, 0], [5, 6, 0]])
+    >>> out = np.nonzero(x)
+    >>> for arr in out:
+    >>>     [i for i in arr]
+    [0, 1, 2, 2]
+    [0, 1, 0, 1]
+
+    >>> x2 = np.array([3, 0, 0, 0, 4, 0, 5, 6, 0])
+    >>> out2 = np.nonzero(x2)
+    >>> for arr in out2:
+    >>>     [i for i in arr]
+    [0, 4, 6, 7]
 
     """
 

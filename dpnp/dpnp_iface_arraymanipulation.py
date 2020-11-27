@@ -57,18 +57,11 @@ def asfarray(a, dtype=numpy.float64):
     """
     Return an array converted to a float type.
 
-    Parameters
-    ----------
-    a : array_like
-        The input array.
-    dtype : str or dtype object, optional
-        Float type code to coerce input array `a`.  If `dtype` is one of the
-        'int' dtypes, it is replaced with float64.
+    For full documentation refer to :obj:`numpy.asfarray`.
 
-    Returns
-    -------
-    out : ndarray
-        The input `a` as a float ndarray.
+    Notes
+    -----
+    This function works exactly the same as :obj:`dpnp.array`.
 
     """
 
