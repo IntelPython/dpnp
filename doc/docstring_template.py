@@ -49,7 +49,7 @@ Recommendations:
    with short description.
 
    In case of only one link better to use one-line section:
-   .. seealso:: :func:`numpy.func` : short description.
+   .. seealso:: :func:`numpy.func` short description.
 
 4. Examples maybe partially taken from `numpy` docstrings
    with some modifications, ex:
@@ -78,7 +78,7 @@ def func(a, b=None, c=True):
     -----------
     Some limitations in comparison to baseline, ex:
     Input array data types are limited by supported DPNP :ref:`Data types`.
-    Prameters ``c`` is supported only with default value `True`.
+    Parameter ``c`` is supported only with default value ``True``.
     Otherwise the function will be executed sequentially on CPU.
 
     See Also

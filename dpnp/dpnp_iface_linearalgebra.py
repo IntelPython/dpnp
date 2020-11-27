@@ -204,7 +204,7 @@ def kron(x1, x2, **kwargs):
     -----------
     Function is executed sequentially on CPU.
 
-    .. seealso:: :obj:`dpnp.outer` : Returns the outer product of two arrays.
+    .. seealso:: :obj:`dpnp.outer` returns the outer product of two arrays.
 
     """
 

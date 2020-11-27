@@ -236,7 +236,7 @@ def cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=N
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    .. seealso:: :obj:`dpnp.corrcoef` : Normalized covariance matrix.
+    .. seealso:: :obj:`dpnp.corrcoef` normalized covariance matrix.
 
     Examples
     --------
