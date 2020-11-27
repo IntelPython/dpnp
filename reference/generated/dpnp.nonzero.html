@@ -196,39 +196,17 @@
 <dt id="dpnp.nonzero">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">nonzero</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_indexing.html#nonzero"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.nonzero" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the indices of the elements that are non-zero.</p>
-<p>Returns a tuple of arrays, one for each dimension of <cite>a</cite>,
-containing the indices of the non-zero elements in that
-dimension. The values in <cite>a</cite> are always tested and returned in
-row-major, C-style order.</p>
-<p>To group the indices by element, rather than dimension, use <cite>argwhere</cite>,
-which returns a row for each non-zero element.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>When called on a zero-d array or scalar, <code class="docutils literal notranslate"><span class="pre">nonzero(a)</span></code> is treated
-as <code class="docutils literal notranslate"><span class="pre">nonzero(atleast1d(a))</span></code>.</p>
-<div class="deprecated">
-<p><span class="versionmodified deprecated">Deprecated since version 1.17.0: </span>Use <cite>atleast1d</cite> explicitly if this behavior is deliberate.</p>
-</div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>a</strong> (<em>array_like</em>) – Input array.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>tuple_of_arrays</strong> – Indices of elements that are non-zero.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)">tuple</a></p>
-</dd>
-</dl>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.nonzero.html#numpy.nonzero" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.nonzero</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Input array is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Otherwise the function will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">flatnonzero</span></code></dt><dd><p>Return indices that are non-zero in the flattened version of the input array.</p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.flatnonzero</span></code></dt><dd><p>Return indices that are non-zero in the flattened version of the input array.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray.nonzero</span></code></dt><dd><p>Equivalent ndarray method.</p>
-</dd>
-<dt><a class="reference internal" href="dpnp.count_nonzero.html#dpnp.count_nonzero" title="dpnp.count_nonzero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count_nonzero</span></code></a></dt><dd><p>Counts the number of non-zero elements in the input array.</p>
+<dt><a class="reference internal" href="dpnp.count_nonzero.html#dpnp.count_nonzero" title="dpnp.count_nonzero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.count_nonzero</span></code></a></dt><dd><p>Counts the number of non-zero elements in the input array.</p>
 </dd>
 </dl>
 </div>
@@ -236,6 +214,23 @@ as <code class="docutils literal notranslate"><span class="pre">nonzero(atleast1
 <p>While the nonzero values can be obtained with <code class="docutils literal notranslate"><span class="pre">a[nonzero(a)]</span></code>, it is
 recommended to use <code class="docutils literal notranslate"><span class="pre">x[x.astype(bool)]</span></code> or <code class="docutils literal notranslate"><span class="pre">x[x</span> <span class="pre">!=</span> <span class="pre">0]</span></code> instead, which
 will correctly handle 0-d arrays.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">arr</span><span class="p">]</span>
+<span class="go">[0, 1, 2, 2]</span>
+<span class="go">[0, 1, 0, 1]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">out2</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">arr</span><span class="p">]</span>
+<span class="go">[0, 4, 6, 7]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>

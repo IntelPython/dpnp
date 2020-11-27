@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.deg2rad &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.asfarray &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.rad2deg" href="dpnp.rad2deg.html" />
-    <link rel="prev" title="dpnp.arctanh" href="dpnp.arctanh.html" /> 
+    <link rel="next" title="dpnp.repeat" href="dpnp.repeat.html" />
+    <link rel="prev" title="dpnp.asnumpy" href="dpnp.asnumpy.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -91,18 +91,34 @@
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="../ufunc.html#available-ufuncs">Available ufuncs</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../ufunc.html#math-operations">Math operations</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../ufunc.html#trigonometric-functions">Trigonometric functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../ufunc.html#bit-twiddling-functions">Bit-twiddling functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../ufunc.html#comparison-functions">Comparison functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../ufunc.html#floating-functions">Floating functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../creation.html">Array Creation Routines</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../manipulation.html">Array Manipulation Routines</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#basic-operations">Basic operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#changing-array-shape">Changing array shape</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#transpose-like-operations">Transpose-like operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#changing-number-of-dimensions">Changing number of dimensions</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../manipulation.html#changing-kind-of-array">Changing kind of array</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#joining-arrays">Joining arrays</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#splitting-arrays">Splitting arrays</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#tiling-arrays">Tiling arrays</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#adding-and-removing-elements">Adding and removing elements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#rearranging-elements">Rearranging elements</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../binary.html">Binary Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear Algebra</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pad.html">Padding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../polynomials.html">Polynomials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sorting.html">Sorting, Searching, and Counting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistical Functions</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../routines.html">Routines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../difference.html">Difference between DPNP and NumPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table</a></li>
@@ -158,15 +174,17 @@
         
           <li><a href="../index.html">API Reference</a> &raquo;</li>
         
-          <li><a href="../ufunc.html">Universal Functions (ufunc)</a> &raquo;</li>
+          <li><a href="../routines.html">Routines</a> &raquo;</li>
         
-      <li>dpnp.deg2rad</li>
+          <li><a href="../manipulation.html">Array Manipulation Routines</a> &raquo;</li>
+        
+      <li>dpnp.asfarray</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.deg2rad.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.asfarray.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -179,24 +197,15 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-deg2rad">
-<h1>dpnp.deg2rad<a class="headerlink" href="#dpnp-deg2rad" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-asfarray">
+<h1>dpnp.asfarray<a class="headerlink" href="#dpnp-asfarray" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.deg2rad">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">deg2rad</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_trigonometric.html#deg2rad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.deg2rad" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert angles from degrees to radians.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.deg2rad.html#numpy.deg2rad" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.deg2rad</span></code></a>.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference internal" href="dpnp.rad2deg.html#dpnp.rad2deg" title="dpnp.rad2deg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.rad2deg</span></code></a></dt><dd><p>Convert angles from radians to degrees.</p>
-</dd>
-<dt><a class="reference internal" href="dpnp.unwrap.html#dpnp.unwrap" title="dpnp.unwrap"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.unwrap</span></code></a></dt><dd><p>Remove large jumps in angle by wrapping.</p>
-</dd>
-</dl>
-</div>
+<dt id="dpnp.asfarray">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">asfarray</code><span class="sig-paren">(</span><em class="sig-param">a</em>, <em class="sig-param">dtype=&lt;class 'numpy.float64'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraymanipulation.html#asfarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.asfarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an array converted to a float type.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.asfarray.html#numpy.asfarray" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.asfarray</span></code></a>.</p>
 <p class="rubric">Notes</p>
-<p>This function works exactly the same as <a class="reference internal" href="dpnp.radians.html#dpnp.radians" title="dpnp.radians"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.radians</span></code></a>.</p>
+<p>This function works exactly the same as <a class="reference internal" href="dpnp.array.html#dpnp.array" title="dpnp.array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.array</span></code></a>.</p>
 </dd></dl>
 
 </div>
@@ -209,10 +218,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.rad2deg.html" class="btn btn-neutral float-right" title="dpnp.rad2deg" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.repeat.html" class="btn btn-neutral float-right" title="dpnp.repeat" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.arctanh.html" class="btn btn-neutral float-left" title="dpnp.arctanh" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.asnumpy.html" class="btn btn-neutral float-left" title="dpnp.asnumpy" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

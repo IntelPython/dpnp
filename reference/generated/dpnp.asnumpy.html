@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.tanh &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.asnumpy &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.arcsinh" href="dpnp.arcsinh.html" />
-    <link rel="prev" title="dpnp.cosh" href="dpnp.cosh.html" /> 
+    <link rel="next" title="dpnp.asfarray" href="dpnp.asfarray.html" />
+    <link rel="prev" title="dpnp.transpose" href="dpnp.transpose.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -91,18 +91,34 @@
 <li class="toctree-l1"><a class="reference internal" href="../../install.html">Installation Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="../ufunc.html#available-ufuncs">Available ufuncs</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../ufunc.html#math-operations">Math operations</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../ufunc.html#trigonometric-functions">Trigonometric functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../ufunc.html#bit-twiddling-functions">Bit-twiddling functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../ufunc.html#comparison-functions">Comparison functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../ufunc.html#floating-functions">Floating functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../creation.html">Array Creation Routines</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../manipulation.html">Array Manipulation Routines</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#basic-operations">Basic operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#changing-array-shape">Changing array shape</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#transpose-like-operations">Transpose-like operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#changing-number-of-dimensions">Changing number of dimensions</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../manipulation.html#changing-kind-of-array">Changing kind of array</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#joining-arrays">Joining arrays</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#splitting-arrays">Splitting arrays</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#tiling-arrays">Tiling arrays</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#adding-and-removing-elements">Adding and removing elements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#rearranging-elements">Rearranging elements</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../binary.html">Binary Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear Algebra</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pad.html">Padding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../polynomials.html">Polynomials</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sorting.html">Sorting, Searching, and Counting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistical Functions</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../routines.html">Routines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../difference.html">Difference between DPNP and NumPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table</a></li>
@@ -158,15 +174,17 @@
         
           <li><a href="../index.html">API Reference</a> &raquo;</li>
         
-          <li><a href="../ufunc.html">Universal Functions (ufunc)</a> &raquo;</li>
+          <li><a href="../routines.html">Routines</a> &raquo;</li>
         
-      <li>dpnp.tanh</li>
+          <li><a href="../manipulation.html">Array Manipulation Routines</a> &raquo;</li>
+        
+      <li>dpnp.asnumpy</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.tanh.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.asnumpy.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -179,25 +197,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-tanh">
-<h1>dpnp.tanh<a class="headerlink" href="#dpnp-tanh" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-asnumpy">
+<h1>dpnp.asnumpy<a class="headerlink" href="#dpnp-asnumpy" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.tanh">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">tanh</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_trigonometric.html#tanh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.tanh" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute hyperbolic tangent element-wise.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.tanh.html#numpy.tanh" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.tanh</span></code></a>.</p>
-<p class="rubric">Limitations</p>
-<p>Input array is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
-Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">numpy</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pi</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">out</span><span class="p">]</span>
-<span class="go">[-0.996272, 0.917152, 0.996272]</span>
-</pre></div>
-</div>
+<dt id="dpnp.asnumpy">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">asnumpy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">'C'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface.html#asnumpy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.asnumpy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the NumPy array with input data.</p>
+<p class="rubric">Notes</p>
+<p>This function works exactly the same as <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.asarray.html#numpy.asarray" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.asarray</span></code></a>.</p>
 </dd></dl>
 
 </div>
@@ -210,10 +217,10 @@ Input array data types are limited by supported DPNP <a class="reference interna
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.arcsinh.html" class="btn btn-neutral float-right" title="dpnp.arcsinh" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.asfarray.html" class="btn btn-neutral float-right" title="dpnp.asfarray" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.cosh.html" class="btn btn-neutral float-left" title="dpnp.cosh" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.transpose.html" class="btn btn-neutral float-left" title="dpnp.transpose" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

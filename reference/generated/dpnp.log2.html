@@ -185,6 +185,29 @@
 <dt id="dpnp.log2">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">log2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_trigonometric.html#log2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.log2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Trigonometric logarithm, element-wise.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.log2.html#numpy.log2" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.log2</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Input array is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.log.html#dpnp.log" title="dpnp.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.log</span></code></a></dt><dd><p>Natural logarithm, element-wise.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.log10.html#dpnp.log10" title="dpnp.log10"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.log10</span></code></a></dt><dd><p>Return the base 10 logarithm of the input array, element-wise.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.log1p.html#dpnp.log1p" title="dpnp.log1p"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.log1p</span></code></a></dt><dd><p>Return the natural logarithm of one plus the input array, element-wise.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="o">**</span><span class="mi">4</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">out</span><span class="p">]</span>
+<span class="go">[-inf, 0.0, 1.0, 4.0]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>

@@ -1,0 +1,6 @@
+﻿dpnp.asnumpy
+============
+
+.. currentmodule:: dpnp
+
+.. autofunction:: asnumpy

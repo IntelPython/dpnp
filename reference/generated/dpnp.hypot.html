@@ -185,21 +185,22 @@
 <dt id="dpnp.hypot">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">hypot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_trigonometric.html#hypot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.hypot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given the “legs” of a right triangle, return its hypotenuse.</p>
-<p>Equivalent to sqrt(x1**2 + x2**2), element-wise. If x1 or x2 is scalar_like (i.e., unambiguously cast-able to a scalar type), it is broadcast for use with each element of the other argument. (See Examples)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x1</strong> (<em>Leg of the triangle</em><em>(</em><em>s</em><em>)</em><em> If x1.shape != x2.shape</em><em>, </em><em>they must be broadcastable to a common shape</em><em> (</em><em>which becomes the shape of the output</em><em>)</em><em></em>) – </p></li>
-<li><p><strong>x2</strong> (<em>Leg of the triangle</em><em>(</em><em>s</em><em>)</em><em> If x1.shape != x2.shape</em><em>, </em><em>they must be broadcastable to a common shape</em><em> (</em><em>which becomes the shape of the output</em><em>)</em><em></em>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>The hypotenuse of the triangle(s) This is a scalar if both x1 and x2 are scalars.</p>
-</dd>
-</dl>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.hypot.html#numpy.hypot" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.hypot</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Input arrays are supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Otherwise the function will be executed sequentially on CPU.
+Parameter <code class="docutils literal notranslate"><span class="pre">out</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Sizes, shapes of input arrays are supported to be equal.
+Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x1</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x2</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">out</span><span class="p">]</span>
+<span class="go">[5.0, 5.0, 5.0]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>

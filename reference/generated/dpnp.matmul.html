@@ -198,32 +198,38 @@
 <dl class="py function">
 <dt id="dpnp.matmul">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">matmul</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_array1</span></em>, <em class="sig-param"><span class="n">in_array2</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface.html#matmul"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.matmul" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the matrix product of two arrays and is the implementation of
-the <cite>&#64;</cite> operator introduced in Python 3.5 following PEP465.</p>
-<p>The main difference against dpnp.dot are the handling of arrays with more
-than 2 dimensions. For more information see <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.matmul.html#numpy.matmul" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.matmul</span></code></a>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The out array as input is currently not supported.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>in_array1</strong> (<em>dpnp.dparray</em>) – The left argument.</p></li>
-<li><p><strong>in_array2</strong> (<em>dpnp.dparray</em>) – The right argument.</p></li>
-<li><p><strong>out</strong> (<em>dpnp.dparray</em>) – Output array.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Output array.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dpnp.dparray</p>
-</dd>
-</dl>
+<dd><p>Matrix product of two arrays.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.matmul.html#numpy.matmul" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.matmul</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Input arrays are supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Otherwise the function will be executed sequentially on CPU.
+Parameter <code class="docutils literal notranslate"><span class="pre">out</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.matmul.html#numpy.matmul" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.matmul</span></code></a></p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.vdot.html#dpnp.vdot" title="dpnp.vdot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.vdot</span></code></a></dt><dd><p>Complex-conjugating dot product.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.tensordot.html#dpnp.tensordot" title="dpnp.tensordot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.tensordot</span></code></a></dt><dd><p>Sum products over arbitrary axes.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.einsum.html#dpnp.einsum" title="dpnp.einsum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.einsum</span></code></a></dt><dd><p>Einstein summation convention.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.dot.html#dpnp.dot" title="dpnp.dot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.dot</span></code></a></dt><dd><p>Alternative matrix product with different broadcasting rules.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="mi">9</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="mi">9</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(9, 5, 7, 3)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="go">array([[4, 1],</span>
+<span class="go">       [2, 2]])</span>
+</pre></div>
 </div>
 </dd></dl>
 

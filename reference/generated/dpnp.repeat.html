@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Binary Operations" href="../binary.html" />
-    <link rel="prev" title="dpnp.transpose" href="dpnp.transpose.html" /> 
+    <link rel="prev" title="dpnp.asfarray" href="dpnp.asfarray.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -206,14 +206,14 @@
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.repeat.html#numpy.repeat" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.repeat</span></code></a>.</p>
 <p class="rubric">Limitations</p>
 <p>Input array is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
-Prameters <code class="docutils literal notranslate"><span class="pre">axis</span></code> is supported with value either <code class="docutils literal notranslate"><span class="pre">None</span></code> or <code class="docutils literal notranslate"><span class="pre">0</span></code>.
+Parameter <code class="docutils literal notranslate"><span class="pre">axis</span></code> is supported with value either <code class="docutils literal notranslate"><span class="pre">None</span></code> or <code class="docutils literal notranslate"><span class="pre">0</span></code>.
 Dimension of input array are supported to be less than <code class="docutils literal notranslate"><span class="pre">2</span></code>.
 Otherwise the function will be executed sequentially on CPU.
 If <code class="docutils literal notranslate"><span class="pre">repeats</span></code> is <code class="docutils literal notranslate"><span class="pre">tuple</span></code> or <code class="docutils literal notranslate"><span class="pre">list</span></code>, should be <code class="docutils literal notranslate"><span class="pre">len(repeats)</span> <span class="pre">&gt;</span> <span class="pre">1</span></code>.
 Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.tile.html#numpy.tile" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.tile</span></code></a> : Tile an array.</p>
+<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.tile.html#numpy.tile" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.tile</span></code></a> tile an array.</p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
@@ -237,7 +237,7 @@ Input array data types are limited by supported DPNP <a class="reference interna
         <a href="../binary.html" class="btn btn-neutral float-right" title="Binary Operations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.transpose.html" class="btn btn-neutral float-left" title="dpnp.transpose" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.asfarray.html" class="btn btn-neutral float-left" title="dpnp.asfarray" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

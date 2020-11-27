@@ -203,21 +203,29 @@
 <dt id="dpnp.unwrap">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">unwrap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_trigonometric.html#unwrap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.unwrap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Unwrap by changing deltas between values to 2*pi complement.</p>
-<p>Unwrap radian phase p by changing absolute jumps greater than discont to their 2*pi complement along the given axis.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>x1</strong> (<em>Input array.</em>) – </p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Output array.</p>
-</dd>
-</dl>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.unwrap.html#numpy.unwrap" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.unwrap</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Input array is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="dpnp.rad2deg.html#dpnp.rad2deg" title="dpnp.rad2deg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.rad2deg</span></code></a>, <a class="reference internal" href="dpnp.deg2rad.html#dpnp.deg2rad" title="dpnp.deg2rad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.deg2rad</span></code></a></p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.rad2deg.html#dpnp.rad2deg" title="dpnp.rad2deg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.rad2deg</span></code></a></dt><dd><p>Convert angles from radians to degrees.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.deg2rad.html#dpnp.deg2rad" title="dpnp.deg2rad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.deg2rad</span></code></a></dt><dd><p>Convert angles from degrees to radians.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">phase</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">phase</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">pi</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unwrap</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">out</span><span class="p">]</span>
+<span class="go">[0.0, 0.78539816, 1.57079633, 5.49778714, 6.28318531]</span>
+</pre></div>
 </div>
 </dd></dl>
 

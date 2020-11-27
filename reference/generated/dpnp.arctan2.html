@@ -184,26 +184,33 @@
 <dl class="py function">
 <dt id="dpnp.arctan2">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">arctan2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">x2</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_trigonometric.html#arctan2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.arctan2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Element-wise arc tangent of x1/x2 choosing the quadrant correctly.</p>
-<p>The quadrant (i.e., branch) is chosen so that arctan2(x1, x2) is the signed angle in radians between the ray ending at the origin and passing through the point (1,0), and the ray ending at the origin and passing through the point (x2, x1). (Note the role reversal: the “y-coordinate” is the first function parameter, the “x-coordinate” is the second.) By IEEE convention, this function is defined for x2 = +/-0 and for either or both of x1 and x2 = +/-inf (see Notes for specific values).</p>
-<p>This function is not defined for complex-valued arguments; for the so-called argument of complex values, use angle.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x1</strong> (<em>y-coordinates.</em>) – </p></li>
-<li><p><strong>x2</strong> (<em>x-coordinates. If x1.shape != x2.shape</em><em>, </em><em>they must be broadcastable to a common shape</em><em> (</em><em>which becomes the shape of the output</em><em>)</em><em></em>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Array of angles in radians, in the range [-pi, pi] This is a scalar if both x1 and x2 are scalars.</p>
-</dd>
-</dl>
+<dd><p>Element-wise arc tangent of <code class="docutils literal notranslate"><span class="pre">x1/x2</span></code> choosing the quadrant correctly.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.arctan2.html#numpy.arctan2" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.arctan2</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Input arrays are supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Otherwise the function will be executed sequentially on CPU.
+Parameter <code class="docutils literal notranslate"><span class="pre">out</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Sizes, shapes of input arrays are supported to be equal.
+Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="dpnp.arctan.html#dpnp.arctan" title="dpnp.arctan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.arctan</span></code></a>, <a class="reference internal" href="dpnp.tan.html#dpnp.tan" title="dpnp.tan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.tan</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.angle</span></code></p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.arctan.html#dpnp.arctan" title="dpnp.arctan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.arctan</span></code></a></dt><dd><p>Trigonometric inverse tangent, element-wise.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.tan.html#dpnp.tan" title="dpnp.tan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.tan</span></code></a></dt><dd><p>Compute tangent element-wise.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.angle</span></code></dt><dd><p>Return the angle of the complex argument.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">out</span><span class="p">]</span>
+<span class="go">[1.57079633, -1.57079633]</span>
+</pre></div>
 </div>
 </dd></dl>
 

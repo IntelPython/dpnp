@@ -198,25 +198,15 @@
 <dt id="dpnp.array_equal">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">array_equal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a1</span></em>, <em class="sig-param"><span class="n">a2</span></em>, <em class="sig-param"><span class="n">equal_nan</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface.html#array_equal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.array_equal" title="Permalink to this definition">¶</a></dt>
 <dd><p>True if two arrays have the same shape and elements, False otherwise.</p>
-<dl class="simple">
-<dt>Parameters</dt><dd><dl class="simple">
-<dt>a1, a2: array_like</dt><dd><p>Input arrays.</p>
-</dd>
-<dt>equal_nanbool</dt><dd><p>Whether to compare NaN’s as equal. If the dtype of a1 and a2 is complex,
-values will be considered equal if either the real or the imaginary component of a given value is nan.
-New in version 1.19.0.</p>
-</dd>
-</dl>
-</dd>
-<dt>Returns</dt><dd><dl class="simple">
-<dt>b: bool</dt><dd><p>Returns True if the arrays are equal.</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.array_equal.html#numpy.array_equal" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.array_equal</span></code></a>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.allclose.html#numpy.allclose" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.allclose</span></code></a> <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.array_equiv.html#numpy.array_equiv" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.array_equiv</span></code></a></p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.allclose</span></code></dt><dd><p>Returns True if two arrays are element-wise equal within a tolerance.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.array_equiv</span></code></dt><dd><p>Returns True if input arrays are shape consistent and all elements equal.</p>
+</dd>
+</dl>
 </div>
 </dd></dl>
 

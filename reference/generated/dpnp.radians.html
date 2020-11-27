@@ -203,20 +203,21 @@
 <dt id="dpnp.radians">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">radians</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_trigonometric.html#radians"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.radians" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert angles from degrees to radians.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>x1</strong> (<em>Input array in degrees.</em>) – </p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>The corresponding radian values. This is a scalar if x is a scalar.</p>
-</dd>
-</dl>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.radians.html#numpy.radians" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.radians</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Input array is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="dpnp.deg2rad.html#dpnp.deg2rad" title="dpnp.deg2rad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.deg2rad</span></code></a></p>
+<p><a class="reference internal" href="dpnp.deg2rad.html#dpnp.deg2rad" title="dpnp.deg2rad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.deg2rad</span></code></a> equivalent function.</p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">deg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">6.</span><span class="p">)</span> <span class="o">*</span> <span class="mf">30.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">deg</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">out</span><span class="p">]</span>
+<span class="go">[0.0, 0.52359878, 1.04719755, 1.57079633, 2.0943951, 2.61799388]</span>
+</pre></div>
 </div>
 </dd></dl>
 
