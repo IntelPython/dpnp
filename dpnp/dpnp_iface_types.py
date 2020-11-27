@@ -69,6 +69,9 @@ integer = numpy.integer
 def isscalar(obj):
     """
     Returns True if the type of `obj` is a scalar type.
+
+    For full documentation refer to :obj:`numpy.isscalar`.
+
     """
     return numpy.isscalar(obj)
 
