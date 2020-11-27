@@ -63,8 +63,8 @@ def argmax(in_array1, axis=None, out=None):
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
     Otherwise the function will be executed sequentially on CPU.
-    Prameters ``axis`` is supported only with default value ``None``.
-    Prameters ``out`` is supported only with default value ``None``.
+    Parameter ``axis`` is supported only with default value ``None``.
+    Parameter ``out`` is supported only with default value ``None``.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -122,8 +122,8 @@ def argmin(in_array1, axis=None, out=None):
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
     Otherwise the function will be executed sequentially on CPU.
-    Prameters ``axis`` is supported only with default value ``None``.
-    Prameters ``out`` is supported only with default value ``None``.
+    Parameter ``axis`` is supported only with default value ``None``.
+    Parameter ``out`` is supported only with default value ``None``.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also

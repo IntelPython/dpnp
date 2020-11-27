@@ -70,8 +70,8 @@ def copyto(dst, src, casting='same_kind', where=True):
     -----------
     Input arrays are supported as :obj:`dpnp.ndarray`.
     Otherwise the function will be executed sequentially on CPU.
-    Prameters ``casting`` is supported only with default value ``"same_kind"``.
-    Prameters ``where`` is supported only with default value ``True``.
+    Parameter ``casting`` is supported only with default value ``"same_kind"``.
+    Parameter ``where`` is supported only with default value ``True``.
     Shapes of input arrays are supported to be equal.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -217,13 +217,13 @@ def repeat(x1, repeats, axis=None):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
-    Prameters ``axis`` is supported with value either ``None`` or ``0``.
+    Parameter ``axis`` is supported with value either ``None`` or ``0``.
     Dimension of input array are supported to be less than ``2``.
     Otherwise the function will be executed sequentially on CPU.
     If ``repeats`` is ``tuple`` or ``list``, should be ``len(repeats) > 1``.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    .. seealso:: :obj:`numpy.tile` : Tile an array.
+    .. seealso:: :obj:`numpy.tile` tile an array.
 
     Examples
     --------
@@ -273,7 +273,7 @@ def rollaxis(a, axis, start=0):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
-    Prameters ``axis`` is supported as integer only.
+    Parameter ``axis`` is supported as integer only.
     Parameter ``start`` is limited by ``-a.ndim <= start <= a.ndim``.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
