@@ -54,6 +54,7 @@ __all__ = [
     "dpnp_laplace",
     "dpnp_lognormal",
     "dpnp_multinomial",
+    "dpnp_multivariate_normal",
     "dpnp_negative_binomial",
     "dpnp_normal",
     "dpnp_poisson",
@@ -82,6 +83,13 @@ ctypedef void(*fptr_custom_rng_hypergeometric_c_1out_t)(void *, int, int, int, s
 ctypedef void(*fptr_custom_rng_laplace_c_1out_t)(void *, double, double, size_t) except +
 ctypedef void(*fptr_custom_rng_lognormal_c_1out_t)(void *, double, double, size_t) except +
 ctypedef void(*fptr_custom_rng_multinomial_c_1out_t)(void* result, int, const double*, const size_t, size_t) except +
+ctypedef void(*fptr_custom_rng_multivariate_normal_c_1out_t)(void *,
+                                                             const int,
+                                                             const double *,
+                                                             const size_t,
+                                                             const double *,
+                                                             const size_t,
+                                                             size_t) except +
 ctypedef void(*fptr_custom_rng_negative_binomial_c_1out_t)(void *, double, double, size_t) except +
 ctypedef void(*fptr_custom_rng_normal_c_1out_t)(void *, double, double, size_t) except +
 ctypedef void(*fptr_custom_rng_poisson_c_1out_t)(void *, double, size_t) except +
@@ -462,6 +470,52 @@ cpdef dparray dpnp_multinomial(int ntrial, p, size):
         func = <fptr_custom_rng_multinomial_c_1out_t > kernel_data.ptr
         # call FPTR function
         func(result.get_data(), ntrial, p_vector, p_vector_size, result.size)
+
+    return result
+
+
+cpdef dparray dpnp_multivariate_normal(numpy.ndarray mean, numpy.ndarray cov, size):
+    """
+    Returns an array populated with samples from multivariate normal distribution.
+    `multivariate_normal` generates a matrix filled with random floats sampled from a
+    multivariate normal distribution.
+
+    """
+
+    dtype = numpy.float64
+    cdef dparray result
+    cdef int dimen
+    cdef double * mean_vector
+    cdef double * cov_vector
+    cdef size_t mean_vector_size
+    cdef size_t cov_vector_size
+
+    cdef DPNPFuncType param1_type
+    cdef DPNPFuncData kernel_data
+    cdef fptr_custom_rng_multivariate_normal_c_1out_t func
+
+    # mean and cov expected numpy.ndarray in C order (row major)
+    mean_vector = <double *> numpy.PyArray_DATA(mean)
+    cov_vector = <double *> numpy.PyArray_DATA(cov)
+
+    mean_vector_size = mean.size
+    cov_vector_size = cov.size
+
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+
+    # get the FPTR data structure
+    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_MULTIVARIATE_NORMAL, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    result = dparray(size, dtype=result_type)
+
+    dimen = len(mean)
+
+    func = <fptr_custom_rng_multivariate_normal_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), dimen, mean_vector, mean_vector_size, cov_vector, cov_vector_size, result.size)
 
     return result
 
