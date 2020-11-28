@@ -634,11 +634,11 @@ def test_multivariate_normal_invalid_args():
     with pytest.raises(ValueError):
         dpnp.random.multivariate_normal(mean=mean, cov=cov, size=size)
 
-
     mean = [2.56, 3.23]  # OK
     cov = [1, 0, 0, 1]   # `cov` must be 2 dimensional and square
     with pytest.raises(ValueError):
         dpnp.random.multivariate_normal(mean=mean, cov=cov, size=size)
+
 
 def test_multivariate_normal_check_moments():
     seed = 2804183
