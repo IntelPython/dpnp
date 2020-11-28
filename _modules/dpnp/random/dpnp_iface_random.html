@@ -212,6 +212,7 @@
     <span class="s1">&#39;laplace&#39;</span><span class="p">,</span>
     <span class="s1">&#39;lognormal&#39;</span><span class="p">,</span>
     <span class="s1">&#39;multinomial&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;multivariate_normal&#39;</span><span class="p">,</span>
     <span class="s1">&#39;negative_binomial&#39;</span><span class="p">,</span>
     <span class="s1">&#39;normal&#39;</span><span class="p">,</span>
     <span class="s1">&#39;poisson&#39;</span><span class="p">,</span>
@@ -1032,6 +1033,124 @@
             <span class="k">return</span> <span class="n">dpnp_multinomial</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">pvals</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multinomial</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">pvals</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="multivariate_normal"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.multivariate_normal.html#dpnp.random.multivariate_normal">[docs]</a><span class="k">def</span> <span class="nf">multivariate_normal</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">check_valid</span><span class="o">=</span><span class="s1">&#39;warn&#39;</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Multivariate normal distributions.</span>
+
+<span class="sd">    Draw random samples from a multivariate normal distribution.</span>
+
+<span class="sd">    The multivariate normal, multinormal or Gaussian distribution is a</span>
+<span class="sd">    generalization of the one-dimensional normal distribution to higher</span>
+<span class="sd">    dimensions.  Such a distribution is specified by its mean and</span>
+<span class="sd">    covariance matrix.  These parameters are analogous to the mean</span>
+<span class="sd">    (average or &quot;center&quot;) and variance (standard deviation, or &quot;width,&quot;</span>
+<span class="sd">    squared) of the one-dimensional normal distribution.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mean : 1-D array_like, of length N</span>
+<span class="sd">        Mean of the N-dimensional distribution.</span>
+<span class="sd">    cov : 2-D array_like, of shape (N, N)</span>
+<span class="sd">        Covariance matrix of the distribution. It must be symmetric and</span>
+<span class="sd">        positive-semidefinite for proper sampling.</span>
+<span class="sd">    size : int or tuple of ints, optional</span>
+<span class="sd">        Given a shape of, for example, ``(m,n,k)``, ``m*n*k`` samples are</span>
+<span class="sd">        generated, and packed in an `m`-by-`n`-by-`k` arrangement.  Because</span>
+<span class="sd">        each sample is `N`-dimensional, the output shape is ``(m,n,k,N)``.</span>
+<span class="sd">        If no shape is specified, a single (`N`-D) sample is returned.</span>
+<span class="sd">    check_valid : { &#39;warn&#39;, &#39;raise&#39;, &#39;ignore&#39; }, optional</span>
+<span class="sd">        Behavior when the covariance matrix is not positive semidefinite.</span>
+<span class="sd">        Currently ignored and not used.</span>
+<span class="sd">    tol : float, optional</span>
+<span class="sd">        Tolerance when checking the singular values in covariance matrix.</span>
+<span class="sd">        cov is cast to double before the check. Currently ignored and not used.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dparray</span>
+<span class="sd">        The drawn samples, of shape *size*, if that was provided.  If not,</span>
+<span class="sd">        the shape is ``(N,)``.</span>
+<span class="sd">        In other words, each entry ``out[i,j,...,:]`` is an N-dimensional</span>
+<span class="sd">        value drawn from the distribution.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The mean is a coordinate in N-dimensional space, which represents the</span>
+<span class="sd">    location where samples are most likely to be generated.  This is</span>
+<span class="sd">    analogous to the peak of the bell curve for the one-dimensional or</span>
+<span class="sd">    univariate normal distribution.</span>
+
+<span class="sd">    Covariance indicates the level to which two variables vary together.</span>
+<span class="sd">    From the multivariate normal distribution, we draw N-dimensional</span>
+<span class="sd">    samples, :math:`X = [x_1, x_2, ... x_N]`.  The covariance matrix</span>
+<span class="sd">    element :math:`C_{ij}` is the covariance of :math:`x_i` and :math:`x_j`.</span>
+<span class="sd">    The element :math:`C_{ii}` is the variance of :math:`x_i` (i.e. its</span>
+<span class="sd">    &quot;spread&quot;).</span>
+
+<span class="sd">    Instead of specifying the full covariance matrix, popular</span>
+<span class="sd">    approximations include:</span>
+
+<span class="sd">      - Spherical covariance (`cov` is a multiple of the identity matrix)</span>
+<span class="sd">      - Diagonal covariance (`cov` has non-negative elements, and only on</span>
+<span class="sd">        the diagonal)</span>
+
+<span class="sd">    This geometrical property can be seen in two dimensions by plotting</span>
+<span class="sd">    generated data-points:</span>
+
+<span class="sd">    &gt;&gt;&gt; mean = [0, 0]</span>
+<span class="sd">    &gt;&gt;&gt; cov = [[1, 0], [0, 100]]  # diagonal covariance</span>
+
+<span class="sd">    Diagonal covariance means that points are oriented along x or y-axis:</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; x, y = np.random.multivariate_normal(mean, cov, 5000).T</span>
+<span class="sd">    &gt;&gt;&gt; plt.plot(x, y, &#39;x&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.axis(&#39;equal&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    Note that the covariance matrix must be positive semidefinite (a.k.a.</span>
+<span class="sd">    nonnegative-definite). Otherwise, the behavior of this method is</span>
+<span class="sd">    undefined and backwards compatibility is not guaranteed.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Papoulis, A., &quot;Probability, Random Variables, and Stochastic</span>
+<span class="sd">           Processes,&quot; 3rd ed., New York: McGraw-Hill, 1991.</span>
+<span class="sd">    .. [2] Duda, R. O., Hart, P. E., and Stork, D. G., &quot;Pattern</span>
+<span class="sd">           Classification,&quot; 2nd ed., New York: Wiley, 2001.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; mean = (1, 2)</span>
+<span class="sd">    &gt;&gt;&gt; cov = [[1, 0], [0, 1]]</span>
+<span class="sd">    &gt;&gt;&gt; x = dpnp.random.multivariate_normal(mean, cov, (3, 3))</span>
+<span class="sd">    &gt;&gt;&gt; x.shape</span>
+<span class="sd">    (3, 3, 2)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">mean</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dpnp_queue_is_cpu</span><span class="p">():</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
+        <span class="n">cov</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cov</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">integer</span><span class="p">)):</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="n">size</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mean</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;mean must be 1 dimensional&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cov</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">cov</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">cov</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;cov must be 2 dimensional and square&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mean</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">cov</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;mean and cov must have same length&quot;</span><span class="p">)</span>
+        <span class="n">final_shape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">shape</span><span class="p">[:])</span>
+        <span class="n">final_shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mean</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">dpnp_multivariate_normal</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">final_shape</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">check_valid</span><span class="p">,</span> <span class="n">tol</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="negative_binomial"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.negative_binomial.html#dpnp.random.negative_binomial">[docs]</a><span class="k">def</span> <span class="nf">negative_binomial</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>

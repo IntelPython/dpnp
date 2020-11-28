@@ -32,6 +32,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "custom_rng_laplace_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga5f9688ac0e6ce2686965df03e37757ae", null ],
     [ "custom_rng_lognormal_c", "group___b_a_c_k_e_n_d___a_p_i.html#gadcf7f5e3d983619656c72b942e2bc075", null ],
     [ "custom_rng_multinomial_c", "group___b_a_c_k_e_n_d___a_p_i.html#gac9ae42a430be29b913fa774095b6325e", null ],
+    [ "custom_rng_multivariate_normal_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga15115d994c7019571a3af47c3232de0f", null ],
     [ "custom_rng_negative_binomial_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga614afeb47001aadd191c2f52289722dc", null ],
     [ "custom_rng_normal_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga8c3c5b177ffc3f86e63b3e4ec80b3eb7", null ],
     [ "custom_rng_poisson_c", "group___b_a_c_k_e_n_d___a_p_i.html#gaeee97f774cb0c2a1d94b8a3c53c1569b", null ],
