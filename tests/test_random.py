@@ -640,6 +640,19 @@ def test_multivariate_normal_invalid_args():
     with pytest.raises(ValueError):
         dpnp.random.multivariate_normal(mean=mean, cov=cov, size=size)
 
+def test_multivariate_normal_check_moments():
+    seed = 2804183
+    dpnp.random.seed(seed)
+
+    mean = [2.56, 3.23]
+    cov = [[1, 0], [0, 1]]
+    size = 10**5
+
+    res = numpy.array(dpnp.random.multivariate_normal(mean=mean, cov=cov, size=size))
+    res_mean = [numpy.mean(res.T[0]), numpy.mean(res.T[1])]
+
+    assert_allclose(res_mean, mean, rtol=1e-03, atol=0)
+
 
 def test_negative_binomial_seed():
     seed = 28041990
