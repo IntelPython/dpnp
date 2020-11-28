@@ -596,6 +596,51 @@ def test_multinomial_check_moments():
     assert math.isclose(mean, expected_mean, abs_tol=0.003)
 
 
+def test_multivariate_normal_output_shape_check():
+    seed = 28041990
+    size = 100
+    mean = [2.56, 3.23]
+    cov = [[1, 0], [0, 1]]
+    expected_shape = (100, 2)
+
+    dpnp.random.seed(seed)
+    res = dpnp.random.multivariate_normal(mean, cov, size=100)
+    assert res.shape == expected_shape
+
+
+def test_multivariate_normal_seed():
+    seed = 28041990
+    size = 100
+    mean = [2.56, 3.23]
+    cov = [[1, 0], [0, 1]]
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.multivariate_normal(mean, cov, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.multivariate_normal(mean, cov, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_multivariate_normal_invalid_args():
+    size = 10
+
+    mean = [2.56, 3.23]  # OK
+    cov = [[1, 0]]       # `mean` and `cov` must have same length
+    with pytest.raises(ValueError):
+        dpnp.random.multivariate_normal(mean=mean, cov=cov, size=size)
+
+    mean = [[2.56, 3.23]]   # `mean` must be 1 dimensional
+    cov = [[1, 0], [0, 1]]  # OK
+    with pytest.raises(ValueError):
+        dpnp.random.multivariate_normal(mean=mean, cov=cov, size=size)
+
+
+    mean = [2.56, 3.23]  # OK
+    cov = [1, 0, 0, 1]   # `cov` must be 2 dimensional and square
+    with pytest.raises(ValueError):
+        dpnp.random.multivariate_normal(mean=mean, cov=cov, size=size)
+
+
 def test_negative_binomial_seed():
     seed = 28041990
     size = 100

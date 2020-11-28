@@ -475,7 +475,7 @@ cpdef dparray dpnp_multinomial(int ntrial, p, size):
     return result
 
 
-cpdef dparray dpnp_multivariate_normal(mean, cov, size):
+cpdef dparray dpnp_multivariate_normal(numpy.ndarray mean, numpy.ndarray cov, size):
     """
     Returns an array populated with samples from multivariate normal distribution.
     `multivariate_normal` generates a matrix filled with random floats sampled from a
@@ -495,14 +495,12 @@ cpdef dparray dpnp_multivariate_normal(mean, cov, size):
     cdef DPNPFuncData kernel_data
     cdef fptr_custom_rng_multivariate_normal_c_1out_t func
 
-    mean_ = numpy.asarray(mean, dtype=numpy.float64)
-    cov_ = numpy.asarray(cov, dtype=numpy.float64)
+    # mean and cov expected numpy.ndarray in C order (row major)
+    mean_vector = <double *> numpy.PyArray_DATA(mean)
+    cov_vector = <double *> numpy.PyArray_DATA(cov)
 
-    mean_vector = <double *> numpy.PyArray_DATA(mean_)
-    cov_vector = <double *> numpy.PyArray_DATA(cov_)
-
-    mean_vector_size = mean_.size
-    cov_vector_size = cov_.size
+    mean_vector_size = mean.size
+    cov_vector_size = cov.size
 
     # convert string type names (dparray.dtype) to C enum DPNPFuncType
     param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
