@@ -37,7 +37,6 @@ import dpnp.config as config
 
 from dpnp.backend cimport *
 from dpnp.dparray cimport dparray
-import dpnp.dparray
 from dpnp.dpnp_utils cimport *
 import numpy
 cimport numpy
