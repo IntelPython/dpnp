@@ -332,7 +332,7 @@ def choice(a, size=None, replace=True, p=None):
     Notes
     -----
     The function uses `numpy.random.choice` on the backend and will be
-    executed on CPU.
+    executed on fallback backend.
 
     """
 
