@@ -122,7 +122,7 @@ var NAVTREEINDEX0 =
 "group___b_a_c_k_e_n_d___a_p_i.html#ggaae520250ac00985feaadcbd984c30ab1a332c42fe262bf0855ca1de84d27049b1":[0,0,2,1],
 "group___b_a_c_k_e_n_d___a_p_i.html#ggaae520250ac00985feaadcbd984c30ab1acc7580c6d50ad116c1c0deb3f7adf468":[0,0,2,0],
 "group___b_a_c_k_e_n_d___f_f_t___a_p_i.html":[0,1],
-"group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga946829790944d58cb7c157e05672e6df":[0,1,0],
+"group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga477ae04183f86ac18c2d4e60235e8355":[0,1,0],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html":[0,2],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ga52f631e01afd73cc5573f9e8f61bd78f":[0,2,1],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ga8b20590525bff7c7ce4f728d2021b558":[0,2,2],
@@ -234,8 +234,11 @@ var NAVTREEINDEX0 =
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15ac84f19e1412dd40492153e4cb0e27739":[0,2,3,4],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15aea1ca4f8f623afaaf6072b0b6eb56c76":[0,2,3,3],
 "group___b_a_c_k_e_n_d___u_t_i_l_s.html":[0,3],
-"group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga198cbdd953fb93be953e9e52fa9a4a15":[0,3,1],
-"group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga9ed3925b3af87fcbebdf27990480b98b":[0,3,0],
+"group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga064c245ca5bae67e4c986442e22d484e":[0,3,0],
+"group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga198cbdd953fb93be953e9e52fa9a4a15":[0,3,4],
+"group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga4706968b8ce210d69309a0cae330cea5":[0,3,1],
+"group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga99a92e14994c6506a087f9da3a4caa61":[0,3,2],
+"group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga9ed3925b3af87fcbebdf27990480b98b":[0,3,3],
 "index.html":[],
 "memory__sycl_8cpp_source.html":[2,0,23],
 "modules.html":[0],
@@ -246,8 +249,5 @@ var NAVTREEINDEX0 =
 "struct__argsort__less.html#a4dc553531fd4c936522572f2de21c8c3":[1,0,0,0],
 "struct__argsort__less.html#adfd222a063b19425b08da2363a0bcc62":[1,0,0,1],
 "struct__sort__less.html":[1,0,1],
-"struct__sort__less.html#a7f312cf44e7d7d0c0d5cba52bbe6a514":[1,0,1,0],
-"struct_d_p_n_p_func_data.html":[0,2,0],
-"struct_d_p_n_p_func_data.html#a59c07232bc3830e89d5abe5447a24816":[0,2,0,1],
-"struct_d_p_n_p_func_data.html#af40fd22f5954384788121f817fb02f0d":[0,2,0,0]
+"struct__sort__less.html#a7f312cf44e7d7d0c0d5cba52bbe6a514":[1,0,1,0]
 };

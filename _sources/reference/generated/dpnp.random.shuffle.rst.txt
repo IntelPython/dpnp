@@ -1,0 +1,6 @@
+﻿dpnp.random.shuffle
+===================
+
+.. currentmodule:: dpnp.random
+
+.. autofunction:: shuffle

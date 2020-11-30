@@ -1,0 +1,6 @@
+<map id="dpnp_fft_fft_c" name="dpnp_fft_fft_c">
+<area shape="rect" id="node1" title="1D discrete Fourier Transform." alt="" coords="5,56,105,83"/>
+<area shape="rect" id="node2" href="$group___b_a_c_k_e_n_d___a_p_i.html#ga8805a5bf88725bc644760a3eb4f73c3e" title="SYCL queue memory allocation." alt="" coords="155,5,306,32"/>
+<area shape="rect" id="node3" href="$group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga064c245ca5bae67e4c986442e22d484e" title="Calculate linear index from ids array." alt="" coords="153,56,308,83"/>
+<area shape="rect" id="node4" href="$group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga99a92e14994c6506a087f9da3a4caa61" title="Calculate ids for all given axes from linear index." alt="" coords="153,107,308,133"/>
+</map>

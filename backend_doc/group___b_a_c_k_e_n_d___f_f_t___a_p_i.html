@@ -91,16 +91,16 @@ $(document).ready(function(){initNavTree('group___b_a_c_k_e_n_d___f_f_t___a_p_i.
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga946829790944d58cb7c157e05672e6df"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
-<tr class="memitem:ga946829790944d58cb7c157e05672e6df"><td class="memTemplItemLeft" align="right" valign="top">INP_DLLEXPORT void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga946829790944d58cb7c157e05672e6df">dpnp_fft_fft_c</a> (void *array1_in, void *result1, size_t input_size, size_t output_size)</td></tr>
-<tr class="memdesc:ga946829790944d58cb7c157e05672e6df"><td class="mdescLeft">&#160;</td><td class="mdescRight">1D discrete Fourier Transform.  <a href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga946829790944d58cb7c157e05672e6df">More...</a><br /></td></tr>
-<tr class="separator:ga946829790944d58cb7c157e05672e6df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga477ae04183f86ac18c2d4e60235e8355"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
+<tr class="memitem:ga477ae04183f86ac18c2d4e60235e8355"><td class="memTemplItemLeft" align="right" valign="top">INP_DLLEXPORT void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga477ae04183f86ac18c2d4e60235e8355">dpnp_fft_fft_c</a> (const void *array1_in, void *result1, const long *input_shape, const long *output_shape, size_t shape_size, long axis)</td></tr>
+<tr class="memdesc:ga477ae04183f86ac18c2d4e60235e8355"><td class="mdescLeft">&#160;</td><td class="mdescRight">1D discrete Fourier Transform.  <a href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga477ae04183f86ac18c2d4e60235e8355">More...</a><br /></td></tr>
+<tr class="separator:ga477ae04183f86ac18c2d4e60235e8355"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>This section describes Backend API for Discrete Fourier Transform (DFT) part. </p>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ga946829790944d58cb7c157e05672e6df"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga946829790944d58cb7c157e05672e6df">&#9670;&nbsp;</a></span>dpnp_fft_fft_c()</h2>
+<a id="ga477ae04183f86ac18c2d4e60235e8355"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga477ae04183f86ac18c2d4e60235e8355">&#9670;&nbsp;</a></span>dpnp_fft_fft_c()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -110,7 +110,7 @@ template&lt;typename _DataType &gt; </div>
         <tr>
           <td class="memname">INP_DLLEXPORT void dpnp_fft_fft_c </td>
           <td>(</td>
-          <td class="paramtype">void *&#160;</td>
+          <td class="paramtype">const void *&#160;</td>
           <td class="paramname"><em>array1_in</em>, </td>
         </tr>
         <tr>
@@ -122,14 +122,26 @@ template&lt;typename _DataType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>input_size</em>, </td>
+          <td class="paramtype">const long *&#160;</td>
+          <td class="paramname"><em>input_shape</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const long *&#160;</td>
+          <td class="paramname"><em>output_shape</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>output_size</em>&#160;</td>
+          <td class="paramname"><em>shape_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long&#160;</td>
+          <td class="paramname"><em>axis</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -143,15 +155,28 @@ template&lt;typename _DataType &gt; </div>
 <p>Compute the one-dimensional discrete Fourier Transform.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">array1_in</td><td>Input array 1.</td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">result1</td><td>Output array.</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">input_size</td><td>Number of elements in input array.</td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">output_size</td><td>Number of elements in output array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">array1_in</td><td>Input array 1. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result1</td><td>Output array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input_shape</td><td>Array with shape information for input array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">output_shape</td><td>Array with shape information for output array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">shape_size</td><td>Number of elements in input_shape or output_shape arrays. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">axis</td><td>Axis ID to compute by. </td></tr>
   </table>
   </dd>
 </dl>
 
 <p class="definition">Definition at line <a class="el" href="dpnp__kernels__fft_8cpp_source.html#l00039">39</a> of file <a class="el" href="dpnp__kernels__fft_8cpp_source.html">dpnp_kernels_fft.cpp</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="group___b_a_c_k_e_n_d___f_f_t___a_p_i_ga477ae04183f86ac18c2d4e60235e8355_cgraph.png" border="0" usemap="#agroup___b_a_c_k_e_n_d___f_f_t___a_p_i_ga477ae04183f86ac18c2d4e60235e8355_cgraph" alt=""/></div>
+<map name="group___b_a_c_k_e_n_d___f_f_t___a_p_i_ga477ae04183f86ac18c2d4e60235e8355_cgraph" id="agroup___b_a_c_k_e_n_d___f_f_t___a_p_i_ga477ae04183f86ac18c2d4e60235e8355_cgraph">
+<area shape="rect" title="1D discrete Fourier Transform." alt="" coords="5,56,105,83"/>
+<area shape="rect" href="group___b_a_c_k_e_n_d___a_p_i.html#ga8805a5bf88725bc644760a3eb4f73c3e" title="SYCL queue memory allocation." alt="" coords="155,5,306,32"/>
+<area shape="rect" href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga064c245ca5bae67e4c986442e22d484e" title="Calculate linear index from ids array." alt="" coords="153,56,308,83"/>
+<area shape="rect" href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga99a92e14994c6506a087f9da3a4caa61" title="Calculate ids for all given axes from linear index." alt="" coords="153,107,308,133"/>
+</map>
+</div>
 
 </div>
 </div>
