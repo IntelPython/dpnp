@@ -36,44 +36,86 @@ template <typename _KernelNameSpecialization1, typename _KernelNameSpecializatio
 class dpnp_fft_fft_c_kernel;
 
 template <typename _DataType_input, typename _DataType_output>
-void dpnp_fft_fft_c(void* array1_in, void* result1, size_t input_size, size_t output_size)
+void dpnp_fft_fft_c(const void* array1_in,
+                    void* result1,
+                    const long* input_shape,
+                    const long* output_shape,
+                    size_t shape_size,
+                    long axis)
 {
-    if (!output_size)
+    const size_t result_size = std::accumulate(output_shape, output_shape + shape_size, 1, std::multiplies<size_t>());
+    if (!(result_size && shape_size))
     {
         return;
     }
 
     cl::sycl::event event;
 
-    _DataType_input* array_1 = reinterpret_cast<_DataType_input*>(array1_in);
+    const _DataType_input* array_1 = reinterpret_cast<const _DataType_input*>(array1_in);
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
 
-#if 1
-    cl::sycl::range<1> gws(output_size);
+    // kernel specific temporal data
+    long* output_shape_offsets = reinterpret_cast<long*>(dpnp_memory_alloc_c(shape_size * sizeof(long)));
+    long* input_shape_offsets = reinterpret_cast<long*>(dpnp_memory_alloc_c(shape_size * sizeof(long)));
+    // must be a thread local storage.
+    long* xyz = reinterpret_cast<long*>(dpnp_memory_alloc_c(result_size * shape_size * sizeof(long)));
+    long* axis_iterator = reinterpret_cast<long*>(dpnp_memory_alloc_c(result_size * shape_size * sizeof(long)));
+
+    get_shape_offsets_inkernel<long>(output_shape, shape_size, output_shape_offsets);
+    get_shape_offsets_inkernel<long>(input_shape, shape_size, input_shape_offsets);
+
+    cl::sycl::range<1> gws(result_size);
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
-        size_t id = global_id[0];
+        size_t output_id = global_id[0];
 
-        double sumreal = 0.0;
-        double sumimag = 0.0;
-        for (size_t it = 0; it < output_size; ++it)
+        double sum_real = 0.0;
+        double sum_imag = 0.0;
+        // need to replace these arrays by thread local storage
+        long* xyz_thread = xyz + (output_id * shape_size);
+        long* axis_iterator_thread = axis_iterator + (output_id * shape_size);
+
+        get_xyz_by_id_inkernel(output_id, output_shape_offsets, shape_size, xyz_thread);
+        for (size_t i = 0; i < shape_size; ++i)
         {
-            double angle = 2 * M_PI * it * id / output_size;
-            double inreal = 0.0;
-            double inimag = 0.0;
-
-            if (it < input_size)
-            {
-                inreal = array_1[it];
-            }
-
-            double angle_cos = cl::sycl::cos(angle);
-            double angle_sin = cl::sycl::sin(angle);
-
-            sumreal += inreal * angle_cos + inimag * angle_sin;
-            sumimag += -inreal * angle_sin + inimag * angle_cos;
+            axis_iterator_thread[i] = xyz_thread[i];
         }
 
-        result[id] = _DataType_output(sumreal, sumimag);
+        const long axis_length = output_shape[axis];
+        for (long it = 0; it < axis_length; ++it)
+        {
+            double in_real = 0.0;
+            double in_imag = 0.0;
+
+            axis_iterator_thread[axis] = it;
+
+            const size_t input_it = get_id_by_xyz_inkernel(axis_iterator_thread, shape_size, input_shape_offsets);
+
+            if (it < input_shape[axis])
+            {
+                if constexpr (std::is_same<_DataType_input, std::complex<double>>::value)
+                {
+                    const _DataType_input* cmplx_ptr = array_1 + input_it;
+                    const double* dbl_ptr = reinterpret_cast<const double*>(cmplx_ptr);
+                    in_real = *dbl_ptr;
+                    in_imag = *(dbl_ptr + 1);
+                }
+                else
+                {
+                    in_real = array_1[input_it];
+                }
+            }
+
+            const size_t output_local_id = xyz_thread[axis];
+            const double angle = 2.0 * M_PI * it * output_local_id / axis_length;
+
+            const double angle_cos = cl::sycl::cos(angle);
+            const double angle_sin = cl::sycl::sin(angle);
+
+            sum_real += in_real * angle_cos + in_imag * angle_sin;
+            sum_imag += -in_real * angle_sin + in_imag * angle_cos;
+        }
+
+        result[output_id] = _DataType_output(sum_real, sum_imag);
     };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
@@ -82,9 +124,9 @@ void dpnp_fft_fft_c(void* array1_in, void* result1, size_t input_size, size_t ou
 
     event = DPNP_QUEUE.submit(kernel_func);
 
-#else
-    oneapi::mkl::dft::descriptor<mkl_dft::precision::DOUBLE, mkl_dft::domain::COMPLEX> desc(output_size);
-    desc.set_value(mkl_dft::config_param::FORWARD_SCALE, static_cast<double>(output_size));
+#if 0 // keep this code
+    oneapi::mkl::dft::descriptor<mkl_dft::precision::DOUBLE, mkl_dft::domain::COMPLEX> desc(result_size);
+    desc.set_value(mkl_dft::config_param::FORWARD_SCALE, static_cast<double>(result_size));
     desc.set_value(mkl_dft::config_param::PLACEMENT, DFTI_NOT_INPLACE); // enum value from MKL C interface
     desc.commit(DPNP_QUEUE);
 
@@ -92,6 +134,11 @@ void dpnp_fft_fft_c(void* array1_in, void* result1, size_t input_size, size_t ou
 #endif
 
     event.wait();
+
+    dpnp_memory_free_c(input_shape_offsets);
+    dpnp_memory_free_c(output_shape_offsets);
+    dpnp_memory_free_c(axis_iterator);
+    dpnp_memory_free_c(xyz);
 
     return;
 }
@@ -106,6 +153,7 @@ void func_map_init_fft_func(func_map_t& fmap)
                                                              (void*)dpnp_fft_fft_c<float, std::complex<double>>};
     fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_DBL][eft_DBL] = {eft_C128,
                                                              (void*)dpnp_fft_fft_c<double, std::complex<double>>};
-
+    fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_C128][eft_C128] = {
+        eft_C128, (void*)dpnp_fft_fft_c<std::complex<double>, std::complex<double>>};
     return;
 }
