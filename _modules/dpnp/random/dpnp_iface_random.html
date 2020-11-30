@@ -204,6 +204,7 @@
     <span class="s1">&#39;binomial&#39;</span><span class="p">,</span>
     <span class="s1">&#39;bytes&#39;</span><span class="p">,</span>
     <span class="s1">&#39;chisquare&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;choice&#39;</span><span class="p">,</span>
     <span class="s1">&#39;exponential&#39;</span><span class="p">,</span>
     <span class="s1">&#39;gamma&#39;</span><span class="p">,</span>
     <span class="s1">&#39;geometric&#39;</span><span class="p">,</span>
@@ -475,6 +476,22 @@
         <span class="k">return</span> <span class="n">dpnp_chisquare</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">df</span><span class="p">),</span> <span class="n">size</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">chisquare</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="choice"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.choice.html#dpnp.random.choice">[docs]</a><span class="k">def</span> <span class="nf">choice</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates a random sample from a given 1-D array.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.random.choice`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The function uses `numpy.random.choice` on the backend and will be</span>
+<span class="sd">    executed on fallback backend.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">replace</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="exponential"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.exponential.html#dpnp.random.exponential">[docs]</a><span class="k">def</span> <span class="nf">exponential</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
