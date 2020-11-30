@@ -86,7 +86,9 @@ def abs(*args, **kwargs):
 
     For full documentation refer to :obj:`numpy.absolute`.
 
-    .. seealso:: :obj:`dpnp.absolute` : Calculate the absolute value element-wise.
+    Notes
+    -----
+    "obj:`dpnp.abs` is a shorthand for :obj:`dpnp.absolute`.
 
     Examples
     --------
@@ -112,6 +114,7 @@ def absolute(x1, **kwargs):
     Limitations
     -----------
         Parameter ``x1`` is supported as :obj:`dpnp.ndarray`.
+        Dimension of input array is limited by ``x1.ndim != 0``.
         Keyword arguments ``kwargs`` are currently unsupported.
         Otherwise the functions will be executed sequentially on CPU.
         Input array data types are limited by supported DPNP :ref:`Data types`.
@@ -264,8 +267,6 @@ def divide(x1, x2, **kwargs):
         Input array data types are limited by supported DPNP :ref:`Data types`.
         Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
 
-    .. note:: The 'out' parameter is currently not supported.
-
     Examples
     --------
     >>> import dpnp as np
@@ -375,7 +376,6 @@ def floor_divide(x1, x2, **kwargs):
         Keyword arguments ``kwargs`` are currently unsupported.
         Otherwise the functions will be executed sequentially on CPU.
         Input array data types are limited by supported DPNP :ref:`Data types`.
-        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
 
     See Also
     --------
@@ -445,7 +445,6 @@ def fmin(*args, **kwargs):
 
 
 def fmod(x1, x2, **kwargs):
-
     """
     Calculate the element-wise remainder of division.
 
@@ -672,9 +671,6 @@ def multiply(x1, x2, **kwargs):
         Input array data types are limited by supported DPNP :ref:`Data types`.
         Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
 
-    .. note::
-        The 'out' parameter is currently not supported.
-
     Examples
     --------
     >>> import dpnp as np
@@ -716,9 +712,9 @@ def nanprod(x1, **kwargs):
     Examples
     --------
     >>> import dpnp as np
-    >>> print(np.nanprod(np.array([1, 2])))
+    >>> np.nanprod(np.array([1, 2]))
     2
-    >>> print(np.nanprod(np.array([[1, 2], [3, 4]])))
+    >>> np.nanprod(np.array([[1, 2], [3, 4]]))
     24
 
     """
@@ -747,9 +743,9 @@ def nansum(x1, **kwargs):
     Examples
     --------
     >>> import dpnp as np
-    >>> print(np.nansum(np.array([1, 2])))
+    >>> np.nansum(np.array([1, 2]))
     3
-    >>> print(np.nansum(np.array([[1, 2], [3, 4]])))
+    >>> np.nansum(np.array([[1, 2], [3, 4]]))
     10
 
     """
@@ -814,8 +810,6 @@ def power(x1, x2, **kwargs):
         :obj:`dpnp.fmin` : Element-wise minimum of array elements.
         :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
 
-    .. note::
-        The 'out' parameter is currently not supported.
 
     Example
     -------
@@ -859,9 +853,9 @@ def prod(x1, **kwargs):
     Examples
     --------
     >>> import dpnp as np
-    >>> print(np.prod(np.array([[1, 2], [3, 4]])))
+    >>> np.prod(np.array([[1, 2], [3, 4]]))
     24
-    >>> print(np.prod(np.array([1, 2])))
+    >>> np.prod(np.array([1, 2]))
     2
 
     """
@@ -920,7 +914,7 @@ def remainder(x1, x2, **kwargs):
 
 def sign(x1, **kwargs):
     """
-    Compute the absolute values element-wise.
+    Returns an element-wise indication of the sign of a number.
 
     For full documentation refer to :obj:`numpy.sign`.
 
@@ -937,9 +931,6 @@ def sign(x1, **kwargs):
     >>> result = np.sign(np.array([-5., 4.5]))
     >>> [x for x in result]
     [-1.0, 1.0]
-
-
-    .. seealso:: :obj:`numpy.sign`
 
     """
 
@@ -999,14 +990,14 @@ def sum(x1, **kwargs):
     Limitations
     -----------
         Parameter ``x1`` is supported as :obj:`dpnp.ndarray`.
-        Parameter ``axis`` from keyword arguments ``kwargs`` are supported.
+        Only parameter ``axis`` from keyword arguments ``kwargs`` is supported.
         Otherwise the functions will be executed sequentially on CPU.
         Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> print(np.sum(np.array([1, 2, 3, 4, 5])))
+    >>> np.sum(np.array([1, 2, 3, 4, 5]))
     15
     >>> result = np.sum(np.array([[0, 1], [0, 5]]), axis=0)
     >>> [x for x in result]
