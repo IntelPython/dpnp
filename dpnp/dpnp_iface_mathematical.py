@@ -84,7 +84,17 @@ def abs(*args, **kwargs):
     """
     Calculate the absolute value element-wise.
 
-    .. seealso:: :obj:`numpy.add`
+    For full documentation refer to :obj:`numpy.absolute`.
+
+    .. seealso:: :obj:`dpnp.absolute` : Calculate the absolute value element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([-1.2, 1.2])
+    >>> result = np.abs(a)
+    >>> [x for x in result]
+    [1.2, 1.2]
 
     """
 
@@ -95,15 +105,25 @@ def absolute(x1, **kwargs):
     """
     Calculate the absolute value element-wise.
 
-    Parameters
-    ----------
-    x1 : array_like
-        Input array.
+    For full documentation refer to :obj:`numpy.absolute`.
 
-    Returns
-    -------
-    absolute : ndarray
-        An ndarray containing the absolute value of each element in x.
+    .. seealso:: :obj:`dpnp.abs` : Calculate the absolute value element-wise.
+
+    Limitations
+    -----------
+        Parameter ``x1`` is supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([-1.2, 1.2])
+    >>> result = np.absolute(a)
+    >>> [x for x in result]
+    [1.2, 1.2]
+
     """
 
     is_input_dparray = isinstance(x1, dparray)
@@ -120,26 +140,24 @@ def add(x1, x2, **kwargs):
     """
     Add arguments element-wise.
 
-    Parameters
-    ----------
-    x1, x2 : array_like
-        The arrays to be added.
-    **kwargs
-        For other keyword arguments.
+    For full documentation refer to :obj:`numpy.add`.
 
-    Returns
-    -------
-    out : dparray:
-        The sum of `x1` and `x2`, element-wise.
-        This is a scalar if both `x1` and `x2` are scalars.
+    Limitations
+    -----------
+        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
 
-    See Also
+    Examples
     --------
-    :obj:`numpy.add`
-
-    Notes
-    -----
-    Equivalent to `x1 + x2` in terms of array broadcasting.
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 3])
+    >>> b = np.array([1, 2, 3])
+    >>> result = np.add(a, b)
+    >>> [x for x in result]
+    [2, 4, 6]
 
     """
 
@@ -162,7 +180,27 @@ def ceil(x1, **kwargs):
     """
     Compute  the ceiling of the input, element-wise.
 
-    .. seealso:: :obj:`numpy.ceil`
+    For full documentation refer to :obj:`numpy.ceil`.
+
+    Limitations
+    -----------
+        Parameter ``x1`` is supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.floor` : Return the floor of the input, element-wise.
+    :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0])
+    >>> result = np.ceil(a)
+    >>> [x for x in result]
+    [-1.0, -1.0, -0.0, 1.0, 2.0, 2.0, 2.0]
 
     """
 
@@ -178,20 +216,25 @@ def copysign(x1, x2, **kwargs):
     """
     Change the sign of x1 to that of x2, element-wise.
 
-    Parameters
-    ----------
-    x1 : array_like
-        Values to change the sign of.
-    x2 : array_like
-        The sign of x2 is copied to x1.
-    kwargs : dict
-        Remaining input parameters of the function.
+    For full documentation refer to :obj:`numpy.copysign`.
 
-    Returns
-    -------
-    out: ndarray or scalar
-        The values of x1 with the sign of x2.
+    Limitations
+    -----------
+        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> result = np.copysign(np.array([1, -2, 6, -9]), np.array([-1, -1, 1, 1]))
+    >>> [x for x in result]
+    [-1.0, -2.0, 6.0, 9.0]
+
     """
+
     if not use_origin_backend(x1) and not kwargs:
         if not isinstance(x1, dparray):
             pass
@@ -211,19 +254,24 @@ def divide(x1, x2, **kwargs):
     """
     Divide arguments element-wise.
 
-    .. note::
-        The 'out' parameter is currently not supported.
+    For full documentation refer to :obj:`numpy.divide`.
 
-    Args:
-        x1  (dpnp.dparray): The left argument.
-        x2  (dpnp.dparray): The right argument.
-        out (dpnp.dparray): Output array.
+    Limitations
+    -----------
+        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
 
-    Returns:
-        dpnp.dparray: The division of x1 and x2, element-wise.
-        This is a scalar if both x1 and x2 are scalars.
+    .. note:: The 'out' parameter is currently not supported.
 
-    .. seealso:: :obj:`numpy.divide`
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> result = np.divide(np.array([1, -2, 6, -9]), np.array([-2, -2, -2, -2]))
+    >>> [x for x in result]
+    [-0.5, 1.0, -3.0, 4.5]
 
     """
 
@@ -246,7 +294,23 @@ def fabs(x1, **kwargs):
     """
     Compute the absolute values element-wise.
 
-    .. seealso:: :obj:`numpy.fabs`
+    For full documentation refer to :obj:`numpy.fabs`.
+
+    Limitations
+    -----------
+        Parameter ``x1`` is supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    .. seealso:: :obj:`dpnp.abs` : Calculate the absolute value element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> result = np.fabs(np.array([1, -2, 6, -9]))
+    >>> [x for x in result]
+    [1.0, 2.0, 6.0, 9.0]
 
     """
 
@@ -260,12 +324,34 @@ def fabs(x1, **kwargs):
 
 def floor(x1, **kwargs):
     """
-    Compute the floor of the input, element-wise.
+    Round a number to the nearest integer toward minus infinity.
 
-    Some spreadsheet programs calculate the “floor-towards-zero”, in other words floor(-2.5) == -2.
-    dpNP instead uses the definition of floor where floor(-2.5) == -3.
+    For full documentation refer to :obj:`numpy.floor`.
 
-    .. seealso:: :obj:`numpy.floor`
+    Limitations
+    -----------
+        Parameter ``x1`` is supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+        :obj:`dpnp.ceil` : Compute  the ceiling of the input, element-wise.
+        :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
+    
+    Notes
+    -----
+        Some spreadsheet programs calculate the “floor-towards-zero”, in other words floor(-2.5) == -2.
+        dpNP instead uses the definition of floor where floor(-2.5) == -3.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0])
+    >>> result = np.floor(a)
+    >>> [x for x in result]
+    [-2.0, -2.0, -1.0, 0.0, 1.0, 1.0, 2.0]
 
     """
 
@@ -281,7 +367,29 @@ def floor_divide(x1, x2, **kwargs):
     """
     Compute the largest integer smaller or equal to the division of the inputs.
 
-    .. seealso:: :obj:`numpy.floor_divide`
+    For full documentation refer to :obj:`numpy.floor_divide`.
+
+    Limitations
+    -----------
+        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
+
+    See Also
+    --------
+    :obj:`dpnp.reminder` : Remainder complementary to floor_divide.
+    :obj:`dpnp.divide` : Standard division.
+    :obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.
+    :obj:`dpnp.ceil` : Round a number to the nearest integer toward infinity.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> result = np.floor_divide(np.array([1, -1, -2, -9]), np.array([-2, -2, -2, -2]))
+    >>> [x for x in result]
+    [-1, 0, 1, 4]
 
     """
 
@@ -298,7 +406,17 @@ def fmax(*args, **kwargs):
     """
     Element-wise maximum of array elements.
 
-    .. seealso:: :obj:`numpy.fmax`
+    For full documentation refer to :obj:`numpy.fmax`.
+
+    See Also
+    --------
+    :obj:`dpnp.maximum` : Element-wise maximum of array elements.
+    :obj:`dpnp.fmin` : Element-wise minimum of array elements.
+    :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
+
+    Notes
+    -----
+    This function works the same as :obj:`dpnp.maximum`
 
     """
 
@@ -309,7 +427,17 @@ def fmin(*args, **kwargs):
     """
     Element-wise minimum of array elements.
 
-    .. seealso:: :obj:`numpy.fmin`
+    For full documentation refer to :obj:`numpy.fmin`.
+
+    See Also
+    --------
+    :obj:`dpnp.maximum` : Element-wise maximum of array elements.
+    :obj:`dpnp.fmax` : Element-wise maximum of array elements.
+    :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
+
+    Notes
+    -----
+    This function works the same as :obj:`dpnp.minimum`
 
     """
 
@@ -317,10 +445,33 @@ def fmin(*args, **kwargs):
 
 
 def fmod(x1, x2, **kwargs):
+
     """
     Calculate the element-wise remainder of division.
 
-    .. seealso:: :obj:`numpy.fmod`
+    For full documentation refer to :obj:`numpy.fmod`.
+
+    Limitations
+    -----------
+        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
+
+    See Also
+    --------
+    :obj:`dpnp.reminder` : Remainder complementary to floor_divide.
+    :obj:`dpnp.divide` : Standard division.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([2, -3, 4, 5, -4.5])
+    >>> b = np.array([2, 2, 2, 2, 2])
+    >>> result = np.fmod(a, b)
+    >>> [x for x in result]
+    [0.0, -1.0, 0.0, 1.0, -0.5]
 
     """
 
@@ -370,7 +521,28 @@ def maximum(x1, x2, **kwargs):
     """
     Element-wise maximum of array elements.
 
-    .. seealso:: :obj:`numpy.maximum`
+    For full documentation refer to :obj:`numpy.maximum`.
+
+    Limitations
+    -----------
+        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
+
+    See Also
+    --------
+        :obj:`dpnp.fmax` : Element-wise maximum of array elements.
+        :obj:`dpnp.fmin` : Element-wise minimum of array elements.
+        :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
+
+    Example
+    -------
+    >>> import dpnp as np
+    >>> result = np.fmax(np.array([-2, 3, 4]), np.array([1, 5, 2]))
+    >>> [x for x in result]
+    [1, 5, 4]
 
     """
 
@@ -393,7 +565,28 @@ def minimum(x1, x2, **kwargs):
     """
     Element-wise minimum of array elements.
 
-    .. seealso:: :obj:`numpy.minimum`
+    For full documentation refer to :obj:`numpy.minimum`.
+
+    Limitations
+    -----------
+        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
+
+    See Also
+    --------
+        :obj:`dpnp.fmax` : Element-wise maximum of array elements.
+        :obj:`dpnp.fmin` : Element-wise minimum of array elements.
+        :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
+
+    Example
+    -------
+    >>> import dpnp as np
+    >>> result = np.fmin(np.array([-2, 3, 4]), np.array([1, 5, 2]))
+    >>> [x for x in result]
+    [-2, 3, 2]
 
     """
 
@@ -416,9 +609,17 @@ def mod(*args, **kwargs):
     """
     Compute element-wise remainder of division.
 
-    Alias for :obj:`dpnp.remainder`
+    For full documentation refer to :obj:`numpy.mod`.
 
-    .. seealso:: :obj:`numpy.mod`
+    See Also
+    --------
+    :obj:`dpnp.fmod` : Calculate the element-wise remainder of division
+    :obj:`dpnp.reminder` : Remainder complementary to floor_divide.
+    :obj:`dpnp.divide` : Standard division.
+
+    Notes
+    -----
+    This function works the same as :obj:`dpnp.remainder`.
 
     """
 
@@ -429,25 +630,23 @@ def modf(x, **kwargs):
     """
     Return the fractional and integral parts of an array, element-wise.
 
-    The fractional and integral parts are negative if the given number is negative.
+    For full documentation refer to :obj:`numpy.modf`.
 
-    Parameters
-    ----------
-    x : array_like
-        Input array.
-    kwargs : dict
-        Remaining input parameters of the function.
+    Limitations
+    -----------
+        Parameter ``x`` is supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    Returns
-    -------
-    y1 : ndarray or scalar
-        Fractional part of x. This is a scalar if x is a scalar.
-    y2 : ndarray or scalar
-        Integral part of x. This is a scalar if x is a scalar.
-
-    See Also
+    Examples
     --------
-    :obj:`numpy.modf`
+    >>> import dpnp as np
+    >>> a = np.array([1, 2])
+    >>> result = np.modf(a)
+    >>> [[x for x in y] for y in result ]
+    [[1.0, 2.0], [0.0, 0.0]]
+
 
     """
     if not use_origin_backend(x) and not kwargs:
@@ -463,19 +662,26 @@ def multiply(x1, x2, **kwargs):
     """
     Multiply arguments element-wise.
 
+    For full documentation refer to :obj:`numpy.multiply`.
+
+    Limitations
+    -----------
+        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
+
     .. note::
         The 'out' parameter is currently not supported.
 
-    Args:
-        x1  (dpnp.dparray): The left argument.
-        x2  (dpnp.dparray): The right argument.
-        out (dpnp.dparray): Output array.
-
-    Returns:
-        dpnp.dparray: The product of x1 and x2, element-wise.
-        This is a scalar if both x1 and x2 are scalars.
-
-    .. seealso:: :obj:`numpy.multiply`
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 3, 4, 5])
+    >>> result = np.multiply(a, a)
+    >>> [x for x in result]
+    [1, 4, 9, 16, 25]
 
     """
 
@@ -498,7 +704,22 @@ def nanprod(x1, **kwargs):
     """
     Calculate prod() function treating 'Not a Numbers' (NaN) as ones.
 
-    .. seealso:: :obj:`numpy.nanprod`
+    For full documentation refer to :obj:`numpy.nanprod`.
+
+    Limitations
+    -----------
+        Parameter ``x1`` is supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> print(np.nanprod(np.array([1, 2])))
+    2
+    >>> print(np.nanprod(np.array([[1, 2], [3, 4]])))
+    24
 
     """
 
@@ -514,7 +735,22 @@ def nansum(x1, **kwargs):
     """
     Calculate sum() function treating 'Not a Numbers' (NaN) as zero.
 
-    .. seealso:: :obj:`numpy.nansum`
+    For full documentation refer to :obj:`numpy.nansum`.
+
+    Limitations
+    -----------
+        Parameter ``x1`` is supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> print(np.nansum(np.array([1, 2])))
+    3
+    >>> print(np.nansum(np.array([[1, 2], [3, 4]])))
+    10
 
     """
 
@@ -530,7 +766,23 @@ def negative(x1, **kwargs):
     """
     Negative element-wise.
 
-    .. seealso:: :obj:`numpy.negative`
+    For full documentation refer to :obj:`numpy.negative`.
+
+    Limitations
+    -----------
+        Parameter ``x1`` is supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    .. see also: :obj:`dpnp.copysign` : Change the sign of x1 to that of x2, element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> result = np.negative([1, -1])
+    >>> [x for x in result]
+    [-1, 1]
 
     """
 
@@ -546,19 +798,33 @@ def power(x1, x2, **kwargs):
     """
     First array elements raised to powers from second array, element-wise.
 
+    For full documentation refer to :obj:`numpy.power`.
+
+    Limitations
+    -----------
+        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
+
+    See Also
+    --------
+        :obj:`dpnp.fmax` : Element-wise maximum of array elements.
+        :obj:`dpnp.fmin` : Element-wise minimum of array elements.
+        :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
+
     .. note::
         The 'out' parameter is currently not supported.
 
-    Args:
-        x1  (dpnp.dparray): array.
-        x2  (dpnp.dparray): array.
-        out (dpnp.dparray): Output array.
-
-    Returns:
-        dpnp.dparray: The bases in x1 raised to the exponents in x2.
-        This is a scalar if both x1 and x2 are scalars.
-
-    .. seealso:: :obj:`numpy.power`
+    Example
+    -------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 3, 4, 5])
+    >>> b = np.array([2, 2, 2, 2, 2])
+    >>> result = np.power(a, b)
+    >>> [x for x in result]
+    [1, 4, 9, 16, 25]
 
     """
 
@@ -581,7 +847,22 @@ def prod(x1, **kwargs):
     """
     Calculate product of array elements over a given axis.
 
-    .. seealso:: :obj:`numpy.prod`
+    For full documentation refer to :obj:`numpy.prod`.
+
+    Limitations
+    -----------
+        Parameter ``x1`` is supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> print(np.prod(np.array([[1, 2], [3, 4]])))
+    24
+    >>> print(np.prod(np.array([1, 2])))
+    2
 
     """
 
@@ -596,6 +877,30 @@ def prod(x1, **kwargs):
 def remainder(x1, x2, **kwargs):
     """
     Return element-wise remainder of division.
+
+    For full documentation refer to :obj:`numpy.remainder`.
+
+    Limitations
+    -----------
+        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
+
+    See Also
+    --------
+        :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
+        :obj:`dpnp.divide` : Standard division.
+        :obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.
+
+    Example
+    -------
+    >>> import dpnp as np
+    >>> result = np.remainder(np.array([4, 7]), np.array([2, 3]))
+    >>> [x for x in result]
+    [0, 1]
+
     """
 
     is_x1_dparray = isinstance(x1, dparray)
@@ -617,6 +922,23 @@ def sign(x1, **kwargs):
     """
     Compute the absolute values element-wise.
 
+    For full documentation refer to :obj:`numpy.sign`.
+
+    Limitations
+    -----------
+        Parameter ``x1`` is supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> result = np.sign(np.array([-5., 4.5]))
+    >>> [x for x in result]
+    [-1.0, 1.0]
+
+
     .. seealso:: :obj:`numpy.sign`
 
     """
@@ -633,19 +955,22 @@ def subtract(x1, x2, **kwargs):
     """
     Subtract arguments, element-wise.
 
-    .. note::
-        The 'out' parameter is currently not supported.
+    For full documentation refer to :obj:`numpy.subtract`.
 
-    Args:
-        x1  (dpnp.dparray): array.
-        x2  (dpnp.dparray): array.
-        out (dpnp.dparray): Output array.
+    Limitations
+    -----------
+        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
 
-    Returns:
-        dpnp.dparray: The difference of x1 and x2, element-wise.
-        This is a scalar if both x1 and x2 are scalars.
-
-    .. seealso:: :obj:`numpy.subtract`
+    Example
+    -------
+    >>> import dpnp as np
+    >>> result = np.subtract(np.array([4, 3]), np.array([2, 7]))
+    >>> [x for x in result]
+    [2, -4]
 
     """
 
@@ -669,7 +994,23 @@ def sum(x1, **kwargs):
     """
     Sum of array elements over a given axis.
 
-    .. seealso:: :obj:`numpy.sum`
+    For full documentation refer to :obj:`numpy.sum`.
+
+    Limitations
+    -----------
+        Parameter ``x1`` is supported as :obj:`dpnp.ndarray`.
+        Parameter ``axis`` from keyword arguments ``kwargs`` are supported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> print(np.sum(np.array([1, 2, 3, 4, 5])))
+    15
+    >>> result = np.sum(np.array([[0, 1], [0, 5]]), axis=0)
+    >>> [x for x in result]
+    [0, 6]
 
     """
 
@@ -693,7 +1034,16 @@ def true_divide(*args, **kwargs):
     """
     Provide a true division of the inputs, element-wise.
 
-    .. seealso:: :obj:`numpy.true_divide`
+    For full documentation refer to :obj:`numpy.true_divide`.
+
+    See Also
+    --------
+    .. seealso:: :obj:`dpnp.divide` : Standard division.
+
+    Notes
+    -----
+    This function works the same as :obj:`dpnp.divide`.
+
 
     """
 
@@ -704,7 +1054,27 @@ def trunc(x1, **kwargs):
     """
     Compute the truncated value of the input, element-wise.
 
-    .. seealso:: :obj:`numpy.trunc`
+    For full documentation refer to :obj:`numpy.trunc`.
+
+    Limitations
+    -----------
+        Parameter ``x1`` is supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+        :obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.
+        :obj:`dpnp.ceil` : Round a number to the nearest integer toward infinity.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0])
+    >>> result = np.trunc(a)
+    >>> [x for x in result]
+    [-1.0, -1.0, -0.0, 0.0, 1.0, 1.0, 2.0]
 
     """
 
