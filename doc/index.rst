@@ -34,3 +34,4 @@ along with their limitations.
    install
    reference/index
    dpnp_backend_api
+   dpctl
