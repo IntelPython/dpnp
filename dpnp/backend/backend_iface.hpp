@@ -719,22 +719,6 @@ INP_DLLEXPORT void custom_rng_gaussian_c(void* result, _DataType mean, _DataType
 
 /**
  * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (normal continious distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- *
- * @param [in]  mean   Mean value.
- *
- * @param [in]  stddev Standard deviation.
- *
- * @param [out] result Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void custom_rng_normal_c(void* result, _DataType mean, _DataType stddev, size_t size);
-
-/**
- * @ingroup BACKEND_API
  * @brief math library implementation of random number generator (hypergeometric distribution)
  *
  * @param [in]  size   Number of elements in `result` arrays.
@@ -815,6 +799,43 @@ INP_DLLEXPORT void custom_rng_lognormal_c(void* result, _DataType mean, _DataTyp
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (multinomial distribution)
+ *
+ * @param [in]  size          Number of elements in `result` arrays.
+ *
+ * @param [in]  ntrial        Number of independent trials.
+ *
+ * @param [in]  p_vector      Probability vector of possible outcomes (k length).
+ *
+ * @param [in]  p_vector_size Length of `p_vector`.
+ *
+ * @param [out] result        Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_rng_multinomial_c(void* result,
+                                            int ntrial,
+                                            const double* p_vector,
+                                            const size_t p_vector_size,
+                                            size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (multinomial distribution)
+ * TODO
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_rng_multivariate_normal_c(void* result,
+                                                    const int dimen,
+                                                    const double* mean_vector,
+                                                    const size_t mean_vector_size,
+                                                    const double* cov_vector,
+                                                    const size_t cov_vector_size,
+                                                    size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of random number generator (negative binomial distribution)
  *
  * @param [in]  size   Number of elements in `result` arrays.
@@ -828,6 +849,22 @@ INP_DLLEXPORT void custom_rng_lognormal_c(void* result, _DataType mean, _DataTyp
  */
 template <typename _DataType>
 INP_DLLEXPORT void custom_rng_negative_binomial_c(void* result, double a, double p, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (normal continious distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ *
+ * @param [in]  mean   Mean value.
+ *
+ * @param [in]  stddev Standard deviation.
+ *
+ * @param [out] result Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void custom_rng_normal_c(void* result, _DataType mean, _DataType stddev, size_t size);
 
 /**
  * @ingroup BACKEND_API

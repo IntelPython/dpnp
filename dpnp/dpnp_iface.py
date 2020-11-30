@@ -107,22 +107,17 @@ __all__ += __all__trigonometric
 
 
 def array_equal(a1, a2, equal_nan=False):
-    """True if two arrays have the same shape and elements, False otherwise.
+    """
+    True if two arrays have the same shape and elements, False otherwise.
 
-    Parameters
-        a1, a2: array_like
-            Input arrays.
+    For full documentation refer to :obj:`numpy.array_equal`.
 
-        equal_nanbool
-            Whether to compare NaN’s as equal. If the dtype of a1 and a2 is complex,
-            values will be considered equal if either the real or the imaginary component of a given value is nan.
-            New in version 1.19.0.
-
-    Returns
-        b: bool
-            Returns True if the arrays are equal.
-
-    .. seealso:: :obj:`numpy.allclose` :obj:`numpy.array_equiv`
+    See Also
+    --------
+    :obj:`dpnp.allclose` : Returns True if two arrays are element-wise equal
+                           within a tolerance.
+    :obj:`dpnp.array_equiv` : Returns True if input arrays are shape consistent
+                              and all elements equal.
 
     """
 
@@ -130,12 +125,12 @@ def array_equal(a1, a2, equal_nan=False):
 
 
 def asnumpy(input, order='C'):
-    """Returns the NumPy array with input data.
+    """
+    Returns the NumPy array with input data.
 
-    Args:
-        input: Arbitrary object that can be converted to :class:`numpy.ndarray`.
-    Returns:
-        numpy.ndarray: array with input data.
+    Notes
+    -----
+    This function works exactly the same as :obj:`numpy.asarray`.
 
     """
 
@@ -154,24 +149,37 @@ def get_include():
 
 def matmul(in_array1, in_array2, out=None):
     """
-    Returns the matrix product of two arrays and is the implementation of
-    the `@` operator introduced in Python 3.5 following PEP465.
+    Matrix product of two arrays.
 
-    The main difference against dpnp.dot are the handling of arrays with more
-    than 2 dimensions. For more information see :obj:`numpy.matmul`.
+    For full documentation refer to :obj:`numpy.matmul`.
 
-    .. note::
-        The out array as input is currently not supported.
+    Limitations
+    -----------
+    Input arrays are supported as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Parameter ``out`` is supported only with default value ``None``.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    Args:
-        in_array1 (dpnp.dparray): The left argument.
-        in_array2 (dpnp.dparray): The right argument.
-        out (dpnp.dparray): Output array.
+    See Also
+    --------
+    :obj:`dpnp.vdot` : Complex-conjugating dot product.
+    :obj:`dpnp.tensordot` : Sum products over arbitrary axes.
+    :obj:`dpnp.einsum` : Einstein summation convention.
+    :obj:`dpnp.dot` : Alternative matrix product with
+                      different broadcasting rules.
 
-    Returns:
-        dpnp.dparray: Output array.
-
-    .. seealso:: :obj:`numpy.matmul`
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.ones([9, 5, 7, 4])
+    >>> c = np.ones([9, 5, 4, 3])
+    >>> np.matmul(a, c).shape
+    (9, 5, 7, 3)
+    >>> a = np.array([[1, 0], [0, 1]])
+    >>> b = np.array([[4, 1], [2, 2]])
+    >>> np.matmul(a, b)
+    array([[4, 1],
+           [2, 2]])
 
     """
 

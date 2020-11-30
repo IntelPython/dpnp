@@ -402,7 +402,7 @@ def test_hypergeometric_check_moments():
 
     size = 10**5
     expected_mean = nsample * (ngood / (ngood + nbad))
-    expected_var = nsample * (ngood / (ngood + nbad)) * (nbad / (ngood + nbad)) * (((ngood + nbad) - nsample) / ((ngood + nbad) - 1))
+    expected_var = expected_mean * (nbad / (ngood + nbad)) * (((ngood + nbad) - nsample) / ((ngood + nbad) - 1))
 
     var = numpy.var(dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size))
     mean = numpy.mean(dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size))
@@ -526,6 +526,132 @@ def test_lognormal_check_extreme_value():
     res = numpy.asarray(dpnp.random.lognormal(mean=mean, sigma=sigma, size=100))
     assert len(numpy.unique(res)) == 1
     assert numpy.unique(res)[0] == expected_val
+
+
+def test_multinomial_seed():
+    seed = 28041990
+    size = 100
+    n = 20
+    pvals = [1 / 6.] * 6
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.multinomial(n, pvals, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.multinomial(n, pvals, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_multinomial_check_sum():
+    seed = 28041990
+    size = 1
+    n = 20
+    pvals = [1 / 6.] * 6
+
+    dpnp.random.seed(seed)
+    res = dpnp.random.multinomial(n, pvals, size)
+    assert_allclose(n, sum(res), rtol=1e-07, atol=0)
+
+
+def test_multinomial_invalid_args():
+    size = 10
+    n = -10                # parameter `n`, non-negative expected
+    pvals = [1 / 6.] * 6   # parameter `pvals`, OK
+    with pytest.raises(ValueError):
+        dpnp.random.multinomial(n, pvals, size)
+    n = 10                 # parameter `n`, OK
+    pvals = [-1 / 6.] * 6  # parameter `pvals`, sum(pvals) expected between [0, 1]
+    with pytest.raises(ValueError):
+        dpnp.random.multinomial(n, pvals, size)
+    n = 10                          # parameter `n`, OK
+    pvals = [1 / 6.] * 6 + [1 / 6.]  # parameter `pvals`, sum(pvals) expected between [0, 1]
+    with pytest.raises(ValueError):
+        dpnp.random.multinomial(n, pvals, size)
+
+
+def test_multinomial_check_extreme_value():
+    seed = 28041990
+    dpnp.random.seed(seed)
+
+    n = 0
+    pvals = [1 / 6.] * 6
+
+    res = numpy.asarray(dpnp.random.multinomial(n, pvals, size=1))
+    assert len(numpy.unique(res)) == 1
+    assert numpy.unique(res)[0] == 0.0
+
+
+def test_multinomial_check_moments():
+    seed = 28041995
+    dpnp.random.seed(seed)
+    n = 10
+    pvals = [1 / 6.] * 6
+    size = 10**5
+
+    expected_mean = n * pvals[0]
+    expected_var = n * pvals[0] * (1 - pvals[0])
+
+    var = numpy.var(dpnp.random.multinomial(n=n, pvals=pvals, size=size))
+    mean = numpy.mean(dpnp.random.multinomial(n=n, pvals=pvals, size=size))
+    assert math.isclose(var, expected_var, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+
+
+def test_multivariate_normal_output_shape_check():
+    seed = 28041990
+    size = 100
+    mean = [2.56, 3.23]
+    cov = [[1, 0], [0, 1]]
+    expected_shape = (100, 2)
+
+    dpnp.random.seed(seed)
+    res = dpnp.random.multivariate_normal(mean, cov, size=100)
+    assert res.shape == expected_shape
+
+
+def test_multivariate_normal_seed():
+    seed = 28041990
+    size = 100
+    mean = [2.56, 3.23]
+    cov = [[1, 0], [0, 1]]
+
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.multivariate_normal(mean, cov, size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.multivariate_normal(mean, cov, size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+def test_multivariate_normal_invalid_args():
+    size = 10
+
+    mean = [2.56, 3.23]  # OK
+    cov = [[1, 0]]       # `mean` and `cov` must have same length
+    with pytest.raises(ValueError):
+        dpnp.random.multivariate_normal(mean=mean, cov=cov, size=size)
+
+    mean = [[2.56, 3.23]]   # `mean` must be 1 dimensional
+    cov = [[1, 0], [0, 1]]  # OK
+    with pytest.raises(ValueError):
+        dpnp.random.multivariate_normal(mean=mean, cov=cov, size=size)
+
+    mean = [2.56, 3.23]  # OK
+    cov = [1, 0, 0, 1]   # `cov` must be 2 dimensional and square
+    with pytest.raises(ValueError):
+        dpnp.random.multivariate_normal(mean=mean, cov=cov, size=size)
+
+
+def test_multivariate_normal_check_moments():
+    seed = 2804183
+    dpnp.random.seed(seed)
+
+    mean = [2.56, 3.23]
+    cov = [[1, 0], [0, 1]]
+    size = 10**5
+
+    res = numpy.array(dpnp.random.multivariate_normal(mean=mean, cov=cov, size=size))
+    res_mean = [numpy.mean(res.T[0]), numpy.mean(res.T[1])]
+
+    assert_allclose(res_mean, mean, rtol=1e-03, atol=0)
 
 
 def test_negative_binomial_seed():

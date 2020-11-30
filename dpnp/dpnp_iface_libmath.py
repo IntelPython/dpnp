@@ -52,9 +52,28 @@ __all__ = [
 
 def erf(in_array1):
     """
-    Return the 'error function' at in_array1.
+    Returns the error function of complex argument.
+
+    For full documentation refer to :obj:`scipy.special.erf`.
+
+    Limitations
+    -----------
+    Parameter ``in_array1`` is supported as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     .. seealso:: :obj:`math.erf`
+
+    Examples
+    --------
+
+    >>> import dpnp as np
+    >>> x = np.linspace(2.0, 3.0, num=5)
+    >>> [i for i in x]
+    [2.0, 2.25, 2.5, 2.75, 3.0]
+    >>> out = np.erf(x)
+    >>> [i for i in out]
+    [0.99532227, 0.99853728, 0.99959305, 0.99989938, 0.99997791]
 
     """
 

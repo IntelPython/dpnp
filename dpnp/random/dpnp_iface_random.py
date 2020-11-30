@@ -49,6 +49,7 @@ __all__ = [
     'binomial',
     'bytes',
     'chisquare',
+    'choice',
     'exponential',
     'gamma',
     'geometric',
@@ -56,6 +57,8 @@ __all__ = [
     'hypergeometric',
     'laplace',
     'lognormal',
+    'multinomial',
+    'multivariate_normal',
     'negative_binomial',
     'normal',
     'poisson',
@@ -96,10 +99,6 @@ def beta(a, b, size=None):
                                  (1 - t)^{\\beta - 1} dt.
 
     It is often seen in Bayesian inference and order statistics.
-
-    .. note::
-        New code should use the ``beta`` method of a ``default_rng()``
-        instance instead; please see the :ref:`random-quick-start`.
 
     Parameters
     ----------
@@ -324,6 +323,22 @@ def chisquare(df, size=None):
     return call_origin(numpy.random.chisquare, df, size)
 
 
+def choice(a, size=None, replace=True, p=None):
+    """
+    Generates a random sample from a given 1-D array.
+
+    For full documentation refer to :obj:`numpy.random.choice`.
+
+    Notes
+    -----
+    The function uses `numpy.random.choice` on the backend and will be
+    executed on fallback backend.
+
+    """
+
+    return call_origin(numpy.random.choice, a, size, replace, p)
+
+
 def exponential(scale=1.0, size=None):
     """Exponential distribution.
 
@@ -342,10 +357,6 @@ def exponential(scale=1.0, size=None):
     geometric distribution.  It describes many common situations, such as
     the size of raindrops measured over many rainstorms [1]_, or the time
     between page requests to Wikipedia [2]_.
-
-    .. note::
-        New code should use the ``exponential`` method of a ``default_rng()``
-        instance instead; please see the :ref:`random-quick-start`.
 
     Parameters
     ----------
@@ -400,10 +411,6 @@ def gamma(shape, scale=1.0, size=None):
     Samples are drawn from a Gamma distribution with specified parameters,
     `shape` (sometimes designated "k") and `scale` (sometimes designated
     "theta"), where both parameters are > 0.
-
-    .. note::
-        New code should use the ``gamma`` method of a ``default_rng()``
-        instance instead; please see the :ref:`random-quick-start`.
 
     Parameters
     ----------
@@ -675,7 +682,6 @@ def hypergeometric(ngood, nbad, nsample, size=None):
         if nsample < 1:
             checker_throw_value_error("hypergeometric", "nsample", nsample, ">= 1")
 
-
         m = int(ngood)
         l = int(ngood) + int(nbad)
         s = int(nsample)
@@ -819,6 +825,194 @@ def lognormal(mean=0.0, sigma=1.0, size=None):
         return dpnp_lognormal(mean, sigma, size)
 
     return call_origin(numpy.random.lognormal, mean, sigma, size)
+
+
+def multinomial(n, pvals, size=None):
+    """Multinomial distribution.
+
+    Draw samples from a multinomial distribution.
+
+    The multinomial distribution is a multivariate generalization of the
+    binomial distribution.  Take an experiment with one of ``p``
+    possible outcomes.  An example of such an experiment is throwing a dice,
+    where the outcome can be 1 through 6.  Each sample drawn from the
+    distribution represents `n` such experiments.  Its values,
+    ``X_i = [X_0, X_1, ..., X_p]``, represent the number of times the
+    outcome was ``i``.
+
+    Parameters
+    ----------
+    n : int
+        Number of experiments.
+    pvals : sequence of floats, length p
+        Probabilities of each of the ``p`` different outcomes.  These
+        must sum to 1 (however, the last element is always assumed to
+        account for the remaining probability, as long as
+        ``sum(pvals[:-1]) <= 1)``.
+    size : int or tuple of ints, optional
+        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
+        ``m * n * k`` samples are drawn.  Default is None, in which case a
+        single value is returned.
+
+    Returns
+    -------
+    out : dparray, int32
+        The drawn samples, of shape *size*, if that was provided.  If not,
+        the shape is ``(N,)``.
+        In other words, each entry ``out[i,j,...,:]`` is an N-dimensional
+        value drawn from the distribution.
+
+    Examples
+    --------
+    Throw a dice 20 times:
+    >>> dpnp.random.multinomial(20, [1/6.]*6, size=1)
+    array([[4, 1, 7, 5, 2, 1]]) # random
+
+    """
+
+    if not use_origin_backend(n) and dpnp_queue_is_cpu():
+        if size is None:
+            size = (1,)
+        elif isinstance(size, tuple):
+            for dim in size:
+                if not isinstance(dim, int):
+                    checker_throw_value_error("multinomial", "type(dim)", type(dim), int)
+        elif not isinstance(size, int):
+            checker_throw_value_error("multinomial", "type(size)", type(size), int)
+        else:
+            size = (size,)
+        pvals_sum = sum(pvals)
+
+        if n < 0:
+            checker_throw_value_error("multinomial", "n", n, "non-negative")
+        elif n > numpy.iinfo(numpy.int32).max:
+            checker_throw_value_error("multinomial", "n", n, "n <= int32 max (2147483647)")
+        elif pvals_sum > 1.0:
+            checker_throw_value_error("multinomial", "sum(pvals)", pvals_sum, "sum(pvals) <= 1.0")
+        elif pvals_sum < 0.0:
+            checker_throw_value_error("multinomial", "sum(pvals)", pvals_sum, "sum(pvals) >= 0.0")
+        else:
+            return dpnp_multinomial(int(n), pvals, size)
+
+    return call_origin(numpy.random.multinomial, n, pvals, size)
+
+
+def multivariate_normal(mean, cov, size=None, check_valid='warn', tol=1e-8):
+    """Multivariate normal distributions.
+
+    Draw random samples from a multivariate normal distribution.
+
+    The multivariate normal, multinormal or Gaussian distribution is a
+    generalization of the one-dimensional normal distribution to higher
+    dimensions.  Such a distribution is specified by its mean and
+    covariance matrix.  These parameters are analogous to the mean
+    (average or "center") and variance (standard deviation, or "width,"
+    squared) of the one-dimensional normal distribution.
+
+    Parameters
+    ----------
+    mean : 1-D array_like, of length N
+        Mean of the N-dimensional distribution.
+    cov : 2-D array_like, of shape (N, N)
+        Covariance matrix of the distribution. It must be symmetric and
+        positive-semidefinite for proper sampling.
+    size : int or tuple of ints, optional
+        Given a shape of, for example, ``(m,n,k)``, ``m*n*k`` samples are
+        generated, and packed in an `m`-by-`n`-by-`k` arrangement.  Because
+        each sample is `N`-dimensional, the output shape is ``(m,n,k,N)``.
+        If no shape is specified, a single (`N`-D) sample is returned.
+    check_valid : { 'warn', 'raise', 'ignore' }, optional
+        Behavior when the covariance matrix is not positive semidefinite.
+        Currently ignored and not used.
+    tol : float, optional
+        Tolerance when checking the singular values in covariance matrix.
+        cov is cast to double before the check. Currently ignored and not used.
+
+    Returns
+    -------
+    out : dparray
+        The drawn samples, of shape *size*, if that was provided.  If not,
+        the shape is ``(N,)``.
+        In other words, each entry ``out[i,j,...,:]`` is an N-dimensional
+        value drawn from the distribution.
+
+    Notes
+    -----
+    The mean is a coordinate in N-dimensional space, which represents the
+    location where samples are most likely to be generated.  This is
+    analogous to the peak of the bell curve for the one-dimensional or
+    univariate normal distribution.
+
+    Covariance indicates the level to which two variables vary together.
+    From the multivariate normal distribution, we draw N-dimensional
+    samples, :math:`X = [x_1, x_2, ... x_N]`.  The covariance matrix
+    element :math:`C_{ij}` is the covariance of :math:`x_i` and :math:`x_j`.
+    The element :math:`C_{ii}` is the variance of :math:`x_i` (i.e. its
+    "spread").
+
+    Instead of specifying the full covariance matrix, popular
+    approximations include:
+
+      - Spherical covariance (`cov` is a multiple of the identity matrix)
+      - Diagonal covariance (`cov` has non-negative elements, and only on
+        the diagonal)
+
+    This geometrical property can be seen in two dimensions by plotting
+    generated data-points:
+
+    >>> mean = [0, 0]
+    >>> cov = [[1, 0], [0, 100]]  # diagonal covariance
+
+    Diagonal covariance means that points are oriented along x or y-axis:
+
+    >>> import matplotlib.pyplot as plt
+    >>> x, y = np.random.multivariate_normal(mean, cov, 5000).T
+    >>> plt.plot(x, y, 'x')
+    >>> plt.axis('equal')
+    >>> plt.show()
+
+    Note that the covariance matrix must be positive semidefinite (a.k.a.
+    nonnegative-definite). Otherwise, the behavior of this method is
+    undefined and backwards compatibility is not guaranteed.
+
+    References
+    ----------
+    .. [1] Papoulis, A., "Probability, Random Variables, and Stochastic
+           Processes," 3rd ed., New York: McGraw-Hill, 1991.
+    .. [2] Duda, R. O., Hart, P. E., and Stork, D. G., "Pattern
+           Classification," 2nd ed., New York: Wiley, 2001.
+
+    Examples
+    --------
+    >>> mean = (1, 2)
+    >>> cov = [[1, 0], [0, 1]]
+    >>> x = dpnp.random.multivariate_normal(mean, cov, (3, 3))
+    >>> x.shape
+    (3, 3, 2)
+
+    """
+
+    if not use_origin_backend(mean) and dpnp_queue_is_cpu():
+        mean = numpy.array(mean, dtype=numpy.float64, order='C')
+        cov = numpy.array(cov, dtype=numpy.float64, order='C')
+        if size is None:
+            shape = []
+        elif isinstance(size, (int, numpy.integer)):
+            shape = [size]
+        else:
+            shape = size
+        if len(mean.shape) != 1:
+            raise ValueError("mean must be 1 dimensional")
+        if (len(cov.shape) != 2) or (cov.shape[0] != cov.shape[1]):
+            raise ValueError("cov must be 2 dimensional and square")
+        if mean.shape[0] != cov.shape[0]:
+            raise ValueError("mean and cov must have same length")
+        final_shape = list(shape[:])
+        final_shape.append(mean.shape[0])
+
+        return dpnp_multivariate_normal(mean, cov, final_shape)
+
+    return call_origin(numpy.random.multivariate_normal, mean, cov, size, check_valid, tol)
 
 
 def negative_binomial(n, p, size=None):
@@ -1122,11 +1316,13 @@ def randint(low, high=None, size=None, dtype=int):
     dtype : dtype, optional
         Desired dtype of the result. Byteorder must be native.
         The default value is int.
+
     Returns
     -------
     out : array of random ints
         `size`-shaped array of random integers from the appropriate
         distribution, or a single such random int if `size` not provided.
+
     See Also
     --------
     :obj:`dpnp.random.random_integers` : similar to `randint`, only for the closed
@@ -1250,11 +1446,13 @@ def random_integers(low, high=None, size=None):
         Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
         ``m * n * k`` samples are drawn.  Default is None, in which case a
         single value is returned.
+
     Returns
     -------
     out : array of random ints
         `size`-shaped array of random integers from the appropriate
         distribution, or a single such random int if `size` not provided.
+
     See Also
     --------
     :obj:`dpnp.random.randint`
@@ -1399,7 +1597,7 @@ def sample(size):
 
 def seed(seed=None):
     """
-    Reseed a legacy philox4x32x10 random number generator engine
+    Reseed a legacy philox4x32x10 random number generator engine.
 
     Parameters
     ----------
@@ -1571,7 +1769,7 @@ def standard_gamma(shape, size=None):
 
         if shape < 0:
             checker_throw_value_error("standard_gamma", "shape", shape, "non-negative")
-    
+
         return dpnp_standard_gamma(shape, size)
 
     return call_origin(numpy.random.standard_gamma, shape, size)
@@ -1588,7 +1786,7 @@ def standard_normal(size=None):
         Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
         ``m * n * k`` samples are drawn.  Default is None, in which case a
         single value is returned.
- 
+
     Returns
     -------
     out : float or ndarray

@@ -64,7 +64,9 @@ Changing kind of array
    :nosignatures:
 
    dpnp.asarray
+   dpnp.asnumpy
    dpnp.asanyarray
+   dpnp.asfarray
    dpnp.asfortranarray
    dpnp.ascontiguousarray
    dpnp.require

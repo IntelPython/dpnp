@@ -53,6 +53,8 @@ __all__ = [
     "dpnp_hypergeometric",
     "dpnp_laplace",
     "dpnp_lognormal",
+    "dpnp_multinomial",
+    "dpnp_multivariate_normal",
     "dpnp_negative_binomial",
     "dpnp_normal",
     "dpnp_poisson",
@@ -80,6 +82,14 @@ ctypedef void(*fptr_custom_rng_gumbel_c_1out_t)(void *, double, double, size_t) 
 ctypedef void(*fptr_custom_rng_hypergeometric_c_1out_t)(void *, int, int, int, size_t) except +
 ctypedef void(*fptr_custom_rng_laplace_c_1out_t)(void *, double, double, size_t) except +
 ctypedef void(*fptr_custom_rng_lognormal_c_1out_t)(void *, double, double, size_t) except +
+ctypedef void(*fptr_custom_rng_multinomial_c_1out_t)(void* result, int, const double*, const size_t, size_t) except +
+ctypedef void(*fptr_custom_rng_multivariate_normal_c_1out_t)(void *,
+                                                             const int,
+                                                             const double *,
+                                                             const size_t,
+                                                             const double *,
+                                                             const size_t,
+                                                             size_t) except +
 ctypedef void(*fptr_custom_rng_negative_binomial_c_1out_t)(void *, double, double, size_t) except +
 ctypedef void(*fptr_custom_rng_normal_c_1out_t)(void *, double, double, size_t) except +
 ctypedef void(*fptr_custom_rng_poisson_c_1out_t)(void *, double, size_t) except +
@@ -97,6 +107,7 @@ cpdef dparray dpnp_beta(double a, double b, size):
     Returns an array populated with samples from beta distribution.
     `dpnp_beta` generates a matrix filled with random floats sampled from a
     univariate beta distribution.
+
     """
 
     # convert string type names (dparray.dtype) to C enum DPNPFuncType
@@ -122,6 +133,7 @@ cpdef dparray dpnp_binomial(int ntrial, double p, size):
     `dpnp_binomial` generates a matrix filled with random floats sampled from a
     univariate binomial distribution for a given number of independent trials and
     success probability p of a single trial.
+
     """
 
     dtype = numpy.int32
@@ -159,6 +171,7 @@ cpdef dparray dpnp_chisquare(int df, size):
     Returns an array populated with samples from chi-square distribution.
     `dpnp_chisquare` generates a matrix filled with random floats sampled from a
     univariate chi-square distribution for a given number of degrees of freedom.
+
     """
 
     # convert string type names (dparray.dtype) to C enum DPNPFuncType
@@ -183,6 +196,7 @@ cpdef dparray dpnp_exponential(double beta, size):
     Returns an array populated with samples from exponential distribution.
     `dpnp_exponential` generates a matrix filled with random floats sampled from a
     univariate exponential distribution of `beta`.
+
     """
 
     dtype = numpy.float64
@@ -208,6 +222,7 @@ cpdef dparray dpnp_gamma(double shape, double scale, size):
     Returns an array populated with samples from gamma distribution.
     `dpnp_gamma` generates a matrix filled with random floats sampled from a
     univariate gamma distribution of `shape` and `scale`.
+
     """
 
     dtype = numpy.float64
@@ -275,7 +290,7 @@ cpdef dparray dpnp_geometric(float p, size):
 
 cpdef dparray dpnp_gumbel(double loc, double scale, size):
     """
-    Returns an array populated with samples from beta distribution.
+    Returns an array populated with samples from gumbel distribution.
     `dpnp_gumbel` generates a matrix filled with random floats sampled from a
     univariate Gumbel distribution.
 
@@ -308,7 +323,7 @@ cpdef dparray dpnp_gumbel(double loc, double scale, size):
     return result
 
 
-cpdef dparray dpnp_hypergeometric(int l, int s, int m,  size):
+cpdef dparray dpnp_hypergeometric(int l, int s, int m, size):
     """
     Returns an array populated with samples from hypergeometric distribution.
     `dpnp_hypergeometric` generates a matrix filled with random floats sampled from a
@@ -346,44 +361,9 @@ cpdef dparray dpnp_hypergeometric(int l, int s, int m,  size):
     return result
 
 
-cpdef dparray dpnp_normal(double loc, double scale, size):
-    """
-    Returns an array populated with samples from normal distribution.
-    `dpnp_normal` generates a matrix filled with random floats sampled from a
-    normal distribution.
-
-    """
-
-    dtype = numpy.float64
-    cdef dparray result
-    cdef DPNPFuncType param1_type
-    cdef DPNPFuncData kernel_data
-    cdef fptr_custom_rng_normal_c_1out_t func
-
-    if scale == 0.0:
-        result = dparray(size, dtype=dtype)
-        result.fill(loc)
-    else:
-        # convert string type names (dparray.dtype) to C enum DPNPFuncType
-        param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
-
-        # get the FPTR data structure
-        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_NORMAL, param1_type, param1_type)
-
-        result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-        # ceate result array with type given by FPTR data
-        result = dparray(size, dtype=result_type)
-
-        func = <fptr_custom_rng_normal_c_1out_t > kernel_data.ptr
-        # call FPTR function
-        func(result.get_data(), loc, scale, result.size)
-
-    return result
-
-
 cpdef dparray dpnp_laplace(double loc, double scale, size):
     """
-    Returns an array populated with samples from beta distribution.
+    Returns an array populated with samples from laplace distribution.
     `dpnp_laplace` generates a matrix filled with random floats sampled from a
     univariate laplace distribution.
 
@@ -418,7 +398,7 @@ cpdef dparray dpnp_laplace(double loc, double scale, size):
 
 cpdef dparray dpnp_lognormal(double mean, double stddev, size):
     """
-    Returns an array populated with samples from beta distribution.
+    Returns an array populated with samples from lognormal distribution.
     `dpnp_lognormal` generates a matrix filled with random floats sampled from a
     univariate lognormal distribution.
 
@@ -448,6 +428,94 @@ cpdef dparray dpnp_lognormal(double mean, double stddev, size):
         func = <fptr_custom_rng_lognormal_c_1out_t > kernel_data.ptr
         # call FPTR function
         func(result.get_data(), mean, stddev, result.size)
+
+    return result
+
+
+cpdef dparray dpnp_multinomial(int ntrial, p, size):
+    """
+    Returns an array populated with samples from multinomial distribution.
+
+    `dpnp_multinomial` generates a matrix filled with random floats sampled from a
+    univariate multinomial distribution for a given number of independent trials and
+    probabilities of each of the ``p`` different outcome.
+
+    """
+
+    dtype = numpy.int32
+    cdef dparray result
+    cdef DPNPFuncType param1_type
+    cdef DPNPFuncData kernel_data
+    cdef fptr_custom_rng_multinomial_c_1out_t func
+    p = numpy.asarray(p, dtype=numpy.float64)
+
+    cdef double * p_vector = <double*> numpy.PyArray_DATA(p)
+    cdef size_t p_vector_size = len(p)
+    size = size + (len(p),)
+
+    if ntrial == 0:
+        result = dparray(size, dtype=dtype)
+        result.fill(0.0)
+    else:
+        # convert string type names (dparray.dtype) to C enum DPNPFuncType
+        param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+
+        # get the FPTR data structure
+        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_MULTINOMIAL, param1_type, param1_type)
+
+        result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+        # ceate result array with type given by FPTR data
+        result = dparray(size, dtype=result_type)
+
+        func = <fptr_custom_rng_multinomial_c_1out_t > kernel_data.ptr
+        # call FPTR function
+        func(result.get_data(), ntrial, p_vector, p_vector_size, result.size)
+
+    return result
+
+
+cpdef dparray dpnp_multivariate_normal(numpy.ndarray mean, numpy.ndarray cov, size):
+    """
+    Returns an array populated with samples from multivariate normal distribution.
+    `multivariate_normal` generates a matrix filled with random floats sampled from a
+    multivariate normal distribution.
+
+    """
+
+    dtype = numpy.float64
+    cdef dparray result
+    cdef int dimen
+    cdef double * mean_vector
+    cdef double * cov_vector
+    cdef size_t mean_vector_size
+    cdef size_t cov_vector_size
+
+    cdef DPNPFuncType param1_type
+    cdef DPNPFuncData kernel_data
+    cdef fptr_custom_rng_multivariate_normal_c_1out_t func
+
+    # mean and cov expected numpy.ndarray in C order (row major)
+    mean_vector = <double *> numpy.PyArray_DATA(mean)
+    cov_vector = <double *> numpy.PyArray_DATA(cov)
+
+    mean_vector_size = mean.size
+    cov_vector_size = cov.size
+
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+
+    # get the FPTR data structure
+    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_MULTIVARIATE_NORMAL, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    result = dparray(size, dtype=result_type)
+
+    dimen = len(mean)
+
+    func = <fptr_custom_rng_multivariate_normal_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), dimen, mean_vector, mean_vector_size, cov_vector, cov_vector_size, result.size)
 
     return result
 
@@ -493,12 +561,48 @@ cpdef dparray dpnp_negative_binomial(double a, double p, size):
     return result
 
 
+cpdef dparray dpnp_normal(double loc, double scale, size):
+    """
+    Returns an array populated with samples from normal distribution.
+    `dpnp_normal` generates a matrix filled with random floats sampled from a
+    normal distribution.
+
+    """
+
+    dtype = numpy.float64
+    cdef dparray result
+    cdef DPNPFuncType param1_type
+    cdef DPNPFuncData kernel_data
+    cdef fptr_custom_rng_normal_c_1out_t func
+
+    if scale == 0.0:
+        result = dparray(size, dtype=dtype)
+        result.fill(loc)
+    else:
+        # convert string type names (dparray.dtype) to C enum DPNPFuncType
+        param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+
+        # get the FPTR data structure
+        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_NORMAL, param1_type, param1_type)
+
+        result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+        # ceate result array with type given by FPTR data
+        result = dparray(size, dtype=result_type)
+
+        func = <fptr_custom_rng_normal_c_1out_t > kernel_data.ptr
+        # call FPTR function
+        func(result.get_data(), loc, scale, result.size)
+
+    return result
+
+
 cpdef dparray dpnp_poisson(double lam, size):
     """
     Returns an array populated with samples from Poisson distribution.
     `dpnp_poisson` generates a matrix filled with random floats sampled from a
     univariate Poisson distribution for a given number of independent trials and
     success probability p of a single trial.
+
     """
 
     dtype = numpy.int32
@@ -533,6 +637,7 @@ cpdef dparray dpnp_randn(dims):
     Returns an array populated with samples from standard normal distribution.
     `dpnp_randn` generates a matrix filled with random floats sampled from a
     univariate normal (Gaussian) distribution of mean 0 and variance 1.
+
     """
     cdef double mean = 0.0
     cdef double stddev = 1.0
@@ -558,6 +663,7 @@ cpdef dparray dpnp_random(dims):
     """
     Create an array of the given shape and populate it
     with random samples from a uniform distribution over [0, 1).
+
     """
     cdef long low = 0
     cdef long high = 1
@@ -617,13 +723,15 @@ cpdef dparray dpnp_rayleigh(double scale, size):
 cpdef dpnp_srand(seed):
     """
     Initialize basic random number generator.
+
     """
+
     dpnp_srand_c(seed)
 
 
 cpdef dparray dpnp_standard_cauchy(size):
     """
-    Returns an array populated with samples from beta distribution.
+    Returns an array populated with samples from standard cauchy distribution.
     `dpnp_standard_cauchy` generates a matrix filled with random floats sampled from a
     univariate standard cauchy distribution.
 
@@ -654,6 +762,8 @@ cpdef dparray dpnp_standard_exponential(size):
 
     """
 
+    cdef fptr_custom_rng_standard_exponential_c_1out_t func
+
     # convert string type names (dparray.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
@@ -664,7 +774,7 @@ cpdef dparray dpnp_standard_exponential(size):
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(size, dtype=result_type)
 
-    cdef fptr_custom_rng_standard_exponential_c_1out_t func = < fptr_custom_rng_standard_exponential_c_1out_t > kernel_data.ptr
+    func = < fptr_custom_rng_standard_exponential_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), result.size)
 
@@ -708,7 +818,7 @@ cpdef dparray dpnp_standard_gamma(double shape, size):
 
 cpdef dparray dpnp_standard_normal(size):
     """
-    Returns an array populated with samples from beta distribution.
+    Returns an array populated with samples from standard normal(Gaussian) distribution.
     `dpnp_standard_normal` generates a matrix filled with random floats sampled from a
     univariate standard normal(Gaussian) distribution.
 
@@ -737,6 +847,7 @@ cpdef dparray dpnp_uniform(long low, long high, size, dtype=numpy.int32):
     Generates a matrix filled with random numbers sampled from a
     uniform distribution of the certain left (low) and right (high)
     bounds.
+
     """
     # convert string type names (dparray.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
@@ -757,9 +868,10 @@ cpdef dparray dpnp_uniform(long low, long high, size, dtype=numpy.int32):
 
 cpdef dparray dpnp_weibull(double a, size):
     """
-    Returns an array populated with samples from beta distribution.
+    Returns an array populated with samples from weibull distribution.
     `dpnp_weibull` generates a matrix filled with random floats sampled from a
     univariate weibull distribution.
+
     """
 
     dtype = numpy.float64

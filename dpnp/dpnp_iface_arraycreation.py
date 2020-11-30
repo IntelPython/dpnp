@@ -197,6 +197,10 @@ def asanyarray(a, dtype=None, order='C'):
 
     For full documentation refer to :obj:`numpy.asanyarray`.
 
+    Limitations
+    -----------
+    Parameter ``order`` is supported only with default value ``"C"``.
+
     See Also
     --------
     :obj:`dpnp.asarray` : Similar function which always returns ndarrays.
@@ -209,10 +213,6 @@ def asanyarray(a, dtype=None, order='C'):
     :obj:`dpnp.fromiter` : Create an array from an iterator.
     :obj:`dpnp.fromfunction` : Construct an array by executing a function
                                on grid positions.
-
-    Limitations
-    -----------
-    Parameter ``order`` is supported only with default value ``"C"``.
 
     Examples
     --------

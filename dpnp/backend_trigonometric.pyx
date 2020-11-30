@@ -177,6 +177,7 @@ cpdef dparray dpnp_unwrap(dparray array1):
         result = dparray(array1.shape)
 
     for i in range(result.size):
-        result[i] = numpy.unwrap(array1[i])
+        val, = numpy.unwrap([array1[i]])
+        result[i] = val
 
     return result
