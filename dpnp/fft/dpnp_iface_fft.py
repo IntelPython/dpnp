@@ -83,7 +83,7 @@ def fft(x1, n=None, axis=-1, norm=None):
             boundarie = n
 
         if x1.size < 1:
-             pass                # let fallback to handle exception
+            pass                 # let fallback to handle exception
         elif boundarie < 1:
             pass                 # let fallback to handle exception
         elif norm is not None:
