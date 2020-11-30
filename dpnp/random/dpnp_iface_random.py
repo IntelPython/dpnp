@@ -61,6 +61,7 @@ __all__ = [
     'multivariate_normal',
     'negative_binomial',
     'normal',
+    'permutation',
     'poisson',
     'rand',
     'randint',
@@ -76,6 +77,7 @@ __all__ = [
     'standard_exponential',
     'standard_gamma',
     'standard_normal',
+    'shuffle',
     'uniform',
     'weibull'
 ]
@@ -1191,6 +1193,22 @@ def normal(loc=0.0, scale=1.0, size=None):
     return call_origin(numpy.random.normal, loc, scale, size)
 
 
+def permutation(x):
+    """
+    Randomly permute a sequence, or return a permuted range.
+
+    For full documentation refer to :obj:`numpy.random.permutation`.
+
+    Notes
+    -----
+    The function uses `numpy.random.permutation` on the backend and will be
+    executed on fallback backend.
+
+    """
+
+    return call_origin(numpy.random.permutation, x)
+
+
 def poisson(lam=1.0, size=None):
     """Poisson distribution.
 
@@ -1808,6 +1826,22 @@ def standard_normal(size=None):
         return dpnp_standard_normal(size)
 
     return call_origin(numpy.random.standard_normal, size)
+
+
+def shuffle(x):
+    """
+    Modify a sequence in-place by shuffling its contents.
+
+    For full documentation refer to :obj:`numpy.random.shuffle`.
+
+    Notes
+    -----
+    The function uses `numpy.random.shuffle` on the backend and will be
+    executed on fallback backend.
+
+    """
+
+    return call_origin(numpy.random.shuffle, x)
 
 
 def uniform(low=0.0, high=1.0, size=None):
