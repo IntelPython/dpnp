@@ -59,40 +59,37 @@ def fft(x1, n=None, axis=-1, norm=None):
     """
     Compute the one-dimensional discrete Fourier Transform.
 
-    Compute the one-dimensional discrete Fourier Transform.
-    Multi-dimensional arrays computed as batch of 1-D arrays
-
     Limitations
     -----------
-    Parameter ``axis`` is unsupported.
     Parameter ``norm`` is unsupported.
-    Parameter ``x1`` supports 1-D arrays only.
-    Parameter ``x1`` supports `dpnp.int32`, `dpnp.int64`, `dpnp.float32` and `dpnp.float64` datatypes only.
+    Parameter ``x1`` supports `dpnp.int32`, `dpnp.int64`, `dpnp.float32`, `dpnp.float64` and
+    `dpnp.complex128` datatypes only.
 
-    See Also
-    --------
-    :obj:`numpy.fft.fft` : Compute the one-dimensional discrete Fourier Transform.
+    For full documentation refer to :obj:`numpy.fft.fft`.
 
     """
 
     is_x1_dparray = isinstance(x1, dparray)
 
     if (not use_origin_backend(x1) and is_x1_dparray):
-        if n is None:
-            output_size = x1.size
+        if axis is None:
+            axis_param = -1      # the most right dimension (default value)
         else:
-            output_size = n
+            axis_param = axis
 
-        if output_size < 1:
-            pass
-        elif axis != -1:
-            pass
+        if n is None:
+            boundarie = x1.shape[axis_param]
+        else:
+            boundarie = n
+
+        if x1.size < 1:
+             pass                # let fallback to handle exception
+        elif boundarie < 1:
+            pass                 # let fallback to handle exception
         elif norm is not None:
             pass
-        elif x1.ndim > 1:
-            pass
         else:
-            return dpnp_fft(x1, output_size)
+            return dpnp_fft(x1, boundarie, axis_param)
 
     return call_origin(numpy.fft.fft, x1, n, axis, norm)
 
@@ -101,7 +98,6 @@ def fft2(x1, s=None, axes=(-2, -1), norm=None):
     """
     Compute the 2-dimensional discrete Fourier Transform
 
-    Compute the 2-dimensional discrete Fourier Transform
     Multi-dimensional arrays computed as batch of 1-D arrays
 
     Limitations
@@ -143,7 +139,6 @@ def fftn(x1, s=None, axes=None, norm=None):
     """
     Compute the N-dimensional FFT.
 
-    Compute the N-dimensional FFT.
     Multi-dimensional arrays computed as batch of 1-D arrays
 
     Limitations
