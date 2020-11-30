@@ -49,6 +49,7 @@ __all__ = [
     'binomial',
     'bytes',
     'chisquare',
+    'choice',
     'exponential',
     'gamma',
     'geometric',
@@ -320,6 +321,22 @@ def chisquare(df, size=None):
         return dpnp_chisquare(int(df), size)
 
     return call_origin(numpy.random.chisquare, df, size)
+
+
+def choice(a, size=None, replace=True, p=None):
+    """
+    Generates a random sample from a given 1-D array.
+
+    For full documentation refer to :obj:`numpy.random.choice`.
+
+    Notes
+    -----
+    The function uses `numpy.random.choice` on the backend and will be
+    executed on fallback backend.
+
+    """
+
+    return call_origin(numpy.random.choice, a, size, replace, p)
 
 
 def exponential(scale=1.0, size=None):
