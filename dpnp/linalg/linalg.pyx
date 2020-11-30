@@ -177,8 +177,8 @@ cpdef dparray dpnp_norm(dparray input, ord=None, axis=None):
     else:
         axis_ = axis
 
+    ndim = input.ndim
     if axis is None:
-        ndim = input.ndim
         if ((ord is None)  or
             (ord in ('f', 'fro') and ndim ==2) or
             (ord == 2 and ndim == 1)):
@@ -203,89 +203,62 @@ cpdef dparray dpnp_norm(dparray input, ord=None, axis=None):
             raise ValueError(f"Invalid norm order '{ord}' for vectors")
         else:
             absx = dpnp.abs(input)
-            absx **= ord
-            ret = dpnp.sum(absx, axis=axis)
-            ret **= (1 / ord)
-            return ret
-
-    if axis_ is None:
-        output_shape = dparray(1, dtype=numpy.int64)
-        output_shape[0] = 1
+            absx_size = absx.size
+            absx_power = dparray(absx_size, dtype=absx.dtype)
+            for i in range(absx_size):
+                absx_elem = absx.item(i)
+                absx_power[i] = absx_elem ** ord
+            absx_ = absx_power.reshape(absx.shape)
+            ret = dpnp.sum(absx_, axis=axis)
+            ret_size = ret.size
+            ret_power = dparray(ret_size)
+            for i in range(ret_size):
+                ret_elem = ret.item(i)
+                ret_power[i] = ret_elem ** (1 / ord)
+            ret_ = ret_power.reshape(ret.shape)
+            return ret_
+    elif len_axis == 2:
+        row_axis, col_axis = axis_
+        if row_axis == col_axis:
+            raise ValueError('Duplicate axes given.')
+        # if ord == 2:
+        #     ret =  _multi_svd_norm(input, row_axis, col_axis, amax)
+        # elif ord == -2:
+        #     ret = _multi_svd_norm(input, row_axis, col_axis, amin)
+        elif ord == 1:
+            if col_axis > row_axis:
+                col_axis -= 1
+            dpnp_sum_val_ = dpnp.sum(dpnp.abs(input), axis=row_axis)
+            dpnp_sum_val = dpnp_sum_val_ if isinstance(dpnp_sum_val_, dparray) else dpnp.array([dpnp_sum_val_])
+            dpnp_max_val = dpnp_sum_val.min(axis=col_axis)
+            ret = dpnp_max_val if isinstance(dpnp_max_val, dparray) else dpnp.array([dpnp_max_val])
+        elif ord == numpy.inf:
+            if row_axis > col_axis:
+                row_axis -= 1
+            dpnp_sum_val_ = dpnp.sum(dpnp.abs(input), axis=col_axis)
+            dpnp_sum_val = dpnp_sum_val_ if isinstance(dpnp_sum_val_, dparray) else dpnp.array([dpnp_sum_val_])
+            dpnp_max_val = dpnp_sum_val.max(axis=row_axis)
+            ret = dpnp_max_val if isinstance(dpnp_max_val, dparray) else dpnp.array([dpnp_max_val])
+        elif ord == -1:
+            if col_axis > row_axis:
+                col_axis -= 1
+            dpnp_sum_val_ = dpnp.sum(dpnp.abs(input), axis=row_axis)
+            dpnp_sum_val = dpnp_sum_val_ if isinstance(dpnp_sum_val_, dparray) else dpnp.array([dpnp_sum_val_])
+            dpnp_min_val = dpnp_sum_val.min(axis=col_axis)
+            ret = dpnp_min_val if isinstance(dpnp_min_val, dparray) else dpnp.array([dpnp_min_val])
+        elif ord == -numpy.inf:
+            if row_axis > col_axis:
+                row_axis -= 1
+            dpnp_sum_val_ = dpnp.sum(dpnp.abs(input), axis=col_axis)
+            dpnp_sum_val = dpnp_sum_val_ if isinstance(dpnp_sum_val_, dparray) else dpnp.array([dpnp_sum_val_])
+            dpnp_min_val = dpnp_sum_val.min(axis=row_axis)
+            ret = dpnp_min_val if isinstance(dpnp_min_val, dparray) else dpnp.array([dpnp_min_val])
+        elif ord in [None, 'fro', 'f']:
+            ret = dpnp.sqrt(dpnp.sum(input * input, axis=axis))
+        # elif ord == 'nuc':
+        #     ret = _multi_svd_norm(input, row_axis, col_axis, sum)
+        else:
+            raise ValueError("Invalid norm order for matrices.")
+        return ret
     else:
-        output_shape = dparray(len(shape_input) - len(axis_), dtype=numpy.int64)
-        ind = 0
-        for id, shape_axis in enumerate(shape_input):
-            if id not in axis_:
-                output_shape[ind] = shape_axis
-                ind += 1
-
-    cdef long prod = 1
-    for i in range(len(output_shape)):
-        if output_shape[i] != 0:
-            prod *= output_shape[i]
-
-    result_array = [None] * prod
-    input_shape_offsets = [None] * len(shape_input)
-    acc = 1
-
-    for i in range(len(shape_input)):
-        ind = len(shape_input) - 1 - i
-        input_shape_offsets[ind] = acc
-        acc *= shape_input[ind]
-
-    output_shape_offsets = [None] * len(shape_input)
-    acc = 1
-
-    if axis_ is not None:
-        for i in range(len(output_shape)):
-            ind = len(output_shape) - 1 - i
-            output_shape_offsets[ind] = acc
-            acc *= output_shape[ind]
-            result_offsets = input_shape_offsets[:] # need copy. not a reference
-
-    for source_idx in range(size_input):
-
-        # reconstruct x,y,z from linear source_idx
-        xyz = []
-        remainder = source_idx
-        for i in input_shape_offsets:
-            quotient, remainder = divmod(remainder, i)
-            xyz.append(quotient)
-
-        # extract result axis
-        result_axis = []
-        if axis_ is None:
-            result_axis = xyz
-        else:
-            for idx, offset in enumerate(xyz):
-                if idx not in axis_:
-                    result_axis.append(offset)
-
-        # Construct result offset
-        result_offset = 0
-        if axis_ is not None:
-            for i, result_axis_val in enumerate(result_axis):
-              result_offset += (output_shape_offsets[i] * result_axis_val)
-
-        input_elem = input.item(source_idx)
-        if axis_ is None:
-            if result_array[0] is None:
-                result_array[0] = input_elem ** 2
-            else:
-                result_array[0] += input_elem ** 2
-        else:
-            if result_array[result_offset] is None:
-                result_array[result_offset] = input_elem ** 2
-            else:
-                result_array[result_offset] += input_elem ** 2
-
-    output_size = 1
-    for i in output_shape:
-        output_size *= i
-
-    for i in range(output_size):
-        result_array[i] **= 1/2
-
-    dpnp_array = dpnp.array(result_array, dtype=res_type)
-    dpnp_result_array = dpnp_array.reshape(output_shape)
-    return dpnp_result_array
+        raise ValueError("Improper number of dimensions to norm.")
