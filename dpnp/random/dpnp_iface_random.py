@@ -50,17 +50,22 @@ __all__ = [
     'bytes',
     'chisquare',
     'choice',
+    'dirichlet',
     'exponential',
+    'f',
     'gamma',
     'geometric',
     'gumbel',
     'hypergeometric',
     'laplace',
+    'logistic',
     'lognormal',
+    'logseries',
     'multinomial',
     'multivariate_normal',
     'negative_binomial',
     'normal',
+    'noncentral_chisquare',
     'permutation',
     'poisson',
     'rand',
@@ -341,6 +346,23 @@ def choice(a, size=None, replace=True, p=None):
     return call_origin(numpy.random.choice, a, size, replace, p)
 
 
+def dirichlet(alpha, size=None):
+    """Dirichlet distribution.
+
+    Draw samples from the Dirichlet distribution.
+
+    For full documentation refer to :obj:`numpy.random.dirichlet`.
+
+    Notes
+    -----
+    The function uses `numpy.random.dirichlet` on the backend and will be
+    executed on fallback backend.
+
+    """
+
+    return call_origin(numpy.random.dirichlet, alpha, size)
+
+
 def exponential(scale=1.0, size=None):
     """Exponential distribution.
 
@@ -403,6 +425,23 @@ def exponential(scale=1.0, size=None):
         return dpnp_exponential(scale, size)
 
     return call_origin(numpy.random.exponential, scale, size)
+
+
+def f(dfnum, dfden, size=None):
+    """F distribution.
+
+    Draw samples from an F distribution.
+
+    For full documentation refer to :obj:`numpy.random.f`.
+
+    Notes
+    -----
+    The function uses `numpy.random.f` on the backend and will be
+    executed on fallback backend.
+
+    """
+
+    return call_origin(numpy.random.f, dfnum, dfden, size)
 
 
 def gamma(shape, scale=1.0, size=None):
@@ -748,6 +787,23 @@ def laplace(loc=0.0, scale=1.0, size=None):
     return call_origin(numpy.random.laplace, loc, scale, size)
 
 
+def logistic(loc=0.0, scale=1.0, size=None):
+    """Logistic distribution.
+
+    Draw samples from a logistic distribution.
+
+    For full documentation refer to :obj:`numpy.random.logistic`.
+
+    Notes
+    -----
+    The function uses `numpy.random.logistic` on the backend and will be
+    executed on fallback backend.
+
+    """
+
+    return call_origin(numpy.random.logistic, loc, scale, size)
+
+
 def lognormal(mean=0.0, sigma=1.0, size=None):
     """Lognormal distribution.
 
@@ -827,6 +883,23 @@ def lognormal(mean=0.0, sigma=1.0, size=None):
         return dpnp_lognormal(mean, sigma, size)
 
     return call_origin(numpy.random.lognormal, mean, sigma, size)
+
+
+def logseries(p, size=None):
+    """Logseries distribution.
+
+    Draw samples from a logarithmic series distribution.
+
+    For full documentation refer to :obj:`numpy.random.logseries`.
+
+    Notes
+    -----
+    The function uses `numpy.random.logseries` on the backend and will be
+    executed on fallback backend.
+
+    """
+
+    return call_origin(numpy.random.logseries, p, size)
 
 
 def multinomial(n, pvals, size=None):
@@ -1106,6 +1179,23 @@ def negative_binomial(n, p, size=None):
         return dpnp_negative_binomial(n, p, size)
 
     return call_origin(numpy.random.negative_binomial, n, p, size)
+
+
+def noncentral_chisquare(df, nonc, size=None):
+    """Noncentral chi-square distribution.
+
+    Draw samples from a noncentral chi-square distribution.
+
+    For full documentation refer to :obj:`numpy.random.noncentral_chisquare`.
+
+    Notes
+    -----
+    The function uses `numpy.random.noncentral_chisquare` on the backend and
+    will be executed on fallback backend.
+
+    """
+
+    return call_origin(numpy.random.noncentral_chisquare, df, nonc, size)
 
 
 def normal(loc=0.0, scale=1.0, size=None):
