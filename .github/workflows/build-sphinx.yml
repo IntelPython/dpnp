@@ -53,7 +53,7 @@ jobs:
         with:
             working-directory: 'dpnp/backend'
       - name: Copy backend docs
-        run: cp -r docs/backend_doc/html doc/_build/html/backend_doc
+        run: cp -r dpnp/backend/html doc/_build/html/backend_doc
       # https://github.com/marketplace/actions/github-pages-action
       - name: Deploy docs
         uses: peaceiris/actions-gh-pages@v3
