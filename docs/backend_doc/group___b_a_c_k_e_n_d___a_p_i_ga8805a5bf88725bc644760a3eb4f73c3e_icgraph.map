@@ -1,7 +1,0 @@
-<map id="dpnp_memory_alloc_c" name="dpnp_memory_alloc_c">
-<area shape="rect" id="node1" title="SYCL queue memory allocation." alt="" coords="279,81,447,108"/>
-<area shape="rect" id="node2" href="$group___b_a_c_k_e_n_d___a_p_i.html#ga5d5f581a2892255757308d15fc75dc7e" title="Custom implementation of dot function." alt="" coords="45,5,191,32"/>
-<area shape="rect" id="node3" href="$group___b_a_c_k_e_n_d___a_p_i.html#ga2220a585b7e77bb5ff79bd803cea03c9" title="Custom implementation of cov function with MKL and PSTL." alt="" coords="61,56,175,83"/>
-<area shape="rect" id="node4" href="$group___b_a_c_k_e_n_d___a_p_i.html#gabf70014bd0a0a7630864cbbb9e2cce2c" title="transpose function. Permute axes of the input to the output with elements permutation." alt="" coords="5,107,231,133"/>
-<area shape="rect" id="node5" href="$group___b_a_c_k_e_n_d___a_p_i.html#gaf68a75c1b9503091b9c84651fa0b10e8" title="MKL implementation of eig function." alt="" coords="39,157,197,184"/>
-</map>
