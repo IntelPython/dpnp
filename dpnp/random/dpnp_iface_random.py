@@ -80,15 +80,19 @@ __all__ = [
     'ranf',
     'rayleigh',
     'sample',
+    'shuffle',
     'seed',
     'standard_cauchy',
     'standard_exponential',
     'standard_gamma',
     'standard_normal',
     'standard_t',
-    'shuffle',
+    'triangular',
     'uniform',
-    'weibull'
+    'vonmises',
+    'wald',
+    'weibull',
+    'zipf'
 ]
 
 
@@ -1759,6 +1763,22 @@ def sample(size):
     return call_origin(numpy.random.sample, size)
 
 
+def shuffle(x):
+    """
+    Modify a sequence in-place by shuffling its contents.
+
+    For full documentation refer to :obj:`numpy.random.shuffle`.
+
+    Notes
+    -----
+    The function uses `numpy.random.shuffle` on the backend and will be
+    executed on fallback backend.
+
+    """
+
+    return call_origin(numpy.random.shuffle, x)
+
+
 def seed(seed=None):
     """
     Reseed a legacy philox4x32x10 random number generator engine.
@@ -1992,20 +2012,22 @@ def standard_t(df, size=None):
     return call_origin(numpy.random.standard_t, df, size)
 
 
-def shuffle(x):
-    """
-    Modify a sequence in-place by shuffling its contents.
+def triangular(left, mode, right, size=None):
+    """Triangular distribution.
 
-    For full documentation refer to :obj:`numpy.random.shuffle`.
+    Draw samples from the triangular distribution over the interval
+    [left, right].
+
+    For full documentation refer to :obj:`numpy.random.triangular`.
 
     Notes
     -----
-    The function uses `numpy.random.shuffle` on the backend and will be
-    executed on fallback backend.
+    The function uses `numpy.random.triangular` on the backend and
+    will be executed on fallback backend.
 
     """
 
-    return call_origin(numpy.random.shuffle, x)
+    return call_origin(numpy.random.triangular, left, mode, right, size)
 
 
 def uniform(low=0.0, high=1.0, size=None):
@@ -2057,6 +2079,41 @@ def uniform(low=0.0, high=1.0, size=None):
         return dpnp_uniform(low, high, size, dtype=numpy.float64)
 
     return call_origin(numpy.random.uniform, low, high, size)
+
+
+def vonmises(mu, kappa, size=None):
+    """von Mises distribution.
+
+    Draw samples from a von Mises distribution.
+
+    For full documentation refer to :obj:`numpy.random.vonmises`.
+
+    Notes
+    -----
+    The function uses `numpy.random.vonmises` on the backend and
+    will be executed on fallback backend.
+
+    """
+
+    return call_origin(numpy.random.vonmises, mu, kappa, size)
+
+
+def wald(mean, scale, size=None):
+    """Wald distribution.
+
+    Draw samples from a Wald, or inverse Gaussian, distribution.
+
+    For full documentation refer to :obj:`numpy.random.wald`.
+
+    Notes
+    -----
+    The function uses `numpy.random.wald` on the backend and
+    will be executed on fallback backend.
+
+    """
+
+    return call_origin(numpy.random.wald, mean, scale, size)
+
 
 
 def weibull(a, size=None):
@@ -2112,3 +2169,21 @@ def weibull(a, size=None):
         return dpnp_weibull(a, size)
 
     return call_origin(numpy.random.weibull, a, size)
+
+
+def zipf(a, size=None, dtype=int):
+    """Zipf distribution.
+
+    Returns an array of samples drawn from the Zipf distribution. Its
+    probability mass function is defined as
+
+    For full documentation refer to :obj:`numpy.random.zipf`.
+
+    Notes
+    -----
+    The function uses `numpy.random.zipf` on the backend and
+    will be executed on fallback backend.
+
+    """
+
+    return call_origin(numpy.random.zipf, a, size, dtype)
