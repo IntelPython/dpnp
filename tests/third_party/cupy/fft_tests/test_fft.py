@@ -71,10 +71,6 @@ class TestFft2(unittest.TestCase):
         a = testing.shaped_random(self.shape, xp, dtype)
         out = xp.fft.fft2(a, s=self.s, axes=self.axes, norm=self.norm)
 
-        if self.axes is not None and not self.axes:
-            assert out is a
-            return out
-
         return out
 
     @testing.for_all_dtypes()
@@ -83,10 +79,6 @@ class TestFft2(unittest.TestCase):
     def test_ifft2(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
         out = xp.fft.ifft2(a, s=self.s, axes=self.axes, norm=self.norm)
-
-        if self.axes is not None and not self.axes:
-            assert out is a
-            return out
 
         return out
 
@@ -127,10 +119,6 @@ class TestFftn(unittest.TestCase):
         a = testing.shaped_random(self.shape, xp, dtype)
         out = xp.fft.fftn(a, s=self.s, axes=self.axes, norm=self.norm)
 
-        if self.axes is not None and not self.axes:
-            assert out is a
-            return out
-
         return out
 
     @testing.for_all_dtypes()
@@ -139,10 +127,6 @@ class TestFftn(unittest.TestCase):
     def test_ifftn(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
         out = xp.fft.ifftn(a, s=self.s, axes=self.axes, norm=self.norm)
-
-        if self.axes is not None and not self.axes:
-            assert out is a
-            return out
 
         return out
 
@@ -161,9 +145,6 @@ class TestRfft(unittest.TestCase):
         a = testing.shaped_random(self.shape, xp, dtype)
         out = xp.fft.rfft(a, n=self.n, norm=self.norm)
 
-        if xp is np and dtype in [np.float16, np.float32, np.complex64]:
-            out = out.astype(np.complex64)
-
         return out
 
     @testing.for_all_dtypes()
@@ -171,9 +152,6 @@ class TestRfft(unittest.TestCase):
     def test_irfft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
         out = xp.fft.irfft(a, n=self.n, norm=self.norm)
-
-        if xp is np and dtype in [np.float16, np.float32, np.complex64]:
-            out = out.astype(np.float32)
 
         return out
 
@@ -236,9 +214,6 @@ class TestHfft(unittest.TestCase):
         a = testing.shaped_random(self.shape, xp, dtype)
         out = xp.fft.hfft(a, n=self.n, norm=self.norm)
 
-        if xp is np and dtype in [np.float16, np.float32, np.complex64]:
-            out = out.astype(np.float32)
-
         return out
 
     @testing.for_all_dtypes(no_complex=True)
@@ -246,9 +221,6 @@ class TestHfft(unittest.TestCase):
     def test_ihfft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
         out = xp.fft.ihfft(a, n=self.n, norm=self.norm)
-
-        if xp is np and dtype in [np.float16, np.float32, np.complex64]:
-            out = out.astype(np.complex64)
 
         return out
 
