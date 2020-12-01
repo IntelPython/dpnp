@@ -210,7 +210,8 @@
     <span class="s2">&quot;eigvals&quot;</span><span class="p">,</span>
     <span class="s2">&quot;matrix_power&quot;</span><span class="p">,</span>
     <span class="s2">&quot;matrix_rank&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;multi_dot&quot;</span>
+    <span class="s2">&quot;multi_dot&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;norm&quot;</span>
 <span class="p">]</span>
 
 
@@ -443,6 +444,59 @@
         <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">arrays</span><span class="p">[</span><span class="nb">id</span><span class="p">])</span>
 
     <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="norm"><a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.norm.html#dpnp.linalg.norm">[docs]</a><span class="k">def</span> <span class="nf">norm</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Matrix or vector norm.</span>
+<span class="sd">    This function is able to return one of eight different matrix norms,</span>
+<span class="sd">    or one of an infinite number of vector norms (described below), depending</span>
+<span class="sd">    on the value of the ``ord`` parameter.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    input : array_like</span>
+<span class="sd">        Input array.  If `axis` is None, `x` must be 1-D or 2-D, unless `ord`</span>
+<span class="sd">        is None. If both `axis` and `ord` are None, the 2-norm of</span>
+<span class="sd">        ``x.ravel`` will be returned.</span>
+<span class="sd">    ord : {non-zero int, inf, -inf, &#39;fro&#39;, &#39;nuc&#39;}, optional</span>
+<span class="sd">        Order of the norm (see table under ``Notes``). inf means numpy&#39;s</span>
+<span class="sd">        `inf` object. The default is None.</span>
+<span class="sd">    axis : {None, int, 2-tuple of ints}, optional.</span>
+<span class="sd">        If `axis` is an integer, it specifies the axis of `x` along which to</span>
+<span class="sd">        compute the vector norms.  If `axis` is a 2-tuple, it specifies the</span>
+<span class="sd">        axes that hold 2-D matrices, and the matrix norms of these matrices</span>
+<span class="sd">        are computed.  If `axis` is None then either a vector norm (when `x`</span>
+<span class="sd">        is 1-D) or a matrix norm (when `x` is 2-D) is returned. The default</span>
+<span class="sd">        is None.</span>
+<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">        If this is set to True, the axes which are normed over are left in the</span>
+<span class="sd">        result as dimensions with size one.  With this option the result will</span>
+<span class="sd">        broadcast correctly against the original `x`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    n : float or ndarray</span>
+<span class="sd">        Norm of the matrix or vector(s).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_input_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_input_dparray</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">keepdims</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;norm&quot;</span><span class="p">,</span> <span class="s2">&quot;keepdims&quot;</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;&#39;axis&#39; must be None, an integer or a tuple of integers&quot;</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_norm</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="nb">ord</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+
+        <span class="c1"># scalar returned</span>
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="ow">and</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="nb">ord</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

@@ -184,12 +184,32 @@
 <dl class="py function">
 <dt id="dpnp.floor">
 <code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">floor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_mathematical.html#floor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.floor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the floor of the input, element-wise.</p>
-<p>Some spreadsheet programs calculate the “floor-towards-zero”, in other words floor(-2.5) == -2.
-dpNP instead uses the definition of floor where floor(-2.5) == -3.</p>
+<dd><p>Round a number to the nearest integer toward minus infinity.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.floor.html#numpy.floor" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.floor</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Parameter <code class="docutils literal notranslate"><span class="pre">x1</span></code> is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Keyword arguments <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are currently unsupported.
+Otherwise the functions will be executed sequentially on CPU.
+Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.floor.html#numpy.floor" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.floor</span></code></a></p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.ceil.html#dpnp.ceil" title="dpnp.ceil"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ceil</span></code></a></dt><dd><p>Compute  the ceiling of the input, element-wise.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.trunc.html#dpnp.trunc" title="dpnp.trunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.trunc</span></code></a></dt><dd><p>Return the truncated value of the input, element-wise.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>Some spreadsheet programs calculate the “floor-towards-zero”, in other words floor(-2.5) == -2.
+dpNP instead uses the definition of floor where floor(-2.5) == -3.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">1.7</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.7</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
+<span class="go">[-2.0, -2.0, -1.0, 0.0, 1.0, 1.0, 2.0]</span>
+</pre></div>
 </div>
 </dd></dl>
 

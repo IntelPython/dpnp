@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.prod &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.random.logistic &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.sum" href="dpnp.sum.html" />
-    <link rel="prev" title="dpnp.unwrap" href="dpnp.unwrap.html" /> 
+    <link rel="next" title="dpnp.random.lognormal" href="dpnp.random.lognormal.html" />
+    <link rel="prev" title="dpnp.random.laplace" href="dpnp.random.laplace.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -99,22 +99,16 @@
 <li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear Algebra</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic Functions</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../math.html">Mathematical Functions</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../math.html#trigonometric-functions">Trigonometric functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#hyperbolic-functions">Hyperbolic functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#rounding">Rounding</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../math.html#sums-products-differences">Sums, products, differences</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#exponents-and-logarithms">Exponents and logarithms</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#other-special-functions">Other special functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#floating-point-routines">Floating point routines</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#arithmetic-operations">Arithmetic operations</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#handling-complex-numbers">Handling complex numbers</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#miscellaneous">Miscellaneous</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pad.html">Padding</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../polynomials.html">Polynomials</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../random.html#simple-random-data">Simple random data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../random.html#permutations">Permutations</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../random.html#distributions">Distributions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../random.html#random-generator">Random generator</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../sorting.html">Sorting, Searching, and Counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistical Functions</a></li>
 </ul>
@@ -176,15 +170,15 @@
         
           <li><a href="../routines.html">Routines</a> &raquo;</li>
         
-          <li><a href="../math.html">Mathematical Functions</a> &raquo;</li>
+          <li><a href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a> &raquo;</li>
         
-      <li>dpnp.prod</li>
+      <li>dpnp.random.logistic</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.prod.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.random.logistic.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -197,26 +191,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-prod">
-<h1>dpnp.prod<a class="headerlink" href="#dpnp-prod" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-random-logistic">
+<h1>dpnp.random.logistic<a class="headerlink" href="#dpnp-random-logistic" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.prod">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">prod</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_mathematical.html#prod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.prod" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate product of array elements over a given axis.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.prod.html#numpy.prod" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.prod</span></code></a>.</p>
-<p class="rubric">Limitations</p>
-<p>Parameter <code class="docutils literal notranslate"><span class="pre">x1</span></code> is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
-Keyword arguments <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are currently unsupported.
-Otherwise the functions will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]]))</span>
-<span class="go">24</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
-<span class="go">2</span>
-</pre></div>
-</div>
+<dt id="dpnp.random.logistic">
+<code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">logistic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">loc</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">scale</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#logistic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.logistic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logistic distribution.</p>
+<p>Draw samples from a logistic distribution.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.logistic.html#numpy.random.logistic" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.logistic</span></code></a>.</p>
+<p class="rubric">Notes</p>
+<p>The function uses <cite>numpy.random.logistic</cite> on the backend and will be
+executed on fallback backend.</p>
 </dd></dl>
 
 </div>
@@ -229,10 +214,10 @@ Input array data types are limited by supported DPNP <a class="reference interna
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.sum.html" class="btn btn-neutral float-right" title="dpnp.sum" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.random.lognormal.html" class="btn btn-neutral float-right" title="dpnp.random.lognormal" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.unwrap.html" class="btn btn-neutral float-left" title="dpnp.unwrap" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.random.laplace.html" class="btn btn-neutral float-left" title="dpnp.random.laplace" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

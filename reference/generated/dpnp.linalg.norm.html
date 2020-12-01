@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.prod &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.linalg.norm &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.sum" href="dpnp.sum.html" />
-    <link rel="prev" title="dpnp.unwrap" href="dpnp.unwrap.html" /> 
+    <link rel="next" title="dpnp.linalg.matrix_rank" href="dpnp.linalg.matrix_rank.html" />
+    <link rel="prev" title="dpnp.linalg.det" href="dpnp.linalg.det.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -97,21 +97,17 @@
 <li class="toctree-l3"><a class="reference internal" href="../manipulation.html">Array Manipulation Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../binary.html">Binary Operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear Algebra</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic Functions</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../math.html">Mathematical Functions</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../math.html#trigonometric-functions">Trigonometric functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#hyperbolic-functions">Hyperbolic functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#rounding">Rounding</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../math.html#sums-products-differences">Sums, products, differences</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#exponents-and-logarithms">Exponents and logarithms</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#other-special-functions">Other special functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#floating-point-routines">Floating point routines</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#arithmetic-operations">Arithmetic operations</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#handling-complex-numbers">Handling complex numbers</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#miscellaneous">Miscellaneous</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../linalg.html">Linear Algebra</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../linalg.html#matrix-and-vector-products">Matrix and vector products</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../linalg.html#decompositions">Decompositions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../linalg.html#matrix-eigenvalues">Matrix eigenvalues</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../linalg.html#norms-etc">Norms etc.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../linalg.html#solving-linear-equations">Solving linear equations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../linalg.html#special-matrices">Special Matrices</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pad.html">Padding</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../polynomials.html">Polynomials</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
@@ -176,15 +172,15 @@
         
           <li><a href="../routines.html">Routines</a> &raquo;</li>
         
-          <li><a href="../math.html">Mathematical Functions</a> &raquo;</li>
+          <li><a href="../linalg.html">Linear Algebra</a> &raquo;</li>
         
-      <li>dpnp.prod</li>
+      <li>dpnp.linalg.norm</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.prod.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.linalg.norm.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -197,26 +193,41 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-prod">
-<h1>dpnp.prod<a class="headerlink" href="#dpnp-prod" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-linalg-norm">
+<h1>dpnp.linalg.norm<a class="headerlink" href="#dpnp-linalg-norm" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.prod">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">prod</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_mathematical.html#prod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.prod" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate product of array elements over a given axis.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.prod.html#numpy.prod" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.prod</span></code></a>.</p>
-<p class="rubric">Limitations</p>
-<p>Parameter <code class="docutils literal notranslate"><span class="pre">x1</span></code> is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
-Keyword arguments <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are currently unsupported.
-Otherwise the functions will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]]))</span>
-<span class="go">24</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
-<span class="go">2</span>
-</pre></div>
-</div>
+<dt id="dpnp.linalg.norm">
+<code class="sig-prename descclassname">dpnp.linalg.</code><code class="sig-name descname">norm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input</span></em>, <em class="sig-param"><span class="n">ord</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keepdims</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/linalg_iface.html#norm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.linalg.norm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Matrix or vector norm.
+This function is able to return one of eight different matrix norms,
+or one of an infinite number of vector norms (described below), depending
+on the value of the <code class="docutils literal notranslate"><span class="pre">ord</span></code> parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input</strong> (<em>array_like</em>) – Input array.  If <cite>axis</cite> is None, <cite>x</cite> must be 1-D or 2-D, unless <cite>ord</cite>
+is None. If both <cite>axis</cite> and <cite>ord</cite> are None, the 2-norm of
+<code class="docutils literal notranslate"><span class="pre">x.ravel</span></code> will be returned.</p></li>
+<li><p><strong>ord</strong> (<em>{non-zero int</em><em>, </em><em>inf</em><em>, </em><em>-inf</em><em>, </em><em>'fro'</em><em>, </em><em>'nuc'}</em><em>, </em><em>optional</em>) – Order of the norm (see table under <code class="docutils literal notranslate"><span class="pre">Notes</span></code>). inf means numpy’s
+<cite>inf</cite> object. The default is None.</p></li>
+<li><p><strong>axis</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>2-tuple of ints}</em><em>, </em><em>optional.</em>) – If <cite>axis</cite> is an integer, it specifies the axis of <cite>x</cite> along which to
+compute the vector norms.  If <cite>axis</cite> is a 2-tuple, it specifies the
+axes that hold 2-D matrices, and the matrix norms of these matrices
+are computed.  If <cite>axis</cite> is None then either a vector norm (when <cite>x</cite>
+is 1-D) or a matrix norm (when <cite>x</cite> is 2-D) is returned. The default
+is None.</p></li>
+<li><p><strong>keepdims</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – If this is set to True, the axes which are normed over are left in the
+result as dimensions with size one.  With this option the result will
+broadcast correctly against the original <cite>x</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>n</strong> – Norm of the matrix or vector(s).</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)">float</a> or ndarray</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -229,10 +240,10 @@ Input array data types are limited by supported DPNP <a class="reference interna
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.sum.html" class="btn btn-neutral float-right" title="dpnp.sum" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.linalg.matrix_rank.html" class="btn btn-neutral float-right" title="dpnp.linalg.matrix_rank" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.unwrap.html" class="btn btn-neutral float-left" title="dpnp.unwrap" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.linalg.det.html" class="btn btn-neutral float-left" title="dpnp.linalg.det" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
