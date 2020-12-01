@@ -457,8 +457,6 @@ def min(input, axis=None, out=None):
 
     """
 
-    dim_input = input.ndim
-
     is_input_dparray = isinstance(input, dparray)
 
     if not use_origin_backend(input) and is_input_dparray:
