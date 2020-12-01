@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.random.uniform &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.tri &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.random.vonmises" href="dpnp.random.vonmises.html" />
-    <link rel="prev" title="dpnp.random.triangular" href="dpnp.random.triangular.html" /> 
+    <link rel="next" title="dpnp.tril" href="dpnp.tril.html" />
+    <link rel="prev" title="dpnp.diagflat" href="dpnp.diagflat.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -97,18 +97,20 @@
 <li class="toctree-l3"><a class="reference internal" href="../manipulation.html">Array Manipulation Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../binary.html">Binary Operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear Algebra</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../linalg.html">Linear Algebra</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../linalg.html#matrix-and-vector-products">Matrix and vector products</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../linalg.html#decompositions">Decompositions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../linalg.html#matrix-eigenvalues">Matrix eigenvalues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../linalg.html#norms-etc">Norms etc.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../linalg.html#solving-linear-equations">Solving linear equations</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../linalg.html#special-matrices">Special Matrices</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pad.html">Padding</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../polynomials.html">Polynomials</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../random.html#simple-random-data">Simple random data</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../random.html#permutations">Permutations</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../random.html#distributions">Distributions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../random.html#random-generator">Random generator</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../sorting.html">Sorting, Searching, and Counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistical Functions</a></li>
 </ul>
@@ -170,15 +172,15 @@
         
           <li><a href="../routines.html">Routines</a> &raquo;</li>
         
-          <li><a href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a> &raquo;</li>
+          <li><a href="../creation.html">Array Creation Routines</a> &raquo;</li>
         
-      <li>dpnp.random.uniform</li>
+      <li>dpnp.tri</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.random.uniform.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.tri.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -191,41 +193,25 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-random-uniform">
-<h1>dpnp.random.uniform<a class="headerlink" href="#dpnp-random-uniform" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-tri">
+<h1>dpnp.tri<a class="headerlink" href="#dpnp-tri" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.random.uniform">
-<code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">uniform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">low</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">high</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#uniform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.uniform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Draw samples from a uniform distribution.
-Samples are uniformly distributed over the half-open interval
-<code class="docutils literal notranslate"><span class="pre">[low,</span> <span class="pre">high)</span></code> (includes low, but excludes high).  In other words,
-any value within the given interval is equally likely to be drawn
-by <cite>uniform</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>low</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>optional</em>) – Lower boundary of the output interval.  All values generated will be
-greater than or equal to low.  The default value is 0.</p></li>
-<li><p><strong>high</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Upper boundary of the output interval.  All values generated will be
-less than high.  The default value is 1.0.</p></li>
-<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
-<code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">*</span> <span class="pre">k</span></code> samples are drawn.  If size is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default),
-a single value is returned if <code class="docutils literal notranslate"><span class="pre">low</span></code> and <code class="docutils literal notranslate"><span class="pre">high</span></code> are both scalars.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – Drawn samples from the parameterized uniform distribution.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>array or scalar</p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference internal" href="dpnp.random.random.html#dpnp.random.random" title="dpnp.random.random"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.random.random</span></code></a></dt><dd><p>Floats uniformly distributed over <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1)</span></code>.</p>
-</dd>
-</dl>
+<dt id="dpnp.tri">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">tri</code><span class="sig-paren">(</span><em class="sig-param">N</em>, <em class="sig-param">M=None</em>, <em class="sig-param">k=0</em>, <em class="sig-param">dtype=&lt;class 'float'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#tri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.tri" title="Permalink to this definition">¶</a></dt>
+<dd><p>An array with ones at and below the given diagonal and zeros elsewhere.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.tri.html#numpy.tri" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.tri</span></code></a>.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">tri</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+<span class="go">array([[1, 1, 1, 0, 0],</span>
+<span class="go">       [1, 1, 1, 1, 0],</span>
+<span class="go">       [1, 1, 1, 1, 1]])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">tri</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">array([[0.,  0.,  0.,  0.,  0.],</span>
+<span class="go">       [1.,  0.,  0.,  0.,  0.],</span>
+<span class="go">       [1.,  1.,  0.,  0.,  0.]])</span>
+</pre></div>
 </div>
 </dd></dl>
 
@@ -239,10 +225,10 @@ a single value is returned if <code class="docutils literal notranslate"><span c
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.random.vonmises.html" class="btn btn-neutral float-right" title="dpnp.random.vonmises" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.tril.html" class="btn btn-neutral float-right" title="dpnp.tril" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.random.triangular.html" class="btn btn-neutral float-left" title="dpnp.random.triangular" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.diagflat.html" class="btn btn-neutral float-left" title="dpnp.diagflat" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -320,7 +320,7 @@
 
             <span class="c1"># scalar returned</span>
             <span class="k">if</span> <span class="n">array_avg</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,):</span>
-                <span class="k">return</span> <span class="n">array_avg</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">array_avg</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  
+                <span class="k">return</span> <span class="n">array_avg</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">array_avg</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
             <span class="k">return</span> <span class="n">array_avg</span>
 
@@ -611,8 +611,6 @@
 <span class="sd">    0</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">dim_input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">ndim</span>
 
     <span class="n">is_input_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
 
