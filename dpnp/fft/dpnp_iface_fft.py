@@ -62,8 +62,8 @@ def fft(x1, n=None, axis=-1, norm=None):
     Limitations
     -----------
     Parameter ``norm`` is unsupported.
-    Parameter ``x1`` supports `dpnp.int32`, `dpnp.int64`, `dpnp.float32`, `dpnp.float64` and
-    `dpnp.complex128` datatypes only.
+    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
+    ``dpnp.complex128`` datatypes only.
 
     For full documentation refer to :obj:`numpy.fft.fft`.
 
@@ -102,10 +102,9 @@ def fft2(x1, s=None, axes=(-2, -1), norm=None):
 
     Limitations
     -----------
-    Parameter ``axes`` is unsupported.
     Parameter ``norm`` is unsupported.
-    Parameter ``x1`` supports 1-D arrays only.
-    Parameter ``x1`` supports `dpnp.int32`, `dpnp.int64`, `dpnp.float32` and `dpnp.float64` datatypes only.
+    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
+    ``dpnp.complex128`` datatypes only.
 
     See Also
     --------
@@ -115,22 +114,11 @@ def fft2(x1, s=None, axes=(-2, -1), norm=None):
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and 0):
-        if s is None:
-            output_size = x1.size
-        else:
-            output_size = n
-
-        if output_size < 1:
-            pass
-        elif axes != (-2, -1):
-            pass
-        elif norm is not None:
-            pass
-        elif x1.ndim > 1:
+    if (not use_origin_backend(x1) and is_x1_dparray):
+        if norm is not None:
             pass
         else:
-            return dpnp_fft(x1, output_size)
+            return fftn(x1, s, axes, norm)
 
     return call_origin(numpy.fft.fft2, x1, s, axes, norm)
 
@@ -143,10 +131,9 @@ def fftn(x1, s=None, axes=None, norm=None):
 
     Limitations
     -----------
-    Parameter ``axes`` is unsupported.
     Parameter ``norm`` is unsupported.
-    Parameter ``x1`` supports 1-D arrays only.
-    Parameter ``x1`` supports `dpnp.int32`, `dpnp.int64`, `dpnp.float32` and `dpnp.float64` datatypes only.
+    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
+    ``dpnp.complex128`` datatypes only.
 
     See Also
     --------
@@ -156,21 +143,32 @@ def fftn(x1, s=None, axes=None, norm=None):
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and 0):
+    if (not use_origin_backend(x1) and is_x1_dparray):
         if s is None:
-            output_size = x1.size
+            boundaries = tuple([x1.shape[i] for i in range(x1.ndim)])
         else:
-            output_size = n
+            boundaries = s
 
-        if output_size < 1:
-            pass
-        elif axes is not None:
-            pass
-        elif norm is not None:
-            pass
-        elif x1.ndim > 1:
+        if axes is None:
+            axes_param = tuple([i for i in range(x1.ndim)])
+        else:
+            axes_param = axes
+
+        if norm is not None:
             pass
         else:
-            return dpnp_fft(x1, output_size)
+            x1_iter = x1
+            iteration_list = list(range(len(axes_param)))
+            iteration_list.reverse()  # inplace operation
+            for it in iteration_list:
+                param_axis = axes_param[it]
+                try:
+                    param_n = boundaries[param_axis]
+                except IndexError:
+                    checker_throw_axis_error("fft.fftn", "is out of bounds", param_axis, f"< {len(boundaries)}")
+
+                x1_iter = fft(x1_iter, n=param_n, axis=param_axis, norm=norm)
+
+            return x1_iter
 
     return call_origin(numpy.fft.fftn, x1, s, axes, norm)
