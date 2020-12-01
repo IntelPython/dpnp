@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.fft.fftn &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.fft.ifftn &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.fft.ifftn" href="dpnp.fft.ifftn.html" />
-    <link rel="prev" title="dpnp.fft.ifft2" href="dpnp.fft.ifft2.html" /> 
+    <link rel="next" title="dpnp.fft.rfft" href="dpnp.fft.rfft.html" />
+    <link rel="prev" title="dpnp.fft.fftn" href="dpnp.fft.fftn.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -172,13 +172,13 @@
         
           <li><a href="../fft.html">FFT Functions</a> &raquo;</li>
         
-      <li>dpnp.fft.fftn</li>
+      <li>dpnp.fft.ifftn</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.fft.fftn.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.fft.ifftn.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -191,18 +191,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-fft-fftn">
-<h1>dpnp.fft.fftn<a class="headerlink" href="#dpnp-fft-fftn" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-fft-ifftn">
+<h1>dpnp.fft.ifftn<a class="headerlink" href="#dpnp-fft-ifftn" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.fft.fftn">
-<code class="sig-prename descclassname">dpnp.fft.</code><code class="sig-name descname">fftn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">s</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">axes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">norm</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/fft/dpnp_iface_fft.html#fftn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.fft.fftn" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the N-dimensional FFT.</p>
+<dt id="dpnp.fft.ifftn">
+<code class="sig-prename descclassname">dpnp.fft.</code><code class="sig-name descname">ifftn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">s</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">axes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">norm</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/fft/dpnp_iface_fft.html#ifftn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.fft.ifftn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the N-dimensional inverse discrete Fourier Transform.</p>
 <p>Multi-dimensional arrays computed as batch of 1-D arrays</p>
 <p class="rubric">Limitations</p>
 <p>Parameter <code class="docutils literal notranslate"><span class="pre">norm</span></code> is unsupported.
 Parameter <code class="docutils literal notranslate"><span class="pre">x1</span></code> supports <code class="docutils literal notranslate"><span class="pre">dpnp.int32</span></code>, <code class="docutils literal notranslate"><span class="pre">dpnp.int64</span></code>, <code class="docutils literal notranslate"><span class="pre">dpnp.float32</span></code>, <code class="docutils literal notranslate"><span class="pre">dpnp.float64</span></code> and
 <code class="docutils literal notranslate"><span class="pre">dpnp.complex128</span></code> datatypes only.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.fft.fftn.html#numpy.fft.fftn" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fft.fftn</span></code></a>.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.fft.ifftn.html#numpy.fft.ifftn" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fft.ifftn</span></code></a>.</p>
 </dd></dl>
 
 </div>
@@ -215,10 +215,10 @@ Parameter <code class="docutils literal notranslate"><span class="pre">x1</span>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.fft.ifftn.html" class="btn btn-neutral float-right" title="dpnp.fft.ifftn" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.fft.rfft.html" class="btn btn-neutral float-right" title="dpnp.fft.rfft" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.fft.ifft2.html" class="btn btn-neutral float-left" title="dpnp.fft.ifft2" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.fft.fftn.html" class="btn btn-neutral float-left" title="dpnp.fft.fftn" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

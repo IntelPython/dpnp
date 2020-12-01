@@ -206,7 +206,16 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;fft&quot;</span><span class="p">,</span>
     <span class="s2">&quot;fft2&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;fftn&quot;</span>
+    <span class="s2">&quot;fftn&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ifft&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ifft2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ifftn&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;irfft&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;irfft2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;irfftn&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rfft&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rfft2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rfftn&quot;</span>
 <span class="p">]</span>
 
 
@@ -261,9 +270,7 @@
 <span class="sd">    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and</span>
 <span class="sd">    ``dpnp.complex128`` datatypes only.</span>
 
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`numpy.fft.fft2` : Compute the 2-dimensional discrete Fourier Transform</span>
+<span class="sd">    For full documentation refer to :obj:`numpy.fft.fft2`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -290,9 +297,7 @@
 <span class="sd">    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and</span>
 <span class="sd">    ``dpnp.complex128`` datatypes only.</span>
 
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`numpy.fft.fftn` : Compute the N-dimensional FFT.</span>
+<span class="sd">    For full documentation refer to :obj:`numpy.fft.fftn`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -327,6 +332,350 @@
             <span class="k">return</span> <span class="n">x1_iter</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftn</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ifft"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.ifft.html#dpnp.fft.ifft">[docs]</a><span class="k">def</span> <span class="nf">ifft</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the one-dimensional inverse discrete Fourier Transform.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameter ``norm`` is unsupported.</span>
+<span class="sd">    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and</span>
+<span class="sd">    ``dpnp.complex128`` datatypes only.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.fft.ifft`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">axis_param</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>      <span class="c1"># the most right dimension (default value)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">axis_param</span> <span class="o">=</span> <span class="n">axis</span>
+
+        <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">boundarie</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis_param</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">boundarie</span> <span class="o">=</span> <span class="n">n</span>
+
+        <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">pass</span>                 <span class="c1"># let fallback to handle exception</span>
+        <span class="k">elif</span> <span class="n">boundarie</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">pass</span>                 <span class="c1"># let fallback to handle exception</span>
+        <span class="k">elif</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifft</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ifft2"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.ifft2.html#dpnp.fft.ifft2">[docs]</a><span class="k">def</span> <span class="nf">ifft2</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the 2-dimensional inverse discrete Fourier Transform</span>
+
+<span class="sd">    Multi-dimensional arrays computed as batch of 1-D arrays</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameter ``norm`` is unsupported.</span>
+<span class="sd">    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and</span>
+<span class="sd">    ``dpnp.complex128`` datatypes only.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.fft.ifft2`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">fftn</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifft2</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ifftn"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.ifftn.html#dpnp.fft.ifftn">[docs]</a><span class="k">def</span> <span class="nf">ifftn</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the N-dimensional inverse discrete Fourier Transform.</span>
+
+<span class="sd">    Multi-dimensional arrays computed as batch of 1-D arrays</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameter ``norm`` is unsupported.</span>
+<span class="sd">    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and</span>
+<span class="sd">    ``dpnp.complex128`` datatypes only.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.fft.ifftn`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">boundaries</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">ndim</span><span class="p">)])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">boundaries</span> <span class="o">=</span> <span class="n">s</span>
+
+        <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">axes_param</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">ndim</span><span class="p">)])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">axes_param</span> <span class="o">=</span> <span class="n">axes</span>
+
+        <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x1_iter</span> <span class="o">=</span> <span class="n">x1</span>
+            <span class="n">iteration_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">axes_param</span><span class="p">)))</span>
+            <span class="n">iteration_list</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>  <span class="c1"># inplace operation</span>
+            <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">iteration_list</span><span class="p">:</span>
+                <span class="n">param_axis</span> <span class="o">=</span> <span class="n">axes_param</span><span class="p">[</span><span class="n">it</span><span class="p">]</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">param_n</span> <span class="o">=</span> <span class="n">boundaries</span><span class="p">[</span><span class="n">param_axis</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                    <span class="n">checker_throw_axis_error</span><span class="p">(</span><span class="s2">&quot;fft.ifftn&quot;</span><span class="p">,</span> <span class="s2">&quot;is out of bounds&quot;</span><span class="p">,</span> <span class="n">param_axis</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;&lt; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">boundaries</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="n">x1_iter</span> <span class="o">=</span> <span class="n">fft</span><span class="p">(</span><span class="n">x1_iter</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">param_n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">param_axis</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">x1_iter</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifftn</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="irfft"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.irfft.html#dpnp.fft.irfft">[docs]</a><span class="k">def</span> <span class="nf">irfft</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the one-dimensional inverse discrete Fourier Transform for real input..</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameter ``norm`` is unsupported.</span>
+<span class="sd">    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and</span>
+<span class="sd">    ``dpnp.complex128`` datatypes only.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.fft.irfft`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">axis_param</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>      <span class="c1"># the most right dimension (default value)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">axis_param</span> <span class="o">=</span> <span class="n">axis</span>
+
+        <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">boundarie</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis_param</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">boundarie</span> <span class="o">=</span> <span class="n">n</span>
+
+        <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">pass</span>                 <span class="c1"># let fallback to handle exception</span>
+        <span class="k">elif</span> <span class="n">boundarie</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">pass</span>                 <span class="c1"># let fallback to handle exception</span>
+        <span class="k">elif</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="irfft2"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.irfft2.html#dpnp.fft.irfft2">[docs]</a><span class="k">def</span> <span class="nf">irfft2</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the 2-dimensional inverse discrete Fourier Transform for real input.</span>
+
+<span class="sd">    Multi-dimensional arrays computed as batch of 1-D arrays</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameter ``norm`` is unsupported.</span>
+<span class="sd">    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and</span>
+<span class="sd">    ``dpnp.complex128`` datatypes only.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.fft.irfft2`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">fftn</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft2</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="irfftn"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.irfftn.html#dpnp.fft.irfftn">[docs]</a><span class="k">def</span> <span class="nf">irfftn</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the N-dimensional inverse discrete Fourier Transform for real input.</span>
+
+<span class="sd">    Multi-dimensional arrays computed as batch of 1-D arrays</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameter ``norm`` is unsupported.</span>
+<span class="sd">    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and</span>
+<span class="sd">    ``dpnp.complex128`` datatypes only.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.fft.irfftn`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">boundaries</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">ndim</span><span class="p">)])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">boundaries</span> <span class="o">=</span> <span class="n">s</span>
+
+        <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">axes_param</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">ndim</span><span class="p">)])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">axes_param</span> <span class="o">=</span> <span class="n">axes</span>
+
+        <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x1_iter</span> <span class="o">=</span> <span class="n">x1</span>
+            <span class="n">iteration_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">axes_param</span><span class="p">)))</span>
+            <span class="n">iteration_list</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>  <span class="c1"># inplace operation</span>
+            <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">iteration_list</span><span class="p">:</span>
+                <span class="n">param_axis</span> <span class="o">=</span> <span class="n">axes_param</span><span class="p">[</span><span class="n">it</span><span class="p">]</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">param_n</span> <span class="o">=</span> <span class="n">boundaries</span><span class="p">[</span><span class="n">param_axis</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                    <span class="n">checker_throw_axis_error</span><span class="p">(</span><span class="s2">&quot;fft.irfftn&quot;</span><span class="p">,</span> <span class="s2">&quot;is out of bounds&quot;</span><span class="p">,</span> <span class="n">param_axis</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;&lt; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">boundaries</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="n">x1_iter</span> <span class="o">=</span> <span class="n">fft</span><span class="p">(</span><span class="n">x1_iter</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">param_n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">param_axis</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">x1_iter</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfftn</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="rfft"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.rfft.html#dpnp.fft.rfft">[docs]</a><span class="k">def</span> <span class="nf">rfft</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the one-dimensional discrete Fourier Transform for real input.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameter ``norm`` is unsupported.</span>
+<span class="sd">    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and</span>
+<span class="sd">    ``dpnp.complex128`` datatypes only.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.fft.rfft`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">axis_param</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>      <span class="c1"># the most right dimension (default value)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">axis_param</span> <span class="o">=</span> <span class="n">axis</span>
+
+        <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">boundarie</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis_param</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">boundarie</span> <span class="o">=</span> <span class="n">n</span>
+
+        <span class="k">if</span> <span class="n">x1</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">pass</span>                 <span class="c1"># let fallback to handle exception</span>
+        <span class="k">elif</span> <span class="n">boundarie</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">pass</span>                 <span class="c1"># let fallback to handle exception</span>
+        <span class="k">elif</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="rfft2"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.rfft2.html#dpnp.fft.rfft2">[docs]</a><span class="k">def</span> <span class="nf">rfft2</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the 2-dimensional discrete Fourier Transform for real input.</span>
+
+<span class="sd">    Multi-dimensional arrays computed as batch of 1-D arrays</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameter ``norm`` is unsupported.</span>
+<span class="sd">    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and</span>
+<span class="sd">    ``dpnp.complex128`` datatypes only.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.fft.rfft2`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">fftn</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft2</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="rfftn"><a class="viewcode-back" href="../../../reference/generated/dpnp.fft.rfftn.html#dpnp.fft.rfftn">[docs]</a><span class="k">def</span> <span class="nf">rfftn</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the N-dimensional discrete Fourier Transform for real input.</span>
+
+<span class="sd">    Multi-dimensional arrays computed as batch of 1-D arrays</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameter ``norm`` is unsupported.</span>
+<span class="sd">    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and</span>
+<span class="sd">    ``dpnp.complex128`` datatypes only.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.fft.rfftn`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">boundaries</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">ndim</span><span class="p">)])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">boundaries</span> <span class="o">=</span> <span class="n">s</span>
+
+        <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">axes_param</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">ndim</span><span class="p">)])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">axes_param</span> <span class="o">=</span> <span class="n">axes</span>
+
+        <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x1_iter</span> <span class="o">=</span> <span class="n">x1</span>
+            <span class="n">iteration_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">axes_param</span><span class="p">)))</span>
+            <span class="n">iteration_list</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>  <span class="c1"># inplace operation</span>
+            <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">iteration_list</span><span class="p">:</span>
+                <span class="n">param_axis</span> <span class="o">=</span> <span class="n">axes_param</span><span class="p">[</span><span class="n">it</span><span class="p">]</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">param_n</span> <span class="o">=</span> <span class="n">boundaries</span><span class="p">[</span><span class="n">param_axis</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                    <span class="n">checker_throw_axis_error</span><span class="p">(</span><span class="s2">&quot;fft.rfftn&quot;</span><span class="p">,</span> <span class="s2">&quot;is out of bounds&quot;</span><span class="p">,</span> <span class="n">param_axis</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;&lt; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">boundaries</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="n">x1_iter</span> <span class="o">=</span> <span class="n">fft</span><span class="p">(</span><span class="n">x1_iter</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">param_n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">param_axis</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">x1_iter</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftn</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
