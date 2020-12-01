@@ -165,7 +165,7 @@ def average(a, axis=None, weights=None, returned=False):
 
             # scalar returned
             if array_avg.shape == (1,):
-                return array_avg.dtype.type(array_avg[0])  
+                return array_avg.dtype.type(array_avg[0])
 
             return array_avg
 
@@ -456,8 +456,6 @@ def min(input, axis=None, out=None):
     0
 
     """
-
-    dim_input = input.ndim
 
     is_input_dparray = isinstance(input, dparray)
 

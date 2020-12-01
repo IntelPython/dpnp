@@ -214,7 +214,7 @@ def kron(x1, x2, **kwargs):
 def outer(x1, x2, **kwargs):
     """
     Returns the outer product of two arrays.
-    
+
     For full documentation refer to :obj:`numpy.outer`.
 
     Limitations
