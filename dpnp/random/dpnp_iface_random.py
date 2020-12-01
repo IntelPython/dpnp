@@ -66,8 +66,11 @@ __all__ = [
     'negative_binomial',
     'normal',
     'noncentral_chisquare',
+    'noncentral_f',
+    'pareto',
     'permutation',
     'poisson',
+    'power',
     'rand',
     'randint',
     'randn',
@@ -82,6 +85,7 @@ __all__ = [
     'standard_exponential',
     'standard_gamma',
     'standard_normal',
+    'standard_t',
     'shuffle',
     'uniform',
     'weibull'
@@ -1181,23 +1185,6 @@ def negative_binomial(n, p, size=None):
     return call_origin(numpy.random.negative_binomial, n, p, size)
 
 
-def noncentral_chisquare(df, nonc, size=None):
-    """Noncentral chi-square distribution.
-
-    Draw samples from a noncentral chi-square distribution.
-
-    For full documentation refer to :obj:`numpy.random.noncentral_chisquare`.
-
-    Notes
-    -----
-    The function uses `numpy.random.noncentral_chisquare` on the backend and
-    will be executed on fallback backend.
-
-    """
-
-    return call_origin(numpy.random.noncentral_chisquare, df, nonc, size)
-
-
 def normal(loc=0.0, scale=1.0, size=None):
     """Normal distribution.
 
@@ -1281,6 +1268,57 @@ def normal(loc=0.0, scale=1.0, size=None):
         return dpnp_normal(loc, scale, size)
 
     return call_origin(numpy.random.normal, loc, scale, size)
+
+
+def noncentral_chisquare(df, nonc, size=None):
+    """Noncentral chi-square distribution.
+
+    Draw samples from a noncentral chi-square distribution.
+
+    For full documentation refer to :obj:`numpy.random.noncentral_chisquare`.
+
+    Notes
+    -----
+    The function uses `numpy.random.noncentral_chisquare` on the backend and
+    will be executed on fallback backend.
+
+    """
+
+    return call_origin(numpy.random.noncentral_chisquare, df, nonc, size)
+
+
+def noncentral_f(dfnum, dfden, nonc, size=None):
+    """Noncentral F distribution.
+
+    Draw samples from the noncentral F distribution.
+
+    For full documentation refer to :obj:`numpy.random.noncentral_f`.
+
+    Notes
+    -----
+    The function uses `numpy.random.noncentral_f` on the backend and
+    will be executed on fallback backend.
+
+    """
+
+    return call_origin(numpy.random.noncentral_f, dfnum, dfden, nonc, size)
+
+
+def pareto(a, size=None):
+    """Pareto II or Lomax distribution.
+
+    Draw samples from a Pareto II or Lomax distribution with specified shape.
+
+    For full documentation refer to :obj:`numpy.random.pareto`.
+
+    Notes
+    -----
+    The function uses `numpy.random.pareto` on the backend and
+    will be executed on fallback backend.
+
+    """
+
+    return call_origin(numpy.random.pareto, a, size)
 
 
 def permutation(x):
@@ -1367,6 +1405,24 @@ def poisson(lam=1.0, size=None):
         return dpnp_poisson(lam, size)
 
     return call_origin(numpy.random.poisson, lam, size)
+
+
+def power(a, size=None):
+    """Power distribution.
+
+    Draws samples in [0, 1] from a power distribution with positive exponent
+    a - 1.
+
+    For full documentation refer to :obj:`numpy.random.power`.
+
+    Notes
+    -----
+    The function uses `numpy.random.power` on the backend and
+    will be executed on fallback backend.
+
+    """
+
+    return call_origin(numpy.random.power, a, size)
 
 
 def rand(d0, *dn):
@@ -1916,6 +1972,24 @@ def standard_normal(size=None):
         return dpnp_standard_normal(size)
 
     return call_origin(numpy.random.standard_normal, size)
+
+
+def standard_t(df, size=None):
+    """Power distribution.
+
+    Draw samples from a standard Student’s t distribution with df degrees
+    of freedom.
+
+    For full documentation refer to :obj:`numpy.random.standard_t`.
+
+    Notes
+    -----
+    The function uses `numpy.random.standard_t` on the backend and
+    will be executed on fallback backend.
+
+    """
+
+    return call_origin(numpy.random.standard_t, df, size)
 
 
 def shuffle(x):
