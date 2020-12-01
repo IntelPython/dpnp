@@ -217,8 +217,8 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Parameter ``norm`` is unsupported.</span>
-<span class="sd">    Parameter ``x1`` supports `dpnp.int32`, `dpnp.int64`, `dpnp.float32`, `dpnp.float64` and</span>
-<span class="sd">    `dpnp.complex128` datatypes only.</span>
+<span class="sd">    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and</span>
+<span class="sd">    ``dpnp.complex128`` datatypes only.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.fft.fft`.</span>
 
@@ -257,10 +257,9 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``axes`` is unsupported.</span>
 <span class="sd">    Parameter ``norm`` is unsupported.</span>
-<span class="sd">    Parameter ``x1`` supports 1-D arrays only.</span>
-<span class="sd">    Parameter ``x1`` supports `dpnp.int32`, `dpnp.int64`, `dpnp.float32` and `dpnp.float64` datatypes only.</span>
+<span class="sd">    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and</span>
+<span class="sd">    ``dpnp.complex128`` datatypes only.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -270,22 +269,11 @@
 
     <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="mi">0</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">output_size</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">size</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">output_size</span> <span class="o">=</span> <span class="n">n</span>
-
-        <span class="k">if</span> <span class="n">output_size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">axes</span> <span class="o">!=</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">x1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">output_size</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">fftn</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft2</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
@@ -298,10 +286,9 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``axes`` is unsupported.</span>
 <span class="sd">    Parameter ``norm`` is unsupported.</span>
-<span class="sd">    Parameter ``x1`` supports 1-D arrays only.</span>
-<span class="sd">    Parameter ``x1`` supports `dpnp.int32`, `dpnp.int64`, `dpnp.float32` and `dpnp.float64` datatypes only.</span>
+<span class="sd">    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and</span>
+<span class="sd">    ``dpnp.complex128`` datatypes only.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -311,22 +298,33 @@
 
     <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="mi">0</span><span class="p">):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">output_size</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">size</span>
+            <span class="n">boundaries</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">x1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">ndim</span><span class="p">)])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">output_size</span> <span class="o">=</span> <span class="n">n</span>
+            <span class="n">boundaries</span> <span class="o">=</span> <span class="n">s</span>
 
-        <span class="k">if</span> <span class="n">output_size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">axes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">x1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">axes_param</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">ndim</span><span class="p">)])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">axes_param</span> <span class="o">=</span> <span class="n">axes</span>
+
+        <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">output_size</span><span class="p">)</span>
+            <span class="n">x1_iter</span> <span class="o">=</span> <span class="n">x1</span>
+            <span class="n">iteration_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">axes_param</span><span class="p">)))</span>
+            <span class="n">iteration_list</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>  <span class="c1"># inplace operation</span>
+            <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">iteration_list</span><span class="p">:</span>
+                <span class="n">param_axis</span> <span class="o">=</span> <span class="n">axes_param</span><span class="p">[</span><span class="n">it</span><span class="p">]</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">param_n</span> <span class="o">=</span> <span class="n">boundaries</span><span class="p">[</span><span class="n">param_axis</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                    <span class="n">checker_throw_axis_error</span><span class="p">(</span><span class="s2">&quot;fft.fftn&quot;</span><span class="p">,</span> <span class="s2">&quot;is out of bounds&quot;</span><span class="p">,</span> <span class="n">param_axis</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;&lt; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">boundaries</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="n">x1_iter</span> <span class="o">=</span> <span class="n">fft</span><span class="p">(</span><span class="n">x1_iter</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">param_n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">param_axis</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">x1_iter</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftn</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 </pre></div>
