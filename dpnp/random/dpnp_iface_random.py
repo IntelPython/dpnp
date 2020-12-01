@@ -2174,8 +2174,7 @@ def weibull(a, size=None):
 def zipf(a, size=None, dtype=int):
     """Zipf distribution.
 
-    Returns an array of samples drawn from the Zipf distribution. Its
-    probability mass function is defined as
+    Returns an array of samples drawn from the Zipf distribution.
 
     For full documentation refer to :obj:`numpy.random.zipf`.
 
