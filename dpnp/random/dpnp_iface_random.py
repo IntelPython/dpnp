@@ -2115,7 +2115,6 @@ def wald(mean, scale, size=None):
     return call_origin(numpy.random.wald, mean, scale, size)
 
 
-
 def weibull(a, size=None):
     """
 
