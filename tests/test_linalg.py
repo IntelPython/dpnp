@@ -30,6 +30,20 @@ def test_cholesky():
     numpy.testing.assert_array_equal(expected, result)
 
 
+@pytest.mark.parametrize("arr",
+                         [[[1, 0, -1], [0, 1, 0], [1, 0, 1]], [[1, 2, 3], [4, 5, 6], [7, 8, 9]]],
+                         ids=['[[1, 0, -1], [0, 1, 0], [1, 0, 1]]', '[[1, 2, 3], [4, 5, 6], [7, 8, 9]]'])
+@pytest.mark.parametrize("p",
+                         [None, 1, -1, 2, -2, numpy.inf, -numpy.inf, 'fro'],
+                         ids=['None', '1', '-1', '2', '-2', 'numpy.inf', '-numpy.inf', '"fro"'])
+def test_cond(arr, p):
+    a = numpy.array(arr)
+    ia = inp.array(a)
+    result = inp.linalg.cond(ia, p)
+    expected = numpy.linalg.cond(a, p)
+    numpy.testing.assert_array_equal(expected, result)
+
+
 def test_det():
     arrays = [
         [[0, 0], [0, 0]],

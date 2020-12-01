@@ -42,6 +42,7 @@ cimport numpy
 
 __all__ = [
     "dpnp_cholesky",
+    "dpnp_cond",
     "dpnp_det",
     "dpnp_eig",
     "dpnp_eigvals",
@@ -74,6 +75,29 @@ cpdef dparray dpnp_cholesky(dparray input):
     func(input.get_data(), result.get_data(), < size_t * > input._dparray_shape.data())
     l_result = result.reshape(input.shape)
     return l_result
+
+
+cpdef dparray dpnp_cond(dparray input, p):
+    if p in ('f', 'fro'):
+        input = input.ravel(order='K')
+        sqnorm = dpnp.dot(input, input)
+        ret = dpnp.sqrt(sqnorm)
+        return dpnp.array([ret])
+    elif p == numpy.inf:
+        dpnp_sum_val = dpnp.array([dpnp.sum(dpnp.abs(input), axis=1)])
+        ret = dpnp.array([dpnp_sum_val.max()])
+    elif p == -numpy.inf:
+        dpnp_sum_val = dpnp.array([dpnp.sum(dpnp.abs(input), axis=1)])
+        ret = dpnp.array([dpnp_sum_val.min()])
+    elif p == 1:
+        dpnp_sum_val = dpnp.array([dpnp.sum(dpnp.abs(input), axis=0)])
+        ret = dpnp.array([dpnp_sum_val.max()])
+    elif p == -1:
+        dpnp_sum_val = dpnp.array([dpnp.sum(dpnp.abs(input), axis=0)])
+        ret = dpnp.array([dpnp_sum_val.min()])
+    else:
+        ret = dpnp.array([input.item(0)])
+    return ret
 
 
 cpdef dparray dpnp_det(dparray input):
