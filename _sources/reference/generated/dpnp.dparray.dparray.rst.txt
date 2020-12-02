@@ -5,53 +5,139 @@
 
 .. autoclass:: dparray
 
-   
-   .. automethod:: __init__
+   ..
+      Methods
 
-   
+
+
    .. rubric:: Methods
 
-   .. autosummary::
-   
-      ~dparray.__init__
-      ~dparray.all
-      ~dparray.any
-      ~dparray.argmax
-      ~dparray.argmin
-      ~dparray.argsort
-      ~dparray.astype
-      ~dparray.fill
-      ~dparray.flatten
-      ~dparray.item
-      ~dparray.max
-      ~dparray.mean
-      ~dparray.min
-      ~dparray.ravel
-      ~dparray.repeat
-      ~dparray.reshape
-      ~dparray.sort
-      ~dparray.std
-      ~dparray.sum
-      ~dparray.transpose
-      ~dparray.var
-   
-   
+   ..
+      Special methods
 
-   
-   
+
+
+   .. automethod:: __getitem__
+
+
+   .. automethod:: __setitem__
+
+
+   .. automethod:: __len__
+
+
+   .. automethod:: __next__
+
+
+   .. automethod:: __iter__
+
+
+   ..
+      Ordinary methods
+
+
+
+
+   .. automethod:: all
+
+
+   .. automethod:: any
+
+
+   .. automethod:: argmax
+
+
+   .. automethod:: argmin
+
+
+   .. automethod:: argsort
+
+
+   .. automethod:: astype
+
+
+   .. automethod:: fill
+
+
+   .. automethod:: flatten
+
+
+   .. automethod:: item
+
+
+   .. automethod:: max
+
+
+   .. automethod:: mean
+
+
+   .. automethod:: min
+
+
+   .. automethod:: ravel
+
+
+   .. automethod:: repeat
+
+
+   .. automethod:: reshape
+
+
+   .. automethod:: sort
+
+
+   .. automethod:: std
+
+
+   .. automethod:: sum
+
+
+   .. automethod:: transpose
+
+
+   .. automethod:: var
+
+
+   ..
+      Special methods
+
+
+
+   .. automethod:: __eq__
+
+
+   .. automethod:: __ne__
+
+
+   .. automethod:: __lt__
+
+
+   .. automethod:: __le__
+
+
+   .. automethod:: __gt__
+
+
+   .. automethod:: __ge__
+
+
+
+   ..
+      Atributes
+
+ 
+
    .. rubric:: Attributes
 
-   .. autosummary::
-   
-      ~dparray.T
-      ~dparray.dtype
-      ~dparray.flags
-      ~dparray.flat
-      ~dparray.itemsize
-      ~dparray.nbytes
-      ~dparray.ndim
-      ~dparray.shape
-      ~dparray.size
-      ~dparray.strides
-   
-   
+
+   .. autoattribute:: T
+   .. autoattribute:: dtype
+   .. autoattribute:: flags
+   .. autoattribute:: flat
+   .. autoattribute:: itemsize
+   .. autoattribute:: nbytes
+   .. autoattribute:: ndim
+   .. autoattribute:: shape
+   .. autoattribute:: size
+   .. autoattribute:: strides
+ 
