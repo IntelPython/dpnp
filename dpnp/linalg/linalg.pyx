@@ -45,6 +45,7 @@ __all__ = [
     "dpnp_det",
     "dpnp_eig",
     "dpnp_eigvals",
+    "dpnp_inv",
     "dpnp_matrix_rank",
     "dpnp_norm"
 ]
@@ -143,6 +144,51 @@ cpdef dparray dpnp_eigvals(dparray input):
     func(input.get_data(), res_val.get_data(), size)
 
     return res_val
+
+
+cpdef dparray dpnp_inv(dparray input):
+    cpdef dparray_shape_type input_shape = input.shape
+    n = input.shape[0]
+
+    input_souz = dparray(input_shape)
+    for i in range(n):
+        for j in range(n):
+            m = dparray((n-1, n-1), dtype=input.dtype)
+            n_e_k = 1
+            n_e_l = 1
+            for k in range(n-1):
+                if k != i:
+                    if n_e_k == 1:
+                        if i == n - 1:
+                            continue
+                        else:
+                            ind_k = k
+                    else:
+                        ind_k = k - 1
+
+                    for l in range(n-1):
+                        if l != j:
+                            if n_e_l == 1:
+                                if j == n - 1:
+                                    continue
+                                else:
+                                    ind_l = l
+                            else:
+                                ind_l = l - 1
+                            m[k][l] = input[ind_k][ind_l]
+                        else:
+                            n_e_l = 0
+                else:
+                    n_e_k = 0
+            if n - 1 == 1:
+                input_souz[i, j] = m[0, 0]
+            else:
+                input_souz[i, j] = dpnp.linalg.det(m)
+
+    input_souz_t = dpnp.transpose(input_souz)
+    input_det = dpnp.linalg.det(input)
+    res = (1/input_det) * input_souz_t
+    return res
 
 
 cpdef dparray dpnp_matrix_rank(dparray input):

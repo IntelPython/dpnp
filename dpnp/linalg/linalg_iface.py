@@ -53,6 +53,7 @@ __all__ = [
     "det",
     "eig",
     "eigvals",
+    "inv",
     "matrix_power",
     "matrix_rank",
     "multi_dot",
@@ -166,6 +167,30 @@ def eigvals(input):
             return dpnp_eigvals(input)
 
     return call_origin(numpy.linalg.eigvals, input)
+
+
+def inv(input):
+    """
+        Compute the (multiplicative) inverse of a matrix.
+        Given a square matrix `input`, return the matrix `ainv` satisfying
+        ``dot(input, ainv) = dot(ainv, input) = eye(input.shape[0])``.
+        Parameters
+        ----------
+        input : (..., M, M) array_like
+            Matrix to be inverted.
+        Returns
+        -------
+        ainv : (..., M, M) ndarray or matrix
+            (Multiplicative) inverse of the matrix `input`.
+    """
+
+    is_input_dparray = isinstance(input, dparray)
+
+    if (not use_origin_backend(input) and is_input_dparray):
+        if input.ndim == 2 and input.shape[0] == input.shape[1] and input.shape[0] >= 2:
+            return dpnp_inv(input)
+
+    return call_origin(numpy.linalg.inv, input)
 
 
 def matrix_power(input, count):

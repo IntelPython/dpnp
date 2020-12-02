@@ -98,6 +98,17 @@ def test_eigvals():
         numpy.testing.assert_allclose(expected, result, atol=0.5)
 
 
+@pytest.mark.parametrize("array",
+                         [[[1., 2.], [3., 4.]]],
+                         ids=['[[1., 2.], [3., 4.]]'])
+def test_inv(array):
+    a = numpy.array(array)
+    ia = inp.array(a)
+    result = inp.linalg.inv(ia)
+    expected = numpy.linalg.inv(a)
+    numpy.testing.assert_allclose(expected, result)
+
+
 def test_matrix_rank():
     arrays = [
         [0, 0],
