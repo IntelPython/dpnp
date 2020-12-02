@@ -37,6 +37,8 @@ from dpnp.dpnp_utils cimport *
 
 
 __all__ += [
+    "dpnp_atleast_2d",
+    "dpnp_atleast_3d",
     "dpnp_copyto",
     "dpnp_repeat",
     "dpnp_transpose"
@@ -46,6 +48,37 @@ __all__ += [
 # C function pointer to the C library template functions
 ctypedef void(*fptr_custom_elemwise_transpose_1in_1out_t)(void * , dparray_shape_type & , dparray_shape_type & ,
                                                           dparray_shape_type &, void * , size_t)
+
+
+cpdef dparray dpnp_atleast_2d(dparray arr):
+    cdef size_t arr_ndim = arr.ndim
+    cdef long arr_size = arr.size
+    if arr_ndim == 1:
+        result = dparray((1, arr_size), dtype=arr.dtype)
+        for i in range(arr_size):
+            result[0, i] = arr[i]
+        return result
+    else:
+        return arr
+
+
+cpdef dparray dpnp_atleast_3d(dparray arr):
+    cdef size_t arr_ndim = arr.ndim
+    cdef dparray_shape_type arr_shape = arr.shape
+    cdef long arr_size = arr.size
+    if arr_ndim == 1:
+        result = dparray((1, 1, arr_size), dtype=arr.dtype)
+        for i in range(arr_size):
+            result[0, 0, i] = arr[i]
+        return result
+    elif arr_ndim == 2:
+        result = dparray((1, arr_shape[0], arr_shape[1]), dtype=arr.dtype)
+        for i in range(arr_shape[0]):
+            for j in range(arr_shape[1]):
+                result[0, i, j] = arr[i, j]
+        return result
+    else:
+        return arr
 
 
 cpdef dparray dpnp_copyto(dparray dst, dparray src, where=True):

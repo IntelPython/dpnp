@@ -50,6 +50,9 @@ import dpnp
 
 
 __all__ = [
+    "atleast_1d",
+    "atleast_2d",
+    "atleast_3d",
     "copyto",
     "moveaxis",
     "ravel",
@@ -58,6 +61,107 @@ __all__ = [
     "swapaxes",
     "transpose"
 ]
+
+
+def atleast_1d(*arys):
+    """
+    Convert inputs to arrays with at least one dimension.
+    Scalar inputs are converted to 1-dimensional arrays, whilst
+    higher-dimensional inputs are preserved.
+
+    Parameters
+    ----------
+    arys1, arys2, ... : array_like
+        One or more input arrays.
+
+    Returns
+    -------
+    ret : ndarray
+        An array, or list of arrays, each with ``a.ndim >= 1``.
+        Copies are made only if necessary.
+    """
+
+    return call_origin(numpy.atleast_1d, *arys)
+
+
+def atleast_2d(*arys):
+    """
+    View inputs as arrays with at least two dimensions.
+
+    Parameters
+    ----------
+    arys1, arys2, ... : array_like
+        One or more array-like sequences.  Non-array inputs are converted
+        to arrays.  Arrays that already have two or more dimensions are
+        preserved.
+
+    Returns
+    -------
+    res, res2, ... : ndarray
+        An array, or list of arrays, each with ``a.ndim >= 2``.
+        Copies are avoided where possible, and views with two or more
+        dimensions are returned.
+    """
+
+    all_is_dparray = True
+    for ary in arys:
+        if not isinstance(ary, dparray):
+            all_is_dparray = False
+            break
+
+    if not use_origin_backend(arys[0]) and all_is_dparray:
+        result = []
+        for ary in arys:
+            res = dpnp_atleast_2d(ary)
+            result.append(res)
+
+        if len(result) == 1:
+            return result[0]
+        else:
+            return result
+
+    return call_origin(numpy.atleast_2d, *arys)
+
+
+def atleast_3d(*arys):
+    """
+    View inputs as arrays with at least three dimensions.
+
+    Parameters
+    ----------
+    arys1, arys2, ... : array_like
+        One or more array-like sequences.  Non-array inputs are converted to
+        arrays.  Arrays that already have three or more dimensions are
+        preserved.
+
+    Returns
+    -------
+    res1, res2, ... : ndarray
+        An array, or list of arrays, each with ``a.ndim >= 3``.  Copies are
+        avoided where possible, and views with three or more dimensions are
+        returned.  For example, a 1-D array of shape ``(N,)`` becomes a view
+        of shape ``(1, N, 1)``, and a 2-D array of shape ``(M, N)`` becomes a
+        view of shape ``(M, N, 1)``.
+    """
+
+    all_is_dparray = True
+    for ary in arys:
+        if not isinstance(ary, dparray):
+            all_is_dparray = False
+            break
+
+    if not use_origin_backend(arys[0]) and all_is_dparray:
+        result = []
+        for ary in arys:
+            res = dpnp_atleast_3d(ary)
+            result.append(res)
+
+        if len(result) == 1:
+            return result[0]
+        else:
+            return result
+
+    return call_origin(numpy.atleast_3d, *arys)
 
 
 def copyto(dst, src, casting='same_kind', where=True):
