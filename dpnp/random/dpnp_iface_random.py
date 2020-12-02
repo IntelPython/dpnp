@@ -2170,7 +2170,7 @@ def weibull(a, size=None):
     return call_origin(numpy.random.weibull, a, size)
 
 
-def zipf(a, size=None, dtype=int):
+def zipf(a, size=None):
     """Zipf distribution.
 
     Returns an array of samples drawn from the Zipf distribution.
@@ -2184,4 +2184,4 @@ def zipf(a, size=None, dtype=int):
 
     """
 
-    return call_origin(numpy.random.zipf, a, size, dtype)
+    return call_origin(numpy.random.zipf, a, size)
