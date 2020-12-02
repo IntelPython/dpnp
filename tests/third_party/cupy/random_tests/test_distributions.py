@@ -18,10 +18,9 @@ _int_dtypes = _signed_dtypes + _unsigned_dtypes
 class RandomDistributionsTestCase(unittest.TestCase):
     def check_distribution(self, dist_name, params):
         cp_params = {k: cupy.asarray(params[k]) for k in params}
-        np_out = numpy.asarray(
-            getattr(numpy.random, dist_name)(size=self.shape, **params))
-        cp_out = getattr(_distributions, dist_name)(
-            size=self.shape, **cp_params)
+        np_out = numpy.asarray(getattr(numpy.random, dist_name)(size=self.shape, **params))
+        cp_out = getattr(_distributions, dist_name)(size=self.shape, **cp_params)
+
         self.assertEqual(cp_out.shape, np_out.shape)
         self.assertEqual(cp_out.dtype, np_out.dtype)
 
