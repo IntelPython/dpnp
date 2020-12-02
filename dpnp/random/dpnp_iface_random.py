@@ -2184,4 +2184,4 @@ def zipf(a, size=None):
 
     """
 
-    return call_origin(numpy.random.zipf, a, size, dtype)
+    return call_origin(numpy.random.zipf, a, size)
