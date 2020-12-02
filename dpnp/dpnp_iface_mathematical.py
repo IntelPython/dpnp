@@ -684,14 +684,26 @@ def multiply(x1, x2, **kwargs):
     is_x1_dparray = isinstance(x1, dparray)
     is_x2_dparray = isinstance(x2, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
-        if (x1.size != x2.size):
-            checker_throw_value_error("multiply", "size", x1.size, x2.size)
+    is_x1_scalar = numpy.isscalar(x1)
+    is_x2_scalar = numpy.isscalar(x2)
 
-        if (x1.shape != x2.shape):
-            checker_throw_value_error("multiply", "shape", x1.shape, x2.shape)
+    if (not use_origin_backend(x1) and (is_x1_dparray or is_x1_scalar)) and \
+            (not use_origin_backend(x2) and (is_x2_dparray or is_x2_scalar)) and \
+            not (is_x1_scalar and is_x2_scalar) and not kwargs:
 
-        return dpnp_multiply(x1, x2)
+        if is_x1_scalar:
+            result = dpnp_multiply(x2, x1)
+        else:
+            if is_x1_dparray and is_x2_dparray:
+                if (x1.size != x2.size):
+                    checker_throw_value_error("multiply", "size", x1.size, x2.size)
+
+                if (x1.shape != x2.shape):
+                    checker_throw_value_error("multiply", "shape", x1.shape, x2.shape)
+
+            result = dpnp_multiply(x1, x2)
+
+        return result
 
     return call_origin(numpy.multiply, x1, x2, **kwargs)
 
