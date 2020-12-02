@@ -169,7 +169,7 @@ cpdef dparray dpnp_multiply(dparray x1, x2):
         res_type = x1_dtype
     elif x1_dtype == numpy.float32:
         res_type = x1_dtype
-    if x1_dtype == numpy.int64:
+    elif x1_dtype == numpy.int64:
         if x2_dtype == numpy.int64 or x2_dtype == numpy.int32:
             res_type = x1_dtype
         else:

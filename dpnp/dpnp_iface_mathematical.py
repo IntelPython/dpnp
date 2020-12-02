@@ -692,18 +692,11 @@ def multiply(x1, x2, **kwargs):
             not (is_x1_scalar and is_x2_scalar) and not kwargs:
 
         if is_x1_scalar:
-            result = dpnp_multiply(x2, x1)
+            return dpnp_multiply(x2, x1)
         else:
             if is_x1_dparray and is_x2_dparray:
-                if (x1.size != x2.size):
-                    checker_throw_value_error("multiply", "size", x1.size, x2.size)
-
-                if (x1.shape != x2.shape):
-                    checker_throw_value_error("multiply", "shape", x1.shape, x2.shape)
-
-            result = dpnp_multiply(x1, x2)
-
-        return result
+                if (x1.size == x2.size) and (x1.shape == x2.shape):
+                    return dpnp_multiply(x1, x2)
 
     return call_origin(numpy.multiply, x1, x2, **kwargs)
 
