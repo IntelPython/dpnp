@@ -684,8 +684,8 @@ def multiply(x1, x2, **kwargs):
     is_x1_dparray = isinstance(x1, dparray)
     is_x2_dparray = isinstance(x2, dparray)
 
-    is_x1_scalar = numpy.isscalar(x1)
-    is_x2_scalar = numpy.isscalar(x2)
+    is_x1_scalar = dpnp.isscalar(x1)
+    is_x2_scalar = dpnp.isscalar(x2)
 
     if (not use_origin_backend(x1) and (is_x1_dparray or is_x1_scalar)) and \
             (not use_origin_backend(x2) and (is_x2_dparray or is_x2_scalar)) and \
