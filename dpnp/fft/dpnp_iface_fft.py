@@ -408,6 +408,7 @@ def irfftn(x1, s=None, axes=None, norm=None):
 
     return call_origin(numpy.fft.irfftn, x1, s, axes, norm)
 
+
 def rfft(x1, n=None, axis=-1, norm=None):
     """
     Compute the one-dimensional discrete Fourier Transform for real input.
