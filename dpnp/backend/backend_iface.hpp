@@ -204,7 +204,7 @@ INP_DLLEXPORT void custom_prod_c(void* array, void* result, size_t size);
  *
  * @param [out] result1   The eigenvalues, each repeated according to its multiplicity
  *
- * @param [out] result2   The normalized (unit “length”) eigenvectors
+ * @param [out] result2   The normalized (unit "length") eigenvectors
  *
  * @param [in]  size      One dimension of square [size][size] array
  *
