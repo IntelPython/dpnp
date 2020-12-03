@@ -365,18 +365,10 @@ tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_3_{copy
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_3_{copy=False, indexing='ij', sparse=True}::test_meshgrid1
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_3_{copy=False, indexing='ij', sparse=True}::test_meshgrid2
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_3_{copy=False, indexing='ij', sparse=True}::test_meshgrid3
-tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_4_{copy=True, indexing='xy', sparse=False}::test_meshgrid0
-tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_4_{copy=True, indexing='xy', sparse=False}::test_meshgrid1
-tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_4_{copy=True, indexing='xy', sparse=False}::test_meshgrid2
-tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_4_{copy=True, indexing='xy', sparse=False}::test_meshgrid3
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_5_{copy=True, indexing='xy', sparse=True}::test_meshgrid0
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_5_{copy=True, indexing='xy', sparse=True}::test_meshgrid1
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_5_{copy=True, indexing='xy', sparse=True}::test_meshgrid2
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_5_{copy=True, indexing='xy', sparse=True}::test_meshgrid3
-tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_6_{copy=True, indexing='ij', sparse=False}::test_meshgrid0
-tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_6_{copy=True, indexing='ij', sparse=False}::test_meshgrid1
-tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_6_{copy=True, indexing='ij', sparse=False}::test_meshgrid2
-tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_6_{copy=True, indexing='ij', sparse=False}::test_meshgrid3
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy=True, indexing='ij', sparse=True}::test_meshgrid0
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy=True, indexing='ij', sparse=True}::test_meshgrid1
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy=True, indexing='ij', sparse=True}::test_meshgrid2
@@ -393,14 +385,6 @@ tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid2
 tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid3
 tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid4
 tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid5
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange3
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange4
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange5
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange8
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange9
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange_negative_size
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange_no_dtype_float
-tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_arange_no_dtype_int
 tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_array_start_stop
 tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_array_start_stop_axis1
 tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_float_underflow
