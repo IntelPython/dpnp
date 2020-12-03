@@ -2088,70 +2088,20 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStan
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardT_param_1_{df_shape=(), shape=(3, 2)}::test_standard_t
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardT_param_2_{df_shape=(3, 2), shape=(4, 3, 2)}::test_standard_t
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardT_param_3_{df_shape=(3, 2), shape=(3, 2)}::test_standard_t
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_0_{dtype=float64, left_shape=(), mode_shape=(), right_shape=(), shape=(4, 3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_0_{dtype=float64, left_shape=(), mode_shape=(), right_shape=(), shape=(4, 3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_10_{dtype=float64, left_shape=(3, 2), mode_shape=(), right_shape=(3, 2), shape=(4, 3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_10_{dtype=float64, left_shape=(3, 2), mode_shape=(), right_shape=(3, 2), shape=(4, 3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_11_{dtype=float64, left_shape=(3, 2), mode_shape=(), right_shape=(3, 2), shape=(3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_11_{dtype=float64, left_shape=(3, 2), mode_shape=(), right_shape=(3, 2), shape=(3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_12_{dtype=float64, left_shape=(3, 2), mode_shape=(3, 2), right_shape=(), shape=(4, 3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_12_{dtype=float64, left_shape=(3, 2), mode_shape=(3, 2), right_shape=(), shape=(4, 3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_13_{dtype=float64, left_shape=(3, 2), mode_shape=(3, 2), right_shape=(), shape=(3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_13_{dtype=float64, left_shape=(3, 2), mode_shape=(3, 2), right_shape=(), shape=(3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_14_{dtype=float64, left_shape=(3, 2), mode_shape=(3, 2), right_shape=(3, 2), shape=(4, 3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_14_{dtype=float64, left_shape=(3, 2), mode_shape=(3, 2), right_shape=(3, 2), shape=(4, 3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_15_{dtype=float64, left_shape=(3, 2), mode_shape=(3, 2), right_shape=(3, 2), shape=(3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_15_{dtype=float64, left_shape=(3, 2), mode_shape=(3, 2), right_shape=(3, 2), shape=(3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_16_{dtype=float32, left_shape=(), mode_shape=(), right_shape=(), shape=(4, 3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_16_{dtype=float32, left_shape=(), mode_shape=(), right_shape=(), shape=(4, 3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_17_{dtype=float32, left_shape=(), mode_shape=(), right_shape=(), shape=(3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_17_{dtype=float32, left_shape=(), mode_shape=(), right_shape=(), shape=(3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_18_{dtype=float32, left_shape=(), mode_shape=(), right_shape=(3, 2), shape=(4, 3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_18_{dtype=float32, left_shape=(), mode_shape=(), right_shape=(3, 2), shape=(4, 3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_19_{dtype=float32, left_shape=(), mode_shape=(), right_shape=(3, 2), shape=(3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_19_{dtype=float32, left_shape=(), mode_shape=(), right_shape=(3, 2), shape=(3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_1_{dtype=float64, left_shape=(), mode_shape=(), right_shape=(), shape=(3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_1_{dtype=float64, left_shape=(), mode_shape=(), right_shape=(), shape=(3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_20_{dtype=float32, left_shape=(), mode_shape=(3, 2), right_shape=(), shape=(4, 3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_20_{dtype=float32, left_shape=(), mode_shape=(3, 2), right_shape=(), shape=(4, 3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_21_{dtype=float32, left_shape=(), mode_shape=(3, 2), right_shape=(), shape=(3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_21_{dtype=float32, left_shape=(), mode_shape=(3, 2), right_shape=(), shape=(3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_22_{dtype=float32, left_shape=(), mode_shape=(3, 2), right_shape=(3, 2), shape=(4, 3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_22_{dtype=float32, left_shape=(), mode_shape=(3, 2), right_shape=(3, 2), shape=(4, 3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_23_{dtype=float32, left_shape=(), mode_shape=(3, 2), right_shape=(3, 2), shape=(3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_23_{dtype=float32, left_shape=(), mode_shape=(3, 2), right_shape=(3, 2), shape=(3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_24_{dtype=float32, left_shape=(3, 2), mode_shape=(), right_shape=(), shape=(4, 3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_24_{dtype=float32, left_shape=(3, 2), mode_shape=(), right_shape=(), shape=(4, 3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_25_{dtype=float32, left_shape=(3, 2), mode_shape=(), right_shape=(), shape=(3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_25_{dtype=float32, left_shape=(3, 2), mode_shape=(), right_shape=(), shape=(3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_26_{dtype=float32, left_shape=(3, 2), mode_shape=(), right_shape=(3, 2), shape=(4, 3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_26_{dtype=float32, left_shape=(3, 2), mode_shape=(), right_shape=(3, 2), shape=(4, 3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_27_{dtype=float32, left_shape=(3, 2), mode_shape=(), right_shape=(3, 2), shape=(3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_27_{dtype=float32, left_shape=(3, 2), mode_shape=(), right_shape=(3, 2), shape=(3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_28_{dtype=float32, left_shape=(3, 2), mode_shape=(3, 2), right_shape=(), shape=(4, 3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_28_{dtype=float32, left_shape=(3, 2), mode_shape=(3, 2), right_shape=(), shape=(4, 3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_29_{dtype=float32, left_shape=(3, 2), mode_shape=(3, 2), right_shape=(), shape=(3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_29_{dtype=float32, left_shape=(3, 2), mode_shape=(3, 2), right_shape=(), shape=(3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_2_{dtype=float64, left_shape=(), mode_shape=(), right_shape=(3, 2), shape=(4, 3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_2_{dtype=float64, left_shape=(), mode_shape=(), right_shape=(3, 2), shape=(4, 3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_30_{dtype=float32, left_shape=(3, 2), mode_shape=(3, 2), right_shape=(3, 2), shape=(4, 3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_30_{dtype=float32, left_shape=(3, 2), mode_shape=(3, 2), right_shape=(3, 2), shape=(4, 3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_31_{dtype=float32, left_shape=(3, 2), mode_shape=(3, 2), right_shape=(3, 2), shape=(3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_31_{dtype=float32, left_shape=(3, 2), mode_shape=(3, 2), right_shape=(3, 2), shape=(3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_3_{dtype=float64, left_shape=(), mode_shape=(), right_shape=(3, 2), shape=(3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_3_{dtype=float64, left_shape=(), mode_shape=(), right_shape=(3, 2), shape=(3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_4_{dtype=float64, left_shape=(), mode_shape=(3, 2), right_shape=(), shape=(4, 3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_4_{dtype=float64, left_shape=(), mode_shape=(3, 2), right_shape=(), shape=(4, 3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_5_{dtype=float64, left_shape=(), mode_shape=(3, 2), right_shape=(), shape=(3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_5_{dtype=float64, left_shape=(), mode_shape=(3, 2), right_shape=(), shape=(3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_6_{dtype=float64, left_shape=(), mode_shape=(3, 2), right_shape=(3, 2), shape=(4, 3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_6_{dtype=float64, left_shape=(), mode_shape=(3, 2), right_shape=(3, 2), shape=(4, 3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_7_{dtype=float64, left_shape=(), mode_shape=(3, 2), right_shape=(3, 2), shape=(3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_7_{dtype=float64, left_shape=(), mode_shape=(3, 2), right_shape=(3, 2), shape=(3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_8_{dtype=float64, left_shape=(3, 2), mode_shape=(), right_shape=(), shape=(4, 3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_8_{dtype=float64, left_shape=(3, 2), mode_shape=(), right_shape=(), shape=(4, 3, 2)}::test_triangular_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_9_{dtype=float64, left_shape=(3, 2), mode_shape=(), right_shape=(), shape=(3, 2)}::test_triangular
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_9_{dtype=float64, left_shape=(3, 2), mode_shape=(), right_shape=(), shape=(3, 2)}::test_triangular_for_invalid_params
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_0_{left_shape=(), mode_shape=(), right_shape=(), shape=(4, 3, 2)}::test_triangular
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_1_{left_shape=(), mode_shape=(), right_shape=(), shape=(3, 2)}::test_triangular
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_2_{left_shape=(), mode_shape=(), right_shape=(3, 2), shape=(4, 3, 2)}::test_triangular
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_3_{left_shape=(), mode_shape=(), right_shape=(3, 2), shape=(3, 2)}::test_triangular
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_4_{left_shape=(), mode_shape=(3, 2), right_shape=(), shape=(4, 3, 2)}::test_triangular
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_5_{left_shape=(), mode_shape=(3, 2), right_shape=(), shape=(3, 2)}::test_triangular
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_6_{left_shape=(), mode_shape=(3, 2), right_shape=(3, 2), shape=(4, 3, 2)}::test_triangular
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_7_{left_shape=(), mode_shape=(3, 2), right_shape=(3, 2), shape=(3, 2)}::test_triangular
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_8_{left_shape=(3, 2), mode_shape=(), right_shape=(), shape=(4, 3, 2)}::test_triangular
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_9_{left_shape=(3, 2), mode_shape=(), right_shape=(), shape=(3, 2)}::test_triangular
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_10_{left_shape=(3, 2), mode_shape=(), right_shape=(3, 2), shape=(4, 3, 2)}::test_triangular
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_11_{left_shape=(3, 2), mode_shape=(), right_shape=(3, 2), shape=(3, 2)}::test_triangular
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_12_{left_shape=(3, 2), mode_shape=(3, 2), right_shape=(), shape=(4, 3, 2)}::test_triangular
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_13_{left_shape=(3, 2), mode_shape=(3, 2), right_shape=(), shape=(3, 2)}::test_triangular
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace_param_0_{loc_shape=(), scale_shape=(), shape=(4, 3, 2)}::test_laplace
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace_param_1_{loc_shape=(), scale_shape=(), shape=(3, 2)}::test_laplace
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace_param_2_{loc_shape=(), scale_shape=(3, 2), shape=(4, 3, 2)}::test_laplace

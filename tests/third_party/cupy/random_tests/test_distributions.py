@@ -647,7 +647,6 @@ class TestDistributionsStandardT(unittest.TestCase):
     'left_shape': [(), (3, 2)],
     'mode_shape': [(), (3, 2)],
     'right_shape': [(), (3, 2)],
-    'dtype': _regular_float_dtypes,  # to escape timeout
 })
 )
 @testing.gpu
@@ -661,8 +660,7 @@ class TestDistributionsTriangular(RandomDistributionsTestCase):
         mode = numpy.full(self.mode_shape, 0, dtype=mode_dtype)
         right = numpy.full(self.right_shape, 2, dtype=right_dtype)
         self.check_distribution('triangular',
-                                {'left': left, 'mode': mode, 'right': right},
-                                self.dtype)
+                                {'left': left, 'mode': mode, 'right': right})
 
     @helper.for_float_dtypes('param_dtype', no_float16=True)
     def test_triangular_for_invalid_params(self, param_dtype):
@@ -671,21 +669,21 @@ class TestDistributionsTriangular(RandomDistributionsTestCase):
         right = cupy.full(self.right_shape, 2, dtype=param_dtype)
         with self.assertRaises(ValueError):
             _distributions.triangular(
-                left, mode, right, size=self.shape, dtype=self.dtype)
+                left, mode, right, size=self.shape)
 
         left = cupy.full(self.left_shape, -2, dtype=param_dtype)
         mode = cupy.full(self.mode_shape, 0, dtype=param_dtype)
         right = cupy.full(self.right_shape, -1, dtype=param_dtype)
         with self.assertRaises(ValueError):
             _distributions.triangular(
-                left, mode, right, size=self.shape, dtype=self.dtype)
+                left, mode, right, size=self.shape)
 
         left = cupy.full(self.left_shape, 0, dtype=param_dtype)
         mode = cupy.full(self.mode_shape, 0, dtype=param_dtype)
         right = cupy.full(self.right_shape, 0, dtype=param_dtype)
         with self.assertRaises(ValueError):
             _distributions.triangular(
-                left, mode, right, size=self.shape, dtype=self.dtype)
+                left, mode, right, size=self.shape)
 
 
 @testing.parameterize(*testing.product({
