@@ -41,7 +41,8 @@ void dpnp_fft_fft_c(const void* array1_in,
                     const long* input_shape,
                     const long* output_shape,
                     size_t shape_size,
-                    long axis)
+                    long axis,
+                    long input_boundarie)
 {
     const size_t result_size = std::accumulate(output_shape, output_shape + shape_size, 1, std::multiplies<size_t>());
     if (!(result_size && shape_size))
@@ -80,7 +81,7 @@ void dpnp_fft_fft_c(const void* array1_in,
             axis_iterator_thread[i] = xyz_thread[i];
         }
 
-        const long axis_length = output_shape[axis];
+        const long axis_length = input_boundarie;
         for (long it = 0; it < axis_length; ++it)
         {
             double in_real = 0.0;
