@@ -70,6 +70,7 @@ jobs:
       echo ========================= setup Intel OneAPI ===============================
       ls -l /opt/intel/oneapi/
       . /opt/intel/oneapi/setvars.sh
+      export MKLROOT=/opt/intel/oneapi/mkl/latest
       echo ========================= Current clang version ===============================
       valgrind --version
       clang++ --version
@@ -127,6 +128,7 @@ jobs:
       echo ========================= setup Intel OneAPI ===============================
       ls -l /opt/intel/oneapi/
       . /opt/intel/oneapi/setvars.sh
+      export MKLROOT=/opt/intel/oneapi/mkl/latest
       echo ========================= Current clang version ===============================
       valgrind --version
       clang++ --version
@@ -186,6 +188,7 @@ jobs:
       echo ========================= setup Intel OneAPI ===============================
       ls -l /opt/intel/oneapi/
       . /opt/intel/oneapi/setvars.sh
+      export MKLROOT=/opt/intel/oneapi/mkl/latest
       g++ --version
       sudo apt list --installed
       echo ========================= Current clang version ===============================
