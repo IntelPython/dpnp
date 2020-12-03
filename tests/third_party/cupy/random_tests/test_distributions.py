@@ -721,7 +721,6 @@ class TestDistributionsVonmises(unittest.TestCase):
         kappa = cupy.ones(self.kappa_shape, dtype=kappa_dtype)
         out = dist_func(mu, kappa, self.shape)
         self.assertEqual(self.shape, out.shape)
-        # self.assertEqual(out.dtype, dtype)
         # numpy and dpdp output dtype is float64
         self.assertEqual(out.dtype, numpy.float64)
 
