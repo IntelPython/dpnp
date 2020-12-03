@@ -711,24 +711,25 @@ class TestDistributionsUniform(RandomDistributionsTestCase):
     'shape': [(4, 3, 2), (3, 2)],
     'mu_shape': [(), (3, 2)],
     'kappa_shape': [(), (3, 2)],
-    'dtype': _float_dtypes,  # to escape timeout
 })
 )
 @testing.gpu
 class TestDistributionsVonmises(unittest.TestCase):
 
-    def check_distribution(self, dist_func, mu_dtype, kappa_dtype, dtype):
+    def check_distribution(self, dist_func, mu_dtype, kappa_dtype):
         mu = cupy.ones(self.mu_shape, dtype=mu_dtype)
         kappa = cupy.ones(self.kappa_shape, dtype=kappa_dtype)
-        out = dist_func(mu, kappa, self.shape, dtype)
+        out = dist_func(mu, kappa, self.shape)
         self.assertEqual(self.shape, out.shape)
-        self.assertEqual(out.dtype, dtype)
+        # self.assertEqual(out.dtype, dtype)
+        # numpy and dpdp output dtype is float64
+        self.assertEqual(out.dtype, numpy.float64)
 
     @helper.for_dtypes_combination(
-        _float_dtypes, names=['mu_dtype', 'kappa_dtype'])
+        _regular_float_dtypes, names=['mu_dtype', 'kappa_dtype'])
     def test_vonmises(self, mu_dtype, kappa_dtype):
         self.check_distribution(_distributions.vonmises,
-                                mu_dtype, kappa_dtype, self.dtype)
+                                mu_dtype, kappa_dtype)
 
 
 @testing.parameterize(*testing.product({

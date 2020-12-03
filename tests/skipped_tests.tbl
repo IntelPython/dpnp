@@ -1858,30 +1858,6 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsUnif
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsUniform_param_5_{high_shape=(3, 2), low_shape=(), shape=(3, 2)}::test_uniform
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsUniform_param_6_{high_shape=(3, 2), low_shape=(3, 2), shape=(4, 3, 2)}::test_uniform
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsUniform_param_7_{high_shape=(3, 2), low_shape=(3, 2), shape=(3, 2)}::test_uniform
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises_param_0_{dtype=float64, kappa_shape=(), mu_shape=(), shape=(4, 3, 2)}::test_vonmises
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises_param_10_{dtype=float32, kappa_shape=(), mu_shape=(3, 2), shape=(4, 3, 2)}::test_vonmises
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises_param_11_{dtype=float32, kappa_shape=(), mu_shape=(3, 2), shape=(3, 2)}::test_vonmises
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises_param_12_{dtype=float32, kappa_shape=(3, 2), mu_shape=(), shape=(4, 3, 2)}::test_vonmises
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises_param_13_{dtype=float32, kappa_shape=(3, 2), mu_shape=(), shape=(3, 2)}::test_vonmises
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises_param_14_{dtype=float32, kappa_shape=(3, 2), mu_shape=(3, 2), shape=(4, 3, 2)}::test_vonmises
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises_param_15_{dtype=float32, kappa_shape=(3, 2), mu_shape=(3, 2), shape=(3, 2)}::test_vonmises
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises_param_16_{dtype=float16, kappa_shape=(), mu_shape=(), shape=(4, 3, 2)}::test_vonmises
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises_param_17_{dtype=float16, kappa_shape=(), mu_shape=(), shape=(3, 2)}::test_vonmises
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises_param_18_{dtype=float16, kappa_shape=(), mu_shape=(3, 2), shape=(4, 3, 2)}::test_vonmises
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises_param_19_{dtype=float16, kappa_shape=(), mu_shape=(3, 2), shape=(3, 2)}::test_vonmises
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises_param_1_{dtype=float64, kappa_shape=(), mu_shape=(), shape=(3, 2)}::test_vonmises
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises_param_20_{dtype=float16, kappa_shape=(3, 2), mu_shape=(), shape=(4, 3, 2)}::test_vonmises
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises_param_21_{dtype=float16, kappa_shape=(3, 2), mu_shape=(), shape=(3, 2)}::test_vonmises
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises_param_22_{dtype=float16, kappa_shape=(3, 2), mu_shape=(3, 2), shape=(4, 3, 2)}::test_vonmises
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises_param_23_{dtype=float16, kappa_shape=(3, 2), mu_shape=(3, 2), shape=(3, 2)}::test_vonmises
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises_param_2_{dtype=float64, kappa_shape=(), mu_shape=(3, 2), shape=(4, 3, 2)}::test_vonmises
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises_param_3_{dtype=float64, kappa_shape=(), mu_shape=(3, 2), shape=(3, 2)}::test_vonmises
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises_param_4_{dtype=float64, kappa_shape=(3, 2), mu_shape=(), shape=(4, 3, 2)}::test_vonmises
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises_param_5_{dtype=float64, kappa_shape=(3, 2), mu_shape=(), shape=(3, 2)}::test_vonmises
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises_param_6_{dtype=float64, kappa_shape=(3, 2), mu_shape=(3, 2), shape=(4, 3, 2)}::test_vonmises
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises_param_7_{dtype=float64, kappa_shape=(3, 2), mu_shape=(3, 2), shape=(3, 2)}::test_vonmises
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises_param_8_{dtype=float32, kappa_shape=(), mu_shape=(), shape=(4, 3, 2)}::test_vonmises
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises_param_9_{dtype=float32, kappa_shape=(), mu_shape=(), shape=(3, 2)}::test_vonmises
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWald_param_0_{mean_shape=(), scale_shape=(), shape=(4, 3, 2)}::test_wald
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWald_param_1_{mean_shape=(), scale_shape=(), shape=(3, 2)}::test_wald
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWald_param_2_{mean_shape=(), scale_shape=(3, 2), shape=(4, 3, 2)}::test_wald
