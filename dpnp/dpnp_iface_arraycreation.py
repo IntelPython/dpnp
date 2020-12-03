@@ -63,6 +63,7 @@ __all__ = [
     "geomspace",
     "linspace",
     "logspace",
+    "meshgrid",
     "ones",
     "ones_like",
     "tri",
@@ -354,6 +355,7 @@ def diag(v, k=0):
 
     Examples
     --------
+    >>> import dpnp as np
     >>> x = np.arange(9).reshape((3,3))
     >>> x
     array([[0, 1, 2],
@@ -391,6 +393,7 @@ def diagflat(v, k=0):
 
     Examples
     --------
+    >>> import dpnp as np
     >>> np.diagflat([[1,2], [3,4]])
     array([[1, 0, 0, 0],
            [0, 2, 0, 0],
@@ -706,6 +709,68 @@ def logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0):
     return call_origin(numpy.logspace, start, stop, num, endpoint, base, dtype, axis)
 
 
+def meshgrid(*xi, copy=True, sparse=False, indexing='xy'):
+    """
+    Return coordinate matrices from coordinate vectors.
+
+    Make N-D coordinate arrays for vectorized evaluations of
+    N-D scalar/vector fields over N-D grids, given
+    one-dimensional coordinate arrays x1, x2,..., xn.
+
+    For full documentation refer to :obj:`numpy.meshgrid`.
+
+    Limitations
+    -----------
+    Parameter ``copy`` is supported only with default value ``True``.
+    Parameter ``sparse`` is supported only with default value ``False``.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> nx, ny = (3, 2)
+    >>> x = np.linspace(0, 1, nx)
+    >>> y = np.linspace(0, 1, ny)
+    >>> xv, yv = np.meshgrid(x, y)
+    >>> xv
+    array([[0. , 0.5, 1. ],
+           [0. , 0.5, 1. ]])
+    >>> yv
+    array([[0.,  0.,  0.],
+           [1.,  1.,  1.]])
+    >>> xv, yv = np.meshgrid(x, y, sparse=True)  # make sparse output arrays
+    >>> xv
+    array([[0. ,  0.5,  1. ]])
+    >>> yv
+    array([[0.],
+           [1.]])
+
+    `meshgrid` is very useful to evaluate functions on a grid.
+
+    >>> import matplotlib.pyplot as plt
+    >>> x = np.arange(-5, 5, 0.1)
+    >>> y = np.arange(-5, 5, 0.1)
+    >>> xx, yy = np.meshgrid(x, y, sparse=True)
+    >>> z = np.sin(xx**2 + yy**2) / (xx**2 + yy**2)
+    >>> h = plt.contourf(x,y,z)
+    >>> plt.show()
+
+    """
+
+    if not use_origin_backend():
+        # original limitation
+        if indexing not in ["ij", "xy"]:
+            checker_throw_value_error("meshgrid", "indexing", indexing, "'ij' or 'xy'")
+
+        if copy is not True:
+            checker_throw_value_error("meshgrid", "copy", copy, True)
+        if sparse is not False:
+            checker_throw_value_error("meshgrid", "sparse", sparse, False)
+
+        return dpnp_meshgrid(xi, copy, sparse, indexing)
+
+    return call_origin(numpy.meshgrid, xi, copy, sparse, indexing)
+
+
 def ones(shape, dtype=None, order='C'):
     """
     Return a new array of given shape and type, filled with ones.
@@ -797,6 +862,7 @@ def tri(N, M=None, k=0, dtype=numpy.float):
 
     Examples
     --------
+    >>> import dpnp as np
     >>> np.tri(3, 5, 2, dtype=int)
     array([[1, 1, 1, 0, 0],
            [1, 1, 1, 1, 0],
@@ -825,6 +891,7 @@ def tril(m, k=0):
 
     Examples
     --------
+    >>> import dpnp as np
     >>> np.tril([[1,2,3],[4,5,6],[7,8,9],[10,11,12]], -1)
     array([[ 0,  0,  0],
            [ 4,  0,  0],
@@ -853,6 +920,7 @@ def triu(m, k=0):
 
     Examples
     --------
+    >>> import dpnp as np
     >>> np.triu([[1,2,3],[4,5,6],[7,8,9],[10,11,12]], -1)
     array([[ 1,  2,  3],
            [ 4,  5,  6],

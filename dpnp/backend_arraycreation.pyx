@@ -45,6 +45,7 @@ __all__ += [
     "dpnp_geomspace",
     "dpnp_linspace",
     "dpnp_logspace",
+    "dpnp_meshgrid",
     "dpnp_tri",
     "dpnp_tril",
     "dpnp_triu",
@@ -139,6 +140,54 @@ cpdef tuple dpnp_linspace(start, stop, num, endpoint, retstep, dtype, axis):
 cpdef dparray dpnp_logspace(start, stop, num, endpoint, base, dtype, axis):
     temp = dpnp.linspace(start, stop, num=num, endpoint=endpoint)
     return dpnp.power(base, temp).astype(dtype)
+
+
+cpdef list dpnp_meshgrid(xi, copy, sparse, indexing):
+    cdef dparray res_item
+
+    input_count = len(xi)
+
+    # simple case
+    if input_count == 0:
+        return []
+
+    # simple case
+    if input_count == 1:
+        return [dpnp.copy(xi[0])]
+
+    shape_mult = 1
+    for i in range(input_count):
+        shape_mult = shape_mult * xi[i].size
+
+    shape_list = []
+    for i in range(input_count):
+        shape_list.append(xi[i].size)
+    if indexing == "xy":
+        temp = shape_list[0]
+        shape_list[0] = shape_list[1]
+        shape_list[1] = temp
+
+    steps = []
+    for i in range(input_count):
+        shape_mult = shape_mult // shape_list[i]
+        steps.append(shape_mult)
+    if indexing == "xy":
+        temp = steps[0]
+        steps[0] = steps[1]
+        steps[1] = temp
+
+    shape = tuple(shape_list)
+
+    result = []
+    for i in range(input_count):
+        res_item = dparray(shape=shape, dtype=xi[i].dtype)
+
+        for j in range(res_item.size):
+            res_item[j] = xi[i][(j // steps[i]) % xi[i].size]
+
+        result.append(res_item)
+
+    return result
 
 
 cpdef dparray dpnp_tri(N, M, k, dtype):
