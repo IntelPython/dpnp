@@ -343,7 +343,7 @@ def floor(x1, **kwargs):
 
     Notes
     -----
-        Some spreadsheet programs calculate the “floor-towards-zero”, in other words floor(-2.5) == -2.
+        Some spreadsheet programs calculate the "floor-towards-zero", in other words floor(-2.5) == -2.
         dpNP instead uses the definition of floor where floor(-2.5) == -3.
 
     Examples
