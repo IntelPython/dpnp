@@ -414,7 +414,6 @@ class TestDistributionsNoncentralChisquare(RandomDistributionsTestCase):
     'dfnum_shape': [(), (3, 2)],
     'dfden_shape': [(), (3, 2)],
     'nonc_shape': [(), (3, 2)],
-    'dtype': _int_dtypes,  # to escape timeout
 })
 )
 @testing.gpu
@@ -428,8 +427,7 @@ class TestDistributionsNoncentralF(RandomDistributionsTestCase):
         dfden = numpy.full(self.dfden_shape, 1, dtype=dfden_dtype)
         nonc = numpy.full(self.nonc_shape, 1, dtype=nonc_dtype)
         self.check_distribution('noncentral_f',
-                                {'dfnum': dfnum, 'dfden': dfden, 'nonc': nonc},
-                                self.dtype)
+                                {'dfnum': dfnum, 'dfden': dfden, 'nonc': nonc})
 
     @helper.for_float_dtypes('param_dtype', no_float16=True)
     def test_noncentral_f_for_invalid_params(self, param_dtype):
@@ -438,21 +436,21 @@ class TestDistributionsNoncentralF(RandomDistributionsTestCase):
         nonc = numpy.full(self.nonc_shape, 1, dtype=param_dtype)
         with self.assertRaises(ValueError):
             _distributions.noncentral_f(
-                dfnum, dfden, nonc, size=self.shape, dtype=self.dtype)
+                dfnum, dfden, nonc, size=self.shape)
 
         dfnum = numpy.full(self.dfnum_shape, 1, dtype=param_dtype)
         dfden = numpy.full(self.dfden_shape, -1, dtype=param_dtype)
         nonc = numpy.full(self.nonc_shape, 1, dtype=param_dtype)
         with self.assertRaises(ValueError):
             _distributions.noncentral_f(
-                dfnum, dfden, nonc, size=self.shape, dtype=self.dtype)
+                dfnum, dfden, nonc, size=self.shape)
 
         dfnum = numpy.full(self.dfnum_shape, 1, dtype=param_dtype)
         dfden = numpy.full(self.dfden_shape, 1, dtype=param_dtype)
         nonc = numpy.full(self.nonc_shape, -1, dtype=param_dtype)
         with self.assertRaises(ValueError):
             _distributions.noncentral_f(
-                dfnum, dfden, nonc, size=self.shape, dtype=self.dtype)
+                dfnum, dfden, nonc, size=self.shape)
 
 
 @testing.parameterize(*testing.product({
