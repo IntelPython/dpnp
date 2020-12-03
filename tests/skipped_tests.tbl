@@ -914,30 +914,6 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsExpo
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsExponential_param_3_{scale_shape=(3, 2), shape=(4, 3, 2)}::test_exponential
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsExponential_param_4_{scale_shape=(3, 2), shape=(3, 2)}::test_exponential
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsExponential_param_5_{scale_shape=(3, 2), shape=None}::test_exponential
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF_param_0_{dfden_shape=(), dfnum_shape=(), dtype=float64, shape=(4, 3, 2)}::test_f
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF_param_10_{dfden_shape=(), dfnum_shape=(3, 2), dtype=float16, shape=(4, 3, 2)}::test_f
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF_param_11_{dfden_shape=(), dfnum_shape=(3, 2), dtype=float16, shape=(3, 2)}::test_f
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF_param_12_{dfden_shape=(3, 2), dfnum_shape=(), dtype=float64, shape=(4, 3, 2)}::test_f
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF_param_13_{dfden_shape=(3, 2), dfnum_shape=(), dtype=float64, shape=(3, 2)}::test_f
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF_param_14_{dfden_shape=(3, 2), dfnum_shape=(), dtype=float32, shape=(4, 3, 2)}::test_f
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF_param_15_{dfden_shape=(3, 2), dfnum_shape=(), dtype=float32, shape=(3, 2)}::test_f
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF_param_16_{dfden_shape=(3, 2), dfnum_shape=(), dtype=float16, shape=(4, 3, 2)}::test_f
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF_param_17_{dfden_shape=(3, 2), dfnum_shape=(), dtype=float16, shape=(3, 2)}::test_f
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF_param_18_{dfden_shape=(3, 2), dfnum_shape=(3, 2), dtype=float64, shape=(4, 3, 2)}::test_f
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF_param_19_{dfden_shape=(3, 2), dfnum_shape=(3, 2), dtype=float64, shape=(3, 2)}::test_f
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF_param_1_{dfden_shape=(), dfnum_shape=(), dtype=float64, shape=(3, 2)}::test_f
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF_param_20_{dfden_shape=(3, 2), dfnum_shape=(3, 2), dtype=float32, shape=(4, 3, 2)}::test_f
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF_param_21_{dfden_shape=(3, 2), dfnum_shape=(3, 2), dtype=float32, shape=(3, 2)}::test_f
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF_param_22_{dfden_shape=(3, 2), dfnum_shape=(3, 2), dtype=float16, shape=(4, 3, 2)}::test_f
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF_param_23_{dfden_shape=(3, 2), dfnum_shape=(3, 2), dtype=float16, shape=(3, 2)}::test_f
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF_param_2_{dfden_shape=(), dfnum_shape=(), dtype=float32, shape=(4, 3, 2)}::test_f
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF_param_3_{dfden_shape=(), dfnum_shape=(), dtype=float32, shape=(3, 2)}::test_f
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF_param_4_{dfden_shape=(), dfnum_shape=(), dtype=float16, shape=(4, 3, 2)}::test_f
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF_param_5_{dfden_shape=(), dfnum_shape=(), dtype=float16, shape=(3, 2)}::test_f
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF_param_6_{dfden_shape=(), dfnum_shape=(3, 2), dtype=float64, shape=(4, 3, 2)}::test_f
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF_param_7_{dfden_shape=(), dfnum_shape=(3, 2), dtype=float64, shape=(3, 2)}::test_f
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF_param_8_{dfden_shape=(), dfnum_shape=(3, 2), dtype=float32, shape=(4, 3, 2)}::test_f
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF_param_9_{dfden_shape=(), dfnum_shape=(3, 2), dtype=float32, shape=(3, 2)}::test_f
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_0_{dtype=float64, scale_shape=(), shape=(4, 3, 2), shape_shape=()}::test_gamma
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_10_{dtype=float32, scale_shape=(), shape=(3, 2), shape_shape=()}::test_gamma
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_11_{dtype=float32, scale_shape=(), shape=(3, 2), shape_shape=(3, 2)}::test_gamma
@@ -1080,8 +1056,6 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogi
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogistic_param_3_{loc_shape=(), scale_shape=(3, 2), shape=(3, 2)}::test_logistic
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogistic_param_4_{loc_shape=(3, 2), scale_shape=(), shape=(4, 3, 2)}::test_logistic
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogistic_param_5_{loc_shape=(3, 2), scale_shape=(), shape=(3, 2)}::test_logistic
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogistic_param_6_{loc_shape=(3, 2), scale_shape=(3, 2), shape=(4, 3, 2)}::test_logistic
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogistic_param_7_{loc_shape=(3, 2), scale_shape=(3, 2), shape=(3, 2)}::test_logistic
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLognormal_param_0_{mean_shape=(), shape=(4, 3, 2), sigma_shape=()}::test_lognormal
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLognormal_param_1_{mean_shape=(), shape=(3, 2), sigma_shape=()}::test_lognormal
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogseries_param_0_{p_shape=(), shape=(4, 3, 2)}::test_logseries
@@ -1252,166 +1226,12 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNega
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_8_{dtype=int16, n_shape=(), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_9_{dtype=int16, n_shape=(), p_shape=(), shape=(3, 2)}::test_negative_binomial
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_9_{dtype=int16, n_shape=(), p_shape=(), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_0_{df_shape=(), dtype=int8, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_0_{df_shape=(), dtype=int8, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_10_{df_shape=(), dtype=int32, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_10_{df_shape=(), dtype=int32, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_11_{df_shape=(), dtype=int32, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_11_{df_shape=(), dtype=int32, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_12_{df_shape=(), dtype=int64, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_12_{df_shape=(), dtype=int64, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_13_{df_shape=(), dtype=int64, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_13_{df_shape=(), dtype=int64, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_14_{df_shape=(), dtype=int64, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_14_{df_shape=(), dtype=int64, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_15_{df_shape=(), dtype=int64, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_15_{df_shape=(), dtype=int64, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_16_{df_shape=(), dtype=longlong, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_16_{df_shape=(), dtype=longlong, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_17_{df_shape=(), dtype=longlong, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_17_{df_shape=(), dtype=longlong, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_18_{df_shape=(), dtype=longlong, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_18_{df_shape=(), dtype=longlong, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_19_{df_shape=(), dtype=longlong, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_19_{df_shape=(), dtype=longlong, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_1_{df_shape=(), dtype=int8, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_1_{df_shape=(), dtype=int8, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_20_{df_shape=(), dtype=uint8, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_20_{df_shape=(), dtype=uint8, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_21_{df_shape=(), dtype=uint8, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_21_{df_shape=(), dtype=uint8, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_22_{df_shape=(), dtype=uint8, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_22_{df_shape=(), dtype=uint8, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_23_{df_shape=(), dtype=uint8, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_23_{df_shape=(), dtype=uint8, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_24_{df_shape=(), dtype=uint16, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_24_{df_shape=(), dtype=uint16, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_25_{df_shape=(), dtype=uint16, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_25_{df_shape=(), dtype=uint16, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_26_{df_shape=(), dtype=uint16, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_26_{df_shape=(), dtype=uint16, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_27_{df_shape=(), dtype=uint16, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_27_{df_shape=(), dtype=uint16, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_28_{df_shape=(), dtype=uint32, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_28_{df_shape=(), dtype=uint32, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_29_{df_shape=(), dtype=uint32, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_29_{df_shape=(), dtype=uint32, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_2_{df_shape=(), dtype=int8, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_2_{df_shape=(), dtype=int8, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_30_{df_shape=(), dtype=uint32, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_30_{df_shape=(), dtype=uint32, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_31_{df_shape=(), dtype=uint32, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_31_{df_shape=(), dtype=uint32, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_32_{df_shape=(), dtype=uint64, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_32_{df_shape=(), dtype=uint64, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_33_{df_shape=(), dtype=uint64, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_33_{df_shape=(), dtype=uint64, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_34_{df_shape=(), dtype=uint64, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_34_{df_shape=(), dtype=uint64, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_35_{df_shape=(), dtype=uint64, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_35_{df_shape=(), dtype=uint64, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_36_{df_shape=(), dtype=ulonglong, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_36_{df_shape=(), dtype=ulonglong, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_37_{df_shape=(), dtype=ulonglong, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_37_{df_shape=(), dtype=ulonglong, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_38_{df_shape=(), dtype=ulonglong, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_38_{df_shape=(), dtype=ulonglong, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_39_{df_shape=(), dtype=ulonglong, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_39_{df_shape=(), dtype=ulonglong, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_3_{df_shape=(), dtype=int8, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_3_{df_shape=(), dtype=int8, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_40_{df_shape=(3, 2), dtype=int8, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_40_{df_shape=(3, 2), dtype=int8, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_41_{df_shape=(3, 2), dtype=int8, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_41_{df_shape=(3, 2), dtype=int8, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_42_{df_shape=(3, 2), dtype=int8, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_42_{df_shape=(3, 2), dtype=int8, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_43_{df_shape=(3, 2), dtype=int8, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_43_{df_shape=(3, 2), dtype=int8, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_44_{df_shape=(3, 2), dtype=int16, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_44_{df_shape=(3, 2), dtype=int16, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_45_{df_shape=(3, 2), dtype=int16, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_45_{df_shape=(3, 2), dtype=int16, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_46_{df_shape=(3, 2), dtype=int16, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_46_{df_shape=(3, 2), dtype=int16, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_47_{df_shape=(3, 2), dtype=int16, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_47_{df_shape=(3, 2), dtype=int16, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_48_{df_shape=(3, 2), dtype=int32, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_48_{df_shape=(3, 2), dtype=int32, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_49_{df_shape=(3, 2), dtype=int32, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_49_{df_shape=(3, 2), dtype=int32, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_4_{df_shape=(), dtype=int16, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_4_{df_shape=(), dtype=int16, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_50_{df_shape=(3, 2), dtype=int32, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_50_{df_shape=(3, 2), dtype=int32, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_51_{df_shape=(3, 2), dtype=int32, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_51_{df_shape=(3, 2), dtype=int32, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_52_{df_shape=(3, 2), dtype=int64, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_52_{df_shape=(3, 2), dtype=int64, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_53_{df_shape=(3, 2), dtype=int64, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_53_{df_shape=(3, 2), dtype=int64, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_54_{df_shape=(3, 2), dtype=int64, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_54_{df_shape=(3, 2), dtype=int64, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_55_{df_shape=(3, 2), dtype=int64, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_55_{df_shape=(3, 2), dtype=int64, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_56_{df_shape=(3, 2), dtype=longlong, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_56_{df_shape=(3, 2), dtype=longlong, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_57_{df_shape=(3, 2), dtype=longlong, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_57_{df_shape=(3, 2), dtype=longlong, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_58_{df_shape=(3, 2), dtype=longlong, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_58_{df_shape=(3, 2), dtype=longlong, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_59_{df_shape=(3, 2), dtype=longlong, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_59_{df_shape=(3, 2), dtype=longlong, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_5_{df_shape=(), dtype=int16, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_5_{df_shape=(), dtype=int16, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_60_{df_shape=(3, 2), dtype=uint8, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_60_{df_shape=(3, 2), dtype=uint8, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_61_{df_shape=(3, 2), dtype=uint8, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_61_{df_shape=(3, 2), dtype=uint8, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_62_{df_shape=(3, 2), dtype=uint8, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_62_{df_shape=(3, 2), dtype=uint8, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_63_{df_shape=(3, 2), dtype=uint8, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_63_{df_shape=(3, 2), dtype=uint8, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_64_{df_shape=(3, 2), dtype=uint16, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_64_{df_shape=(3, 2), dtype=uint16, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_65_{df_shape=(3, 2), dtype=uint16, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_65_{df_shape=(3, 2), dtype=uint16, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_66_{df_shape=(3, 2), dtype=uint16, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_66_{df_shape=(3, 2), dtype=uint16, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_67_{df_shape=(3, 2), dtype=uint16, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_67_{df_shape=(3, 2), dtype=uint16, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_68_{df_shape=(3, 2), dtype=uint32, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_68_{df_shape=(3, 2), dtype=uint32, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_69_{df_shape=(3, 2), dtype=uint32, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_69_{df_shape=(3, 2), dtype=uint32, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_6_{df_shape=(), dtype=int16, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_6_{df_shape=(), dtype=int16, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_70_{df_shape=(3, 2), dtype=uint32, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_70_{df_shape=(3, 2), dtype=uint32, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_71_{df_shape=(3, 2), dtype=uint32, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_71_{df_shape=(3, 2), dtype=uint32, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_72_{df_shape=(3, 2), dtype=uint64, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_72_{df_shape=(3, 2), dtype=uint64, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_73_{df_shape=(3, 2), dtype=uint64, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_73_{df_shape=(3, 2), dtype=uint64, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_74_{df_shape=(3, 2), dtype=uint64, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_74_{df_shape=(3, 2), dtype=uint64, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_75_{df_shape=(3, 2), dtype=uint64, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_75_{df_shape=(3, 2), dtype=uint64, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_76_{df_shape=(3, 2), dtype=ulonglong, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_76_{df_shape=(3, 2), dtype=ulonglong, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_77_{df_shape=(3, 2), dtype=ulonglong, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_77_{df_shape=(3, 2), dtype=ulonglong, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_78_{df_shape=(3, 2), dtype=ulonglong, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_78_{df_shape=(3, 2), dtype=ulonglong, nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_79_{df_shape=(3, 2), dtype=ulonglong, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_79_{df_shape=(3, 2), dtype=ulonglong, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_7_{df_shape=(), dtype=int16, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_7_{df_shape=(), dtype=int16, nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_8_{df_shape=(), dtype=int32, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_8_{df_shape=(), dtype=int32, nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare_for_invalid_params
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_9_{df_shape=(), dtype=int32, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_9_{df_shape=(), dtype=int32, nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare_for_invalid_params
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_0_{df_shape=(), nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_1_{df_shape=(), nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_2_{df_shape=(), nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_3_{df_shape=(), nonc_shape=(3, 2), shape=(3, 2)}::test_noncentral_chisquare
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_4_{df_shape=(3, 2), nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_5_{df_shape=(3, 2), nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralF_param_0_{dfden_shape=(), dfnum_shape=(), nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_f
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralF_param_1_{dfden_shape=(), dfnum_shape=(), nonc_shape=(), shape=(3, 2)}::test_noncentral_f
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralF_param_2_{dfden_shape=(), dfnum_shape=(), nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_f

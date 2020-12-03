@@ -130,24 +130,24 @@ class TestDistributionsExponentialError(RandomDistributionsTestCase):
     'shape': [(4, 3, 2), (3, 2)],
     'dfnum_shape': [(), (3, 2)],
     'dfden_shape': [(), (3, 2)],
-    'dtype': _float_dtypes,  # to escape timeout
 })
 )
 @testing.gpu
 class TestDistributionsF(unittest.TestCase):
 
-    def check_distribution(self, dist_func, dfnum_dtype, dfden_dtype, dtype):
+    def check_distribution(self, dist_func, dfnum_dtype, dfden_dtype):
         dfnum = cupy.ones(self.dfnum_shape, dtype=dfnum_dtype)
         dfden = cupy.ones(self.dfden_shape, dtype=dfden_dtype)
-        out = dist_func(dfnum, dfden, self.shape, dtype)
+        out = dist_func(dfnum, dfden, self.shape)
         self.assertEqual(self.shape, out.shape)
-        self.assertEqual(out.dtype, dtype)
+        # numpy and dpdp output dtype is float64
+        self.assertEqual(out.dtype, numpy.float64)
 
     @helper.for_float_dtypes('dfnum_dtype')
     @helper.for_float_dtypes('dfden_dtype')
     def test_f(self, dfnum_dtype, dfden_dtype):
         self.check_distribution(_distributions.f,
-                                dfnum_dtype, dfden_dtype, self.dtype)
+                                dfnum_dtype, dfden_dtype)
 
 
 @testing.parameterize(*testing.product({
@@ -270,14 +270,12 @@ class TestDistributionsuLaplace(RandomDistributionsTestCase):
 @testing.gpu
 class TestDistributionsLogistic(RandomDistributionsTestCase):
 
-    @helper.for_float_dtypes('dtype', no_float16=True)
     @helper.for_dtypes_combination(
-        _float_dtypes, names=['loc_dtype', 'scale_dtype'])
-    def test_logistic(self, loc_dtype, scale_dtype, dtype):
+        _regular_float_dtypes, names=['loc_dtype', 'scale_dtype'])
+    def test_logistic(self, loc_dtype, scale_dtype):
         loc = numpy.ones(self.loc_shape, dtype=loc_dtype)
         scale = numpy.ones(self.scale_shape, dtype=scale_dtype)
-        self.check_distribution('logistic',
-                                {'loc': loc, 'scale': scale}, dtype)
+        self.check_distribution('logistic', {'loc': loc, 'scale': scale})
 
 
 @testing.parameterize(*testing.product({
@@ -307,22 +305,20 @@ class TestDistributionsLognormal(RandomDistributionsTestCase):
 @testing.gpu
 class TestDistributionsLogseries(RandomDistributionsTestCase):
 
-    @helper.for_dtypes([numpy.int64, numpy.int32], 'dtype')
-    @helper.for_float_dtypes('p_dtype', no_float16=True)
-    def test_logseries(self, p_dtype, dtype):
-        p = numpy.full(self.p_shape, 0.5, dtype=p_dtype)
-        self.check_distribution('logseries',
-                                {'p': p}, dtype)
 
-    @helper.for_dtypes([numpy.int64, numpy.int32], 'dtype')
     @helper.for_float_dtypes('p_dtype', no_float16=True)
-    def test_logseries_for_invalid_p(self, p_dtype, dtype):
+    def test_logseries(self, p_dtype):
+        p = numpy.full(self.p_shape, 0.5, dtype=p_dtype)
+        self.check_distribution('logseries', {'p': p})
+
+    @helper.for_float_dtypes('p_dtype', no_float16=True)
+    def test_logseries_for_invalid_p(self, p_dtype):
         with self.assertRaises(ValueError):
             cp_params = {'p': cupy.zeros(self.p_shape, dtype=p_dtype)}
-            _distributions.logseries(size=self.shape, dtype=dtype, **cp_params)
+            _distributions.logseries(size=self.shape, **cp_params)
         with self.assertRaises(ValueError):
             cp_params = {'p': cupy.ones(self.p_shape, dtype=p_dtype)}
-            _distributions.logseries(size=self.shape, dtype=dtype, **cp_params)
+            _distributions.logseries(size=self.shape, **cp_params)
 
 
 @testing.parameterize(*testing.product({
@@ -380,7 +376,6 @@ class TestDistributionsNegativeBinomial(RandomDistributionsTestCase):
     'shape': [(4, 3, 2), (3, 2)],
     'df_shape': [(), (3, 2)],
     'nonc_shape': [(), (3, 2)],
-    'dtype': _int_dtypes,  # to escape timeout
 })
 )
 @testing.gpu
@@ -392,7 +387,7 @@ class TestDistributionsNoncentralChisquare(RandomDistributionsTestCase):
         df = numpy.full(self.df_shape, 1, dtype=df_dtype)
         nonc = numpy.full(self.nonc_shape, 1, dtype=nonc_dtype)
         self.check_distribution('noncentral_chisquare',
-                                {'df': df, 'nonc': nonc}, self.dtype)
+                                {'df': df, 'nonc': nonc})
 
     @helper.for_float_dtypes('param_dtype', no_float16=True)
     def test_noncentral_chisquare_for_invalid_params(self, param_dtype):
@@ -400,13 +395,13 @@ class TestDistributionsNoncentralChisquare(RandomDistributionsTestCase):
         nonc = cupy.full(self.nonc_shape, 1, dtype=param_dtype)
         with self.assertRaises(ValueError):
             _distributions.noncentral_chisquare(
-                df, nonc, size=self.shape, dtype=self.dtype)
+                df, nonc, size=self.shape)
 
         df = cupy.full(self.df_shape, 1, dtype=param_dtype)
         nonc = cupy.full(self.nonc_shape, -1, dtype=param_dtype)
         with self.assertRaises(ValueError):
             _distributions.noncentral_chisquare(
-                df, nonc, size=self.shape, dtype=self.dtype)
+                df, nonc, size=self.shape)
 
 
 @testing.parameterize(*testing.product({
