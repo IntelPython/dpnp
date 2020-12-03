@@ -162,25 +162,59 @@ cpdef tuple dpnp_modf(dparray x1):
 cpdef dparray dpnp_multiply(dparray x1, x2):
     x2_is_scalar = dpnp.isscalar(x2)
 
-    x1_dtype = x1.dtype
-    x2_dtype = type(x2) if x2_is_scalar else x2.dtype
+    x1_dtype_ = x1.dtype
+    x2_dtype_ = type(x2) if x2_is_scalar else x2.dtype
+
+    if x1_dtype_ == float:
+        x1_dtype = dpnp.float64
+    elif x1_dtype_ == int:
+        x1_dtype = dpnp.int64
+    else:
+        x1_dtype = x1_dtype_
+
+    if x2_dtype_ == float:
+        x2_dtype = dpnp.float64
+    elif x2_dtype_ == int:
+        x2_dtype = dpnp.int64
+    else:
+        x2_dtype = x2_dtype_
 
     if x1_dtype == dpnp.float64:
-        res_type = x1_dtype
+        if x2_dtype == dpnp.float64:
+            res_type = dpnp.float64
+        elif x2_dtype == dpnp.float32:
+            res_type = dpnp.float64
+        elif x2_dtype == dpnp.int64:
+            res_type = dpnp.float64
+        elif x2_dtype == dpnp.int32:
+            res_type = dpnp.float64
     elif x1_dtype == dpnp.float32:
-        res_type = x1_dtype
+        if x2_dtype == dpnp.float64:
+            res_type = dpnp.float32
+        elif x2_dtype == dpnp.float32:
+            res_type = dpnp.float32
+        elif x2_dtype == dpnp.int64:
+            res_type = dpnp.float32
+        elif x2_dtype == dpnp.int32:
+            res_type = dpnp.float32
     elif x1_dtype == dpnp.int64:
-        if x2_dtype == dpnp.int64 or x2_dtype == dpnp.int32:
-            res_type = x1_dtype
-        else:
-            res_type = x2_dtype
+        if x2_dtype == dpnp.float64:
+            res_type = dpnp.float64
+        elif x2_dtype == dpnp.float32:
+            res_type = dpnp.float32
+        elif x2_dtype == dpnp.int64:
+            res_type = dpnp.int64
+        elif x2_dtype == dpnp.int32:
+            res_type = dpnp.int64
     elif x1_dtype == dpnp.int32:
-        if x2_dtype == dpnp.float64 or x2_dtype == float or x2_dtype == dpnp.float32:
-            res_type = x2_dtype
-        else:
-            res_type = x1_dtype
-    else:
-        res_type = x1_dtype
+        if x2_dtype == dpnp.float64:
+            res_type = dpnp.float64
+        elif x2_dtype == dpnp.float32:
+            res_type = dpnp.float32
+        elif x2_dtype == dpnp.int64:
+            res_type = dpnp.int32
+        elif x2_dtype == dpnp.int32:
+            res_type = dpnp.int32
 
     cdef dparray result = dparray(x1.shape, dtype=res_type)
 
