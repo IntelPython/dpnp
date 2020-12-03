@@ -165,17 +165,17 @@ cpdef dparray dpnp_multiply(dparray x1, x2):
     x1_dtype = x1.dtype
     x2_dtype = type(x2) if x2_is_scalar else x2.dtype
 
-    if x1_dtype == numpy.float64:
+    if x1_dtype == dpnp.float64:
         res_type = x1_dtype
-    elif x1_dtype == numpy.float32:
+    elif x1_dtype == dpnp.float32:
         res_type = x1_dtype
-    elif x1_dtype == numpy.int64:
-        if x2_dtype == numpy.int64 or x2_dtype == numpy.int32:
+    elif x1_dtype == dpnp.int64:
+        if x2_dtype == dpnp.int64 or x2_dtype == dpnp.int32:
             res_type = x1_dtype
         else:
             res_type = x2_dtype
-    elif x1_dtype == numpy.int32:
-        if x2_dtype == numpy.float64 or x2_dtype == float or x2_dtype == numpy.float32:
+    elif x1_dtype == dpnp.int32:
+        if x2_dtype == dpnp.float64 or x2_dtype == float or x2_dtype == dpnp.float32:
             res_type = x2_dtype
         else:
             res_type = x1_dtype
