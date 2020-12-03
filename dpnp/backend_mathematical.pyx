@@ -159,8 +159,61 @@ cpdef tuple dpnp_modf(dparray x1):
     return result1, result2
 
 
-cpdef dparray dpnp_multiply(dparray x1, dparray x2):
-    return call_fptr_2in_1out(DPNP_FN_MULTIPLY, x1, x2, x1.shape)
+cpdef dparray dpnp_multiply(dparray x1, x2):
+    x2_is_scalar = dpnp.isscalar(x2)
+
+    x1_dtype_ = x1.dtype
+    x2_dtype_ = type(x2) if x2_is_scalar else x2.dtype
+
+    types_map = {float: dpnp.float64, int: dpnp.int64}
+    x1_dtype = types_map.get(x1_dtype_, x1_dtype_)
+    x2_dtype = types_map.get(x2_dtype_, x2_dtype_)
+
+    if x1_dtype == dpnp.float64:
+        if x2_dtype == dpnp.float64:
+            res_type = dpnp.float64
+        elif x2_dtype == dpnp.float32:
+            res_type = dpnp.float64
+        elif x2_dtype == dpnp.int64:
+            res_type = dpnp.float64
+        elif x2_dtype == dpnp.int32:
+            res_type = dpnp.float64
+    elif x1_dtype == dpnp.float32:
+        if x2_dtype == dpnp.float64:
+            res_type = dpnp.float32
+        elif x2_dtype == dpnp.float32:
+            res_type = dpnp.float32
+        elif x2_dtype == dpnp.int64:
+            res_type = dpnp.float32
+        elif x2_dtype == dpnp.int32:
+            res_type = dpnp.float32
+    elif x1_dtype == dpnp.int64:
+        if x2_dtype == dpnp.float64:
+            res_type = dpnp.float64
+        elif x2_dtype == dpnp.float32:
+            res_type = dpnp.float32
+        elif x2_dtype == dpnp.int64:
+            res_type = dpnp.int64
+        elif x2_dtype == dpnp.int32:
+            res_type = dpnp.int64
+    elif x1_dtype == dpnp.int32:
+        if x2_dtype == dpnp.float64:
+            res_type = dpnp.float64
+        elif x2_dtype == dpnp.float32:
+            res_type = dpnp.float32
+        elif x2_dtype == dpnp.int64:
+            res_type = dpnp.int32
+        elif x2_dtype == dpnp.int32:
+            res_type = dpnp.int32
+
+    cdef dparray result = dparray(x1.shape, dtype=res_type)
+
+    if x2_is_scalar:
+        for i in range(result.size):
+            result[i] = x1[i] * x2
+        return result
+    else:
+        return call_fptr_2in_1out(DPNP_FN_MULTIPLY, x1, x2, x1.shape)
 
 
 cpdef dpnp_nanprod(dparray x1):
