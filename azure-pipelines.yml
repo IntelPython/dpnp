@@ -66,8 +66,7 @@ jobs:
       echo ========================= install Intel OneAPI ===============================
       sudo apt-get install intel-oneapi-mkl                \
                            intel-oneapi-mkl-devel          \
-                           intel-oneapi-dpcpp-cpp-compiler \
-                           intel-oneapi-dpcpp-cpp
+                           intel-oneapi-dpcpp-cpp-compiler
       echo ========================= setup Intel OneAPI ===============================
       ls -l /opt/intel/oneapi/
       . /opt/intel/oneapi/setvars.sh
@@ -124,8 +123,7 @@ jobs:
       echo ========================= install Intel OneAPI ===============================
       sudo apt-get install intel-oneapi-mkl                \
                            intel-oneapi-mkl-devel          \
-                           intel-oneapi-dpcpp-cpp-compiler \
-                           intel-oneapi-dpcpp-cpp
+                           intel-oneapi-dpcpp-cpp-compiler
       echo ========================= setup Intel OneAPI ===============================
       ls -l /opt/intel/oneapi/
       . /opt/intel/oneapi/setvars.sh
@@ -184,8 +182,7 @@ jobs:
       echo ========================= install Intel OneAPI ===============================
       sudo apt-get install intel-oneapi-mkl                \
                            intel-oneapi-mkl-devel          \
-                           intel-oneapi-dpcpp-cpp-compiler \
-                           intel-oneapi-dpcpp-cpp
+                           intel-oneapi-dpcpp-cpp-compiler
       echo ========================= setup Intel OneAPI ===============================
       ls -l /opt/intel/oneapi/
       . /opt/intel/oneapi/setvars.sh
