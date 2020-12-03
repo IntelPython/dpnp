@@ -2050,10 +2050,6 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNorm
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNormal_param_5_{loc_shape=(3, 2), scale_shape=(), shape=(3, 2)}::test_normal
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNormal_param_6_{loc_shape=(3, 2), scale_shape=(3, 2), shape=(4, 3, 2)}::test_normal
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNormal_param_7_{loc_shape=(3, 2), scale_shape=(3, 2), shape=(3, 2)}::test_normal
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPareto_param_0_{a_shape=(), shape=(4, 3, 2)}::test_pareto
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPareto_param_1_{a_shape=(), shape=(3, 2)}::test_pareto
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPareto_param_2_{a_shape=(3, 2), shape=(4, 3, 2)}::test_pareto
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPareto_param_3_{a_shape=(3, 2), shape=(3, 2)}::test_pareto
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPoisson_param_0_{lam_shape=(), shape=(4, 3, 2)}::test_poisson
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPoisson_param_1_{lam_shape=(), shape=(3, 2)}::test_poisson
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPoisson_param_2_{lam_shape=(3, 2), shape=(4, 3, 2)}::test_poisson

@@ -482,17 +482,17 @@ class TestDistributionsNormal(RandomDistributionsTestCase):
 @testing.gpu
 class TestDistributionsPareto(unittest.TestCase):
 
-    def check_distribution(self, dist_func, a_dtype, dtype):
+    def check_distribution(self, dist_func, a_dtype):
         a = cupy.ones(self.a_shape, dtype=a_dtype)
-        out = dist_func(a, self.shape, dtype)
+        out = dist_func(a, self.shape)
         self.assertEqual(self.shape, out.shape)
-        self.assertEqual(out.dtype, dtype)
+        # numpy and dpdp output dtype is float64
+        self.assertEqual(out.dtype, numpy.float64)
 
-    @helper.for_float_dtypes('dtype', no_float16=True)
     @helper.for_float_dtypes('a_dtype')
-    def test_pareto(self, a_dtype, dtype):
+    def test_pareto(self, a_dtype):
         self.check_distribution(_distributions.pareto,
-                                a_dtype, dtype)
+                                a_dtype)
 
 
 @testing.parameterize(*testing.product({
