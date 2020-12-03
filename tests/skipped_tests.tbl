@@ -1774,10 +1774,6 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStan
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardGamma_param_3_{shape=(3, 2), shape_shape=(3, 2)}::test_standard_gamma
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardNormal_param_0_{shape=(4, 3, 2)}::test_standard_normal
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardNormal_param_1_{shape=(3, 2)}::test_standard_normal
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardT_param_0_{df_shape=(), shape=(4, 3, 2)}::test_standard_t
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardT_param_1_{df_shape=(), shape=(3, 2)}::test_standard_t
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardT_param_2_{df_shape=(3, 2), shape=(4, 3, 2)}::test_standard_t
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardT_param_3_{df_shape=(3, 2), shape=(3, 2)}::test_standard_t
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_0_{left_shape=(), mode_shape=(), right_shape=(), shape=(4, 3, 2)}::test_triangular
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_1_{left_shape=(), mode_shape=(), right_shape=(), shape=(3, 2)}::test_triangular
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_2_{left_shape=(), mode_shape=(), right_shape=(3, 2), shape=(4, 3, 2)}::test_triangular
