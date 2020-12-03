@@ -87,18 +87,20 @@ def fft(x1, n=None, axis=-1, norm=None):
             axis_param = axis
 
         if n is None:
-            boundarie = x1.shape[axis_param]
+            input_boundarie = x1.shape[axis_param]
         else:
-            boundarie = n
+            input_boundarie = n
 
         if x1.size < 1:
             pass                 # let fallback to handle exception
-        elif boundarie < 1:
+        elif input_boundarie < 1:
             pass                 # let fallback to handle exception
         elif norm is not None:
             pass
         else:
-            return dpnp_fft(x1, boundarie, axis_param)
+            output_boundarie = input_boundarie
+
+            return dpnp_fft(x1, input_boundarie, output_boundarie, axis_param)
 
     return call_origin(numpy.fft.fft, x1, n, axis, norm)
 
@@ -202,18 +204,20 @@ def ifft(x1, n=None, axis=-1, norm=None):
             axis_param = axis
 
         if n is None:
-            boundarie = x1.shape[axis_param]
+            input_boundarie = x1.shape[axis_param]
         else:
-            boundarie = n
+            input_boundarie = n
 
         if x1.size < 1:
             pass                 # let fallback to handle exception
-        elif boundarie < 1:
+        elif input_boundarie < 1:
             pass                 # let fallback to handle exception
         elif norm is not None:
             pass
         else:
-            return dpnp_fft(x1, boundarie, axis_param)
+            output_boundarie = input_boundarie
+
+            return dpnp_fft(x1, input_boundarie, output_boundarie, axis_param)
 
     return call_origin(numpy.fft.ifft, x1, n, axis, norm)
 
@@ -317,18 +321,20 @@ def irfft(x1, n=None, axis=-1, norm=None):
             axis_param = axis
 
         if n is None:
-            boundarie = x1.shape[axis_param]
+            input_boundarie = x1.shape[axis_param]
         else:
-            boundarie = n
+            input_boundarie = n
 
         if x1.size < 1:
             pass                 # let fallback to handle exception
-        elif boundarie < 1:
+        elif input_boundarie < 1:
             pass                 # let fallback to handle exception
         elif norm is not None:
             pass
         else:
-            return dpnp_fft(x1, boundarie, axis_param)
+            output_boundarie = input_boundarie
+
+            return dpnp_fft(x1, input_boundarie, output_boundarie, axis_param)
 
     return call_origin(numpy.fft.irfft, x1, n, axis, norm)
 
@@ -408,6 +414,7 @@ def irfftn(x1, s=None, axes=None, norm=None):
 
     return call_origin(numpy.fft.irfftn, x1, s, axes, norm)
 
+
 def rfft(x1, n=None, axis=-1, norm=None):
     """
     Compute the one-dimensional discrete Fourier Transform for real input.
@@ -424,25 +431,27 @@ def rfft(x1, n=None, axis=-1, norm=None):
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and 0):
+    if (not use_origin_backend(x1) and is_x1_dparray):
         if axis is None:
-            axis_param = -1      # the most right dimension (default value)
+            axis_param = -1                             # the most right dimension (default value)
         else:
             axis_param = axis
 
         if n is None:
-            boundarie = x1.shape[axis_param]
+            input_boundarie = x1.shape[axis_param]
         else:
-            boundarie = n
+            input_boundarie = n
 
         if x1.size < 1:
-            pass                 # let fallback to handle exception
-        elif boundarie < 1:
-            pass                 # let fallback to handle exception
+            pass                                        # let fallback to handle exception
+        elif input_boundarie < 1:
+            pass                                        # let fallback to handle exception
         elif norm is not None:
             pass
         else:
-            return dpnp_fft(x1, boundarie, axis_param)
+            output_boundarie = input_boundarie // 2 + 1  # rfft specific requirenment
+
+            return dpnp_fft(x1, input_boundarie, output_boundarie, axis_param)
 
     return call_origin(numpy.fft.rfft, x1, n, axis, norm)
 
@@ -465,11 +474,11 @@ def rfft2(x1, s=None, axes=(-2, -1), norm=None):
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and 0):
+    if (not use_origin_backend(x1) and is_x1_dparray):
         if norm is not None:
             pass
         else:
-            return fftn(x1, s, axes, norm)
+            return rfftn(x1, s, axes, norm)
 
     return call_origin(numpy.fft.rfft2, x1, s, axes, norm)
 
@@ -492,7 +501,7 @@ def rfftn(x1, s=None, axes=None, norm=None):
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and 0):
+    if (not use_origin_backend(x1) and is_x1_dparray):
         if s is None:
             boundaries = tuple([x1.shape[i] for i in range(x1.ndim)])
         else:
@@ -505,6 +514,8 @@ def rfftn(x1, s=None, axes=None, norm=None):
 
         if norm is not None:
             pass
+        elif len(axes) < 1:
+            pass                      # let fallback to handle exception
         else:
             x1_iter = x1
             iteration_list = list(range(len(axes_param)))
@@ -516,7 +527,7 @@ def rfftn(x1, s=None, axes=None, norm=None):
                 except IndexError:
                     checker_throw_axis_error("fft.rfftn", "is out of bounds", param_axis, f"< {len(boundaries)}")
 
-                x1_iter = fft(x1_iter, n=param_n, axis=param_axis, norm=norm)
+                x1_iter = rfft(x1_iter, n=param_n, axis=param_axis, norm=norm)
 
             return x1_iter
 
