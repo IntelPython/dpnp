@@ -64,10 +64,10 @@ jobs:
       sudo apt autoremove
       sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
       echo ========================= install Intel OneAPI ===============================
-      sudo apt-get install intel-oneapi-mkl-2021.1-beta10                \
-                           intel-oneapi-mkl-devel-2021.1-beta10          \
-                           intel-oneapi-dpcpp-cpp-compiler-2021.1-beta10 \
-                           intel-oneapi-dpcpp-cpp-2021.1-beta10
+      sudo apt-get install intel-oneapi-mkl                \
+                           intel-oneapi-mkl-devel          \
+                           intel-oneapi-dpcpp-cpp-compiler \
+                           intel-oneapi-dpcpp-cpp
       echo ========================= setup Intel OneAPI ===============================
       ls -l /opt/intel/oneapi/
       . /opt/intel/oneapi/setvars.sh
@@ -122,10 +122,10 @@ jobs:
       sudo apt autoremove
       sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
       echo ========================= install Intel OneAPI ===============================
-      sudo apt-get install intel-oneapi-mkl-2021.1-beta10                \
-                           intel-oneapi-mkl-devel-2021.1-beta10          \
-                           intel-oneapi-dpcpp-cpp-compiler-2021.1-beta10 \
-                           intel-oneapi-dpcpp-cpp-2021.1-beta10
+      sudo apt-get install intel-oneapi-mkl                \
+                           intel-oneapi-mkl-devel          \
+                           intel-oneapi-dpcpp-cpp-compiler \
+                           intel-oneapi-dpcpp-cpp
       echo ========================= setup Intel OneAPI ===============================
       ls -l /opt/intel/oneapi/
       . /opt/intel/oneapi/setvars.sh
@@ -182,10 +182,10 @@ jobs:
       sudo apt autoremove
       sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
       echo ========================= install Intel OneAPI ===============================
-      sudo apt-get install intel-oneapi-mkl-2021.1-beta10                \
-                           intel-oneapi-mkl-devel-2021.1-beta10          \
-                           intel-oneapi-dpcpp-cpp-compiler-2021.1-beta10 \
-                           intel-oneapi-dpcpp-cpp-2021.1-beta10
+      sudo apt-get install intel-oneapi-mkl                \
+                           intel-oneapi-mkl-devel          \
+                           intel-oneapi-dpcpp-cpp-compiler \
+                           intel-oneapi-dpcpp-cpp
       echo ========================= setup Intel OneAPI ===============================
       ls -l /opt/intel/oneapi/
       . /opt/intel/oneapi/setvars.sh
