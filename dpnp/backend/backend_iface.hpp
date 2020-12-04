@@ -204,7 +204,7 @@ INP_DLLEXPORT void custom_prod_c(void* array, void* result, size_t size);
  *
  * @param [out] result1   The eigenvalues, each repeated according to its multiplicity
  *
- * @param [out] result2   The normalized (unit “length”) eigenvectors
+ * @param [out] result2   The normalized (unit "length") eigenvectors
  *
  * @param [in]  size      One dimension of square [size][size] array
  *
@@ -813,11 +813,8 @@ INP_DLLEXPORT void custom_rng_lognormal_c(void* result, _DataType mean, _DataTyp
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_rng_multinomial_c(void* result,
-                                            int ntrial,
-                                            const double* p_vector,
-                                            const size_t p_vector_size,
-                                            size_t size);
+INP_DLLEXPORT void
+    custom_rng_multinomial_c(void* result, int ntrial, const double* p_vector, const size_t p_vector_size, size_t size);
 
 /**
  * @ingroup BACKEND_API

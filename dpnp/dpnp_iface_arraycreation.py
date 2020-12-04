@@ -54,6 +54,8 @@ __all__ = [
     "asarray",
     "ascontiguousarray",
     "copy",
+    "diag",
+    "diagflat",
     "empty",
     "empty_like",
     "full",
@@ -61,8 +63,12 @@ __all__ = [
     "geomspace",
     "linspace",
     "logspace",
+    "meshgrid",
     "ones",
     "ones_like",
+    "tri",
+    "tril",
+    "triu",
     "zeros",
     "zeros_like"
 ]
@@ -339,6 +345,75 @@ def copy(a, order='C', subok=False):
         return array(a, order=order, subok=subok)
 
     return call_origin(numpy.copy, a, order, subok)
+
+
+def diag(v, k=0):
+    """
+    Extract a diagonal or construct a diagonal array.
+
+    For full documentation refer to :obj:`numpy.diag`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(9).reshape((3,3))
+    >>> x
+    array([[0, 1, 2],
+           [3, 4, 5],
+           [6, 7, 8]])
+
+    >>> np.diag(x)
+    array([0, 4, 8])
+    >>> np.diag(x, k=1)
+    array([1, 5])
+    >>> np.diag(x, k=-1)
+    array([3, 7])
+
+    >>> np.diag(np.diag(x))
+    array([[0, 0, 0],
+           [0, 4, 0],
+           [0, 0, 8]])
+
+    """
+
+    if not use_origin_backend(v):
+        if not isinstance(v, dparray):
+            pass
+        else:
+            return dpnp_diag(v, k)
+
+    return call_origin(numpy.diag, v, k)
+
+
+def diagflat(v, k=0):
+    """
+    Create a two-dimensional array with the flattened input as a diagonal.
+
+    For full documentation refer to :obj:`numpy.diagflat`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.diagflat([[1,2], [3,4]])
+    array([[1, 0, 0, 0],
+           [0, 2, 0, 0],
+           [0, 0, 3, 0],
+           [0, 0, 0, 4]])
+
+    >>> np.diagflat([1,2], 1)
+    array([[0, 1, 0],
+           [0, 0, 2],
+           [0, 0, 0]])
+
+    """
+
+    if not use_origin_backend(v):
+        if not isinstance(v, dparray):
+            pass
+        else:
+            return dpnp_diag(v.ravel(), k)
+
+    return call_origin(numpy.diagflat, v, k)
 
 
 # numpy.empty(shape, dtype=float, order='C')
@@ -634,6 +709,68 @@ def logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0):
     return call_origin(numpy.logspace, start, stop, num, endpoint, base, dtype, axis)
 
 
+def meshgrid(*xi, copy=True, sparse=False, indexing='xy'):
+    """
+    Return coordinate matrices from coordinate vectors.
+
+    Make N-D coordinate arrays for vectorized evaluations of
+    N-D scalar/vector fields over N-D grids, given
+    one-dimensional coordinate arrays x1, x2,..., xn.
+
+    For full documentation refer to :obj:`numpy.meshgrid`.
+
+    Limitations
+    -----------
+    Parameter ``copy`` is supported only with default value ``True``.
+    Parameter ``sparse`` is supported only with default value ``False``.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> nx, ny = (3, 2)
+    >>> x = np.linspace(0, 1, nx)
+    >>> y = np.linspace(0, 1, ny)
+    >>> xv, yv = np.meshgrid(x, y)
+    >>> xv
+    array([[0. , 0.5, 1. ],
+           [0. , 0.5, 1. ]])
+    >>> yv
+    array([[0.,  0.,  0.],
+           [1.,  1.,  1.]])
+    >>> xv, yv = np.meshgrid(x, y, sparse=True)  # make sparse output arrays
+    >>> xv
+    array([[0. ,  0.5,  1. ]])
+    >>> yv
+    array([[0.],
+           [1.]])
+
+    `meshgrid` is very useful to evaluate functions on a grid.
+
+    >>> import matplotlib.pyplot as plt
+    >>> x = np.arange(-5, 5, 0.1)
+    >>> y = np.arange(-5, 5, 0.1)
+    >>> xx, yy = np.meshgrid(x, y, sparse=True)
+    >>> z = np.sin(xx**2 + yy**2) / (xx**2 + yy**2)
+    >>> h = plt.contourf(x,y,z)
+    >>> plt.show()
+
+    """
+
+    if not use_origin_backend():
+        # original limitation
+        if indexing not in ["ij", "xy"]:
+            checker_throw_value_error("meshgrid", "indexing", indexing, "'ij' or 'xy'")
+
+        if copy is not True:
+            checker_throw_value_error("meshgrid", "copy", copy, True)
+        if sparse is not False:
+            checker_throw_value_error("meshgrid", "sparse", sparse, False)
+
+        return dpnp_meshgrid(xi, copy, sparse, indexing)
+
+    return call_origin(numpy.meshgrid, xi, copy, sparse, indexing)
+
+
 def ones(shape, dtype=None, order='C'):
     """
     Return a new array of given shape and type, filled with ones.
@@ -715,6 +852,90 @@ def ones_like(x1, dtype=None, order='C', subok=False, shape=None):
         return dpnp_init_val(_shape, _dtype, 1)
 
     return numpy.ones_like(x1, dtype, order, subok, shape)
+
+
+def tri(N, M=None, k=0, dtype=numpy.float):
+    """
+    An array with ones at and below the given diagonal and zeros elsewhere.
+
+    For full documentation refer to :obj:`numpy.tri`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.tri(3, 5, 2, dtype=int)
+    array([[1, 1, 1, 0, 0],
+           [1, 1, 1, 1, 0],
+           [1, 1, 1, 1, 1]])
+
+    >>> np.tri(3, 5, -1)
+    array([[0.,  0.,  0.,  0.,  0.],
+           [1.,  0.,  0.,  0.,  0.],
+           [1.,  1.,  0.,  0.,  0.]])
+
+    """
+
+    if not use_origin_backend():
+        return dpnp_tri(N, M, k, dtype)
+
+    return call_origin(numpy.tri, N, M, k, dtype)
+
+
+def tril(m, k=0):
+    """
+    Lower triangle of an array.
+
+    Return a copy of an array with elements above the `k`-th diagonal zeroed.
+
+    For full documentation refer to :obj:`numpy.tril`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.tril([[1,2,3],[4,5,6],[7,8,9],[10,11,12]], -1)
+    array([[ 0,  0,  0],
+           [ 4,  0,  0],
+           [ 7,  8,  0],
+           [10, 11, 12]])
+
+    """
+
+    if not use_origin_backend(m):
+        if not isinstance(m, dparray):
+            pass
+        else:
+            return dpnp_tril(m, k)
+
+    return call_origin(numpy.tril, m, k)
+
+
+def triu(m, k=0):
+    """
+    Upper triangle of an array.
+
+    Return a copy of a matrix with the elements below the `k`-th diagonal
+    zeroed.
+
+    For full documentation refer to :obj:`numpy.triu`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.triu([[1,2,3],[4,5,6],[7,8,9],[10,11,12]], -1)
+    array([[ 1,  2,  3],
+           [ 4,  5,  6],
+           [ 0,  8,  9],
+           [ 0,  0, 12]])
+
+    """
+
+    if not use_origin_backend(m):
+        if not isinstance(m, dparray):
+            pass
+        else:
+            return dpnp_triu(m, k)
+
+    return call_origin(numpy.triu, m, k)
 
 
 def zeros(shape, dtype=None, order='C'):

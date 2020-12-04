@@ -50,6 +50,9 @@ import dpnp
 
 
 __all__ = [
+    "atleast_1d",
+    "atleast_2d",
+    "atleast_3d",
     "copyto",
     "moveaxis",
     "ravel",
@@ -58,6 +61,85 @@ __all__ = [
     "swapaxes",
     "transpose"
 ]
+
+
+def atleast_1d(*arys):
+    """
+    Convert inputs to arrays with at least one dimension.
+    Scalar inputs are converted to 1-dimensional arrays, whilst
+    higher-dimensional inputs are preserved.
+
+    For full documentation refer to :obj:`numpy.atleast_1d`.
+
+    Limitations
+    -----------
+    Input arrays is supported as :obj:`dpnp.ndarray`.
+
+    """
+
+    return call_origin(numpy.atleast_1d, *arys)
+
+
+def atleast_2d(*arys):
+    """
+    View inputs as arrays with at least two dimensions.
+
+    For full documentation refer to :obj:`numpy.atleast_2d`.
+
+    Limitations
+    -----------
+    Input arrays is supported as :obj:`dpnp.ndarray`.
+    """
+
+    all_is_dparray = True
+    for ary in arys:
+        if not isinstance(ary, dparray):
+            all_is_dparray = False
+            break
+
+    if not use_origin_backend(arys[0]) and all_is_dparray:
+        result = []
+        for ary in arys:
+            res = dpnp_atleast_2d(ary)
+            result.append(res)
+
+        if len(result) == 1:
+            return result[0]
+        else:
+            return result
+
+    return call_origin(numpy.atleast_2d, *arys)
+
+
+def atleast_3d(*arys):
+    """
+    View inputs as arrays with at least three dimensions.
+
+    For full documentation refer to :obj:`numpy.atleast_3d`.
+
+    Limitations
+    -----------
+    Input arrays is supported as :obj:`dpnp.ndarray`.
+    """
+
+    all_is_dparray = True
+    for ary in arys:
+        if not isinstance(ary, dparray):
+            all_is_dparray = False
+            break
+
+    if not use_origin_backend(arys[0]) and all_is_dparray:
+        result = []
+        for ary in arys:
+            res = dpnp_atleast_3d(ary)
+            result.append(res)
+
+        if len(result) == 1:
+            return result[0]
+        else:
+            return result
+
+    return call_origin(numpy.atleast_3d, *arys)
 
 
 def copyto(dst, src, casting='same_kind', where=True):

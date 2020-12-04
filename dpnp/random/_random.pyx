@@ -82,7 +82,7 @@ ctypedef void(*fptr_custom_rng_gumbel_c_1out_t)(void *, double, double, size_t) 
 ctypedef void(*fptr_custom_rng_hypergeometric_c_1out_t)(void *, int, int, int, size_t) except +
 ctypedef void(*fptr_custom_rng_laplace_c_1out_t)(void *, double, double, size_t) except +
 ctypedef void(*fptr_custom_rng_lognormal_c_1out_t)(void *, double, double, size_t) except +
-ctypedef void(*fptr_custom_rng_multinomial_c_1out_t)(void* result, int, const double*, const size_t, size_t) except +
+ctypedef void(*fptr_custom_rng_multinomial_c_1out_t)(void * result, int, const double *, const size_t, size_t) except +
 ctypedef void(*fptr_custom_rng_multivariate_normal_c_1out_t)(void *,
                                                              const int,
                                                              const double *,
@@ -449,7 +449,7 @@ cpdef dparray dpnp_multinomial(int ntrial, p, size):
     cdef fptr_custom_rng_multinomial_c_1out_t func
     p = numpy.asarray(p, dtype=numpy.float64)
 
-    cdef double * p_vector = <double*> numpy.PyArray_DATA(p)
+    cdef double * p_vector = <double * > numpy.PyArray_DATA(p)
     cdef size_t p_vector_size = len(p)
     size = size + (len(p),)
 
@@ -495,8 +495,8 @@ cpdef dparray dpnp_multivariate_normal(numpy.ndarray mean, numpy.ndarray cov, si
     cdef fptr_custom_rng_multivariate_normal_c_1out_t func
 
     # mean and cov expected numpy.ndarray in C order (row major)
-    mean_vector = <double *> numpy.PyArray_DATA(mean)
-    cov_vector = <double *> numpy.PyArray_DATA(cov)
+    mean_vector = <double * > numpy.PyArray_DATA(mean)
+    cov_vector = <double * > numpy.PyArray_DATA(cov)
 
     mean_vector_size = mean.size
     cov_vector_size = cov.size

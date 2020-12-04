@@ -593,7 +593,7 @@ def expm1(x1):
 
 def hypot(x1, x2, out=None):
     """
-    Given the “legs” of a right triangle, return its hypotenuse.
+    Given the "legs" of a right triangle, return its hypotenuse.
 
     For full documentation refer to :obj:`numpy.hypot`.
 
