@@ -42,7 +42,8 @@ void dpnp_fft_fft_c(const void* array1_in,
                     const long* output_shape,
                     size_t shape_size,
                     long axis,
-                    long input_boundarie)
+                    long input_boundarie,
+                    size_t inverse)
 {
     const size_t result_size = std::accumulate(output_shape, output_shape + shape_size, 1, std::multiplies<size_t>());
     if (!(result_size && shape_size))
@@ -51,6 +52,7 @@ void dpnp_fft_fft_c(const void* array1_in,
     }
 
     cl::sycl::event event;
+    const double kernel_pi = inverse ? -M_PI : M_PI;
 
     const _DataType_input* array_1 = reinterpret_cast<const _DataType_input*>(array1_in);
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
@@ -107,13 +109,19 @@ void dpnp_fft_fft_c(const void* array1_in,
             }
 
             const size_t output_local_id = xyz_thread[axis];
-            const double angle = 2.0 * M_PI * it * output_local_id / axis_length;
+            const double angle = 2.0 * kernel_pi * it * output_local_id / axis_length;
 
             const double angle_cos = cl::sycl::cos(angle);
             const double angle_sin = cl::sycl::sin(angle);
 
             sum_real += in_real * angle_cos + in_imag * angle_sin;
             sum_imag += -in_real * angle_sin + in_imag * angle_cos;
+        }
+
+        if (inverse)
+        {
+            sum_real = sum_real / input_boundarie;
+            sum_imag = sum_imag / input_boundarie;
         }
 
         result[output_id] = _DataType_output(sum_real, sum_imag);
