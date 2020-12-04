@@ -29,19 +29,17 @@ class RandomDistributionsTestCase(unittest.TestCase):
     'shape': [(4, 3, 2), (3, 2)],
     'a_shape': [(), (3, 2)],
     'b_shape': [(), (3, 2)],
-    'dtype': _float_dtypes,  # to escape timeout
 })
 )
 @testing.gpu
 class TestDistributionsBeta(RandomDistributionsTestCase):
 
     @helper.for_dtypes_combination(
-        _float_dtypes, names=['a_dtype', 'b_dtype'])
+        _regular_float_dtypes, names=['a_dtype', 'b_dtype'])
     def test_beta(self, a_dtype, b_dtype):
         a = numpy.full(self.a_shape, 3, dtype=a_dtype)
         b = numpy.full(self.b_shape, 3, dtype=b_dtype)
-        self.check_distribution('beta',
-                                {'a': a, 'b': b}, self.dtype)
+        self.check_distribution('beta', {'a': a, 'b': b})
 
 
 @testing.parameterize(*testing.product({
@@ -94,11 +92,10 @@ class TestDistributionsChisquare(unittest.TestCase):
 class TestDistributionsDirichlet(RandomDistributionsTestCase):
 
     @helper.for_dtypes_combination(
-        _float_dtypes, names=['alpha_dtype', 'dtype'])
-    def test_dirichlet(self, alpha_dtype, dtype):
+        _regular_float_dtypes, names=['alpha_dtype'])
+    def test_dirichlet(self, alpha_dtype):
         alpha = numpy.ones(self.alpha_shape, dtype=alpha_dtype)
-        self.check_distribution('dirichlet',
-                                {'alpha': alpha}, dtype)
+        self.check_distribution('dirichlet', {'alpha': alpha})
 
 
 @testing.parameterize(*testing.product({
