@@ -1171,34 +1171,18 @@ tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_2dim_with_axis
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_2dim_with_discont
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_2dim_without_axis
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_0_{a_shape=(), b_shape=(), dtype=float64, shape=(4, 3, 2)}::test_beta
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_10_{a_shape=(), b_shape=(3, 2), dtype=float16, shape=(4, 3, 2)}::test_beta
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_11_{a_shape=(), b_shape=(3, 2), dtype=float16, shape=(3, 2)}::test_beta
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_12_{a_shape=(3, 2), b_shape=(), dtype=float64, shape=(4, 3, 2)}::test_beta
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_13_{a_shape=(3, 2), b_shape=(), dtype=float64, shape=(3, 2)}::test_beta
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_14_{a_shape=(3, 2), b_shape=(), dtype=float32, shape=(4, 3, 2)}::test_beta
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_15_{a_shape=(3, 2), b_shape=(), dtype=float32, shape=(3, 2)}::test_beta
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_16_{a_shape=(3, 2), b_shape=(), dtype=float16, shape=(4, 3, 2)}::test_beta
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_17_{a_shape=(3, 2), b_shape=(), dtype=float16, shape=(3, 2)}::test_beta
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_18_{a_shape=(3, 2), b_shape=(3, 2), dtype=float64, shape=(4, 3, 2)}::test_beta
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_19_{a_shape=(3, 2), b_shape=(3, 2), dtype=float64, shape=(3, 2)}::test_beta
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_1_{a_shape=(), b_shape=(), dtype=float64, shape=(3, 2)}::test_beta
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_20_{a_shape=(3, 2), b_shape=(3, 2), dtype=float32, shape=(4, 3, 2)}::test_beta
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_21_{a_shape=(3, 2), b_shape=(3, 2), dtype=float32, shape=(3, 2)}::test_beta
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_22_{a_shape=(3, 2), b_shape=(3, 2), dtype=float16, shape=(4, 3, 2)}::test_beta
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_23_{a_shape=(3, 2), b_shape=(3, 2), dtype=float16, shape=(3, 2)}::test_beta
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_2_{a_shape=(), b_shape=(), dtype=float32, shape=(4, 3, 2)}::test_beta
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_3_{a_shape=(), b_shape=(), dtype=float32, shape=(3, 2)}::test_beta
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_4_{a_shape=(), b_shape=(), dtype=float16, shape=(4, 3, 2)}::test_beta
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_5_{a_shape=(), b_shape=(), dtype=float16, shape=(3, 2)}::test_beta
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_6_{a_shape=(), b_shape=(3, 2), dtype=float64, shape=(4, 3, 2)}::test_beta
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_7_{a_shape=(), b_shape=(3, 2), dtype=float64, shape=(3, 2)}::test_beta
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_8_{a_shape=(), b_shape=(3, 2), dtype=float32, shape=(4, 3, 2)}::test_beta
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_9_{a_shape=(), b_shape=(3, 2), dtype=float32, shape=(3, 2)}::test_beta
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_0_{a_shape=(), b_shape=(), shape=(4, 3, 2)}::test_beta
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_1_{a_shape=(), b_shape=(), shape=(3, 2)}::test_beta
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_2_{a_shape=(), b_shape=(3, 2), shape=(4, 3, 2)}::test_beta
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_3_{a_shape=(), b_shape=(3, 2), shape=(3, 2)}::test_beta
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_4_{a_shape=(3, 2), b_shape=(), shape=(4, 3, 2)}::test_beta
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_5_{a_shape=(3, 2), b_shape=(), shape=(3, 2)}::test_beta
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsChisquare_param_0_{df_shape=(), shape=(4, 3, 2)}::test_chisquare
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsChisquare_param_1_{df_shape=(), shape=(3, 2)}::test_chisquare
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsChisquare_param_2_{df_shape=(3, 2), shape=(4, 3, 2)}::test_chisquare
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsChisquare_param_3_{df_shape=(3, 2), shape=(3, 2)}::test_chisquare
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsDirichlet_param_0_{alpha_shape=(3,), shape=(4, 3, 2, 3)}::test_dirichlet
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsDirichlet_param_1_{alpha_shape=(3,), shape=(3, 2, 3)}::test_dirichlet
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsExponentialError::test_negative_scale
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsExponential_param_0_{scale_shape=(), shape=(4, 3, 2)}::test_exponential
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsExponential_param_1_{scale_shape=(), shape=(3, 2)}::test_exponential
