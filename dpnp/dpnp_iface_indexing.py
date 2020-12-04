@@ -140,7 +140,7 @@ def diag_indices_from(arr):
         # original limitation
         # For more than d=2, the strided formula is only valid for arrays with
         # all dimensions equal, so we check first.
-        if not alltrue(diff(arr.shape) == 0):
+        if not numpy.alltrue(numpy.diff(arr.shape) == 0): # TODO: replace alltrue and diff funcs with dpnp own ones
             checker_throw_value_error("diag_indices_from", "arr.shape", arr.shape, "All dimensions of input must be of equal length")
 
         return dpnp_diag_indices(arr.shape[0], arr.ndim)
