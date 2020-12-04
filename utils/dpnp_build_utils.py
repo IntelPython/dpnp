@@ -219,9 +219,8 @@ def _find_mathlib_in_mathlib_root(verbose=False):
     rel_include_path = os.path.join("latest", "include") 
     rel_libdir_path = os.path.join("latest", "lib", "intel64")
 
-#    return find_library("MKLROOT", rel_header_paths, rel_lib_paths, rel_include_path=rel_include_path,
-#                        rel_libdir_path=rel_libdir_path, verbose=verbose)
-    return (["/opt/intel/oneapi/mkl/latest/include"], ["/opt/intel/oneapi/mkl/latest/lib/intel64"])
+    return find_library("MKLROOT", rel_header_paths, rel_lib_paths, rel_include_path=rel_include_path,
+                        rel_libdir_path=rel_libdir_path, verbose=verbose)
 
 
 def find_mathlib(verbose=False):
