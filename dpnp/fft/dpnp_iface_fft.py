@@ -100,7 +100,7 @@ def fft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = input_boundarie
 
-            return dpnp_fft(x1, input_boundarie, output_boundarie, axis_param)
+            return dpnp_fft(x1, input_boundarie, output_boundarie, axis_param, False)
 
     return call_origin(numpy.fft.fft, x1, n, axis, norm)
 
@@ -197,7 +197,7 @@ def ifft(x1, n=None, axis=-1, norm=None):
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and 0):
+    if (not use_origin_backend(x1) and is_x1_dparray):
         if axis is None:
             axis_param = -1      # the most right dimension (default value)
         else:
@@ -217,7 +217,7 @@ def ifft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = input_boundarie
 
-            return dpnp_fft(x1, input_boundarie, output_boundarie, axis_param)
+            return dpnp_fft(x1, input_boundarie, output_boundarie, axis_param, True)
 
     return call_origin(numpy.fft.ifft, x1, n, axis, norm)
 
@@ -240,11 +240,11 @@ def ifft2(x1, s=None, axes=(-2, -1), norm=None):
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and 0):
+    if (not use_origin_backend(x1) and is_x1_dparray):
         if norm is not None:
             pass
         else:
-            return fftn(x1, s, axes, norm)
+            return ifftn(x1, s, axes, norm)
 
     return call_origin(numpy.fft.ifft2, x1, s, axes, norm)
 
@@ -267,7 +267,7 @@ def ifftn(x1, s=None, axes=None, norm=None):
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and 0):
+    if (not use_origin_backend(x1) and is_x1_dparray):
         if s is None:
             boundaries = tuple([x1.shape[i] for i in range(x1.ndim)])
         else:
@@ -291,7 +291,7 @@ def ifftn(x1, s=None, axes=None, norm=None):
                 except IndexError:
                     checker_throw_axis_error("fft.ifftn", "is out of bounds", param_axis, f"< {len(boundaries)}")
 
-                x1_iter = fft(x1_iter, n=param_n, axis=param_axis, norm=norm)
+                x1_iter = ifft(x1_iter, n=param_n, axis=param_axis, norm=norm)
 
             return x1_iter
 
@@ -332,9 +332,13 @@ def irfft(x1, n=None, axis=-1, norm=None):
         elif norm is not None:
             pass
         else:
-            output_boundarie = input_boundarie
+            output_boundarie = 2 * (input_boundarie - 1)
 
-            return dpnp_fft(x1, input_boundarie, output_boundarie, axis_param)
+            result = dpnp_fft(x1, input_boundarie, output_boundarie, axis_param, True)
+            tmp = dparray(result.shape, dtype=dpnp.float64)
+            for it in range(tmp.size):
+                tmp[it] = result[it].real
+            return tmp
 
     return call_origin(numpy.fft.irfft, x1, n, axis, norm)
 
@@ -357,11 +361,11 @@ def irfft2(x1, s=None, axes=(-2, -1), norm=None):
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and 0):
+    if (not use_origin_backend(x1) and is_x1_dparray):
         if norm is not None:
             pass
         else:
-            return fftn(x1, s, axes, norm)
+            return irfftn(x1, s, axes, norm)
 
     return call_origin(numpy.fft.irfft2, x1, s, axes, norm)
 
@@ -408,7 +412,7 @@ def irfftn(x1, s=None, axes=None, norm=None):
                 except IndexError:
                     checker_throw_axis_error("fft.irfftn", "is out of bounds", param_axis, f"< {len(boundaries)}")
 
-                x1_iter = fft(x1_iter, n=param_n, axis=param_axis, norm=norm)
+                x1_iter = irfft(x1_iter, n=param_n, axis=param_axis, norm=norm)
 
             return x1_iter
 
@@ -451,7 +455,7 @@ def rfft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = input_boundarie // 2 + 1  # rfft specific requirenment
 
-            return dpnp_fft(x1, input_boundarie, output_boundarie, axis_param)
+            return dpnp_fft(x1, input_boundarie, output_boundarie, axis_param, False)
 
     return call_origin(numpy.fft.rfft, x1, n, axis, norm)
 

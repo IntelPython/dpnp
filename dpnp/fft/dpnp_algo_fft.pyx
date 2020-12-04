@@ -42,10 +42,10 @@ __all__ = [
     "dpnp_fft"
 ]
 
-ctypedef void(*fptr_dpnp_fft_fft_t)(void *, void * , long * , long * , size_t, long, long)
+ctypedef void(*fptr_dpnp_fft_fft_t)(void *, void * , long * , long * , size_t, long, long, size_t)
 
 
-cpdef dparray dpnp_fft(dparray input, size_t input_boundarie, size_t output_boundarie, long axis):
+cpdef dparray dpnp_fft(dparray input, size_t input_boundarie, size_t output_boundarie, long axis, size_t inverse):
 
     cdef dparray_shape_type input_shape = input.shape
     cdef dparray_shape_type output_shape = input_shape
@@ -66,6 +66,6 @@ cpdef dparray dpnp_fft(dparray input, size_t input_boundarie, size_t output_boun
     cdef fptr_dpnp_fft_fft_t func = <fptr_dpnp_fft_fft_t > kernel_data.ptr
     # call FPTR function
     func(input.get_data(), result.get_data(), input_shape.data(),
-         output_shape.data(), input_shape.size(), axis_norm, input_boundarie)
+         output_shape.data(), input_shape.size(), axis_norm, input_boundarie, inverse)
 
     return result
