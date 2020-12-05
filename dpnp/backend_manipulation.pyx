@@ -41,7 +41,8 @@ __all__ += [
     "dpnp_atleast_3d",
     "dpnp_copyto",
     "dpnp_repeat",
-    "dpnp_transpose"
+    "dpnp_transpose",
+    "dpnp_squeeze",
 ]
 
 
@@ -179,5 +180,26 @@ cpdef dparray dpnp_transpose(dparray array1, axes=None):
     cdef fptr_custom_elemwise_transpose_1in_1out_t func = <fptr_custom_elemwise_transpose_1in_1out_t > kernel_data.ptr
     # call FPTR function
     func(array1.get_data(), input_shape, result_shape, permute_axes, result.get_data(), array1.size)
+
+    return result
+
+
+cpdef dparray dpnp_squeeze(dparray in_array, axis):
+    shape_list = []
+    if axis is None:
+        for i in range(in_array.ndim):
+            if in_array.shape[i] != 1:
+                shape_list.append(in_array.shape[i])
+    else:
+        axis_norm = _object_to_tuple(normalize_axis(_object_to_tuple(axis), in_array.ndim))
+        for i in range(in_array.ndim):
+            if i in axis_norm:
+                if in_array.shape[i] != 1:
+                    checker_throw_value_error("dpnp_squeeze", "axis", axis, "axis has size not equal to one")
+            else:
+                shape_list.append(in_array.shape[i])
+
+    shape = _object_to_tuple(shape_list)
+    cdef dparray result = dpnp.copy(in_array).reshape(shape)
 
     return result

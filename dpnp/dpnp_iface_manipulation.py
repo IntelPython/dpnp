@@ -50,6 +50,7 @@ import dpnp
 
 
 __all__ = [
+    "asfarray",
     "atleast_1d",
     "atleast_2d",
     "atleast_3d",
@@ -58,9 +59,36 @@ __all__ = [
     "ravel",
     "repeat",
     "rollaxis",
+    "squeeze",
     "swapaxes",
     "transpose"
 ]
+
+
+def asfarray(a, dtype=numpy.float64):
+    """
+    Return an array converted to a float type.
+
+    For full documentation refer to :obj:`numpy.asfarray`.
+
+    Notes
+    -----
+    This function works exactly the same as :obj:`dpnp.array`.
+
+    """
+
+    if not use_origin_backend(a):
+        # behavior of original function: int types replaced with float64
+        if numpy.issubdtype(dtype, numpy.integer):
+            dtype = numpy.float64
+
+        # if type is the same then same object should be returned
+        if isinstance(a, dpnp.ndarray) and a.dtype == dtype:
+            return a
+
+        return array(a, dtype=dtype)
+
+    return call_origin(numpy.asfarray, a, dtype)
 
 
 def atleast_1d(*arys):
@@ -395,6 +423,49 @@ def rollaxis(a, axis, start=0):
     result = numpy.rollaxis(dp2nd_array(a), axis, start)
 
     return nd2dp_array(result)
+
+
+def squeeze(a, axis=None):
+    """
+    Remove single-dimensional entries from the shape of an array.
+
+    For full documentation refer to :obj:`numpy.squeeze`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([[[0], [1], [2]]])
+    >>> x.shape
+    (1, 3, 1)
+    >>> np.squeeze(x).shape
+    (3,)
+    >>> np.squeeze(x, axis=0).shape
+    (3, 1)
+    >>> np.squeeze(x, axis=1).shape
+    Traceback (most recent call last):
+    ...
+    ValueError: cannot select an axis to squeeze out which has size not equal to one
+    >>> np.squeeze(x, axis=2).shape
+    (1, 3)
+    >>> x = np.array([[1234]])
+    >>> x.shape
+    (1, 1)
+    >>> np.squeeze(x)
+    array(1234)  # 0d array
+    >>> np.squeeze(x).shape
+    ()
+    >>> np.squeeze(x)[()]
+    1234
+
+    """
+
+    if not use_origin_backend(a):
+        if not isinstance(a, dpnp.ndarray):
+            pass
+        else:
+            return dpnp_squeeze(a, axis)
+
+    return call_origin(numpy.squeeze, a, axis)
 
 
 def swapaxes(x1, axis1, axis2):
