@@ -176,19 +176,19 @@ if IS_WIN:
     _sdl_ldflags = ["-NXCompat", "-DynamicBase"]
 
 
-try:
-    """
-    set environment variables to control setuptools build procedure
-    """
-    # check if we have preset variables in environment
-    os.environ["CC"] == _project_compiler
-    os.environ["CXX"] == _project_compiler
-    os.environ["LD"] == _project_linker
-except KeyError:
-    # set variables if not presented in environment
-    os.environ["CC"] = _project_compiler
-    os.environ["CXX"] = _project_compiler
-    os.environ["LD"] = _project_linker
+# try:
+#     """
+#     set environment variables to control setuptools build procedure
+#     """
+#     # check if we have preset variables in environment
+#     os.environ["CC"] == _project_compiler
+#     os.environ["CXX"] == _project_compiler
+#     os.environ["LD"] == _project_linker
+# except KeyError:
+#     # set variables if not presented in environment
+#     os.environ["CC"] = _project_compiler
+#     os.environ["CXX"] = _project_compiler
+#     os.environ["LD"] = _project_linker
 
 
 """

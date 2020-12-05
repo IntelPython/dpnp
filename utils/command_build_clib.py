@@ -90,7 +90,10 @@ class custom_build_clib(build_clib.build_clib):
 
             # set compiler and options
             self.compiler.compiler_so = compiler + default_flags
+            self.compiler.compiler = self.compiler.compiler_so
+            self.compiler.compiler_cxx = self.compiler.compiler_so
             self.compiler.linker_so = linker + default_flags
+            self.compiler.linker_exe = self.compiler.linker_so
 
             objects = []
             """
