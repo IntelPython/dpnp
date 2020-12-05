@@ -136,19 +136,23 @@ def beta(a, b, size=None):
     # TODO:
     # array_like of floats for `a`, `b`
     if not use_origin_backend(a) and dpnp_queue_is_cpu():
-        if size is None:
-            size = 1
         if isinstance(size, tuple):
             for dim in size:
                 if not isinstance(dim, int):
                     pass
         elif not isinstance(size, int):
             pass
+        elif not dpnp.isscalar(a):
+            pass
+        elif not dpnp.isscalar(b):
+            pass
         elif a <= 0:
             pass
         elif b <= 0:
             pass
         else:
+            if size is None:
+                size = 1
             return dpnp_beta(a, b, size)
 
     return call_origin(numpy.random.beta, a, b, size)
