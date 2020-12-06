@@ -169,7 +169,6 @@ def binomial(n, p, size=None):
     -----------
     Output array data type is :obj:`dpnp.int32`.
     Parameters ``n`` and ``p`` are supported as scalar.
-    Parameter ``size`` is supported as a ``tuple`` of ``ints`` or ``int``.
     Otherwise the function will use :obj:`numpy.random.binomial` on the
     backend and will be executed on fallback backend.
 
@@ -190,18 +189,12 @@ def binomial(n, p, size=None):
     """
 
     if not use_origin_backend(n) and dpnp_queue_is_cpu():
-        if isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    pass
-        elif not isinstance(size, int):
-            pass
-        elif not dpnp.isscalar(n):
+        # TODO:
+        # array_like of floats for `p` param
+        if not dpnp.isscalar(n):
             pass
         elif not dpnp.isscalar(p):
             pass
-        # TODO:
-        # array_like of floats for `p` param
         elif p > 1 or p < 0:
             pass
         elif n < 0:
