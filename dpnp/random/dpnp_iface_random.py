@@ -327,15 +327,6 @@ def exponential(scale=1.0, size=None):
     """
 
     if not use_origin_backend(scale):
-        if size is None:
-            size = 1
-        elif isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    checker_throw_value_error("exponential", "type(dim)", type(dim), int)
-        elif not isinstance(size, int):
-            checker_throw_value_error("exponential", "type(size)", type(size), int)
-
         if scale < 0:
             checker_throw_value_error("exponential", "scale", scale, "non-negative")
 
@@ -413,15 +404,6 @@ def gamma(shape, scale=1.0, size=None):
     # TODO:
     # array_like of floats for `scale` and `shape`
     if not use_origin_backend(scale) and dpnp_queue_is_cpu():
-        if size is None:
-            size = 1
-        elif isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    checker_throw_value_error("gamma", "type(dim)", type(dim), int)
-        elif not isinstance(size, int):
-            checker_throw_value_error("gamma", "type(size)", type(size), int)
-
         if scale < 0:
             checker_throw_value_error("gamma", "scale", scale, "non-negative")
         if shape < 0:
@@ -472,15 +454,6 @@ def geometric(p, size=None):
     """
 
     if not use_origin_backend(p):
-        if size is None:
-            size = 1
-        elif isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    checker_throw_value_error("geometric", "type(dim)", type(dim), int)
-        elif not isinstance(size, int):
-            checker_throw_value_error("geometric", "type(size)", type(size), int)
-
         # TODO:
         # array_like of floats for `p` param
         if p > 1 or p <= 0:
@@ -525,15 +498,6 @@ def gumbel(loc=0.0, scale=1.0, size=None):
     """
 
     if not use_origin_backend(loc):
-        if size is None:
-            size = 1
-        elif isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    checker_throw_value_error("gumbel", "type(dim)", type(dim), int)
-        elif not isinstance(size, int):
-            checker_throw_value_error("gumbel", "type(size)", type(size), int)
-
         # TODO:
         # array_like of floats for `loc` and `scale` params
         if scale < 0:
@@ -618,15 +582,6 @@ def hypergeometric(ngood, nbad, nsample, size=None):
     """
 
     if not use_origin_backend(ngood) and dpnp_queue_is_cpu():
-        if size is None:
-            size = 1
-        elif isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    checker_throw_value_error("hypergeometric", "type(dim)", type(dim), int)
-        elif not isinstance(size, int):
-            checker_throw_value_error("hypergeometric", "type(size)", type(size), int)
-
         # TODO:
         # array_like of ints for `ngood`, `nbad`, `nsample` param
         if ngood < 0:
@@ -685,15 +640,6 @@ def laplace(loc=0.0, scale=1.0, size=None):
     """
 
     if not use_origin_backend(loc):
-        if size is None:
-            size = 1
-        elif isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    checker_throw_value_error("laplace", "type(dim)", type(dim), int)
-        elif not isinstance(size, int):
-            checker_throw_value_error("laplace", "type(size)", type(size), int)
-
         # TODO:
         # array_like of floats for `loc` and `scale` params
         if scale < 0:
@@ -783,15 +729,6 @@ def lognormal(mean=0.0, sigma=1.0, size=None):
     """
 
     if not use_origin_backend(mean):
-        if size is None:
-            size = 1
-        elif isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    checker_throw_value_error("lognormal", "type(dim)", type(dim), int)
-        elif not isinstance(size, int):
-            checker_throw_value_error("lognormal", "type(size)", type(size), int)
-
         # TODO:
         # array_like of floats for `mean` and `sigma` params
         if sigma < 0:
@@ -1077,15 +1014,6 @@ def negative_binomial(n, p, size=None):
     """
 
     if not use_origin_backend(n) and dpnp_queue_is_cpu():
-        if size is None:
-            size = 1
-        elif isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    checker_throw_value_error("negative_binomial", "type(dim)", type(dim), int)
-        elif not isinstance(size, int):
-            checker_throw_value_error("negative_binomial", "type(size)", type(size), int)
-
         # TODO:
         # array_like of floats for `p` and `n` params
         if p > 1 or p < 0:
@@ -1164,15 +1092,6 @@ def normal(loc=0.0, scale=1.0, size=None):
     """
 
     if not use_origin_backend(loc):
-        if size is None:
-            size = 1
-        elif isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    checker_throw_value_error("normal", "type(dim)", type(dim), int)
-        elif not isinstance(size, int):
-            checker_throw_value_error("normal", "type(size)", type(size), int)
-
         # TODO:
         # array_like of floats for `loc` and `scale` params
         if scale < 0:
@@ -1301,15 +1220,6 @@ def poisson(lam=1.0, size=None):
     """
 
     if not use_origin_backend(lam):
-        if size is None:
-            size = 1
-        elif isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    checker_throw_value_error("poisson", "type(dim)", type(dim), int)
-        elif not isinstance(size, int):
-            checker_throw_value_error("poisson", "type(size)", type(size), int)
-
         # TODO:
         # array_like of floats for `lam` param
         if lam < 0:
@@ -1409,15 +1319,6 @@ def randint(low, high=None, size=None, dtype=int):
     """
 
     if not use_origin_backend(low):
-        if size is None:
-            size = 1
-        elif isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    checker_throw_value_error("randint", "type(dim)", type(dim), int)
-        elif not isinstance(size, int):
-            checker_throw_value_error("randint", "type(size)", type(size), int)
-
         if high is None:
             high = low
             low = 0
@@ -1564,9 +1465,6 @@ def random_sample(size):
     """
 
     if not use_origin_backend(size):
-        for dim in size:
-            if not isinstance(dim, int):
-                checker_throw_value_error("random_sample", "type(dim)", type(dim), int)
         return dpnp_random(size)
 
     return call_origin(numpy.random.random_sample, size)
@@ -1592,9 +1490,6 @@ def ranf(size):
     """
 
     if not use_origin_backend(size):
-        for dim in size:
-            if not isinstance(dim, int):
-                checker_throw_value_error("ranf", "type(dim)", type(dim), int)
         return dpnp_random(size)
 
     return call_origin(numpy.random.ranf, size)
@@ -1625,15 +1520,6 @@ def rayleigh(scale=1.0, size=None):
     """
 
     if not use_origin_backend(scale):
-        if size is None:
-            size = 1
-        elif isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    checker_throw_value_error("rayleigh", "type(dim)", type(dim), int)
-        elif not isinstance(size, int):
-            checker_throw_value_error("rayleigh", "type(size)", type(size), int)
-
         # TODO:
         # array_like of floats for `scale` params
         if scale < 0:
@@ -1664,9 +1550,6 @@ def sample(size):
     """
 
     if not use_origin_backend(size):
-        for dim in size:
-            if not isinstance(dim, int):
-                checker_throw_value_error("sample", "type(dim)", type(dim), int)
         return dpnp_random(size)
 
     return call_origin(numpy.random.sample, size)
@@ -1741,15 +1624,6 @@ def standard_cauchy(size=None):
     """
 
     if not use_origin_backend(size):
-        if size is None:
-            size = 1
-        elif isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    checker_throw_value_error("standard_cauchy", "type(dim)", type(dim), int)
-        elif not isinstance(size, int):
-            checker_throw_value_error("standard_cauchy", "type(size)", type(size), int)
-
         return dpnp_standard_cauchy(size)
 
     return call_origin(numpy.random.standard_cauchy, size)
@@ -1783,15 +1657,6 @@ def standard_exponential(size=None):
     """
 
     if not use_origin_backend(size):
-        if size is None:
-            size = 1
-        elif isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    checker_throw_value_error("standard_exponential", "type(dim)", type(dim), int)
-        elif not isinstance(size, int):
-            checker_throw_value_error("standard_exponential", "type(size)", type(size), int)
-
         return dpnp_standard_exponential(size)
 
     return call_origin(numpy.random.standard_exponential, size)
@@ -1851,15 +1716,6 @@ def standard_gamma(shape, size=None):
     # TODO:
     # array_like of floats for and `shape`
     if not use_origin_backend(shape) and dpnp_queue_is_cpu():
-        if size is None:
-            size = 1
-        elif isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    checker_throw_value_error("standard_gamma", "type(dim)", type(dim), int)
-        elif not isinstance(size, int):
-            checker_throw_value_error("standard_gamma", "type(size)", type(size), int)
-
         if shape < 0:
             checker_throw_value_error("standard_gamma", "shape", shape, "non-negative")
 
@@ -1889,15 +1745,6 @@ def standard_normal(size=None):
     """
 
     if not use_origin_backend(size):
-        if size is None:
-            size = 1
-        elif isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    checker_throw_value_error("standard_normal", "type(dim)", type(dim), int)
-        elif not isinstance(size, int):
-            checker_throw_value_error("standard_normal", "type(size)", type(size), int)
-
         return dpnp_standard_normal(size)
 
     return call_origin(numpy.random.standard_normal, size)
@@ -1974,8 +1821,6 @@ def uniform(low=0.0, high=1.0, size=None):
     """
 
     if not use_origin_backend(low):
-        if size is None:
-            size = 1
         if low == high:
             # TODO:
             # currently dparray.full is not implemented
@@ -2060,20 +1905,10 @@ def weibull(a, size=None):
     """
 
     if not use_origin_backend(a):
-        if size is None:
-            size = 1
-        elif isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    checker_throw_value_error("weibull", "type(dim)", type(dim), int)
-        elif not isinstance(size, int):
-            checker_throw_value_error("weibull", "type(size)", type(size), int)
-
         # TODO:
         # array_like of floats for `a` params
         if a < 0:
             checker_throw_value_error("weibulla", "a", a, "non-negative")
-
         return dpnp_weibull(a, size)
 
     return call_origin(numpy.random.weibull, a, size)
