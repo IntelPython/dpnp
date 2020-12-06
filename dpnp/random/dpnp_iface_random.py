@@ -422,9 +422,6 @@ def exponential(scale=1.0, size=None):
     """
 
     if not use_origin_backend(scale):
-        if size is None:
-            size = 1
-
         if scale < 0:
             checker_throw_value_error("exponential", "scale", scale, "non-negative")
 
@@ -502,9 +499,6 @@ def gamma(shape, scale=1.0, size=None):
     # TODO:
     # array_like of floats for `scale` and `shape`
     if not use_origin_backend(scale) and dpnp_queue_is_cpu():
-        if size is None:
-            size = 1
-
         if scale < 0:
             checker_throw_value_error("gamma", "scale", scale, "non-negative")
         if shape < 0:
@@ -555,9 +549,6 @@ def geometric(p, size=None):
     """
 
     if not use_origin_backend(p):
-        if size is None:
-            size = 1
-
         # TODO:
         # array_like of floats for `p` param
         if p > 1 or p <= 0:
@@ -602,9 +593,6 @@ def gumbel(loc=0.0, scale=1.0, size=None):
     """
 
     if not use_origin_backend(loc):
-        if size is None:
-            size = 1
-
         # TODO:
         # array_like of floats for `loc` and `scale` params
         if scale < 0:
@@ -689,9 +677,6 @@ def hypergeometric(ngood, nbad, nsample, size=None):
     """
 
     if not use_origin_backend(ngood) and dpnp_queue_is_cpu():
-        if size is None:
-            size = 1
-
         # TODO:
         # array_like of ints for `ngood`, `nbad`, `nsample` param
         if ngood < 0:
@@ -750,9 +735,6 @@ def laplace(loc=0.0, scale=1.0, size=None):
     """
 
     if not use_origin_backend(loc):
-        if size is None:
-            size = 1
-
         # TODO:
         # array_like of floats for `loc` and `scale` params
         if scale < 0:
@@ -842,9 +824,6 @@ def lognormal(mean=0.0, sigma=1.0, size=None):
     """
 
     if not use_origin_backend(mean):
-        if size is None:
-            size = 1
-
         # TODO:
         # array_like of floats for `mean` and `sigma` params
         if sigma < 0:
@@ -1130,9 +1109,6 @@ def negative_binomial(n, p, size=None):
     """
 
     if not use_origin_backend(n) and dpnp_queue_is_cpu():
-        if size is None:
-            size = 1
-
         # TODO:
         # array_like of floats for `p` and `n` params
         if p > 1 or p < 0:
@@ -1211,9 +1187,6 @@ def normal(loc=0.0, scale=1.0, size=None):
     """
 
     if not use_origin_backend(loc):
-        if size is None:
-            size = 1
-
         # TODO:
         # array_like of floats for `loc` and `scale` params
         if scale < 0:
@@ -1342,9 +1315,6 @@ def poisson(lam=1.0, size=None):
     """
 
     if not use_origin_backend(lam):
-        if size is None:
-            size = 1
-
         # TODO:
         # array_like of floats for `lam` param
         if lam < 0:
@@ -1444,9 +1414,6 @@ def randint(low, high=None, size=None, dtype=int):
     """
 
     if not use_origin_backend(low):
-        if size is None:
-            size = 1
-
         if high is None:
             high = low
             low = 0
@@ -1648,9 +1615,6 @@ def rayleigh(scale=1.0, size=None):
     """
 
     if not use_origin_backend(scale):
-        if size is None:
-            size = 1
-
         # TODO:
         # array_like of floats for `scale` params
         if scale < 0:
@@ -1755,9 +1719,6 @@ def standard_cauchy(size=None):
     """
 
     if not use_origin_backend(size):
-        if size is None:
-            size = 1
-
         return dpnp_standard_cauchy(size)
 
     return call_origin(numpy.random.standard_cauchy, size)
@@ -1791,9 +1752,6 @@ def standard_exponential(size=None):
     """
 
     if not use_origin_backend(size):
-        if size is None:
-            size = 1
-
         return dpnp_standard_exponential(size)
 
     return call_origin(numpy.random.standard_exponential, size)
@@ -1853,9 +1811,6 @@ def standard_gamma(shape, size=None):
     # TODO:
     # array_like of floats for and `shape`
     if not use_origin_backend(shape) and dpnp_queue_is_cpu():
-        if size is None:
-            size = 1
-
         if shape < 0:
             checker_throw_value_error("standard_gamma", "shape", shape, "non-negative")
 
@@ -1885,9 +1840,6 @@ def standard_normal(size=None):
     """
 
     if not use_origin_backend(size):
-        if size is None:
-            size = 1
-
         return dpnp_standard_normal(size)
 
     return call_origin(numpy.random.standard_normal, size)
@@ -1964,8 +1916,6 @@ def uniform(low=0.0, high=1.0, size=None):
     """
 
     if not use_origin_backend(low):
-        if size is None:
-            size = 1
         if low == high:
             # TODO:
             # currently dparray.full is not implemented
@@ -2050,14 +2000,10 @@ def weibull(a, size=None):
     """
 
     if not use_origin_backend(a):
-        if size is None:
-            size = 1
-
         # TODO:
         # array_like of floats for `a` params
         if a < 0:
             checker_throw_value_error("weibulla", "a", a, "non-negative")
-
         return dpnp_weibull(a, size)
 
     return call_origin(numpy.random.weibull, a, size)
