@@ -41,12 +41,11 @@ jobs:
           python-version: 3.x
       - name: Install dependencies
         run: pip install numpy cython sphinx sphinx_rtd_theme
-      - name: set Intel OneAPI environment
-        run: . /opt/intel/oneapi/setvars.sh
-      - name: Build library
-        run: ./0.build.sh
       - name: Build docs
-        run: ./0.builddoc.sh
+        run: |
+         . /opt/intel/oneapi/setvars.sh
+         ./0.build.sh
+         ./0.builddoc.sh
         working-directory: doc
       # https://github.com/marketplace/actions/doxygen-action
       - name: Build backend docs
