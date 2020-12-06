@@ -357,58 +357,6 @@ tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy=True, indexing='ij', sparse=True}::test_meshgrid1
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy=True, indexing='ij', sparse=True}::test_meshgrid2
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy=True, indexing='ij', sparse=True}::test_meshgrid3
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftfreq_param_0_{d=1, n=1}::test_fftfreq
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftfreq_param_0_{d=1, n=1}::test_rfftfreq
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftfreq_param_1_{d=0.5, n=10}::test_fftfreq
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftfreq_param_1_{d=0.5, n=10}::test_rfftfreq
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftfreq_param_2_{d=2, n=100}::test_fftfreq
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftfreq_param_2_{d=2, n=100}::test_rfftfreq
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftshift_param_0_{axes=None, shape=(5,)}::test_fftshift
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftshift_param_0_{axes=None, shape=(5,)}::test_ifftshift
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftshift_param_1_{axes=0, shape=(5,)}::test_fftshift
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftshift_param_1_{axes=0, shape=(5,)}::test_ifftshift
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftshift_param_2_{axes=None, shape=(10,)}::test_fftshift
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftshift_param_2_{axes=None, shape=(10,)}::test_ifftshift
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftshift_param_3_{axes=0, shape=(10,)}::test_fftshift
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftshift_param_3_{axes=0, shape=(10,)}::test_ifftshift
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftshift_param_4_{axes=None, shape=(10, 10)}::test_fftshift
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftshift_param_4_{axes=None, shape=(10, 10)}::test_ifftshift
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftshift_param_5_{axes=0, shape=(10, 10)}::test_fftshift
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftshift_param_5_{axes=0, shape=(10, 10)}::test_ifftshift
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftshift_param_6_{axes=(0, 1), shape=(10, 10)}::test_fftshift
-tests/third_party/cupy/fft_tests/test_fft.py::TestFftshift_param_6_{axes=(0, 1), shape=(10, 10)}::test_ifftshift
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_0_{n=None, norm=None, shape=(10,)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_0_{n=None, norm=None, shape=(10,)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_10_{n=10, norm='ortho', shape=(10,)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_10_{n=10, norm='ortho', shape=(10,)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_11_{n=10, norm='ortho', shape=(10, 10)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_11_{n=10, norm='ortho', shape=(10, 10)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_12_{n=15, norm=None, shape=(10,)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_12_{n=15, norm=None, shape=(10,)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_13_{n=15, norm=None, shape=(10, 10)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_13_{n=15, norm=None, shape=(10, 10)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_14_{n=15, norm='ortho', shape=(10,)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_14_{n=15, norm='ortho', shape=(10,)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_15_{n=15, norm='ortho', shape=(10, 10)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_15_{n=15, norm='ortho', shape=(10, 10)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_1_{n=None, norm=None, shape=(10, 10)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_1_{n=None, norm=None, shape=(10, 10)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_2_{n=None, norm='ortho', shape=(10,)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_2_{n=None, norm='ortho', shape=(10,)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_3_{n=None, norm='ortho', shape=(10, 10)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_3_{n=None, norm='ortho', shape=(10, 10)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_4_{n=5, norm=None, shape=(10,)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_4_{n=5, norm=None, shape=(10,)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_5_{n=5, norm=None, shape=(10, 10)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_5_{n=5, norm=None, shape=(10, 10)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_6_{n=5, norm='ortho', shape=(10,)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_6_{n=5, norm='ortho', shape=(10,)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_7_{n=5, norm='ortho', shape=(10, 10)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_7_{n=5, norm='ortho', shape=(10, 10)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_8_{n=10, norm=None, shape=(10,)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_8_{n=10, norm=None, shape=(10,)}::test_ihfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_9_{n=10, norm=None, shape=(10, 10)}::test_hfft
-tests/third_party/cupy/fft_tests/test_fft.py::TestHfft_param_9_{n=10, norm=None, shape=(10, 10)}::test_ihfft
 tests/third_party/cupy/indexing_tests/test_generate.py::TestIndices::test_indices_list0
 tests/third_party/cupy/indexing_tests/test_generate.py::TestIndices::test_indices_list1
 tests/third_party/cupy/indexing_tests/test_generate.py::TestIndices::test_indices_list2
