@@ -169,8 +169,7 @@ def binomial(n, p, size=None):
     -----------
     Output array data type is :obj:`dpnp.int32`.
     Parameters ``n`` and ``p`` are supported as scalar.
-    Otherwise the function will use :obj:`numpy.random.binomial` on the
-    backend and will be executed on fallback backend.
+    Otherwise, :obj:`numpy.random.binomial(n, p, size)` samples are drawn.
 
     Examples
     --------
