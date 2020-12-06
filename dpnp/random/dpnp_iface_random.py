@@ -101,48 +101,26 @@ def beta(a, b, size=None):
 
     Draw samples from a Beta distribution.
 
-    The Beta distribution is a special case of the Dirichlet distribution,
-    and is related to the Gamma distribution.  It has the probability
-    distribution function
+    For full documentation refer to :obj:`numpy.random.beta`.
 
-    .. math:: f(x; a,b) = \\frac{1}{B(\\alpha, \\beta)} x^{\\alpha - 1}
-                                                     (1 - x)^{\\beta - 1},
+    Limitations
+    -----------
+    Parameters ``a`` and ``b`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.beta(a, b, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
 
-    where the normalization, B, is the beta function,
-
-    .. math:: B(\\alpha, \\beta) = \\int_0^1 t^{\\alpha - 1}
-                                 (1 - t)^{\\beta - 1} dt.
-
-    It is often seen in Bayesian inference and order statistics.
-
-    Parameters
-    ----------
-    a : float
-        Alpha, positive (>0).
-    b : float
-        Beta, positive (>0).
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
-        a single value is returned if ``a`` and ``b`` are both scalars.
-
-    Returns
-    -------
-    out : dparray
-        Drawn samples from the parameterized beta distribution.
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> a, b = .4, .5  # alpha, beta
+    >>> s = dpnp.random.beta(a, b, 1000)
 
     """
 
-    # TODO:
-    # array_like of floats for `a`, `b`
     if not use_origin_backend(a) and dpnp_queue_is_cpu():
-        if isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    pass
-        elif not isinstance(size, int):
-            pass
-        elif not dpnp.isscalar(a):
+        # TODO:
+        # array_like of floats for `a`, `b`
+        if not dpnp.isscalar(a):
             pass
         elif not dpnp.isscalar(b):
             pass
