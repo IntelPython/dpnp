@@ -215,31 +215,13 @@ def chisquare(df, size=None):
 
     Draw samples from a chi-square distribution.
 
-    When `df` independent random variables, each with standard normal
-    distributions (mean 0, variance 1), are squared and summed, the
-    resulting distribution is chi-square (see Notes).  This distribution
-    is often used in hypothesis testing.
+    For full documentation refer to :obj:`numpy.random.chisquare`.
 
-    Parameters
-    ----------
-    df : float
-         Number of degrees of freedom, must be > 0.
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
-        a single value is returned if ``df`` is a scalar.  Otherwise,
-        ``np.array(df).size`` samples are drawn.
-
-    Returns
-    -------
-    out : ndarray or scalar
-        Drawn samples from the parameterized chi-square distribution.
-
-    Raises
-    ------
-    ValueError
-        When `df` <= 0 or when an inappropriate `size` (e.g. ``size=-1``)
-        is given.
+    Limitations
+    -----------
+    Parameter ``df`` is supported as a scalar.
+    Otherwise, :obj:`numpy.random.chisquare(df, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
 
     Examples
     --------
@@ -249,23 +231,18 @@ def chisquare(df, size=None):
     """
 
     if not use_origin_backend(df) and dpnp_queue_is_cpu():
-        if size is None:
-            size = 1
-        elif isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    checker_throw_value_error("chisquare", "type(dim)", type(dim), int)
-        elif not isinstance(size, int):
-            checker_throw_value_error("chisquare", "type(size)", type(size), int)
-
         # TODO:
         # array_like of floats for `df`
-        # add check for df array like, after adding array-like interface for df param
-        if df <= 0:
-            checker_throw_value_error("chisquare", "df", df, "positive")
-        # TODO:
-        # float to int, safe
-        return dpnp_chisquare(int(df), size)
+        if not dpnp.isscalar(df):
+            pass
+        elif df <= 0:
+            pass
+        else:
+            if size is None:
+                size = 1
+            # TODO:
+            # float to int, safe
+            return dpnp_chisquare(int(df), size)
 
     return call_origin(numpy.random.chisquare, df, size)
 
