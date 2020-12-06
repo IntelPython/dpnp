@@ -163,60 +163,13 @@ def binomial(n, p, size=None):
 
     Draw samples from a binomial distribution.
 
-    Samples are drawn from a binomial distribution with specified
-    parameters, n trials and p probability of success where
-    n an integer >= 0 and p is in the interval [0,1]. (n may be
-    input as a float, but it is truncated to an integer in use)
+    For full documentation refer to :obj:`numpy.random.binomial`.
 
-    Parameters
-    ----------
-    n : int
-        Parameter of the distribution, >= 0. Floats are also accepted,
-        but they will be truncated to integers.
-    p : float
-        Parameter of the distribution, >= 0 and <=1.
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
-        a single value is returned if ``n`` and ``p`` are both scalars.
-        Otherwise, ``np.broadcast(n, p).size`` samples are drawn.
-
-    Returns
-    -------
-    out : dparray, int32
-        Drawn samples from the parameterized binomial distribution, where
-        each sample is equal to the number of successes over the n trials.
-
-    Notes
-    -----
-    The probability density for the binomial distribution is
-
-    .. math:: P(N) = \\binom{n}{N}p^N(1-p)^{n-N},
-
-    where :math:`n` is the number of trials, :math:`p` is the probability
-    of success, and :math:`N` is the number of successes.
-
-    When estimating the standard error of a proportion in a population by
-    using a random sample, the normal distribution works well unless the
-    product p*n <=5, where p = population proportion estimate, and n =
-    number of samples, in which case the binomial distribution is used
-    instead. For example, a sample of 15 people shows 4 who are left
-    handed, and 11 who are right handed. Then p = 4/15 = 27%. 0.27*15 = 4,
-    so the binomial distribution should be used in this case.
-
-    References
-    ----------
-    .. [1] Dalgaard, Peter, "Introductory Statistics with R",
-           Springer-Verlag, 2002.
-    .. [2] Glantz, Stanton A. "Primer of Biostatistics.", McGraw-Hill,
-           Fifth Edition, 2002.
-    .. [3] Lentner, Marvin, "Elementary Applied Statistics", Bogden
-           and Quigley, 1972.
-    .. [4] Weisstein, Eric W. "Binomial Distribution." From MathWorld--A
-           Wolfram Web Resource.
-           http://mathworld.wolfram.com/BinomialDistribution.html
-    .. [5] Wikipedia, "Binomial distribution",
-           https://en.wikipedia.org/wiki/Binomial_distribution
+    Limitations
+    -----------
+    Output array data type is :obj:`dpnp.int32`.
+    Parameters ``n`` and ``p`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.binomial(n, p, size)` samples are drawn.
 
     Examples
     --------
@@ -235,23 +188,20 @@ def binomial(n, p, size=None):
     """
 
     if not use_origin_backend(n) and dpnp_queue_is_cpu():
-        if size is None:
-            size = 1
-        elif isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    checker_throw_value_error("binomial", "type(dim)", type(dim), int)
-        elif not isinstance(size, int):
-            checker_throw_value_error("binomial", "type(size)", type(size), int)
-
         # TODO:
         # array_like of floats for `p` param
-        if p > 1 or p < 0:
-            checker_throw_value_error("binomial", "p", p, "in [0, 1]")
-        if n < 0:
-            checker_throw_value_error("binomial", "n", n, "non-negative")
-
-        return dpnp_binomial(int(n), p, size)
+        if not dpnp.isscalar(n):
+            pass
+        elif not dpnp.isscalar(p):
+            pass
+        elif p > 1 or p < 0:
+            pass
+        elif n < 0:
+            pass
+        else:
+            if size is None:
+                size = 1
+            return dpnp_binomial(int(n), p, size)
 
     return call_origin(numpy.random.binomial, n, p, size)
 
