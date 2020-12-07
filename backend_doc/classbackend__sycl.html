@@ -111,11 +111,11 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:aa19e6be66be2be23d07b588adc1ac919"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae542c859b7075e058f14197b025a1b4b"><td class="memItemLeft" align="right" valign="top">static cl::sycl::queue &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbackend__sycl.html#ae542c859b7075e058f14197b025a1b4b">get_queue</a> ()</td></tr>
 <tr class="separator:ae542c859b7075e058f14197b025a1b4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a30894210414574162988df05e64d4e9c"><td class="memItemLeft" align="right" valign="top">static mkl_rng::philox4x32x10 &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbackend__sycl.html#a30894210414574162988df05e64d4e9c">get_rng_engine</a> ()</td></tr>
-<tr class="separator:a30894210414574162988df05e64d4e9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9531c22868410d767bc1d959d036e286"><td class="memItemLeft" align="right" valign="top">static mkl_rng::mt19937 &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbackend__sycl.html#a9531c22868410d767bc1d959d036e286">get_rng_engine</a> ()</td></tr>
+<tr class="separator:a9531c22868410d767bc1d959d036e286"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>This is container for the SYCL queue, random number generation engine and related functions like queue and engine initialization and maintenance. The queue could not be initialized as a global object. Global object initialization order is undefined. This class postpone initialization of the SYCL queue and philox4x32x10 random number generation engine. </p>
+<div class="textblock"><p>This is container for the SYCL queue, random number generation engine and related functions like queue and engine initialization and maintenance. The queue could not be initialized as a global object. Global object initialization order is undefined. This class postpone initialization of the SYCL queue and mt19937 random number generation engine. </p>
 
 <p class="definition">Definition at line <a class="el" href="queue__sycl_8hpp_source.html#l00060">60</a> of file <a class="el" href="queue__sycl_8hpp_source.html">queue_sycl.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
@@ -268,7 +268,7 @@ Here is the caller graph for this function:</div>
 <map name="classbackend__sycl_aa19e6be66be2be23d07b588adc1ac919_icgraph" id="aclassbackend__sycl_aa19e6be66be2be23d07b588adc1ac919_icgraph">
 <area shape="rect" title=" " alt="" coords="204,27,360,69"/>
 <area shape="rect" href="group___b_a_c_k_e_n_d___a_p_i.html#ga0038297e25b24c5eb47820c31f12be8d" title="initializer for basic random number generator." alt="" coords="29,5,132,32"/>
-<area shape="rect" href="classbackend__sycl.html#a30894210414574162988df05e64d4e9c" title=" " alt="" coords="5,57,156,98"/>
+<area shape="rect" href="classbackend__sycl.html#a9531c22868410d767bc1d959d036e286" title=" " alt="" coords="5,57,156,98"/>
 </map>
 </div>
 
@@ -321,8 +321,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a30894210414574162988df05e64d4e9c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a30894210414574162988df05e64d4e9c">&#9670;&nbsp;</a></span>get_rng_engine()</h2>
+<a id="a9531c22868410d767bc1d959d036e286"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9531c22868410d767bc1d959d036e286">&#9670;&nbsp;</a></span>get_rng_engine()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -331,7 +331,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static mkl_rng::philox4x32x10&amp; backend_sycl::get_rng_engine </td>
+          <td class="memname">static mkl_rng::mt19937&amp; backend_sycl::get_rng_engine </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -349,8 +349,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classbackend__sycl_a30894210414574162988df05e64d4e9c_cgraph.png" border="0" usemap="#aclassbackend__sycl_a30894210414574162988df05e64d4e9c_cgraph" alt=""/></div>
-<map name="classbackend__sycl_a30894210414574162988df05e64d4e9c_cgraph" id="aclassbackend__sycl_a30894210414574162988df05e64d4e9c_cgraph">
+<div class="center"><img src="classbackend__sycl_a9531c22868410d767bc1d959d036e286_cgraph.png" border="0" usemap="#aclassbackend__sycl_a9531c22868410d767bc1d959d036e286_cgraph" alt=""/></div>
+<map name="classbackend__sycl_a9531c22868410d767bc1d959d036e286_cgraph" id="aclassbackend__sycl_a9531c22868410d767bc1d959d036e286_cgraph">
 <area shape="rect" title=" " alt="" coords="5,5,156,47"/>
 <area shape="rect" href="classbackend__sycl.html#aa19e6be66be2be23d07b588adc1ac919" title=" " alt="" coords="204,5,360,47"/>
 </map>
