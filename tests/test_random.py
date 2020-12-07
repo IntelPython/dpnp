@@ -124,8 +124,8 @@ def test_beta_check_moments():
     var = numpy.var(dpnp.random.beta(a=a, b=b, size=10**6))
     mean = numpy.mean(dpnp.random.beta(a=a, b=b, size=10**6))
 
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+    assert math.isclose(var, expected_var, abs_tol=0.03)
+    assert math.isclose(mean, expected_mean, abs_tol=0.03)
 
 
 def test_binomial_seed():
@@ -149,8 +149,8 @@ def test_binomial_check_moments():
     expected_var = n * p * (1 - p)
     var = numpy.var(dpnp.random.binomial(n=n, p=p, size=10**6))
     mean = numpy.mean(dpnp.random.binomial(n=n, p=p, size=10**6))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+    assert math.isclose(var, expected_var, abs_tol=0.03)
+    assert math.isclose(mean, expected_mean, abs_tol=0.03)
 
 
 def test_binomial_check_extreme_value():
@@ -259,8 +259,8 @@ def test_gamma_check_moments():
     expected_var = shape * scale * scale
     var = numpy.var(dpnp.random.gamma(shape=shape, scale=scale, size=10**6))
     mean = numpy.mean(dpnp.random.gamma(shape=shape, scale=scale, size=10**6))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+    assert math.isclose(var, expected_var, abs_tol=0.03)
+    assert math.isclose(mean, expected_mean, abs_tol=0.03)
 
 
 def test_geometric_seed():
@@ -292,8 +292,8 @@ def test_geometric_check_moments():
     expected_var = (1 - p) / (p**2)
     var = numpy.var(dpnp.random.geometric(p=p, size=size))
     mean = numpy.mean(dpnp.random.geometric(p=p, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+    assert math.isclose(var, expected_var, abs_tol=0.03)
+    assert math.isclose(mean, expected_mean, abs_tol=0.03)
 
 
 def test_geometric_check_extreme_value():
@@ -340,8 +340,8 @@ def test_gumbel_check_moments():
 
     var = numpy.var(dpnp.random.gumbel(loc=loc, scale=scale, size=size))
     mean = numpy.mean(dpnp.random.gumbel(loc=loc, scale=scale, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+    assert math.isclose(var, expected_var, abs_tol=0.03)
+    assert math.isclose(mean, expected_mean, abs_tol=0.03)
 
 
 def test_gumbel_check_extreme_value():
@@ -419,8 +419,8 @@ def test_hypergeometric_check_moments():
 
     var = numpy.var(dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size))
     mean = numpy.mean(dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+    assert math.isclose(var, expected_var, abs_tol=0.03)
+    assert math.isclose(mean, expected_mean, abs_tol=0.03)
 
 
 def test_hypergeometric_check_extreme_value():
@@ -478,8 +478,8 @@ def test_laplace_check_moments():
     expected_var = 2 * scale * scale
     var = numpy.var(dpnp.random.laplace(loc=loc, scale=scale, size=size))
     mean = numpy.mean(dpnp.random.laplace(loc=loc, scale=scale, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+    assert math.isclose(var, expected_var, abs_tol=0.03)
+    assert math.isclose(mean, expected_mean, abs_tol=0.03)
 
 
 def test_laplace_check_extreme_value():
@@ -526,7 +526,7 @@ def test_lognormal_check_moments():
     var = numpy.var(dpnp.random.lognormal(mean=mean, sigma=sigma, size=size))
     mean = numpy.mean(dpnp.random.lognormal(mean=mean, sigma=sigma, size=size))
     assert math.isclose(var, expected_var, abs_tol=0.03)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+    assert math.isclose(mean, expected_mean, abs_tol=0.03)
 
 
 def test_lognormal_check_extreme_value():
@@ -605,8 +605,8 @@ def test_multinomial_check_moments():
 
     var = numpy.var(dpnp.random.multinomial(n=n, pvals=pvals, size=size))
     mean = numpy.mean(dpnp.random.multinomial(n=n, pvals=pvals, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+    assert math.isclose(var, expected_var, abs_tol=0.03)
+    assert math.isclose(mean, expected_mean, abs_tol=0.03)
 
 
 def test_multivariate_normal_output_shape_check():
@@ -664,7 +664,7 @@ def test_multivariate_normal_check_moments():
     res = numpy.array(dpnp.random.multivariate_normal(mean=mean, cov=cov, size=size))
     res_mean = [numpy.mean(res.T[0]), numpy.mean(res.T[1])]
 
-    assert_allclose(res_mean, mean, rtol=1e-03, atol=0)
+    assert_allclose(res_mean, mean, rtol=1e-02, atol=0)
 
 
 def test_negative_binomial_seed():
@@ -741,8 +741,8 @@ def test_normal_check_moments():
     expected_var = scale**2
     var = numpy.var(dpnp.random.normal(loc=loc, scale=scale, size=size))
     mean = numpy.mean(dpnp.random.normal(loc=loc, scale=scale, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+    assert math.isclose(var, expected_var, abs_tol=0.03)
+    assert math.isclose(mean, expected_mean, abs_tol=0.03)
 
 
 def test_normal_check_extreme_value():
@@ -785,8 +785,8 @@ def test_poisson_check_moments():
     expected_var = lam
     var = numpy.var(dpnp.random.poisson(lam=lam, size=size))
     mean = numpy.mean(dpnp.random.poisson(lam=lam, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+    assert math.isclose(var, expected_var, abs_tol=0.03)
+    assert math.isclose(mean, expected_mean, abs_tol=0.03)
 
 
 def test_poisson_check_extreme_value():
@@ -849,8 +849,8 @@ def test_rayleigh_check_moments():
     expected_var = ((4 - numpy.pi) / 2) * scale * scale
     var = numpy.var(dpnp.random.rayleigh(scale=scale, size=size))
     mean = numpy.mean(dpnp.random.rayleigh(scale=scale, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+    assert math.isclose(var, expected_var, abs_tol=0.03)
+    assert math.isclose(mean, expected_mean, abs_tol=0.03)
 
 
 def test_rayleigh_check_extreme_value():
@@ -893,8 +893,8 @@ def test_standard_exponential_check_moments():
     expected_var = 1.0
     var = numpy.var(dpnp.random.standard_exponential(size=size))
     mean = numpy.mean(dpnp.random.standard_exponential(size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+    assert math.isclose(var, expected_var, abs_tol=0.03)
+    assert math.isclose(mean, expected_mean, abs_tol=0.03)
 
 
 def test_standard_gamma_seed():
@@ -925,8 +925,8 @@ def test_standard_gamma_check_moments():
     expected_var = shape
     var = numpy.var(dpnp.random.gamma(shape=shape, size=10**6))
     mean = numpy.mean(dpnp.random.gamma(shape=shape, size=10**6))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+    assert math.isclose(var, expected_var, abs_tol=0.03)
+    assert math.isclose(mean, expected_mean, abs_tol=0.03)
 
 
 def test_standard_gamma_check_extreme_value():
@@ -959,8 +959,8 @@ def test_standard_normal_check_moments():
     expected_var = 1.0
     var = numpy.var(dpnp.random.standard_normal(size=size))
     mean = numpy.mean(dpnp.random.standard_normal(size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
+    assert math.isclose(var, expected_var, abs_tol=0.03)
+    assert math.isclose(mean, expected_mean, abs_tol=0.03)
 
 
 def test_weibull_seed():

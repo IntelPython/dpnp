@@ -55,14 +55,14 @@ namespace mkl_rng = oneapi::mkl::rng;
  * This is container for the SYCL queue, random number generation engine and related functions like queue and engine
  * initialization and maintenance.
  * The queue could not be initialized as a global object. Global object initialization order is undefined.
- * This class postpone initialization of the SYCL queue and philox4x32x10 random number generation engine.
+ * This class postpone initialization of the SYCL queue and mt19937 random number generation engine.
  */
 class backend_sycl
 {
 #if defined(DPNP_LOCAL_QUEUE)
     static cl::sycl::queue* queue; /**< contains SYCL queue pointer initialized in @ref backend_sycl_queue_init */
 #endif
-    static mkl_rng::philox4x32x10* rng_engine; /**< RNG engine ptr. initialized in @ref backend_sycl_rng_engine_init */
+    static mkl_rng::mt19937* rng_engine; /**< RNG engine ptr. initialized in @ref backend_sycl_rng_engine_init */
 
     static void destroy()
     {
@@ -136,7 +136,7 @@ public:
     /**
      * Return the @ref rng_engine to the user
      */
-    static mkl_rng::philox4x32x10& get_rng_engine()
+    static mkl_rng::mt19937& get_rng_engine()
     {
         if (!rng_engine)
         {

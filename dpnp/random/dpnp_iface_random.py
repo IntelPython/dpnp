@@ -1298,7 +1298,7 @@ def shuffle(x):
 
 def seed(seed=None):
     """
-    Reseed a legacy philox4x32x10 random number generator engine.
+    Reseed a legacy mt19937 random number generator engine.
 
     Limitations
     -----------
