@@ -47,6 +47,7 @@ from dpnp.backend import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 import dpnp
+from dpnp.dpnp_iface_arraycreation import array
 
 
 __all__ = [
