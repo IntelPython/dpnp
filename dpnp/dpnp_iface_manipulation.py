@@ -47,20 +47,50 @@ from dpnp.backend import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 import dpnp
+from dpnp.dpnp_iface_arraycreation import array
 
 
 __all__ = [
+    "asfarray",
     "atleast_1d",
     "atleast_2d",
     "atleast_3d",
     "copyto",
+    "expand_dims",
     "moveaxis",
     "ravel",
     "repeat",
     "rollaxis",
+    "squeeze",
     "swapaxes",
     "transpose"
 ]
+
+
+def asfarray(a, dtype=numpy.float64):
+    """
+    Return an array converted to a float type.
+
+    For full documentation refer to :obj:`numpy.asfarray`.
+
+    Notes
+    -----
+    This function works exactly the same as :obj:`dpnp.array`.
+
+    """
+
+    if not use_origin_backend(a):
+        # behavior of original function: int types replaced with float64
+        if numpy.issubdtype(dtype, numpy.integer):
+            dtype = numpy.float64
+
+        # if type is the same then same object should be returned
+        if isinstance(a, dpnp.ndarray) and a.dtype == dtype:
+            return a
+
+        return array(a, dtype=dtype)
+
+    return call_origin(numpy.asfarray, a, dtype)
 
 
 def atleast_1d(*arys):
@@ -191,6 +221,73 @@ def copyto(dst, src, casting='same_kind', where=True):
             result._setitem_scalar(i, result_numpy.item(i))
 
     return result
+
+
+def expand_dims(a, axis):
+    """
+    Expand the shape of an array.
+
+    Insert a new axis that will appear at the `axis` position in the expanded
+    array shape.
+
+    For full documentation refer to :obj:`numpy.expand_dims`.
+
+    See Also
+    --------
+    :obj:`dpnp.squeeze` : The inverse operation, removing singleton dimensions
+    :obj:`dpnp.reshape` : Insert, remove, and combine dimensions, and resize existing ones
+    :obj:`dpnp.indexing`, :obj:`dpnp.atleast_1d`, :obj:`dpnp.atleast_2d`, :obj:`dpnp.atleast_3d`
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 2])
+    >>> x.shape
+    (2,)
+
+    The following is equivalent to ``x[np.newaxis, :]`` or ``x[np.newaxis]``:
+
+    >>> y = np.expand_dims(x, axis=0)
+    >>> y
+    array([[1, 2]])
+    >>> y.shape
+    (1, 2)
+
+    The following is equivalent to ``x[:, np.newaxis]``:
+
+    >>> y = np.expand_dims(x, axis=1)
+    >>> y
+    array([[1],
+           [2]])
+    >>> y.shape
+    (2, 1)
+
+    ``axis`` may also be a tuple:
+
+    >>> y = np.expand_dims(x, axis=(0, 1))
+    >>> y
+    array([[[1, 2]]])
+
+    >>> y = np.expand_dims(x, axis=(2, 0))
+    >>> y
+    array([[[1],
+            [2]]])
+
+    Note that some examples may use ``None`` instead of ``np.newaxis``.  These
+    are the same objects:
+
+    >>> np.newaxis is None
+    True
+
+    """
+
+    if not use_origin_backend(a):
+        if not isinstance(a, dpnp.ndarray):
+            pass
+        else:
+            return dpnp_expand_dims(a, axis)
+
+    return call_origin(numpy.expand_dims, a, axis)
 
 
 def moveaxis(x1, source, destination):
@@ -395,6 +492,49 @@ def rollaxis(a, axis, start=0):
     result = numpy.rollaxis(dp2nd_array(a), axis, start)
 
     return nd2dp_array(result)
+
+
+def squeeze(a, axis=None):
+    """
+    Remove single-dimensional entries from the shape of an array.
+
+    For full documentation refer to :obj:`numpy.squeeze`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([[[0], [1], [2]]])
+    >>> x.shape
+    (1, 3, 1)
+    >>> np.squeeze(x).shape
+    (3,)
+    >>> np.squeeze(x, axis=0).shape
+    (3, 1)
+    >>> np.squeeze(x, axis=1).shape
+    Traceback (most recent call last):
+    ...
+    ValueError: cannot select an axis to squeeze out which has size not equal to one
+    >>> np.squeeze(x, axis=2).shape
+    (1, 3)
+    >>> x = np.array([[1234]])
+    >>> x.shape
+    (1, 1)
+    >>> np.squeeze(x)
+    array(1234)  # 0d array
+    >>> np.squeeze(x).shape
+    ()
+    >>> np.squeeze(x)[()]
+    1234
+
+    """
+
+    if not use_origin_backend(a):
+        if not isinstance(a, dpnp.ndarray):
+            pass
+        else:
+            return dpnp_squeeze(a, axis)
+
+    return call_origin(numpy.squeeze, a, axis)
 
 
 def swapaxes(x1, axis1, axis2):
