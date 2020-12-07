@@ -129,8 +129,6 @@ def beta(a, b, size=None):
         elif b <= 0:
             pass
         else:
-            if size is None:
-                size = 1
             return dpnp_beta(a, b, size)
 
     return call_origin(numpy.random.beta, a, b, size)
@@ -177,8 +175,6 @@ def binomial(n, p, size=None):
         elif n < 0:
             pass
         else:
-            if size is None:
-                size = 1
             return dpnp_binomial(int(n), p, size)
 
     return call_origin(numpy.random.binomial, n, p, size)
@@ -238,8 +234,6 @@ def chisquare(df, size=None):
         elif df <= 0:
             pass
         else:
-            if size is None:
-                size = 1
             # TODO:
             # float to int, safe
             return dpnp_chisquare(int(df), size)
