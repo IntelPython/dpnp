@@ -56,6 +56,7 @@ __all__ = [
     "atleast_2d",
     "atleast_3d",
     "copyto",
+    "expand_dims",
     "moveaxis",
     "ravel",
     "repeat",
@@ -220,6 +221,73 @@ def copyto(dst, src, casting='same_kind', where=True):
             result._setitem_scalar(i, result_numpy.item(i))
 
     return result
+
+
+def expand_dims(a, axis):
+    """
+    Expand the shape of an array.
+
+    Insert a new axis that will appear at the `axis` position in the expanded
+    array shape.
+
+    For full documentation refer to :obj:`numpy.expand_dims`.
+
+    See Also
+    --------
+    :obj:`dpnp.squeeze` : The inverse operation, removing singleton dimensions
+    :obj:`dpnp.reshape` : Insert, remove, and combine dimensions, and resize existing ones
+    :obj:`dpnp.indexing`, :obj:`dpnp.atleast_1d`, :obj:`dpnp.atleast_2d`, :obj:`dpnp.atleast_3d`
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 2])
+    >>> x.shape
+    (2,)
+
+    The following is equivalent to ``x[np.newaxis, :]`` or ``x[np.newaxis]``:
+
+    >>> y = np.expand_dims(x, axis=0)
+    >>> y
+    array([[1, 2]])
+    >>> y.shape
+    (1, 2)
+
+    The following is equivalent to ``x[:, np.newaxis]``:
+
+    >>> y = np.expand_dims(x, axis=1)
+    >>> y
+    array([[1],
+           [2]])
+    >>> y.shape
+    (2, 1)
+
+    ``axis`` may also be a tuple:
+
+    >>> y = np.expand_dims(x, axis=(0, 1))
+    >>> y
+    array([[[1, 2]]])
+
+    >>> y = np.expand_dims(x, axis=(2, 0))
+    >>> y
+    array([[[1],
+            [2]]])
+
+    Note that some examples may use ``None`` instead of ``np.newaxis``.  These
+    are the same objects:
+
+    >>> np.newaxis is None
+    True
+
+    """
+
+    if not use_origin_backend(a):
+        if not isinstance(a, dpnp.ndarray):
+            pass
+        else:
+            return dpnp_expand_dims(a, axis)
+
+    return call_origin(numpy.expand_dims, a, axis)
 
 
 def moveaxis(x1, source, destination):
