@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.atleast_3d &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.expand_dims &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.expand_dims" href="dpnp.expand_dims.html" />
-    <link rel="prev" title="dpnp.atleast_2d" href="dpnp.atleast_2d.html" /> 
+    <link rel="next" title="dpnp.squeeze" href="dpnp.squeeze.html" />
+    <link rel="prev" title="dpnp.atleast_3d" href="dpnp.atleast_3d.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -179,13 +179,13 @@
         
           <li><a href="../manipulation.html">Array Manipulation Routines</a> &raquo;</li>
         
-      <li>dpnp.atleast_3d</li>
+      <li>dpnp.expand_dims</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.atleast_3d.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.expand_dims.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -198,15 +198,67 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-atleast-3d">
-<h1>dpnp.atleast_3d<a class="headerlink" href="#dpnp-atleast-3d" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-expand-dims">
+<h1>dpnp.expand_dims<a class="headerlink" href="#dpnp-expand-dims" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.atleast_3d">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">atleast_3d</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">arys</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_manipulation.html#atleast_3d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.atleast_3d" title="Permalink to this definition">¶</a></dt>
-<dd><p>View inputs as arrays with at least three dimensions.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.atleast_3d.html#numpy.atleast_3d" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.atleast_3d</span></code></a>.</p>
-<p class="rubric">Limitations</p>
-<p>Input arrays is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.</p>
+<dt id="dpnp.expand_dims">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">expand_dims</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">axis</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_manipulation.html#expand_dims"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.expand_dims" title="Permalink to this definition">¶</a></dt>
+<dd><p>Expand the shape of an array.</p>
+<p>Insert a new axis that will appear at the <cite>axis</cite> position in the expanded
+array shape.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.expand_dims.html#numpy.expand_dims" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.expand_dims</span></code></a>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.squeeze.html#dpnp.squeeze" title="dpnp.squeeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.squeeze</span></code></a></dt><dd><p>The inverse operation, removing singleton dimensions</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.reshape</span></code></dt><dd><p>Insert, remove, and combine dimensions, and resize existing ones</p>
+</dd>
+</dl>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.indexing</span></code>, <a class="reference internal" href="dpnp.atleast_1d.html#dpnp.atleast_1d" title="dpnp.atleast_1d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.atleast_1d</span></code></a>, <a class="reference internal" href="dpnp.atleast_2d.html#dpnp.atleast_2d" title="dpnp.atleast_2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.atleast_2d</span></code></a>, <a class="reference internal" href="dpnp.atleast_3d.html#dpnp.atleast_3d" title="dpnp.atleast_3d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.atleast_3d</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(2,)</span>
+</pre></div>
+</div>
+<p>The following is equivalent to <code class="docutils literal notranslate"><span class="pre">x[np.newaxis,</span> <span class="pre">:]</span></code> or <code class="docutils literal notranslate"><span class="pre">x[np.newaxis]</span></code>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span>
+<span class="go">array([[1, 2]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(1, 2)</span>
+</pre></div>
+</div>
+<p>The following is equivalent to <code class="docutils literal notranslate"><span class="pre">x[:,</span> <span class="pre">np.newaxis]</span></code>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span>
+<span class="go">array([[1],</span>
+<span class="go">       [2]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(2, 1)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">axis</span></code> may also be a tuple:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span>
+<span class="go">array([[[1, 2]]])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span>
+<span class="go">array([[[1],</span>
+<span class="go">        [2]]])</span>
+</pre></div>
+</div>
+<p>Note that some examples may use <code class="docutils literal notranslate"><span class="pre">None</span></code> instead of <code class="docutils literal notranslate"><span class="pre">np.newaxis</span></code>.  These
+are the same objects:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span> <span class="ow">is</span> <span class="kc">None</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>
@@ -219,10 +271,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.expand_dims.html" class="btn btn-neutral float-right" title="dpnp.expand_dims" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.squeeze.html" class="btn btn-neutral float-right" title="dpnp.squeeze" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.atleast_2d.html" class="btn btn-neutral float-left" title="dpnp.atleast_2d" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.atleast_3d.html" class="btn btn-neutral float-left" title="dpnp.atleast_3d" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

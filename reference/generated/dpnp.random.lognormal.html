@@ -199,55 +199,12 @@
 <code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">lognormal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mean</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">sigma</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#lognormal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.lognormal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lognormal distribution.</p>
 <p>Draw samples from a log-normal distribution.</p>
-<p>Draw samples from a log-normal distribution with specified mean,
-standard deviation, and array shape.  Note that the mean and standard
-deviation are not the values for the distribution itself, but of the
-underlying normal distribution it is derived from.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>mean</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>optional</em>) – Mean value of the underlying normal distribution. Default is 0.</p></li>
-<li><p><strong>sigma</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>optional</em>) – Standard deviation of the underlying normal distribution. Must be
-non-negative. Default is 1.</p></li>
-<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
-<code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">*</span> <span class="pre">k</span></code> samples are drawn.  If size is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default),
-a single value is returned if <code class="docutils literal notranslate"><span class="pre">mean</span></code> and <code class="docutils literal notranslate"><span class="pre">sigma</span></code> are both scalars.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – Drawn samples from the parameterized log-normal distribution.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.dparray.dparray.html#dpnp.dparray.dparray" title="dpnp.dparray.dparray">dparray</a></p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>A variable <cite>x</cite> has a log-normal distribution if <cite>log(x)</cite> is normally
-distributed.  The probability density function for the log-normal
-distribution is:</p>
-<div class="math notranslate nohighlight">
-\[p(x) = \frac{1}{\sigma x \sqrt{2\pi}}
-e^{(-\frac{(ln(x)-\mu)^2}{2\sigma^2})}\]</div>
-<p>where <span class="math notranslate nohighlight">\(\mu\)</span> is the mean and <span class="math notranslate nohighlight">\(\sigma\)</span> is the standard
-deviation of the normally distributed logarithm of the variable.
-A log-normal distribution results if a random variable is the <em>product</em>
-of a large number of independent, identically-distributed variables in
-the same way that a normal distribution results if the variable is the
-<em>sum</em> of a large number of independent, identically-distributed
-variables.</p>
-<p class="rubric">References</p>
-<dl class="footnote brackets">
-<dt class="label" id="id1"><span class="brackets">1</span></dt>
-<dd><p>Limpert, E., Stahel, W. A., and Abbt, M., “Log-normal
-Distributions across the Sciences: Keys and Clues,”
-BioScience, Vol. 51, No. 5, May, 2001.
-<a class="reference external" href="https://stat.ethz.ch/~stahel/lognormal/bioscience.pdf">https://stat.ethz.ch/~stahel/lognormal/bioscience.pdf</a></p>
-</dd>
-<dt class="label" id="id2"><span class="brackets">2</span></dt>
-<dd><p>Reiss, R.D. and Thomas, M., “Statistical Analysis of Extreme
-Values,” Basel: Birkhauser Verlag, 2001, pp. 31-32.</p>
-</dd>
-</dl>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.lognormal.html#numpy.random.lognormal" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.lognormal</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Parameters <code class="docutils literal notranslate"><span class="pre">mean</span></code> and <code class="docutils literal notranslate"><span class="pre">sigma</span></code> are supported as scalar.
+Otherwise, <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.lognormal(mean,</span> <span class="pre">sigma,</span> <span class="pre">size)</span></code> samples
+are drawn.
+Output array data type is <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code>.</p>
 <p class="rubric">Examples</p>
 <p>Draw samples from the distribution:
 &gt;&gt;&gt; mu, sigma = 3., 1. # mean and standard deviation

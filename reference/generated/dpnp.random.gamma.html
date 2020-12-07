@@ -199,48 +199,15 @@
 <code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">gamma</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shape</span></em>, <em class="sig-param"><span class="n">scale</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#gamma"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.gamma" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gamma distribution.</p>
 <p>Draw samples from a Gamma distribution.</p>
-<p>Samples are drawn from a Gamma distribution with specified parameters,
-<cite>shape</cite> (sometimes designated “k”) and <cite>scale</cite> (sometimes designated
-“theta”), where both parameters are &gt; 0.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>shape</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em> or </em><em>array_like of floats</em>) – The shape of the gamma distribution. Must be non-negative.</p></li>
-<li><p><strong>scale</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em> or </em><em>array_like of floats</em><em>, </em><em>optional</em>) – The scale of the gamma distribution. Must be non-negative.
-Default is equal to 1.</p></li>
-<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
-<code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">*</span> <span class="pre">k</span></code> samples are drawn.  If size is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default),
-a single value is returned if <code class="docutils literal notranslate"><span class="pre">shape</span></code> and <code class="docutils literal notranslate"><span class="pre">scale</span></code> are both scalars.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – Drawn samples from the parameterized gamma distribution.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.dparray.dparray.html#dpnp.dparray.dparray" title="dpnp.dparray.dparray">dparray</a></p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The probability density for the Gamma distribution is</p>
-<div class="math notranslate nohighlight">
-\[p(x) = x^{k-1}\frac{e^{-x/\theta}}{\theta^k\Gamma(k)},\]</div>
-<p>where <span class="math notranslate nohighlight">\(k\)</span> is the shape and <span class="math notranslate nohighlight">\(\theta\)</span> the scale,
-and <span class="math notranslate nohighlight">\(\Gamma\)</span> is the Gamma function.</p>
-<p>The Gamma distribution is often used to model the times to failure of
-electronic components, and arises naturally in processes for which the
-waiting times between Poisson distributed events are relevant.</p>
-<p class="rubric">References</p>
-<dl class="footnote brackets">
-<dt class="label" id="id1"><span class="brackets">1</span></dt>
-<dd><p>Weisstein, Eric W. “Gamma Distribution.” From MathWorld–A
-Wolfram Web Resource.
-<a class="reference external" href="http://mathworld.wolfram.com/GammaDistribution.html">http://mathworld.wolfram.com/GammaDistribution.html</a></p>
-</dd>
-<dt class="label" id="id2"><span class="brackets">2</span></dt>
-<dd><p>Wikipedia, “Gamma distribution”,
-<a class="reference external" href="https://en.wikipedia.org/wiki/Gamma_distribution">https://en.wikipedia.org/wiki/Gamma_distribution</a></p>
-</dd>
-</dl>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.gamma.html#numpy.random.gamma" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.gamma</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Parameters <code class="docutils literal notranslate"><span class="pre">shape</span></code> and <code class="docutils literal notranslate"><span class="pre">scale</span></code> are supported as scalar.
+Otherwise, <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.gamma(shape,</span> <span class="pre">scale,</span> <span class="pre">size)</span></code> samples are drawn.
+Output array data type is <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code>.</p>
+<p class="rubric">Examples</p>
+<p>Draw samples from the distribution:
+&gt;&gt;&gt; shape, scale = 0, 0.1  # shape and scale
+&gt;&gt;&gt; s = dpnp.random.gamma(shape, scale, 1000)</p>
 </dd></dl>
 
 </div>

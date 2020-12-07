@@ -86,6 +86,9 @@
    .. automethod:: sort
 
 
+   .. automethod:: squeeze
+
+
    .. automethod:: std
 
 

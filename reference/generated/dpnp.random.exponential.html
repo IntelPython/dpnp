@@ -199,50 +199,15 @@
 <code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">exponential</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scale</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#exponential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.exponential" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exponential distribution.</p>
 <p>Draw samples from an exponential distribution.</p>
-<p>Its probability density function is</p>
-<div class="math notranslate nohighlight">
-\[f(x; \frac{1}{\beta}) = \frac{1}{\beta} \exp(-\frac{x}{\beta}),\]</div>
-<p>for <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> and 0 elsewhere. <span class="math notranslate nohighlight">\(\beta\)</span> is the scale parameter,
-which is the inverse of the rate parameter <span class="math notranslate nohighlight">\(\lambda = 1/\beta\)</span>.
-The rate parameter is an alternative, widely used parameterization
-of the exponential distribution <a class="footnote-reference brackets" href="#id6" id="id1">3</a>.</p>
-<p>The exponential distribution is a continuous analogue of the
-geometric distribution.  It describes many common situations, such as
-the size of raindrops measured over many rainstorms <a class="footnote-reference brackets" href="#id4" id="id2">1</a>, or the time
-between page requests to Wikipedia <a class="footnote-reference brackets" href="#id5" id="id3">2</a>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>scale</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – The scale parameter, <span class="math notranslate nohighlight">\(\beta = 1/\lambda\)</span>. Must be
-non-negative.</p></li>
-<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
-<code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">*</span> <span class="pre">k</span></code> samples are drawn.  If size is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default),
-a single value is returned if <code class="docutils literal notranslate"><span class="pre">scale</span></code> is a scalar.  Otherwise,
-<code class="docutils literal notranslate"><span class="pre">np.array(scale).size</span></code> samples are drawn.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – Drawn samples from the parameterized exponential distribution.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.dparray.dparray.html#dpnp.dparray.dparray" title="dpnp.dparray.dparray">dparray</a></p>
-</dd>
-</dl>
-<p class="rubric">References</p>
-<dl class="footnote brackets">
-<dt class="label" id="id4"><span class="brackets"><a class="fn-backref" href="#id2">1</a></span></dt>
-<dd><p>Peyton Z. Peebles Jr., “Probability, Random Variables and
-Random Signal Principles”, 4th ed, 2001, p. 57.</p>
-</dd>
-<dt class="label" id="id5"><span class="brackets"><a class="fn-backref" href="#id3">2</a></span></dt>
-<dd><p>Wikipedia, “Poisson process”,
-<a class="reference external" href="https://en.wikipedia.org/wiki/Poisson_process">https://en.wikipedia.org/wiki/Poisson_process</a></p>
-</dd>
-<dt class="label" id="id6"><span class="brackets"><a class="fn-backref" href="#id1">3</a></span></dt>
-<dd><p>Wikipedia, “Exponential distribution”,
-<a class="reference external" href="https://en.wikipedia.org/wiki/Exponential_distribution">https://en.wikipedia.org/wiki/Exponential_distribution</a></p>
-</dd>
-</dl>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.exponential.html#numpy.random.exponential" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.exponential</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Parameter <code class="docutils literal notranslate"><span class="pre">scale</span></code> is supported as a scalar.
+Otherwise, <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.exponential(scale,</span> <span class="pre">size)</span></code> samples are drawn.
+Output array data type is <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code>.</p>
+<p class="rubric">Examples</p>
+<p>Draw samples from the distribution:
+&gt;&gt;&gt; scale = .5  # alpha
+&gt;&gt;&gt; s = dpnp.random.exponential(scale, 1000)</p>
 </dd></dl>
 
 </div>

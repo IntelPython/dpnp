@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.asfarray &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.squeeze &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.repeat" href="dpnp.repeat.html" />
-    <link rel="prev" title="dpnp.asnumpy" href="dpnp.asnumpy.html" /> 
+    <link rel="next" title="dpnp.asnumpy" href="dpnp.asnumpy.html" />
+    <link rel="prev" title="dpnp.expand_dims" href="dpnp.expand_dims.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -98,8 +98,8 @@
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#basic-operations">Basic operations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#changing-array-shape">Changing array shape</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#transpose-like-operations">Transpose-like operations</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#changing-number-of-dimensions">Changing number of dimensions</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../manipulation.html#changing-kind-of-array">Changing kind of array</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../manipulation.html#changing-number-of-dimensions">Changing number of dimensions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#changing-kind-of-array">Changing kind of array</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#joining-arrays">Joining arrays</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#splitting-arrays">Splitting arrays</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#tiling-arrays">Tiling arrays</a></li>
@@ -179,13 +179,13 @@
         
           <li><a href="../manipulation.html">Array Manipulation Routines</a> &raquo;</li>
         
-      <li>dpnp.asfarray</li>
+      <li>dpnp.squeeze</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.asfarray.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.squeeze.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -198,15 +198,39 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-asfarray">
-<h1>dpnp.asfarray<a class="headerlink" href="#dpnp-asfarray" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-squeeze">
+<h1>dpnp.squeeze<a class="headerlink" href="#dpnp-squeeze" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.asfarray">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">asfarray</code><span class="sig-paren">(</span><em class="sig-param">a</em>, <em class="sig-param">dtype=&lt;class 'numpy.float64'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_manipulation.html#asfarray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.asfarray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an array converted to a float type.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.asfarray.html#numpy.asfarray" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.asfarray</span></code></a>.</p>
-<p class="rubric">Notes</p>
-<p>This function works exactly the same as <a class="reference internal" href="dpnp.array.html#dpnp.array" title="dpnp.array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.array</span></code></a>.</p>
+<dt id="dpnp.squeeze">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">squeeze</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_manipulation.html#squeeze"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.squeeze" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove single-dimensional entries from the shape of an array.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.squeeze.html#numpy.squeeze" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.squeeze</span></code></a>.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">]]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(1, 3, 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(3,)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(3, 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValueError</span>: <span class="n">cannot select an axis to squeeze out which has size not equal to one</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(1, 3)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1234</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(1, 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="go">array(1234)  # 0d array</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">x</span><span class="p">)[()]</span>
+<span class="go">1234</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>
@@ -219,10 +243,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.repeat.html" class="btn btn-neutral float-right" title="dpnp.repeat" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.asnumpy.html" class="btn btn-neutral float-right" title="dpnp.asnumpy" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.asnumpy.html" class="btn btn-neutral float-left" title="dpnp.asnumpy" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.expand_dims.html" class="btn btn-neutral float-left" title="dpnp.expand_dims" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

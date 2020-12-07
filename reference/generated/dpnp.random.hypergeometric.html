@@ -199,64 +199,12 @@
 <code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">hypergeometric</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ngood</span></em>, <em class="sig-param"><span class="n">nbad</span></em>, <em class="sig-param"><span class="n">nsample</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#hypergeometric"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.hypergeometric" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hypergeometric distribution.</p>
 <p>Draw samples from a Hypergeometric distribution.</p>
-<p>Samples are drawn from a hypergeometric distribution with specified
-parameters, <cite>ngood</cite> (ways to make a good selection), <cite>nbad</cite> (ways to make
-a bad selection), and <cite>nsample</cite> (number of items sampled, which is less
-than or equal to the sum <code class="docutils literal notranslate"><span class="pre">ngood</span> <span class="pre">+</span> <span class="pre">nbad</span></code>).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ngood</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Number of ways to make a good selection.  Must be nonnegative.</p></li>
-<li><p><strong>nbad</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Number of ways to make a bad selection.  Must be nonnegative.</p></li>
-<li><p><strong>nsample</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Number of items sampled.  Must be at least 1 and at most
-<code class="docutils literal notranslate"><span class="pre">ngood</span> <span class="pre">+</span> <span class="pre">nbad</span></code>.</p></li>
-<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
-<code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">*</span> <span class="pre">k</span></code> samples are drawn.  If size is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default),
-a single value is returned if <cite>ngood</cite>, <cite>nbad</cite>, and <cite>nsample</cite>
-are all scalars.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – Drawn samples from the parameterized hypergeometric distribution. Each
-sample is the number of good items within a randomly selected subset of
-size <cite>nsample</cite> taken from a set of <cite>ngood</cite> good items and <cite>nbad</cite> bad items.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.dparray.dparray.html#dpnp.dparray.dparray" title="dpnp.dparray.dparray">dparray</a></p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The probability density for the Hypergeometric distribution is</p>
-<div class="math notranslate nohighlight">
-\[P(x) = \frac{\binom{g}{x}\binom{b}{n-x}}{\binom{g+b}{n}},\]</div>
-<p>where <span class="math notranslate nohighlight">\(0 \le x \le n\)</span> and <span class="math notranslate nohighlight">\(n-b \le x \le g\)</span></p>
-<p>for P(x) the probability of <code class="docutils literal notranslate"><span class="pre">x</span></code> good results in the drawn sample,
-g = <cite>ngood</cite>, b = <cite>nbad</cite>, and n = <cite>nsample</cite>.</p>
-<p>Consider an urn with black and white marbles in it, <cite>ngood</cite> of them
-are black and <cite>nbad</cite> are white. If you draw <cite>nsample</cite> balls without
-replacement, then the hypergeometric distribution describes the
-distribution of black balls in the drawn sample.</p>
-<p>Note that this distribution is very similar to the binomial
-distribution, except that in this case, samples are drawn without
-replacement, whereas in the Binomial case samples are drawn with
-replacement (or the sample space is infinite). As the sample space
-becomes large, this distribution approaches the binomial.</p>
-<p class="rubric">References</p>
-<dl class="footnote brackets">
-<dt class="label" id="id1"><span class="brackets">1</span></dt>
-<dd><p>Lentner, Marvin, “Elementary Applied Statistics”, Bogden
-and Quigley, 1972.</p>
-</dd>
-<dt class="label" id="id2"><span class="brackets">2</span></dt>
-<dd><p>Weisstein, Eric W. “Hypergeometric Distribution.” From
-MathWorld–A Wolfram Web Resource.
-<a class="reference external" href="http://mathworld.wolfram.com/HypergeometricDistribution.html">http://mathworld.wolfram.com/HypergeometricDistribution.html</a></p>
-</dd>
-<dt class="label" id="id3"><span class="brackets">3</span></dt>
-<dd><p>Wikipedia, “Hypergeometric distribution”,
-<a class="reference external" href="https://en.wikipedia.org/wiki/Hypergeometric_distribution">https://en.wikipedia.org/wiki/Hypergeometric_distribution</a></p>
-</dd>
-</dl>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.hypergeometric.html#numpy.random.hypergeometric" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.hypergeometric</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Parameters <code class="docutils literal notranslate"><span class="pre">ngood</span></code>, <code class="docutils literal notranslate"><span class="pre">nbad</span></code> and <code class="docutils literal notranslate"><span class="pre">nsample</span></code> are supported as scalar.
+Otherwise, <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.hypergeometric(shape,</span> <span class="pre">scale,</span> <span class="pre">size)</span></code> samples
+are drawn.
+Output array data type is <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.int32</span></code>.</p>
 <p class="rubric">Examples</p>
 <p>Draw samples from the distribution:
 &gt;&gt;&gt; ngood, nbad, nsamp = 100, 2, 10
