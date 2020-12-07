@@ -33,7 +33,7 @@
 #if defined(DPNP_LOCAL_QUEUE)
 cl::sycl::queue* backend_sycl::queue = nullptr;
 #endif
-mkl_rng::philox4x32x10* backend_sycl::rng_engine = nullptr;
+mkl_rng::mt19937* backend_sycl::rng_engine = nullptr;
 
 /**
  * Function push the SYCL kernels to be linked (final stage of the compilation) for the current queue
@@ -137,7 +137,7 @@ void backend_sycl::backend_sycl_rng_engine_init(size_t seed)
     {
         backend_sycl::destroy_rng_engine();
     }
-    rng_engine = new mkl_rng::philox4x32x10(DPNP_QUEUE, seed);
+    rng_engine = new mkl_rng::mt19937(DPNP_QUEUE, seed);
 }
 
 void dpnp_queue_initialize_c(QueueOptions selector)
