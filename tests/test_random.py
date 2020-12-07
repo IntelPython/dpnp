@@ -112,19 +112,21 @@ def test_beta_invalid_args():
 
 
 def test_beta_check_moments():
-    seed = 28041990
-    dpnp.random.seed(seed)
     a = 2.56
     b = 0.8
 
     expected_mean = a / (a + b)
     expected_var = (a * b) / ((a + b)**2 * (a + b + 1))
 
-    var = numpy.var(dpnp.random.beta(a=a, b=b, size=10**6))
-    mean = numpy.mean(dpnp.random.beta(a=a, b=b, size=10**6))
+    seed = 28041990
+    dpnp.random.seed(seed)
+    res = dpnp.random.beta(a=a, b=b, size=10**5)
 
-    assert math.isclose(var, expected_var, abs_tol=0.03)
-    assert math.isclose(mean, expected_mean, abs_tol=0.03)
+    var = numpy.var(res)
+    mean = numpy.mean(res)
+
+    assert math.isclose(var, expected_var, abs_tol=0.1)
+    assert math.isclose(mean, expected_mean, abs_tol=0.1)
 
 
 def test_binomial_seed():
@@ -140,16 +142,20 @@ def test_binomial_seed():
 
 
 def test_binomial_check_moments():
-    seed = 28041990
-    dpnp.random.seed(seed)
     n = 5
     p = 0.8
+
     expected_mean = n * p
     expected_var = n * p * (1 - p)
-    var = numpy.var(dpnp.random.binomial(n=n, p=p, size=10**6))
-    mean = numpy.mean(dpnp.random.binomial(n=n, p=p, size=10**6))
-    assert math.isclose(var, expected_var, abs_tol=0.03)
-    assert math.isclose(mean, expected_mean, abs_tol=0.03)
+
+    seed = 28041990
+    dpnp.random.seed(seed)
+    res = dpnp.random.binomial(n=n, p=p, size=10**5)
+
+    var = numpy.var(res)
+    mean = numpy.mean(res)
+    assert math.isclose(var, expected_var, abs_tol=0.1)
+    assert math.isclose(mean, expected_mean, abs_tol=0.1)
 
 
 def test_binomial_check_extreme_value():
@@ -250,16 +256,20 @@ def test_gamma_invalid_args():
 
 
 def test_gamma_check_moments():
-    seed = 28041990
-    dpnp.random.seed(seed)
     shape = 2.56
     scale = 0.8
+
     expected_mean = shape * scale
     expected_var = shape * scale * scale
-    var = numpy.var(dpnp.random.gamma(shape=shape, scale=scale, size=10**6))
-    mean = numpy.mean(dpnp.random.gamma(shape=shape, scale=scale, size=10**6))
-    assert math.isclose(var, expected_var, abs_tol=0.03)
-    assert math.isclose(mean, expected_mean, abs_tol=0.03)
+
+    seed = 28041990
+    dpnp.random.seed(seed)
+    res =dpnp.random.gamma(shape=shape, scale=scale, size=10**5)
+
+    var = numpy.var(res)
+    mean = numpy.mean(res)
+    assert math.isclose(var, expected_var, abs_tol=0.1)
+    assert math.isclose(mean, expected_mean, abs_tol=0.1)
 
 
 def test_geometric_seed():
@@ -283,16 +293,20 @@ def test_geometric_invalid_args():
 
 
 def test_geometric_check_moments():
-    seed = 28041995
-    dpnp.random.seed(seed)
     p = 0.8
-    size = 10**6
+    size = 10**5
+
     expected_mean = (1 - p) / p
     expected_var = (1 - p) / (p**2)
-    var = numpy.var(dpnp.random.geometric(p=p, size=size))
-    mean = numpy.mean(dpnp.random.geometric(p=p, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.03)
-    assert math.isclose(mean, expected_mean, abs_tol=0.03)
+
+    seed = 28041995
+    dpnp.random.seed(seed)
+    res = dpnp.random.geometric(p=p, size=size)
+
+    var = numpy.var(res)
+    mean = numpy.mean(res)
+    assert math.isclose(var, expected_var, abs_tol=0.1)
+    assert math.isclose(mean, expected_mean, abs_tol=0.1)
 
 
 def test_geometric_check_extreme_value():
@@ -329,18 +343,21 @@ def test_gumbel_invalid_args():
 
 
 def test_gumbel_check_moments():
-    seed = 28041990
-    dpnp.random.seed(seed)
     loc = 12
     scale = 0.8
-    size = 10**6
+    size = 10**5
+
     expected_mean = loc + scale * numpy.euler_gamma
     expected_var = (numpy.pi**2 / 6) * (scale ** 2)
 
-    var = numpy.var(dpnp.random.gumbel(loc=loc, scale=scale, size=size))
-    mean = numpy.mean(dpnp.random.gumbel(loc=loc, scale=scale, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.03)
-    assert math.isclose(mean, expected_mean, abs_tol=0.03)
+    seed = 28041990
+    dpnp.random.seed(seed)
+    res = dpnp.random.gumbel(loc=loc, scale=scale, size=size)
+
+    var = numpy.var(res)
+    mean = numpy.mean(res)
+    assert math.isclose(var, expected_var, abs_tol=0.1)
+    assert math.isclose(mean, expected_mean, abs_tol=0.1)
 
 
 def test_gumbel_check_extreme_value():
@@ -406,20 +423,22 @@ def test_hypergeometric_invalid_args():
 
 
 def test_hypergeometric_check_moments():
-    seed = 28041995
-    dpnp.random.seed(seed)
     ngood = 100
     nbad = 2
     nsample = 10
-
     size = 10**5
+
     expected_mean = nsample * (ngood / (ngood + nbad))
     expected_var = expected_mean * (nbad / (ngood + nbad)) * (((ngood + nbad) - nsample) / ((ngood + nbad) - 1))
 
-    var = numpy.var(dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size))
-    mean = numpy.mean(dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.03)
-    assert math.isclose(mean, expected_mean, abs_tol=0.03)
+    seed = 28041995
+    dpnp.random.seed(seed)
+    res = dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size)
+
+    var = numpy.var(res)
+    mean = numpy.mean(res)
+    assert math.isclose(var, expected_var, abs_tol=0.1)
+    assert math.isclose(mean, expected_mean, abs_tol=0.1)
 
 
 def test_hypergeometric_check_extreme_value():
@@ -468,17 +487,21 @@ def test_laplace_invalid_args():
 
 
 def test_laplace_check_moments():
-    seed = 28041995
-    dpnp.random.seed(seed)
     loc = 2.56
     scale = 0.8
-    size = 10**6
+    size = 10**5
+
     expected_mean = loc
     expected_var = 2 * scale * scale
-    var = numpy.var(dpnp.random.laplace(loc=loc, scale=scale, size=size))
-    mean = numpy.mean(dpnp.random.laplace(loc=loc, scale=scale, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.03)
-    assert math.isclose(mean, expected_mean, abs_tol=0.03)
+
+    seed = 28041995
+    dpnp.random.seed(seed)
+    res = dpnp.random.laplace(loc=loc, scale=scale, size=size)
+
+    var = numpy.var(res)
+    mean = numpy.mean(res)
+    assert math.isclose(var, expected_var, abs_tol=0.1)
+    assert math.isclose(mean, expected_mean, abs_tol=0.1)
 
 
 def test_laplace_check_extreme_value():
@@ -515,17 +538,21 @@ def test_lognormal_invalid_args():
 
 
 def test_lognormal_check_moments():
-    seed = 28041995
-    dpnp.random.seed(seed)
     mean = 0.5
     sigma = 0.8
-    size = 10**6
+    size = 10**5
+
     expected_mean = numpy.exp(mean + (sigma ** 2) / 2)
     expected_var = (numpy.exp(sigma**2) - 1) * numpy.exp(2 * mean + sigma**2)
-    var = numpy.var(dpnp.random.lognormal(mean=mean, sigma=sigma, size=size))
-    mean = numpy.mean(dpnp.random.lognormal(mean=mean, sigma=sigma, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.03)
-    assert math.isclose(mean, expected_mean, abs_tol=0.03)
+
+    seed = 28041995
+    dpnp.random.seed(seed)
+    res = dpnp.random.lognormal(mean=mean, sigma=sigma, size=size)
+
+    var = numpy.var(res)
+    mean = numpy.mean(res)
+    assert math.isclose(var, expected_var, abs_tol=0.1)
+    assert math.isclose(mean, expected_mean, abs_tol=0.1)
 
 
 def test_lognormal_check_extreme_value():
@@ -593,8 +620,6 @@ def test_multinomial_check_extreme_value():
 
 
 def test_multinomial_check_moments():
-    seed = 28041995
-    dpnp.random.seed(seed)
     n = 10
     pvals = [1 / 6.] * 6
     size = 10**5
@@ -602,10 +627,14 @@ def test_multinomial_check_moments():
     expected_mean = n * pvals[0]
     expected_var = n * pvals[0] * (1 - pvals[0])
 
-    var = numpy.var(dpnp.random.multinomial(n=n, pvals=pvals, size=size))
-    mean = numpy.mean(dpnp.random.multinomial(n=n, pvals=pvals, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.03)
-    assert math.isclose(mean, expected_mean, abs_tol=0.03)
+    seed = 28041995
+    dpnp.random.seed(seed)
+    res = dpnp.random.multinomial(n=n, pvals=pvals, size=size)
+
+    var = numpy.var(res)
+    mean = numpy.mean(res)
+    assert math.isclose(var, expected_var, abs_tol=0.1)
+    assert math.isclose(mean, expected_mean, abs_tol=0.1)
 
 
 def test_multivariate_normal_output_shape_check():
@@ -731,17 +760,21 @@ def test_normal_invalid_args():
 
 
 def test_normal_check_moments():
-    seed = 28041995
-    dpnp.random.seed(seed)
     loc = 2.56
     scale = 0.8
-    size = 10**6
+    size = 10**5
+
     expected_mean = loc
     expected_var = scale**2
-    var = numpy.var(dpnp.random.normal(loc=loc, scale=scale, size=size))
-    mean = numpy.mean(dpnp.random.normal(loc=loc, scale=scale, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.03)
-    assert math.isclose(mean, expected_mean, abs_tol=0.03)
+
+    seed = 28041995
+    dpnp.random.seed(seed)
+    res = dpnp.random.normal(loc=loc, scale=scale, size=size)
+
+    var = numpy.var(res)
+    mean = numpy.mean(res)
+    assert math.isclose(var, expected_var, abs_tol=0.1)
+    assert math.isclose(mean, expected_mean, abs_tol=0.1)
 
 
 def test_normal_check_extreme_value():
@@ -776,16 +809,20 @@ def test_poisson_invalid_args():
 
 
 def test_poisson_check_moments():
-    seed = 28041995
-    dpnp.random.seed(seed)
     lam = 0.8
-    size = 10**6
+    size = 10**5
+
     expected_mean = lam
     expected_var = lam
-    var = numpy.var(dpnp.random.poisson(lam=lam, size=size))
-    mean = numpy.mean(dpnp.random.poisson(lam=lam, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.03)
-    assert math.isclose(mean, expected_mean, abs_tol=0.03)
+
+    seed = 28041995
+    dpnp.random.seed(seed)
+    res = dpnp.random.poisson(lam=lam, size=size)
+
+    var = numpy.var(res)
+    mean = numpy.mean(res)
+    assert math.isclose(var, expected_var, abs_tol=0.1)
+    assert math.isclose(mean, expected_mean, abs_tol=0.1)
 
 
 def test_poisson_check_extreme_value():
@@ -842,16 +879,20 @@ def test_rayleigh_invalid_args():
 
 
 def test_rayleigh_check_moments():
-    seed = 28041995
-    dpnp.random.seed(seed)
     scale = 0.8
-    size = 10**6
+    size = 10**5
+
     expected_mean = scale * numpy.sqrt(numpy.pi / 2)
     expected_var = ((4 - numpy.pi) / 2) * scale * scale
-    var = numpy.var(dpnp.random.rayleigh(scale=scale, size=size))
-    mean = numpy.mean(dpnp.random.rayleigh(scale=scale, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.03)
-    assert math.isclose(mean, expected_mean, abs_tol=0.03)
+
+    seed = 28041995
+    dpnp.random.seed(seed)
+    res = dpnp.random.rayleigh(scale=scale, size=size)
+
+    var = numpy.var(res)
+    mean = numpy.mean(res)
+    assert math.isclose(var, expected_var, abs_tol=0.1)
+    assert math.isclose(mean, expected_mean, abs_tol=0.1)
 
 
 def test_rayleigh_check_extreme_value():
@@ -887,15 +928,18 @@ def test_standard_exponential_seed():
 
 
 def test_standard_exponential_check_moments():
-    seed = 28041995
-    dpnp.random.seed(seed)
-    size = 10**6
     expected_mean = 1.0
     expected_var = 1.0
-    var = numpy.var(dpnp.random.standard_exponential(size=size))
-    mean = numpy.mean(dpnp.random.standard_exponential(size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.03)
-    assert math.isclose(mean, expected_mean, abs_tol=0.03)
+    size = 10**6
+
+    seed = 28041995
+    dpnp.random.seed(seed)
+    res = dpnp.random.standard_exponential(size=size)
+
+    var = numpy.var(res)
+    mean = numpy.mean(res)
+    assert math.isclose(var, expected_var, abs_tol=0.1)
+    assert math.isclose(mean, expected_mean, abs_tol=0.1)
 
 
 def test_standard_gamma_seed():
@@ -918,16 +962,20 @@ def test_standard_gamma_invalid_args():
 
 
 def test_standard_gamma_check_moments():
-    seed = 28041990
-    dpnp.random.seed(seed)
     shape = 0.8
+    size = 10**5
 
     expected_mean = shape
     expected_var = shape
-    var = numpy.var(dpnp.random.gamma(shape=shape, size=10**6))
-    mean = numpy.mean(dpnp.random.gamma(shape=shape, size=10**6))
-    assert math.isclose(var, expected_var, abs_tol=0.03)
-    assert math.isclose(mean, expected_mean, abs_tol=0.03)
+
+    seed = 28041990
+    dpnp.random.seed(seed)
+    res = dpnp.random.gamma(shape=shape, size=size)
+
+    var = numpy.var(res)
+    mean = numpy.mean(res)
+    assert math.isclose(var, expected_var, abs_tol=0.1)
+    assert math.isclose(mean, expected_mean, abs_tol=0.1)
 
 
 def test_standard_gamma_check_extreme_value():
@@ -953,15 +1001,18 @@ def test_standard_normal_seed():
 
 
 def test_standard_normal_check_moments():
-    seed = 28041995
-    dpnp.random.seed(seed)
-    size = 10**6
     expected_mean = 0.0
     expected_var = 1.0
-    var = numpy.var(dpnp.random.standard_normal(size=size))
-    mean = numpy.mean(dpnp.random.standard_normal(size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.03)
-    assert math.isclose(mean, expected_mean, abs_tol=0.03)
+    size = 10**5
+
+    seed = 28041995
+    dpnp.random.seed(seed)
+    res = dpnp.random.standard_normal(size=size)
+
+    var = numpy.var(res)
+    mean = numpy.mean(res)
+    assert math.isclose(var, expected_var, abs_tol=0.1)
+    assert math.isclose(mean, expected_mean, abs_tol=0.1)
 
 
 def test_weibull_seed():
