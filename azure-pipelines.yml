@@ -156,6 +156,10 @@ jobs:
   - bash: |
       echo ========================== current SHELL ===============================
       echo ${SHELL}
+      echo ========================== run script ===============================
+      echo $PWD
+      ls -l
+      ./scripts/set_ci_env.sh
       echo ========================= current machine kernel ===============================
       uname -a
       echo ========================= current directory ===============================
