@@ -2,7 +2,6 @@ import pytest
 
 import dpnp.random
 import numpy
-# from scipy import stats
 from numpy.testing import assert_allclose
 import math
 
@@ -800,24 +799,26 @@ def test_poisson_check_extreme_value():
 
 
 def test_randn_normal_distribution():
-    """ Check if the sample obtained from the dpnp.random.randn differs from
-    the normal distribution.
-    Using ``scipy.stats.normaltest``.
-
-    It is based on D’Agostino and Pearson’s test that combines skew
-    and kurtosis to produce an omnibus test of normality,
-    see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.normaltest.html
     """
-    pts = 1000
+    Check the moments of the normal distribution sample obtained
+    from ``dpnp.random.randn``.
+
+    """
+
+    seed = 28041995
+    pts = 10**5
     alpha = 0.05
-    dpnp.random.seed(28041990)
-    x = dpnp.random.randn(pts)
-    _, p = stats.normaltest(x)
-    # null hypothesis: x comes from a normal distribution.
-    # The p-value is interpreted against an alpha of 5% and finds that the test
-    # dataset does not significantly deviate from normal.
-    # If p > alpha, the null hypothesis cannot be rejected.
-    assert p > alpha
+
+    expected_mean = 0.0
+    expected_var = 1.0
+
+    dpnp.random.seed(seed)
+    res = dpnp.random.randn(pts)
+
+    var = numpy.var(res)
+    mean = numpy.mean(res)
+    assert math.isclose(var, expected_var, abs_tol=0.03)
+    assert math.isclose(mean, expected_mean, abs_tol=0.03)
 
 
 def test_rayleigh_seed():
