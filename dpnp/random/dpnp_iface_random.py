@@ -279,52 +279,31 @@ def exponential(scale=1.0, size=None):
 
     Draw samples from an exponential distribution.
 
-    Its probability density function is
+    For full documentation refer to :obj:`numpy.random.exponential`.
 
-    .. math:: f(x; \\frac{1}{\\beta}) = \\frac{1}{\\beta} \\exp(-\\frac{x}{\\beta}),
+    Limitations
+    -----------
+    Parameter ``scale`` is supported as a scalar.
+    Otherwise, :obj:`numpy.random.exponential(scale, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
 
-    for ``x > 0`` and 0 elsewhere. :math:`\\beta` is the scale parameter,
-    which is the inverse of the rate parameter :math:`\\lambda = 1/\\beta`.
-    The rate parameter is an alternative, widely used parameterization
-    of the exponential distribution [3]_.
-
-    The exponential distribution is a continuous analogue of the
-    geometric distribution.  It describes many common situations, such as
-    the size of raindrops measured over many rainstorms [1]_, or the time
-    between page requests to Wikipedia [2]_.
-
-    Parameters
-    ----------
-    scale : float
-        The scale parameter, :math:`\\beta = 1/\\lambda`. Must be
-        non-negative.
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
-        a single value is returned if ``scale`` is a scalar.  Otherwise,
-        ``np.array(scale).size`` samples are drawn.
-
-    Returns
-    -------
-    out : dparray
-        Drawn samples from the parameterized exponential distribution.
-
-    References
-    ----------
-    .. [1] Peyton Z. Peebles Jr., "Probability, Random Variables and
-           Random Signal Principles", 4th ed, 2001, p. 57.
-    .. [2] Wikipedia, "Poisson process",
-           https://en.wikipedia.org/wiki/Poisson_process
-    .. [3] Wikipedia, "Exponential distribution",
-           https://en.wikipedia.org/wiki/Exponential_distribution
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> scale = .5  # alpha
+    >>> s = dpnp.random.exponential(scale, 1000)
 
     """
 
     if not use_origin_backend(scale):
-        if scale < 0:
-            checker_throw_value_error("exponential", "scale", scale, "non-negative")
-
-        return dpnp_exponential(scale, size)
+        # TODO:
+        # array_like of floats for `scale`
+        if not dpnp.isscalar(scale):
+            pass
+        elif scale < 0:
+            pass
+        else:
+            return dpnp_exponential(scale, size)
 
     return call_origin(numpy.random.exponential, scale, size)
 
@@ -351,59 +330,35 @@ def gamma(shape, scale=1.0, size=None):
 
     Draw samples from a Gamma distribution.
 
-    Samples are drawn from a Gamma distribution with specified parameters,
-    `shape` (sometimes designated "k") and `scale` (sometimes designated
-    "theta"), where both parameters are > 0.
+    For full documentation refer to :obj:`numpy.random.gamma`.
 
-    Parameters
-    ----------
-    shape : float or array_like of floats
-        The shape of the gamma distribution. Must be non-negative.
-    scale : float or array_like of floats, optional
-        The scale of the gamma distribution. Must be non-negative.
-        Default is equal to 1.
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
-        a single value is returned if ``shape`` and ``scale`` are both scalars.
+    Limitations
+    -----------
+    Parameters ``shape`` and ``scale`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.gamma(shape, scale, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
 
-    Returns
-    -------
-    out : dparray
-        Drawn samples from the parameterized gamma distribution.
-
-    Notes
-    -----
-    The probability density for the Gamma distribution is
-
-    .. math:: p(x) = x^{k-1}\\frac{e^{-x/\\theta}}{\\theta^k\\Gamma(k)},
-
-    where :math:`k` is the shape and :math:`\\theta` the scale,
-    and :math:`\\Gamma` is the Gamma function.
-
-    The Gamma distribution is often used to model the times to failure of
-    electronic components, and arises naturally in processes for which the
-    waiting times between Poisson distributed events are relevant.
-
-    References
-    ----------
-    .. [1] Weisstein, Eric W. "Gamma Distribution." From MathWorld--A
-           Wolfram Web Resource.
-           http://mathworld.wolfram.com/GammaDistribution.html
-    .. [2] Wikipedia, "Gamma distribution",
-           https://en.wikipedia.org/wiki/Gamma_distribution
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> shape, scale = 0, 0.1  # shape and scale
+    >>> s = dpnp.random.gamma(shape, scale, 1000)
 
     """
 
-    # TODO:
-    # array_like of floats for `scale` and `shape`
     if not use_origin_backend(scale) and dpnp_queue_is_cpu():
-        if scale < 0:
-            checker_throw_value_error("gamma", "scale", scale, "non-negative")
-        if shape < 0:
-            checker_throw_value_error("gamma", "shape", shape, "non-negative")
-
-        return dpnp_gamma(shape, scale, size)
+        # TODO:
+        # array_like of floats for `scale` and `shape`
+        if not dpnp.isscalar(scale):
+            pass
+        elif not dpnp.isscalar(shape):
+            pass
+        elif scale < 0:
+            pass
+        elif shape < 0:
+            pass
+        else:
+            return dpnp_gamma(shape, scale, size)
 
     return call_origin(numpy.random.gamma, shape, scale, size)
 
@@ -413,31 +368,13 @@ def geometric(p, size=None):
 
     Draw samples from the geometric distribution.
 
-    Bernoulli trials are experiments with one of two outcomes:
-    success or failure (an example of such an experiment is flipping
-    a coin).  The geometric distribution models the number of trials
-    that must be run in order to achieve success.  It is therefore
-    supported on the positive integers, ``k = 1, 2, ...``.
+    For full documentation refer to :obj:`numpy.random.geometric`.
 
-    The probability mass function of the geometric distribution is
-
-    .. math:: f(k) = (1 - p)^{k - 1} p
-
-    where `p` is the probability of success of an individual trial.
-
-    Parameters
-    ----------
-    p : float
-        The probability of success of an individual trial.
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
-        a single value is returned if ``p`` is a scalar.
-
-    Returns
-    -------
-    out : dparray, int32
-        Drawn samples from the parameterized geometric distribution.
+    Limitations
+    -----------
+    Parameter ``p`` is supported as a scalar.
+    Otherwise, :obj:`numpy.random.geometric(p, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.int32`.
 
     Examples
     --------
@@ -450,10 +387,12 @@ def geometric(p, size=None):
     if not use_origin_backend(p):
         # TODO:
         # array_like of floats for `p` param
-        if p > 1 or p <= 0:
-            checker_throw_value_error("geometric", "p", p, "in (0, 1]")
-
-        return dpnp_geometric(p, size)
+        if not dpnp.isscalar(p):
+            pass
+        elif p > 1 or p <= 0:
+            pass
+        else:
+            return dpnp_geometric(p, size)
 
     return call_origin(numpy.random.geometric, p, size)
 
@@ -463,25 +402,13 @@ def gumbel(loc=0.0, scale=1.0, size=None):
 
     Draw samples from a Gumbel distribution.
 
-    Draw samples from a Gumbel distribution with specified location and
-    scale.
+    For full documentation refer to :obj:`numpy.random.gumbel`.
 
-    Parameters
-    ----------
-    loc : float, optional
-        The location of the mode of the distribution. Default is 0.
-    scale : float, optional
-        The scale parameter of the distribution. Default is 1. Must be non-
-        negative.
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
-        a single value is returned if ``loc`` and ``scale`` are both scalars.
-
-    Returns
-    -------
-    out : dparray
-        Drawn samples from the parameterized Gumbel distribution.
+    Limitations
+    -----------
+    Parameters ``loc`` and ``scale`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.gumbel(loc, scale, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
 
     Examples
     --------
@@ -494,10 +421,16 @@ def gumbel(loc=0.0, scale=1.0, size=None):
     if not use_origin_backend(loc):
         # TODO:
         # array_like of floats for `loc` and `scale` params
-        if scale < 0:
-            checker_throw_value_error("gumbel", "scale", scale, "non-negative")
-
-        return dpnp_gumbel(loc, scale, size)
+        if not dpnp.isscalar(scale):
+            pass
+        elif not dpnp.isscalar(loc):
+            pass
+        elif scale < 0:
+            pass
+        elif loc < 0:
+            pass
+        else:
+            return dpnp_gumbel(loc, scale, size)
 
     return call_origin(numpy.random.gumbel, loc, scale, size)
 
@@ -507,64 +440,14 @@ def hypergeometric(ngood, nbad, nsample, size=None):
 
     Draw samples from a Hypergeometric distribution.
 
-    Samples are drawn from a hypergeometric distribution with specified
-    parameters, `ngood` (ways to make a good selection), `nbad` (ways to make
-    a bad selection), and `nsample` (number of items sampled, which is less
-    than or equal to the sum ``ngood + nbad``).
+    For full documentation refer to :obj:`numpy.random.hypergeometric`.
 
-    Parameters
-    ----------
-    ngood : int
-        Number of ways to make a good selection.  Must be nonnegative.
-    nbad : int
-        Number of ways to make a bad selection.  Must be nonnegative.
-    nsample : int
-        Number of items sampled.  Must be at least 1 and at most
-        ``ngood + nbad``.
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
-        a single value is returned if `ngood`, `nbad`, and `nsample`
-        are all scalars.
-
-    Returns
-    -------
-    out : dparray
-        Drawn samples from the parameterized hypergeometric distribution. Each
-        sample is the number of good items within a randomly selected subset of
-        size `nsample` taken from a set of `ngood` good items and `nbad` bad items.
-
-    Notes
-    -----
-    The probability density for the Hypergeometric distribution is
-
-    .. math:: P(x) = \\frac{\\binom{g}{x}\\binom{b}{n-x}}{\\binom{g+b}{n}},
-
-    where :math:`0 \\le x \\le n` and :math:`n-b \\le x \\le g`
-
-    for P(x) the probability of ``x`` good results in the drawn sample,
-    g = `ngood`, b = `nbad`, and n = `nsample`.
-
-    Consider an urn with black and white marbles in it, `ngood` of them
-    are black and `nbad` are white. If you draw `nsample` balls without
-    replacement, then the hypergeometric distribution describes the
-    distribution of black balls in the drawn sample.
-
-    Note that this distribution is very similar to the binomial
-    distribution, except that in this case, samples are drawn without
-    replacement, whereas in the Binomial case samples are drawn with
-    replacement (or the sample space is infinite). As the sample space
-    becomes large, this distribution approaches the binomial.
-
-    References
-    ----------
-    .. [1] Lentner, Marvin, "Elementary Applied Statistics", Bogden
-           and Quigley, 1972.
-    .. [2] Weisstein, Eric W. "Hypergeometric Distribution." From
-           MathWorld--A Wolfram Web Resource.
-           http://mathworld.wolfram.com/HypergeometricDistribution.html
-    .. [3] Wikipedia, "Hypergeometric distribution",
-           https://en.wikipedia.org/wiki/Hypergeometric_distribution
+    Limitations
+    -----------
+    Parameters ``ngood``, ``nbad`` and ``nsample`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.hypergeometric(shape, scale, size)` samples
+    are drawn.
+    Output array data type is :obj:`dpnp.int32`.
 
     Examples
     --------
@@ -578,22 +461,27 @@ def hypergeometric(ngood, nbad, nsample, size=None):
     if not use_origin_backend(ngood) and dpnp_queue_is_cpu():
         # TODO:
         # array_like of ints for `ngood`, `nbad`, `nsample` param
-        if ngood < 0:
-            checker_throw_value_error("hypergeometric", "ngood", ngood, "non-negative")
-        if nbad < 0:
-            checker_throw_value_error("hypergeometric", "nbad", nbad, "non-negative")
-        if nsample < 0:
-            checker_throw_value_error("hypergeometric", "nsample", nsample, "non-negative")
-        if ngood + nbad < nsample:
-            checker_throw_value_error("hypergeometric", "nsample", nsample, "ngood + nbad >= nsample")
-        if nsample < 1:
-            checker_throw_value_error("hypergeometric", "nsample", nsample, ">= 1")
-
-        m = int(ngood)
-        l = int(ngood) + int(nbad)
-        s = int(nsample)
-
-        return dpnp_hypergeometric(l, s, m, size)
+        if not dpnp.isscalar(ngood):
+            pass
+        elif not dpnp.isscalar(nbad):
+            pass
+        elif not dpnp.isscalar(nsample):
+            pass
+        elif ngood < 0:
+            pass
+        elif nbad < 0:
+            pass
+        elif nsample < 0:
+            pass
+        elif ngood + nbad < nsample:
+            pass
+        elif nsample < 1:
+            pass
+        else:
+            m = int(ngood)
+            l = int(ngood) + int(nbad)
+            s = int(nsample)
+            return dpnp_hypergeometric(l, s, m, size)
 
     return call_origin(numpy.random.hypergeometric, ngood, nbad, nsample, size)
 
@@ -604,27 +492,13 @@ def laplace(loc=0.0, scale=1.0, size=None):
     Draw samples from the Laplace or double exponential distribution with
     specified location (or mean) and scale (decay).
 
-    The Laplace distribution is similar to the Gaussian/normal distribution,
-    but is sharper at the peak and has fatter tails. It represents the
-    difference between two independent, identically distributed exponential
-    random variables.
+    For full documentation refer to :obj:`numpy.random.laplace`.
 
-    Parameters
-    ----------
-    loc : float, optional
-        The position, :math:`\\mu`, of the distribution peak. Default is 0.
-    scale : float, optional
-        :math:`\\lambda`, the exponential decay. Default is 1. Must be non-
-        negative.
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
-        a single value is returned if ``loc`` and ``scale`` are both scalars.
-
-    Returns
-    -------
-    out : dparray
-        Drawn samples from the parameterized Laplace distribution.
+    Limitations
+    -----------
+    Parameters ``loc`` and ``scale`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.laplace(loc, scale, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
 
     Examples
     --------
@@ -635,11 +509,15 @@ def laplace(loc=0.0, scale=1.0, size=None):
 
     if not use_origin_backend(loc):
         # TODO:
-        # array_like of floats for `loc` and `scale` params
-        if scale < 0:
-            checker_throw_value_error("laplace", "scale", scale, "non-negative")
-
-        return dpnp_laplace(loc, scale, size)
+        # array_like of floats for `loc` and `scale`
+        if not dpnp.isscalar(loc):
+            pass
+        elif not dpnp.isscalar(scale):
+            pass
+        elif scale < 0:
+            pass
+        else:
+            return dpnp_laplace(loc, scale, size)
 
     return call_origin(numpy.random.laplace, loc, scale, size)
 
@@ -666,53 +544,14 @@ def lognormal(mean=0.0, sigma=1.0, size=None):
 
     Draw samples from a log-normal distribution.
 
-    Draw samples from a log-normal distribution with specified mean,
-    standard deviation, and array shape.  Note that the mean and standard
-    deviation are not the values for the distribution itself, but of the
-    underlying normal distribution it is derived from.
+    For full documentation refer to :obj:`numpy.random.lognormal`.
 
-    Parameters
-    ----------
-    mean : float, optional
-        Mean value of the underlying normal distribution. Default is 0.
-    sigma : float, optional
-        Standard deviation of the underlying normal distribution. Must be
-        non-negative. Default is 1.
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
-        a single value is returned if ``mean`` and ``sigma`` are both scalars.
-
-    Returns
-    -------
-    out : dparray
-        Drawn samples from the parameterized log-normal distribution.
-
-    Notes
-    -----
-    A variable `x` has a log-normal distribution if `log(x)` is normally
-    distributed.  The probability density function for the log-normal
-    distribution is:
-
-    .. math:: p(x) = \\frac{1}{\\sigma x \\sqrt{2\\pi}}
-                     e^{(-\\frac{(ln(x)-\\mu)^2}{2\\sigma^2})}
-
-    where :math:`\\mu` is the mean and :math:`\\sigma` is the standard
-    deviation of the normally distributed logarithm of the variable.
-    A log-normal distribution results if a random variable is the *product*
-    of a large number of independent, identically-distributed variables in
-    the same way that a normal distribution results if the variable is the
-    *sum* of a large number of independent, identically-distributed
-    variables.
-
-    References
-    ----------
-    .. [1] Limpert, E., Stahel, W. A., and Abbt, M., "Log-normal
-           Distributions across the Sciences: Keys and Clues,"
-           BioScience, Vol. 51, No. 5, May, 2001.
-           https://stat.ethz.ch/~stahel/lognormal/bioscience.pdf
-    .. [2] Reiss, R.D. and Thomas, M., "Statistical Analysis of Extreme
-           Values," Basel: Birkhauser Verlag, 2001, pp. 31-32.
+    Limitations
+    -----------
+    Parameters ``mean`` and ``sigma`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.lognormal(mean, sigma, size)` samples
+    are drawn.
+    Output array data type is :obj:`dpnp.float64`.
 
     Examples
     --------
@@ -725,10 +564,14 @@ def lognormal(mean=0.0, sigma=1.0, size=None):
     if not use_origin_backend(mean):
         # TODO:
         # array_like of floats for `mean` and `sigma` params
-        if sigma < 0:
-            checker_throw_value_error("lognormal", "sigma", sigma, "non-negative")
-
-        return dpnp_lognormal(mean, sigma, size)
+        if not dpnp.isscalar(mean):
+            pass
+        elif not dpnp.isscalar(sigma):
+            pass
+        elif sigma < 0:
+            pass
+        else:
+            return dpnp_lognormal(mean, sigma, size)
 
     return call_origin(numpy.random.lognormal, mean, sigma, size)
 
@@ -943,53 +786,14 @@ def negative_binomial(n, p, size=None):
 
     Draw samples from a negative binomial distribution.
 
-    Samples are drawn from a negative binomial distribution with specified
-    parameters, `n` successes and `p` probability of success where `n`
-    is > 0 and `p` is in the interval [0, 1].
+    For full documentation refer to :obj:`numpy.random.negative_binomial`.
 
-    Parameters
-    ----------
-    n : float
-        Parameter of the distribution, > 0.
-    p : float
-        Parameter of the distribution, >= 0 and <=1.
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
-        a single value is returned if ``n`` and ``p`` are both scalars.
-
-    Returns
-    -------
-    out : dparray, int32
-        Drawn samples from the parameterized negative binomial distribution,
-        where each sample is equal to N, the number of failures that
-        occurred before a total of n successes was reached.
-
-    Notes
-    -----
-    The probability mass function of the negative binomial distribution is
-
-    .. math:: P(N;n,p) = \\frac{\\Gamma(N+n)}{N!\\Gamma(n)}p^{n}(1-p)^{N},
-
-    where :math:`n` is the number of successes, :math:`p` is the
-    probability of success, :math:`N+n` is the number of trials, and
-    :math:`\\Gamma` is the gamma function. When :math:`n` is an integer,
-    :math:`\\frac{\\Gamma(N+n)}{N!\\Gamma(n)} = \\binom{N+n-1}{N}`, which is
-    the more common form of this term in the the pmf. The negative
-    binomial distribution gives the probability of N failures given n
-    successes, with a success on the last trial.
-
-    If one throws a die repeatedly until the third time a "1" appears,
-    then the probability distribution of the number of non-"1"s that
-    appear before the third "1" is a negative binomial distribution.
-
-    References
-    ----------
-    .. [1] Weisstein, Eric W. "Negative Binomial Distribution." From
-           MathWorld--A Wolfram Web Resource.
-           http://mathworld.wolfram.com/NegativeBinomialDistribution.html
-    .. [2] Wikipedia, "Negative binomial distribution",
-           https://en.wikipedia.org/wiki/Negative_binomial_distribution
+    Limitations
+    -----------
+    Parameters ``n`` and ``p`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.negative_binomial(n, p, size)` samples
+    are drawn.
+    Output array data type is :obj:`dpnp.int32`.
 
     Examples
     --------
@@ -1001,7 +805,7 @@ def negative_binomial(n, p, size=None):
     single success after drilling 5 wells, after 6 wells, etc.?
 
     >>> s = dpnp.random.negative_binomial(1, 0.1, 100000)
-    >>> for i in range(1, 11): # doctest: +SKIP
+    >>> for i in range(1, 11):
     ...    probability = sum(s<i) / 100000.
     ...    print(i, "wells drilled, probability of one success =", probability)
 
@@ -1010,12 +814,16 @@ def negative_binomial(n, p, size=None):
     if not use_origin_backend(n) and dpnp_queue_is_cpu():
         # TODO:
         # array_like of floats for `p` and `n` params
-        if p > 1 or p < 0:
-            checker_throw_value_error("negative_binomial", "p", p, "in [0, 1]")
-        if n <= 0:
-            checker_throw_value_error("negative_binomial", "n", n, "non-negative")
-
-        return dpnp_negative_binomial(n, p, size)
+        if not dpnp.isscalar(n):
+            pass
+        elif not dpnp.isscalar(p):
+            pass
+        elif p > 1 or p < 0:
+            pass
+        elif n <= 0:
+            pass
+        else:
+            return dpnp_negative_binomial(n, p, size)
 
     return call_origin(numpy.random.negative_binomial, n, p, size)
 
@@ -1025,57 +833,13 @@ def normal(loc=0.0, scale=1.0, size=None):
 
     Draw random samples from a normal (Gaussian) distribution.
 
-    The probability density function of the normal distribution, first
-    derived by De Moivre and 200 years later by both Gauss and Laplace
-    independently [2]_, is often called the bell curve because of
-    its characteristic shape (see the example below).
+    For full documentation refer to :obj:`numpy.random.normal`.
 
-    The normal distributions occurs often in nature.  For example, it
-    describes the commonly occurring distribution of samples influenced
-    by a large number of tiny, random disturbances, each with its own
-    unique distribution [2]_.
-
-    Parameters
-    ----------
-    loc : float
-        Mean ("centre") of the distribution.
-    scale : float
-        Standard deviation (spread or "width") of the distribution. Must be
-        non-negative.
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
-        a single value is returned if ``loc`` and ``scale`` are both scalars.
-
-    Returns
-    -------
-    out : dparray
-        Drawn samples from the parameterized normal distribution.
-
-    Notes
-    -----
-    The probability density for the Gaussian distribution is
-
-    .. math:: p(x) = \\frac{1}{\\sqrt{ 2 \\pi \\sigma^2 }}
-                     e^{ - \\frac{ (x - \\mu)^2 } {2 \\sigma^2} },
-
-    where :math:`\\mu` is the mean and :math:`\\sigma` the standard
-    deviation. The square of the standard deviation, :math:`\\sigma^2`,
-    is called the variance.
-
-    The function has its peak at the mean, and its "spread" increases with
-    the standard deviation (the function reaches 0.607 times its maximum at
-    :math:`x + \\sigma` and :math:`x - \\sigma` [2]_).  This implies that
-    normal is more likely to return samples lying close to the mean, rather
-    than those far away.
-
-    References
-    ----------
-    .. [1] Wikipedia, "Normal distribution",
-           https://en.wikipedia.org/wiki/Normal_distribution
-    .. [2] P. R. Peebles Jr., "Central Limit Theorem" in "Probability,
-           Random Variables and Random Signal Principles", 4th ed., 2001,
-           pp. 51, 51, 125.
+    Limitations
+    -----------
+    Parameters ``loc`` and ``scale`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.normal(loc, scale, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
 
     Examples
     --------
@@ -1088,10 +852,14 @@ def normal(loc=0.0, scale=1.0, size=None):
     if not use_origin_backend(loc):
         # TODO:
         # array_like of floats for `loc` and `scale` params
-        if scale < 0:
-            checker_throw_value_error("normal", "scale", scale, "non-negative")
-
-        return dpnp_normal(loc, scale, size)
+        if not dpnp.isscalar(loc):
+            pass
+        elif not dpnp.isscalar(scale):
+            pass
+        elif scale < 0:
+            pass
+        else:
+            return dpnp_normal(loc, scale, size)
 
     return call_origin(numpy.random.normal, loc, scale, size)
 
@@ -1168,42 +936,13 @@ def poisson(lam=1.0, size=None):
 
     Draw samples from a Poisson distribution.
 
-    The Poisson distribution is the limit of the binomial distribution
-    for large N.
+    For full documentation refer to :obj:`numpy.random.poisson`.
 
-    Parameters
-    ----------
-    lam : float
-        Expectation of interval, must be >= 0. A sequence of expectation
-        intervals must be broadcastable over the requested size.
-    size : int, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
-        a single value is returned if ``lam`` is a scalar.
-
-    Returns
-    -------
-    out : dparray, int32
-        Drawn samples from the parameterized Poisson distribution.
-
-    Notes
-    -----
-    The Poisson distribution
-
-    .. math:: f(k; \\lambda)=\\frac{\\lambda^k e^{-\\lambda}}{k!}
-
-    For events with an expected separation :math:`\\lambda` the Poisson
-    distribution :math:`f(k; \\lambda)` describes the probability of
-    :math:`k` events occurring within the observed
-    interval :math:`\\lambda`.
-
-    References
-    ----------
-    .. [1] Weisstein, Eric W. "Poisson Distribution."
-           From MathWorld--A Wolfram Web Resource.
-           http://mathworld.wolfram.com/PoissonDistribution.html
-    .. [2] Wikipedia, "Poisson distribution",
-           https://en.wikipedia.org/wiki/Poisson_distribution
+    Limitations
+    -----------
+    Parameter ``lam`` is supported as a scalar.
+    Otherwise, :obj:`numpy.random.poisson(lam, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.int32`.
 
     Examples
     --------
@@ -1216,10 +955,12 @@ def poisson(lam=1.0, size=None):
     if not use_origin_backend(lam):
         # TODO:
         # array_like of floats for `lam` param
-        if lam < 0:
-            checker_throw_value_error("poisson", "lam", lam, "non-negative")
-
-        return dpnp_poisson(lam, size)
+        if not dpnp.isscalar(lam):
+            pass
+        elif lam < 0:
+            pass
+        else:
+            return dpnp_poisson(lam, size)
 
     return call_origin(numpy.random.poisson, lam, size)
 
@@ -1494,32 +1235,31 @@ def rayleigh(scale=1.0, size=None):
 
     Draw samples from a Rayleigh distribution.
 
-    The :math:`\\chi` and Weibull distributions are generalizations of the
-    Rayleigh.
+    For full documentation refer to :obj:`numpy.random.rayleigh`.
 
-    Parameters
-    ----------
-    scale : float, optional
-        Scale, also equals the mode. Must be non-negative. Default is 1.
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
-        a single value is returned if ``scale`` is a scalar.
+    Limitations
+    -----------
+    Parameter ``scale`` is supported as a scalar.
+    Otherwise, :obj:`numpy.random.rayleigh(scale, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
 
-    Returns
-    -------
-    out : dparray
-        Drawn samples from the parameterized Rayleigh distribution.
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> import numpy as np
+    >>> s = dpnp.random.rayleigh(1.0, 10000)
 
     """
 
     if not use_origin_backend(scale):
         # TODO:
         # array_like of floats for `scale` params
-        if scale < 0:
-            checker_throw_value_error("rayleigh", "scale", scale, "non-negative")
-
-        return dpnp_rayleigh(scale, size)
+        if not dpnp.isscalar(scale):
+            pass
+        elif scale < 0:
+            pass
+        else:
+            return dpnp_rayleigh(scale, size)
 
     return call_origin(numpy.random.rayleigh, scale, size)
 
@@ -1661,59 +1401,32 @@ def standard_gamma(shape, size=None):
 
     Draw samples from a standard Gamma distribution.
 
-    Samples are drawn from a Gamma distribution with specified parameters,
-    shape (sometimes designated "k") and scale=1.
+    For full documentation refer to :obj:`numpy.random.standard_gamma`.
 
-    Parameters
-    ----------
-    shape : float
-        Parameter, must be non-negative.
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
-        a single value is returned if ``shape`` is a scalar.
-
-    Returns
-    -------
-    out : dparray
-        Drawn samples from the parameterized standard gamma distribution.
-
-    Notes
-    -----
-    The probability density for the Gamma distribution is
-
-    .. math:: p(x) = x^{k-1}\\frac{e^{-x/\\theta}}{\\theta^k\\Gamma(k)},
-
-    where :math:`k` is the shape and :math:`\\theta` the scale,
-    and :math:`\\Gamma` is the Gamma function.
-
-    The Gamma distribution is often used to model the times to failure of
-    electronic components, and arises naturally in processes for which the
-    waiting times between Poisson distributed events are relevant.
-
-    References
-    ----------
-    .. [1] Weisstein, Eric W. "Gamma Distribution." From MathWorld--A
-           Wolfram Web Resource.
-           http://mathworld.wolfram.com/GammaDistribution.html
-    .. [2] Wikipedia, "Gamma distribution",
-           https://en.wikipedia.org/wiki/Gamma_distribution
+    Limitations
+    -----------
+    Parameter ``shape`` is supported as a scalar.
+    Otherwise, :obj:`numpy.random.standard_gamma(shape, size)` samples
+    are drawn.
+    Output array data type is :obj:`dpnp.float64`.
 
     Examples
     --------
     Draw samples from the distribution:
-    >>> shape = 2. # mean and width
+    >>> shape = 2.
     >>> s = dpnp.random.standard_gamma(shape, 1000000)
 
     """
 
-    # TODO:
-    # array_like of floats for and `shape`
     if not use_origin_backend(shape) and dpnp_queue_is_cpu():
-        if shape < 0:
-            checker_throw_value_error("standard_gamma", "shape", shape, "non-negative")
-
-        return dpnp_standard_gamma(shape, size)
+        # TODO:
+        # array_like of floats for `shape`
+        if not dpnp.isscalar(shape):
+            pass
+        elif shape < 0:
+            pass
+        else:
+            return dpnp_standard_gamma(shape, size)
 
     return call_origin(numpy.random.standard_gamma, shape, size)
 
@@ -1868,28 +1581,13 @@ def weibull(a, size=None):
 
     Draw samples from a Weibull distribution.
 
-    Draw samples from a 1-parameter Weibull distribution with the given
-    shape parameter `a`.
+    For full documentation refer to :obj:`numpy.random.weibull`.
 
-    .. math:: X = (-ln(U))^{1/a}
-
-    Here, U is drawn from the uniform distribution over (0,1].
-    The more common 2-parameter Weibull, including a scale parameter
-    :math:`\\lambda` is just :math:`X = \\lambda(-ln(U))^{1/a}`.
-
-    Parameters
-    ----------
-    a : float
-        Shape parameter of the distribution.  Must be nonnegative.
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
-        a single value is returned if ``a`` is a scalar.
-
-    Returns
-    -------
-    out : ndarray or scalar
-        Drawn samples from the parameterized Weibull distribution.
+    Limitations
+    -----------
+    Parameter ``a`` is supported as a scalar.
+    Otherwise, :obj:`numpy.random.weibull(a, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
 
     Examples
     --------
@@ -1900,10 +1598,13 @@ def weibull(a, size=None):
 
     if not use_origin_backend(a):
         # TODO:
-        # array_like of floats for `a` params
-        if a < 0:
-            checker_throw_value_error("weibulla", "a", a, "non-negative")
-        return dpnp_weibull(a, size)
+        # array_like of floats for `a` param
+        if not dpnp.isscalar(a):
+            pass
+        elif a < 0:
+            pass
+        else:
+            return dpnp_weibull(a, size)
 
     return call_origin(numpy.random.weibull, a, size)
 
