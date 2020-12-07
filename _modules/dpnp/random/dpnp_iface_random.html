@@ -341,20 +341,12 @@
 
 <span class="sd">    Return random bytes.</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    length : int</span>
-<span class="sd">        Number of random bytes.</span>
+<span class="sd">    For full documentation refer to :obj:`numpy.random.bytes`.</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : str</span>
-<span class="sd">        String of length `length`.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; dpnp.random.bytes(10)</span>
-<span class="sd">    &#39; eh\\x85\\x022SZ\\xbf\\xa4&#39; #random</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The function uses `numpy.random.bytes` on the backend and will be</span>
+<span class="sd">    executed on fallback backend.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -362,8 +354,7 @@
 
 
 <div class="viewcode-block" id="chisquare"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.chisquare.html#dpnp.random.chisquare">[docs]</a><span class="k">def</span> <span class="nf">chisquare</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    chisquare(df, size=None)</span>
+    <span class="sd">&quot;&quot;&quot;Chi-square distribution</span>
 
 <span class="sd">    Draw samples from a chi-square distribution.</span>
 
@@ -1465,21 +1456,25 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reseed a legacy philox4x32x10 random number generator engine.</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    seed : {None, int}, optional</span>
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameter ``seed`` is supported as a scalar.</span>
+<span class="sd">    Otherwise, the function will use :obj:`numpy.random.seed` on the backend</span>
+<span class="sd">    and will be executed on fallback backend.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">seed</span><span class="p">):</span>
+        <span class="c1"># TODO:</span>
+        <span class="c1"># array_like of ints for `seed`</span>
+        <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">seed</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">pass</span>
         <span class="k">elif</span> <span class="n">seed</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">seed</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="n">dpnp_srand</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpnp_srand</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span> <span class="n">seed</span><span class="p">)</span></div>
 
@@ -1491,16 +1486,9 @@
 
 <span class="sd">    Also known as the Lorentz distribution.</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    size : int, optional</span>
-<span class="sd">        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then</span>
-<span class="sd">        ``m * n * k`` samples are drawn.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    samples : dparray</span>
-<span class="sd">        The drawn samples.</span>
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1527,17 +1515,9 @@
 <span class="sd">    `standard_exponential` is identical to the exponential distribution</span>
 <span class="sd">    with a scale parameter of 1.</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    size : int or tuple of ints, optional</span>
-<span class="sd">        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then</span>
-<span class="sd">        ``m * n * k`` samples are drawn.  Default is None, in which case a</span>
-<span class="sd">        single value is returned.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dparray</span>
-<span class="sd">        Drawn samples.</span>
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1592,18 +1572,16 @@
 
 <span class="sd">    Draw samples from a standard Normal distribution (mean=0, stdev=1).</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    size : int, optional</span>
-<span class="sd">        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then</span>
-<span class="sd">        ``m * n * k`` samples are drawn.  Default is None, in which case a</span>
-<span class="sd">        single value is returned.</span>
+<span class="sd">    For full documentation refer to :obj:`numpy.random.standard_normal`.</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : float or ndarray</span>
-<span class="sd">        A floating-point array of shape ``size`` of drawn samples, or a</span>
-<span class="sd">        single sample if ``size`` was not specified.</span>
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Output array data type is :obj:`dpnp.float64`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Draw samples from the distribution:</span>
+<span class="sd">    &gt;&gt;&gt; s = dpnp.random.standard_normal(1000)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
