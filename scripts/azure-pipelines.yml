@@ -86,7 +86,7 @@ jobs:
       echo ========================= run pytest ===============================
       pytest
 
-- job: make package
+- job: make_package
   displayName: conda-build
   pool:
     vmImage: 'ubuntu-20.04'
