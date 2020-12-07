@@ -39,8 +39,20 @@ from dpnp.dpnp_iface_counting import count_nonzero
 
 
 __all__ += [
+    "dpnp_diag_indices",
     "dpnp_nonzero",
 ]
+
+
+cpdef tuple dpnp_diag_indices(n, ndim):
+    cdef dparray res_item = dpnp.arange(n, dtype=dpnp.int64)
+
+    # yes, all are the same item
+    result = []
+    for i in range(ndim):
+        result.append(res_item)
+
+    return tuple(result)
 
 
 cpdef tuple dpnp_nonzero(dparray in_array1):

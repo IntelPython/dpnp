@@ -176,6 +176,19 @@ def test_binomial_check_extreme_value():
     assert numpy.unique(res)[0] == 5
 
 
+def test_binomial_invalid_args():
+    size = 10
+    n = -5     # non-negative `n` is expected
+    p = 0.4    # OK
+    with pytest.raises(ValueError):
+        dpnp.random.binomial(n=n, p=p, size=size)
+
+    n = 5      # OK
+    p = -0.5   # `p` is expected from [0, 1]
+    with pytest.raises(ValueError):
+        dpnp.random.binomial(n=n, p=p, size=size)
+
+
 def test_chisquare_seed():
     seed = 28041990
     size = 100

@@ -51,15 +51,21 @@ from dpnp.fft.dpnp_algo_fft import *
 __all__ = [
     "fft",
     "fft2",
+    "fftfreq",
     "fftn",
+    "fftshift",
+    "hfft",
     "ifft",
     "ifft2",
     "ifftn",
+    "ifftshift",
+    "ihfft",
     "irfft",
     "irfft2",
     "irfftn",
     "rfft",
     "rfft2",
+    "rfftfreq",
     "rfftn"
 ]
 
@@ -100,7 +106,7 @@ def fft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = input_boundarie
 
-            return dpnp_fft(x1, input_boundarie, output_boundarie, axis_param)
+            return dpnp_fft(x1, input_boundarie, output_boundarie, axis_param, False)
 
     return call_origin(numpy.fft.fft, x1, n, axis, norm)
 
@@ -130,6 +136,21 @@ def fft2(x1, s=None, axes=(-2, -1), norm=None):
             return fftn(x1, s, axes, norm)
 
     return call_origin(numpy.fft.fft2, x1, s, axes, norm)
+
+
+def fftfreq(n=None, d=1.0):
+    """
+    Compute the one-dimensional discrete Fourier Transform sample frequencies.
+
+    Limitations
+    -----------
+    Parameter ``d`` is unsupported.
+
+    For full documentation refer to :obj:`numpy.fft.fftfreq`.
+
+    """
+
+    return call_origin(numpy.fft.fftfreq, n, d)
 
 
 def fftn(x1, s=None, axes=None, norm=None):
@@ -181,9 +202,39 @@ def fftn(x1, s=None, axes=None, norm=None):
     return call_origin(numpy.fft.fftn, x1, s, axes, norm)
 
 
-def ifft(x1, n=None, axis=-1, norm=None):
+def fftshift(x1, axes=None):
     """
-    Compute the one-dimensional inverse discrete Fourier Transform.
+    Shift the zero-frequency component to the center of the spectrum.
+
+    Limitations
+    -----------
+    Parameter ``axes`` is unsupported.
+    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
+    ``dpnp.complex128`` datatypes only.
+
+    For full documentation refer to :obj:`numpy.fft.fftshift`.
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray and 0):
+        if axis is None:
+            axis_param = -1      # the most right dimension (default value)
+        else:
+            axis_param = axes
+
+        if x1.size < 1:
+            pass                 # let fallback to handle exception
+        else:
+            return dpnp_fft(x1, input_boundarie, output_boundarie, axis_param, False)
+
+    return call_origin(numpy.fft.fftshift, x1, axes)
+
+
+def hfft(x1, n=None, axis=-1, norm=None):
+    """
+    Compute the one-dimensional discrete Fourier Transform of a signal that has Hermitian symmetry.
 
     Limitations
     -----------
@@ -191,7 +242,7 @@ def ifft(x1, n=None, axis=-1, norm=None):
     Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
     ``dpnp.complex128`` datatypes only.
 
-    For full documentation refer to :obj:`numpy.fft.ifft`.
+    For full documentation refer to :obj:`numpy.fft.hfft`.
 
     """
 
@@ -217,7 +268,48 @@ def ifft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = input_boundarie
 
-            return dpnp_fft(x1, input_boundarie, output_boundarie, axis_param)
+            return dpnp_fft(x1, input_boundarie, output_boundarie, axis_param, False)
+
+    return call_origin(numpy.fft.hfft, x1, n, axis, norm)
+
+
+def ifft(x1, n=None, axis=-1, norm=None):
+    """
+    Compute the one-dimensional inverse discrete Fourier Transform.
+
+    Limitations
+    -----------
+    Parameter ``norm`` is unsupported.
+    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
+    ``dpnp.complex128`` datatypes only.
+
+    For full documentation refer to :obj:`numpy.fft.ifft`.
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray):
+        if axis is None:
+            axis_param = -1      # the most right dimension (default value)
+        else:
+            axis_param = axis
+
+        if n is None:
+            input_boundarie = x1.shape[axis_param]
+        else:
+            input_boundarie = n
+
+        if x1.size < 1:
+            pass                 # let fallback to handle exception
+        elif input_boundarie < 1:
+            pass                 # let fallback to handle exception
+        elif norm is not None:
+            pass
+        else:
+            output_boundarie = input_boundarie
+
+            return dpnp_fft(x1, input_boundarie, output_boundarie, axis_param, True)
 
     return call_origin(numpy.fft.ifft, x1, n, axis, norm)
 
@@ -240,13 +332,43 @@ def ifft2(x1, s=None, axes=(-2, -1), norm=None):
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and 0):
+    if (not use_origin_backend(x1) and is_x1_dparray):
         if norm is not None:
             pass
         else:
-            return fftn(x1, s, axes, norm)
+            return ifftn(x1, s, axes, norm)
 
     return call_origin(numpy.fft.ifft2, x1, s, axes, norm)
+
+
+def ifftshift(x1, axes=None):
+    """
+    Inverse shift the zero-frequency component to the center of the spectrum.
+
+    Limitations
+    -----------
+    Parameter ``axes`` is unsupported.
+    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
+    ``dpnp.complex128`` datatypes only.
+
+    For full documentation refer to :obj:`numpy.fft.ifftshift`.
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray and 0):
+        if axis is None:
+            axis_param = -1      # the most right dimension (default value)
+        else:
+            axis_param = axes
+
+        if x1.size < 1:
+            pass                 # let fallback to handle exception
+        else:
+            return dpnp_fft(x1, input_boundarie, output_boundarie, axis_param, False)
+
+    return call_origin(numpy.fft.ifftshift, x1, axes)
 
 
 def ifftn(x1, s=None, axes=None, norm=None):
@@ -267,7 +389,7 @@ def ifftn(x1, s=None, axes=None, norm=None):
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and 0):
+    if (not use_origin_backend(x1) and is_x1_dparray):
         if s is None:
             boundaries = tuple([x1.shape[i] for i in range(x1.ndim)])
         else:
@@ -291,11 +413,52 @@ def ifftn(x1, s=None, axes=None, norm=None):
                 except IndexError:
                     checker_throw_axis_error("fft.ifftn", "is out of bounds", param_axis, f"< {len(boundaries)}")
 
-                x1_iter = fft(x1_iter, n=param_n, axis=param_axis, norm=norm)
+                x1_iter = ifft(x1_iter, n=param_n, axis=param_axis, norm=norm)
 
             return x1_iter
 
     return call_origin(numpy.fft.ifftn, x1, s, axes, norm)
+
+
+def ihfft(x1, n=None, axis=-1, norm=None):
+    """
+    Compute inverse one-dimensional discrete Fourier Transform of a signal that has Hermitian symmetry.
+
+    Limitations
+    -----------
+    Parameter ``norm`` is unsupported.
+    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
+    ``dpnp.complex128`` datatypes only.
+
+    For full documentation refer to :obj:`numpy.fft.ihfft`.
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray and 0):
+        if axis is None:
+            axis_param = -1      # the most right dimension (default value)
+        else:
+            axis_param = axis
+
+        if n is None:
+            input_boundarie = x1.shape[axis_param]
+        else:
+            input_boundarie = n
+
+        if x1.size < 1:
+            pass                 # let fallback to handle exception
+        elif input_boundarie < 1:
+            pass                 # let fallback to handle exception
+        elif norm is not None:
+            pass
+        else:
+            output_boundarie = input_boundarie
+
+            return dpnp_fft(x1, input_boundarie, output_boundarie, axis_param, False)
+
+    return call_origin(numpy.fft.ihfft, x1, n, axis, norm)
 
 
 def irfft(x1, n=None, axis=-1, norm=None):
@@ -332,9 +495,13 @@ def irfft(x1, n=None, axis=-1, norm=None):
         elif norm is not None:
             pass
         else:
-            output_boundarie = input_boundarie
+            output_boundarie = 2 * (input_boundarie - 1)
 
-            return dpnp_fft(x1, input_boundarie, output_boundarie, axis_param)
+            result = dpnp_fft(x1, input_boundarie, output_boundarie, axis_param, True)
+            tmp = dparray(result.shape, dtype=dpnp.float64)
+            for it in range(tmp.size):
+                tmp[it] = result[it].real
+            return tmp
 
     return call_origin(numpy.fft.irfft, x1, n, axis, norm)
 
@@ -357,11 +524,11 @@ def irfft2(x1, s=None, axes=(-2, -1), norm=None):
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and 0):
+    if (not use_origin_backend(x1) and is_x1_dparray):
         if norm is not None:
             pass
         else:
-            return fftn(x1, s, axes, norm)
+            return irfftn(x1, s, axes, norm)
 
     return call_origin(numpy.fft.irfft2, x1, s, axes, norm)
 
@@ -408,7 +575,7 @@ def irfftn(x1, s=None, axes=None, norm=None):
                 except IndexError:
                     checker_throw_axis_error("fft.irfftn", "is out of bounds", param_axis, f"< {len(boundaries)}")
 
-                x1_iter = fft(x1_iter, n=param_n, axis=param_axis, norm=norm)
+                x1_iter = irfft(x1_iter, n=param_n, axis=param_axis, norm=norm)
 
             return x1_iter
 
@@ -451,7 +618,7 @@ def rfft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = input_boundarie // 2 + 1  # rfft specific requirenment
 
-            return dpnp_fft(x1, input_boundarie, output_boundarie, axis_param)
+            return dpnp_fft(x1, input_boundarie, output_boundarie, axis_param, False)
 
     return call_origin(numpy.fft.rfft, x1, n, axis, norm)
 
@@ -481,6 +648,21 @@ def rfft2(x1, s=None, axes=(-2, -1), norm=None):
             return rfftn(x1, s, axes, norm)
 
     return call_origin(numpy.fft.rfft2, x1, s, axes, norm)
+
+
+def rfftfreq(n=None, d=1.0):
+    """
+    Compute the one-dimensional discrete Fourier Transform sample frequencies.
+
+    Limitations
+    -----------
+    Parameter ``d`` is unsupported.
+
+    For full documentation refer to :obj:`numpy.fft.rfftfreq`.
+
+    """
+
+    return call_origin(numpy.fft.rfftfreq, n, d)
 
 
 def rfftn(x1, s=None, axes=None, norm=None):

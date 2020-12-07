@@ -69,6 +69,7 @@
  * @param[in]  shape_size      Number of elements in @ref input_shape or @ref output_shape arrays.
  * @param[in]  axis            Axis ID to compute by.
  * @param[in]  input_boundarie Limit number of elements for @ref axis.
+ * @param[in]  inverse         Using inverse algorithm.
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_fft_fft_c(const void* array_in,
@@ -77,6 +78,7 @@ INP_DLLEXPORT void dpnp_fft_fft_c(const void* array_in,
                                   const long* output_shape,
                                   size_t shape_size,
                                   long axis,
-                                  long input_boundarie);
+                                  long input_boundarie,
+                                  size_t inverse);
 
 #endif // BACKEND_IFACE_FFT_H
