@@ -185,20 +185,12 @@ def bytes(length):
 
     Return random bytes.
 
-    Parameters
-    ----------
-    length : int
-        Number of random bytes.
+    For full documentation refer to :obj:`numpy.random.bytes`.
 
-    Returns
-    -------
-    out : str
-        String of length `length`.
-
-    Examples
-    --------
-    >>> dpnp.random.bytes(10)
-    ' eh\\x85\\x022SZ\\xbf\\xa4' #random
+    Notes
+    -----
+    The function uses `numpy.random.bytes` on the backend and will be
+    executed on fallback backend.
 
     """
 
@@ -206,8 +198,7 @@ def bytes(length):
 
 
 def chisquare(df, size=None):
-    """
-    chisquare(df, size=None)
+    """Chi-square distribution
 
     Draw samples from a chi-square distribution.
 
@@ -1309,14 +1300,18 @@ def seed(seed=None):
     """
     Reseed a legacy philox4x32x10 random number generator engine.
 
-    Parameters
-    ----------
-    seed : {None, int}, optional
+    Limitations
+    -----------
+    Parameter ``seed`` is supported as a scalar.
+    Otherwise, the function will use :obj:`numpy.random.seed` on the backend
+    and will be executed on fallback backend.
 
     """
 
     if not use_origin_backend(seed):
-        if not isinstance(seed, int):
+        if not dpnp.isscalar(seed):
+            pass
+        elif not isinstance(seed, int):
             pass
         elif seed < 0:
             pass
@@ -1335,16 +1330,9 @@ def standard_cauchy(size=None):
 
     Also known as the Lorentz distribution.
 
-    Parameters
-    ----------
-    size : int, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.
-
-    Returns
-    -------
-    samples : dparray
-        The drawn samples.
+    Limitations
+    -----------
+    Output array data type is :obj:`dpnp.float64`.
 
     Examples
     --------
@@ -1371,17 +1359,9 @@ def standard_exponential(size=None):
     `standard_exponential` is identical to the exponential distribution
     with a scale parameter of 1.
 
-    Parameters
-    ----------
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  Default is None, in which case a
-        single value is returned.
-
-    Returns
-    -------
-    out : dparray
-        Drawn samples.
+    Limitations
+    -----------
+    Output array data type is :obj:`dpnp.float64`.
 
     Examples
     --------
@@ -1436,18 +1416,16 @@ def standard_normal(size=None):
 
     Draw samples from a standard Normal distribution (mean=0, stdev=1).
 
-    Parameters
-    ----------
-    size : int, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  Default is None, in which case a
-        single value is returned.
+    For full documentation refer to :obj:`numpy.random.standard_normal`.
 
-    Returns
-    -------
-    out : float or ndarray
-        A floating-point array of shape ``size`` of drawn samples, or a
-        single sample if ``size`` was not specified.
+    Limitations
+    -----------
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> s = dpnp.random.standard_normal(1000)
 
     """
 
