@@ -1868,20 +1868,12 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayl
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh_param_1_{scale_shape=(), shape=(3, 2)}::test_rayleigh
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh_param_1_{scale_shape=(), shape=(3, 2)}::test_rayleigh_for_negative_scale
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh_param_1_{scale_shape=(), shape=(3, 2)}::test_rayleigh_for_zero_scale
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh_param_2_{scale_shape=(3, 2), shape=(4, 3, 2)}::test_rayleigh
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh_param_2_{scale_shape=(3, 2), shape=(4, 3, 2)}::test_rayleigh_for_negative_scale
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh_param_2_{scale_shape=(3, 2), shape=(4, 3, 2)}::test_rayleigh_for_zero_scale
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh_param_3_{scale_shape=(3, 2), shape=(3, 2)}::test_rayleigh
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh_param_3_{scale_shape=(3, 2), shape=(3, 2)}::test_rayleigh_for_negative_scale
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh_param_3_{scale_shape=(3, 2), shape=(3, 2)}::test_rayleigh_for_zero_scale
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardCauchy_param_0_{shape=(4, 3, 2)}::test_standard_cauchy
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardCauchy_param_1_{shape=(3, 2)}::test_standard_cauchy
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardExponential_param_0_{shape=(4, 3, 2)}::test_standard_exponential
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardExponential_param_1_{shape=(3, 2)}::test_standard_exponential
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardGamma_param_0_{shape=(4, 3, 2), shape_shape=()}::test_standard_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardGamma_param_1_{shape=(4, 3, 2), shape_shape=(3, 2)}::test_standard_gamma
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardGamma_param_2_{shape=(3, 2), shape_shape=()}::test_standard_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardGamma_param_3_{shape=(3, 2), shape_shape=(3, 2)}::test_standard_gamma
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardNormal_param_0_{shape=(4, 3, 2)}::test_standard_normal
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardNormal_param_1_{shape=(3, 2)}::test_standard_normal
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_0_{left_shape=(), mode_shape=(), right_shape=(), shape=(4, 3, 2)}::test_triangular
@@ -1926,12 +1918,6 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeib
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull_param_1_{a_shape=(), shape=(3, 2)}::test_weibull
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull_param_1_{a_shape=(), shape=(3, 2)}::test_weibull_for_inf_a
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull_param_1_{a_shape=(), shape=(3, 2)}::test_weibull_for_negative_a
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull_param_2_{a_shape=(3, 2), shape=(4, 3, 2)}::test_weibull
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull_param_2_{a_shape=(3, 2), shape=(4, 3, 2)}::test_weibull_for_inf_a
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull_param_2_{a_shape=(3, 2), shape=(4, 3, 2)}::test_weibull_for_negative_a
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull_param_3_{a_shape=(3, 2), shape=(3, 2)}::test_weibull
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull_param_3_{a_shape=(3, 2), shape=(3, 2)}::test_weibull_for_inf_a
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull_param_3_{a_shape=(3, 2), shape=(3, 2)}::test_weibull_for_negative_a
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsZipf_param_0_{a_shape=(), shape=(4, 3, 2)}::test_zipf
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsZipf_param_1_{a_shape=(), shape=(3, 2)}::test_zipf
 tests/third_party/cupy/random_tests/test_sample.py::TestChoice::test_no_none

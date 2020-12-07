@@ -537,27 +537,22 @@ class TestDistributionsPower(RandomDistributionsTestCase):
 @testing.gpu
 class TestDistributionsRayleigh(RandomDistributionsTestCase):
 
-    @helper.for_float_dtypes('dtype', no_float16=True)
     @helper.for_float_dtypes('scale_dtype')
-    def test_rayleigh(self, scale_dtype, dtype):
+    def test_rayleigh(self, scale_dtype):
         scale = numpy.full(self.scale_shape, 3, dtype=scale_dtype)
-        self.check_distribution('rayleigh',
-                                {'scale': scale}, dtype)
+        self.check_distribution('rayleigh', {'scale': scale})
 
-    @helper.for_float_dtypes('dtype', no_float16=True)
     @helper.for_float_dtypes('scale_dtype')
-    def test_rayleigh_for_zero_scale(self, scale_dtype, dtype):
+    def test_rayleigh_for_zero_scale(self, scale_dtype):
         scale = numpy.zeros(self.scale_shape, dtype=scale_dtype)
-        self.check_distribution('rayleigh',
-                                {'scale': scale}, dtype)
+        self.check_distribution('rayleigh', {'scale': scale})
 
-    @helper.for_float_dtypes('dtype', no_float16=True)
     @helper.for_float_dtypes('scale_dtype')
-    def test_rayleigh_for_negative_scale(self, scale_dtype, dtype):
+    def test_rayleigh_for_negative_scale(self, scale_dtype):
         scale = numpy.full(self.scale_shape, -0.5, dtype=scale_dtype)
         with self.assertRaises(ValueError):
             cp_params = {'scale': cupy.asarray(scale)}
-            _distributions.rayleigh(size=self.shape, dtype=dtype, **cp_params)
+            _distributions.rayleigh(size=self.shape, **cp_params)
 
 
 @testing.parameterize(*testing.product({
@@ -592,12 +587,11 @@ class TestDistributionsStandardExponential(RandomDistributionsTestCase):
 @testing.gpu
 class TestDistributionsStandardGamma(RandomDistributionsTestCase):
 
-    @helper.for_float_dtypes('dtype', no_float16=True)
     @helper.for_float_dtypes('shape_dtype')
-    def test_standard_gamma(self, shape_dtype, dtype):
+    def test_standard_gamma(self, shape_dtype):
         shape = numpy.ones(self.shape_shape, dtype=shape_dtype)
         self.check_distribution('standard_gamma',
-                                {'shape': shape}, dtype)
+                                {'shape': shape})
 
 
 @testing.parameterize(*testing.product({
@@ -745,27 +739,22 @@ class TestDistributionsWald(RandomDistributionsTestCase):
 @testing.gpu
 class TestDistributionsWeibull(RandomDistributionsTestCase):
 
-    @helper.for_float_dtypes('dtype', no_float16=True)
     @helper.for_float_dtypes('a_dtype')
-    def test_weibull(self, a_dtype, dtype):
+    def test_weibull(self, a_dtype):
         a = numpy.ones(self.a_shape, dtype=a_dtype)
-        self.check_distribution('weibull',
-                                {'a': a}, dtype)
+        self.check_distribution('weibull', {'a': a})
 
-    @helper.for_float_dtypes('dtype', no_float16=True)
     @helper.for_float_dtypes('a_dtype')
-    def test_weibull_for_inf_a(self, a_dtype, dtype):
+    def test_weibull_for_inf_a(self, a_dtype):
         a = numpy.full(self.a_shape, numpy.inf, dtype=a_dtype)
-        self.check_distribution('weibull', {'a': a}, dtype)
+        self.check_distribution('weibull', {'a': a})
 
-    @helper.for_float_dtypes('dtype', no_float16=True)
     @helper.for_float_dtypes('a_dtype')
-    def test_weibull_for_negative_a(self, a_dtype, dtype):
+    def test_weibull_for_negative_a(self, a_dtype):
         a = numpy.full(self.a_shape, -0.5, dtype=a_dtype)
         with self.assertRaises(ValueError):
             cp_params = {'a': cupy.asarray(a)}
-            getattr(_distributions, 'weibull')(
-                size=self.shape, dtype=dtype, **cp_params)
+            getattr(_distributions, 'weibull')(size=self.shape, **cp_params)
 
 
 @testing.parameterize(*testing.product({
