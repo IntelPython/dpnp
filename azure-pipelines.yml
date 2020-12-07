@@ -9,11 +9,7 @@ jobs:
   steps:
 
   - bash: |
-      echo ========================= install Python 3.8 ===============================
-      sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
-      echo ========================= Python version ===============================
-      python --version
-      python3 --version
+      . ./scripts/set_ci_env.sh
       echo ========================= Conda ENV ===============================
       conda create -q -y -n CondaCodeStyle python=3.8 conda-build conda-verify \
                                                       numpy cython pytest \
@@ -36,49 +32,12 @@ jobs:
   steps:
 
   - bash: |
-      echo ========================== current SHELL ===============================
-      echo ${SHELL}
-      echo ========================= current machine kernel ===============================
-      uname -a
-      echo ========================= current directory ===============================
-      pwd
-      echo ========================= install Intel repository ===============================
-      wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-      sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-      rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-      sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
-      sudo apt-get update
-      echo ========================= install Python 3.8 ===============================
-      sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
-      echo ========================= Python version ===============================
-      python --version
-      python3 --version
-      echo ========================= install valgrind ===============================
-      sudo apt-get install valgrind
-      echo ========================= install Numpy cython pytest ===============================
-      pip3 install numpy cython pytest pytest-valgrind
-      echo ========================= install/delete libstdc++-dev ===============================
-      sudo apt remove -y gcc-7 g++-7 gcc-8 g++-8 gcc-10 g++-10
-      # oneapi beta 10 can not work with libstdc++-10-dev 
-      sudo apt remove -y libstdc++-10-dev
-      sudo apt autoremove
-      sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
-      echo ========================= install Intel OneAPI ===============================
-      sudo apt-get install intel-oneapi-mkl                \
-                           intel-oneapi-mkl-devel          \
-                           intel-oneapi-dpcpp-cpp-compiler
-      echo ========================= setup Intel OneAPI ===============================
-      ls -l /opt/intel/oneapi/
-      . /opt/intel/oneapi/setvars.sh
-      echo ========================= Current clang version ===============================
-      valgrind --version
-      clang++ --version
-      which clang++
+      . ./scripts/set_ci_env.sh
       echo ========================= build DPNP ===============================
       ./0.build.sh
       echo ========================= run valgrind ===============================
       export PYTHONMALLOC=malloc
-      valgrind --show-leak-kinds=definite --log-file=/tmp/valgrind-output \
+      valgrind --show-leak-kinds=definite --log-file=/tmp/valgrind-output            \
                python -m pytest tests/third_party/cupy/math_tests/test_arithmetic.py \
                                 -vv --valgrind --valgrind-log=/tmp/valgrind-output
 
@@ -88,25 +47,7 @@ jobs:
     vmImage: 'ubuntu-20.04'
   steps:
   - bash: |
-      echo ========================== current SHELL ===============================
-      echo ${SHELL}
-      echo ========================= current machine kernel ===============================
-      uname -a
-      echo ========================= current directory ===============================
-      pwd
-      echo ========================= install Intel repository ===============================
-      wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-      sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-      rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-      sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
-      sudo apt-get update
-      echo ========================= install Python 3.8 ===============================
-      sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
-      echo ========================= Python version ===============================
-      python --version
-      python3 --version
-      echo ========================= install valgrind ===============================
-      sudo apt-get install valgrind
+      . ./scripts/set_ci_env.sh
       echo ========================= Conda ENV ===============================
       conda create -q -y -n CondaCodeStyle python=3.8 conda-build conda-verify \
                                                       numpy cython pytest \
@@ -114,23 +55,6 @@ jobs:
                                                       cython pytest pytest-cov
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate CondaCodeStyle
-      echo ========================= install/delete libstdc++-dev ===============================
-      sudo apt remove -y gcc-7 g++-7 gcc-8 g++-8 gcc-10 g++-10
-      # oneapi beta 10 can not work with libstdc++-10-dev 
-      sudo apt remove -y libstdc++-10-dev
-      sudo apt autoremove
-      sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
-      echo ========================= install Intel OneAPI ===============================
-      sudo apt-get install intel-oneapi-mkl                \
-                           intel-oneapi-mkl-devel          \
-                           intel-oneapi-dpcpp-cpp-compiler
-      echo ========================= setup Intel OneAPI ===============================
-      ls -l /opt/intel/oneapi/
-      . /opt/intel/oneapi/setvars.sh
-      echo ========================= Current clang version ===============================
-      valgrind --version
-      clang++ --version
-      which clang++
       echo ========================= build DPNP ===============================
       ./0.build.sh
       echo ========================= run code coverage ===============================
@@ -139,7 +63,7 @@ jobs:
       bash <(curl -s https://codecov.io/bash) -f coverage.xml
 
 - job: ubuntu2004
-  displayName: testing on Ubuntu 20.04
+  displayName: Ubuntu 20.04
   pool:
     vmImage: 'ubuntu-20.04'
   strategy:
@@ -148,57 +72,19 @@ jobs:
         python.version: '3.7'
       Python38:
         python.version: '3.8'
+      Python39:
+        python.version: '3.9'
   steps:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '$(python.version)'
     displayName: 'Use Python $(python.version)'
   - bash: |
-      echo ========================== current SHELL ===============================
-      echo ${SHELL}
-      echo ========================== run script ===============================
-      echo $PWD
-      ls -l
-      ./scripts/set_ci_env.sh
-      echo ========================= current machine kernel ===============================
-      uname -a
-      echo ========================= current directory ===============================
-      pwd
-      echo ========================= install Intel repository ===============================
-      wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-      sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-      rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-      sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
-      sudo apt-get update
-      echo ========================= install Python 3.8 ===============================
-      sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
-      echo ========================= Python version ===============================
-      python --version
-      python3 --version
-      echo ========================= install Numpy cython pytest ===============================
-      pip3 install numpy cython pytest
-      echo ========================= install/delete libstdc++-dev ===============================
-      sudo apt remove -y gcc-7 g++-7 gcc-8 g++-8 gcc-10 g++-10
-      # oneapi beta 10 can not work with libstdc++-10-dev 
-      sudo apt remove -y libstdc++-10-dev
-      sudo apt autoremove
-      sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
-      echo ========================= install Intel OneAPI ===============================
-      sudo apt-get install intel-oneapi-mkl                \
-                           intel-oneapi-mkl-devel          \
-                           intel-oneapi-dpcpp-cpp-compiler
-      echo ========================= setup Intel OneAPI ===============================
-      ls -l /opt/intel/oneapi/
-      . /opt/intel/oneapi/setvars.sh
-      g++ --version
-      sudo apt list --installed
-      echo ========================= Current clang version ===============================
-      clang++ --version
-      which clang++
+      . ./scripts/set_ci_env.sh
       echo ========================= build DPNP ===============================
       ./0.build.sh
       echo ========================= run pytest ===============================
-      python -m pytest --tb=short
+      pytest
 
 # - job: ubuntu1804
 #   displayName: make package
