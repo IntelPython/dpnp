@@ -258,13 +258,14 @@ def test_gamma_invalid_args():
 def test_gamma_check_moments():
     shape = 2.56
     scale = 0.8
+    size = 10**5
 
     expected_mean = shape * scale
     expected_var = shape * scale * scale
 
     seed = 28041990
     dpnp.random.seed(seed)
-    res =dpnp.random.gamma(shape=shape, scale=scale, size=10**5)
+    res = dpnp.random.gamma(shape=shape, scale=scale, size=size)
 
     var = numpy.var(res)
     mean = numpy.mean(res)
