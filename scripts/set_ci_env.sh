@@ -24,10 +24,10 @@ python --version
 python3 --version
 
 echo ========================= install valgrind ===============================
-sudo apt-get install valgrind pytest-valgrind
+sudo apt-get install valgrind
 
 echo ========================= install Numpy cython pytest ===============================
-pip3 install numpy cython pytest
+pip3 install numpy cython pytest pytest-valgrind
 
 echo ========================= install/delete libstdc++-dev ===============================
 sudo apt remove -y gcc-7 g++-7 gcc-8 g++-8 gcc-10 g++-10
