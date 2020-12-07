@@ -205,8 +205,104 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;diag_indices&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;diag_indices_from&quot;</span><span class="p">,</span>
     <span class="s2">&quot;nonzero&quot;</span><span class="p">,</span>
 <span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">diag_indices</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the indices to access the main diagonal of an array.</span>
+
+<span class="sd">    This returns a tuple of indices that can be used to access the main</span>
+<span class="sd">    diagonal of an array `a` with ``a.ndim &gt;= 2`` dimensions and shape</span>
+<span class="sd">    (n, n, ..., n). For ``a.ndim = 2`` this is the usual diagonal, for</span>
+<span class="sd">    ``a.ndim &gt; 2`` this is the set of indices to access ``a[i, i, ..., i]``</span>
+<span class="sd">    for ``i = [0..n-1]``.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.diag_indices`.</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`diag_indices_from` : Return the indices to access the main</span>
+<span class="sd">                               diagonal of an n-dimensional array.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Create a set of indices to access the diagonal of a (4, 4) array:</span>
+
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; di = np.diag_indices(4)</span>
+<span class="sd">    &gt;&gt;&gt; di</span>
+<span class="sd">    (array([0, 1, 2, 3]), array([0, 1, 2, 3]))</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(16).reshape(4, 4)</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[ 0,  1,  2,  3],</span>
+<span class="sd">           [ 4,  5,  6,  7],</span>
+<span class="sd">           [ 8,  9, 10, 11],</span>
+<span class="sd">           [12, 13, 14, 15]])</span>
+<span class="sd">    &gt;&gt;&gt; a[di] = 100</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[100,   1,   2,   3],</span>
+<span class="sd">           [  4, 100,   6,   7],</span>
+<span class="sd">           [  8,   9, 100,  11],</span>
+<span class="sd">           [ 12,  13,  14, 100]])</span>
+
+<span class="sd">    Now, we create indices to manipulate a 3-D array:</span>
+
+<span class="sd">    &gt;&gt;&gt; d3 = np.diag_indices(2, 3)</span>
+<span class="sd">    &gt;&gt;&gt; d3</span>
+<span class="sd">    (array([0, 1]), array([0, 1]), array([0, 1]))</span>
+
+<span class="sd">    And use it to set the diagonal of an array of zeros to 1:</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.zeros((2, 2, 2), dtype=int)</span>
+<span class="sd">    &gt;&gt;&gt; a[d3] = 1</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[[1, 0],</span>
+<span class="sd">            [0, 0]],</span>
+<span class="sd">           [[0, 0],</span>
+<span class="sd">            [0, 1]]])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">dpnp_diag_indices</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">diag_indices</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">ndim</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">diag_indices_from</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the indices to access the main diagonal of an n-dimensional array.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.diag_indices_from`.</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`diag_indices` : Return the indices to access the main</span>
+<span class="sd">                          diagonal of an array.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_a_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_a_dparray</span><span class="p">):</span>
+        <span class="c1"># original limitation</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;diag_indices_from&quot;</span><span class="p">,</span> <span class="s2">&quot;arr.ndim&quot;</span><span class="p">,</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="s2">&quot;at least 2-d&quot;</span><span class="p">)</span>
+
+        <span class="c1"># original limitation</span>
+        <span class="c1"># For more than d=2, the strided formula is only valid for arrays with</span>
+        <span class="c1"># all dimensions equal, so we check first.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">numpy</span><span class="o">.</span><span class="n">alltrue</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>  <span class="c1"># TODO: replace alltrue and diff funcs with dpnp own ones</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;diag_indices_from&quot;</span><span class="p">,</span> <span class="s2">&quot;arr.shape&quot;</span><span class="p">,</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+                                      <span class="s2">&quot;All dimensions of input must be of equal length&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp_diag_indices</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">diag_indices_from</span><span class="p">,</span> <span class="n">arr</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="nonzero"><a class="viewcode-back" href="../../reference/generated/dpnp.nonzero.html#dpnp.nonzero">[docs]</a><span class="k">def</span> <span class="nf">nonzero</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>

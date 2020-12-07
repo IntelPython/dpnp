@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.geomspace &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.meshgrid &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.meshgrid" href="dpnp.meshgrid.html" />
-    <link rel="prev" title="dpnp.logspace" href="dpnp.logspace.html" /> 
+    <link rel="next" title="dpnp.diag" href="dpnp.diag.html" />
+    <link rel="prev" title="dpnp.geomspace" href="dpnp.geomspace.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -173,13 +173,13 @@
         
           <li><a href="../creation.html">Array Creation Routines</a> &raquo;</li>
         
-      <li>dpnp.geomspace</li>
+      <li>dpnp.meshgrid</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.geomspace.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.meshgrid.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -192,34 +192,47 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-geomspace">
-<h1>dpnp.geomspace<a class="headerlink" href="#dpnp-geomspace" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-meshgrid">
+<h1>dpnp.meshgrid<a class="headerlink" href="#dpnp-meshgrid" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.geomspace">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">geomspace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">stop</span></em>, <em class="sig-param"><span class="n">num</span><span class="o">=</span><span class="default_value">50</span></em>, <em class="sig-param"><span class="n">endpoint</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#geomspace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.geomspace" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return numbers spaced evenly on a log scale (a geometric progression).</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.geomspace.html#numpy.geomspace" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.geomspace</span></code></a>.</p>
+<dt id="dpnp.meshgrid">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">meshgrid</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">xi</span></em>, <em class="sig-param"><span class="n">copy</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">sparse</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">indexing</span><span class="o">=</span><span class="default_value">'xy'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#meshgrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.meshgrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return coordinate matrices from coordinate vectors.</p>
+<p>Make N-D coordinate arrays for vectorized evaluations of
+N-D scalar/vector fields over N-D grids, given
+one-dimensional coordinate arrays x1, x2,…, xn.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.meshgrid.html#numpy.meshgrid" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.meshgrid</span></code></a>.</p>
 <p class="rubric">Limitations</p>
-<p>Parameter <code class="docutils literal notranslate"><span class="pre">axis</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference internal" href="dpnp.logspace.html#dpnp.logspace" title="dpnp.logspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.logspace</span></code></a></dt><dd><p>Similar to geomspace, but with endpoints specified using log and base.</p>
-</dd>
-<dt><a class="reference internal" href="dpnp.linspace.html#dpnp.linspace" title="dpnp.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linspace</span></code></a></dt><dd><p>Similar to geomspace, but with arithmetic instead of geometric progression.</p>
-</dd>
-<dt><a class="reference internal" href="dpnp.arange.html#dpnp.arange" title="dpnp.arange"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.arange</span></code></a></dt><dd><p>Similar to linspace, with the step size specified instead of the number of samples.</p>
-</dd>
-</dl>
-</div>
+<p>Parameter <code class="docutils literal notranslate"><span class="pre">copy</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">True</span></code>.
+Parameter <code class="docutils literal notranslate"><span class="pre">sparse</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">geomspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
-<span class="go">[1.0, 10.0, 100.0, 1000.0]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">geomspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x2</span><span class="p">]</span>
-<span class="go">[1.0, 5.62341325, 31.6227766, 177.827941]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">nx</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ny</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xv</span><span class="p">,</span> <span class="n">yv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xv</span>
+<span class="go">array([[0. , 0.5, 1. ],</span>
+<span class="go">       [0. , 0.5, 1. ]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">yv</span>
+<span class="go">array([[0.,  0.,  0.],</span>
+<span class="go">       [1.,  1.,  1.]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xv</span><span class="p">,</span> <span class="n">yv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># make sparse output arrays</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xv</span>
+<span class="go">array([[0. ,  0.5,  1. ]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">yv</span>
+<span class="go">array([[0.],</span>
+<span class="go">       [1.]])</span>
+</pre></div>
+</div>
+<p><cite>meshgrid</cite> is very useful to evaluate functions on a grid.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">xx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">yy</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">xx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">yy</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -234,10 +247,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.meshgrid.html" class="btn btn-neutral float-right" title="dpnp.meshgrid" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.diag.html" class="btn btn-neutral float-right" title="dpnp.diag" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.logspace.html" class="btn btn-neutral float-left" title="dpnp.logspace" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.geomspace.html" class="btn btn-neutral float-left" title="dpnp.geomspace" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

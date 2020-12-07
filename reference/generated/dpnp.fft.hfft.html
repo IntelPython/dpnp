@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.diagflat &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.fft.hfft &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.tri" href="dpnp.tri.html" />
-    <link rel="prev" title="dpnp.diag" href="dpnp.diag.html" /> 
+    <link rel="next" title="dpnp.fft.ihfft" href="dpnp.fft.ihfft.html" />
+    <link rel="prev" title="dpnp.fft.irfftn" href="dpnp.fft.irfftn.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -93,16 +93,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="../creation.html">Array Creation Routines</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../creation.html#basic-creation-routines">Basic creation routines</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../creation.html#creation-from-other-data">Creation from other data</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../creation.html#numerical-ranges">Numerical ranges</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../creation.html#matrix-creation">Matrix creation</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="../creation.html">Array Creation Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manipulation.html">Array Manipulation Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../binary.html">Binary Operations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../fft.html">FFT Functions</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../fft.html#standard-ffts">Standard FFTs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../fft.html#real-ffts">Real FFTs</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../fft.html#hermitian-ffts">Hermitian FFTs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../fft.html#helper-routines">Helper routines</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear Algebra</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical Functions</a></li>
@@ -171,15 +171,15 @@
         
           <li><a href="../routines.html">Routines</a> &raquo;</li>
         
-          <li><a href="../creation.html">Array Creation Routines</a> &raquo;</li>
+          <li><a href="../fft.html">FFT Functions</a> &raquo;</li>
         
-      <li>dpnp.diagflat</li>
+      <li>dpnp.fft.hfft</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.diagflat.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.fft.hfft.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -192,28 +192,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-diagflat">
-<h1>dpnp.diagflat<a class="headerlink" href="#dpnp-diagflat" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-fft-hfft">
+<h1>dpnp.fft.hfft<a class="headerlink" href="#dpnp-fft-hfft" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.diagflat">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">diagflat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v</span></em>, <em class="sig-param"><span class="n">k</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#diagflat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.diagflat" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a two-dimensional array with the flattened input as a diagonal.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.diagflat.html#numpy.diagflat" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.diagflat</span></code></a>.</p>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">diagflat</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]])</span>
-<span class="go">array([[1, 0, 0, 0],</span>
-<span class="go">       [0, 2, 0, 0],</span>
-<span class="go">       [0, 0, 3, 0],</span>
-<span class="go">       [0, 0, 0, 4]])</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">diagflat</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
-<span class="go">array([[0, 1, 0],</span>
-<span class="go">       [0, 0, 2],</span>
-<span class="go">       [0, 0, 0]])</span>
-</pre></div>
-</div>
+<dt id="dpnp.fft.hfft">
+<code class="sig-prename descclassname">dpnp.fft.</code><code class="sig-name descname">hfft</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">n</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">norm</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/fft/dpnp_iface_fft.html#hfft"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.fft.hfft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the one-dimensional discrete Fourier Transform of a signal that has Hermitian symmetry.</p>
+<p class="rubric">Limitations</p>
+<p>Parameter <code class="docutils literal notranslate"><span class="pre">norm</span></code> is unsupported.
+Parameter <code class="docutils literal notranslate"><span class="pre">x1</span></code> supports <code class="docutils literal notranslate"><span class="pre">dpnp.int32</span></code>, <code class="docutils literal notranslate"><span class="pre">dpnp.int64</span></code>, <code class="docutils literal notranslate"><span class="pre">dpnp.float32</span></code>, <code class="docutils literal notranslate"><span class="pre">dpnp.float64</span></code> and
+<code class="docutils literal notranslate"><span class="pre">dpnp.complex128</span></code> datatypes only.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.fft.hfft.html#numpy.fft.hfft" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fft.hfft</span></code></a>.</p>
 </dd></dl>
 
 </div>
@@ -226,10 +215,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.tri.html" class="btn btn-neutral float-right" title="dpnp.tri" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.fft.ihfft.html" class="btn btn-neutral float-right" title="dpnp.fft.ihfft" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.diag.html" class="btn btn-neutral float-left" title="dpnp.diag" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.fft.irfftn.html" class="btn btn-neutral float-left" title="dpnp.fft.irfftn" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

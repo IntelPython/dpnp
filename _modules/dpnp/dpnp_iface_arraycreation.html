@@ -219,6 +219,7 @@
     <span class="s2">&quot;geomspace&quot;</span><span class="p">,</span>
     <span class="s2">&quot;linspace&quot;</span><span class="p">,</span>
     <span class="s2">&quot;logspace&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;meshgrid&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ones&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ones_like&quot;</span><span class="p">,</span>
     <span class="s2">&quot;tri&quot;</span><span class="p">,</span>
@@ -510,6 +511,7 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; x = np.arange(9).reshape((3,3))</span>
 <span class="sd">    &gt;&gt;&gt; x</span>
 <span class="sd">    array([[0, 1, 2],</span>
@@ -547,6 +549,7 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; np.diagflat([[1,2], [3,4]])</span>
 <span class="sd">    array([[1, 0, 0, 0],</span>
 <span class="sd">           [0, 2, 0, 0],</span>
@@ -862,6 +865,68 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">logspace</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="meshgrid"><a class="viewcode-back" href="../../reference/generated/dpnp.meshgrid.html#dpnp.meshgrid">[docs]</a><span class="k">def</span> <span class="nf">meshgrid</span><span class="p">(</span><span class="o">*</span><span class="n">xi</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s1">&#39;xy&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return coordinate matrices from coordinate vectors.</span>
+
+<span class="sd">    Make N-D coordinate arrays for vectorized evaluations of</span>
+<span class="sd">    N-D scalar/vector fields over N-D grids, given</span>
+<span class="sd">    one-dimensional coordinate arrays x1, x2,..., xn.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.meshgrid`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameter ``copy`` is supported only with default value ``True``.</span>
+<span class="sd">    Parameter ``sparse`` is supported only with default value ``False``.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; nx, ny = (3, 2)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.linspace(0, 1, nx)</span>
+<span class="sd">    &gt;&gt;&gt; y = np.linspace(0, 1, ny)</span>
+<span class="sd">    &gt;&gt;&gt; xv, yv = np.meshgrid(x, y)</span>
+<span class="sd">    &gt;&gt;&gt; xv</span>
+<span class="sd">    array([[0. , 0.5, 1. ],</span>
+<span class="sd">           [0. , 0.5, 1. ]])</span>
+<span class="sd">    &gt;&gt;&gt; yv</span>
+<span class="sd">    array([[0.,  0.,  0.],</span>
+<span class="sd">           [1.,  1.,  1.]])</span>
+<span class="sd">    &gt;&gt;&gt; xv, yv = np.meshgrid(x, y, sparse=True)  # make sparse output arrays</span>
+<span class="sd">    &gt;&gt;&gt; xv</span>
+<span class="sd">    array([[0. ,  0.5,  1. ]])</span>
+<span class="sd">    &gt;&gt;&gt; yv</span>
+<span class="sd">    array([[0.],</span>
+<span class="sd">           [1.]])</span>
+
+<span class="sd">    `meshgrid` is very useful to evaluate functions on a grid.</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; x = np.arange(-5, 5, 0.1)</span>
+<span class="sd">    &gt;&gt;&gt; y = np.arange(-5, 5, 0.1)</span>
+<span class="sd">    &gt;&gt;&gt; xx, yy = np.meshgrid(x, y, sparse=True)</span>
+<span class="sd">    &gt;&gt;&gt; z = np.sin(xx**2 + yy**2) / (xx**2 + yy**2)</span>
+<span class="sd">    &gt;&gt;&gt; h = plt.contourf(x,y,z)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">():</span>
+        <span class="c1"># original limitation</span>
+        <span class="k">if</span> <span class="n">indexing</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ij&quot;</span><span class="p">,</span> <span class="s2">&quot;xy&quot;</span><span class="p">]:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;meshgrid&quot;</span><span class="p">,</span> <span class="s2">&quot;indexing&quot;</span><span class="p">,</span> <span class="n">indexing</span><span class="p">,</span> <span class="s2">&quot;&#39;ij&#39; or &#39;xy&#39;&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">copy</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;meshgrid&quot;</span><span class="p">,</span> <span class="s2">&quot;copy&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sparse</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;meshgrid&quot;</span><span class="p">,</span> <span class="s2">&quot;sparse&quot;</span><span class="p">,</span> <span class="n">sparse</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dpnp_meshgrid</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">sparse</span><span class="p">,</span> <span class="n">indexing</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">sparse</span><span class="p">,</span> <span class="n">indexing</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="ones"><a class="viewcode-back" href="../../reference/generated/dpnp.ones.html#dpnp.ones">[docs]</a><span class="k">def</span> <span class="nf">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a new array of given shape and type, filled with ones.</span>
@@ -953,6 +1018,7 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; np.tri(3, 5, 2, dtype=int)</span>
 <span class="sd">    array([[1, 1, 1, 0, 0],</span>
 <span class="sd">           [1, 1, 1, 1, 0],</span>
@@ -981,6 +1047,7 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; np.tril([[1,2,3],[4,5,6],[7,8,9],[10,11,12]], -1)</span>
 <span class="sd">    array([[ 0,  0,  0],</span>
 <span class="sd">           [ 4,  0,  0],</span>
@@ -1009,6 +1076,7 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; np.triu([[1,2,3],[4,5,6],[7,8,9],[10,11,12]], -1)</span>
 <span class="sd">    array([[ 1,  2,  3],</span>
 <span class="sd">           [ 4,  5,  6],</span>
