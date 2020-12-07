@@ -302,7 +302,6 @@ class TestDistributionsLognormal(RandomDistributionsTestCase):
 @testing.gpu
 class TestDistributionsLogseries(RandomDistributionsTestCase):
 
-
     @helper.for_float_dtypes('p_dtype', no_float16=True)
     def test_logseries(self, p_dtype):
         p = numpy.full(self.p_shape, 0.5, dtype=p_dtype)

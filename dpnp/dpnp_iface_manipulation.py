@@ -254,7 +254,7 @@ def moveaxis(x1, source, destination):
     for destination_id, source_id in sorted(zip(destination_norm, source_norm)):
         # if destination_id in input_permute:
         # pytest tests/third_party/cupy/manipulation_tests/test_transpose.py::TestTranspose::test_moveaxis_invalid5_3
-        #checker_throw_value_error("swapaxes", "source_id exists", source_id, input_permute)
+        # checker_throw_value_error("swapaxes", "source_id exists", source_id, input_permute)
         input_permute.insert(destination_id, source_id)
 
     return transpose(x1, axes=input_permute)
@@ -318,11 +318,7 @@ def repeat(x1, repeats, axis=None):
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1)
-        and is_x1_dparray
-        and (axis is None or axis == 0)
-        and (x1.ndim < 2)
-        ):
+    if (not use_origin_backend(x1) and is_x1_dparray and (axis is None or axis == 0) and (x1.ndim < 2)):
 
         repeat_val = repeats
         if isinstance(repeats, (tuple, list)):
