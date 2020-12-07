@@ -63,7 +63,7 @@ Recommendations:
    >>> [i for i in a]
    [0, 1, 2]
 
-`dpnp.array` contains a good example of docstring. 
+`dpnp.array` contains a good example of docstring.
 
 """
 

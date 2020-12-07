@@ -962,7 +962,7 @@ def zeros(shape, dtype=None, order='C'):
     [0.0, 0.0, 0.0, 0.0, 0.0]
     >>> x = np.zeros((2, 1))
     >>> x.ndim, x.size, x.shape
-    (2, 2, (2, 1))  
+    (2, 2, (2, 1))
     >>> [i for i in x]
     [0.0, 0.0]
 
