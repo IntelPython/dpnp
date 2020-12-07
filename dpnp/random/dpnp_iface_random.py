@@ -1309,16 +1309,16 @@ def seed(seed=None):
     """
 
     if not use_origin_backend(seed):
-        if not dpnp.isscalar(seed):
-            pass
-        elif not isinstance(seed, int):
+        # TODO:
+        # array_like of ints for `seed`
+        if seed is None:
+            seed = 1
+        if not isinstance(seed, int):
             pass
         elif seed < 0:
             pass
         else:
-            if seed is None:
-                seed = 1
-            dpnp_srand(seed)
+            return dpnp_srand(seed)
 
     return call_origin(numpy.random.seed, seed)
 
