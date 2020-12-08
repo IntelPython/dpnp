@@ -94,6 +94,8 @@ jobs:
   - bash: |
       . ./scripts/set_ci_env.sh
       echo ========================= make DPNP package ===============================
+      conda activate
+      conda info
       conda-build conda-recipe/
       echo ========================= list files ===============================
       ls -l
