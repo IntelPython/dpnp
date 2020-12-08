@@ -71,35 +71,35 @@ __all__ = [
 ]
 
 
-ctypedef void(*fptr_custom_rng_beta_c_1out_t)(void *, double, double, size_t) except +
-ctypedef void(*fptr_custom_rng_binomial_c_1out_t)(void *, int, double, size_t) except +
-ctypedef void(*fptr_custom_rng_chi_square_c_1out_t)(void *, int, size_t) except +
-ctypedef void(*fptr_custom_rng_exponential_c_1out_t)(void *, double, size_t) except +
-ctypedef void(*fptr_custom_rng_gamma_c_1out_t)(void *, double, double, size_t) except +
-ctypedef void(*fptr_custom_rng_geometric_c_1out_t)(void *, float, size_t) except +
-ctypedef void(*fptr_custom_rng_gaussian_c_1out_t)(void *, double, double, size_t) except +
-ctypedef void(*fptr_custom_rng_gumbel_c_1out_t)(void *, double, double, size_t) except +
-ctypedef void(*fptr_custom_rng_hypergeometric_c_1out_t)(void *, int, int, int, size_t) except +
-ctypedef void(*fptr_custom_rng_laplace_c_1out_t)(void *, double, double, size_t) except +
-ctypedef void(*fptr_custom_rng_lognormal_c_1out_t)(void *, double, double, size_t) except +
-ctypedef void(*fptr_custom_rng_multinomial_c_1out_t)(void * result, int, const double *, const size_t, size_t) except +
-ctypedef void(*fptr_custom_rng_multivariate_normal_c_1out_t)(void *,
-                                                             const int,
-                                                             const double *,
-                                                             const size_t,
-                                                             const double *,
-                                                             const size_t,
-                                                             size_t) except +
-ctypedef void(*fptr_custom_rng_negative_binomial_c_1out_t)(void *, double, double, size_t) except +
-ctypedef void(*fptr_custom_rng_normal_c_1out_t)(void *, double, double, size_t) except +
-ctypedef void(*fptr_custom_rng_poisson_c_1out_t)(void *, double, size_t) except +
-ctypedef void(*fptr_custom_rng_rayleigh_c_1out_t)(void *, double, size_t) except +
-ctypedef void(*fptr_custom_rng_standard_cauchy_c_1out_t)(void *, size_t) except +
-ctypedef void(*fptr_custom_rng_standard_exponential_c_1out_t)(void *, size_t) except +
-ctypedef void(*fptr_custom_rng_standard_gamma_c_1out_t)(void *, double, size_t) except +
-ctypedef void(*fptr_custom_rng_standard_normal_c_1out_t)(void *, size_t) except +
-ctypedef void(*fptr_custom_rng_uniform_c_1out_t)(void *, long, long, size_t) except +
-ctypedef void(*fptr_custom_rng_weibull_c_1out_t)(void *, double, size_t) except +
+ctypedef void(*fptr_dpnp_rng_beta_c_1out_t)(void *, double, double, size_t) except +
+ctypedef void(*fptr_dpnp_rng_binomial_c_1out_t)(void *, int, double, size_t) except +
+ctypedef void(*fptr_dpnp_rng_chi_square_c_1out_t)(void *, int, size_t) except +
+ctypedef void(*fptr_dpnp_rng_exponential_c_1out_t)(void *, double, size_t) except +
+ctypedef void(*fptr_dpnp_rng_gamma_c_1out_t)(void *, double, double, size_t) except +
+ctypedef void(*fptr_dpnp_rng_geometric_c_1out_t)(void *, float, size_t) except +
+ctypedef void(*fptr_dpnp_rng_gaussian_c_1out_t)(void *, double, double, size_t) except +
+ctypedef void(*fptr_dpnp_rng_gumbel_c_1out_t)(void *, double, double, size_t) except +
+ctypedef void(*fptr_dpnp_rng_hypergeometric_c_1out_t)(void *, int, int, int, size_t) except +
+ctypedef void(*fptr_dpnp_rng_laplace_c_1out_t)(void *, double, double, size_t) except +
+ctypedef void(*fptr_dpnp_rng_lognormal_c_1out_t)(void *, double, double, size_t) except +
+ctypedef void(*fptr_dpnp_rng_multinomial_c_1out_t)(void * result, int, const double *, const size_t, size_t) except +
+ctypedef void(*fptr_dpnp_rng_multivariate_normal_c_1out_t)(void *,
+                                                           const int,
+                                                           const double *,
+                                                           const size_t,
+                                                           const double *,
+                                                           const size_t,
+                                                           size_t) except +
+ctypedef void(*fptr_dpnp_rng_negative_binomial_c_1out_t)(void *, double, double, size_t) except +
+ctypedef void(*fptr_dpnp_rng_normal_c_1out_t)(void *, double, double, size_t) except +
+ctypedef void(*fptr_dpnp_rng_poisson_c_1out_t)(void *, double, size_t) except +
+ctypedef void(*fptr_dpnp_rng_rayleigh_c_1out_t)(void *, double, size_t) except +
+ctypedef void(*fptr_dpnp_rng_standard_cauchy_c_1out_t)(void *, size_t) except +
+ctypedef void(*fptr_dpnp_rng_standard_exponential_c_1out_t)(void *, size_t) except +
+ctypedef void(*fptr_dpnp_rng_standard_gamma_c_1out_t)(void *, double, size_t) except +
+ctypedef void(*fptr_dpnp_rng_standard_normal_c_1out_t)(void *, size_t) except +
+ctypedef void(*fptr_dpnp_rng_uniform_c_1out_t)(void *, long, long, size_t) except +
+ctypedef void(*fptr_dpnp_rng_weibull_c_1out_t)(void *, double, size_t) except +
 
 
 cpdef dparray dpnp_beta(double a, double b, size):
@@ -120,7 +120,7 @@ cpdef dparray dpnp_beta(double a, double b, size):
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(size, dtype=result_type)
 
-    cdef fptr_custom_rng_beta_c_1out_t func = <fptr_custom_rng_beta_c_1out_t > kernel_data.ptr
+    cdef fptr_dpnp_rng_beta_c_1out_t func = <fptr_dpnp_rng_beta_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), a, b, result.size)
 
@@ -140,7 +140,7 @@ cpdef dparray dpnp_binomial(int ntrial, double p, size):
     cdef dparray result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
-    cdef fptr_custom_rng_binomial_c_1out_t func
+    cdef fptr_dpnp_rng_binomial_c_1out_t func
 
     if ntrial == 0 or p == 0.0:
         result = dparray(size, dtype=dtype)
@@ -159,7 +159,7 @@ cpdef dparray dpnp_binomial(int ntrial, double p, size):
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
-        func = <fptr_custom_rng_binomial_c_1out_t > kernel_data.ptr
+        func = <fptr_dpnp_rng_binomial_c_1out_t > kernel_data.ptr
         # call FPTR function
         func(result.get_data(), ntrial, p, result.size)
 
@@ -184,7 +184,7 @@ cpdef dparray dpnp_chisquare(int df, size):
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(size, dtype=result_type)
 
-    cdef fptr_custom_rng_chi_square_c_1out_t func = <fptr_custom_rng_chi_square_c_1out_t > kernel_data.ptr
+    cdef fptr_dpnp_rng_chi_square_c_1out_t func = <fptr_dpnp_rng_chi_square_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), df, result.size)
 
@@ -210,7 +210,7 @@ cpdef dparray dpnp_exponential(double beta, size):
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(size, dtype=dtype)
 
-    cdef fptr_custom_rng_exponential_c_1out_t func = <fptr_custom_rng_exponential_c_1out_t > kernel_data.ptr
+    cdef fptr_dpnp_rng_exponential_c_1out_t func = <fptr_dpnp_rng_exponential_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), beta, result.size)
 
@@ -229,7 +229,7 @@ cpdef dparray dpnp_gamma(double shape, double scale, size):
     cdef dparray result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
-    cdef fptr_custom_rng_gamma_c_1out_t func
+    cdef fptr_dpnp_rng_gamma_c_1out_t func
 
     if shape == 0.0 or scale == 0.0:
         result = dparray(size, dtype=dtype)
@@ -245,7 +245,7 @@ cpdef dparray dpnp_gamma(double shape, double scale, size):
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
-        func = <fptr_custom_rng_gamma_c_1out_t > kernel_data.ptr
+        func = <fptr_dpnp_rng_gamma_c_1out_t > kernel_data.ptr
         # call FPTR function
         func(result.get_data(), shape, scale, result.size)
 
@@ -265,7 +265,7 @@ cpdef dparray dpnp_geometric(float p, size):
     cdef dparray result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
-    cdef fptr_custom_rng_geometric_c_1out_t func
+    cdef fptr_dpnp_rng_geometric_c_1out_t func
 
     if p == 1.0:
         result = dparray(size, dtype=dtype)
@@ -281,7 +281,7 @@ cpdef dparray dpnp_geometric(float p, size):
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
-        func = <fptr_custom_rng_geometric_c_1out_t > kernel_data.ptr
+        func = <fptr_dpnp_rng_geometric_c_1out_t > kernel_data.ptr
         # call FPTR function
         func(result.get_data(), p, result.size)
 
@@ -300,7 +300,7 @@ cpdef dparray dpnp_gumbel(double loc, double scale, size):
     cdef dparray result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
-    cdef fptr_custom_rng_gumbel_c_1out_t func
+    cdef fptr_dpnp_rng_gumbel_c_1out_t func
 
     if scale == 0.0:
         result = dparray(size, dtype=dtype)
@@ -316,7 +316,7 @@ cpdef dparray dpnp_gumbel(double loc, double scale, size):
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
-        func = <fptr_custom_rng_gumbel_c_1out_t > kernel_data.ptr
+        func = <fptr_dpnp_rng_gumbel_c_1out_t > kernel_data.ptr
         # call FPTR function
         func(result.get_data(), loc, scale, result.size)
 
@@ -335,7 +335,7 @@ cpdef dparray dpnp_hypergeometric(int l, int s, int m, size):
     cdef dparray result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
-    cdef fptr_custom_rng_hypergeometric_c_1out_t func
+    cdef fptr_dpnp_rng_hypergeometric_c_1out_t func
 
     if m == 0:
         result = dparray(size, dtype=dtype)
@@ -354,7 +354,7 @@ cpdef dparray dpnp_hypergeometric(int l, int s, int m, size):
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
-        func = <fptr_custom_rng_hypergeometric_c_1out_t > kernel_data.ptr
+        func = <fptr_dpnp_rng_hypergeometric_c_1out_t > kernel_data.ptr
         # call FPTR function
         func(result.get_data(), l, s, m, result.size)
 
@@ -373,7 +373,7 @@ cpdef dparray dpnp_laplace(double loc, double scale, size):
     cdef dparray result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
-    cdef fptr_custom_rng_laplace_c_1out_t func
+    cdef fptr_dpnp_rng_laplace_c_1out_t func
 
     if scale == 0.0:
         result = dparray(size, dtype=dtype)
@@ -389,7 +389,7 @@ cpdef dparray dpnp_laplace(double loc, double scale, size):
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
-        func = <fptr_custom_rng_laplace_c_1out_t > kernel_data.ptr
+        func = <fptr_dpnp_rng_laplace_c_1out_t > kernel_data.ptr
         # call FPTR function
         func(result.get_data(), loc, scale, result.size)
 
@@ -408,7 +408,7 @@ cpdef dparray dpnp_lognormal(double mean, double stddev, size):
     cdef dparray result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
-    cdef fptr_custom_rng_lognormal_c_1out_t func
+    cdef fptr_dpnp_rng_lognormal_c_1out_t func
 
     if stddev == 0.0:
         val = numpy.exp(mean + (stddev ** 2) / 2)
@@ -425,7 +425,7 @@ cpdef dparray dpnp_lognormal(double mean, double stddev, size):
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
-        func = <fptr_custom_rng_lognormal_c_1out_t > kernel_data.ptr
+        func = <fptr_dpnp_rng_lognormal_c_1out_t > kernel_data.ptr
         # call FPTR function
         func(result.get_data(), mean, stddev, result.size)
 
@@ -446,7 +446,7 @@ cpdef dparray dpnp_multinomial(int ntrial, p, size):
     cdef dparray result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
-    cdef fptr_custom_rng_multinomial_c_1out_t func
+    cdef fptr_dpnp_rng_multinomial_c_1out_t func
     p = numpy.asarray(p, dtype=numpy.float64)
 
     cdef double * p_vector = <double * > numpy.PyArray_DATA(p)
@@ -467,7 +467,7 @@ cpdef dparray dpnp_multinomial(int ntrial, p, size):
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
-        func = <fptr_custom_rng_multinomial_c_1out_t > kernel_data.ptr
+        func = <fptr_dpnp_rng_multinomial_c_1out_t > kernel_data.ptr
         # call FPTR function
         func(result.get_data(), ntrial, p_vector, p_vector_size, result.size)
 
@@ -492,7 +492,7 @@ cpdef dparray dpnp_multivariate_normal(numpy.ndarray mean, numpy.ndarray cov, si
 
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
-    cdef fptr_custom_rng_multivariate_normal_c_1out_t func
+    cdef fptr_dpnp_rng_multivariate_normal_c_1out_t func
 
     # mean and cov expected numpy.ndarray in C order (row major)
     mean_vector = <double * > numpy.PyArray_DATA(mean)
@@ -513,7 +513,7 @@ cpdef dparray dpnp_multivariate_normal(numpy.ndarray mean, numpy.ndarray cov, si
 
     dimen = len(mean)
 
-    func = <fptr_custom_rng_multivariate_normal_c_1out_t > kernel_data.ptr
+    func = <fptr_dpnp_rng_multivariate_normal_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), dimen, mean_vector, mean_vector_size, cov_vector, cov_vector_size, result.size)
 
@@ -534,7 +534,7 @@ cpdef dparray dpnp_negative_binomial(double a, double p, size):
     cdef dparray result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
-    cdef fptr_custom_rng_negative_binomial_c_1out_t func
+    cdef fptr_dpnp_rng_negative_binomial_c_1out_t func
 
     if p == 0.0:
         filled_val = numpy.iinfo(dtype).min
@@ -554,7 +554,7 @@ cpdef dparray dpnp_negative_binomial(double a, double p, size):
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
-        func = <fptr_custom_rng_negative_binomial_c_1out_t > kernel_data.ptr
+        func = <fptr_dpnp_rng_negative_binomial_c_1out_t > kernel_data.ptr
         # call FPTR function
         func(result.get_data(), a, p, result.size)
 
@@ -573,7 +573,7 @@ cpdef dparray dpnp_normal(double loc, double scale, size):
     cdef dparray result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
-    cdef fptr_custom_rng_normal_c_1out_t func
+    cdef fptr_dpnp_rng_normal_c_1out_t func
 
     if scale == 0.0:
         result = dparray(size, dtype=dtype)
@@ -589,7 +589,7 @@ cpdef dparray dpnp_normal(double loc, double scale, size):
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
-        func = <fptr_custom_rng_normal_c_1out_t > kernel_data.ptr
+        func = <fptr_dpnp_rng_normal_c_1out_t > kernel_data.ptr
         # call FPTR function
         func(result.get_data(), loc, scale, result.size)
 
@@ -609,7 +609,7 @@ cpdef dparray dpnp_poisson(double lam, size):
     cdef dparray result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
-    cdef fptr_custom_rng_poisson_c_1out_t func
+    cdef fptr_dpnp_rng_poisson_c_1out_t func
 
     if lam == 0:
         result = dparray(size, dtype=dtype)
@@ -625,7 +625,7 @@ cpdef dparray dpnp_poisson(double lam, size):
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
-        func = <fptr_custom_rng_poisson_c_1out_t > kernel_data.ptr
+        func = <fptr_dpnp_rng_poisson_c_1out_t > kernel_data.ptr
         # call FPTR function
         func(result.get_data(), lam, result.size)
 
@@ -652,7 +652,7 @@ cpdef dparray dpnp_randn(dims):
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(dims, dtype=result_type)
 
-    cdef fptr_custom_rng_gaussian_c_1out_t func = <fptr_custom_rng_gaussian_c_1out_t > kernel_data.ptr
+    cdef fptr_dpnp_rng_gaussian_c_1out_t func = <fptr_dpnp_rng_gaussian_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), mean, stddev, result.size)
 
@@ -678,7 +678,7 @@ cpdef dparray dpnp_random(dims):
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(dims, dtype=result_type)
 
-    cdef fptr_custom_rng_uniform_c_1out_t func = <fptr_custom_rng_uniform_c_1out_t > kernel_data.ptr
+    cdef fptr_dpnp_rng_uniform_c_1out_t func = <fptr_dpnp_rng_uniform_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), low, high, result.size)
 
@@ -697,7 +697,7 @@ cpdef dparray dpnp_rayleigh(double scale, size):
     cdef dparray result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
-    cdef fptr_custom_rng_rayleigh_c_1out_t func
+    cdef fptr_dpnp_rng_rayleigh_c_1out_t func
 
     if scale == 0.0:
         result = dparray(size, dtype=dtype)
@@ -713,7 +713,7 @@ cpdef dparray dpnp_rayleigh(double scale, size):
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
-        func = <fptr_custom_rng_rayleigh_c_1out_t > kernel_data.ptr
+        func = <fptr_dpnp_rng_rayleigh_c_1out_t > kernel_data.ptr
         # call FPTR function
         func(result.get_data(), scale, result.size)
 
@@ -747,7 +747,7 @@ cpdef dparray dpnp_standard_cauchy(size):
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(size, dtype=result_type)
 
-    cdef fptr_custom_rng_standard_cauchy_c_1out_t func = < fptr_custom_rng_standard_cauchy_c_1out_t > kernel_data.ptr
+    cdef fptr_dpnp_rng_standard_cauchy_c_1out_t func = < fptr_dpnp_rng_standard_cauchy_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), result.size)
 
@@ -762,7 +762,7 @@ cpdef dparray dpnp_standard_exponential(size):
 
     """
 
-    cdef fptr_custom_rng_standard_exponential_c_1out_t func
+    cdef fptr_dpnp_rng_standard_exponential_c_1out_t func
 
     # convert string type names (dparray.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
@@ -774,7 +774,7 @@ cpdef dparray dpnp_standard_exponential(size):
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(size, dtype=result_type)
 
-    func = < fptr_custom_rng_standard_exponential_c_1out_t > kernel_data.ptr
+    func = < fptr_dpnp_rng_standard_exponential_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), result.size)
 
@@ -793,7 +793,7 @@ cpdef dparray dpnp_standard_gamma(double shape, size):
     cdef dparray result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
-    cdef fptr_custom_rng_standard_gamma_c_1out_t func
+    cdef fptr_dpnp_rng_standard_gamma_c_1out_t func
 
     if shape == 0.0:
         result = dparray(size, dtype=dtype)
@@ -809,7 +809,7 @@ cpdef dparray dpnp_standard_gamma(double shape, size):
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
-        func = <fptr_custom_rng_standard_gamma_c_1out_t > kernel_data.ptr
+        func = <fptr_dpnp_rng_standard_gamma_c_1out_t > kernel_data.ptr
         # call FPTR function
         func(result.get_data(), shape, result.size)
 
@@ -834,7 +834,7 @@ cpdef dparray dpnp_standard_normal(size):
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(size, dtype=result_type)
 
-    cdef fptr_custom_rng_standard_normal_c_1out_t func = < fptr_custom_rng_standard_normal_c_1out_t > kernel_data.ptr
+    cdef fptr_dpnp_rng_standard_normal_c_1out_t func = < fptr_dpnp_rng_standard_normal_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), result.size)
 
@@ -859,7 +859,7 @@ cpdef dparray dpnp_uniform(long low, long high, size, dtype=numpy.int32):
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(size, dtype=result_type)
 
-    cdef fptr_custom_rng_uniform_c_1out_t func = <fptr_custom_rng_uniform_c_1out_t > kernel_data.ptr
+    cdef fptr_dpnp_rng_uniform_c_1out_t func = <fptr_dpnp_rng_uniform_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), low, high, result.size)
 
@@ -878,7 +878,7 @@ cpdef dparray dpnp_weibull(double a, size):
     cdef dparray result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
-    cdef fptr_custom_rng_weibull_c_1out_t func
+    cdef fptr_dpnp_rng_weibull_c_1out_t func
 
     if a == 0.0:
         result = dparray(size, dtype=dtype)
@@ -894,7 +894,7 @@ cpdef dparray dpnp_weibull(double a, size):
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
-        func = <fptr_custom_rng_weibull_c_1out_t > kernel_data.ptr
+        func = <fptr_dpnp_rng_weibull_c_1out_t > kernel_data.ptr
         # call FPTR function
         func(result.get_data(), a, result.size)
 
