@@ -665,14 +665,12 @@ class TestDistributionsTriangular(RandomDistributionsTestCase):
 @testing.gpu
 class TestDistributionsUniform(RandomDistributionsTestCase):
 
-    @helper.for_float_dtypes('dtype', no_float16=True)
     @helper.for_dtypes_combination(
-        _float_dtypes, names=['low_dtype', 'high_dtype'])
-    def test_uniform(self, low_dtype, high_dtype, dtype):
+        _regular_float_dtypes, names=['low_dtype', 'high_dtype'])
+    def test_uniform(self, low_dtype, high_dtype):
         low = numpy.ones(self.low_shape, dtype=low_dtype)
         high = numpy.ones(self.high_shape, dtype=high_dtype) * 2.
-        self.check_distribution('uniform',
-                                {'low': low, 'high': high}, dtype)
+        self.check_distribution('uniform', {'low': low, 'high': high})
 
 
 @testing.parameterize(*testing.product({
