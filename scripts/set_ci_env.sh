@@ -38,7 +38,7 @@ sudo apt-get install intel-oneapi-mkl       \
                      intel-oneapi-mkl-devel \
                      intel-oneapi-dpcpp-cpp-compiler
 
-echo ========================= setup Intel OneAPI (python changed to Intel OneAPI ====
+echo ========================= setup Intel OneAPI python changed to Intel OneAPI ====
 ls -l /opt/intel/oneapi/
 . /opt/intel/oneapi/setvars.sh
 g++ --version
