@@ -6,6 +6,7 @@ echo
 echo ========================= Set DPNP environment ===========================
 echo SHELL=${SHELL}
 echo PWD=${PWD}
+echo HOME=${HOME}
 ls -l
 echo ========================= current machine kernel =========================
 uname -a
