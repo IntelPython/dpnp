@@ -26,9 +26,6 @@ python3 --version
 echo ========================= install valgrind ===============================
 sudo apt-get install valgrind
 
-echo ========================= install Numpy cython pytest ===============================
-pip3 install numpy cython pytest pytest-valgrind
-
 echo ========================= install/delete libstdc++-dev ===============================
 sudo apt remove -y gcc-7 g++-7 gcc-8 g++-8 gcc-10 g++-10
 # oneapi beta 10 can not work with libstdc++-10-dev 
@@ -41,16 +38,27 @@ sudo apt-get install intel-oneapi-mkl       \
                      intel-oneapi-mkl-devel \
                      intel-oneapi-dpcpp-cpp-compiler
 
-echo ========================= setup Intel OneAPI ===============================
+echo ========================= setup Intel OneAPI (python changed to Intel OneAPI ====
 ls -l /opt/intel/oneapi/
 . /opt/intel/oneapi/setvars.sh
 g++ --version
 sudo apt list --installed
 
+echo ========================= PIP3: install prerequisites ===============================
+pip3 install numpy cython pytest pytest-valgrind
+
+echo ========================= Conda: install prerequisites ===============================
+conda install conda-build
+
 echo ========================= Current clang version ===============================
+python --version
+which python
+
 valgrind --version
 which valgrind
+
 clang++ --version
 which clang++
+
 dpcpp --version
 which dpcpp
