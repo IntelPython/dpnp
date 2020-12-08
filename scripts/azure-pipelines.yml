@@ -91,10 +91,6 @@ jobs:
   pool:
     vmImage: 'ubuntu-20.04'
   steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '$(python.version)'
-    displayName: 'Use Python $(python.version)'
   - bash: |
       . ./scripts/set_ci_env.sh
       echo ========================= make DPNP package ===============================
