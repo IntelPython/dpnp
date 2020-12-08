@@ -1476,28 +1476,20 @@ def uniform(low=0.0, high=1.0, size=None):
     uniform(low=0.0, high=1.0, size=None)
 
     Draw samples from a uniform distribution.
-    Samples are uniformly distributed over the half-open interval
-    ``[low, high)`` (includes low, but excludes high).  In other words,
-    any value within the given interval is equally likely to be drawn
-    by `uniform`.
 
-    Parameters
-    ----------
-    low : float, optional
-        Lower boundary of the output interval.  All values generated will be
-        greater than or equal to low.  The default value is 0.
-    high : float
-        Upper boundary of the output interval.  All values generated will be
-        less than high.  The default value is 1.0.
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
-        a single value is returned if ``low`` and ``high`` are both scalars.
+    For full documentation refer to :obj:`numpy.random.uniform`.
 
-    Returns
-    -------
-    out : array or scalar
-        Drawn samples from the parameterized uniform distribution.
+    Limitations
+    -----------
+    Parameters ``low`` and ``high`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.uniform(low, high, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> low, high = 0, 0.1 # low and high
+    >>> s = dpnp.random.uniform(low, high, 10000)
 
     See Also
     --------
@@ -1506,16 +1498,14 @@ def uniform(low=0.0, high=1.0, size=None):
     """
 
     if not use_origin_backend(low):
-        if low == high:
-            # TODO:
-            # currently dparray.full is not implemented
-            # return dpnp.dparray.dparray.full(size, low, dtype=numpy.float64)
-            message = "`low` equal to `high`, should return an array, filled with `low` value."
-            message += "  Currently not supported. See: numpy.full TODO"
-            checker_throw_runtime_error("uniform", message)
-        elif low > high:
-            low, high = high, low
-        return dpnp_uniform(low, high, size, dtype=numpy.float64)
+        if not dpnp.isscalar(low):
+            pass
+        elif not dpnp.isscalar(high):
+            pass
+        else:
+            if low > high:
+                low, high = high, low
+            return dpnp_uniform(low, high, size, dtype=numpy.float64)
 
     return call_origin(numpy.random.uniform, low, high, size)
 
