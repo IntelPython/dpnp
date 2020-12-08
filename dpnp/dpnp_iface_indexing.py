@@ -228,13 +228,8 @@ def tril_indices(n, k=0, m=None):
     """
 
     if not use_origin_backend():
-        if not isinstance(n, int):
-            raise TypeError("n must be an integer")
-        if not isinstance(k, int):
-            raise TypeError("k must be an integer")
-        if not isinstance(m, int) and m is not None:
-            raise TypeError("m must be an integer")
-
-        return dpnp_tril_indices(n, k, m)
+        if isinstance(n, int) and isinstance(k, int) \
+                and (isinstance(m, int) or m is None):
+            return dpnp_tril_indices(n, k, m)
 
     return call_origin(numpy.tril_indices, n, k, m)
