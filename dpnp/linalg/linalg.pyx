@@ -83,7 +83,6 @@ cpdef dparray dpnp_det(dparray input):
     cdef size_t size_out = 1
     if input.ndim == 2:
         output_shape = (1, )
-        size_out = 0
     else:
         output_shape = tuple((list(input.shape))[:-2])
         for i in range(len(output_shape)):
@@ -148,41 +147,32 @@ cpdef dparray dpnp_eigvals(dparray input):
 
 cpdef dparray dpnp_inv(dparray input):
     cpdef dparray_shape_type input_shape = input.shape
-    n = input.shape[0]
+    cpdef size_t n = input.shape[0]
 
     input_souz = dparray(input_shape)
     for i in range(n):
         for j in range(n):
             m = dparray((n-1, n-1), dtype=input.dtype)
-            n_e_k = 1
-            n_e_l = 1
-            for k in range(n-1):
-                if k != i:
-                    if n_e_k == 1:
-                        if i == n - 1:
-                            continue
-                        else:
-                            ind_k = k
-                    else:
-                        ind_k = k - 1
-
-                    for l in range(n-1):
-                        if l != j:
-                            if n_e_l == 1:
-                                if j == n - 1:
-                                    continue
-                                else:
-                                    ind_l = l
-                            else:
-                                ind_l = l - 1
-                            m[k][l] = input[ind_k][ind_l]
-                        else:
-                            n_e_l = 0
-                else:
-                    n_e_k = 0
+            k_list = []
+            l_list = []
+            for t in range(n):
+                if t != i:
+                    k_list.append(t)
+                if t != j:
+                    l_list.append(t)
+            k_ind = 0
+            for k in k_list:
+                l_ind = 0
+                for l in l_list:
+                    m[k_ind, l_ind] = input[k, l]
+                    l_ind += 1
+                k_ind += 1
+            print("M = ", m)
             if n - 1 == 1:
                 input_souz[i, j] = m[0, 0]
             else:
+                print(m.shape)
+                print(dpnp.linalg.det(m))
                 input_souz[i, j] = dpnp.linalg.det(m)
 
     input_souz_t = dpnp.transpose(input_souz)
