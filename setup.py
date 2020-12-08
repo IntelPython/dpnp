@@ -153,7 +153,7 @@ try:
     _dpctrl_include += [dpctl.get_include()]
     # _dpctrl_libpath = for package build + for local build
     _dpctrl_libpath += ["$ORIGIN/../dpctl"] + [os.path.join(dpctl.get_include(), '..')]
-    _dpctrl_lib += ["DPPLSyclInterface"]
+    _dpctrl_lib += ["DPCTLSyclInterface"]
 except ImportError:
     """
     Set local SYCL queue handler
