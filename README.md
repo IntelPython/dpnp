@@ -35,6 +35,16 @@ pytest tests/test_matmul.py -s -v
 python -m unittest tests/test_mixins.py
 ```
 
+## Run numpy test
+```
+. ./0.env
+python -m tests.third_party.numpy
+# or
+python -m tests.third_party.numpy core/tests/test_umath.py
+# or
+python -m tests.third_party.numpy core/tests/test_umath.py::TestHypot::test_simple
+```
+
 ### Building documentation:
 ```
 Prerequisites:

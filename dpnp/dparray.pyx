@@ -48,7 +48,7 @@ cimport dpnp.dpnp_utils as utils
 
 
 # initially copied from original
-cdef class _flagsobj:
+class _flagsobj:
     aligned: bool
     updateifcopy: bool
     writeable: bool
@@ -362,6 +362,9 @@ cdef class dparray:
 
         """
 
+        key_is_slice = isinstance(key, slice)
+        key_has_slice = False
+
         if isinstance(key, tuple):
             """
             This is corner case for a[numpy.newaxis, ...] slicing
@@ -373,6 +376,15 @@ cdef class dparray:
                     result[i] = self[i]
 
                 return result
+
+            for i in key:
+                if isinstance(i, slice):
+                    key_has_slice = True
+                    break
+
+        if key_is_slice or key_has_slice:
+            # fallback to numpy in case of slicing
+            return utils.nd2dp_array(utils.dp2nd_array(self)[key])
 
         lin_idx = utils._get_linear_index(key, self.shape, self.ndim)
 
@@ -512,6 +524,12 @@ cdef class dparray:
         out: ndarray
             A copy of the input array, flattened to one dimension.
 
+        Notes
+        -----
+        Unlike the free function :obj:`dpnp.reshape`, this method on :obj:`dpnp.ndarray`
+        allows the elements of the shape parameter to be passed in as separate arguments.
+        For example, ``a.reshape(10, 11)`` is equivalent to ``a.reshape((10, 11))``.
+
         See Also
         --------
         :obj:`dpnp.ravel`, :obj:`dpnp.flat`
@@ -520,7 +538,7 @@ cdef class dparray:
         # TODO: don't copy the input array
         return self.flatten(order=order)
 
-    def reshape(self, shape, order=b'C'):
+    def reshape(self, d0, *dn, order=b'C'):
         """Change the shape of the array.
 
         .. seealso::
@@ -530,6 +548,14 @@ cdef class dparray:
 
         if order is not b'C':
             utils.checker_throw_value_error("dparray::reshape", "order", order, b'C')
+
+        if dn:
+            if not isinstance(d0, int):
+                msg_tmpl = "'{}' object cannot be interpreted as an integer"
+                raise TypeError(msg_tmpl.format(type(d0).__name__))
+            shape = [d0, *dn]
+        else:
+            shape = d0
 
         cdef long shape_it = 0
         cdef tuple shape_tup = utils._object_to_tuple(shape)
@@ -1019,3 +1045,7 @@ cdef class dparray:
 
         for i in range(self.size):
             self[i] = value
+
+    def copy(self, order="C"):
+        """Return a copy of the array."""
+        return copy(self, order=order)
