@@ -167,12 +167,9 @@ cpdef dparray dpnp_inv(dparray input):
                     m[k_ind, l_ind] = input[k, l]
                     l_ind += 1
                 k_ind += 1
-            print("M = ", m)
             if n - 1 == 1:
                 input_souz[i, j] = m[0, 0]
             else:
-                print(m.shape)
-                print(dpnp.linalg.det(m))
                 input_souz[i, j] = dpnp.linalg.det(m)
 
     input_souz_t = dpnp.transpose(input_souz)
