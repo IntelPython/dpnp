@@ -1505,7 +1505,7 @@ def uniform(low=0.0, high=1.0, size=None):
         else:
             if low > high:
                 low, high = high, low
-        return dpnp_uniform(low, high, size, dtype=dpnp.float64)
+            return dpnp_uniform(low, high, size, dtype=numpy.float64)
 
     return call_origin(numpy.random.uniform, low, high, size)
 

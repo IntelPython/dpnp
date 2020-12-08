@@ -841,7 +841,7 @@ cpdef dparray dpnp_standard_normal(size):
     return result
 
 
-cpdef dparray dpnp_uniform(low, high, size, dtype=numpy.int32):
+cpdef dparray dpnp_uniform(long low, long high, size, dtype):
     """
     Returns an array populated with samples from standard uniform distribution.
     Generates a matrix filled with random numbers sampled from a
@@ -857,7 +857,7 @@ cpdef dparray dpnp_uniform(low, high, size, dtype=numpy.int32):
 
     if low == high:
         result = dparray(size, dtype=dtype)
-        result.fill(0.0)
+        result.fill(low)
     else:
         # convert string type names (dparray.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)

@@ -658,8 +658,8 @@ class TestDistributionsTriangular(RandomDistributionsTestCase):
 
 @testing.parameterize(*testing.product({
     'shape': [(4, 3, 2), (3, 2)],
-    'low_shape': [(1), (3, 2)],
-    'high_shape': [(1), (3, 2)],
+    'low_shape': [(), (3, 2)],
+    'high_shape': [(), (3, 2)],
 })
 )
 @testing.gpu
