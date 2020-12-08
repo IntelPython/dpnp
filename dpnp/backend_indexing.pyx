@@ -41,6 +41,7 @@ from dpnp.dpnp_iface_counting import count_nonzero
 __all__ += [
     "dpnp_diag_indices",
     "dpnp_nonzero",
+    "dpnp_tril_indices"
 ]
 
 
@@ -75,3 +76,26 @@ cpdef tuple dpnp_nonzero(dparray in_array1):
             idx = idx + 1
 
     return result
+
+
+cpdef tuple dpnp_tril_indices(n, k=0, m=None):
+    array1 = []
+    array2 = []
+    if m is None:
+        for i in range(n):
+            for j in range(i + 1 + k):
+                if j >= n:
+                    continue
+                else:
+                    array1.append(i)
+                    array2.append(j)
+    else:
+        for i in range(n):
+            for j in range(i + 1 + k):
+                if j < m :
+                    array1.append(i)
+                    array2.append(j)
+
+    dparray1 = dpnp.array(array1, dtype=dpnp.int64)
+    dparray2 = dpnp.array(array2, dtype=dpnp.int64)
+    return (dparray1, dparray2)

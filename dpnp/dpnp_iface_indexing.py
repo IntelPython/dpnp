@@ -52,6 +52,7 @@ __all__ = [
     "diag_indices",
     "diag_indices_from",
     "nonzero",
+    "tril_indices"
 ]
 
 
@@ -198,3 +199,42 @@ def nonzero(a):
         return dpnp_nonzero(a)
 
     return call_origin(numpy.nonzero, a)
+
+
+def tril_indices(n, k=0, m=None):
+    """
+    Return the indices for the lower-triangle of an (n, m) array.
+
+    Parameters
+    ----------
+    n : int
+        The row dimension of the arrays for which the returned
+        indices will be valid.
+
+    k : int, optional
+        Diagonal offset (see `tril` for details).
+
+    m : int, optional
+        The column dimension of the arrays for which the returned
+        arrays will be valid.
+        By default `m` is taken equal to `n`.
+
+    Returns
+    -------
+    inds : tuple of arrays
+        The indices for the triangle. The returned tuple contains two arrays,
+        each with the indices along one dimension of the array.
+
+    """
+
+    if not use_origin_backend():
+        if not isinstance(n, int):
+            raise TypeError("n must be an integer")
+        if not isinstance(k, int):
+            raise TypeError("k must be an integer")
+        if not isinstance(m, int) and m is not None:
+            raise TypeError("m must be an integer")
+
+        return dpnp_tril_indices(n, k, m)
+
+    return call_origin(numpy.tril_indices, n, k, m)
