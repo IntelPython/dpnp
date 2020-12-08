@@ -129,7 +129,7 @@ $(document).ready(function(){initNavTree('queue__sycl_8hpp_source.html',''); ini
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="preprocessor">#include &lt;ctime&gt;</span></div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="preprocessor">#if !defined(DPNP_LOCAL_QUEUE)</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="preprocessor">#include &lt;dppl_sycl_queue_manager.h&gt;</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="preprocessor">#include &lt;dpctl_sycl_queue_manager.h&gt;</span></div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="preprocessor">#include &quot;backend_pstl.hpp&quot;</span> <span class="comment">// this header must be included after &lt;mkl.hpp&gt;</span></div>
@@ -194,7 +194,7 @@ $(document).ready(function(){initNavTree('queue__sycl_8hpp_source.html',''); ini
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;        <span class="keywordflow">return</span> *queue;</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;<span class="preprocessor">#else</span></div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;        <span class="comment">// temporal solution. Started from Sept-2020</span></div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;        DPPLSyclQueueRef DPCtrl_queue = DPPLQueueMgr_GetCurrentQueue();</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;        DPCTLSyclQueueRef DPCtrl_queue = DPCTLQueueMgr_GetCurrentQueue();</div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;        <span class="keywordflow">return</span> *(<span class="keyword">reinterpret_cast&lt;</span>cl::sycl::queue*<span class="keyword">&gt;</span>(DPCtrl_queue));</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;    }</div>

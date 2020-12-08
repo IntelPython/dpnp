@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.copy &mdash; dpnp 0.2 documentation</title>
+  <title>dpnp.fromfile &mdash; dpnp 0.2 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.fromfile" href="dpnp.fromfile.html" />
-    <link rel="prev" title="dpnp.ascontiguousarray" href="dpnp.ascontiguousarray.html" /> 
+    <link rel="next" title="dpnp.arange" href="dpnp.arange.html" />
+    <link rel="prev" title="dpnp.copy" href="dpnp.copy.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -173,13 +173,13 @@
         
           <li><a href="../creation.html">Array Creation Routines</a> &raquo;</li>
         
-      <li>dpnp.copy</li>
+      <li>dpnp.fromfile</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.copy.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.fromfile.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -192,28 +192,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-copy">
-<h1>dpnp.copy<a class="headerlink" href="#dpnp-copy" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-fromfile">
+<h1>dpnp.fromfile<a class="headerlink" href="#dpnp-fromfile" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.copy">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">copy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">'C'</span></em>, <em class="sig-param"><span class="n">subok</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.copy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an array copy of the given object.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.copy.html#numpy.copy" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.copy</span></code></a>.</p>
+<dt id="dpnp.fromfile">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">fromfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#fromfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.fromfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct an array from data in a text or binary file.</p>
+<p>A highly efficient way of reading binary data with a known data-type,
+as well as parsing simply formatted text files.  Data written using the
+<cite>tofile</cite> method can be read using this function.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.fromfile.html#numpy.fromfile" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fromfile</span></code></a>.</p>
 <p class="rubric">Limitations</p>
-<p>Parameter <code class="docutils literal notranslate"><span class="pre">order</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code>.
-Parameter <code class="docutils literal notranslate"><span class="pre">subok</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">x</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="go">False</span>
-</pre></div>
-</div>
+<p>Only float64, float32, int64, int32 types are supported.</p>
 </dd></dl>
 
 </div>
@@ -226,10 +216,10 @@ Parameter <code class="docutils literal notranslate"><span class="pre">subok</sp
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.fromfile.html" class="btn btn-neutral float-right" title="dpnp.fromfile" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.arange.html" class="btn btn-neutral float-right" title="dpnp.arange" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.ascontiguousarray.html" class="btn btn-neutral float-left" title="dpnp.ascontiguousarray" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.copy.html" class="btn btn-neutral float-left" title="dpnp.copy" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
