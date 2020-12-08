@@ -17,12 +17,12 @@ var files_dup =
     [ "custom_kernels_linalg.cpp", "custom__kernels__linalg_8cpp_source.html", null ],
     [ "custom_kernels_manipulation.cpp", "custom__kernels__manipulation_8cpp_source.html", null ],
     [ "custom_kernels_mathematical.cpp", "custom__kernels__mathematical_8cpp_source.html", null ],
-    [ "custom_kernels_random.cpp", "custom__kernels__random_8cpp_source.html", null ],
     [ "custom_kernels_reduction.cpp", "custom__kernels__reduction_8cpp_source.html", null ],
     [ "custom_kernels_searching.cpp", "custom__kernels__searching_8cpp_source.html", null ],
     [ "custom_kernels_sorting.cpp", "custom__kernels__sorting_8cpp_source.html", null ],
     [ "custom_kernels_statistics.cpp", "custom__kernels__statistics_8cpp_source.html", null ],
     [ "dpnp_kernels_fft.cpp", "dpnp__kernels__fft_8cpp_source.html", null ],
+    [ "dpnp_kernels_random.cpp", "dpnp__kernels__random_8cpp_source.html", null ],
     [ "memory_sycl.cpp", "memory__sycl_8cpp_source.html", null ],
     [ "queue_sycl.cpp", "queue__sycl_8cpp_source.html", null ],
     [ "queue_sycl.hpp", "queue__sycl_8hpp_source.html", null ]
