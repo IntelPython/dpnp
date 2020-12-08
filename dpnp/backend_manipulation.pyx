@@ -40,8 +40,10 @@ __all__ += [
     "dpnp_atleast_2d",
     "dpnp_atleast_3d",
     "dpnp_copyto",
+    "dpnp_expand_dims",
     "dpnp_repeat",
-    "dpnp_transpose"
+    "dpnp_transpose",
+    "dpnp_squeeze",
 ]
 
 
@@ -129,6 +131,38 @@ cpdef dparray dpnp_copyto(dparray dst, dparray src, where=True):
     return dst
 
 
+cpdef dparray dpnp_expand_dims(dparray in_array, axis):
+    axis_tuple = _object_to_tuple(axis)
+    result_ndim = len(axis_tuple) + in_array.ndim
+
+    if len(axis_tuple) == 0:
+        axis_ndim = 0
+    else:
+        axis_ndim = max(-min(0, min(axis_tuple)), max(0, max(axis_tuple))) + 1
+
+    axis_norm = _object_to_tuple(normalize_axis(axis_tuple, result_ndim))
+
+    if axis_ndim - len(axis_norm) > in_array.ndim:
+        checker_throw_axis_error("dpnp_expand_dims", "axis", axis, axis_ndim)
+
+    if len(axis_norm) > len(set(axis_norm)):
+        checker_throw_value_error("dpnp_expand_dims", "axis", axis, "no repeated axis")
+
+    shape_list = []
+    axis_idx = 0
+    for i in range(result_ndim):
+        if i in axis_norm:
+            shape_list.append(1)
+        else:
+            shape_list.append(in_array.shape[axis_idx])
+            axis_idx = axis_idx + 1
+
+    shape = _object_to_tuple(shape_list)
+    cdef dparray result = dpnp.copy(in_array).reshape(shape)
+
+    return result
+
+
 cpdef dparray dpnp_repeat(dparray array1, repeats, axes=None):
     cdef long new_size = array1.size * repeats
     cdef dparray result = dparray((new_size, ), dtype=array1.dtype)
@@ -179,5 +213,26 @@ cpdef dparray dpnp_transpose(dparray array1, axes=None):
     cdef fptr_custom_elemwise_transpose_1in_1out_t func = <fptr_custom_elemwise_transpose_1in_1out_t > kernel_data.ptr
     # call FPTR function
     func(array1.get_data(), input_shape, result_shape, permute_axes, result.get_data(), array1.size)
+
+    return result
+
+
+cpdef dparray dpnp_squeeze(dparray in_array, axis):
+    shape_list = []
+    if axis is None:
+        for i in range(in_array.ndim):
+            if in_array.shape[i] != 1:
+                shape_list.append(in_array.shape[i])
+    else:
+        axis_norm = _object_to_tuple(normalize_axis(_object_to_tuple(axis), in_array.ndim))
+        for i in range(in_array.ndim):
+            if i in axis_norm:
+                if in_array.shape[i] != 1:
+                    checker_throw_value_error("dpnp_squeeze", "axis", axis, "axis has size not equal to one")
+            else:
+                shape_list.append(in_array.shape[i])
+
+    shape = _object_to_tuple(shape_list)
+    cdef dparray result = dpnp.copy(in_array).reshape(shape)
 
     return result

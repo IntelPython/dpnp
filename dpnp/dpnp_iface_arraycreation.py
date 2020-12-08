@@ -64,6 +64,8 @@ __all__ = [
     "linspace",
     "logspace",
     "meshgrid",
+    "mgrid",
+    "ogrid",
     "ones",
     "ones_like",
     "tri",
@@ -771,6 +773,66 @@ def meshgrid(*xi, copy=True, sparse=False, indexing='xy'):
     return call_origin(numpy.meshgrid, xi, copy, sparse, indexing)
 
 
+class MGridClass:
+    """
+    Construct a dense multi-dimensional "meshgrid".
+
+    For full documentation refer to :obj:`numpy.mgrid`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.mgrid[0:5,0:5]
+    array([[[0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1],
+            [2, 2, 2, 2, 2],
+            [3, 3, 3, 3, 3],
+            [4, 4, 4, 4, 4]],
+           [[0, 1, 2, 3, 4],
+            [0, 1, 2, 3, 4],
+            [0, 1, 2, 3, 4],
+            [0, 1, 2, 3, 4],
+            [0, 1, 2, 3, 4]]])
+    >>> np.mgrid[-1:1:5j]
+    array([-1. , -0.5,  0. ,  0.5,  1. ])
+
+    """
+
+    def __getitem__(self, key):
+        return dpnp.array(numpy.mgrid[key])
+
+
+mgrid = MGridClass()
+
+
+class OGridClass:
+    """
+    Construct an open multi-dimensional "meshgrid".
+
+    For full documentation refer to :obj:`numpy.ogrid`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> from numpy import ogrid
+    >>> ogrid[-1:1:5j]
+    array([-1. , -0.5,  0. ,  0.5,  1. ])
+    >>> ogrid[0:5,0:5]
+    [array([[0],
+            [1],
+            [2],
+            [3],
+            [4]]), array([[0, 1, 2, 3, 4]])]
+
+    """
+
+    def __getitem__(self, key):
+        return dpnp.array(numpy.ogrid[key])
+
+
+ogrid = OGridClass()
+
+
 def ones(shape, dtype=None, order='C'):
     """
     Return a new array of given shape and type, filled with ones.
@@ -962,7 +1024,7 @@ def zeros(shape, dtype=None, order='C'):
     [0.0, 0.0, 0.0, 0.0, 0.0]
     >>> x = np.zeros((2, 1))
     >>> x.ndim, x.size, x.shape
-    (2, 2, (2, 1))  
+    (2, 2, (2, 1))
     >>> [i for i in x]
     [0.0, 0.0]
 

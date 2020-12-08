@@ -573,6 +573,17 @@ cdef class dparray:
         """
         return std(self, axis, dtype, out, ddof, keepdims)
 
+    def squeeze(self, axis=None):
+        """
+        Remove single-dimensional entries from the shape of an array.
+
+        .. seealso::
+           :obj:`dpnp.squeeze` for full documentation
+
+        """
+
+        return squeeze(self, axis)
+
     def transpose(self, *axes):
         """ Returns a view of the array with axes permuted.
 

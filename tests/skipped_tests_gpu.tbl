@@ -154,7 +154,6 @@ tests/test_random.py::test_multivariate_normal_invalid_args
 tests/test_random.py::test_multivariate_normal_output_shape_check
 tests/test_random.py::test_multivariate_normal_seed
 tests/test_random.py::test_negative_binomial_seed
-tests/test_random.py::test_randn_normal_distribution
 tests/test_random.py::test_rayleigh_check_moments 
 tests/test_random.py::test_standard_gamma_check_extreme_value
 tests/test_random.py::test_standard_gamma_check_moments
@@ -373,15 +372,7 @@ tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy=True, indexing='ij', sparse=True}::test_meshgrid1
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy=True, indexing='ij', sparse=True}::test_meshgrid2
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy=True, indexing='ij', sparse=True}::test_meshgrid3
-tests/third_party/cupy/creation_tests/test_ranges.py::TestMgrid::test_mgrid0
-tests/third_party/cupy/creation_tests/test_ranges.py::TestMgrid::test_mgrid1
-tests/third_party/cupy/creation_tests/test_ranges.py::TestMgrid::test_mgrid2
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMgrid::test_mgrid3
-tests/third_party/cupy/creation_tests/test_ranges.py::TestMgrid::test_mgrid4
-tests/third_party/cupy/creation_tests/test_ranges.py::TestMgrid::test_mgrid5
-tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid0
-tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid1
-tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid2
 tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid3
 tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid4
 tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid5
@@ -1191,6 +1182,51 @@ tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_pa
 tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_8_{dst_shape=(0,), src=0}::test_copyto_where
 tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_9_{dst_shape=(0,), src=4}::test_copyto
 tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_9_{dst_shape=(0,), src=4}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_broadcast_to
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_broadcast_to_fail
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_broadcast_to_fail_numpy19
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_broadcast_to_numpy19
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_broadcast_to_short_shape
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_broadcast_to_short_shape_numpy19
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_int_axis_failure1
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_int_axis_failure2
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_scalar_failure1
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_scalar_failure2
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_scalar_failure3
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_scalar_failure4
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_tuple_axis_failure1
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_tuple_axis_failure2
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_tuple_axis_failure3
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_0_{shapes=[(), ()]}::test_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_0_{shapes=[(), ()]}::test_broadcast_arrays
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_1_{shapes=[(0,), (0,)]}::test_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_1_{shapes=[(0,), (0,)]}::test_broadcast_arrays
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_2_{shapes=[(1,), (1,)]}::test_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_2_{shapes=[(1,), (1,)]}::test_broadcast_arrays
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_3_{shapes=[(2,), (2,)]}::test_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_3_{shapes=[(2,), (2,)]}::test_broadcast_arrays
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_4_{shapes=[(0,), (1,)]}::test_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_4_{shapes=[(0,), (1,)]}::test_broadcast_arrays
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_5_{shapes=[(2, 3), (1, 3)]}::test_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_5_{shapes=[(2, 3), (1, 3)]}::test_broadcast_arrays
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_6_{shapes=[(2, 1, 3, 4), (3, 1, 4)]}::test_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_6_{shapes=[(2, 1, 3, 4), (3, 1, 4)]}::test_broadcast_arrays
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_7_{shapes=[(4, 3, 2, 3), (2, 3)]}::test_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_7_{shapes=[(4, 3, 2, 3), (2, 3)]}::test_broadcast_arrays
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_8_{shapes=[(2, 0, 1, 1, 3), (2, 1, 0, 0, 3)]}::test_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_8_{shapes=[(2, 0, 1, 1, 3), (2, 1, 0, 0, 3)]}::test_broadcast_arrays
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_9_{shapes=[(0, 1, 1, 3), (2, 1, 0, 0, 3)]}::test_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_9_{shapes=[(0, 1, 1, 3), (2, 1, 0, 0, 3)]}::test_broadcast_arrays
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_10_{shapes=[(0, 1, 1, 0, 3), (5, 2, 0, 1, 0, 0, 3), (2, 1, 0, 0, 0, 3)]}::test_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_10_{shapes=[(0, 1, 1, 0, 3), (5, 2, 0, 1, 0, 0, 3), (2, 1, 0, 0, 0, 3)]}::test_broadcast_arrays
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_0_{shapes=[(3,), (2,)]}::test_invalid_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_0_{shapes=[(3,), (2,)]}::test_invalid_broadcast_arrays
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_1_{shapes=[(3, 2), (2, 3)]}::test_invalid_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_1_{shapes=[(3, 2), (2, 3)]}::test_invalid_broadcast_arrays
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_2_{shapes=[(3, 2), (3, 4)]}::test_invalid_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_2_{shapes=[(3, 2), (3, 4)]}::test_invalid_broadcast_arrays
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_3_{shapes=[(0,), (2,)]}::test_invalid_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_3_{shapes=[(0,), (2,)]}::test_invalid_broadcast_arrays
 tests/third_party/cupy/manipulation_tests/test_shape.py::TestRavel::test_ravel3
 tests/third_party/cupy/manipulation_tests/test_shape.py::TestReshapeOrder_param_0_{order_init='C', order_reshape='C', shape_in_out=((2, 3), (1, 6, 1))}::test_reshape_contiguity
 tests/third_party/cupy/manipulation_tests/test_shape.py::TestReshapeOrder_param_10_{order_init='C', order_reshape='c', shape_in_out=((6,), (2, 3))}::test_reshape_contiguity
@@ -1507,149 +1543,15 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_5_{a_shape=(3, 2), b_shape=(), shape=(3, 2)}::test_beta
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsDirichlet_param_0_{alpha_shape=(3,), shape=(4, 3, 2, 3)}::test_dirichlet
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsDirichlet_param_1_{alpha_shape=(3,), shape=(3, 2, 3)}::test_dirichlet
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsExponentialError::test_negative_scale
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsExponential_param_0_{scale_shape=(), shape=(4, 3, 2)}::test_exponential
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsExponential_param_1_{scale_shape=(), shape=(3, 2)}::test_exponential
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsExponential_param_2_{scale_shape=(), shape=None}::test_exponential
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsExponential_param_3_{scale_shape=(3, 2), shape=(4, 3, 2)}::test_exponential
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsExponential_param_4_{scale_shape=(3, 2), shape=(3, 2)}::test_exponential
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsExponential_param_5_{scale_shape=(3, 2), shape=None}::test_exponential
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_0_{dtype=float64, scale_shape=(), shape=(4, 3, 2), shape_shape=()}::test_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_10_{dtype=float32, scale_shape=(), shape=(3, 2), shape_shape=()}::test_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_11_{dtype=float32, scale_shape=(), shape=(3, 2), shape_shape=(3, 2)}::test_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_12_{dtype=float32, scale_shape=(3, 2), shape=(4, 3, 2), shape_shape=()}::test_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_13_{dtype=float32, scale_shape=(3, 2), shape=(4, 3, 2), shape_shape=(3, 2)}::test_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_14_{dtype=float32, scale_shape=(3, 2), shape=(3, 2), shape_shape=()}::test_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_15_{dtype=float32, scale_shape=(3, 2), shape=(3, 2), shape_shape=(3, 2)}::test_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_16_{dtype=float16, scale_shape=(), shape=(4, 3, 2), shape_shape=()}::test_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_17_{dtype=float16, scale_shape=(), shape=(4, 3, 2), shape_shape=(3, 2)}::test_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_18_{dtype=float16, scale_shape=(), shape=(3, 2), shape_shape=()}::test_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_19_{dtype=float16, scale_shape=(), shape=(3, 2), shape_shape=(3, 2)}::test_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_1_{dtype=float64, scale_shape=(), shape=(4, 3, 2), shape_shape=(3, 2)}::test_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_20_{dtype=float16, scale_shape=(3, 2), shape=(4, 3, 2), shape_shape=()}::test_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_21_{dtype=float16, scale_shape=(3, 2), shape=(4, 3, 2), shape_shape=(3, 2)}::test_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_22_{dtype=float16, scale_shape=(3, 2), shape=(3, 2), shape_shape=()}::test_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_23_{dtype=float16, scale_shape=(3, 2), shape=(3, 2), shape_shape=(3, 2)}::test_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_2_{dtype=float64, scale_shape=(), shape=(3, 2), shape_shape=()}::test_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_3_{dtype=float64, scale_shape=(), shape=(3, 2), shape_shape=(3, 2)}::test_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_4_{dtype=float64, scale_shape=(3, 2), shape=(4, 3, 2), shape_shape=()}::test_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_5_{dtype=float64, scale_shape=(3, 2), shape=(4, 3, 2), shape_shape=(3, 2)}::test_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_6_{dtype=float64, scale_shape=(3, 2), shape=(3, 2), shape_shape=()}::test_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_7_{dtype=float64, scale_shape=(3, 2), shape=(3, 2), shape_shape=(3, 2)}::test_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_8_{dtype=float32, scale_shape=(), shape=(4, 3, 2), shape_shape=()}::test_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma_param_9_{dtype=float32, scale_shape=(), shape=(4, 3, 2), shape_shape=(3, 2)}::test_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_0_{dtype=int8, p_shape=(), shape=(4, 3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_10_{dtype=int32, p_shape=(3, 2), shape=(4, 3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_11_{dtype=int32, p_shape=(3, 2), shape=(3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_12_{dtype=int64, p_shape=(), shape=(4, 3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_13_{dtype=int64, p_shape=(), shape=(3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_14_{dtype=int64, p_shape=(3, 2), shape=(4, 3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_15_{dtype=int64, p_shape=(3, 2), shape=(3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_16_{dtype=longlong, p_shape=(), shape=(4, 3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_17_{dtype=longlong, p_shape=(), shape=(3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_18_{dtype=longlong, p_shape=(3, 2), shape=(4, 3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_19_{dtype=longlong, p_shape=(3, 2), shape=(3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_1_{dtype=int8, p_shape=(), shape=(3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_20_{dtype=uint8, p_shape=(), shape=(4, 3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_21_{dtype=uint8, p_shape=(), shape=(3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_22_{dtype=uint8, p_shape=(3, 2), shape=(4, 3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_23_{dtype=uint8, p_shape=(3, 2), shape=(3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_24_{dtype=uint16, p_shape=(), shape=(4, 3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_25_{dtype=uint16, p_shape=(), shape=(3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_26_{dtype=uint16, p_shape=(3, 2), shape=(4, 3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_27_{dtype=uint16, p_shape=(3, 2), shape=(3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_28_{dtype=uint32, p_shape=(), shape=(4, 3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_29_{dtype=uint32, p_shape=(), shape=(3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_2_{dtype=int8, p_shape=(3, 2), shape=(4, 3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_30_{dtype=uint32, p_shape=(3, 2), shape=(4, 3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_31_{dtype=uint32, p_shape=(3, 2), shape=(3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_32_{dtype=uint64, p_shape=(), shape=(4, 3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_33_{dtype=uint64, p_shape=(), shape=(3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_34_{dtype=uint64, p_shape=(3, 2), shape=(4, 3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_35_{dtype=uint64, p_shape=(3, 2), shape=(3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_36_{dtype=ulonglong, p_shape=(), shape=(4, 3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_37_{dtype=ulonglong, p_shape=(), shape=(3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_38_{dtype=ulonglong, p_shape=(3, 2), shape=(4, 3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_39_{dtype=ulonglong, p_shape=(3, 2), shape=(3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_3_{dtype=int8, p_shape=(3, 2), shape=(3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_4_{dtype=int16, p_shape=(), shape=(4, 3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_5_{dtype=int16, p_shape=(), shape=(3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_6_{dtype=int16, p_shape=(3, 2), shape=(4, 3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_7_{dtype=int16, p_shape=(3, 2), shape=(3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_8_{dtype=int32, p_shape=(), shape=(4, 3, 2)}::test_geometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_9_{dtype=int32, p_shape=(), shape=(3, 2)}::test_geometric
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel_param_0_{loc_shape=(), scale_shape=(), shape=(4, 3, 2)}::test_gumbel
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel_param_1_{loc_shape=(), scale_shape=(), shape=(3, 2)}::test_gumbel
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel_param_2_{loc_shape=(), scale_shape=(3, 2), shape=(4, 3, 2)}::test_gumbel
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel_param_3_{loc_shape=(), scale_shape=(3, 2), shape=(3, 2)}::test_gumbel
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel_param_4_{loc_shape=(3, 2), scale_shape=(), shape=(4, 3, 2)}::test_gumbel
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel_param_5_{loc_shape=(3, 2), scale_shape=(), shape=(3, 2)}::test_gumbel
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel_param_6_{loc_shape=(3, 2), scale_shape=(3, 2), shape=(4, 3, 2)}::test_gumbel
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel_param_7_{loc_shape=(3, 2), scale_shape=(3, 2), shape=(3, 2)}::test_gumbel
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_0_{dtype=int32, nbad_shape=(), ngood_shape=(), nsample_dtype=int32, nsample_shape=(), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_10_{dtype=int32, nbad_shape=(), ngood_shape=(3, 2), nsample_dtype=int32, nsample_shape=(3, 2), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_11_{dtype=int32, nbad_shape=(), ngood_shape=(3, 2), nsample_dtype=int32, nsample_shape=(3, 2), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_12_{dtype=int32, nbad_shape=(), ngood_shape=(3, 2), nsample_dtype=int64, nsample_shape=(), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_13_{dtype=int32, nbad_shape=(), ngood_shape=(3, 2), nsample_dtype=int64, nsample_shape=(), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_14_{dtype=int32, nbad_shape=(), ngood_shape=(3, 2), nsample_dtype=int64, nsample_shape=(3, 2), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_15_{dtype=int32, nbad_shape=(), ngood_shape=(3, 2), nsample_dtype=int64, nsample_shape=(3, 2), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_16_{dtype=int32, nbad_shape=(3, 2), ngood_shape=(), nsample_dtype=int32, nsample_shape=(), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_17_{dtype=int32, nbad_shape=(3, 2), ngood_shape=(), nsample_dtype=int32, nsample_shape=(), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_18_{dtype=int32, nbad_shape=(3, 2), ngood_shape=(), nsample_dtype=int32, nsample_shape=(3, 2), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_19_{dtype=int32, nbad_shape=(3, 2), ngood_shape=(), nsample_dtype=int32, nsample_shape=(3, 2), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_1_{dtype=int32, nbad_shape=(), ngood_shape=(), nsample_dtype=int32, nsample_shape=(), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_20_{dtype=int32, nbad_shape=(3, 2), ngood_shape=(), nsample_dtype=int64, nsample_shape=(), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_21_{dtype=int32, nbad_shape=(3, 2), ngood_shape=(), nsample_dtype=int64, nsample_shape=(), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_22_{dtype=int32, nbad_shape=(3, 2), ngood_shape=(), nsample_dtype=int64, nsample_shape=(3, 2), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_23_{dtype=int32, nbad_shape=(3, 2), ngood_shape=(), nsample_dtype=int64, nsample_shape=(3, 2), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_24_{dtype=int32, nbad_shape=(3, 2), ngood_shape=(3, 2), nsample_dtype=int32, nsample_shape=(), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_25_{dtype=int32, nbad_shape=(3, 2), ngood_shape=(3, 2), nsample_dtype=int32, nsample_shape=(), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_26_{dtype=int32, nbad_shape=(3, 2), ngood_shape=(3, 2), nsample_dtype=int32, nsample_shape=(3, 2), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_27_{dtype=int32, nbad_shape=(3, 2), ngood_shape=(3, 2), nsample_dtype=int32, nsample_shape=(3, 2), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_28_{dtype=int32, nbad_shape=(3, 2), ngood_shape=(3, 2), nsample_dtype=int64, nsample_shape=(), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_29_{dtype=int32, nbad_shape=(3, 2), ngood_shape=(3, 2), nsample_dtype=int64, nsample_shape=(), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_2_{dtype=int32, nbad_shape=(), ngood_shape=(), nsample_dtype=int32, nsample_shape=(3, 2), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_30_{dtype=int32, nbad_shape=(3, 2), ngood_shape=(3, 2), nsample_dtype=int64, nsample_shape=(3, 2), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_31_{dtype=int32, nbad_shape=(3, 2), ngood_shape=(3, 2), nsample_dtype=int64, nsample_shape=(3, 2), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_32_{dtype=int64, nbad_shape=(), ngood_shape=(), nsample_dtype=int32, nsample_shape=(), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_33_{dtype=int64, nbad_shape=(), ngood_shape=(), nsample_dtype=int32, nsample_shape=(), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_34_{dtype=int64, nbad_shape=(), ngood_shape=(), nsample_dtype=int32, nsample_shape=(3, 2), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_35_{dtype=int64, nbad_shape=(), ngood_shape=(), nsample_dtype=int32, nsample_shape=(3, 2), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_36_{dtype=int64, nbad_shape=(), ngood_shape=(), nsample_dtype=int64, nsample_shape=(), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_37_{dtype=int64, nbad_shape=(), ngood_shape=(), nsample_dtype=int64, nsample_shape=(), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_38_{dtype=int64, nbad_shape=(), ngood_shape=(), nsample_dtype=int64, nsample_shape=(3, 2), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_39_{dtype=int64, nbad_shape=(), ngood_shape=(), nsample_dtype=int64, nsample_shape=(3, 2), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_3_{dtype=int32, nbad_shape=(), ngood_shape=(), nsample_dtype=int32, nsample_shape=(3, 2), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_40_{dtype=int64, nbad_shape=(), ngood_shape=(3, 2), nsample_dtype=int32, nsample_shape=(), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_41_{dtype=int64, nbad_shape=(), ngood_shape=(3, 2), nsample_dtype=int32, nsample_shape=(), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_42_{dtype=int64, nbad_shape=(), ngood_shape=(3, 2), nsample_dtype=int32, nsample_shape=(3, 2), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_43_{dtype=int64, nbad_shape=(), ngood_shape=(3, 2), nsample_dtype=int32, nsample_shape=(3, 2), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_44_{dtype=int64, nbad_shape=(), ngood_shape=(3, 2), nsample_dtype=int64, nsample_shape=(), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_45_{dtype=int64, nbad_shape=(), ngood_shape=(3, 2), nsample_dtype=int64, nsample_shape=(), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_46_{dtype=int64, nbad_shape=(), ngood_shape=(3, 2), nsample_dtype=int64, nsample_shape=(3, 2), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_47_{dtype=int64, nbad_shape=(), ngood_shape=(3, 2), nsample_dtype=int64, nsample_shape=(3, 2), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_48_{dtype=int64, nbad_shape=(3, 2), ngood_shape=(), nsample_dtype=int32, nsample_shape=(), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_49_{dtype=int64, nbad_shape=(3, 2), ngood_shape=(), nsample_dtype=int32, nsample_shape=(), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_4_{dtype=int32, nbad_shape=(), ngood_shape=(), nsample_dtype=int64, nsample_shape=(), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_50_{dtype=int64, nbad_shape=(3, 2), ngood_shape=(), nsample_dtype=int32, nsample_shape=(3, 2), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_51_{dtype=int64, nbad_shape=(3, 2), ngood_shape=(), nsample_dtype=int32, nsample_shape=(3, 2), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_52_{dtype=int64, nbad_shape=(3, 2), ngood_shape=(), nsample_dtype=int64, nsample_shape=(), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_53_{dtype=int64, nbad_shape=(3, 2), ngood_shape=(), nsample_dtype=int64, nsample_shape=(), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_54_{dtype=int64, nbad_shape=(3, 2), ngood_shape=(), nsample_dtype=int64, nsample_shape=(3, 2), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_55_{dtype=int64, nbad_shape=(3, 2), ngood_shape=(), nsample_dtype=int64, nsample_shape=(3, 2), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_56_{dtype=int64, nbad_shape=(3, 2), ngood_shape=(3, 2), nsample_dtype=int32, nsample_shape=(), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_57_{dtype=int64, nbad_shape=(3, 2), ngood_shape=(3, 2), nsample_dtype=int32, nsample_shape=(), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_58_{dtype=int64, nbad_shape=(3, 2), ngood_shape=(3, 2), nsample_dtype=int32, nsample_shape=(3, 2), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_59_{dtype=int64, nbad_shape=(3, 2), ngood_shape=(3, 2), nsample_dtype=int32, nsample_shape=(3, 2), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_5_{dtype=int32, nbad_shape=(), ngood_shape=(), nsample_dtype=int64, nsample_shape=(), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_60_{dtype=int64, nbad_shape=(3, 2), ngood_shape=(3, 2), nsample_dtype=int64, nsample_shape=(), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_61_{dtype=int64, nbad_shape=(3, 2), ngood_shape=(3, 2), nsample_dtype=int64, nsample_shape=(), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_62_{dtype=int64, nbad_shape=(3, 2), ngood_shape=(3, 2), nsample_dtype=int64, nsample_shape=(3, 2), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_63_{dtype=int64, nbad_shape=(3, 2), ngood_shape=(3, 2), nsample_dtype=int64, nsample_shape=(3, 2), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_6_{dtype=int32, nbad_shape=(), ngood_shape=(), nsample_dtype=int64, nsample_shape=(3, 2), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_7_{dtype=int32, nbad_shape=(), ngood_shape=(), nsample_dtype=int64, nsample_shape=(3, 2), shape=(3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_8_{dtype=int32, nbad_shape=(), ngood_shape=(3, 2), nsample_dtype=int32, nsample_shape=(), shape=(4, 3, 2)}::test_hypergeometric
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric_param_9_{dtype=int32, nbad_shape=(), ngood_shape=(3, 2), nsample_dtype=int32, nsample_shape=(), shape=(3, 2)}::test_hypergeometric
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogistic_param_0_{loc_shape=(), scale_shape=(), shape=(4, 3, 2)}::test_logistic
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogistic_param_1_{loc_shape=(), scale_shape=(), shape=(3, 2)}::test_logistic
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogistic_param_2_{loc_shape=(), scale_shape=(3, 2), shape=(4, 3, 2)}::test_logistic
@@ -1662,170 +1564,18 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogs
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogseries_param_0_{p_shape=(), shape=(4, 3, 2)}::test_logseries_for_invalid_p
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogseries_param_1_{p_shape=(), shape=(3, 2)}::test_logseries
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogseries_param_1_{p_shape=(), shape=(3, 2)}::test_logseries_for_invalid_p
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsMultivariateNormal_param_0_{d=2, shape=(4, 3, 2)}::test_normal
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsMultivariateNormal_param_1_{d=2, shape=(3, 2)}::test_normal
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsMultivariateNormal_param_2_{d=4, shape=(4, 3, 2)}::test_normal
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsMultivariateNormal_param_3_{d=4, shape=(3, 2)}::test_normal
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_0_{dtype=int8, n_shape=(), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_0_{dtype=int8, n_shape=(), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_10_{dtype=int16, n_shape=(), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_10_{dtype=int16, n_shape=(), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_11_{dtype=int16, n_shape=(), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_11_{dtype=int16, n_shape=(), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_12_{dtype=int16, n_shape=(3, 2), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_12_{dtype=int16, n_shape=(3, 2), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_13_{dtype=int16, n_shape=(3, 2), p_shape=(), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_13_{dtype=int16, n_shape=(3, 2), p_shape=(), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_14_{dtype=int16, n_shape=(3, 2), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_14_{dtype=int16, n_shape=(3, 2), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_15_{dtype=int16, n_shape=(3, 2), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_15_{dtype=int16, n_shape=(3, 2), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_16_{dtype=int32, n_shape=(), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_16_{dtype=int32, n_shape=(), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_17_{dtype=int32, n_shape=(), p_shape=(), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_17_{dtype=int32, n_shape=(), p_shape=(), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_18_{dtype=int32, n_shape=(), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_18_{dtype=int32, n_shape=(), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_19_{dtype=int32, n_shape=(), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_19_{dtype=int32, n_shape=(), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_1_{dtype=int8, n_shape=(), p_shape=(), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_1_{dtype=int8, n_shape=(), p_shape=(), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_20_{dtype=int32, n_shape=(3, 2), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_20_{dtype=int32, n_shape=(3, 2), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_21_{dtype=int32, n_shape=(3, 2), p_shape=(), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_21_{dtype=int32, n_shape=(3, 2), p_shape=(), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_22_{dtype=int32, n_shape=(3, 2), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_22_{dtype=int32, n_shape=(3, 2), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_23_{dtype=int32, n_shape=(3, 2), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_23_{dtype=int32, n_shape=(3, 2), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_24_{dtype=int64, n_shape=(), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_24_{dtype=int64, n_shape=(), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_25_{dtype=int64, n_shape=(), p_shape=(), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_25_{dtype=int64, n_shape=(), p_shape=(), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_26_{dtype=int64, n_shape=(), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_26_{dtype=int64, n_shape=(), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_27_{dtype=int64, n_shape=(), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_27_{dtype=int64, n_shape=(), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_28_{dtype=int64, n_shape=(3, 2), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_28_{dtype=int64, n_shape=(3, 2), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_29_{dtype=int64, n_shape=(3, 2), p_shape=(), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_29_{dtype=int64, n_shape=(3, 2), p_shape=(), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_2_{dtype=int8, n_shape=(), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_2_{dtype=int8, n_shape=(), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_30_{dtype=int64, n_shape=(3, 2), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_30_{dtype=int64, n_shape=(3, 2), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_31_{dtype=int64, n_shape=(3, 2), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_31_{dtype=int64, n_shape=(3, 2), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_32_{dtype=longlong, n_shape=(), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_32_{dtype=longlong, n_shape=(), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_33_{dtype=longlong, n_shape=(), p_shape=(), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_33_{dtype=longlong, n_shape=(), p_shape=(), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_34_{dtype=longlong, n_shape=(), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_34_{dtype=longlong, n_shape=(), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_35_{dtype=longlong, n_shape=(), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_35_{dtype=longlong, n_shape=(), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_36_{dtype=longlong, n_shape=(3, 2), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_36_{dtype=longlong, n_shape=(3, 2), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_37_{dtype=longlong, n_shape=(3, 2), p_shape=(), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_37_{dtype=longlong, n_shape=(3, 2), p_shape=(), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_38_{dtype=longlong, n_shape=(3, 2), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_38_{dtype=longlong, n_shape=(3, 2), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_39_{dtype=longlong, n_shape=(3, 2), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_39_{dtype=longlong, n_shape=(3, 2), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_3_{dtype=int8, n_shape=(), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_3_{dtype=int8, n_shape=(), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_40_{dtype=uint8, n_shape=(), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_40_{dtype=uint8, n_shape=(), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_41_{dtype=uint8, n_shape=(), p_shape=(), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_41_{dtype=uint8, n_shape=(), p_shape=(), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_42_{dtype=uint8, n_shape=(), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_42_{dtype=uint8, n_shape=(), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_43_{dtype=uint8, n_shape=(), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_43_{dtype=uint8, n_shape=(), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_44_{dtype=uint8, n_shape=(3, 2), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_44_{dtype=uint8, n_shape=(3, 2), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_45_{dtype=uint8, n_shape=(3, 2), p_shape=(), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_45_{dtype=uint8, n_shape=(3, 2), p_shape=(), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_46_{dtype=uint8, n_shape=(3, 2), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_46_{dtype=uint8, n_shape=(3, 2), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_47_{dtype=uint8, n_shape=(3, 2), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_47_{dtype=uint8, n_shape=(3, 2), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_48_{dtype=uint16, n_shape=(), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_48_{dtype=uint16, n_shape=(), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_49_{dtype=uint16, n_shape=(), p_shape=(), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_49_{dtype=uint16, n_shape=(), p_shape=(), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_4_{dtype=int8, n_shape=(3, 2), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_4_{dtype=int8, n_shape=(3, 2), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_50_{dtype=uint16, n_shape=(), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_50_{dtype=uint16, n_shape=(), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_51_{dtype=uint16, n_shape=(), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_51_{dtype=uint16, n_shape=(), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_52_{dtype=uint16, n_shape=(3, 2), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_52_{dtype=uint16, n_shape=(3, 2), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_53_{dtype=uint16, n_shape=(3, 2), p_shape=(), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_53_{dtype=uint16, n_shape=(3, 2), p_shape=(), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_54_{dtype=uint16, n_shape=(3, 2), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_54_{dtype=uint16, n_shape=(3, 2), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_55_{dtype=uint16, n_shape=(3, 2), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_55_{dtype=uint16, n_shape=(3, 2), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_56_{dtype=uint32, n_shape=(), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_56_{dtype=uint32, n_shape=(), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_57_{dtype=uint32, n_shape=(), p_shape=(), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_57_{dtype=uint32, n_shape=(), p_shape=(), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_58_{dtype=uint32, n_shape=(), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_58_{dtype=uint32, n_shape=(), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_59_{dtype=uint32, n_shape=(), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_59_{dtype=uint32, n_shape=(), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_5_{dtype=int8, n_shape=(3, 2), p_shape=(), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_5_{dtype=int8, n_shape=(3, 2), p_shape=(), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_60_{dtype=uint32, n_shape=(3, 2), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_60_{dtype=uint32, n_shape=(3, 2), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_61_{dtype=uint32, n_shape=(3, 2), p_shape=(), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_61_{dtype=uint32, n_shape=(3, 2), p_shape=(), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_62_{dtype=uint32, n_shape=(3, 2), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_62_{dtype=uint32, n_shape=(3, 2), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_63_{dtype=uint32, n_shape=(3, 2), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_63_{dtype=uint32, n_shape=(3, 2), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_64_{dtype=uint64, n_shape=(), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_64_{dtype=uint64, n_shape=(), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_65_{dtype=uint64, n_shape=(), p_shape=(), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_65_{dtype=uint64, n_shape=(), p_shape=(), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_66_{dtype=uint64, n_shape=(), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_66_{dtype=uint64, n_shape=(), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_67_{dtype=uint64, n_shape=(), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_67_{dtype=uint64, n_shape=(), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_68_{dtype=uint64, n_shape=(3, 2), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_68_{dtype=uint64, n_shape=(3, 2), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_69_{dtype=uint64, n_shape=(3, 2), p_shape=(), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_69_{dtype=uint64, n_shape=(3, 2), p_shape=(), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_6_{dtype=int8, n_shape=(3, 2), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_6_{dtype=int8, n_shape=(3, 2), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_70_{dtype=uint64, n_shape=(3, 2), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_70_{dtype=uint64, n_shape=(3, 2), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_71_{dtype=uint64, n_shape=(3, 2), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_71_{dtype=uint64, n_shape=(3, 2), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_72_{dtype=ulonglong, n_shape=(), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_72_{dtype=ulonglong, n_shape=(), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_73_{dtype=ulonglong, n_shape=(), p_shape=(), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_73_{dtype=ulonglong, n_shape=(), p_shape=(), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_74_{dtype=ulonglong, n_shape=(), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_74_{dtype=ulonglong, n_shape=(), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_75_{dtype=ulonglong, n_shape=(), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_75_{dtype=ulonglong, n_shape=(), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_76_{dtype=ulonglong, n_shape=(3, 2), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_76_{dtype=ulonglong, n_shape=(3, 2), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_77_{dtype=ulonglong, n_shape=(3, 2), p_shape=(), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_77_{dtype=ulonglong, n_shape=(3, 2), p_shape=(), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_78_{dtype=ulonglong, n_shape=(3, 2), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_78_{dtype=ulonglong, n_shape=(3, 2), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_79_{dtype=ulonglong, n_shape=(3, 2), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_79_{dtype=ulonglong, n_shape=(3, 2), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_7_{dtype=int8, n_shape=(3, 2), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_7_{dtype=int8, n_shape=(3, 2), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_8_{dtype=int16, n_shape=(), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_8_{dtype=int16, n_shape=(), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_9_{dtype=int16, n_shape=(), p_shape=(), shape=(3, 2)}::test_negative_binomial
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_9_{dtype=int16, n_shape=(), p_shape=(), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_0_{n_shape=(), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_0_{n_shape=(), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_1_{n_shape=(), p_shape=(), shape=(3, 2)}::test_negative_binomial
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_1_{n_shape=(), p_shape=(), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_2_{n_shape=(), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_2_{n_shape=(), p_shape=(3, 2), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_3_{n_shape=(), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_3_{n_shape=(), p_shape=(3, 2), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_4_{n_shape=(3, 2), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_4_{n_shape=(3, 2), p_shape=(), shape=(4, 3, 2)}::test_negative_binomial_for_noninteger_n
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_5_{n_shape=(3, 2), p_shape=(), shape=(3, 2)}::test_negative_binomial
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial_param_5_{n_shape=(3, 2), p_shape=(), shape=(3, 2)}::test_negative_binomial_for_noninteger_n
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_0_{df_shape=(), nonc_shape=(), shape=(4, 3, 2)}::test_noncentral_chisquare
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_1_{df_shape=(), nonc_shape=(), shape=(3, 2)}::test_noncentral_chisquare
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare_param_2_{df_shape=(), nonc_shape=(3, 2), shape=(4, 3, 2)}::test_noncentral_chisquare
@@ -1852,12 +1602,6 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNorm
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNormal_param_3_{loc_shape=(), scale_shape=(3, 2), shape=(3, 2)}::test_normal
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNormal_param_4_{loc_shape=(3, 2), scale_shape=(), shape=(4, 3, 2)}::test_normal
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNormal_param_5_{loc_shape=(3, 2), scale_shape=(), shape=(3, 2)}::test_normal
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNormal_param_6_{loc_shape=(3, 2), scale_shape=(3, 2), shape=(4, 3, 2)}::test_normal
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNormal_param_7_{loc_shape=(3, 2), scale_shape=(3, 2), shape=(3, 2)}::test_normal
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPoisson_param_0_{lam_shape=(), shape=(4, 3, 2)}::test_poisson
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPoisson_param_1_{lam_shape=(), shape=(3, 2)}::test_poisson
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPoisson_param_2_{lam_shape=(3, 2), shape=(4, 3, 2)}::test_poisson
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPoisson_param_3_{lam_shape=(3, 2), shape=(3, 2)}::test_poisson
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPower_param_0_{a_shape=(), shape=(4, 3, 2)}::test_power
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPower_param_0_{a_shape=(), shape=(4, 3, 2)}::test_power_for_negative_a
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPower_param_1_{a_shape=(), shape=(3, 2)}::test_power
@@ -1868,22 +1612,8 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayl
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh_param_1_{scale_shape=(), shape=(3, 2)}::test_rayleigh
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh_param_1_{scale_shape=(), shape=(3, 2)}::test_rayleigh_for_negative_scale
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh_param_1_{scale_shape=(), shape=(3, 2)}::test_rayleigh_for_zero_scale
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh_param_2_{scale_shape=(3, 2), shape=(4, 3, 2)}::test_rayleigh
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh_param_2_{scale_shape=(3, 2), shape=(4, 3, 2)}::test_rayleigh_for_negative_scale
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh_param_2_{scale_shape=(3, 2), shape=(4, 3, 2)}::test_rayleigh_for_zero_scale
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh_param_3_{scale_shape=(3, 2), shape=(3, 2)}::test_rayleigh
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh_param_3_{scale_shape=(3, 2), shape=(3, 2)}::test_rayleigh_for_negative_scale
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh_param_3_{scale_shape=(3, 2), shape=(3, 2)}::test_rayleigh_for_zero_scale
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardCauchy_param_0_{shape=(4, 3, 2)}::test_standard_cauchy
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardCauchy_param_1_{shape=(3, 2)}::test_standard_cauchy
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardExponential_param_0_{shape=(4, 3, 2)}::test_standard_exponential
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardExponential_param_1_{shape=(3, 2)}::test_standard_exponential
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardGamma_param_0_{shape=(4, 3, 2), shape_shape=()}::test_standard_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardGamma_param_1_{shape=(4, 3, 2), shape_shape=(3, 2)}::test_standard_gamma
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardGamma_param_2_{shape=(3, 2), shape_shape=()}::test_standard_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardGamma_param_3_{shape=(3, 2), shape_shape=(3, 2)}::test_standard_gamma
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardNormal_param_0_{shape=(4, 3, 2)}::test_standard_normal
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardNormal_param_1_{shape=(3, 2)}::test_standard_normal
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_0_{left_shape=(), mode_shape=(), right_shape=(), shape=(4, 3, 2)}::test_triangular
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_1_{left_shape=(), mode_shape=(), right_shape=(), shape=(3, 2)}::test_triangular
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular_param_2_{left_shape=(), mode_shape=(), right_shape=(3, 2), shape=(4, 3, 2)}::test_triangular
@@ -1904,8 +1634,6 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLap
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace_param_3_{loc_shape=(), scale_shape=(3, 2), shape=(3, 2)}::test_laplace
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace_param_4_{loc_shape=(3, 2), scale_shape=(), shape=(4, 3, 2)}::test_laplace
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace_param_5_{loc_shape=(3, 2), scale_shape=(), shape=(3, 2)}::test_laplace
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace_param_6_{loc_shape=(3, 2), scale_shape=(3, 2), shape=(4, 3, 2)}::test_laplace
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace_param_7_{loc_shape=(3, 2), scale_shape=(3, 2), shape=(3, 2)}::test_laplace
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsUniform_param_0_{high_shape=(), low_shape=(), shape=(4, 3, 2)}::test_uniform
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsUniform_param_1_{high_shape=(), low_shape=(), shape=(3, 2)}::test_uniform
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsUniform_param_2_{high_shape=(), low_shape=(3, 2), shape=(4, 3, 2)}::test_uniform
@@ -1926,12 +1654,6 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeib
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull_param_1_{a_shape=(), shape=(3, 2)}::test_weibull
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull_param_1_{a_shape=(), shape=(3, 2)}::test_weibull_for_inf_a
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull_param_1_{a_shape=(), shape=(3, 2)}::test_weibull_for_negative_a
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull_param_2_{a_shape=(3, 2), shape=(4, 3, 2)}::test_weibull
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull_param_2_{a_shape=(3, 2), shape=(4, 3, 2)}::test_weibull_for_inf_a
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull_param_2_{a_shape=(3, 2), shape=(4, 3, 2)}::test_weibull_for_negative_a
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull_param_3_{a_shape=(3, 2), shape=(3, 2)}::test_weibull
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull_param_3_{a_shape=(3, 2), shape=(3, 2)}::test_weibull_for_inf_a
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull_param_3_{a_shape=(3, 2), shape=(3, 2)}::test_weibull_for_negative_a
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsZipf_param_0_{a_shape=(), shape=(4, 3, 2)}::test_zipf
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsZipf_param_1_{a_shape=(), shape=(3, 2)}::test_zipf
 tests/third_party/cupy/random_tests/test_sample.py::TestChoice::test_no_none
