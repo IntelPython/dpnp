@@ -52,7 +52,8 @@ __all__ = [
     "diag_indices",
     "diag_indices_from",
     "nonzero",
-    "tril_indices"
+    "tril_indices",
+    "tril_indices_from"
 ]
 
 
@@ -233,3 +234,27 @@ def tril_indices(n, k=0, m=None):
             return dpnp_tril_indices(n, k, m)
 
     return call_origin(numpy.tril_indices, n, k, m)
+
+
+def tril_indices_from(arr, k=0):
+    """
+    Return the indices for the lower-triangle of arr.
+    See `tril_indices` for full details.
+
+    Parameters
+    ----------
+    arr : array_like
+        The indices will be valid for square arrays whose dimensions are
+        the same as arr.
+
+    k : int, optional
+        Diagonal offset (see `tril` for details).
+    """
+
+    is_arr_dparray = isinstance(arr, dparray)
+
+    if (not use_origin_backend(arr) and is_arr_dparray):
+        if isinstance(k, int):
+            return dpnp_tril_indices_from(arr, k)
+
+    return call_origin(numpy.tril_indices_from, arr, k)
