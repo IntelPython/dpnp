@@ -97,6 +97,7 @@ jobs:
       sudo chmod -R a+w /opt/intel/oneapi/intelpython
       . /opt/intel/oneapi/setvars.sh
       ./scripts/install_python_deps.sh
+      ./scripts/build_deps_dpctl.sh
       echo ========================= make DPNP package ===============================
       #conda init bash
       #conda info
