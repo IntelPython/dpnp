@@ -1640,8 +1640,6 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsUnif
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsUniform_param_3_{high_shape=(), low_shape=(3, 2), shape=(3, 2)}::test_uniform
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsUniform_param_4_{high_shape=(3, 2), low_shape=(), shape=(4, 3, 2)}::test_uniform
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsUniform_param_5_{high_shape=(3, 2), low_shape=(), shape=(3, 2)}::test_uniform
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsUniform_param_6_{high_shape=(3, 2), low_shape=(3, 2), shape=(4, 3, 2)}::test_uniform
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsUniform_param_7_{high_shape=(3, 2), low_shape=(3, 2), shape=(3, 2)}::test_uniform
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWald_param_0_{mean_shape=(), scale_shape=(), shape=(4, 3, 2)}::test_wald
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWald_param_1_{mean_shape=(), scale_shape=(), shape=(3, 2)}::test_wald
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWald_param_2_{mean_shape=(), scale_shape=(3, 2), shape=(4, 3, 2)}::test_wald
