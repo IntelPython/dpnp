@@ -251,7 +251,7 @@ class TestChoice(unittest.TestCase):
         self.m.choice.assert_called_with(3, 1, True, [0.1, 0.1, 0.8])
 
 
-@testing.gpu
+# @testing.gpu
 class TestRandomSample(unittest.TestCase):
 
     def test_rand(self):
@@ -271,16 +271,14 @@ class TestRandomSample(unittest.TestCase):
             random.rand(1, 2, 3, unnecessary='unnecessary_argument')
 
     def test_randn(self):
-        with mock.patch('dpnp.random.distributions.normal') as m:
-            random.randn(1, 2, 3, dtype=numpy.float32)
-        m.assert_called_once_with(
-            size=(1, 2, 3), dtype=numpy.float32)
+        with mock.patch('dpnp.random.normal') as m:
+            random.randn(1, 2, 3)
+        m.assert_called_once_with(size=(1, 2, 3))
 
     def test_randn_default_dtype(self):
-        with mock.patch('dpnp.random.distributions.normal') as m:
+        with mock.patch('dpnp.random.normal') as m:
             random.randn(1, 2, 3)
-        m.assert_called_once_with(
-            size=(1, 2, 3), dtype=float)
+        m.assert_called_once_with(size=(1, 2, 3))
 
     def test_randn_invalid_argument(self):
         with self.assertRaises(TypeError):
