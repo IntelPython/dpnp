@@ -93,7 +93,7 @@ jobs:
   steps:
   - bash: |
       ./scripts/install_system_deps.sh
-      sudo apt-get install intelpython3
+      sudo apt-get install intel-oneapi-python
       . /opt/intel/oneapi/setvars.sh
       ./scripts/install_python_deps.sh
       echo ========================= make DPNP package ===============================
