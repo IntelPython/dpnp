@@ -45,6 +45,8 @@ __all__ += [
     'dpnp_arctan2',
     "dpnp_ceil",
     "dpnp_copysign",
+    "dpnp_cumprod",
+    "dpnp_cumsum",
     "dpnp_divide",
     "dpnp_fabs",
     "dpnp_floor",
@@ -106,6 +108,30 @@ cpdef dparray dpnp_ceil(dparray x1):
 
 cpdef dparray dpnp_copysign(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_COPYSIGN, x1, x2, x1.shape)
+
+
+cpdef dparray dpnp_cumprod(dparray x):
+    cdef dparray result = dparray(x.size, dtype=x.dtype)
+
+    cur_res = x[0]
+    result._setitem_scalar(0, cur_res)
+    for i in range(1, result.size):
+        cur_res *= x[i]
+        result._setitem_scalar(i, cur_res)
+
+    return result
+
+
+cpdef dparray dpnp_cumsum(dparray x):
+    cdef dparray result = dparray(x.size, dtype=x.dtype)
+
+    cur_res = x[0]
+    result._setitem_scalar(0, cur_res)
+    for i in range(1, result.size):
+        cur_res += x[i] 
+        result._setitem_scalar(i, cur_res)
+
+    return result
 
 
 cpdef dparray dpnp_divide(dparray x1, dparray x2):
