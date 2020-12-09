@@ -98,8 +98,8 @@ jobs:
       . /opt/intel/oneapi/setvars.sh
       ./scripts/install_python_deps.sh
       echo ========================= make DPNP package ===============================
-      conda init bash
-      conda info
+      #conda init bash
+      #conda info
       #cat /home/vsts/.bashrc
       #bash -c "conda activate; conda-build conda-recipe/"
       #. /usr/share/miniconda/etc/profile.d/conda.sh
