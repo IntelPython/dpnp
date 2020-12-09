@@ -1016,6 +1016,43 @@ def test_standard_normal_check_moments():
     assert math.isclose(mean, expected_mean, abs_tol=0.1)
 
 
+class TestDistributionsUniform:
+
+    def test_seed(self):
+        seed = 28041990
+        size = 100
+        low = 1.0
+        high = 2.0
+        dpnp.random.seed(seed)
+        a1 = dpnp.random.uniform(low=low, high=high, size=size)
+        dpnp.random.seed(seed)
+        a2 = dpnp.random.uniform(low=low, high=high, size=size)
+        assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+    def test_check_moments(self):
+        low = 1.0
+        high = 2.0
+        size = 10**5
+        expected_mean = (low + high) / 2
+        expected_var = ((high - low) ** 2) / 12
+        seed = 28041990
+        dpnp.random.seed(seed)
+        res = dpnp.random.uniform(low=low, high=high, size=size)
+        var = numpy.var(res)
+        mean = numpy.mean(res)
+        assert math.isclose(var, expected_var, abs_tol=0.1)
+        assert math.isclose(mean, expected_mean, abs_tol=0.1)
+
+    def test_check_extreme_value(self):
+        low = 1.0
+        high = 1.0
+        seed = 28041990
+        dpnp.random.seed(seed)
+        res = numpy.asarray(dpnp.random.uniform(low=low, high=high, size=100))
+        assert len(numpy.unique(res)) == 1
+        assert numpy.unique(res)[0] == low
+
+
 def test_weibull_seed():
     seed = 28041990
     size = 100
