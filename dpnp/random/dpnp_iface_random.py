@@ -1020,10 +1020,9 @@ def randint(low, high=None, size=None, dtype=int):
     Limitations
     -----------
     Parameters ``low`` and ``high`` are supported as scalar.
+    Parameter ``dtype`` is supported only for `int` or :obj:`dpnp.float32`.
     Otherwise, :obj:`numpy.random.randint(low, high, size, dtype)` samples
     are drawn.
-    Supported output array data types are :obj:`dpnp.float32`,
-    :obj:`dpnp.float64` and :obj:`dpnp.int32`.
 
     Examples
     --------
@@ -1043,7 +1042,7 @@ def randint(low, high=None, size=None, dtype=int):
         # TODO
         # add to the limitations
         if dtype is int:
-            _dtype=dpnp.int32
+            _dtype = dpnp.int32
         else:
             _dtype = dpnp.dtype(dtype)
         if high is None:
@@ -1055,9 +1054,9 @@ def randint(low, high=None, size=None, dtype=int):
             pass
         elif not dpnp.isscalar(high):
             pass
-        elif low >= high:
+        elif int(low) >= int(high):
             pass
-        elif not _dtype is dpnp.int32:
+        elif _dtype is not dpnp.int32:
             pass
         else:
             low = int(low)
