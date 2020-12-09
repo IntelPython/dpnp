@@ -28,12 +28,12 @@ python3 --version
 echo ========================= install valgrind ===============================
 sudo apt-get install valgrind
 
-echo ========================= install/delete libstdc++-dev ===================
-sudo apt remove -y gcc-7 g++-7 gcc-8 g++-8 gcc-10 g++-10
+#echo ========================= install/delete libstdc++-dev ===================
+#sudo apt remove -y gcc-7 g++-7 gcc-8 g++-8 gcc-10 g++-10
 # oneapi beta 10 can not work with libstdc++-10-dev 
-sudo apt remove -y libstdc++-10-dev
-sudo apt autoremove
-sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
+#sudo apt remove -y libstdc++-10-dev
+#sudo apt autoremove
+#sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
 
 
 echo ========================= SW versions ====================================
