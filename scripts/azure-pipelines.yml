@@ -94,6 +94,7 @@ jobs:
   - bash: |
       ./scripts/install_system_deps.sh
       sudo apt-get install intel-oneapi-python
+      sudo chmod -R a+w /opt/intel/oneapi/intelpython
       . /opt/intel/oneapi/setvars.sh
       ./scripts/install_python_deps.sh
       echo ========================= make DPNP package ===============================
