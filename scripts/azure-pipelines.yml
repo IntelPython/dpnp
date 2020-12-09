@@ -96,6 +96,7 @@ jobs:
       echo ========================= make DPNP package ===============================
       conda init bash
       conda info
+      conda activate
       conda-build conda-recipe/
       echo ========================= list files ===============================
       ls -l
