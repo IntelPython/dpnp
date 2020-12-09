@@ -10,11 +10,11 @@ requirements:
       - setuptools
       - numpy-devel >=1.18
       - cython
-      - dpctl >=0.3.7
+      - dpctl >=0.5
       - mkl-devel >=2021.1b10
     run:
       - python
-      - dpctl >=0.3.7
+      - dpctl >=0.5
       - dpcpp_cpp_rt >=2021.1b10
       - mkl >=2021.1b10
 

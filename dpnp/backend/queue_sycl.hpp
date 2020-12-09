@@ -41,7 +41,7 @@
 #include <ctime>
 
 #if !defined(DPNP_LOCAL_QUEUE)
-#include <dppl_sycl_queue_manager.h>
+#include <dpctl_sycl_queue_manager.h>
 #endif
 
 #include "backend_pstl.hpp" // this header must be included after <mkl.hpp>
@@ -128,7 +128,7 @@ public:
         return *queue;
 #else
         // temporal solution. Started from Sept-2020
-        DPPLSyclQueueRef DPCtrl_queue = DPPLQueueMgr_GetCurrentQueue();
+        DPCTLSyclQueueRef DPCtrl_queue = DPCTLQueueMgr_GetCurrentQueue();
         return *(reinterpret_cast<cl::sycl::queue*>(DPCtrl_queue));
 #endif
     }

@@ -96,6 +96,13 @@ __all__ = [
 ]
 
 
+def _check_dims(dims):
+    for dim in dims:
+        if not isinstance(dim, int):
+            return False
+    return True
+
+
 def beta(a, b, size=None):
     """Beta distribution.
 
@@ -1006,35 +1013,22 @@ def rand(d0, *dn):
 
 def randint(low, high=None, size=None, dtype=int):
     """
-    randint(low, high=None, size=None, dtype=int)
-
     Return random integers from `low` (inclusive) to `high` (exclusive).
-    Return random integers from the "discrete uniform" distribution of
-    the specified dtype in the "half-open" interval [`low`, `high`). If
-    `high` is None (the default), then results are from [0, `low`).
 
-    Parameters
-    ----------
-    low : int
-        Lowest (signed) integer to be drawn from the distribution (unless
-        ``high=None``, in which case this parameter is one above the
-        *highest* such integer).
-    high : int, optional
-        If provided, one above the largest (signed) integer to be drawn
-        from the distribution.
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  Default is None, in which case a
-        single value is returned.
-    dtype : dtype, optional
-        Desired dtype of the result. Byteorder must be native.
-        The default value is int.
+    For full documentation refer to :obj:`numpy.random.randint`.
 
-    Returns
-    -------
-    out : array of random ints
-        `size`-shaped array of random integers from the appropriate
-        distribution, or a single such random int if `size` not provided.
+    Limitations
+    -----------
+    Parameters ``low`` and ``high`` are supported as scalar.
+    Parameter ``dtype`` is supported only for `int` or :obj:`dpnp.float32`.
+    Otherwise, :obj:`numpy.random.randint(low, high, size, dtype)` samples
+    are drawn.
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> low, high = 3, 11 # low and high
+    >>> s = dpnp.random.randint(low, high, 1000, dtype=dpnp.int32)
 
     See Also
     --------
@@ -1045,42 +1039,51 @@ def randint(low, high=None, size=None, dtype=int):
     """
 
     if not use_origin_backend(low):
+        # TODO
+        # add to the limitations
+        if dtype is int:
+            _dtype = dpnp.int32
+        else:
+            _dtype = dpnp.dtype(dtype)
         if high is None:
             high = low
             low = 0
-
-        low = int(low)
-        high = int(high)
-
-        if (low >= high):
-            checker_throw_value_error("randint", "low", low, high)
-
-        _dtype = numpy.dtype(dtype)
-
         # TODO:
-        # supported only int32
-        # or just raise error when dtype != numpy.int32
-        if _dtype == numpy.int32 or _dtype == numpy.int64:
-            _dtype = numpy.int32
+        # array_like of floats for `low` and `high` params
+        if not dpnp.isscalar(low):
+            pass
+        elif not dpnp.isscalar(high):
+            pass
+        elif int(low) >= int(high):
+            pass
+        elif _dtype is not dpnp.int32:
+            pass
         else:
-            raise TypeError('Unsupported dtype %r for randint' % dtype)
-        return dpnp_uniform(low, high, size, _dtype)
+            low = int(low)
+            high = int(high)
+            return dpnp_uniform(low, high, size, _dtype)
 
     return call_origin(numpy.random.randint, low, high, size, dtype)
 
 
 def randn(d0, *dn):
     """
-    If positive int_like arguments are provided, randn generates an array of shape (d0, d1, ..., dn),
-    filled with random floats sampled from a univariate “normal” (Gaussian) distribution of mean 0 and variance 1.
+    Return a sample (or samples) from the "standard normal" distribution.
 
-    Parameters
-    ----------
-    d0, d1, …, dn : The dimensions of the returned array, must be non-negative.
+    For full documentation refer to :obj:`numpy.random.randn`.
 
-    Returns
-    -------
-    out : (d0, d1, ..., dn)-shaped array of floating-point samples from the standard normal distribution.
+    Limitations
+    -----------
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    >>> dpnp.random.randn()
+    2.1923875335537315  # random
+
+    Two-by-four array of samples from N(3, 6.25):
+
+    >>> s = 3 + 2.5 * dpnp.random.randn(2, 4)
 
     See Also
     --------
@@ -1091,11 +1094,10 @@ def randn(d0, *dn):
 
     if not use_origin_backend(d0):
         dims = tuple([d0, *dn])
-
-        for dim in dims:
-            if not isinstance(dim, int):
-                checker_throw_value_error("randn", "type(dim)", type(dim), int)
-        return dpnp_randn(dims)
+        if not _check_dims(dims):
+            pass
+        else:
+            return dpnp_randn(dims)
 
     return call_origin(numpy.random.randn, d0, *dn)
 
@@ -1105,13 +1107,15 @@ def random(size):
     Return random floats in the half-open interval [0.0, 1.0).
     Alias for random_sample.
 
-    Parameters
-    ----------
-    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
+    For full documentation refer to :obj:`numpy.random.random`.
 
-    Returns
-    -------
-    out : Array of random floats of shape size.
+    Limitations
+    -----------
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    >>> s = dpnp.random.random(1000)
 
     See Also
     --------
@@ -1120,9 +1124,6 @@ def random(size):
     """
 
     if not use_origin_backend(size):
-        for dim in size:
-            if not isinstance(dim, int):
-                checker_throw_value_error("random", "type(dim)", type(dim), int)
         return dpnp_random(size)
 
     return call_origin(numpy.random.random, size)
@@ -1476,28 +1477,20 @@ def uniform(low=0.0, high=1.0, size=None):
     uniform(low=0.0, high=1.0, size=None)
 
     Draw samples from a uniform distribution.
-    Samples are uniformly distributed over the half-open interval
-    ``[low, high)`` (includes low, but excludes high).  In other words,
-    any value within the given interval is equally likely to be drawn
-    by `uniform`.
 
-    Parameters
-    ----------
-    low : float, optional
-        Lower boundary of the output interval.  All values generated will be
-        greater than or equal to low.  The default value is 0.
-    high : float
-        Upper boundary of the output interval.  All values generated will be
-        less than high.  The default value is 1.0.
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  If size is ``None`` (default),
-        a single value is returned if ``low`` and ``high`` are both scalars.
+    For full documentation refer to :obj:`numpy.random.uniform`.
 
-    Returns
-    -------
-    out : array or scalar
-        Drawn samples from the parameterized uniform distribution.
+    Limitations
+    -----------
+    Parameters ``low`` and ``high`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.uniform(low, high, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> low, high = 0, 0.1 # low and high
+    >>> s = dpnp.random.uniform(low, high, 10000)
 
     See Also
     --------
@@ -1506,16 +1499,14 @@ def uniform(low=0.0, high=1.0, size=None):
     """
 
     if not use_origin_backend(low):
-        if low == high:
-            # TODO:
-            # currently dparray.full is not implemented
-            # return dpnp.dparray.dparray.full(size, low, dtype=numpy.float64)
-            message = "`low` equal to `high`, should return an array, filled with `low` value."
-            message += "  Currently not supported. See: numpy.full TODO"
-            checker_throw_runtime_error("uniform", message)
-        elif low > high:
-            low, high = high, low
-        return dpnp_uniform(low, high, size, dtype=numpy.float64)
+        if not dpnp.isscalar(low):
+            pass
+        elif not dpnp.isscalar(high):
+            pass
+        else:
+            if low > high:
+                low, high = high, low
+            return dpnp_uniform(low, high, size, dtype=numpy.float64)
 
     return call_origin(numpy.random.uniform, low, high, size)
 

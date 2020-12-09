@@ -52,6 +52,8 @@ __all__ = [
     "diag_indices",
     "diag_indices_from",
     "nonzero",
+    "tril_indices",
+    "tril_indices_from"
 ]
 
 
@@ -198,3 +200,61 @@ def nonzero(a):
         return dpnp_nonzero(a)
 
     return call_origin(numpy.nonzero, a)
+
+
+def tril_indices(n, k=0, m=None):
+    """
+    Return the indices for the lower-triangle of an (n, m) array.
+
+    Parameters
+    ----------
+    n : int
+        The row dimension of the arrays for which the returned
+        indices will be valid.
+
+    k : int, optional
+        Diagonal offset (see `tril` for details).
+
+    m : int, optional
+        The column dimension of the arrays for which the returned
+        arrays will be valid.
+        By default `m` is taken equal to `n`.
+
+    Returns
+    -------
+    inds : tuple of arrays
+        The indices for the triangle. The returned tuple contains two arrays,
+        each with the indices along one dimension of the array.
+
+    """
+
+    if not use_origin_backend():
+        if isinstance(n, int) and isinstance(k, int) \
+                and (isinstance(m, int) or m is None):
+            return dpnp_tril_indices(n, k, m)
+
+    return call_origin(numpy.tril_indices, n, k, m)
+
+
+def tril_indices_from(arr, k=0):
+    """
+    Return the indices for the lower-triangle of arr.
+    See `tril_indices` for full details.
+
+    Parameters
+    ----------
+    arr : array_like
+        The indices will be valid for square arrays whose dimensions are
+        the same as arr.
+
+    k : int, optional
+        Diagonal offset (see `tril` for details).
+    """
+
+    is_arr_dparray = isinstance(arr, dparray)
+
+    if (not use_origin_backend(arr) and is_arr_dparray):
+        if isinstance(k, int):
+            return dpnp_tril_indices_from(arr, k)
+
+    return call_origin(numpy.tril_indices_from, arr, k)

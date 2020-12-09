@@ -53,11 +53,11 @@ add_library(
     custom_kernels_linalg.cpp
     custom_kernels_manipulation.cpp
     custom_kernels_mathematical.cpp
-    custom_kernels_random.cpp
     custom_kernels_reduction.cpp
     custom_kernels_searching.cpp
     custom_kernels_sorting.cpp
     custom_kernels_statistics.cpp
+    dpnp_kernels_random.cpp
     memory_sycl.cpp
     queue_sycl.cpp
 )

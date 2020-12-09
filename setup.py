@@ -282,12 +282,12 @@ dpnp_backend_c = [
                 "dpnp/backend/custom_kernels_linalg.cpp",
                 "dpnp/backend/custom_kernels_manipulation.cpp",
                 "dpnp/backend/custom_kernels_mathematical.cpp",
-                "dpnp/backend/custom_kernels_random.cpp",
                 "dpnp/backend/custom_kernels_reduction.cpp",
                 "dpnp/backend/custom_kernels_searching.cpp",
                 "dpnp/backend/custom_kernels_sorting.cpp",
                 "dpnp/backend/custom_kernels_statistics.cpp",
                 "dpnp/backend/dpnp_kernels_fft.cpp",
+                "dpnp/backend/dpnp_kernels_random.cpp",
                 "dpnp/backend/memory_sycl.cpp",
                 "dpnp/backend/queue_sycl.cpp"
             ],

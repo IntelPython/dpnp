@@ -639,7 +639,7 @@ INP_DLLEXPORT void custom_elemwise_transpose_c(void* array1_in,
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_rng_beta_c(void* result, _DataType a, _DataType b, size_t size);
+INP_DLLEXPORT void dpnp_rng_beta_c(void* result, _DataType a, _DataType b, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -655,7 +655,7 @@ INP_DLLEXPORT void custom_rng_beta_c(void* result, _DataType a, _DataType b, siz
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_rng_binomial_c(void* result, int ntrial, double p, size_t size);
+INP_DLLEXPORT void dpnp_rng_binomial_c(void* result, int ntrial, double p, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -669,7 +669,7 @@ INP_DLLEXPORT void custom_rng_binomial_c(void* result, int ntrial, double p, siz
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_rng_chi_square_c(void* result, int df, size_t size);
+INP_DLLEXPORT void dpnp_rng_chi_square_c(void* result, int df, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -683,7 +683,7 @@ INP_DLLEXPORT void custom_rng_chi_square_c(void* result, int df, size_t size);
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_rng_exponential_c(void* result, _DataType beta, size_t size);
+INP_DLLEXPORT void dpnp_rng_exponential_c(void* result, _DataType beta, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -699,7 +699,7 @@ INP_DLLEXPORT void custom_rng_exponential_c(void* result, _DataType beta, size_t
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_rng_gamma_c(void* result, _DataType shape, _DataType scale, size_t size);
+INP_DLLEXPORT void dpnp_rng_gamma_c(void* result, _DataType shape, _DataType scale, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -715,7 +715,7 @@ INP_DLLEXPORT void custom_rng_gamma_c(void* result, _DataType shape, _DataType s
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_rng_gaussian_c(void* result, _DataType mean, _DataType stddev, size_t size);
+INP_DLLEXPORT void dpnp_rng_gaussian_c(void* result, _DataType mean, _DataType stddev, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -733,7 +733,7 @@ INP_DLLEXPORT void custom_rng_gaussian_c(void* result, _DataType mean, _DataType
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_rng_hypergeometric_c(void* result, int l, int s, int m, size_t size);
+INP_DLLEXPORT void dpnp_rng_hypergeometric_c(void* result, int l, int s, int m, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -747,7 +747,7 @@ INP_DLLEXPORT void custom_rng_hypergeometric_c(void* result, int l, int s, int m
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_rng_geometric_c(void* result, float p, size_t size);
+INP_DLLEXPORT void dpnp_rng_geometric_c(void* result, float p, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -763,7 +763,7 @@ INP_DLLEXPORT void custom_rng_geometric_c(void* result, float p, size_t size);
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_rng_gumbel_c(void* result, double loc, double scale, size_t size);
+INP_DLLEXPORT void dpnp_rng_gumbel_c(void* result, double loc, double scale, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -779,7 +779,7 @@ INP_DLLEXPORT void custom_rng_gumbel_c(void* result, double loc, double scale, s
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_rng_laplace_c(void* result, double loc, double scale, size_t size);
+INP_DLLEXPORT void dpnp_rng_laplace_c(void* result, double loc, double scale, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -795,7 +795,7 @@ INP_DLLEXPORT void custom_rng_laplace_c(void* result, double loc, double scale, 
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_rng_lognormal_c(void* result, _DataType mean, _DataType stddev, size_t size);
+INP_DLLEXPORT void dpnp_rng_lognormal_c(void* result, _DataType mean, _DataType stddev, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -814,7 +814,7 @@ INP_DLLEXPORT void custom_rng_lognormal_c(void* result, _DataType mean, _DataTyp
  */
 template <typename _DataType>
 INP_DLLEXPORT void
-    custom_rng_multinomial_c(void* result, int ntrial, const double* p_vector, const size_t p_vector_size, size_t size);
+    dpnp_rng_multinomial_c(void* result, int ntrial, const double* p_vector, const size_t p_vector_size, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -823,13 +823,13 @@ INP_DLLEXPORT void
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_rng_multivariate_normal_c(void* result,
-                                                    const int dimen,
-                                                    const double* mean_vector,
-                                                    const size_t mean_vector_size,
-                                                    const double* cov_vector,
-                                                    const size_t cov_vector_size,
-                                                    size_t size);
+INP_DLLEXPORT void dpnp_rng_multivariate_normal_c(void* result,
+                                                  const int dimen,
+                                                  const double* mean_vector,
+                                                  const size_t mean_vector_size,
+                                                  const double* cov_vector,
+                                                  const size_t cov_vector_size,
+                                                  size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -845,7 +845,7 @@ INP_DLLEXPORT void custom_rng_multivariate_normal_c(void* result,
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_rng_negative_binomial_c(void* result, double a, double p, size_t size);
+INP_DLLEXPORT void dpnp_rng_negative_binomial_c(void* result, double a, double p, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -861,7 +861,7 @@ INP_DLLEXPORT void custom_rng_negative_binomial_c(void* result, double a, double
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_rng_normal_c(void* result, _DataType mean, _DataType stddev, size_t size);
+INP_DLLEXPORT void dpnp_rng_normal_c(void* result, _DataType mean, _DataType stddev, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -875,7 +875,7 @@ INP_DLLEXPORT void custom_rng_normal_c(void* result, _DataType mean, _DataType s
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_rng_poisson_c(void* result, double lambda, size_t size);
+INP_DLLEXPORT void dpnp_rng_poisson_c(void* result, double lambda, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -889,7 +889,7 @@ INP_DLLEXPORT void custom_rng_poisson_c(void* result, double lambda, size_t size
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_rng_rayleigh_c(void* result, _DataType scale, size_t size);
+INP_DLLEXPORT void dpnp_rng_rayleigh_c(void* result, _DataType scale, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -901,7 +901,7 @@ INP_DLLEXPORT void custom_rng_rayleigh_c(void* result, _DataType scale, size_t s
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_rng_standard_cauchy_c(void* result, size_t size);
+INP_DLLEXPORT void dpnp_rng_standard_cauchy_c(void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -913,7 +913,7 @@ INP_DLLEXPORT void custom_rng_standard_cauchy_c(void* result, size_t size);
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_rng_standard_normal_c(void* result, size_t size);
+INP_DLLEXPORT void dpnp_rng_standard_normal_c(void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -925,7 +925,7 @@ INP_DLLEXPORT void custom_rng_standard_normal_c(void* result, size_t size);
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_rng_standard_exponential_c(void* result, size_t size);
+INP_DLLEXPORT void dpnp_rng_standard_exponential_c(void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -939,7 +939,7 @@ INP_DLLEXPORT void custom_rng_standard_exponential_c(void* result, size_t size);
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_rng_standard_gamma_c(void* result, _DataType shape, size_t size);
+INP_DLLEXPORT void dpnp_rng_standard_gamma_c(void* result, _DataType shape, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -955,7 +955,7 @@ INP_DLLEXPORT void custom_rng_standard_gamma_c(void* result, _DataType shape, si
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_rng_uniform_c(void* result, long low, long high, size_t size);
+INP_DLLEXPORT void dpnp_rng_uniform_c(void* result, long low, long high, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -969,7 +969,7 @@ INP_DLLEXPORT void custom_rng_uniform_c(void* result, long low, long high, size_
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_rng_weibull_c(void* result, double alpha, size_t size);
+INP_DLLEXPORT void dpnp_rng_weibull_c(void* result, double alpha, size_t size);
 
 /**
  * @ingroup BACKEND_API
