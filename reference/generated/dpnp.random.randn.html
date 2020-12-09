@@ -197,24 +197,19 @@
 <dl class="py function">
 <dt id="dpnp.random.randn">
 <code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">randn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">d0</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">dn</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#randn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.randn" title="Permalink to this definition">¶</a></dt>
-<dd><p>If positive int_like arguments are provided, randn generates an array of shape (d0, d1, …, dn),
-filled with random floats sampled from a univariate “normal” (Gaussian) distribution of mean 0 and variance 1.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>d0</strong> (<em>The dimensions of the returned array</em><em>, </em><em>must be non-negative.</em>) – </p></li>
-<li><p><strong>d1</strong> (<em>The dimensions of the returned array</em><em>, </em><em>must be non-negative.</em>) – </p></li>
-<li><p><strong>…</strong> (<em>The dimensions of the returned array</em><em>, </em><em>must be non-negative.</em>) – </p></li>
-<li><p><strong>dn</strong> (<em>The dimensions of the returned array</em><em>, </em><em>must be non-negative.</em>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(d0, d1, .., dn)-shaped array of floating-point samples from the standard normal distribution.</p>
-</dd>
-</dl>
+<dd><p>Return a sample (or samples) from the “standard normal” distribution.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.randn.html#numpy.random.randn" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.randn</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Output array data type is <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code>.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dpnp</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span>
+<span class="go">2.1923875335537315  # random</span>
+</pre></div>
+</div>
+<p>Two-by-four array of samples from N(3, 6.25):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">+</span> <span class="mf">2.5</span> <span class="o">*</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="dpnp.random.standard_normal.html#dpnp.random.standard_normal" title="dpnp.random.standard_normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.random.standard_normal</span></code></a>, <a class="reference internal" href="dpnp.random.normal.html#dpnp.random.normal" title="dpnp.random.normal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.random.normal</span></code></a></p>
