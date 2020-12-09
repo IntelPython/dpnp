@@ -54,12 +54,8 @@ __all__ = [
     "nonzero",
     "tril_indices",
     "tril_indices_from",
-<<<<<<< HEAD
     "triu_indices",
     "triu_indices_from"
-=======
-    "triu_indices"
->>>>>>> 50cf9a5a57c48e2950de9b9d6216af3971164131
 ]
 
 
