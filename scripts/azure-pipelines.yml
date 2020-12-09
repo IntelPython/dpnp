@@ -96,7 +96,10 @@ jobs:
       echo ========================= make DPNP package ===============================
       conda init bash
       conda info
-      cat /home/vsts/.bashrc
-      bash -c "conda activate; conda-build conda-recipe/"
+      #cat /home/vsts/.bashrc
+      #bash -c "conda activate; conda-build conda-recipe/"
+      . /usr/share/miniconda/etc/profile.d/conda.sh
+      export PATH=/usr/share/miniconda/bin:$PATH
+      conda-build conda-recipe/
       echo ========================= list files ===============================
       ls -l
