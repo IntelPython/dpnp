@@ -11,12 +11,12 @@ requirements:
       - numpy-devel >=1.18
       - cython
       - dpctl >=0.5
-      - mkl-devel >=2021.1b10
+      - mkl-devel >=2021.1.1
     run:
       - python
       - dpctl >=0.5
-      - dpcpp_cpp_rt >=2021.1b10
-      - mkl >=2021.1b10
+      - dpcpp_cpp_rt >=2021.1.1
+      - mkl >=2021.1.1
 
 build:
     number: {{ GIT_DESCRIBE_NUMBER }}
