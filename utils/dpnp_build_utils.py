@@ -216,11 +216,19 @@ def _find_mathlib_in_mathlib_root(verbose=False):
     """
     rel_header_paths = ["mkl.h"]
     rel_lib_paths = ["libmkl_sycl.so"]
-    rel_include_path = os.path.join("latest", "include")
-    rel_libdir_path = os.path.join("latest", "lib", "intel64")
 
-    return find_library("MKLROOT", rel_header_paths, rel_lib_paths, rel_include_path=rel_include_path,
-                        rel_libdir_path=rel_libdir_path, verbose=verbose)
+    rel_libdir_path = os.path.join("lib", "intel64")
+    mathlib_include, mathlib_path = find_library("MKLROOT", rel_header_paths, rel_lib_paths,
+                                                 rel_libdir_path=rel_libdir_path, verbose=verbose)
+
+    if not mathlib_include or not mathlib_path:
+        rel_include_path = os.path.join("latest", "include")
+        rel_libdir_path = os.path.join("latest", "lib", "intel64")
+        mathlib_include, mathlib_path = find_library("MKLROOT", rel_header_paths, rel_lib_paths,
+                                                     rel_include_path=rel_include_path,
+                                                     rel_libdir_path=rel_libdir_path, verbose=verbose)
+
+    return mathlib_include, mathlib_path
 
 
 def find_mathlib(verbose=False):
