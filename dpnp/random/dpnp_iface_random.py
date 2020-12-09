@@ -986,13 +986,16 @@ def rand(d0, *dn):
     Create an array of the given shape and populate it
     with random samples from a uniform distribution over [0, 1).
 
-    Parameters
-    ----------
-    d0, d1, …, dn : The dimensions of the returned array, must be non-negative.
+    For full documentation refer to :obj:`numpy.random.rand`.
 
-    Returns
-    -------
-    out : Random values.
+
+    Limitations
+    -----------
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    >>> s = dpnp.random.rand(2, 4)
 
     See Also
     --------
@@ -1002,11 +1005,10 @@ def rand(d0, *dn):
 
     if not use_origin_backend(d0):
         dims = tuple([d0, *dn])
-
-        for dim in dims:
-            if not isinstance(dim, int):
-                checker_throw_value_error("rand", "type(dim)", type(dim), int)
-        return dpnp_random(dims)
+        if not _check_dims(dims):
+            pass
+        else:
+            return dpnp_random(dims)
 
     return call_origin(numpy.random.rand, d0, *dn)
 
@@ -1026,7 +1028,7 @@ def randint(low, high=None, size=None, dtype=int):
 
     Examples
     --------
-    Draw samples from the distribution:
+    Draw samples:
     >>> low, high = 3, 11 # low and high
     >>> s = dpnp.random.randint(low, high, 1000, dtype=dpnp.int32)
 
@@ -1083,7 +1085,7 @@ def randn(d0, *dn):
 
     Two-by-four array of samples from N(3, 6.25):
 
-    >>> s = 3 + 2.5 * dpnp.random.randn(2, 4)
+    >>> s = dpnp.random.rand(2, 4)
 
     See Also
     --------
@@ -1119,7 +1121,7 @@ def random(size):
 
     See Also
     --------
-    :obj:`dpnp.random.random`
+    :obj:`dpnp.random.random_sample`
 
     """
 
@@ -1131,32 +1133,15 @@ def random(size):
 
 def random_integers(low, high=None, size=None):
     """
-    random_integers(low, high=None, size=None)
-
     Random integers between `low` and `high`, inclusive.
-    Return random integers from the "discrete uniform" distribution in
-    the closed interval [`low`, `high`].  If `high` is
-    None (the default), then results are from [1, `low`].
 
-    Parameters
-    ----------
-    low : int
-        Lowest (signed) integer to be drawn from the distribution (unless
-        ``high=None``, in which case this parameter is the *highest* such
-        integer).
-    high : int, optional
-        If provided, the largest (signed) integer to be drawn from the
-        distribution (see above for behavior if ``high=None``).
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  Default is None, in which case a
-        single value is returned.
+    For full documentation refer to :obj:`numpy.random.random_integers`.
 
-    Returns
-    -------
-    out : array of random ints
-        `size`-shaped array of random integers from the appropriate
-        distribution, or a single such random int if `size` not provided.
+    Limitations
+    -----------
+    Parameters ``low`` and ``high`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.random_integers(low, high, size)` samples
+    are drawn.
 
     See Also
     --------
@@ -1167,8 +1152,15 @@ def random_integers(low, high=None, size=None):
     if not use_origin_backend(low):
         if high is None:
             high = low
-            low = 1
-        return randint(low, int(high) + 1, size=size)
+            low = 0
+        # TODO:
+        # array_like of floats for `low` and `high` params
+        if not dpnp.isscalar(low):
+            pass
+        elif not dpnp.isscalar(high):
+            pass
+        else:
+            return randint(low, int(high) + 1, size=size)
 
     return call_origin(numpy.random.random_integers, low, high, size)
 
@@ -1177,13 +1169,15 @@ def random_sample(size):
     """
     Return random floats in the half-open interval [0.0, 1.0).
 
-    Parameters
-    ----------
-    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
+    For full documentation refer to :obj:`numpy.random.random_sample`.
 
-    Returns
-    -------
-    out : Array of random floats of shape size.
+    Limitations
+    -----------
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    >>> s = dpnp.random.random_sample(1000)
 
     See Also
     --------
@@ -1202,13 +1196,15 @@ def ranf(size):
     Return random floats in the half-open interval [0.0, 1.0).
     This is an alias of random_sample.
 
-    Parameters
-    ----------
-    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
+    For full documentation refer to :obj:`numpy.random.ranf`.
 
-    Returns
-    -------
-    out : Array of random floats of shape size.
+    Limitations
+    -----------
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    >>> s = dpnp.random.ranf(1000)
 
     See Also
     --------
@@ -1238,7 +1234,6 @@ def rayleigh(scale=1.0, size=None):
     Examples
     --------
     Draw samples from the distribution:
-    >>> import numpy as np
     >>> s = dpnp.random.rayleigh(1.0, 10000)
 
     """
@@ -1261,13 +1256,15 @@ def sample(size):
     Return random floats in the half-open interval [0.0, 1.0).
     This is an alias of random_sample.
 
-    Parameters
-    ----------
-    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
+    For full documentation refer to :obj:`numpy.random.sample`.
 
-    Returns
-    -------
-    out : Array of random floats of shape size.
+    Limitations
+    -----------
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    >>> s = dpnp.random.sample(1000)
 
     See Also
     --------

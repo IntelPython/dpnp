@@ -836,6 +836,18 @@ def test_poisson_check_extreme_value():
     assert numpy.unique(res)[0] == 0.0
 
 
+def test_random_integers_seed():
+    seed = 28041990
+    size = 100
+    low = 0
+    high = 1
+    dpnp.random.seed(seed)
+    a1 = dpnp.random.random_integers(low=low, high=high, size=size)
+    dpnp.random.seed(seed)
+    a2 = dpnp.random.random_integers(low=low, high=high, size=size)
+    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
 def test_randn_normal_distribution():
     """
     Check the moments of the normal distribution sample obtained

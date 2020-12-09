@@ -152,28 +152,29 @@ class TestRandintDtype(unittest.TestCase):
 class TestRandomIntegers(unittest.TestCase):
 
     def test_normal(self):
-        with mock.patch('dpnp.random.sample_.randint') as m:
+        with mock.patch('dpnp.random.randint') as m:
             random.random_integers(3, 5)
         m.assert_called_with(3, 6, None)
 
     def test_high_is_none(self):
-        with mock.patch('dpnp.random.sample_.randint') as m:
+        with mock.patch('dpnp.random.randint') as m:
             random.random_integers(3, None)
         m.assert_called_with(1, 4, None)
 
     def test_size_is_not_none(self):
-        with mock.patch('dpnp.random.sample_.randint') as m:
+        with mock.patch('dpnp.random.randint') as m:
             random.random_integers(3, 5, (1, 2, 3))
         m.assert_called_with(3, 6, (1, 2, 3))
 
 
-@testing.fix_random()
+# @testing.fix_random()
 @testing.gpu
 class TestRandomIntegers2(unittest.TestCase):
 
     @condition.repeat(3, 10)
     def test_bound_1(self):
-        vals = [random.random_integers(0, 10, (2, 3)).get() for _ in range(10)]
+        # vals = [random.random_integers(0, 10, (2, 3)).get() for _ in range(10)]
+        vals = [random.random_integers(0, 10, (2, 3)) for _ in range(10)]
         for val in vals:
             self.assertEqual(val.shape, (2, 3))
         self.assertEqual(min(_.min() for _ in vals), 0)
@@ -181,17 +182,19 @@ class TestRandomIntegers2(unittest.TestCase):
 
     @condition.repeat(3, 10)
     def test_bound_2(self):
-        vals = [random.random_integers(0, 2).get() for _ in range(20)]
+        # vals = [random.random_integers(0, 2).get() for _ in range(20)]
+        vals = [random.random_integers(0, 2) for _ in range(20)]
         for val in vals:
             self.assertEqual(val.shape, ())
-        self.assertEqual(min(vals), 0)
-        self.assertEqual(max(vals), 2)
+        self.assertEqual(min(_.min() for _ in vals), 0)
+        self.assertEqual(max(_.max() for _ in vals), 2)
 
     @condition.repeat(3, 10)
     def test_goodness_of_fit(self):
         mx = 5
         trial = 100
-        vals = [random.randint(0, mx).get() for _ in range(trial)]
+        # vals = [random.randint(0, mx).get() for _ in range(trial)]
+        vals = [random.randint(0, mx)[0] for _ in range(trial)]
         counts = numpy.histogram(vals, bins=numpy.arange(mx + 1))[0]
         expected = numpy.array([float(trial) / mx] * mx)
         self.assertTrue(hypothesis.chi_square_test(counts, expected))
@@ -199,7 +202,8 @@ class TestRandomIntegers2(unittest.TestCase):
     @condition.repeat(3, 10)
     def test_goodness_of_fit_2(self):
         mx = 5
-        vals = random.randint(0, mx, (5, 20)).get()
+        # vals = [vals[i] for i in range(5 * 20)]
+        vals = numpy.asarray(random.randint(0, mx, (5, 20)).reshape((5, 20)))
         counts = numpy.histogram(vals, bins=numpy.arange(mx + 1))[0]
         expected = numpy.array([float(vals.size) / mx] * mx)
         self.assertTrue(hypothesis.chi_square_test(counts, expected))
