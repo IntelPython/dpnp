@@ -92,10 +92,22 @@ jobs:
     vmImage: 'ubuntu-20.04'
   steps:
   - bash: |
-      . ./scripts/set_ci_env.sh
+      ./scripts/install_system_deps.sh
+      sudo apt-get install intel-oneapi-python
+      sudo chmod -R a+w /opt/intel/oneapi/intelpython
+      . /opt/intel/oneapi/setvars.sh
+      ./scripts/install_python_deps.sh
+      ./scripts/build_deps_dpctl.sh
+      echo ========================= DPCTL version ===============================
+      python -c "import dpctl as sw; print(f\"sw.version={sw.version}\nsw.version.version={sw.version.version}\nsw.get_include={sw.get_include()}\")"
+      conda list
       echo ========================= make DPNP package ===============================
-      conda init bash
-      conda info
+      #conda init bash
+      #conda info
+      #cat /home/vsts/.bashrc
+      #bash -c "conda activate; conda-build conda-recipe/"
+      #. /usr/share/miniconda/etc/profile.d/conda.sh
+      #export PATH=/usr/share/miniconda/bin:$PATH
       conda-build conda-recipe/
       echo ========================= list files ===============================
       ls -l

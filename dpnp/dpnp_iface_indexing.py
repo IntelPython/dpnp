@@ -53,7 +53,8 @@ __all__ = [
     "diag_indices_from",
     "nonzero",
     "tril_indices",
-    "tril_indices_from"
+    "tril_indices_from",
+    "triu_indices"
 ]
 
 
@@ -258,3 +259,37 @@ def tril_indices_from(arr, k=0):
             return dpnp_tril_indices_from(arr, k)
 
     return call_origin(numpy.tril_indices_from, arr, k)
+
+
+def triu_indices(n, k=0, m=None):
+    """
+    Return the indices for the upper-triangle of an (n, m) array.
+
+    Parameters
+    ----------
+    n : int
+        The size of the arrays for which the returned indices will
+        be valid.
+
+    k : int, optional
+        Diagonal offset (see `triu` for details).
+
+    m : int, optional
+        The column dimension of the arrays for which the returned
+        arrays will be valid.
+        By default `m` is taken equal to `n`.
+
+    Returns
+    -------
+    inds : tuple, shape(2) of ndarrays, shape(`n`)
+        The indices for the triangle. The returned tuple contains two arrays,
+        each with the indices along one dimension of the array.  Can be used
+        to slice a ndarray of shape(`n`, `n`).
+    """
+
+    if not use_origin_backend():
+        if isinstance(n, int) and isinstance(k, int) \
+                and (isinstance(m, int) or m is None):
+            return dpnp_triu_indices(n, k, m)
+
+    return call_origin(numpy.triu_indices, n, k, m)
