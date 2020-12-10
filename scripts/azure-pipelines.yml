@@ -97,6 +97,7 @@ jobs:
       sudo chmod -R a+w /opt/intel/oneapi/intelpython
       sudo chmod -R a+w /opt/intel/oneapi/conda_channel
       . /opt/intel/oneapi/setvars.sh
+      conda config --show channels
       ./scripts/install_python_deps.sh
       ./scripts/build_deps_dpctl.sh
       echo ========================= DPCTL version ===============================
