@@ -15,4 +15,6 @@ git tag 5.0
 
 conda build conda-recipe/ --no-test
 
+ls -lR /opt/intel/oneapi/intelpython/latest/conda-bld
+
 cd ..
