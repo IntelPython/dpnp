@@ -255,7 +255,7 @@ def copysign(x1, x2, **kwargs):
     return call_origin(numpy.copysign, x1, x2, **kwargs)
 
 
-def cumprod(x, **kwargs):
+def cumprod(x1, **kwargs):
     """
     Return the cumulative product of elements along a given axis.
 
@@ -282,16 +282,16 @@ def cumprod(x, **kwargs):
 
     """
 
-    if not use_origin_backend(x) and not kwargs:
-        if not isinstance(x, dparray):
+    if not use_origin_backend(x1) and not kwargs:
+        if not isinstance(x1, dparray):
             pass
         else:
-            return dpnp_cumprod(x)
+            return dpnp_cumprod(x1)
 
-    return call_origin(numpy.cumprod, x, **kwargs)
+    return call_origin(numpy.cumprod, x1, **kwargs)
 
 
-def cumsum(x, **kwargs):
+def cumsum(x1, **kwargs):
     """
     Return the cumulative sum of the elements along a given axis.
 
@@ -318,13 +318,13 @@ def cumsum(x, **kwargs):
 
     """
 
-    if not use_origin_backend(x) and not kwargs:
-        if not isinstance(x, dparray):
+    if not use_origin_backend(x1) and not kwargs:
+        if not isinstance(x1, dparray):
             pass
         else:
-            return dpnp_cumsum(x)
+            return dpnp_cumsum(x1)
 
-    return call_origin(numpy.cumsum, x, **kwargs)
+    return call_origin(numpy.cumsum, x1, **kwargs)
 
 
 def divide(x1, x2, **kwargs):

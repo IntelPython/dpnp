@@ -37,6 +37,7 @@ from dpnp.dpnp_utils cimport *
 import dpnp
 import numpy
 cimport numpy
+from collections import defaultdict
 
 
 __all__ += [
@@ -110,25 +111,49 @@ cpdef dparray dpnp_copysign(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_COPYSIGN, x1, x2, x1.shape)
 
 
-cpdef dparray dpnp_cumprod(dparray x):
-    cdef dparray result = dparray(x.size, dtype=x.dtype)
+cpdef dparray dpnp_cumprod(dparray x1):
 
-    cur_res = x[0]
+    x1_dtype = x1.dtype
+
+    types_map = defaultdict()
+
+    types_map['int32'] = 'int64'
+    types_map['int64'] = 'int64'
+    types_map['float32'] = 'float32'
+    types_map['float64'] = 'float64'
+
+    res_type = dpnp.dtype(types_map[x1_dtype.name])
+
+    cdef dparray result = dparray(x1.size, dtype=res_type)
+
+    cur_res = x1[0]
     result._setitem_scalar(0, cur_res)
     for i in range(1, result.size):
-        cur_res *= x[i]
+        cur_res *= x1[i]
         result._setitem_scalar(i, cur_res)
 
     return result
 
 
-cpdef dparray dpnp_cumsum(dparray x):
-    cdef dparray result = dparray(x.size, dtype=x.dtype)
+cpdef dparray dpnp_cumsum(dparray x1):
 
-    cur_res = x[0]
+    x1_dtype = x1.dtype
+
+    types_map = defaultdict()
+
+    types_map['int32'] = 'int64'
+    types_map['int64'] = 'int64'
+    types_map['float32'] = 'float32'
+    types_map['float64'] = 'float64'
+
+    res_type = dpnp.dtype(types_map[x1_dtype.name])
+
+    cdef dparray result = dparray(x1.size, dtype=res_type)
+
+    cur_res = x1[0]
     result._setitem_scalar(0, cur_res)
     for i in range(1, result.size):
-        cur_res += x[i] 
+        cur_res += x1[i] 
         result._setitem_scalar(i, cur_res)
 
     return result
