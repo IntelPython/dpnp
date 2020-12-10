@@ -95,6 +95,7 @@ jobs:
       ./scripts/install_system_deps.sh
       sudo apt-get install intel-oneapi-python
       sudo chmod -R a+w /opt/intel/oneapi/intelpython
+      sudo chmod -R a+w /opt/intel/oneapi/conda_channel
       . /opt/intel/oneapi/setvars.sh
       ./scripts/install_python_deps.sh
       ./scripts/build_deps_dpctl.sh
