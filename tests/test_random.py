@@ -5,7 +5,43 @@ import numpy
 from numpy.testing import assert_allclose
 import math
 
-from tests.testing.random import TestDistributionsTestCases as distribution
+
+class TestDistribution:
+
+    def __init__(self):
+        pass
+
+    def test_check_extreme_value(self, dist_name, val, params):
+        seed = 28041990
+        size = 10
+        dpnp.random.seed(seed)
+        res = numpy.asarray(getattr(dpnp.random, dist_name)(size=size, **params))
+        assert len(numpy.unique(res)) == 1
+        assert numpy.unique(res)[0] == val
+
+    def test_check_moments(self, dist_name, expected_mean, expected_var, params):
+        size = 10**5
+        seed = 28041995
+        dpnp.random.seed(seed)
+        res = numpy.asarray(getattr(dpnp.random, dist_name)(size=size, **params))
+        var = numpy.var(res)
+        mean = numpy.mean(res)
+        assert math.isclose(var, expected_var, abs_tol=0.1)
+        assert math.isclose(mean, expected_mean, abs_tol=0.1)
+
+    def test_invalid_args(self, dist_name, params):
+        size = 10
+        with pytest.raises(ValueError):
+            getattr(dpnp.random, dist_name)(size=size, **params)
+
+    def test_seed(self, dist_name, params):
+        seed = 28041990
+        size = 10
+        dpnp.random.seed(seed)
+        a1 = numpy.asarray(getattr(dpnp.random, dist_name)(size=size, **params))
+        dpnp.random.seed(seed)
+        a2 = numpy.asarray(getattr(dpnp.random, dist_name)(size=size, **params))
+        assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
 @pytest.mark.parametrize("func",
@@ -116,21 +152,21 @@ class TestDistributionsBeta:
         b = 0.8
         expected_mean = a / (a + b)
         expected_var = (a * b) / ((a + b)**2 * (a + b + 1))
-        distribution.test_check_moments(self, 'beta', expected_mean,
-                                        expected_var, {'a': a, 'b': b})
+        TestDistribution.test_check_moments(self, 'beta', expected_mean,
+                                            expected_var, {'a': a, 'b': b})
 
     def test_invalid_args(self):
         a = 3.0   # OK
         b = -1.0  # positive `b` is expected
-        distribution.test_invalid_args(self, 'beta', {'a': a, 'b': b})
+        TestDistribution.test_invalid_args(self, 'beta', {'a': a, 'b': b})
         a = -1.0  # positive `a` is expected
         b = 3.0   # OK
-        distribution.test_invalid_args(self, 'beta', {'a': a, 'b': b})
+        TestDistribution.test_invalid_args(self, 'beta', {'a': a, 'b': b})
 
     def test_seed(self):
         a = 2.56
         b = 0.8
-        distribution.test_seed(self, 'beta', {'a': a, 'b': b})
+        TestDistribution.test_seed(self, 'beta', {'a': a, 'b': b})
 
 
 class TestDistributionsBinomial:
@@ -139,60 +175,60 @@ class TestDistributionsBinomial:
         n = 5
         p = 0.0
         expected_val = p
-        distribution.test_check_extreme_value(self, 'binomial', expected_val,
-                                              {'n': n, 'p': p})
+        TestDistribution.test_check_extreme_value(self, 'binomial', expected_val,
+                                                  {'n': n, 'p': p})
         n = 0
         p = 0.5
         expected_val = n
-        distribution.test_check_extreme_value(self, 'binomial', expected_val,
-                                              {'n': n, 'p': p})
+        TestDistribution.test_check_extreme_value(self, 'binomial', expected_val,
+                                                  {'n': n, 'p': p})
         n = 5
         p = 1.0
         expected_val = n
-        distribution.test_check_extreme_value(self, 'binomial', expected_val,
-                                              {'n': n, 'p': p})
+        TestDistribution.test_check_extreme_value(self, 'binomial', expected_val,
+                                                  {'n': n, 'p': p})
 
     def test_check_moments(self):
         n = 5
         p = 0.8
         expected_mean = n * p
         expected_var = n * p * (1 - p)
-        distribution.test_check_moments(self, 'binomial', expected_mean,
-                                        expected_var, {'n': n, 'p': p})
+        TestDistribution.test_check_moments(self, 'binomial', expected_mean,
+                                            expected_var, {'n': n, 'p': p})
 
     def test_invalid_args(self):
         n = -5     # non-negative `n` is expected
         p = 0.4    # OK
-        distribution.test_invalid_args(self, 'binomial', {'n': n, 'p': p})
+        TestDistribution.test_invalid_args(self, 'binomial', {'n': n, 'p': p})
         n = 5      # OK
         p = -0.5   # `p` is expected from [0, 1]
-        distribution.test_invalid_args(self, 'binomial', {'n': n, 'p': p})
+        TestDistribution.test_invalid_args(self, 'binomial', {'n': n, 'p': p})
 
     def test_seed(self):
         n, p = 10, .5  # number of trials, probability of each trial
-        distribution.test_seed(self, 'binomial', {'n': n, 'p': p})
+        TestDistribution.test_seed(self, 'binomial', {'n': n, 'p': p})
 
 
 class TestDistributionsChisquare:
 
     def test_invalid_args(self):
         df = -1  # positive `df` is expected
-        distribution.test_invalid_args(self, 'chisquare', {'df': df})
+        TestDistribution.test_invalid_args(self, 'chisquare', {'df': df})
 
     def test_seed(self):
         df = 3  # number of degrees of freedom
-        distribution.test_seed(self, 'chisquare', {'df': df})
+        TestDistribution.test_seed(self, 'chisquare', {'df': df})
 
 
 class TestDistributionsExponential:
 
     def test_invalid_args(self):
         scale = -1  # non-negative `scale` is expected
-        distribution.test_invalid_args(self, 'exponential', {'scale': scale})
+        TestDistribution.test_invalid_args(self, 'exponential', {'scale': scale})
 
     def test_seed(self):
         scale = 3  # number of degrees of freedom
-        distribution.test_seed(self, 'exponential', {'scale': scale})
+        TestDistribution.test_seed(self, 'exponential', {'scale': scale})
 
 
 class TestDistributionsGamma:
@@ -202,21 +238,21 @@ class TestDistributionsGamma:
         scale = 0.8
         expected_mean = shape * scale
         expected_var = shape * scale * scale
-        distribution.test_check_moments(self, 'gamma', expected_mean, expected_var,
-                                        {'shape': shape, 'scale': scale})
+        TestDistribution.test_check_moments(self, 'gamma', expected_mean, expected_var,
+                                            {'shape': shape, 'scale': scale})
 
     def test_invalid_args(self):
         size = 10
         shape = -1   # non-negative `shape` is expected
-        distribution.test_invalid_args(self, 'gamma', {'shape': shape})
+        TestDistribution.test_invalid_args(self, 'gamma', {'shape': shape})
         shape = 1.0   # OK
         scale = -1.0  # non-negative `shape` is expected
-        distribution.test_invalid_args(self, 'gamma', {'shape': shape,
-                                       'scale': scale})
+        TestDistribution.test_invalid_args(self, 'gamma', {'shape': shape,
+                                           'scale': scale})
 
     def test_seed(self):
         shape = 3.0  # shape param for gamma distr
-        distribution.test_seed(self, 'gamma', {'shape': shape})
+        TestDistribution.test_seed(self, 'gamma', {'shape': shape})
 
 
 class TestDistributionsGeometric:
@@ -224,24 +260,24 @@ class TestDistributionsGeometric:
     def test_check_extreme_value(self):
         p = 1.0
         expected_val = p
-        distribution.test_check_extreme_value(self, 'geometric',
-                                              expected_val, {'p': p})
+        TestDistribution.test_check_extreme_value(self, 'geometric',
+                                                  expected_val, {'p': p})
 
     def test_check_moments(self):
         p = 0.8
         expected_mean = (1 - p) / p
         expected_var = (1 - p) / (p**2)
-        distribution.test_check_moments(self, 'geometric', expected_mean,
-                                        expected_var, {'p': p})
+        TestDistribution.test_check_moments(self, 'geometric', expected_mean,
+                                            expected_var, {'p': p})
 
     def test_invalid_args(self):
         size = 10
         p = -1.0  # `p` is expected from (0, 1]
-        distribution.test_invalid_args(self, 'geometric', {'p': p})
+        TestDistribution.test_invalid_args(self, 'geometric', {'p': p})
 
     def test_seed(self):
         p = 0.8
-        distribution.test_seed(self, 'geometric', {'p': p})
+        TestDistribution.test_seed(self, 'geometric', {'p': p})
 
 
 class TestDistributionsGumbel:
@@ -250,29 +286,29 @@ class TestDistributionsGumbel:
         loc = 5
         scale = 0.0
         expected_val = loc
-        distribution.test_check_extreme_value(self, 'gumbel', expected_val,
-                                              {'loc': loc, 'scale': scale})
+        TestDistribution.test_check_extreme_value(self, 'gumbel', expected_val,
+                                                  {'loc': loc, 'scale': scale})
 
     def test_check_moments(self):
         loc = 12
         scale = 0.8
         expected_mean = loc + scale * numpy.euler_gamma
         expected_var = (numpy.pi**2 / 6) * (scale ** 2)
-        distribution.test_check_moments(self, 'gumbel', expected_mean,
-                                        expected_var, {'loc': loc, 'scale': scale})
+        TestDistribution.test_check_moments(self, 'gumbel', expected_mean,
+                                            expected_var, {'loc': loc, 'scale': scale})
 
     def test_invalid_args(self):
         size = 10
         loc = 3.0     # OK
         scale = -1.0  # non-negative `scale` is expected
-        distribution.test_invalid_args(self, 'gumbel',
-                                       {'loc': loc, 'scale': scale})
+        TestDistribution.test_invalid_args(self, 'gumbel',
+                                           {'loc': loc, 'scale': scale})
 
     def test_seed(self):
         loc = 2.56
         scale = 0.8
-        distribution.test_seed(self, 'gumbel',
-                               {'loc': loc, 'scale': scale})
+        TestDistribution.test_seed(self, 'gumbel',
+                                   {'loc': loc, 'scale': scale})
 
 
 class TestDistributionsHypergeometric:
@@ -282,14 +318,14 @@ class TestDistributionsHypergeometric:
         nbad = 0
         nsample = 10
         expected_val = nsample
-        distribution.test_check_extreme_value(self, 'hypergeometric', expected_val,
-                                              {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+        TestDistribution.test_check_extreme_value(self, 'hypergeometric', expected_val,
+                                                  {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
         ngood = 0
         nbad = 11
         nsample = 10
         expected_val = 0
-        distribution.test_check_extreme_value(self, 'hypergeometric', expected_val,
-                                              {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+        TestDistribution.test_check_extreme_value(self, 'hypergeometric', expected_val,
+                                                  {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
 
     def test_check_moments(self):
         ngood = 100
@@ -297,48 +333,48 @@ class TestDistributionsHypergeometric:
         nsample = 10
         expected_mean = nsample * (ngood / (ngood + nbad))
         expected_var = expected_mean * (nbad / (ngood + nbad)) * (((ngood + nbad) - nsample) / ((ngood + nbad) - 1))
-        distribution.test_check_moments(self, 'hypergeometric', expected_mean, expected_var,
-                                        {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+        TestDistribution.test_check_moments(self, 'hypergeometric', expected_mean, expected_var,
+                                            {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
 
     def test_invalid_args(self):
         size = 10
         ngood = 100    # OK
         nbad = 2       # OK
         nsample = -10  # non-negative `nsamp` is expected
-        distribution.test_invalid_args(self, 'hypergeometric',
-                                       {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+        TestDistribution.test_invalid_args(self, 'hypergeometric',
+                                           {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
 
         ngood = 100    # OK
         nbad = -2      # non-negative `nbad` is expected
         nsample = 10   # OK
-        distribution.test_invalid_args(self, 'hypergeometric',
-                                       {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+        TestDistribution.test_invalid_args(self, 'hypergeometric',
+                                           {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
 
         ngood = -100   # non-negative `ngood` is expected
         nbad = 2       # OK
         nsample = 10   # OK
-        distribution.test_invalid_args(self, 'hypergeometric',
-                                       {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+        TestDistribution.test_invalid_args(self, 'hypergeometric',
+                                           {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
 
         ngood = 10
         nbad = 2
         nsample = 100
         # ngood + nbad >= nsample expected
-        distribution.test_invalid_args(self, 'hypergeometric',
-                                       {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+        TestDistribution.test_invalid_args(self, 'hypergeometric',
+                                           {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
 
         ngood = 10   # OK
         nbad = 2     # OK
         nsample = 0  # `nsample` is expected > 0
-        distribution.test_invalid_args(self, 'hypergeometric',
-                                       {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+        TestDistribution.test_invalid_args(self, 'hypergeometric',
+                                           {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
 
     def test_seed(self):
         ngood = 100
         nbad = 2
         nsample = 10
-        distribution.test_seed(self, 'hypergeometric',
-                               {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+        TestDistribution.test_seed(self, 'hypergeometric',
+                                   {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
 
 
 class TestDistributionsLaplace:
@@ -347,28 +383,28 @@ class TestDistributionsLaplace:
         loc = 5
         scale = 0.0
         expected_val = scale
-        distribution.test_check_extreme_value(self, 'laplace', expected_val,
-                                              {'loc': loc, 'scale': scale})
+        TestDistribution.test_check_extreme_value(self, 'laplace', expected_val,
+                                                  {'loc': loc, 'scale': scale})
 
     def test_check_moments(self):
         loc = 2.56
         scale = 0.8
         expected_mean = loc
         expected_var = 2 * scale * scale
-        distribution.test_check_moments(self, 'laplace', expected_mean,
-                                        expected_var, {'loc': loc, 'scale': scale})
+        TestDistribution.test_check_moments(self, 'laplace', expected_mean,
+                                            expected_var, {'loc': loc, 'scale': scale})
 
     def test_invalid_args(self):
         loc = 3.0     # OK
         scale = -1.0  # positive `b` is expected
-        distribution.test_invalid_args(self, 'laplace',
-                                       {'loc': loc, 'scale': scale})
+        TestDistribution.test_invalid_args(self, 'laplace',
+                                           {'loc': loc, 'scale': scale})
 
     def test_seed(self):
         loc = 2.56
         scale = 0.8
-        distribution.test_seed(self, 'laplace',
-                               {'loc': loc, 'scale': scale})
+        TestDistribution.test_seed(self, 'laplace',
+                                   {'loc': loc, 'scale': scale})
 
 
 class TestDistributionsLognormal:
@@ -377,28 +413,28 @@ class TestDistributionsLognormal:
         mean = 0.5
         sigma = 0.0
         expected_val = numpy.exp(mean + (sigma ** 2) / 2)
-        distribution.test_check_extreme_value(self, 'lognormal', expected_val,
-                                              {'mean': mean, 'sigma': sigma})
+        TestDistribution.test_check_extreme_value(self, 'lognormal', expected_val,
+                                                  {'mean': mean, 'sigma': sigma})
 
     def test_check_moments(self):
         mean = 0.5
         sigma = 0.8
         expected_mean = numpy.exp(mean + (sigma ** 2) / 2)
         expected_var = (numpy.exp(sigma**2) - 1) * numpy.exp(2 * mean + sigma**2)
-        distribution.test_check_moments(self, 'lognormal', expected_mean,
-                                        expected_var, {'mean': mean, 'sigma': sigma})
+        TestDistribution.test_check_moments(self, 'lognormal', expected_mean,
+                                            expected_var, {'mean': mean, 'sigma': sigma})
 
     def test_invalid_args(self):
         mean = 0.0
         sigma = -1.0  # non-negative `sigma` is expected
-        distribution.test_invalid_args(self, 'lognormal',
-                                       {'mean': mean, 'sigma': sigma})
+        TestDistribution.test_invalid_args(self, 'lognormal',
+                                           {'mean': mean, 'sigma': sigma})
 
     def test_seed(self):
         mean = 0.0
         sigma = 0.8
-        distribution.test_seed(self, 'lognormal',
-                               {'mean': mean, 'sigma': sigma})
+        TestDistribution.test_seed(self, 'lognormal',
+                                   {'mean': mean, 'sigma': sigma})
 
 
 class TestDistributionsMultinomial:
@@ -406,8 +442,8 @@ class TestDistributionsMultinomial:
     def test_check_extreme_value(self):
         n = 0
         pvals = [1 / 6.] * 6
-        distribution.test_check_extreme_value(self, 'multinomial', n,
-                                              {'n': n, 'pvals': pvals})
+        TestDistribution.test_check_extreme_value(self, 'multinomial', n,
+                                                  {'n': n, 'pvals': pvals})
 
     def test_check_moments(self):
         n = 10
@@ -415,8 +451,8 @@ class TestDistributionsMultinomial:
         size = 10**5
         expected_mean = n * pvals[0]
         expected_var = n * pvals[0] * (1 - pvals[0])
-        distribution.test_check_moments(self, 'multinomial', expected_mean,
-                                        expected_var, {'n': n, 'pvals': pvals})
+        TestDistribution.test_check_moments(self, 'multinomial', expected_mean,
+                                            expected_var, {'n': n, 'pvals': pvals})
 
     def test_check_sum(self):
         seed = 28041990
@@ -430,21 +466,21 @@ class TestDistributionsMultinomial:
     def test_invalid_args(self):
         n = -10                # parameter `n`, non-negative expected
         pvals = [1 / 6.] * 6   # parameter `pvals`, OK
-        distribution.test_invalid_args(self, 'multinomial',
-                                       {'n': n, 'pvals': pvals})
+        TestDistribution.test_invalid_args(self, 'multinomial',
+                                           {'n': n, 'pvals': pvals})
         n = 10                 # parameter `n`, OK
         pvals = [-1 / 6.] * 6  # parameter `pvals`, sum(pvals) expected between [0, 1]
-        distribution.test_invalid_args(self, 'multinomial',
-                                       {'n': n, 'pvals': pvals})
+        TestDistribution.test_invalid_args(self, 'multinomial',
+                                           {'n': n, 'pvals': pvals})
         n = 10                           # parameter `n`, OK
         pvals = [1 / 6.] * 6 + [1 / 6.]  # parameter `pvals`, sum(pvals) expected between [0, 1]
-        distribution.test_invalid_args(self, 'multinomial',
-                                       {'n': n, 'pvals': pvals})
+        TestDistribution.test_invalid_args(self, 'multinomial',
+                                           {'n': n, 'pvals': pvals})
 
     def test_seed(self):
         n = 20
         pvals = [1 / 6.] * 6
-        distribution.test_seed(self, 'multinomial', {'n': n, 'pvals': pvals})
+        TestDistribution.test_seed(self, 'multinomial', {'n': n, 'pvals': pvals})
 
 
 class TestDistributionsMultivariateNormal:
@@ -462,16 +498,16 @@ class TestDistributionsMultivariateNormal:
     def test_invalid_args(self):
         mean = [2.56, 3.23]  # OK
         cov = [[1, 0]]       # `mean` and `cov` must have same length
-        distribution.test_invalid_args(self, 'multivariate_normal',
-                                       {'mean': mean, 'cov': cov})
+        TestDistribution.test_invalid_args(self, 'multivariate_normal',
+                                           {'mean': mean, 'cov': cov})
         mean = [[2.56, 3.23]]   # `mean` must be 1 dimensional
         cov = [[1, 0], [0, 1]]  # OK
-        distribution.test_invalid_args(self, 'multivariate_normal',
-                                       {'mean': mean, 'cov': cov})
+        TestDistribution.test_invalid_args(self, 'multivariate_normal',
+                                           {'mean': mean, 'cov': cov})
         mean = [2.56, 3.23]  # OK
         cov = [1, 0, 0, 1]   # `cov` must be 2 dimensional and square
-        distribution.test_invalid_args(self, 'multivariate_normal',
-                                       {'mean': mean, 'cov': cov})
+        TestDistribution.test_invalid_args(self, 'multivariate_normal',
+                                           {'mean': mean, 'cov': cov})
 
     def test_output_shape_check(self):
         seed = 28041990
@@ -486,7 +522,7 @@ class TestDistributionsMultivariateNormal:
     def test_seed(self):
         mean = [2.56, 3.23]
         cov = [[1, 0], [0, 1]]
-        distribution.test_seed(self, 'multivariate_normal', {'mean': mean, 'cov': cov})
+        TestDistribution.test_seed(self, 'multivariate_normal', {'mean': mean, 'cov': cov})
 
 
 class TestDistributionsNegativeBinomial:
@@ -497,8 +533,8 @@ class TestDistributionsNegativeBinomial:
         n = 5
         p = 1.0
         check_val = 0.0
-        distribution.test_check_extreme_value(self, 'negative_binomial',
-                                              check_val, {'n': n, 'p': p})
+        TestDistribution.test_check_extreme_value(self, 'negative_binomial',
+                                                  check_val, {'n': n, 'p': p})
         n = 5
         p = 0.0
         res = numpy.asarray(dpnp.random.negative_binomial(n=n, p=p, size=10))
@@ -509,14 +545,14 @@ class TestDistributionsNegativeBinomial:
     def test_invalid_args(self):
         n = 10    # parameter `n`, OK
         p = -0.5  # parameter `p`, expected between [0, 1]
-        distribution.test_invalid_args(self, 'negative_binomial', {'n': n, 'p': p})
+        TestDistribution.test_invalid_args(self, 'negative_binomial', {'n': n, 'p': p})
         n = -10   # parameter `n`, expected non-negative
         p = 0.5   # parameter `p`, OK
-        distribution.test_invalid_args(self, 'negative_binomial', {'n': n, 'p': p})
+        TestDistribution.test_invalid_args(self, 'negative_binomial', {'n': n, 'p': p})
 
     def test_seed(self):
         n, p = 10, .5  # number of trials, probability of each trial
-        distribution.test_seed(self, 'negative_binomial', {'n': n, 'p': p})
+        TestDistribution.test_seed(self, 'negative_binomial', {'n': n, 'p': p})
 
 
 class TestDistributionsNormal:
@@ -525,79 +561,79 @@ class TestDistributionsNormal:
         loc = 5
         scale = 0.0
         expected_val = loc
-        distribution.test_check_extreme_value(self, 'normal', expected_val,
-                                              {'loc': loc, 'scale': scale})
+        TestDistribution.test_check_extreme_value(self, 'normal', expected_val,
+                                                  {'loc': loc, 'scale': scale})
 
     def test_check_moments(self):
         loc = 2.56
         scale = 0.8
         expected_mean = loc
         expected_var = scale**2
-        distribution.test_check_moments(self, 'normal', expected_mean,
-                                        expected_var, {'loc': loc, 'scale': scale})
+        TestDistribution.test_check_moments(self, 'normal', expected_mean,
+                                            expected_var, {'loc': loc, 'scale': scale})
 
     def test_invalid_args(self):
         loc = 3.0     # OK
         scale = -1.0  # non-negative `scale` is expected
-        distribution.test_invalid_args(self, 'normal',
-                                       {'loc': loc, 'scale': scale})
+        TestDistribution.test_invalid_args(self, 'normal',
+                                           {'loc': loc, 'scale': scale})
 
     def test_seed(self):
         loc = 2.56
         scale = 0.8
-        distribution.test_seed(self, 'normal', {'loc': loc, 'scale': scale})
+        TestDistribution.test_seed(self, 'normal', {'loc': loc, 'scale': scale})
 
 
 class TestDistributionsPoisson:
 
     def test_check_extreme_value(self):
         lam = 0.0
-        distribution.test_check_extreme_value(self, 'poisson',
-                                              lam, {'lam': lam})
+        TestDistribution.test_check_extreme_value(self, 'poisson',
+                                                  lam, {'lam': lam})
 
     def test_check_moments(self):
         lam = 0.8
         expected_mean = lam
         expected_var = lam
-        distribution.test_check_moments(self, 'poisson', expected_mean,
-                                        expected_var, {'lam': lam})
+        TestDistribution.test_check_moments(self, 'poisson', expected_mean,
+                                            expected_var, {'lam': lam})
 
     def test_invalid_args(self):
         lam = -1.0    # non-negative `lam` is expected
-        distribution.test_invalid_args(self, 'poisson', {'lam': lam})
+        TestDistribution.test_invalid_args(self, 'poisson', {'lam': lam})
 
     def test_seed(self):
         lam = 0.8
-        distribution.test_seed(self, 'poisson', {'lam': lam})
+        TestDistribution.test_seed(self, 'poisson', {'lam': lam})
 
 
 class TestDistributionsRayleigh:
 
     def test_check_extreme_value(self):
         scale = 0.0
-        distribution.test_check_extreme_value(self, 'rayleigh',
-                                              scale, {'scale': scale})
+        TestDistribution.test_check_extreme_value(self, 'rayleigh',
+                                                  scale, {'scale': scale})
 
     def test_check_moments(self):
         scale = 0.8
         expected_mean = scale * numpy.sqrt(numpy.pi / 2)
         expected_var = ((4 - numpy.pi) / 2) * scale * scale
-        distribution.test_check_moments(self, 'rayleigh', expected_mean,
-                                        expected_var, {'scale': scale})
+        TestDistribution.test_check_moments(self, 'rayleigh', expected_mean,
+                                            expected_var, {'scale': scale})
 
     def test_invalid_args(self):
         scale = -1.0  # positive `b` is expected
-        distribution.test_invalid_args(self, 'rayleigh', {'scale': scale})
+        TestDistribution.test_invalid_args(self, 'rayleigh', {'scale': scale})
 
     def test_seed(self):
         scale = 0.8
-        distribution.test_seed(self, 'rayleigh', {'scale': scale})
+        TestDistribution.test_seed(self, 'rayleigh', {'scale': scale})
 
 
 class TestDistributionsStandardCauchy:
 
     def test_seed(self):
-        distribution.test_seed(self, 'standard_cauchy', {})
+        TestDistribution.test_seed(self, 'standard_cauchy', {})
 
 
 class TestDistributionsStandardExponential:
@@ -606,33 +642,33 @@ class TestDistributionsStandardExponential:
         shape = 0.8
         expected_mean = 1.0
         expected_var = 1.0
-        distribution.test_check_moments(self, 'standard_exponential',
-                                        expected_mean, expected_var, {})
+        TestDistribution.test_check_moments(self, 'standard_exponential',
+                                            expected_mean, expected_var, {})
 
     def test_seed(self):
-        distribution.test_seed(self, 'standard_exponential', {})
+        TestDistribution.test_seed(self, 'standard_exponential', {})
 
 
 class TestDistributionsStandardGamma:
 
     def test_check_extreme_value(self):
-        distribution.test_check_extreme_value(self, 'standard_gamma',
-                                              0.0, {'shape': 0.0})
+        TestDistribution.test_check_extreme_value(self, 'standard_gamma',
+                                                  0.0, {'shape': 0.0})
 
     def test_check_moments(self):
         shape = 0.8
         expected_mean = shape
         expected_var = shape
-        distribution.test_check_moments(self, 'standard_gamma', expected_mean,
-                                        expected_var, {'shape': shape})
+        TestDistribution.test_check_moments(self, 'standard_gamma', expected_mean,
+                                            expected_var, {'shape': shape})
 
     def test_invalid_args(self):
         shape = -1   # non-negative `shape` is expected
-        distribution.test_invalid_args(self, 'standard_gamma',
-                                       {'shape': shape})
+        TestDistribution.test_invalid_args(self, 'standard_gamma',
+                                           {'shape': shape})
 
     def test_seed(self):
-        distribution.test_seed(self, 'standard_gamma', {'shape': 0.0})
+        TestDistribution.test_seed(self, 'standard_gamma', {'shape': 0.0})
 
 
 class TestDistributionsStandardNormal:
@@ -640,11 +676,11 @@ class TestDistributionsStandardNormal:
     def test_check_moments(self):
         expected_mean = 0.0
         expected_var = 1.0
-        distribution.test_check_moments(self, 'standard_normal',
-                                        expected_mean, expected_var, {})
+        TestDistribution.test_check_moments(self, 'standard_normal',
+                                            expected_mean, expected_var, {})
 
     def test_seed(self):
-        distribution.test_seed(self, 'standard_normal', {})
+        TestDistribution.test_seed(self, 'standard_normal', {})
 
 
 class TestDistributionsUniform:
@@ -653,21 +689,21 @@ class TestDistributionsUniform:
         low = 1.0
         high = 1.0
         expected_val = low
-        distribution.test_check_extreme_value(self, 'uniform', expected_val,
-                                              {'low': low, 'high': high})
+        TestDistribution.test_check_extreme_value(self, 'uniform', expected_val,
+                                                  {'low': low, 'high': high})
 
     def test_check_moments(self):
         low = 1.0
         high = 2.0
         expected_mean = (low + high) / 2
         expected_var = ((high - low) ** 2) / 12
-        distribution.test_check_moments(self, 'uniform', expected_mean,
-                                        expected_var, {'low': low, 'high': high})
+        TestDistribution.test_check_moments(self, 'uniform', expected_mean,
+                                            expected_var, {'low': low, 'high': high})
 
     def test_seed(self):
         low = 1.0
         high = 2.0
-        distribution.test_seed(self, 'uniform', {'low': low, 'high': high})
+        TestDistribution.test_seed(self, 'uniform', {'low': low, 'high': high})
 
 
 class TestDistributionsWeibull:
@@ -675,12 +711,12 @@ class TestDistributionsWeibull:
     def test_check_extreme_value(self):
         a = 0.0
         expected_val = a
-        distribution.test_check_extreme_value(self, 'weibull', expected_val, {'a': a})
+        TestDistribution.test_check_extreme_value(self, 'weibull', expected_val, {'a': a})
 
     def test_invalid_args(self):
         a = -1.0  # non-negative `a` is expected
-        distribution.test_invalid_args(self, 'weibull', {'a': a})
+        TestDistribution.test_invalid_args(self, 'weibull', {'a': a})
 
     def test_seed(self):
         a = 2.56
-        distribution.test_seed(self, 'weibull', {'a': a})
+        TestDistribution.test_seed(self, 'weibull', {'a': a})
