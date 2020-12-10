@@ -149,9 +149,6 @@ tests/test_random.py::test_multinomial_check_moments
 tests/test_random.py::test_multinomial_check_sum
 tests/test_random.py::test_multinomial_invalid_args
 tests/test_random.py::test_multinomial_seed
-tests/test_random.py::test_multivariate_normal_check_moments
-tests/test_random.py::test_multivariate_normal_invalid_args
-tests/test_random.py::test_multivariate_normal_output_shape_check
 tests/test_random.py::test_multivariate_normal_seed
 tests/test_random.py::test_negative_binomial_seed
 tests/test_random.py::test_rayleigh_check_moments 
