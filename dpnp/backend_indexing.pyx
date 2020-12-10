@@ -71,7 +71,7 @@ cpdef tuple dpnp_nonzero(dparray in_array1):
 
     idx = 0
     for i in range(in_array1.size):
-        if in_array1[i] == 0:
+        if in_array1[i] != 0:
             ids = get_axis_indeces(i, in_array1.shape)
             for j in range(res_count):
                 result[j][idx] = ids[j]
