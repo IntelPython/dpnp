@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.nansum &mdash; dpnp 0.4.0 documentation</title>
+  <title>dpnp.cumsum &mdash; dpnp 0.4.0 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.nanprod" href="dpnp.nanprod.html" />
-    <link rel="prev" title="dpnp.cumsum" href="dpnp.cumsum.html" /> 
+    <link rel="next" title="dpnp.nansum" href="dpnp.nansum.html" />
+    <link rel="prev" title="dpnp.cumprod" href="dpnp.cumprod.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -179,13 +179,13 @@
         
           <li><a href="../math.html">Mathematical Functions</a> &raquo;</li>
         
-      <li>dpnp.nansum</li>
+      <li>dpnp.cumsum</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.nansum.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.cumsum.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -198,24 +198,28 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-nansum">
-<h1>dpnp.nansum<a class="headerlink" href="#dpnp-nansum" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-cumsum">
+<h1>dpnp.cumsum<a class="headerlink" href="#dpnp-cumsum" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.nansum">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">nansum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_mathematical.html#nansum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.nansum" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate sum() function treating ‘Not a Numbers’ (NaN) as zero.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.nansum.html#numpy.nansum" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.nansum</span></code></a>.</p>
+<dt id="dpnp.cumsum">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">cumsum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_mathematical.html#cumsum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.cumsum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the cumulative sum of the elements along a given axis.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.cumsum.html#numpy.cumsum" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.cumsum</span></code></a>.</p>
 <p class="rubric">Limitations</p>
-<p>Parameter <code class="docutils literal notranslate"><span class="pre">x1</span></code> is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+<p>Parameter <code class="docutils literal notranslate"><span class="pre">x</span></code> is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
 Keyword arguments <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are currently unsupported.
 Otherwise the functions will be executed sequentially on CPU.
 Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
-<span class="go">3</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]]))</span>
-<span class="go">10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
+<span class="go">[1, 2, 7]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
+<span class="go">[1, 2, 6, 10, 15, 21]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -230,10 +234,10 @@ Input array data types are limited by supported DPNP <a class="reference interna
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.nanprod.html" class="btn btn-neutral float-right" title="dpnp.nanprod" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.nansum.html" class="btn btn-neutral float-right" title="dpnp.nansum" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.cumsum.html" class="btn btn-neutral float-left" title="dpnp.cumsum" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.cumprod.html" class="btn btn-neutral float-left" title="dpnp.cumprod" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

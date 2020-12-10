@@ -210,6 +210,8 @@
     <span class="s2">&quot;add&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ceil&quot;</span><span class="p">,</span>
     <span class="s2">&quot;copysign&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cumprod&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cumsum&quot;</span><span class="p">,</span>
     <span class="s2">&quot;divide&quot;</span><span class="p">,</span>
     <span class="s2">&quot;fabs&quot;</span><span class="p">,</span>
     <span class="s2">&quot;floor&quot;</span><span class="p">,</span>
@@ -407,6 +409,78 @@
             <span class="k">return</span> <span class="n">dpnp_copysign</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">copysign</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="cumprod"><a class="viewcode-back" href="../../reference/generated/dpnp.cumprod.html#dpnp.cumprod">[docs]</a><span class="k">def</span> <span class="nf">cumprod</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the cumulative product of elements along a given axis.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.cumprod`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">        Parameter ``x`` is supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">        Keyword arguments ``kwargs`` are currently unsupported.</span>
+<span class="sd">        Otherwise the functions will be executed sequentially on CPU.</span>
+<span class="sd">        Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; result = np.cumprod(a)</span>
+<span class="sd">    &gt;&gt;&gt; [x for x in result]</span>
+<span class="sd">    [1, 2, 6]</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([[1, 2, 3], [4, 5, 6]])</span>
+<span class="sd">    &gt;&gt;&gt; result = np.cumprod(b)</span>
+<span class="sd">    &gt;&gt;&gt; [x for x in result]</span>
+<span class="sd">    [1, 2, 6, 24, 120, 720]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_cumprod</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">cumprod</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="cumsum"><a class="viewcode-back" href="../../reference/generated/dpnp.cumsum.html#dpnp.cumsum">[docs]</a><span class="k">def</span> <span class="nf">cumsum</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the cumulative sum of the elements along a given axis.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.cumsum`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">        Parameter ``x`` is supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">        Keyword arguments ``kwargs`` are currently unsupported.</span>
+<span class="sd">        Otherwise the functions will be executed sequentially on CPU.</span>
+<span class="sd">        Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 2, 4])</span>
+<span class="sd">    &gt;&gt;&gt; result = np.cumsum(a)</span>
+<span class="sd">    &gt;&gt;&gt; [x for x in result]</span>
+<span class="sd">    [1, 2, 7]</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([[1, 2, 3], [4, 5, 6]])</span>
+<span class="sd">    &gt;&gt;&gt; result = np.cumsum(b)</span>
+<span class="sd">    &gt;&gt;&gt; [x for x in result]</span>
+<span class="sd">    [1, 2, 6, 10, 15, 21]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_cumsum</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">cumsum</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="divide"><a class="viewcode-back" href="../../reference/generated/dpnp.divide.html#dpnp.divide">[docs]</a><span class="k">def</span> <span class="nf">divide</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
