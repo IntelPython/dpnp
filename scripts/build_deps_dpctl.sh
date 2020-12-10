@@ -13,4 +13,6 @@ git tag 5.0
 python ./setup.py develop
 python ./setup.py install
 
+conda-build conda-recipe/ --no-test
+
 cd ..
