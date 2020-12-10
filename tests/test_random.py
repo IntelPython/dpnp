@@ -1,4 +1,5 @@
 import pytest
+import unittest
 
 import dpnp.random
 import numpy
@@ -6,12 +7,9 @@ from numpy.testing import assert_allclose
 import math
 
 
-class TestDistribution:
+class TestDistribution(unittest.TestCase):
 
-    def __init__(self):
-        pass
-
-    def test_check_extreme_value(self, dist_name, val, params):
+    def check_extreme_value(self, dist_name, val, params):
         seed = 28041990
         size = 10
         dpnp.random.seed(seed)
@@ -19,7 +17,7 @@ class TestDistribution:
         assert len(numpy.unique(res)) == 1
         assert numpy.unique(res)[0] == val
 
-    def test_check_moments(self, dist_name, expected_mean, expected_var, params):
+    def check_moments(self, dist_name, expected_mean, expected_var, params):
         size = 10**5
         seed = 28041995
         dpnp.random.seed(seed)
@@ -29,12 +27,12 @@ class TestDistribution:
         assert math.isclose(var, expected_var, abs_tol=0.1)
         assert math.isclose(mean, expected_mean, abs_tol=0.1)
 
-    def test_invalid_args(self, dist_name, params):
+    def check_invalid_args(self, dist_name, params):
         size = 10
         with pytest.raises(ValueError):
             getattr(dpnp.random, dist_name)(size=size, **params)
 
-    def test_seed(self, dist_name, params):
+    def check_seed(self, dist_name, params):
         seed = 28041990
         size = 10
         dpnp.random.seed(seed)
@@ -145,314 +143,301 @@ def test_randn_normal_distribution():
     assert math.isclose(mean, expected_mean, abs_tol=0.03)
 
 
-class TestDistributionsBeta:
+class TestDistributionsBeta(TestDistribution):
 
-    def test_check_moments(self):
+    def test_moments(self):
         a = 2.56
         b = 0.8
         expected_mean = a / (a + b)
         expected_var = (a * b) / ((a + b)**2 * (a + b + 1))
-        TestDistribution.test_check_moments(self, 'beta', expected_mean,
-                                            expected_var, {'a': a, 'b': b})
+        self.check_moments('beta', expected_mean, expected_var, {'a': a, 'b': b})
 
     def test_invalid_args(self):
         a = 3.0   # OK
         b = -1.0  # positive `b` is expected
-        TestDistribution.test_invalid_args(self, 'beta', {'a': a, 'b': b})
+        self.check_invalid_args('beta', {'a': a, 'b': b})
         a = -1.0  # positive `a` is expected
         b = 3.0   # OK
-        TestDistribution.test_invalid_args(self, 'beta', {'a': a, 'b': b})
+        self.check_invalid_args('beta', {'a': a, 'b': b})
 
     def test_seed(self):
         a = 2.56
         b = 0.8
-        TestDistribution.test_seed(self, 'beta', {'a': a, 'b': b})
+        self.check_seed('beta', {'a': a, 'b': b})
 
 
-class TestDistributionsBinomial:
+class TestDistributionsBinomial(TestDistribution):
 
-    def test_check_extreme_value(self):
+    def test_extreme_value(self):
         n = 5
         p = 0.0
         expected_val = p
-        TestDistribution.test_check_extreme_value(self, 'binomial', expected_val,
-                                                  {'n': n, 'p': p})
+        self.check_extreme_value('binomial', expected_val, {'n': n, 'p': p})
         n = 0
         p = 0.5
         expected_val = n
-        TestDistribution.test_check_extreme_value(self, 'binomial', expected_val,
-                                                  {'n': n, 'p': p})
+        self.check_extreme_value('binomial', expected_val, {'n': n, 'p': p})
         n = 5
         p = 1.0
         expected_val = n
-        TestDistribution.test_check_extreme_value(self, 'binomial', expected_val,
-                                                  {'n': n, 'p': p})
+        self.check_extreme_value('binomial', expected_val, {'n': n, 'p': p})
 
-    def test_check_moments(self):
+    def test_moments(self):
         n = 5
         p = 0.8
         expected_mean = n * p
         expected_var = n * p * (1 - p)
-        TestDistribution.test_check_moments(self, 'binomial', expected_mean,
-                                            expected_var, {'n': n, 'p': p})
+        self.check_moments('binomial', expected_mean,
+                           expected_var, {'n': n, 'p': p})
 
     def test_invalid_args(self):
         n = -5     # non-negative `n` is expected
         p = 0.4    # OK
-        TestDistribution.test_invalid_args(self, 'binomial', {'n': n, 'p': p})
+        self.check_invalid_args('binomial', {'n': n, 'p': p})
         n = 5      # OK
         p = -0.5   # `p` is expected from [0, 1]
-        TestDistribution.test_invalid_args(self, 'binomial', {'n': n, 'p': p})
+        self.check_invalid_args('binomial', {'n': n, 'p': p})
 
     def test_seed(self):
         n, p = 10, .5  # number of trials, probability of each trial
-        TestDistribution.test_seed(self, 'binomial', {'n': n, 'p': p})
+        self.check_seed('binomial', {'n': n, 'p': p})
 
 
-class TestDistributionsChisquare:
+class TestDistributionsChisquare(TestDistribution):
 
     def test_invalid_args(self):
         df = -1  # positive `df` is expected
-        TestDistribution.test_invalid_args(self, 'chisquare', {'df': df})
+        self.check_invalid_args('chisquare', {'df': df})
 
     def test_seed(self):
         df = 3  # number of degrees of freedom
-        TestDistribution.test_seed(self, 'chisquare', {'df': df})
+        self.check_seed('chisquare', {'df': df})
 
 
-class TestDistributionsExponential:
+class TestDistributionsExponential(TestDistribution):
 
     def test_invalid_args(self):
         scale = -1  # non-negative `scale` is expected
-        TestDistribution.test_invalid_args(self, 'exponential', {'scale': scale})
+        self.check_invalid_args('exponential', {'scale': scale})
 
     def test_seed(self):
         scale = 3  # number of degrees of freedom
-        TestDistribution.test_seed(self, 'exponential', {'scale': scale})
+        self.check_seed('exponential', {'scale': scale})
 
 
-class TestDistributionsGamma:
+class TestDistributionsGamma(TestDistribution):
 
-    def test_check_moments(self):
+    def test_moments(self):
         shape = 2.56
         scale = 0.8
         expected_mean = shape * scale
         expected_var = shape * scale * scale
-        TestDistribution.test_check_moments(self, 'gamma', expected_mean, expected_var,
-                                            {'shape': shape, 'scale': scale})
+        self.check_moments('gamma', expected_mean, expected_var,
+                           {'shape': shape, 'scale': scale})
 
     def test_invalid_args(self):
         size = 10
         shape = -1   # non-negative `shape` is expected
-        TestDistribution.test_invalid_args(self, 'gamma', {'shape': shape})
+        self.check_invalid_args('gamma', {'shape': shape})
         shape = 1.0   # OK
         scale = -1.0  # non-negative `shape` is expected
-        TestDistribution.test_invalid_args(self, 'gamma', {'shape': shape,
-                                           'scale': scale})
+        self.check_invalid_args('gamma', {'shape': shape, 'scale': scale})
 
     def test_seed(self):
         shape = 3.0  # shape param for gamma distr
-        TestDistribution.test_seed(self, 'gamma', {'shape': shape})
+        self.check_seed('gamma', {'shape': shape})
 
 
-class TestDistributionsGeometric:
+class TestDistributionsGeometric(TestDistribution):
 
-    def test_check_extreme_value(self):
+    def test_extreme_value(self):
         p = 1.0
         expected_val = p
-        TestDistribution.test_check_extreme_value(self, 'geometric',
-                                                  expected_val, {'p': p})
+        self.check_extreme_value('geometric', expected_val, {'p': p})
 
-    def test_check_moments(self):
+    def test_moments(self):
         p = 0.8
         expected_mean = (1 - p) / p
         expected_var = (1 - p) / (p**2)
-        TestDistribution.test_check_moments(self, 'geometric', expected_mean,
-                                            expected_var, {'p': p})
+        self.check_moments('geometric', expected_mean, expected_var, {'p': p})
 
     def test_invalid_args(self):
         size = 10
         p = -1.0  # `p` is expected from (0, 1]
-        TestDistribution.test_invalid_args(self, 'geometric', {'p': p})
+        self.check_invalid_args('geometric', {'p': p})
 
     def test_seed(self):
         p = 0.8
-        TestDistribution.test_seed(self, 'geometric', {'p': p})
+        self.check_seed('geometric', {'p': p})
 
 
-class TestDistributionsGumbel:
+class TestDistributionsGumbel(TestDistribution):
 
-    def test_check_extreme_value(self):
+    def test_extreme_value(self):
         loc = 5
         scale = 0.0
         expected_val = loc
-        TestDistribution.test_check_extreme_value(self, 'gumbel', expected_val,
-                                                  {'loc': loc, 'scale': scale})
+        self.check_extreme_value('gumbel', expected_val,
+                                 {'loc': loc, 'scale': scale})
 
-    def test_check_moments(self):
+    def test_moments(self):
         loc = 12
         scale = 0.8
         expected_mean = loc + scale * numpy.euler_gamma
         expected_var = (numpy.pi**2 / 6) * (scale ** 2)
-        TestDistribution.test_check_moments(self, 'gumbel', expected_mean,
-                                            expected_var, {'loc': loc, 'scale': scale})
+        self.check_moments('gumbel', expected_mean,
+                           expected_var, {'loc': loc, 'scale': scale})
 
     def test_invalid_args(self):
         size = 10
         loc = 3.0     # OK
         scale = -1.0  # non-negative `scale` is expected
-        TestDistribution.test_invalid_args(self, 'gumbel',
-                                           {'loc': loc, 'scale': scale})
+        self.check_invalid_args('gumbel', {'loc': loc, 'scale': scale})
 
     def test_seed(self):
         loc = 2.56
         scale = 0.8
-        TestDistribution.test_seed(self, 'gumbel',
-                                   {'loc': loc, 'scale': scale})
+        self.check_seed('gumbel', {'loc': loc, 'scale': scale})
 
 
-class TestDistributionsHypergeometric:
+class TestDistributionsHypergeometric(TestDistribution):
 
-    def test_check_extreme_value(self):
+    def test_extreme_value(self):
         ngood = 100
         nbad = 0
         nsample = 10
         expected_val = nsample
-        TestDistribution.test_check_extreme_value(self, 'hypergeometric', expected_val,
-                                                  {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+        self.check_extreme_value('hypergeometric', expected_val,
+                                 {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
         ngood = 0
         nbad = 11
         nsample = 10
         expected_val = 0
-        TestDistribution.test_check_extreme_value(self, 'hypergeometric', expected_val,
-                                                  {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+        self.check_extreme_value('hypergeometric', expected_val,
+                                 {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
 
-    def test_check_moments(self):
+    def test_moments(self):
         ngood = 100
         nbad = 2
         nsample = 10
         expected_mean = nsample * (ngood / (ngood + nbad))
         expected_var = expected_mean * (nbad / (ngood + nbad)) * (((ngood + nbad) - nsample) / ((ngood + nbad) - 1))
-        TestDistribution.test_check_moments(self, 'hypergeometric', expected_mean, expected_var,
-                                            {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+        self.check_moments('hypergeometric', expected_mean, expected_var,
+                           {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
 
     def test_invalid_args(self):
         size = 10
         ngood = 100    # OK
         nbad = 2       # OK
         nsample = -10  # non-negative `nsamp` is expected
-        TestDistribution.test_invalid_args(self, 'hypergeometric',
-                                           {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+        self.check_invalid_args('hypergeometric',
+                                {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
 
         ngood = 100    # OK
         nbad = -2      # non-negative `nbad` is expected
         nsample = 10   # OK
-        TestDistribution.test_invalid_args(self, 'hypergeometric',
-                                           {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+        self.check_invalid_args('hypergeometric',
+                                {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
 
         ngood = -100   # non-negative `ngood` is expected
         nbad = 2       # OK
         nsample = 10   # OK
-        TestDistribution.test_invalid_args(self, 'hypergeometric',
-                                           {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+        self.check_invalid_args('hypergeometric',
+                                {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
 
         ngood = 10
         nbad = 2
         nsample = 100
         # ngood + nbad >= nsample expected
-        TestDistribution.test_invalid_args(self, 'hypergeometric',
-                                           {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+        self.check_invalid_args('hypergeometric',
+                                {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
 
         ngood = 10   # OK
         nbad = 2     # OK
         nsample = 0  # `nsample` is expected > 0
-        TestDistribution.test_invalid_args(self, 'hypergeometric',
-                                           {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+        self.check_invalid_args('hypergeometric',
+                                {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
 
     def test_seed(self):
         ngood = 100
         nbad = 2
         nsample = 10
-        TestDistribution.test_seed(self, 'hypergeometric',
-                                   {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+        self.check_seed('hypergeometric',
+                        {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
 
 
-class TestDistributionsLaplace:
+class TestDistributionsLaplace(TestDistribution):
 
-    def test_check_extreme_value(self):
+    def test_extreme_value(self):
         loc = 5
         scale = 0.0
         expected_val = scale
-        TestDistribution.test_check_extreme_value(self, 'laplace', expected_val,
-                                                  {'loc': loc, 'scale': scale})
+        self.check_extreme_value('laplace', expected_val,
+                                 {'loc': loc, 'scale': scale})
 
-    def test_check_moments(self):
+    def test_moments(self):
         loc = 2.56
         scale = 0.8
         expected_mean = loc
         expected_var = 2 * scale * scale
-        TestDistribution.test_check_moments(self, 'laplace', expected_mean,
-                                            expected_var, {'loc': loc, 'scale': scale})
+        self.check_moments('laplace', expected_mean,
+                           expected_var, {'loc': loc, 'scale': scale})
 
     def test_invalid_args(self):
         loc = 3.0     # OK
         scale = -1.0  # positive `b` is expected
-        TestDistribution.test_invalid_args(self, 'laplace',
-                                           {'loc': loc, 'scale': scale})
+        self.check_invalid_args('laplace',
+                                {'loc': loc, 'scale': scale})
 
     def test_seed(self):
         loc = 2.56
         scale = 0.8
-        TestDistribution.test_seed(self, 'laplace',
-                                   {'loc': loc, 'scale': scale})
+        self.check_seed('laplace', {'loc': loc, 'scale': scale})
 
 
-class TestDistributionsLognormal:
+class TestDistributionsLognormal(TestDistribution):
 
-    def test_check_extreme_value(self):
+    def test_extreme_value(self):
         mean = 0.5
         sigma = 0.0
         expected_val = numpy.exp(mean + (sigma ** 2) / 2)
-        TestDistribution.test_check_extreme_value(self, 'lognormal', expected_val,
-                                                  {'mean': mean, 'sigma': sigma})
+        self.check_extreme_value('lognormal', expected_val,
+                                 {'mean': mean, 'sigma': sigma})
 
-    def test_check_moments(self):
+    def test_moments(self):
         mean = 0.5
         sigma = 0.8
         expected_mean = numpy.exp(mean + (sigma ** 2) / 2)
         expected_var = (numpy.exp(sigma**2) - 1) * numpy.exp(2 * mean + sigma**2)
-        TestDistribution.test_check_moments(self, 'lognormal', expected_mean,
-                                            expected_var, {'mean': mean, 'sigma': sigma})
+        self.check_moments('lognormal', expected_mean,
+                           expected_var, {'mean': mean, 'sigma': sigma})
 
     def test_invalid_args(self):
         mean = 0.0
         sigma = -1.0  # non-negative `sigma` is expected
-        TestDistribution.test_invalid_args(self, 'lognormal',
-                                           {'mean': mean, 'sigma': sigma})
+        self.check_invalid_args('lognormal', {'mean': mean, 'sigma': sigma})
 
     def test_seed(self):
         mean = 0.0
         sigma = 0.8
-        TestDistribution.test_seed(self, 'lognormal',
-                                   {'mean': mean, 'sigma': sigma})
+        self.check_seed('lognormal', {'mean': mean, 'sigma': sigma})
 
 
-class TestDistributionsMultinomial:
+class TestDistributionsMultinomial(TestDistribution):
 
-    def test_check_extreme_value(self):
+    def test_extreme_value(self):
         n = 0
         pvals = [1 / 6.] * 6
-        TestDistribution.test_check_extreme_value(self, 'multinomial', n,
-                                                  {'n': n, 'pvals': pvals})
+        self.check_extreme_value('multinomial', n, {'n': n, 'pvals': pvals})
 
-    def test_check_moments(self):
+    def test_moments(self):
         n = 10
         pvals = [1 / 6.] * 6
         size = 10**5
         expected_mean = n * pvals[0]
         expected_var = n * pvals[0] * (1 - pvals[0])
-        TestDistribution.test_check_moments(self, 'multinomial', expected_mean,
-                                            expected_var, {'n': n, 'pvals': pvals})
+        self.check_moments('multinomial', expected_mean,
+                           expected_var, {'n': n, 'pvals': pvals})
 
     def test_check_sum(self):
         seed = 28041990
@@ -466,26 +451,23 @@ class TestDistributionsMultinomial:
     def test_invalid_args(self):
         n = -10                # parameter `n`, non-negative expected
         pvals = [1 / 6.] * 6   # parameter `pvals`, OK
-        TestDistribution.test_invalid_args(self, 'multinomial',
-                                           {'n': n, 'pvals': pvals})
+        self.check_invalid_args('multinomial', {'n': n, 'pvals': pvals})
         n = 10                 # parameter `n`, OK
         pvals = [-1 / 6.] * 6  # parameter `pvals`, sum(pvals) expected between [0, 1]
-        TestDistribution.test_invalid_args(self, 'multinomial',
-                                           {'n': n, 'pvals': pvals})
+        self.check_invalid_args('multinomial', {'n': n, 'pvals': pvals})
         n = 10                           # parameter `n`, OK
         pvals = [1 / 6.] * 6 + [1 / 6.]  # parameter `pvals`, sum(pvals) expected between [0, 1]
-        TestDistribution.test_invalid_args(self, 'multinomial',
-                                           {'n': n, 'pvals': pvals})
+        self.check_invalid_args('multinomial', {'n': n, 'pvals': pvals})
 
     def test_seed(self):
         n = 20
         pvals = [1 / 6.] * 6
-        TestDistribution.test_seed(self, 'multinomial', {'n': n, 'pvals': pvals})
+        self.check_seed('multinomial', {'n': n, 'pvals': pvals})
 
 
-class TestDistributionsMultivariateNormal:
+class TestDistributionsMultivariateNormal(TestDistribution):
 
-    def test_check_moments(self):
+    def test_moments(self):
         seed = 2804183
         dpnp.random.seed(seed)
         mean = [2.56, 3.23]
@@ -498,16 +480,13 @@ class TestDistributionsMultivariateNormal:
     def test_invalid_args(self):
         mean = [2.56, 3.23]  # OK
         cov = [[1, 0]]       # `mean` and `cov` must have same length
-        TestDistribution.test_invalid_args(self, 'multivariate_normal',
-                                           {'mean': mean, 'cov': cov})
+        self.check_invalid_args('multivariate_normal', {'mean': mean, 'cov': cov})
         mean = [[2.56, 3.23]]   # `mean` must be 1 dimensional
         cov = [[1, 0], [0, 1]]  # OK
-        TestDistribution.test_invalid_args(self, 'multivariate_normal',
-                                           {'mean': mean, 'cov': cov})
+        self.check_invalid_args('multivariate_normal', {'mean': mean, 'cov': cov})
         mean = [2.56, 3.23]  # OK
         cov = [1, 0, 0, 1]   # `cov` must be 2 dimensional and square
-        TestDistribution.test_invalid_args(self, 'multivariate_normal',
-                                           {'mean': mean, 'cov': cov})
+        self.check_invalid_args('multivariate_normal', {'mean': mean, 'cov': cov})
 
     def test_output_shape_check(self):
         seed = 28041990
@@ -522,19 +501,18 @@ class TestDistributionsMultivariateNormal:
     def test_seed(self):
         mean = [2.56, 3.23]
         cov = [[1, 0], [0, 1]]
-        TestDistribution.test_seed(self, 'multivariate_normal', {'mean': mean, 'cov': cov})
+        self.check_seed('multivariate_normal', {'mean': mean, 'cov': cov})
 
 
-class TestDistributionsNegativeBinomial:
+class TestDistributionsNegativeBinomial(TestDistribution):
 
-    def test_check_extreme_value(self):
+    def test_extreme_value(self):
         seed = 28041990
         dpnp.random.seed(seed)
         n = 5
         p = 1.0
         check_val = 0.0
-        TestDistribution.test_check_extreme_value(self, 'negative_binomial',
-                                                  check_val, {'n': n, 'p': p})
+        self.check_extreme_value('negative_binomial', check_val, {'n': n, 'p': p})
         n = 5
         p = 0.0
         res = numpy.asarray(dpnp.random.negative_binomial(n=n, p=p, size=10))
@@ -545,178 +523,172 @@ class TestDistributionsNegativeBinomial:
     def test_invalid_args(self):
         n = 10    # parameter `n`, OK
         p = -0.5  # parameter `p`, expected between [0, 1]
-        TestDistribution.test_invalid_args(self, 'negative_binomial', {'n': n, 'p': p})
+        self.check_invalid_args('negative_binomial', {'n': n, 'p': p})
         n = -10   # parameter `n`, expected non-negative
         p = 0.5   # parameter `p`, OK
-        TestDistribution.test_invalid_args(self, 'negative_binomial', {'n': n, 'p': p})
+        self.check_invalid_args('negative_binomial', {'n': n, 'p': p})
 
     def test_seed(self):
         n, p = 10, .5  # number of trials, probability of each trial
-        TestDistribution.test_seed(self, 'negative_binomial', {'n': n, 'p': p})
+        self.check_seed('negative_binomial', {'n': n, 'p': p})
 
 
-class TestDistributionsNormal:
+class TestDistributionsNormal(TestDistribution):
 
-    def test_check_extreme_value(self):
+    def test_extreme_value(self):
         loc = 5
         scale = 0.0
         expected_val = loc
-        TestDistribution.test_check_extreme_value(self, 'normal', expected_val,
-                                                  {'loc': loc, 'scale': scale})
+        self.check_extreme_value('normal', expected_val, {'loc': loc, 'scale': scale})
 
-    def test_check_moments(self):
+    def test_moments(self):
         loc = 2.56
         scale = 0.8
         expected_mean = loc
         expected_var = scale**2
-        TestDistribution.test_check_moments(self, 'normal', expected_mean,
-                                            expected_var, {'loc': loc, 'scale': scale})
+        self.check_moments('normal', expected_mean,
+                           expected_var, {'loc': loc, 'scale': scale})
 
     def test_invalid_args(self):
         loc = 3.0     # OK
         scale = -1.0  # non-negative `scale` is expected
-        TestDistribution.test_invalid_args(self, 'normal',
-                                           {'loc': loc, 'scale': scale})
+        self.check_invalid_args('normal', {'loc': loc, 'scale': scale})
 
     def test_seed(self):
         loc = 2.56
         scale = 0.8
-        TestDistribution.test_seed(self, 'normal', {'loc': loc, 'scale': scale})
+        self.check_seed('normal', {'loc': loc, 'scale': scale})
 
 
-class TestDistributionsPoisson:
+class TestDistributionsPoisson(TestDistribution):
 
-    def test_check_extreme_value(self):
+    def test_extreme_value(self):
         lam = 0.0
-        TestDistribution.test_check_extreme_value(self, 'poisson',
-                                                  lam, {'lam': lam})
+        self.check_extreme_value('poisson', lam, {'lam': lam})
 
-    def test_check_moments(self):
+    def test_moments(self):
         lam = 0.8
         expected_mean = lam
         expected_var = lam
-        TestDistribution.test_check_moments(self, 'poisson', expected_mean,
-                                            expected_var, {'lam': lam})
+        self.check_moments('poisson', expected_mean,
+                           expected_var, {'lam': lam})
 
     def test_invalid_args(self):
         lam = -1.0    # non-negative `lam` is expected
-        TestDistribution.test_invalid_args(self, 'poisson', {'lam': lam})
+        self.check_invalid_args('poisson', {'lam': lam})
 
     def test_seed(self):
         lam = 0.8
-        TestDistribution.test_seed(self, 'poisson', {'lam': lam})
+        self.check_seed('poisson', {'lam': lam})
 
 
-class TestDistributionsRayleigh:
+class TestDistributionsRayleigh(TestDistribution):
 
-    def test_check_extreme_value(self):
+    def test_extreme_value(self):
         scale = 0.0
-        TestDistribution.test_check_extreme_value(self, 'rayleigh',
-                                                  scale, {'scale': scale})
+        self.check_extreme_value('rayleigh', scale, {'scale': scale})
 
-    def test_check_moments(self):
+    def test_moments(self):
         scale = 0.8
         expected_mean = scale * numpy.sqrt(numpy.pi / 2)
         expected_var = ((4 - numpy.pi) / 2) * scale * scale
-        TestDistribution.test_check_moments(self, 'rayleigh', expected_mean,
-                                            expected_var, {'scale': scale})
+        self.check_moments('rayleigh', expected_mean,
+                           expected_var, {'scale': scale})
 
     def test_invalid_args(self):
         scale = -1.0  # positive `b` is expected
-        TestDistribution.test_invalid_args(self, 'rayleigh', {'scale': scale})
+        self.check_invalid_args('rayleigh', {'scale': scale})
 
     def test_seed(self):
         scale = 0.8
-        TestDistribution.test_seed(self, 'rayleigh', {'scale': scale})
+        self.check_seed('rayleigh', {'scale': scale})
 
 
-class TestDistributionsStandardCauchy:
+class TestDistributionsStandardCauchy(TestDistribution):
 
     def test_seed(self):
-        TestDistribution.test_seed(self, 'standard_cauchy', {})
+        self.check_seed('standard_cauchy', {})
 
 
-class TestDistributionsStandardExponential:
+class TestDistributionsStandardExponential(TestDistribution):
 
-    def test_check_moments(self):
+    def test_moments(self):
         shape = 0.8
         expected_mean = 1.0
         expected_var = 1.0
-        TestDistribution.test_check_moments(self, 'standard_exponential',
-                                            expected_mean, expected_var, {})
+        self.check_moments('standard_exponential',
+                           expected_mean, expected_var, {})
 
     def test_seed(self):
-        TestDistribution.test_seed(self, 'standard_exponential', {})
+        self.check_seed('standard_exponential', {})
 
 
-class TestDistributionsStandardGamma:
+class TestDistributionsStandardGamma(TestDistribution):
 
-    def test_check_extreme_value(self):
-        TestDistribution.test_check_extreme_value(self, 'standard_gamma',
-                                                  0.0, {'shape': 0.0})
+    def test_extreme_value(self):
+        self.check_extreme_value('standard_gamma', 0.0, {'shape': 0.0})
 
-    def test_check_moments(self):
+    def test_moments(self):
         shape = 0.8
         expected_mean = shape
         expected_var = shape
-        TestDistribution.test_check_moments(self, 'standard_gamma', expected_mean,
-                                            expected_var, {'shape': shape})
+        self.check_moments('standard_gamma', expected_mean,
+                           expected_var, {'shape': shape})
 
     def test_invalid_args(self):
         shape = -1   # non-negative `shape` is expected
-        TestDistribution.test_invalid_args(self, 'standard_gamma',
-                                           {'shape': shape})
+        self.check_invalid_args('standard_gamma', {'shape': shape})
 
     def test_seed(self):
-        TestDistribution.test_seed(self, 'standard_gamma', {'shape': 0.0})
+        self.check_seed('standard_gamma', {'shape': 0.0})
 
 
-class TestDistributionsStandardNormal:
+class TestDistributionsStandardNormal(TestDistribution):
 
-    def test_check_moments(self):
+    def test_moments(self):
         expected_mean = 0.0
         expected_var = 1.0
-        TestDistribution.test_check_moments(self, 'standard_normal',
-                                            expected_mean, expected_var, {})
+        self.check_moments('standard_normal',
+                           expected_mean, expected_var, {})
 
     def test_seed(self):
-        TestDistribution.test_seed(self, 'standard_normal', {})
+        self.check_seed('standard_normal', {})
 
 
-class TestDistributionsUniform:
+class TestDistributionsUniform(TestDistribution):
 
-    def test_check_extreme_value(self):
+    def test_extreme_value(self):
         low = 1.0
         high = 1.0
         expected_val = low
-        TestDistribution.test_check_extreme_value(self, 'uniform', expected_val,
-                                                  {'low': low, 'high': high})
+        self.check_extreme_value('uniform', expected_val,
+                                 {'low': low, 'high': high})
 
-    def test_check_moments(self):
+    def test_moments(self):
         low = 1.0
         high = 2.0
         expected_mean = (low + high) / 2
         expected_var = ((high - low) ** 2) / 12
-        TestDistribution.test_check_moments(self, 'uniform', expected_mean,
-                                            expected_var, {'low': low, 'high': high})
+        self.check_moments('uniform', expected_mean,
+                           expected_var, {'low': low, 'high': high})
 
     def test_seed(self):
         low = 1.0
         high = 2.0
-        TestDistribution.test_seed(self, 'uniform', {'low': low, 'high': high})
+        self.check_seed('uniform', {'low': low, 'high': high})
 
 
-class TestDistributionsWeibull:
+class TestDistributionsWeibull(TestDistribution):
 
-    def test_check_extreme_value(self):
+    def test_extreme_value(self):
         a = 0.0
         expected_val = a
-        TestDistribution.test_check_extreme_value(self, 'weibull', expected_val, {'a': a})
+        self.check_extreme_value('weibull', expected_val, {'a': a})
 
     def test_invalid_args(self):
         a = -1.0  # non-negative `a` is expected
-        TestDistribution.test_invalid_args(self, 'weibull', {'a': a})
+        self.check_invalid_args('weibull', {'a': a})
 
     def test_seed(self):
         a = 2.56
-        TestDistribution.test_seed(self, 'weibull', {'a': a})
+        self.check_seed('weibull', {'a': a})
