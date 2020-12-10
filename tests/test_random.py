@@ -647,6 +647,29 @@ class TestDistributionsStandardNormal:
         distribution.test_seed(self, 'standard_normal', {})
 
 
+class TestDistributionsUniform:
+
+    def test_check_extreme_value(self):
+        low = 1.0
+        high = 1.0
+        expected_val = low
+        distribution.test_check_extreme_value(self, 'uniform', expected_val,
+                                              {'low': low, 'high': high})
+
+    def test_check_moments(self):
+        low = 1.0
+        high = 2.0
+        expected_mean = (low + high) / 2
+        expected_var = ((high - low) ** 2) / 12
+        distribution.test_check_moments(self, 'uniform', expected_mean,
+                                        expected_var, {'low': low, 'high': high})
+
+    def test_seed(self):
+        low = 1.0
+        high = 2.0
+        distribution.test_seed(self, 'uniform', {'low': low, 'high': high})
+
+
 class TestDistributionsWeibull:
 
     def test_check_extreme_value(self):
