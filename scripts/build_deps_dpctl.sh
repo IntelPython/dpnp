@@ -10,9 +10,9 @@ cd dpctl
 # didn't find better way to set required version
 git tag 5.0
 
-python ./setup.py develop
-python ./setup.py install
+# python ./setup.py develop
+# python ./setup.py install
 
-conda-build conda-recipe/ --no-test
+conda build conda-recipe/ --no-test
 
 cd ..
