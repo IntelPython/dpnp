@@ -37,7 +37,6 @@ from dpnp.dpnp_utils cimport *
 import dpnp
 import numpy
 cimport numpy
-from collections import defaultdict
 
 
 __all__ += [
@@ -115,14 +114,14 @@ cpdef dparray dpnp_cumprod(dparray x1):
 
     x1_dtype = x1.dtype
 
-    types_map = defaultdict()
+    types_map = {
+        'int32': dpnp.int64,
+        'int64': dpnp.int64,
+        'float32': dpnp.float32,
+        'float64': dpnp.float64
+    }
 
-    types_map['int32'] = 'int64'
-    types_map['int64'] = 'int64'
-    types_map['float32'] = 'float32'
-    types_map['float64'] = 'float64'
-
-    res_type = dpnp.dtype(types_map[x1_dtype.name])
+    res_type = types_map[x1_dtype.name]
 
     cdef dparray result = dparray(x1.size, dtype=res_type)
 
@@ -139,14 +138,14 @@ cpdef dparray dpnp_cumsum(dparray x1):
 
     x1_dtype = x1.dtype
 
-    types_map = defaultdict()
+    types_map = {
+        'int32': dpnp.int64,
+        'int64': dpnp.int64,
+        'float32': dpnp.float32,
+        'float64': dpnp.float64
+    }
 
-    types_map['int32'] = 'int64'
-    types_map['int64'] = 'int64'
-    types_map['float32'] = 'float32'
-    types_map['float64'] = 'float64'
-
-    res_type = dpnp.dtype(types_map[x1_dtype.name])
+    res_type = types_map[x1_dtype.name]
 
     cdef dparray result = dparray(x1.size, dtype=res_type)
 
