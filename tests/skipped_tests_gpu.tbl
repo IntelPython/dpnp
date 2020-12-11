@@ -137,6 +137,7 @@ tests/test_random.py::test_binomial_seed
 tests/test_random.py::test_chisquare_seed
 tests/test_random.py::test_gamma_check_moments
 tests/test_random.py::test_gamma_seed 
+tests/test_random.py::test_gumbel_check_moments
 tests/test_random.py::test_hypergeometric_check_extreme_value
 tests/test_random.py::test_hypergeometric_check_moments
 tests/test_random.py::test_hypergeometric_invalid_args
