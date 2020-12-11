@@ -116,10 +116,10 @@ jobs:
       echo ========================= 2 ===============================
       ls -l /opt/intel/oneapi/intelpython/latest/conda-bld/linux-64/
       echo ========================= 3 ===============================
-      ls -l dpnp/
-      ldd dpnp/libdpnp_backend_c.so
+      ls -l /opt/intel/oneapi/intelpython/python3.7/lib/python3.7/site-packages/dpnp
+      ldd /opt/intel/oneapi/intelpython/python3.7/lib/python3.7/site-packages/dpnp/libdpnp_backend_c.so
       echo ========================= 4 ===============================
-      readelf -d dpnp/libdpnp_backend_c.so
+      readelf -d /opt/intel/oneapi/intelpython/python3.7/lib/python3.7/site-packages/dpnp/libdpnp_backend_c.so
       
       echo ========================= 5 ===============================
       ls -l
