@@ -1233,7 +1233,7 @@ def seed(seed=None):
         elif seed < 0:
             pass
         else:
-            return dpnp_srand(seed)
+            dpnp_srand(seed)
 
     return call_origin(numpy.random.seed, seed)
 
