@@ -1119,7 +1119,7 @@ def random(size):
 
     See Also
     --------
-    :obj:`dpnp.random.random`
+    :obj:`dpnp.random.random_sample`
 
     """
 
@@ -1474,7 +1474,6 @@ def triangular(left, mode, right, size=None):
 
 def uniform(low=0.0, high=1.0, size=None):
     """
-    uniform(low=0.0, high=1.0, size=None)
 
     Draw samples from a uniform distribution.
 
