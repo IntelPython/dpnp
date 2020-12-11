@@ -111,9 +111,12 @@ jobs:
       echo ========================= where mkl_sycl ===============================
       find /opt/intel -name libmkl_sycl.so
       echo ========================= 2 ===============================
+      ls -l /opt/intel/oneapi/intelpython/latest/conda-bld/linux-64/
+      echo ========================= 3 ===============================
       ls -l dpnp/
       ldd dpnp/libdpnp_backend_c.so
+      echo ========================= 4 ===============================
       readelf -d dpnp/libdpnp_backend_c.so
       
-      echo ========================= 3 ===============================
+      echo ========================= 5 ===============================
       ls -l
