@@ -42,7 +42,9 @@ __all__ += [
     "dpnp_diag_indices",
     "dpnp_nonzero",
     "dpnp_tril_indices",
-    "dpnp_tril_indices_from"
+    "dpnp_tril_indices_from",
+    "dpnp_triu_indices",
+    "dpnp_triu_indices_from"
 ]
 
 
@@ -70,7 +72,7 @@ cpdef tuple dpnp_nonzero(dparray in_array1):
 
     idx = 0
     for i in range(in_array1.size):
-        if in_array1[i] == 0:
+        if in_array1[i] != 0:
             ids = get_axis_indeces(i, in_array1.shape)
             for j in range(res_count):
                 result[j][idx] = ids[j]
@@ -121,6 +123,46 @@ cpdef tuple dpnp_tril_indices_from(arr, k=0):
                 if j < m :
                     array1.append(i)
                     array2.append(j)
+
+    dparray1 = dpnp.array(array1, dtype=dpnp.int64)
+    dparray2 = dpnp.array(array2, dtype=dpnp.int64)
+    return (dparray1, dparray2)
+
+
+cpdef tuple dpnp_triu_indices(n, k=0, m=None):
+    array1 = []
+    array2 = []
+    if m is None:
+        for i in range(n):
+            for j in range(i + k, n):
+                array1.append(i)
+                array2.append(j)
+    else:
+        for i in range(n):
+            for j in range(i + k, m):
+                array1.append(i)
+                array2.append(j)
+
+    dparray1 = dpnp.array(array1, dtype=dpnp.int64)
+    dparray2 = dpnp.array(array2, dtype=dpnp.int64)
+    return (dparray1, dparray2)
+
+
+cpdef tuple dpnp_triu_indices_from(arr, k=0):
+    m = arr.shape[0]
+    n = arr.shape[1]
+    array1 = []
+    array2 = []
+    if m is None:
+        for i in range(n):
+            for j in range(i + k, n):
+                array1.append(i)
+                array2.append(j)
+    else:
+        for i in range(n):
+            for j in range(i + k, m):
+                array1.append(i)
+                array2.append(j)
 
     dparray1 = dpnp.array(array1, dtype=dpnp.int64)
     dparray2 = dpnp.array(array2, dtype=dpnp.int64)

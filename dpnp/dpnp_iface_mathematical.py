@@ -54,6 +54,8 @@ __all__ = [
     "add",
     "ceil",
     "copysign",
+    "cumprod",
+    "cumsum",
     "divide",
     "fabs",
     "floor",
@@ -251,6 +253,78 @@ def copysign(x1, x2, **kwargs):
             return dpnp_copysign(x1, x2)
 
     return call_origin(numpy.copysign, x1, x2, **kwargs)
+
+
+def cumprod(x1, **kwargs):
+    """
+    Return the cumulative product of elements along a given axis.
+
+    For full documentation refer to :obj:`numpy.cumprod`.
+
+    Limitations
+    -----------
+        Parameter ``x`` is supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 3])
+    >>> result = np.cumprod(a)
+    >>> [x for x in result]
+    [1, 2, 6]
+    >>> b = np.array([[1, 2, 3], [4, 5, 6]])
+    >>> result = np.cumprod(b)
+    >>> [x for x in result]
+    [1, 2, 6, 24, 120, 720]
+
+    """
+
+    if not use_origin_backend(x1) and not kwargs:
+        if not isinstance(x1, dparray):
+            pass
+        else:
+            return dpnp_cumprod(x1)
+
+    return call_origin(numpy.cumprod, x1, **kwargs)
+
+
+def cumsum(x1, **kwargs):
+    """
+    Return the cumulative sum of the elements along a given axis.
+
+    For full documentation refer to :obj:`numpy.cumsum`.
+
+    Limitations
+    -----------
+        Parameter ``x`` is supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 4])
+    >>> result = np.cumsum(a)
+    >>> [x for x in result]
+    [1, 2, 7]
+    >>> b = np.array([[1, 2, 3], [4, 5, 6]])
+    >>> result = np.cumsum(b)
+    >>> [x for x in result]
+    [1, 2, 6, 10, 15, 21]
+
+    """
+
+    if not use_origin_backend(x1) and not kwargs:
+        if not isinstance(x1, dparray):
+            pass
+        else:
+            return dpnp_cumsum(x1)
+
+    return call_origin(numpy.cumsum, x1, **kwargs)
 
 
 def divide(x1, x2, **kwargs):
