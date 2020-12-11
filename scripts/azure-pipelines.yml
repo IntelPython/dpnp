@@ -93,18 +93,17 @@ jobs:
   steps:
   - bash: |
       ./scripts/install_system_deps.sh
-      sudo apt-get install intel-oneapi-python
-      sudo chmod -R a+w /opt/intel/oneapi/intelpython
-      sudo chmod -R a+w /opt/intel/oneapi/conda_channel
+      ./scripts/install_system_deps_intelpython.sh
+
       . /opt/intel/oneapi/setvars.sh
-      conda config --show channels
+
       ./scripts/install_python_deps.sh
       ./scripts/build_deps_dpctl.sh
-      echo ========================= DPCTL version ===============================
-      python -c "import dpctl as sw; print(f\"sw.version={sw.version}\nsw.version.version={sw.version.version}\nsw.get_include={sw.get_include()}\")"
+
       conda list
       echo ========================= make DPNP package ===============================
       conda-build conda-recipe/ --no-test
+
       echo ========================= list files ===============================
       conda install /opt/intel/oneapi/intelpython/latest/conda-bld/linux-64/dpnp*
       echo ========================= where DPCTL ===============================
@@ -120,6 +119,3 @@ jobs:
       ldd /opt/intel/oneapi/intelpython/python3.7/lib/python3.7/site-packages/dpnp/libdpnp_backend_c.so
       echo ========================= 4 ===============================
       readelf -d /opt/intel/oneapi/intelpython/python3.7/lib/python3.7/site-packages/dpnp/libdpnp_backend_c.so
-      
-      echo ========================= 5 ===============================
-      ls -l
