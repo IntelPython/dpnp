@@ -1261,13 +1261,15 @@ def sample(size):
     Return random floats in the half-open interval [0.0, 1.0).
     This is an alias of random_sample.
 
-    Parameters
-    ----------
-    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
+    For full documentation refer to :obj:`numpy.random.sample`.
 
-    Returns
-    -------
-    out : Array of random floats of shape size.
+    Limitations
+    -----------
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    >>> s = dpnp.random.sample(1000)
 
     See Also
     --------
