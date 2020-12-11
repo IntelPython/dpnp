@@ -602,10 +602,6 @@ def test_multinomial_invalid_args():
     pvals = [-1 / 6.] * 6  # parameter `pvals`, sum(pvals) expected between [0, 1]
     with pytest.raises(ValueError):
         dpnp.random.multinomial(n, pvals, size)
-    n = 10                          # parameter `n`, OK
-    pvals = [1 / 6.] * 6 + [1 / 6.]  # parameter `pvals`, sum(pvals) expected between [0, 1]
-    with pytest.raises(ValueError):
-        dpnp.random.multinomial(n, pvals, size)
 
 
 def test_multinomial_check_extreme_value():
