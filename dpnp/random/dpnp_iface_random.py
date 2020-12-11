@@ -1131,32 +1131,15 @@ def random(size):
 
 def random_integers(low, high=None, size=None):
     """
-    random_integers(low, high=None, size=None)
-
     Random integers between `low` and `high`, inclusive.
-    Return random integers from the "discrete uniform" distribution in
-    the closed interval [`low`, `high`].  If `high` is
-    None (the default), then results are from [1, `low`].
 
-    Parameters
-    ----------
-    low : int
-        Lowest (signed) integer to be drawn from the distribution (unless
-        ``high=None``, in which case this parameter is the *highest* such
-        integer).
-    high : int, optional
-        If provided, the largest (signed) integer to be drawn from the
-        distribution (see above for behavior if ``high=None``).
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  Default is None, in which case a
-        single value is returned.
+    For full documentation refer to :obj:`numpy.random.random_integers`.
 
-    Returns
-    -------
-    out : array of random ints
-        `size`-shaped array of random integers from the appropriate
-        distribution, or a single such random int if `size` not provided.
+    Limitations
+    -----------
+    Parameters ``low`` and ``high`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.random_integers(low, high, size)` samples
+    are drawn.
 
     See Also
     --------
@@ -1167,8 +1150,15 @@ def random_integers(low, high=None, size=None):
     if not use_origin_backend(low):
         if high is None:
             high = low
-            low = 1
-        return randint(low, int(high) + 1, size=size)
+            low = 0
+        # TODO:
+        # array_like of floats for `low` and `high` params
+        if not dpnp.isscalar(low):
+            pass
+        elif not dpnp.isscalar(high):
+            pass
+        else:
+            return randint(low, int(high) + 1, size=size)
 
     return call_origin(numpy.random.random_integers, low, high, size)
 
