@@ -125,8 +125,8 @@ tests/test_linalg.py::test_norm3[(1, 2)-2-[[[1, 2], [3, 4]], [[5, 6], [7, 8]]]]
 tests/test_linalg.py::test_norm3[(1, 2)-2-[[[1, 0], [3, 0]], [[5, 0], [7, 0]]]]
 tests/test_linalg.py::test_norm3[(1, 2)-3-[[[1, 2], [3, 4]], [[5, 6], [7, 8]]]]
 tests/test_linalg.py::test_norm3[(1, 2)-3-[[[1, 0], [3, 0]], [[5, 0], [7, 0]]]]
-tests/test_random.py::test_rayleigh_check_moments
-tests/test_random.py::test_gumbel_check_moments
+tests/test_random.py::TestDistributionsGumbel::test_moments
+tests/test_random.py::TestDistributionsRayleigh::test_moments
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_and
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_or
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_xor

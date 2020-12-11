@@ -30,20 +30,23 @@ def test_cholesky():
     numpy.testing.assert_array_equal(expected, result)
 
 
-def test_det():
-    arrays = [
-        [[0, 0], [0, 0]],
-        [[1, 2], [1, 2]],
-        [[1, 2], [3, 4]],
-        [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]],
-        [[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]
-    ]
-    for array in arrays:
-        a = numpy.array(array)
-        ia = inp.array(a)
-        result = inp.linalg.det(ia)
-        expected = numpy.linalg.det(a)
-        numpy.testing.assert_allclose(expected, result)
+@pytest.mark.parametrize("array",
+                         [[[0, 0], [0, 0]],
+                          [[1, 2], [1, 2]],
+                          [[1, 2], [3, 4]],
+                          [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]],
+                          [[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]],
+                         ids=['[[0, 0], [0, 0]]',
+                              '[[1, 2], [1, 2]]',
+                              '[[1, 2], [3, 4]]',
+                              '[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]',
+                              '[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]'])
+def test_det(array):
+    a = numpy.array(array)
+    ia = inp.array(a)
+    result = inp.linalg.det(ia)
+    expected = numpy.linalg.det(a)
+    numpy.testing.assert_allclose(expected, result)
 
 
 @pytest.mark.parametrize("type",
