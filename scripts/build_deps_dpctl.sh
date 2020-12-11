@@ -17,4 +17,5 @@ conda build conda-recipe/ --no-test
 
 ls -lR /opt/intel/oneapi/intelpython/latest/conda-bld
 
+conda install /opt/intel/oneapi/intelpython/latest/conda-bld/linux-64/dpctl*
 cd ..
