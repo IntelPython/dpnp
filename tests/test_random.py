@@ -455,9 +455,6 @@ class TestDistributionsMultinomial(TestDistribution):
         n = 10                 # parameter `n`, OK
         pvals = [-1 / 6.] * 6  # parameter `pvals`, sum(pvals) expected between [0, 1]
         self.check_invalid_args('multinomial', {'n': n, 'pvals': pvals})
-        n = 10                           # parameter `n`, OK
-        pvals = [1 / 6.] * 6 + [1 / 6.]  # parameter `pvals`, sum(pvals) expected between [0, 1]
-        self.check_invalid_args('multinomial', {'n': n, 'pvals': pvals})
 
     def test_seed(self):
         n = 20

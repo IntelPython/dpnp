@@ -451,7 +451,6 @@ cpdef dparray dpnp_multinomial(int ntrial, p, size):
 
     cdef double * p_vector = <double * > numpy.PyArray_DATA(p)
     cdef size_t p_vector_size = len(p)
-    size = size + (len(p),)
 
     if ntrial == 0:
         result = dparray(size, dtype=dtype)

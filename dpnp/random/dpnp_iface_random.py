@@ -43,6 +43,8 @@ from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 from dpnp.random._random import *
 
+import operator
+
 
 __all__ = [
     'beta',
@@ -594,67 +596,45 @@ def multinomial(n, pvals, size=None):
 
     Draw samples from a multinomial distribution.
 
-    The multinomial distribution is a multivariate generalization of the
-    binomial distribution.  Take an experiment with one of ``p``
-    possible outcomes.  An example of such an experiment is throwing a dice,
-    where the outcome can be 1 through 6.  Each sample drawn from the
-    distribution represents `n` such experiments.  Its values,
-    ``X_i = [X_0, X_1, ..., X_p]``, represent the number of times the
-    outcome was ``i``.
+    For full documentation refer to :obj:`numpy.random.multinomial`.
 
-    Parameters
-    ----------
-    n : int
-        Number of experiments.
-    pvals : sequence of floats, length p
-        Probabilities of each of the ``p`` different outcomes.  These
-        must sum to 1 (however, the last element is always assumed to
-        account for the remaining probability, as long as
-        ``sum(pvals[:-1]) <= 1)``.
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  Default is None, in which case a
-        single value is returned.
-
-    Returns
-    -------
-    out : dparray, int32
-        The drawn samples, of shape *size*, if that was provided.  If not,
-        the shape is ``(N,)``.
-        In other words, each entry ``out[i,j,...,:]`` is an N-dimensional
-        value drawn from the distribution.
+    Limitations
+    -----------
+    Parameter ``n`` limited with int32 max. See, `numpy.iinfo(numpy.int32).max`.
+    Sum of ``pvals``, `sum(pvals)` should be between (0, 1).
+    Otherwise, :obj:`numpy.random.multinomial(n, pvals, size)`
+    samples are drawn.
 
     Examples
     --------
     Throw a dice 20 times:
-    >>> dpnp.random.multinomial(20, [1/6.]*6, size=1)
-    array([[4, 1, 7, 5, 2, 1]]) # random
+    >>> s = dpnp.random.multinomial(20, [1/6.]*6, size=1)
+    >>> s.shape
+    (1, 6)
 
     """
 
     if not use_origin_backend(n) and dpnp_queue_is_cpu():
-        if size is None:
-            size = (1,)
-        elif isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    checker_throw_value_error("multinomial", "type(dim)", type(dim), int)
-        elif not isinstance(size, int):
-            checker_throw_value_error("multinomial", "type(size)", type(size), int)
-        else:
-            size = (size,)
         pvals_sum = sum(pvals)
-
+        d = len(pvals)
         if n < 0:
-            checker_throw_value_error("multinomial", "n", n, "non-negative")
+            pass
         elif n > numpy.iinfo(numpy.int32).max:
-            checker_throw_value_error("multinomial", "n", n, "n <= int32 max (2147483647)")
+            pass
         elif pvals_sum > 1.0:
-            checker_throw_value_error("multinomial", "sum(pvals)", pvals_sum, "sum(pvals) <= 1.0")
+            pass
         elif pvals_sum < 0.0:
-            checker_throw_value_error("multinomial", "sum(pvals)", pvals_sum, "sum(pvals) >= 0.0")
+            pass
         else:
-            return dpnp_multinomial(int(n), pvals, size)
+            if size is None:
+                shape = (d,)
+            else:
+                try:
+                    shape = (operator.index(size), d)
+                except:
+                    shape = tuple(size) + (d,)
+
+            return dpnp_multinomial(int(n), pvals, shape)
 
     return call_origin(numpy.random.multinomial, n, pvals, size)
 
