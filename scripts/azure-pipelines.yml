@@ -104,7 +104,7 @@ jobs:
       python -c "import dpctl as sw; print(f\"sw.version={sw.version}\nsw.version.version={sw.version.version}\nsw.get_include={sw.get_include()}\")"
       conda list
       echo ========================= make DPNP package ===============================
-      conda-build conda-recipe/
+      conda-build conda-recipe/ --no-test
       echo ========================= list files ===============================
       echo ========================= where DPCTL ===============================
       find /opt/intel -name libDPCTLSyclInterface.so
