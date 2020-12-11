@@ -150,6 +150,16 @@ tests/test_random.py::test_rayleigh_check_moments
 tests/test_random.py::test_standard_gamma_check_extreme_value
 tests/test_random.py::test_standard_gamma_check_moments
 tests/test_random.py::test_standard_gamma_invalid_args
+tests/test_random.py::TestDistributionsBeta::test_seed
+tests/test_random.py::TestDistributionsBinomial::test_seed
+tests/test_random.py::TestDistributionsChisquare::test_seed
+tests/test_random.py::TestDistributionsGamma::test_seed
+tests/test_random.py::TestDistributionsHypergeometric::test_seed
+tests/test_random.py::TestDistributionsMultinomial::test_invalid_args
+tests/test_random.py::TestDistributionsMultinomial::test_seed
+tests/test_random.py::TestDistributionsMultivariateNormal::test_seed
+tests/test_random.py::TestDistributionsNegativeBinomial::test_seed
+tests/test_random.py::TestDistributionsRayleigh::test_moments
 tests/test_statistics.py::test_median[2-float32]
 tests/test_statistics.py::test_median[2-float64]
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_and

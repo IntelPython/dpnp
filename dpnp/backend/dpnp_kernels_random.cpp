@@ -31,6 +31,7 @@
 #include <vector>
 
 namespace mkl_rng = oneapi::mkl::rng;
+namespace mkl_blas = oneapi::mkl::blas;
 
 template <typename _DataType>
 void dpnp_rng_beta_c(void* result, _DataType a, _DataType b, size_t size)
@@ -153,16 +154,23 @@ void dpnp_rng_geometric_c(void* result, float p, size_t size)
 template <typename _DataType>
 void dpnp_rng_gumbel_c(void* result, double loc, double scale, size_t size)
 {
+    cl::sycl::event event;
     if (!size)
     {
         return;
     }
+
+    const _DataType alpha = (_DataType(-1.0));
+    const _DataType stride = (_DataType(1.0));
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
+    loc = loc * (double(-1.0));
 
     mkl_rng::gumbel<_DataType> distribution(loc, scale);
     // perform generation
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
+    event = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+    event.wait();
+    event = mkl_blas::scal(DPNP_QUEUE, size, alpha, result1, stride);
+    event.wait();
 }
 
 template <typename _DataType>

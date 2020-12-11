@@ -43,6 +43,8 @@ from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 from dpnp.random._random import *
 
+import operator
+
 
 __all__ = [
     'beta',
@@ -425,8 +427,6 @@ def gumbel(loc=0.0, scale=1.0, size=None):
             pass
         elif scale < 0:
             pass
-        elif loc < 0:
-            pass
         else:
             return dpnp_gumbel(loc, scale, size)
 
@@ -596,67 +596,45 @@ def multinomial(n, pvals, size=None):
 
     Draw samples from a multinomial distribution.
 
-    The multinomial distribution is a multivariate generalization of the
-    binomial distribution.  Take an experiment with one of ``p``
-    possible outcomes.  An example of such an experiment is throwing a dice,
-    where the outcome can be 1 through 6.  Each sample drawn from the
-    distribution represents `n` such experiments.  Its values,
-    ``X_i = [X_0, X_1, ..., X_p]``, represent the number of times the
-    outcome was ``i``.
+    For full documentation refer to :obj:`numpy.random.multinomial`.
 
-    Parameters
-    ----------
-    n : int
-        Number of experiments.
-    pvals : sequence of floats, length p
-        Probabilities of each of the ``p`` different outcomes.  These
-        must sum to 1 (however, the last element is always assumed to
-        account for the remaining probability, as long as
-        ``sum(pvals[:-1]) <= 1)``.
-    size : int or tuple of ints, optional
-        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then
-        ``m * n * k`` samples are drawn.  Default is None, in which case a
-        single value is returned.
-
-    Returns
-    -------
-    out : dparray, int32
-        The drawn samples, of shape *size*, if that was provided.  If not,
-        the shape is ``(N,)``.
-        In other words, each entry ``out[i,j,...,:]`` is an N-dimensional
-        value drawn from the distribution.
+    Limitations
+    -----------
+    Parameter ``n`` limited with int32 max. See, `numpy.iinfo(numpy.int32).max`.
+    Sum of ``pvals``, `sum(pvals)` should be between (0, 1).
+    Otherwise, :obj:`numpy.random.multinomial(n, pvals, size)`
+    samples are drawn.
 
     Examples
     --------
     Throw a dice 20 times:
-    >>> dpnp.random.multinomial(20, [1/6.]*6, size=1)
-    array([[4, 1, 7, 5, 2, 1]]) # random
+    >>> s = dpnp.random.multinomial(20, [1/6.]*6, size=1)
+    >>> s.shape
+    (1, 6)
 
     """
 
     if not use_origin_backend(n) and dpnp_queue_is_cpu():
-        if size is None:
-            size = (1,)
-        elif isinstance(size, tuple):
-            for dim in size:
-                if not isinstance(dim, int):
-                    checker_throw_value_error("multinomial", "type(dim)", type(dim), int)
-        elif not isinstance(size, int):
-            checker_throw_value_error("multinomial", "type(size)", type(size), int)
-        else:
-            size = (size,)
         pvals_sum = sum(pvals)
-
+        d = len(pvals)
         if n < 0:
-            checker_throw_value_error("multinomial", "n", n, "non-negative")
+            pass
         elif n > numpy.iinfo(numpy.int32).max:
-            checker_throw_value_error("multinomial", "n", n, "n <= int32 max (2147483647)")
+            pass
         elif pvals_sum > 1.0:
-            checker_throw_value_error("multinomial", "sum(pvals)", pvals_sum, "sum(pvals) <= 1.0")
+            pass
         elif pvals_sum < 0.0:
-            checker_throw_value_error("multinomial", "sum(pvals)", pvals_sum, "sum(pvals) >= 0.0")
+            pass
         else:
-            return dpnp_multinomial(int(n), pvals, size)
+            if size is None:
+                shape = (d,)
+            else:
+                try:
+                    shape = (operator.index(size), d)
+                except:
+                    shape = tuple(size) + (d,)
+
+            return dpnp_multinomial(int(n), pvals, shape)
 
     return call_origin(numpy.random.multinomial, n, pvals, size)
 
@@ -666,85 +644,13 @@ def multivariate_normal(mean, cov, size=None, check_valid='warn', tol=1e-8):
 
     Draw random samples from a multivariate normal distribution.
 
-    The multivariate normal, multinormal or Gaussian distribution is a
-    generalization of the one-dimensional normal distribution to higher
-    dimensions.  Such a distribution is specified by its mean and
-    covariance matrix.  These parameters are analogous to the mean
-    (average or "center") and variance (standard deviation, or "width,"
-    squared) of the one-dimensional normal distribution.
+    For full documentation refer to :obj:`numpy.random.multivariate_normal`.
 
-    Parameters
-    ----------
-    mean : 1-D array_like, of length N
-        Mean of the N-dimensional distribution.
-    cov : 2-D array_like, of shape (N, N)
-        Covariance matrix of the distribution. It must be symmetric and
-        positive-semidefinite for proper sampling.
-    size : int or tuple of ints, optional
-        Given a shape of, for example, ``(m,n,k)``, ``m*n*k`` samples are
-        generated, and packed in an `m`-by-`n`-by-`k` arrangement.  Because
-        each sample is `N`-dimensional, the output shape is ``(m,n,k,N)``.
-        If no shape is specified, a single (`N`-D) sample is returned.
-    check_valid : { 'warn', 'raise', 'ignore' }, optional
-        Behavior when the covariance matrix is not positive semidefinite.
-        Currently ignored and not used.
-    tol : float, optional
-        Tolerance when checking the singular values in covariance matrix.
-        cov is cast to double before the check. Currently ignored and not used.
-
-    Returns
-    -------
-    out : dparray
-        The drawn samples, of shape *size*, if that was provided.  If not,
-        the shape is ``(N,)``.
-        In other words, each entry ``out[i,j,...,:]`` is an N-dimensional
-        value drawn from the distribution.
-
-    Notes
-    -----
-    The mean is a coordinate in N-dimensional space, which represents the
-    location where samples are most likely to be generated.  This is
-    analogous to the peak of the bell curve for the one-dimensional or
-    univariate normal distribution.
-
-    Covariance indicates the level to which two variables vary together.
-    From the multivariate normal distribution, we draw N-dimensional
-    samples, :math:`X = [x_1, x_2, ... x_N]`.  The covariance matrix
-    element :math:`C_{ij}` is the covariance of :math:`x_i` and :math:`x_j`.
-    The element :math:`C_{ii}` is the variance of :math:`x_i` (i.e. its
-    "spread").
-
-    Instead of specifying the full covariance matrix, popular
-    approximations include:
-
-      - Spherical covariance (`cov` is a multiple of the identity matrix)
-      - Diagonal covariance (`cov` has non-negative elements, and only on
-        the diagonal)
-
-    This geometrical property can be seen in two dimensions by plotting
-    generated data-points:
-
-    >>> mean = [0, 0]
-    >>> cov = [[1, 0], [0, 100]]  # diagonal covariance
-
-    Diagonal covariance means that points are oriented along x or y-axis:
-
-    >>> import matplotlib.pyplot as plt
-    >>> x, y = np.random.multivariate_normal(mean, cov, 5000).T
-    >>> plt.plot(x, y, 'x')
-    >>> plt.axis('equal')
-    >>> plt.show()
-
-    Note that the covariance matrix must be positive semidefinite (a.k.a.
-    nonnegative-definite). Otherwise, the behavior of this method is
-    undefined and backwards compatibility is not guaranteed.
-
-    References
-    ----------
-    .. [1] Papoulis, A., "Probability, Random Variables, and Stochastic
-           Processes," 3rd ed., New York: McGraw-Hill, 1991.
-    .. [2] Duda, R. O., Hart, P. E., and Stork, D. G., "Pattern
-           Classification," 2nd ed., New York: Wiley, 2001.
+    Limitations
+    -----------
+    Parameters ``check_valid`` and ``tol`` are not supported.
+    Otherwise, :obj:`numpy.random.multivariate_normal(mean, cov, size, check_valid, tol)`
+    samples are drawn.
 
     Examples
     --------
@@ -757,24 +663,24 @@ def multivariate_normal(mean, cov, size=None, check_valid='warn', tol=1e-8):
     """
 
     if not use_origin_backend(mean) and dpnp_queue_is_cpu():
-        mean = numpy.array(mean, dtype=numpy.float64, order='C')
-        cov = numpy.array(cov, dtype=numpy.float64, order='C')
+        mean_ = numpy.array(mean, dtype=numpy.float64, order='C')
+        cov_ = numpy.array(cov, dtype=numpy.float64, order='C')
         if size is None:
             shape = []
         elif isinstance(size, (int, numpy.integer)):
             shape = [size]
         else:
             shape = size
-        if len(mean.shape) != 1:
-            raise ValueError("mean must be 1 dimensional")
-        if (len(cov.shape) != 2) or (cov.shape[0] != cov.shape[1]):
-            raise ValueError("cov must be 2 dimensional and square")
-        if mean.shape[0] != cov.shape[0]:
-            raise ValueError("mean and cov must have same length")
-        final_shape = list(shape[:])
-        final_shape.append(mean.shape[0])
-
-        return dpnp_multivariate_normal(mean, cov, final_shape)
+        if len(mean_.shape) != 1:
+            pass
+        elif (len(cov_.shape) != 2) or (cov_.shape[0] != cov_.shape[1]):
+            pass
+        elif mean_.shape[0] != cov_.shape[0]:
+            pass
+        else:
+            final_shape = list(shape[:])
+            final_shape.append(mean_.shape[0])
+            return dpnp_multivariate_normal(mean_, cov_, final_shape)
 
     return call_origin(numpy.random.multivariate_normal, mean, cov, size, check_valid, tol)
 
@@ -986,13 +892,16 @@ def rand(d0, *dn):
     Create an array of the given shape and populate it
     with random samples from a uniform distribution over [0, 1).
 
-    Parameters
-    ----------
-    d0, d1, …, dn : The dimensions of the returned array, must be non-negative.
+    For full documentation refer to :obj:`numpy.random.rand`.
 
-    Returns
-    -------
-    out : Random values.
+
+    Limitations
+    -----------
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    >>> s = dpnp.random.rand(2, 4)
 
     See Also
     --------
@@ -1002,11 +911,10 @@ def rand(d0, *dn):
 
     if not use_origin_backend(d0):
         dims = tuple([d0, *dn])
-
-        for dim in dims:
-            if not isinstance(dim, int):
-                checker_throw_value_error("rand", "type(dim)", type(dim), int)
-        return dpnp_random(dims)
+        if not _check_dims(dims):
+            pass
+        else:
+            return dpnp_random(dims)
 
     return call_origin(numpy.random.rand, d0, *dn)
 
@@ -1119,7 +1027,7 @@ def random(size):
 
     See Also
     --------
-    :obj:`dpnp.random.random`
+    :obj:`dpnp.random.random_sample`
 
     """
 
@@ -1177,13 +1085,15 @@ def random_sample(size):
     """
     Return random floats in the half-open interval [0.0, 1.0).
 
-    Parameters
-    ----------
-    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
+    For full documentation refer to :obj:`numpy.random.random_sample`.
 
-    Returns
-    -------
-    out : Array of random floats of shape size.
+    Limitations
+    -----------
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    >>> s = dpnp.random.random_sample(1000)
 
     See Also
     --------
@@ -1202,13 +1112,15 @@ def ranf(size):
     Return random floats in the half-open interval [0.0, 1.0).
     This is an alias of random_sample.
 
-    Parameters
-    ----------
-    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
+    For full documentation refer to :obj:`numpy.random.ranf`.
 
-    Returns
-    -------
-    out : Array of random floats of shape size.
+    Limitations
+    -----------
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    >>> s = dpnp.random.ranf(1000)
 
     See Also
     --------
@@ -1261,13 +1173,15 @@ def sample(size):
     Return random floats in the half-open interval [0.0, 1.0).
     This is an alias of random_sample.
 
-    Parameters
-    ----------
-    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
+    For full documentation refer to :obj:`numpy.random.sample`.
 
-    Returns
-    -------
-    out : Array of random floats of shape size.
+    Limitations
+    -----------
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    >>> s = dpnp.random.sample(1000)
 
     See Also
     --------
@@ -1474,7 +1388,6 @@ def triangular(left, mode, right, size=None):
 
 def uniform(low=0.0, high=1.0, size=None):
     """
-    uniform(low=0.0, high=1.0, size=None)
 
     Draw samples from a uniform distribution.
 
