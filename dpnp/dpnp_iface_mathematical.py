@@ -56,6 +56,7 @@ __all__ = [
     "copysign",
     "cumprod",
     "cumsum",
+    "diff",
     "divide",
     "fabs",
     "floor",
@@ -325,6 +326,35 @@ def cumsum(x1, **kwargs):
             return dpnp_cumsum(x1)
 
     return call_origin(numpy.cumsum, x1, **kwargs)
+
+
+def diff(input, n=1, axis=-1, prepend=None, append=None):
+    """
+    Calculate the n-th discrete difference along the given axis.
+
+    For full documentation refer to :obj:`numpy.diff`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Not supported parameters n, axis, prepend, append.
+    """
+
+    if not use_origin_backend(input):
+        if not isinstance(input, dparray):
+            pass
+        elif n != 1:
+            pass
+        elif axis != 1:
+            pass
+        elif prepend is not None:
+            pass
+        elif append is not None:
+            pass
+        else:
+            return dpnp_diff(input)
+
+    return call_origin(numpy.diff, input, n, axis, prepend, append)
 
 
 def divide(x1, x2, **kwargs):
