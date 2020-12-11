@@ -160,7 +160,6 @@ tests/test_random.py::TestDistributionsBeta::test_seed
 tests/test_random.py::TestDistributionsBinomial::test_seed
 tests/test_random.py::TestDistributionsChisquare::test_seed
 tests/test_random.py::TestDistributionsGamma::test_seed
-tests/test_random.py::TestDistributionsGumbel::test_moments
 tests/test_random.py::TestDistributionsHypergeometric::test_seed
 tests/test_random.py::TestDistributionsMultinomial::test_invalid_args
 tests/test_random.py::TestDistributionsMultinomial::test_seed
