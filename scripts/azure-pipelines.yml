@@ -106,10 +106,13 @@ jobs:
       echo ========================= make DPNP package ===============================
       conda-build conda-recipe/ --no-test
       echo ========================= list files ===============================
+      conda install /opt/intel/oneapi/intelpython/latest/conda-bld/linux-64/dpnp*
       echo ========================= where DPCTL ===============================
       find /opt/intel -name libDPCTLSyclInterface.so
       echo ========================= where mkl_sycl ===============================
       find /opt/intel -name libmkl_sycl.so
+      echo ========================= where DPNP backend ===============================
+      find /opt/intel -name libdpnp_backend_c.so
       echo ========================= 2 ===============================
       ls -l /opt/intel/oneapi/intelpython/latest/conda-bld/linux-64/
       echo ========================= 3 ===============================
