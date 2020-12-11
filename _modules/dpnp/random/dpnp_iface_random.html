@@ -198,6 +198,8 @@
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.random._random</span> <span class="kn">import</span> <span class="o">*</span>
 
+<span class="kn">import</span> <span class="nn">operator</span>
+
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">&#39;beta&#39;</span><span class="p">,</span>
@@ -749,67 +751,45 @@
 
 <span class="sd">    Draw samples from a multinomial distribution.</span>
 
-<span class="sd">    The multinomial distribution is a multivariate generalization of the</span>
-<span class="sd">    binomial distribution.  Take an experiment with one of ``p``</span>
-<span class="sd">    possible outcomes.  An example of such an experiment is throwing a dice,</span>
-<span class="sd">    where the outcome can be 1 through 6.  Each sample drawn from the</span>
-<span class="sd">    distribution represents `n` such experiments.  Its values,</span>
-<span class="sd">    ``X_i = [X_0, X_1, ..., X_p]``, represent the number of times the</span>
-<span class="sd">    outcome was ``i``.</span>
+<span class="sd">    For full documentation refer to :obj:`numpy.random.multinomial`.</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    n : int</span>
-<span class="sd">        Number of experiments.</span>
-<span class="sd">    pvals : sequence of floats, length p</span>
-<span class="sd">        Probabilities of each of the ``p`` different outcomes.  These</span>
-<span class="sd">        must sum to 1 (however, the last element is always assumed to</span>
-<span class="sd">        account for the remaining probability, as long as</span>
-<span class="sd">        ``sum(pvals[:-1]) &lt;= 1)``.</span>
-<span class="sd">    size : int or tuple of ints, optional</span>
-<span class="sd">        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then</span>
-<span class="sd">        ``m * n * k`` samples are drawn.  Default is None, in which case a</span>
-<span class="sd">        single value is returned.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dparray, int32</span>
-<span class="sd">        The drawn samples, of shape *size*, if that was provided.  If not,</span>
-<span class="sd">        the shape is ``(N,)``.</span>
-<span class="sd">        In other words, each entry ``out[i,j,...,:]`` is an N-dimensional</span>
-<span class="sd">        value drawn from the distribution.</span>
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameter ``n`` limited with int32 max. See, `numpy.iinfo(numpy.int32).max`.</span>
+<span class="sd">    Sum of ``pvals``, `sum(pvals)` should be between (0, 1).</span>
+<span class="sd">    Otherwise, :obj:`numpy.random.multinomial(n, pvals, size)`</span>
+<span class="sd">    samples are drawn.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    Throw a dice 20 times:</span>
-<span class="sd">    &gt;&gt;&gt; dpnp.random.multinomial(20, [1/6.]*6, size=1)</span>
-<span class="sd">    array([[4, 1, 7, 5, 2, 1]]) # random</span>
+<span class="sd">    &gt;&gt;&gt; s = dpnp.random.multinomial(20, [1/6.]*6, size=1)</span>
+<span class="sd">    &gt;&gt;&gt; s.shape</span>
+<span class="sd">    (1, 6)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dpnp_queue_is_cpu</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">size</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-                    <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;multinomial&quot;</span><span class="p">,</span> <span class="s2">&quot;type(dim)&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">dim</span><span class="p">),</span> <span class="nb">int</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;multinomial&quot;</span><span class="p">,</span> <span class="s2">&quot;type(size)&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">size</span><span class="p">),</span> <span class="nb">int</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span><span class="p">,)</span>
         <span class="n">pvals_sum</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">pvals</span><span class="p">)</span>
-
+        <span class="n">d</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pvals</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;multinomial&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="s2">&quot;non-negative&quot;</span><span class="p">)</span>
+            <span class="k">pass</span>
         <span class="k">elif</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="n">numpy</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">:</span>
-            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;multinomial&quot;</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="s2">&quot;n &lt;= int32 max (2147483647)&quot;</span><span class="p">)</span>
+            <span class="k">pass</span>
         <span class="k">elif</span> <span class="n">pvals_sum</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
-            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;multinomial&quot;</span><span class="p">,</span> <span class="s2">&quot;sum(pvals)&quot;</span><span class="p">,</span> <span class="n">pvals_sum</span><span class="p">,</span> <span class="s2">&quot;sum(pvals) &lt;= 1.0&quot;</span><span class="p">)</span>
+            <span class="k">pass</span>
         <span class="k">elif</span> <span class="n">pvals_sum</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
-            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;multinomial&quot;</span><span class="p">,</span> <span class="s2">&quot;sum(pvals)&quot;</span><span class="p">,</span> <span class="n">pvals_sum</span><span class="p">,</span> <span class="s2">&quot;sum(pvals) &gt;= 0.0&quot;</span><span class="p">)</span>
+            <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_multinomial</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">pvals</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">d</span><span class="p">,)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">size</span><span class="p">),</span> <span class="n">d</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">size</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">d</span><span class="p">,)</span>
+
+            <span class="k">return</span> <span class="n">dpnp_multinomial</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">pvals</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multinomial</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">pvals</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
 
@@ -1214,32 +1194,15 @@
 
 <div class="viewcode-block" id="random_integers"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.random_integers.html#dpnp.random.random_integers">[docs]</a><span class="k">def</span> <span class="nf">random_integers</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    random_integers(low, high=None, size=None)</span>
-
 <span class="sd">    Random integers between `low` and `high`, inclusive.</span>
-<span class="sd">    Return random integers from the &quot;discrete uniform&quot; distribution in</span>
-<span class="sd">    the closed interval [`low`, `high`].  If `high` is</span>
-<span class="sd">    None (the default), then results are from [1, `low`].</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    low : int</span>
-<span class="sd">        Lowest (signed) integer to be drawn from the distribution (unless</span>
-<span class="sd">        ``high=None``, in which case this parameter is the *highest* such</span>
-<span class="sd">        integer).</span>
-<span class="sd">    high : int, optional</span>
-<span class="sd">        If provided, the largest (signed) integer to be drawn from the</span>
-<span class="sd">        distribution (see above for behavior if ``high=None``).</span>
-<span class="sd">    size : int or tuple of ints, optional</span>
-<span class="sd">        Output shape.  If the given shape is, e.g., ``(m, n, k)``, then</span>
-<span class="sd">        ``m * n * k`` samples are drawn.  Default is None, in which case a</span>
-<span class="sd">        single value is returned.</span>
+<span class="sd">    For full documentation refer to :obj:`numpy.random.random_integers`.</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : array of random ints</span>
-<span class="sd">        `size`-shaped array of random integers from the appropriate</span>
-<span class="sd">        distribution, or a single such random int if `size` not provided.</span>
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Parameters ``low`` and ``high`` are supported as scalar.</span>
+<span class="sd">    Otherwise, :obj:`numpy.random.random_integers(low, high, size)` samples</span>
+<span class="sd">    are drawn.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1250,8 +1213,15 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">low</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">high</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">high</span> <span class="o">=</span> <span class="n">low</span>
-            <span class="n">low</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="k">return</span> <span class="n">randint</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">high</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+            <span class="n">low</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># TODO:</span>
+        <span class="c1"># array_like of floats for `low` and `high` params</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">low</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">high</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">randint</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">high</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_integers</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span></div>
 
@@ -1408,7 +1378,7 @@
         <span class="k">elif</span> <span class="n">seed</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_srand</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+            <span class="n">dpnp_srand</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span> <span class="n">seed</span><span class="p">)</span></div>
 

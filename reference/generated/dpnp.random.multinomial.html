@@ -198,40 +198,17 @@
 <code class="sig-prename descclassname">dpnp.random.</code><code class="sig-name descname">multinomial</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">pvals</span></em>, <em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/random/dpnp_iface_random.html#multinomial"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.random.multinomial" title="Permalink to this definition">¶</a></dt>
 <dd><p>Multinomial distribution.</p>
 <p>Draw samples from a multinomial distribution.</p>
-<p>The multinomial distribution is a multivariate generalization of the
-binomial distribution.  Take an experiment with one of <code class="docutils literal notranslate"><span class="pre">p</span></code>
-possible outcomes.  An example of such an experiment is throwing a dice,
-where the outcome can be 1 through 6.  Each sample drawn from the
-distribution represents <cite>n</cite> such experiments.  Its values,
-<code class="docutils literal notranslate"><span class="pre">X_i</span> <span class="pre">=</span> <span class="pre">[X_0,</span> <span class="pre">X_1,</span> <span class="pre">...,</span> <span class="pre">X_p]</span></code>, represent the number of times the
-outcome was <code class="docutils literal notranslate"><span class="pre">i</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Number of experiments.</p></li>
-<li><p><strong>pvals</strong> (<em>sequence of floats</em><em>, </em><em>length p</em>) – Probabilities of each of the <code class="docutils literal notranslate"><span class="pre">p</span></code> different outcomes.  These
-must sum to 1 (however, the last element is always assumed to
-account for the remaining probability, as long as
-<code class="docutils literal notranslate"><span class="pre">sum(pvals[:-1])</span> <span class="pre">&lt;=</span> <span class="pre">1)</span></code>.</p></li>
-<li><p><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Output shape.  If the given shape is, e.g., <code class="docutils literal notranslate"><span class="pre">(m,</span> <span class="pre">n,</span> <span class="pre">k)</span></code>, then
-<code class="docutils literal notranslate"><span class="pre">m</span> <span class="pre">*</span> <span class="pre">n</span> <span class="pre">*</span> <span class="pre">k</span></code> samples are drawn.  Default is None, in which case a
-single value is returned.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>out</strong> – The drawn samples, of shape <em>size</em>, if that was provided.  If not,
-the shape is <code class="docutils literal notranslate"><span class="pre">(N,)</span></code>.
-In other words, each entry <code class="docutils literal notranslate"><span class="pre">out[i,j,...,:]</span></code> is an N-dimensional
-value drawn from the distribution.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="dpnp.dparray.dparray.html#dpnp.dparray.dparray" title="dpnp.dparray.dparray">dparray</a>, int32</p>
-</dd>
-</dl>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.multinomial.html#numpy.random.multinomial" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.multinomial</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Parameter <code class="docutils literal notranslate"><span class="pre">n</span></code> limited with int32 max. See, <cite>numpy.iinfo(numpy.int32).max</cite>.
+Sum of <code class="docutils literal notranslate"><span class="pre">pvals</span></code>, <cite>sum(pvals)</cite> should be between (0, 1).
+Otherwise, <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.multinomial(n,</span> <span class="pre">pvals,</span> <span class="pre">size)</span></code>
+samples are drawn.</p>
 <p class="rubric">Examples</p>
 <p>Throw a dice 20 times:
-&gt;&gt;&gt; dpnp.random.multinomial(20, [1/6.]*6, size=1)
-array([[4, 1, 7, 5, 2, 1]]) # random</p>
+&gt;&gt;&gt; s = dpnp.random.multinomial(20, [1/6.]*6, size=1)
+&gt;&gt;&gt; s.shape
+(1, 6)</p>
 </dd></dl>
 
 </div>
