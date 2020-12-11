@@ -104,12 +104,14 @@ jobs:
       python -c "import dpctl as sw; print(f\"sw.version={sw.version}\nsw.version.version={sw.version.version}\nsw.get_include={sw.get_include()}\")"
       conda list
       echo ========================= make DPNP package ===============================
-      #conda init bash
-      #conda info
-      #cat /home/vsts/.bashrc
-      #bash -c "conda activate; conda-build conda-recipe/"
-      #. /usr/share/miniconda/etc/profile.d/conda.sh
-      #export PATH=/usr/share/miniconda/bin:$PATH
       conda-build conda-recipe/
       echo ========================= list files ===============================
+      echo ========================= 1 ===============================
+      find /opt/intel -name libDPCTLSyclInterface.so
+      echo ========================= 2 ===============================
+      ls -l dpnp/
+      ldd dpnp/libdpnp_backend_c.so
+      readelf -d dpnp/libdpnp_backend_c.so
+      
+      echo ========================= 3 ===============================
       ls -l
