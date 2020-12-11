@@ -47,6 +47,7 @@ __all__ += [
     "dpnp_copysign",
     "dpnp_cumprod",
     "dpnp_cumsum",
+    "dpnp_diff",
     "dpnp_divide",
     "dpnp_fabs",
     "dpnp_floor",
@@ -152,6 +153,26 @@ cpdef dparray dpnp_cumsum(dparray x1):
         result._setitem_scalar(i, cur_res)
 
     return result
+
+
+cpdef dparray dpnp_diff(dparray input):
+    size_i = input.size
+    shape_i = input.shape
+    list_shape_i = list(shape_i)
+    list_shape_i[-1] = list_shape_i[-1] - 1
+    output_shape = tuple(list_shape_i)
+    res = []
+    size_idx = output_shape[-1]
+    size_arr_ = size_i /shape_i[-1]
+    for i in range(size_arr_):
+        for j in range(size_idx):
+            idx = i * size_idx + j
+            input_elem = input.item(idx) - input.item(idx + 1)
+            res.appen(input_elem)
+
+    dpnp_array = dpnp.array(res)
+    dpnp_result_array = dpnp_array.reshape(output_shape)
+    return dpnp_result_array
 
 
 cpdef dparray dpnp_divide(dparray x1, dparray x2):

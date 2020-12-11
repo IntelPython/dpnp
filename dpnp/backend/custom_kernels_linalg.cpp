@@ -87,11 +87,7 @@ void custom_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
 
     size_t n = shape[ndim - 1];
     size_t size_out = 1;
-    if (ndim == 2)
-    {
-        size_out = 0;
-    }
-    else
+    if (ndim != 2)
     {
         for (size_t i = 0; i < ndim - 2; i++)
         {

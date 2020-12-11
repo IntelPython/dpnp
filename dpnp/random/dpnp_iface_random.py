@@ -425,8 +425,6 @@ def gumbel(loc=0.0, scale=1.0, size=None):
             pass
         elif scale < 0:
             pass
-        elif loc < 0:
-            pass
         else:
             return dpnp_gumbel(loc, scale, size)
 
@@ -986,13 +984,16 @@ def rand(d0, *dn):
     Create an array of the given shape and populate it
     with random samples from a uniform distribution over [0, 1).
 
-    Parameters
-    ----------
-    d0, d1, …, dn : The dimensions of the returned array, must be non-negative.
+    For full documentation refer to :obj:`numpy.random.rand`.
 
-    Returns
-    -------
-    out : Random values.
+
+    Limitations
+    -----------
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    >>> s = dpnp.random.rand(2, 4)
 
     See Also
     --------
@@ -1002,11 +1003,10 @@ def rand(d0, *dn):
 
     if not use_origin_backend(d0):
         dims = tuple([d0, *dn])
-
-        for dim in dims:
-            if not isinstance(dim, int):
-                checker_throw_value_error("rand", "type(dim)", type(dim), int)
-        return dpnp_random(dims)
+        if not _check_dims(dims):
+            pass
+        else:
+            return dpnp_random(dims)
 
     return call_origin(numpy.random.rand, d0, *dn)
 
@@ -1119,7 +1119,7 @@ def random(size):
 
     See Also
     --------
-    :obj:`dpnp.random.random`
+    :obj:`dpnp.random.random_sample`
 
     """
 
@@ -1177,13 +1177,15 @@ def random_sample(size):
     """
     Return random floats in the half-open interval [0.0, 1.0).
 
-    Parameters
-    ----------
-    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
+    For full documentation refer to :obj:`numpy.random.random_sample`.
 
-    Returns
-    -------
-    out : Array of random floats of shape size.
+    Limitations
+    -----------
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    >>> s = dpnp.random.random_sample(1000)
 
     See Also
     --------
@@ -1202,13 +1204,15 @@ def ranf(size):
     Return random floats in the half-open interval [0.0, 1.0).
     This is an alias of random_sample.
 
-    Parameters
-    ----------
-    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
+    For full documentation refer to :obj:`numpy.random.ranf`.
 
-    Returns
-    -------
-    out : Array of random floats of shape size.
+    Limitations
+    -----------
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    >>> s = dpnp.random.ranf(1000)
 
     See Also
     --------
@@ -1261,13 +1265,15 @@ def sample(size):
     Return random floats in the half-open interval [0.0, 1.0).
     This is an alias of random_sample.
 
-    Parameters
-    ----------
-    size : Output shape. If the given shape is, e.g., (m, n, k), then m * n * k samples are drawn.
+    For full documentation refer to :obj:`numpy.random.sample`.
 
-    Returns
-    -------
-    out : Array of random floats of shape size.
+    Limitations
+    -----------
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    >>> s = dpnp.random.sample(1000)
 
     See Also
     --------
@@ -1474,7 +1480,6 @@ def triangular(left, mode, right, size=None):
 
 def uniform(low=0.0, high=1.0, size=None):
     """
-    uniform(low=0.0, high=1.0, size=None)
 
     Draw samples from a uniform distribution.
 
