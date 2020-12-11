@@ -425,8 +425,6 @@ def gumbel(loc=0.0, scale=1.0, size=None):
             pass
         elif scale < 0:
             pass
-        elif loc < 0:
-            pass
         else:
             return dpnp_gumbel(loc, scale, size)
 
