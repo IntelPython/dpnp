@@ -93,21 +93,41 @@ jobs:
   steps:
   - bash: |
       ./scripts/install_system_deps.sh
-      sudo apt-get install intel-oneapi-python
-      sudo chmod -R a+w /opt/intel/oneapi/intelpython
+      ./scripts/install_system_deps_intelpython.sh
+
       . /opt/intel/oneapi/setvars.sh
+
       ./scripts/install_python_deps.sh
       ./scripts/build_deps_dpctl.sh
-      echo ========================= DPCTL version ===============================
-      python -c "import dpctl as sw; print(f\"sw.version={sw.version}\nsw.version.version={sw.version.version}\nsw.get_include={sw.get_include()}\")"
+
       conda list
       echo ========================= make DPNP package ===============================
-      #conda init bash
-      #conda info
-      #cat /home/vsts/.bashrc
-      #bash -c "conda activate; conda-build conda-recipe/"
-      #. /usr/share/miniconda/etc/profile.d/conda.sh
-      #export PATH=/usr/share/miniconda/bin:$PATH
-      conda-build conda-recipe/
-      echo ========================= list files ===============================
+      conda-build conda-recipe/ --no-test
       ls -l
+#      conda-build conda-recipe/ --no-test
+#                                --output-folder .
+#                                --croot build_conda_package_dpnp
+#      echo ========================= list files ===============================
+#      conda install /opt/intel/oneapi/intelpython/latest/conda-bld/linux-64/dpnp*
+#      echo ========================= where DPCTL ===============================
+#      find /opt/intel -name libDPCTLSyclInterface.so
+#      echo ========================= where mkl_sycl ===============================
+#      find /opt/intel -name libmkl_sycl.so
+#      echo ========================= where DPNP backend ===============================
+#      find /opt/intel -name libdpnp_backend_c.so
+#      echo ========================= 2 ===============================
+#      ls -l /opt/intel/oneapi/intelpython/latest/conda-bld/linux-64/
+#      echo ========================= 3 ===============================
+#      ls -l /opt/intel/oneapi/intelpython/python3.7/lib/python3.7/site-packages/dpnp
+#      ldd /opt/intel/oneapi/intelpython/python3.7/lib/python3.7/site-packages/dpnp/libdpnp_backend_c.so
+#      echo ========================= 4 ===============================
+#      readelf -d /opt/intel/oneapi/intelpython/python3.7/lib/python3.7/site-packages/dpnp/libdpnp_backend_c.so
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '/opt/intel/oneapi/intelpython/latest/conda-bld'
+      contents: '*'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+  - task: PublishPipelineArtifact@1
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: drop
