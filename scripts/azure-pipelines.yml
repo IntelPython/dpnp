@@ -120,6 +120,11 @@ jobs:
 #      ldd /opt/intel/oneapi/intelpython/python3.7/lib/python3.7/site-packages/dpnp/libdpnp_backend_c.so
 #      echo ========================= 4 ===============================
 #      readelf -d /opt/intel/oneapi/intelpython/python3.7/lib/python3.7/site-packages/dpnp/libdpnp_backend_c.so
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '/opt/intel/oneapi/intelpython/latest/conda-bld'
+      contents: '*'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
   - task: PublishPipelineArtifact@1
     inputs:
       pathToPublish: '$(Build.ArtifactStagingDirectory)'
