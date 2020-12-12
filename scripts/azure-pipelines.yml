@@ -102,8 +102,7 @@ jobs:
 
       conda list
       echo ========================= make DPNP package ===============================
-      conda-build conda-recipe/ --no-test
-      ls -l
+      conda-build conda-recipe/
 #      conda-build conda-recipe/ --no-test
 #                                --output-folder .
 #                                --croot build_conda_package_dpnp
