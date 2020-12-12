@@ -130,35 +130,6 @@ tests/test_linalg.py::test_norm3[None--numpy.Inf-[[[1, 0], [3, 0]], [[5, 0], [7,
 tests/test_linalg.py::test_norm3[None-numpy.Inf-[[[1, 0], [3, 0]], [[5, 0], [7, 0]]]]
 tests/test_linalg.py::test_norm3[None--numpy.Inf-[[[1, 2], [3, 4]], [[5, 6], [7, 8]]]]
 tests/test_linalg.py::test_norm3[None-numpy.Inf-[[[1, 2], [3, 4]], [[5, 6], [7, 8]]]]
-tests/test_random.py::test_beta_check_moments
-tests/test_random.py::test_binomial_check_moments
-tests/test_random.py::test_gamma_check_moments
-tests/test_random.py::test_gumbel_check_moments
-tests/test_random.py::test_hypergeometric_check_extreme_value
-tests/test_random.py::test_hypergeometric_check_moments
-tests/test_random.py::test_hypergeometric_invalid_args
-tests/test_random.py::test_input_shape[chisquare]
-tests/test_random.py::test_input_size[chisquare]
-tests/test_random.py::test_multinomial_check_extreme_value
-tests/test_random.py::test_multinomial_check_moments
-tests/test_random.py::test_multinomial_check_sum
-tests/test_random.py::test_multinomial_invalid_args
-tests/test_random.py::test_multivariate_normal_check_moments
-tests/test_random.py::test_multivariate_normal_invalid_args
-tests/test_random.py::test_multivariate_normal_output_shape_check
-tests/test_random.py::test_rayleigh_check_moments 
-tests/test_random.py::test_standard_gamma_check_extreme_value
-tests/test_random.py::test_standard_gamma_check_moments
-tests/test_random.py::test_standard_gamma_invalid_args
-tests/test_random.py::TestDistributionsBeta::test_seed
-tests/test_random.py::TestDistributionsBinomial::test_seed
-tests/test_random.py::TestDistributionsChisquare::test_seed
-tests/test_random.py::TestDistributionsGamma::test_seed
-tests/test_random.py::TestDistributionsHypergeometric::test_seed
-tests/test_random.py::TestDistributionsMultinomial::test_invalid_args
-tests/test_random.py::TestDistributionsMultinomial::test_seed
-tests/test_random.py::TestDistributionsMultivariateNormal::test_seed
-tests/test_random.py::TestDistributionsNegativeBinomial::test_seed
 tests/test_random.py::TestDistributionsRayleigh::test_moments
 tests/test_statistics.py::test_median[2-float32]
 tests/test_statistics.py::test_median[2-float64]
