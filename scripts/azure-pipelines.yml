@@ -102,12 +102,12 @@ jobs:
 
       conda list
       echo ========================= make DPNP package ===============================
-      conda-build conda-recipe/
+      conda-build conda-recipe/ --no-test
 #      conda-build conda-recipe/ --no-test
 #                                --output-folder .
 #                                --croot build_conda_package_dpnp
 #      echo ========================= list files ===============================
-#      conda install /opt/intel/oneapi/intelpython/latest/conda-bld/linux-64/dpnp*
+      conda install /opt/intel/oneapi/intelpython/latest/conda-bld/linux-64/dpnp*
 #      echo ========================= where DPCTL ===============================
 #      find /opt/intel -name libDPCTLSyclInterface.so
 #      echo ========================= where mkl_sycl ===============================
@@ -121,6 +121,8 @@ jobs:
 #      ldd /opt/intel/oneapi/intelpython/python3.7/lib/python3.7/site-packages/dpnp/libdpnp_backend_c.so
 #      echo ========================= 4 ===============================
 #      readelf -d /opt/intel/oneapi/intelpython/python3.7/lib/python3.7/site-packages/dpnp/libdpnp_backend_c.so
+      python ./setup.py clean
+      pytest
   - task: CopyFiles@2
     inputs:
       sourceFolder: '/opt/intel/oneapi/intelpython/latest/conda-bld'
