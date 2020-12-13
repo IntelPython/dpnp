@@ -5,10 +5,10 @@ THEDIR=$(dirname $(readlink -e ${BASH_SOURCE[0]}))
 echo +++++++++++++++++++++++++ Python prerequisites +++++++++++++++++++++++++++
 
 echo ========================= PIP3: install prerequisites ===============================
-pip3 install numpy cython pytest pytest-valgrind
+pip3 install pytest-valgrind
 
 echo ========================= Conda: install prerequisites ===============================
-conda install -y conda-build
+conda install -y conda-build numpy cython pytest
 
 echo ========================= SW versions ===============================
 conda list
