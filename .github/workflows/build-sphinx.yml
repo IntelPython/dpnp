@@ -32,8 +32,11 @@ jobs:
                                intel-oneapi-mkl-devel          \
                                intel-oneapi-dpcpp-cpp-compiler
       # https://github.com/marketplace/actions/checkout
-      - name: Install cuPy
+      - name: Install nvidia-cuda support drivers
         run: |
+          sudo add-apt-repository ppa:graphics-drivers/ppa
+          sudo apt-get update
+          sudo apt-get install nvidia-390
           sudo apt-get install nvidia-cuda-toolkit clinfo
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -44,7 +47,7 @@ jobs:
           python-version: 3.x
       - name: Install sphinx dependencies
         run: pip install numpy cython sphinx sphinx_rtd_theme
-      - name: Install cuda dependencies
+      - name: Install cuPy dependencies
         run: conda install -c conda-forge cupy cudatoolkit=10.0
       - name: Build library
         run: |
