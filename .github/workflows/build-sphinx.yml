@@ -36,7 +36,7 @@ jobs:
         run: |
           sudo add-apt-repository ppa:graphics-drivers/ppa
           sudo apt-get update
-          sudo apt-get install nvidia-390
+          sudo apt-get install cuda
           sudo apt-get install nvidia-cuda-toolkit clinfo
       - name: Checkout repo
         uses: actions/checkout@v2
