@@ -36,7 +36,8 @@ test:
         - tests
     commands:
       - python -c "import dpnp"
-      - pytest
+      - conda list
+      - pytest -s
 
 about:
     home: https://github.com/IntelPython/dpnp
