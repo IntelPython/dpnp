@@ -32,6 +32,9 @@ jobs:
                                intel-oneapi-mkl-devel          \
                                intel-oneapi-dpcpp-cpp-compiler
       # https://github.com/marketplace/actions/checkout
+      - name: Install cuPy
+        run: |
+          sudo apt-get install nvidia-cuda-toolkit clinfo
       - name: Checkout repo
         uses: actions/checkout@v2
       # https://github.com/marketplace/actions/setup-python
@@ -40,7 +43,7 @@ jobs:
         with:
           python-version: 3.x
       - name: Install dependencies
-        run: pip install numpy cython sphinx sphinx_rtd_theme
+        run: pip install numpy cython sphinx sphinx_rtd_theme cupy
       - name: Build library
         run: |
           . /opt/intel/oneapi/setvars.sh
