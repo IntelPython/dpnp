@@ -42,8 +42,10 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.x
-      - name: Install dependencies
-        run: pip install numpy cython sphinx sphinx_rtd_theme cupy
+      - name: Install sphinx dependencies
+        run: pip install numpy cython sphinx sphinx_rtd_theme
+      - name: Install cuda dependencies
+        run: conda install -c conda-forge cupy cudatoolkit=10.0
       - name: Build library
         run: |
           . /opt/intel/oneapi/setvars.sh
