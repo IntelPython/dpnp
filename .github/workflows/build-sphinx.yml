@@ -49,7 +49,7 @@ jobs:
         run: pip install numpy cython sphinx sphinx_rtd_theme
       - name: Install cuPy dependencies
         run: |
-          . /opt/intel/oneapi/setvars.s
+          . /opt/intel/oneapi/setvars.sh
           sudo chmod -R a+w /opt/intel/oneapi/intelpython
           sudo chmod -R a+w /opt/intel/oneapi/conda_channel
           conda install -c conda-forge cupy cudatoolkit=10.0
