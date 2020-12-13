@@ -103,9 +103,8 @@ jobs:
       conda list
       echo ========================= make DPNP package ===============================
       conda-build conda-recipe/ --no-test
-      conda install /opt/intel/oneapi/intelpython/latest/conda-bld/linux-64/dpnp*
+      conda install -y /opt/intel/oneapi/intelpython/latest/conda-bld/linux-64/dpnp*
       conda list
-      conda install pytest
       pytest
 #      conda-build conda-recipe/ --no-test
 #                                --output-folder .
