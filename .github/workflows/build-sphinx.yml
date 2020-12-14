@@ -13,11 +13,12 @@ jobs:
         uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{ github.token }}
-      - name: Install Intel repository
+      - name: Conda environment init
         run: |
           conda info --envs
           conda init bash
-          conda activate base
+      - name: Install Intel repository
+        run: |
           wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
           sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
           rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
