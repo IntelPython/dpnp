@@ -10,11 +10,11 @@ requirements:
       - setuptools
       - numpy-devel >=1.18
       - cython
-      - dpctl >=0.5
+      - dpctl >=0.4
       - mkl-devel >=2021.1.1
     run:
       - python
-      - dpctl >=0.5
+      - dpctl >=0.4
       - dpcpp_cpp_rt >=2021.1.1
       - mkl >=2021.1.1
 
@@ -34,11 +34,10 @@ test:
     source_files:
         - examples
         - tests
+        - setup.cfg
     commands:
       - python -c "import dpnp"
-      - conda list
-      - ls -laR /opt/intel/oneapi/intelpython/latest/conda-bld/
-      - pytest tests/third_party/cupy/math_tests/test_arithmetic.py -sv
+      - pytest
 
 about:
     home: https://github.com/IntelPython/dpnp
