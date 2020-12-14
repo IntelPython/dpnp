@@ -1,7 +1,8 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
   
@@ -11,18 +12,12 @@
   
 
   
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-
-  
   
   
   
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -34,6 +29,10 @@
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
     
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="dpnp.fft.ifft2" href="dpnp.fft.ifft2.html" />
@@ -51,7 +50,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> dpnp
+            <a href="../../index.html" class="icon icon-home"> dpnp
           
 
           
@@ -78,7 +77,6 @@
           
         </div>
 
-        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -125,7 +123,6 @@
             
           
         </div>
-        
       </div>
     </nav>
 
@@ -164,7 +161,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
         
           <li><a href="../index.html">API Reference</a> &raquo;</li>
         
@@ -195,7 +192,7 @@
 <h1>dpnp.fft.fft2<a class="headerlink" href="#dpnp-fft-fft2" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="dpnp.fft.fft2">
-<code class="sig-prename descclassname">dpnp.fft.</code><code class="sig-name descname">fft2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">s</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">axes</span><span class="o">=</span><span class="default_value">(- 2, - 1)</span></em>, <em class="sig-param"><span class="n">norm</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/fft/dpnp_iface_fft.html#fft2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.fft.fft2" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">dpnp.fft.</code><code class="sig-name descname">fft2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="n">s</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">axes</span><span class="o">=</span><span class="default_value">- 2, - 1</span></em>, <em class="sig-param"><span class="n">norm</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/fft/dpnp_iface_fft.html#fft2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.fft.fft2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the 2-dimensional discrete Fourier Transform</p>
 <p>Multi-dimensional arrays computed as batch of 1-D arrays</p>
 <p class="rubric">Limitations</p>
@@ -227,19 +224,11 @@ Parameter <code class="docutils literal notranslate"><span class="pre">x1</span>
 
   <div role="contentinfo">
     <p>
-        
         &copy; Copyright 2020, Intel
 
     </p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -250,6 +239,7 @@ Parameter <code class="docutils literal notranslate"><span class="pre">x1</span>
 
   </div>
   
+
 
   <script type="text/javascript">
       jQuery(function () {
