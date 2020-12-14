@@ -96,7 +96,7 @@ def generate():
         import dpnp
         ref_mods += ['dpnp']
         ref_types += ['DPNP']
-        ref_vers = 'DPNP(v' + dpnp.version.version + ')'
+        ref_vers = ['DPNP(v' + dpnp.version.version + ')']
     except ImportError as err:
         print(f"DOCBUILD: Can't load DPNP module with error={err}")
     except AttributeError as err: #delete this branch after dpnp.version.version implementation
