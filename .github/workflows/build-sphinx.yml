@@ -46,9 +46,13 @@ jobs:
         with:
           python-version: 3.x
       - name: Install sphinx dependencies
-        run: pip install numpy cython sphinx sphinx_rtd_theme
+        run: pip install numpy cython sphinx sphinx_rtd_theme wheel
       - name: Install cuPy dependencies
-        run: pip install cupy
+        run: |
+          pip install cupy-cuda100
+          pip install pynccl
+          pip install cudnn
+          pip install cupy
       - name: Build library
         run: |
           . /opt/intel/oneapi/setvars.sh
