@@ -37,7 +37,7 @@ test:
     commands:
       - python -c "import dpnp"
       - conda list
-      - ls -lR /opt/intel/oneapi/intelpython/latest/conda-bld/
+      - ls -laR /opt/intel/oneapi/intelpython/latest/conda-bld/
       - pytest -s
 
 about:
