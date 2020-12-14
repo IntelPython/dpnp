@@ -58,6 +58,8 @@ __all__ += [
     "dpnp_minimum",
     "dpnp_modf",
     "dpnp_multiply",
+    "dpnp_nancumprod",
+    "dpnp_nancumsum",
     "dpnp_nanprod",
     "dpnp_nansum",
     "dpnp_negative",
@@ -281,6 +283,66 @@ cpdef dparray dpnp_multiply(dparray x1, x2):
         return result
     else:
         return call_fptr_2in_1out(DPNP_FN_MULTIPLY, x1, x2, x1.shape)
+
+
+cpdef dparray dpnp_nancumprod(dparray x1):
+
+    types_map = {
+        'int32': dpnp.int64,
+        'int64': dpnp.int64,
+        'float32': dpnp.float32,
+        'float64': dpnp.float64
+    }
+
+    res_type = types_map[x1.dtype.name]
+
+    cdef dparray result = dparray(x1.size, dtype=res_type)
+
+    if dpnp.isnan(x1[0]):
+        cur_res = 1
+    else:
+        cur_res = x1[0]
+
+    result._setitem_scalar(0, cur_res)
+
+    for i in range(1, result.size):
+        if dpnp.isnan(x1[i]):
+            cur_res *= 1
+        else:
+            cur_res *= x1[i]
+        result._setitem_scalar(i, cur_res)
+
+    return result
+
+
+cpdef dparray dpnp_nancumsum(dparray x1):
+
+    types_map = {
+        'int32': dpnp.int64,
+        'int64': dpnp.int64,
+        'float32': dpnp.float32,
+        'float64': dpnp.float64
+    }
+
+    res_type = dpnp.dtype(types_map[x1.dtype.name])
+
+    cdef dparray result = dparray(x1.size, dtype=res_type)
+
+    if dpnp.isnan(x1[0]):
+        cur_res = 0
+    else:
+        cur_res = x1[0]
+
+    result._setitem_scalar(0, cur_res)
+
+    for i in range(1, result.size):
+        if dpnp.isnan(x1[i]):
+            cur_res += 0
+        else:
+            cur_res += x1[i]
+        result._setitem_scalar(i, cur_res)
+
+    return result
 
 
 cpdef dpnp_nanprod(dparray x1):

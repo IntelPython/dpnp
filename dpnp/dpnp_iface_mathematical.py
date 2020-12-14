@@ -69,6 +69,8 @@ __all__ = [
     "mod",
     "modf",
     "multiply",
+    "nancumprod",
+    "nancumsum",
     "nanprod",
     "nansum",
     "negative",
@@ -803,6 +805,83 @@ def multiply(x1, x2, **kwargs):
                     return dpnp_multiply(x1, x2)
 
     return call_origin(numpy.multiply, x1, x2, **kwargs)
+
+
+def nancumprod(x1, **kwargs):
+    """
+    Return the cumulative product of array elements over a given axis treating Not a Numbers (NaNs) as one.
+
+    For full documentation refer to :obj:`numpy.nancumprod`.
+
+    Limitations
+    -----------
+        Parameter ``x`` is supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    .. seealso:: :obj:`dpnp.cumprod` : Return the cumulative product of elements along a given axis.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1., np.nan])
+    >>> result = np.nancumprod(a)
+    >>> [x for x in result]
+    [1.0, 1.0]
+    >>> b = np.array([[1., 2., np.nan], [4., np.nan, 6.]])
+    >>> result = np.nancumprod(b)
+    >>> [x for x in result]
+    [1.0, 2.0, 2.0, 8.0, 8.0, 48.0]
+
+
+    """
+
+    if not use_origin_backend(x1) and not kwargs:
+        if not isinstance(x1, dparray):
+            pass
+        else:
+            return dpnp_nancumprod(x1)
+
+    return call_origin(numpy.nancumprod, x1, **kwargs)
+
+
+def nancumsum(x1, **kwargs):
+    """
+    Return the cumulative sum of the elements along a given axis.
+
+    For full documentation refer to :obj:`numpy.nancumsum`.
+
+    Limitations
+    -----------
+        Parameter ``x`` is supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    .. seealso:: :obj:`dpnp.cumsum` : Return the cumulative sum of the elements along a given axis.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1., np.nan])
+    >>> result = np.nancumsum(a)
+    >>> [x for x in result]
+    [1.0, 1.0]
+    >>> b = np.array([[1., 2., np.nan], [4., np.nan, 6.]])
+    >>> result = np.nancumprod(b)
+    >>> [x for x in result]
+    [1.0, 3.0, 3.0, 7.0, 7.0, 13.0]
+
+    """
+
+    if not use_origin_backend(x1) and not kwargs:
+        if not isinstance(x1, dparray):
+            pass
+        else:
+            return dpnp_nancumsum(x1)
+
+    return call_origin(numpy.nancumsum, x1, **kwargs)
 
 
 def nanprod(x1, **kwargs):
