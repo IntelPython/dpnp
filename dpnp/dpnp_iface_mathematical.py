@@ -165,18 +165,17 @@ def add(x1, x2, **kwargs):
     [2, 4, 6]
 
     """
-
-    is_x1_dparray = isinstance(x1, dparray)
-    is_x2_dparray = isinstance(x2, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
-        if (x1.size != x2.size):
-            checker_throw_value_error("add", "size", x1.size, x2.size)
-
-        if (x1.shape != x2.shape):
-            checker_throw_value_error("add", "shape", x1.shape, x2.shape)
-
-        return dpnp_add(x1, x2)
+    if not use_origin_backend(x1) and not kwargs:
+        if not isinstance(x1, dparray):
+            pass
+        elif not isinstance(x2, dparray):
+            pass
+        elif x1.size != x2.size:
+            pass
+        elif (x1.shape != x2.shape):
+            pass
+        else:
+            return dpnp_add(x1, x2)
 
     return call_origin(numpy.add, x1, x2, **kwargs)
 
