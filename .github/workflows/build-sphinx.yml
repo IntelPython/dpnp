@@ -15,6 +15,9 @@ jobs:
           access_token: ${{ github.token }}
       - name: Install Intel repository
         run: |
+          conda info --envs
+          conda init bash
+          conda activate base
           wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
           sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
           rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
@@ -47,7 +50,8 @@ jobs:
           python-version: 3.x
       - name: Install sphinx dependencies
         run: |
-          conda info --envs
+          # conda info --envs
+          # conda init bash
           conda activate base
           pip install numpy cython sphinx sphinx_rtd_theme wheel
       - name: Install cuPy dependencies
