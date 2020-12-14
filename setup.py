@@ -56,14 +56,14 @@ from utils.dpnp_build_utils import find_cmplr, find_dpl, find_mathlib, find_omp
 Python version check
 """
 if sys.version_info[:2] < (3, 6):
-    raise RuntimeError("DPNP: Python version >= 3.5 required.")
+    raise RuntimeError("DPNP: Python version >= 3.6 required.")
 
 
 """
 Get the project version
 """
 thefile_path = os.path.abspath(os.path.dirname(__file__))
-version_mod = imm.SourceFileLoader('version', os.path.join(thefile_path, 'dpnp', '_version.py')).load_module()
+version_mod = imm.SourceFileLoader('version', os.path.join(thefile_path, 'dpnp', 'version.py')).load_module()
 __version__ = version_mod.__version__
 
 
