@@ -38,7 +38,7 @@ test:
       - python -c "import dpnp"
       - conda list
       - ls -laR /opt/intel/oneapi/intelpython/latest/conda-bld/
-      - pytest -s
+      - pytest tests/third_party/cupy/math_tests/test_arithmetic.py -sv
 
 about:
     home: https://github.com/IntelPython/dpnp
