@@ -36,8 +36,8 @@ jobs:
         run: |
           sudo add-apt-repository ppa:graphics-drivers/ppa
           sudo apt-get update
-          sudo apt-get install libnvidia-gl-450
-          sudo apt-get install nvidia-cuda-toolkit clinfo
+          sudo apt-get install -y libnvidia-gl-450
+          sudo apt-get install -y nvidia-cuda-toolkit clinfo
       - name: Checkout repo
         uses: actions/checkout@v2
       # https://github.com/marketplace/actions/setup-python
@@ -46,18 +46,22 @@ jobs:
         with:
           python-version: 3.x
       - name: Install sphinx dependencies
-        run: pip install numpy cython sphinx sphinx_rtd_theme wheel
+        run: |
+          conda info --envs
+          conda activate base
+          pip install numpy cython sphinx sphinx_rtd_theme wheel
       - name: Install cuPy dependencies
         run: |
-          pip install pynccl
-          pip install cudnn
-          pip install cupy
+          conda activate base
+          conda install cupy
       - name: Build library
         run: |
+          conda activate base
           . /opt/intel/oneapi/setvars.sh
           ./0.build.sh
       - name: Build docs
         run: |
+          conda activate base
           . /opt/intel/oneapi/setvars.sh
           ./0.builddoc.sh
         working-directory: doc
