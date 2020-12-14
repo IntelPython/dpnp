@@ -54,7 +54,7 @@ jobs:
           pip install numpy cython sphinx sphinx_rtd_theme wheel
       - name: Install cuPy dependencies
         run: |
-          conda install cupy
+          conda install -c conda-forge cupy cudatoolkit=10.0
       - name: Build library
         run: |
           . /opt/intel/oneapi/setvars.sh
