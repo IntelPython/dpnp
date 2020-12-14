@@ -28,11 +28,11 @@
 
 """
 Script to run numpy tests under dpnp.
->>> python -m tests.third_party.numpy.runtests
+>>> python -m tests_external.numpy.runtests
 to run specific test suite:
->>> python -m tests.third_party.numpy.runtests core/tests/test_umath.py
+>>> python -m tests_external.numpy.runtests core/tests/test_umath.py
 to run specific test case:
->>> python -m tests.third_party.numpy.runtests core/tests/test_umath.py::TestHypot::test_simple
+>>> python -m tests_external.numpy.runtests core/tests/test_umath.py::TestHypot::test_simple
 """
 
 import argparse
@@ -262,10 +262,10 @@ NUMPY_MODULES = [
     'core'
 ]
 NUMPY_NOT_FOUND = 3
-TESTS_PATH = Path(__file__).parents[2]
-ABORTED_TESTS_FILE = TESTS_PATH / 'skipped_tests_numpy_aborted.tbl'
-SKIPPED_TESTS_FILE = TESTS_PATH / 'skipped_tests_numpy.tbl'
-FAILED_TESTS_FILE = TESTS_PATH / 'failed_tests_numpy.tbl'
+TESTS_EXT_PATH = Path(__file__).parents[1]
+ABORTED_TESTS_FILE = TESTS_EXT_PATH / 'skipped_tests_numpy_aborted.tbl'
+SKIPPED_TESTS_FILE = TESTS_EXT_PATH / 'skipped_tests_numpy.tbl'
+FAILED_TESTS_FILE = TESTS_EXT_PATH / 'failed_tests_numpy.tbl'
 
 
 def get_excluded_tests():
