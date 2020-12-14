@@ -32,6 +32,12 @@ jobs:
                                intel-oneapi-mkl-devel          \
                                intel-oneapi-dpcpp-cpp-compiler
       # https://github.com/marketplace/actions/checkout
+      - name: Install nvidia-cuda support drivers
+        run: |
+          sudo add-apt-repository ppa:graphics-drivers/ppa
+          sudo apt-get update
+          sudo apt-get install -y libnvidia-gl-450
+          sudo apt-get install -y nvidia-cuda-toolkit clinfo
       - name: Checkout repo
         uses: actions/checkout@v2
       # https://github.com/marketplace/actions/setup-python
@@ -39,8 +45,16 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.x
-      - name: Install dependencies
-        run: pip install numpy cython sphinx sphinx_rtd_theme
+      - name: Conda environment init
+        run: |
+          conda info --envs
+          conda init bash
+      - name: Install sphinx dependencies
+        run: |
+          pip install numpy cython sphinx sphinx_rtd_theme wheel
+      - name: Install cuPy dependencies
+        run: |
+          conda install -c conda-forge cupy cudatoolkit=10.0
       - name: Build library
         run: |
           . /opt/intel/oneapi/setvars.sh

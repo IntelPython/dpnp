@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2020, Intel Corporation
@@ -24,23 +25,10 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import sys
-import warnings
+"""
+DPNP version module
+"""
 
-if "numpy" in sys.modules:
-    warnings.warn("\nDPNP: Module NumPy found. Please load DPNP module before NumPy.\n")
+__version__: str = '0.4.0'
 
-from dpnp.dparray import dparray as ndarray
-from dpnp.dpnp_iface import *
-from dpnp.dpnp_iface import __all__ as _iface__all__
-from dpnp.dpnp_iface_types import *
-from dpnp.version import __version__
-
-
-__all__ = _iface__all__
-
-
-dpnp_queue_initialize()
-'''
-SYCL queue initialization
-'''
+version: str = __version__

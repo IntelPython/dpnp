@@ -8,7 +8,7 @@ echo ========================= PIP3: install prerequisites =====================
 pip3 install numpy cython pytest pytest-valgrind
 
 echo ========================= Conda: install prerequisites ===============================
-conda install -y conda-build
+conda install -y conda-build numpy cython pytest
 
 echo ========================= SW versions ===============================
 conda list
