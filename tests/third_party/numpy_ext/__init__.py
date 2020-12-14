@@ -26,14 +26,14 @@
 
 """
 To run numpy tests under dpnp.
->>> python -m tests.third_party.numpy
+>>> python -m tests.third_party.numpy_ext
 to run specific test suite:
->>> python -m tests.third_party.numpy core/tests/test_umath.py
+>>> python -m tests.third_party.numpy_ext core/tests/test_umath.py
 to run specific test case:
->>> python -m tests.third_party.numpy core/tests/test_umath.py::TestHypot::test_simple
+>>> python -m tests.third_party.numpy_ext core/tests/test_umath.py::TestHypot::test_simple
 """
 
-from tests.third_party.numpy import runtests
+from tests_external.numpy import runtests
 
 
 code = runtests.run()
