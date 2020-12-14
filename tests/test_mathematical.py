@@ -4,8 +4,6 @@ import dpnp as inp
 
 import numpy
 
-import unittest
-
 
 @pytest.mark.parametrize("array",
                          [[[0, 0], [0, 0]],
@@ -28,7 +26,7 @@ def test_diff(array):
     numpy.testing.assert_allclose(expected, result)
 
 
-class Test_nancumsum(unittest.TestCase):
+class TestNanCumSum:
 
     def test_nancumsum_dim1_int(self):
         a = numpy.array([1, 2, 3, 4, 5])
@@ -57,9 +55,9 @@ class Test_nancumsum(unittest.TestCase):
         numpy.testing.assert_array_equal(expected, result)
 
 
-class Test_nancumprod(unittest.TestCase):
+class TestNanCumProd:
 
-    def test_nancumprod_dim1_int():
+    def test_nancumprod_dim1_int(self):
         a = numpy.array([1, 2, 3, 4, 5])
         ia = dpnp.array(a)
 
@@ -68,7 +66,7 @@ class Test_nancumprod(unittest.TestCase):
         numpy.testing.assert_array_equal(expected, result)
 
 
-    def test_nancumprod_dim1_nan():
+    def test_nancumprod_dim1_nan(self):
         a = numpy.array([1, 2, numpy.nan, 4, 5])
         ia = dpnp.array(a)
 
@@ -77,14 +75,10 @@ class Test_nancumprod(unittest.TestCase):
         numpy.testing.assert_array_equal(expected, result)
 
 
-    def test_nancumprod_dim2_nan():
+    def test_nancumprod_dim2_nan(self):
         a = numpy.array([[1, 2, numpy.nan], [3, -4, -5]])
         ia = dpnp.array(a)
 
         result = dpnp.nancumsum(ia)
         expected = numpy.nancumsum(a)
         numpy.testing.assert_array_equal(expected, result)
-
-
-if __name__ == '__main__':
-    unittest.main()
