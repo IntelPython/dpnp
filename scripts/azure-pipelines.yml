@@ -127,4 +127,5 @@ jobs:
   - task: PublishPipelineArtifact@1
     inputs:
       pathToPublish: '/opt/intel/oneapi/intelpython/latest/conda-bld'
-      artifactName: DPNP_build_sandbox
+      patterns: '**/*.bz2'
+      artifactName: DPNP_build_sandbox$(system.JobId)
