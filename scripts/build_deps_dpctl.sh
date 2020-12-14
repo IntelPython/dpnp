@@ -29,3 +29,4 @@ echo ========================= where mkl_sycl ===============================
 find /opt/intel -name libmkl_sycl.so
 
 cd ..
+rm -rf dpctl
