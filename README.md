@@ -35,7 +35,7 @@ pytest tests/test_matmul.py -s -v
 python -m unittest tests/test_mixins.py
 ```
 
-## Run numpy test
+## Run numpy external test
 ```
 . ./0.env
 python -m tests.third_party.numpy_ext
