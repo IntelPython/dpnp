@@ -32,20 +32,44 @@ jobs:
                                intel-oneapi-mkl-devel          \
                                intel-oneapi-dpcpp-cpp-compiler
       # https://github.com/marketplace/actions/checkout
+      - name: Install nvidia-cuda support drivers
+        run: |
+          sudo add-apt-repository ppa:graphics-drivers/ppa
+          sudo apt-get update
+          sudo apt-get install -y libnvidia-gl-450
+          sudo apt-get install -y nvidia-cuda-toolkit clinfo
       - name: Checkout repo
         uses: actions/checkout@v2
-      # https://github.com/marketplace/actions/setup-python
-      - name: Install Python
-        uses: actions/setup-python@v2
+      # https://github.com/marketplace/actions/setup-miniconda
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@v2
         with:
-          python-version: 3.x
-      - name: Install dependencies
-        run: pip install numpy cython sphinx sphinx_rtd_theme
-      - name: Build docs
+          activate-environment: dpnp
+          python-version: 3.7
+          auto-activate-base: false
+      - name: Conda info
+        shell: bash -l {0}
         run: |
-         . /opt/intel/oneapi/setvars.sh
-         ./0.build.sh
-         ./0.builddoc.sh
+          conda info
+          conda list
+      - name: Install sphinx dependencies
+        shell: bash -l {0}
+        run: |
+          conda install numpy cython sphinx sphinx_rtd_theme wheel
+      - name: Install cuPy dependencies
+        shell: bash -l {0}
+        run: |
+          conda install -c conda-forge cupy cudatoolkit=10.0
+      - name: Build library
+        shell: bash -l {0}
+        run: |
+          . /opt/intel/oneapi/setvars.sh
+          ./0.build.sh
+      - name: Build docs
+        shell: bash -l {0}
+        run: |
+          . /opt/intel/oneapi/setvars.sh
+          ./0.builddoc.sh
         working-directory: doc
       # https://github.com/marketplace/actions/doxygen-action
       - name: Build backend docs

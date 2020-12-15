@@ -10,13 +10,13 @@ requirements:
       - setuptools
       - numpy-devel >=1.18
       - cython
-      - dpctl >=0.3.7
-      - mkl-devel >=2021.1b10
+      - dpctl >=0.5
+      - mkl-devel >=2021.1.1
     run:
       - python
-      - dpctl >=0.3.7
-      - dpcpp_cpp_rt >=2021.1b10
-      - mkl >=2021.1b10
+      - dpctl >=0.5
+      - dpcpp_cpp_rt >=2021.1.1
+      - mkl >=2021.1.1
 
 build:
     number: {{ GIT_DESCRIBE_NUMBER }}
@@ -36,7 +36,9 @@ test:
         - tests
     commands:
       - python -c "import dpnp"
-      - pytest
+      - conda list
+      - ls -laR /opt/intel/oneapi/intelpython/latest/conda-bld/
+      - pytest tests/third_party/cupy/math_tests/test_arithmetic.py -sv
 
 about:
     home: https://github.com/IntelPython/dpnp

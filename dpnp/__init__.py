@@ -34,7 +34,7 @@ from dpnp.dparray import dparray as ndarray
 from dpnp.dpnp_iface import *
 from dpnp.dpnp_iface import __all__ as _iface__all__
 from dpnp.dpnp_iface_types import *
-from dpnp._version import __version__
+from dpnp.version import __version__
 
 
 __all__ = _iface__all__

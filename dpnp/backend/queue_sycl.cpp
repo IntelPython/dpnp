@@ -33,7 +33,7 @@
 #if defined(DPNP_LOCAL_QUEUE)
 cl::sycl::queue* backend_sycl::queue = nullptr;
 #endif
-mkl_rng::philox4x32x10* backend_sycl::rng_engine = nullptr;
+mkl_rng::mt19937* backend_sycl::rng_engine = nullptr;
 
 /**
  * Function push the SYCL kernels to be linked (final stage of the compilation) for the current queue
@@ -102,6 +102,8 @@ void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
 
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> time_queue_init = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+#else
+    (void) selector;
 #endif
 
     std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
@@ -137,7 +139,7 @@ void backend_sycl::backend_sycl_rng_engine_init(size_t seed)
     {
         backend_sycl::destroy_rng_engine();
     }
-    rng_engine = new mkl_rng::philox4x32x10(DPNP_QUEUE, seed);
+    rng_engine = new mkl_rng::mt19937(DPNP_QUEUE, seed);
 }
 
 void dpnp_queue_initialize_c(QueueOptions selector)

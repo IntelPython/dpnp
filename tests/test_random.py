@@ -1,10 +1,45 @@
 import pytest
+import unittest
 
 import dpnp.random
 import numpy
-# from scipy import stats
 from numpy.testing import assert_allclose
 import math
+
+
+class TestDistribution(unittest.TestCase):
+
+    def check_extreme_value(self, dist_name, val, params):
+        seed = 28041990
+        size = 10
+        dpnp.random.seed(seed)
+        res = numpy.asarray(getattr(dpnp.random, dist_name)(size=size, **params))
+        assert len(numpy.unique(res)) == 1
+        assert numpy.unique(res)[0] == val
+
+    def check_moments(self, dist_name, expected_mean, expected_var, params):
+        size = 10**5
+        seed = 28041995
+        dpnp.random.seed(seed)
+        res = numpy.asarray(getattr(dpnp.random, dist_name)(size=size, **params))
+        var = numpy.var(res)
+        mean = numpy.mean(res)
+        assert math.isclose(var, expected_var, abs_tol=0.1)
+        assert math.isclose(mean, expected_mean, abs_tol=0.1)
+
+    def check_invalid_args(self, dist_name, params):
+        size = 10
+        with pytest.raises(ValueError):
+            getattr(dpnp.random, dist_name)(size=size, **params)
+
+    def check_seed(self, dist_name, params):
+        seed = 28041990
+        size = 10
+        dpnp.random.seed(seed)
+        a1 = numpy.asarray(getattr(dpnp.random, dist_name)(size=size, **params))
+        dpnp.random.seed(seed)
+        a2 = numpy.asarray(getattr(dpnp.random, dist_name)(size=size, **params))
+        assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
 @pytest.mark.parametrize("func",
@@ -87,907 +122,570 @@ def test_seed(func):
     assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
-def test_beta_seed():
-    seed = 28041990
-    size = 100
-    a = 2.56
-    b = 0.8
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.beta(a, b, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.beta(a, b, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_beta_invalid_args():
-    size = 10
-    a = 3.0   # OK
-    b = -1.0  # positive `b` is expected
-    with pytest.raises(ValueError):
-        dpnp.random.beta(a=a, b=b, size=size)
-    a = -1.0  # positive `a` is expected
-    b = 3.0   # OK
-    with pytest.raises(ValueError):
-        dpnp.random.beta(a=a, b=b, size=size)
-
-
-def test_beta_check_moments():
-    seed = 28041990
-    dpnp.random.seed(seed)
-    a = 2.56
-    b = 0.8
-
-    expected_mean = a / (a + b)
-    expected_var = (a * b) / ((a + b)**2 * (a + b + 1))
-
-    var = numpy.var(dpnp.random.beta(a=a, b=b, size=10**6))
-    mean = numpy.mean(dpnp.random.beta(a=a, b=b, size=10**6))
-
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
-
-
-def test_binomial_seed():
-    seed = 28041990
-    size = 100
-    n, p = 10, .5  # number of trials, probability of each trial
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.binomial(n, p, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.binomial(n, p, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_binomial_check_moments():
-    seed = 28041990
-    dpnp.random.seed(seed)
-    n = 5
-    p = 0.8
-    expected_mean = n * p
-    expected_var = n * p * (1 - p)
-    var = numpy.var(dpnp.random.binomial(n=n, p=p, size=10**6))
-    mean = numpy.mean(dpnp.random.binomial(n=n, p=p, size=10**6))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
-
-
-def test_binomial_check_extreme_value():
-    seed = 28041990
-    dpnp.random.seed(seed)
-
-    n = 5
-    p = 0.0
-    res = numpy.asarray(dpnp.random.binomial(n=n, p=p, size=100))
-    assert len(numpy.unique(res)) == 1
-    assert numpy.unique(res)[0] == 0.0
-
-    n = 0
-    p = 0.5
-    res = numpy.asarray(dpnp.random.binomial(n=n, p=p, size=100))
-    assert len(numpy.unique(res)) == 1
-    assert numpy.unique(res)[0] == 0.0
-
-    n = 5
-    p = 1.0
-    res = numpy.asarray(dpnp.random.binomial(n=n, p=p, size=100))
-    assert len(numpy.unique(res)) == 1
-    assert numpy.unique(res)[0] == 5
-
-
-def test_binomial_invalid_args():
-    size = 10
-    n = -5     # non-negative `n` is expected
-    p = 0.4    # OK
-    with pytest.raises(ValueError):
-        dpnp.random.binomial(n=n, p=p, size=size)
-
-    n = 5      # OK
-    p = -0.5   # `p` is expected from [0, 1]
-    with pytest.raises(ValueError):
-        dpnp.random.binomial(n=n, p=p, size=size)
-
-
-def test_chisquare_seed():
-    seed = 28041990
-    size = 100
-    df = 3  # number of degrees of freedom
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.chisquare(df, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.chisquare(df, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_chisquare_invalid_args():
-    size = 10
-    df = -1  # positive `df` is expected
-    with pytest.raises(ValueError):
-        dpnp.random.chisquare(df, size)
-
-
-def test_exponential_seed():
-    seed = 28041990
-    size = 100
-    scale = 3  # number of degrees of freedom
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.exponential(scale, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.exponential(scale, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_exponential_invalid_args():
-    size = 10
-    scale = -1  # non-negative `scale` is expected
-    with pytest.raises(ValueError):
-        dpnp.random.exponential(scale, size)
-
-
-def test_gamma_seed():
-    seed = 28041990
-    size = 100
-    shape = 3.0  # shape param for gamma distr
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.gamma(shape=shape, size=size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.gamma(shape=shape, size=size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_gamma_invalid_args():
-    size = 10
-    shape = -1   # non-negative `shape` is expected
-    with pytest.raises(ValueError):
-        dpnp.random.gamma(shape=shape, size=size)
-    shape = 1.0   # OK
-    scale = -1.0  # non-negative `shape` is expected
-    with pytest.raises(ValueError):
-        dpnp.random.gamma(shape, scale, size)
-
-
-def test_gamma_check_moments():
-    seed = 28041990
-    dpnp.random.seed(seed)
-    shape = 2.56
-    scale = 0.8
-    expected_mean = shape * scale
-    expected_var = shape * scale * scale
-    var = numpy.var(dpnp.random.gamma(shape=shape, scale=scale, size=10**6))
-    mean = numpy.mean(dpnp.random.gamma(shape=shape, scale=scale, size=10**6))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
-
-
-def test_geometric_seed():
-    seed = 28041990
-    size = 100
-    p = 0.8
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.geometric(p, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.geometric(p, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_geometric_invalid_args():
-    size = 10
-
-    p = -1.0  # `p` is expected from (0, 1]
-    with pytest.raises(ValueError):
-        dpnp.random.geometric(p=p, size=size)
-
-
-def test_geometric_check_moments():
-    seed = 28041995
-    dpnp.random.seed(seed)
-    p = 0.8
-    size = 10**6
-    expected_mean = (1 - p) / p
-    expected_var = (1 - p) / (p**2)
-    var = numpy.var(dpnp.random.geometric(p=p, size=size))
-    mean = numpy.mean(dpnp.random.geometric(p=p, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
-
-
-def test_geometric_check_extreme_value():
-    seed = 28041990
-    dpnp.random.seed(seed)
-
-    p = 1.0
-    expected_val = 1.0
-    res = numpy.asarray(dpnp.random.geometric(p=p, size=100))
-    assert len(numpy.unique(res)) == 1
-    assert numpy.unique(res)[0] == expected_val
-
-
-def test_gumbel_seed():
-    seed = 28041990
-    size = 100
-    loc = 2.56
-    scale = 0.8
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.gumbel(loc, scale, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.gumbel(loc, scale, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_gumbel_invalid_args():
-    size = 10
-
-    loc = 3.0     # OK
-    scale = -1.0  # non-negative `scale` is expected
-    with pytest.raises(ValueError):
-        dpnp.random.gumbel(loc=loc, scale=scale, size=size)
-
-
-def test_gumbel_check_moments():
-    seed = 28041990
-    dpnp.random.seed(seed)
-    loc = 12
-    scale = 0.8
-    size = 10**6
-    expected_mean = loc + scale * numpy.euler_gamma
-    expected_var = (numpy.pi**2 / 6) * (scale ** 2)
-
-    var = numpy.var(dpnp.random.gumbel(loc=loc, scale=scale, size=size))
-    mean = numpy.mean(dpnp.random.gumbel(loc=loc, scale=scale, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
-
-
-def test_gumbel_check_extreme_value():
-    seed = 28041990
-    dpnp.random.seed(seed)
-
-    loc = 5
-    scale = 0.0
-    res = numpy.asarray(dpnp.random.gumbel(loc=loc, scale=scale, size=100))
-    assert len(numpy.unique(res)) == 1
-    assert numpy.unique(res)[0] == loc
-
-
-def test_hypergeometric_seed():
-    seed = 28041990
-
-    size = 100
-
-    ngood = 100
-    nbad = 2
-    nsample = 10
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_hypergeometric_invalid_args():
-    size = 10
-
-    ngood = 100    # OK
-    nbad = 2       # OK
-    nsample = -10  # non-negative `nsamp` is expected
-    with pytest.raises(ValueError):
-        dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size)
-
-    ngood = 100    # OK
-    nbad = -2      # non-negative `nbad` is expected
-    nsample = 10   # OK
-    with pytest.raises(ValueError):
-        dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size)
-
-    ngood = -100   # non-negative `ngood` is expected
-    nbad = 2       # OK
-    nsample = 10   # OK
-    with pytest.raises(ValueError):
-        dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size)
-
-    ngood = 10
-    nbad = 2
-    nsample = 100
-    # ngood + nbad >= nsample expected
-    with pytest.raises(ValueError):
-        dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size)
-
-    ngood = 10   # OK
-    nbad = 2     # OK
-    nsample = 0  # `nsample` is expected > 0
-    with pytest.raises(ValueError):
-        dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size)
-
-
-def test_hypergeometric_check_moments():
-    seed = 28041995
-    dpnp.random.seed(seed)
-    ngood = 100
-    nbad = 2
-    nsample = 10
-
-    size = 10**5
-    expected_mean = nsample * (ngood / (ngood + nbad))
-    expected_var = expected_mean * (nbad / (ngood + nbad)) * (((ngood + nbad) - nsample) / ((ngood + nbad) - 1))
-
-    var = numpy.var(dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size))
-    mean = numpy.mean(dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
-
-
-def test_hypergeometric_check_extreme_value():
-    seed = 28041990
-    dpnp.random.seed(seed)
-
-    ngood = 100
-    nbad = 0
-    nsample = 10
-
-    expected_val = nsample
-    res = numpy.asarray(dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=100))
-    assert len(numpy.unique(res)) == 1
-    assert numpy.unique(res)[0] == expected_val
-
-    ngood = 0
-    nbad = 11
-    nsample = 10
-
-    expected_val = 0
-    res = numpy.asarray(dpnp.random.hypergeometric(ngood=ngood, nbad=nbad, nsample=nsample, size=100))
-    assert len(numpy.unique(res)) == 1
-    assert numpy.unique(res)[0] == expected_val
-
-
-def test_laplace_seed():
-    seed = 28041990
-    size = 100
-    loc = 2.56
-    scale = 0.8
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.laplace(loc, scale, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.laplace(loc, scale, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_laplace_invalid_args():
-    size = 10
-
-    loc = 3.0     # OK
-    scale = -1.0  # positive `b` is expected
-    with pytest.raises(ValueError):
-        dpnp.random.laplace(loc=loc, scale=scale, size=size)
-
-
-def test_laplace_check_moments():
-    seed = 28041995
-    dpnp.random.seed(seed)
-    loc = 2.56
-    scale = 0.8
-    size = 10**6
-    expected_mean = loc
-    expected_var = 2 * scale * scale
-    var = numpy.var(dpnp.random.laplace(loc=loc, scale=scale, size=size))
-    mean = numpy.mean(dpnp.random.laplace(loc=loc, scale=scale, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
-
-
-def test_laplace_check_extreme_value():
-    seed = 28041990
-    dpnp.random.seed(seed)
-
-    loc = 5
-    scale = 0.0
-    res = numpy.asarray(dpnp.random.laplace(loc=loc, scale=scale, size=100))
-    assert len(numpy.unique(res)) == 1
-    assert numpy.unique(res)[0] == 0.0
-
-
-def test_lognormal_seed():
-    seed = 28041990
-    size = 100
-    mean = 0.0
-    sigma = 0.8
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.lognormal(mean, sigma, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.lognormal(mean, sigma, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_lognormal_invalid_args():
-    size = 10
-
-    mean = 0.0
-    sigma = -1.0  # non-negative `sigma` is expected
-    with pytest.raises(ValueError):
-        dpnp.random.lognormal(mean=mean, sigma=sigma, size=size)
-
-
-def test_lognormal_check_moments():
-    seed = 28041995
-    dpnp.random.seed(seed)
-    mean = 0.5
-    sigma = 0.8
-    size = 10**6
-    expected_mean = numpy.exp(mean + (sigma ** 2) / 2)
-    expected_var = (numpy.exp(sigma**2) - 1) * numpy.exp(2 * mean + sigma**2)
-    var = numpy.var(dpnp.random.lognormal(mean=mean, sigma=sigma, size=size))
-    mean = numpy.mean(dpnp.random.lognormal(mean=mean, sigma=sigma, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.03)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
-
-
-def test_lognormal_check_extreme_value():
-    seed = 28041990
-    dpnp.random.seed(seed)
-
-    mean = 0.5
-    sigma = 0.0
-    expected_val = numpy.exp(mean + (sigma ** 2) / 2)
-    res = numpy.asarray(dpnp.random.lognormal(mean=mean, sigma=sigma, size=100))
-    assert len(numpy.unique(res)) == 1
-    assert numpy.unique(res)[0] == expected_val
-
-
-def test_multinomial_seed():
-    seed = 28041990
-    size = 100
-    n = 20
-    pvals = [1 / 6.] * 6
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.multinomial(n, pvals, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.multinomial(n, pvals, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_multinomial_check_sum():
-    seed = 28041990
-    size = 1
-    n = 20
-    pvals = [1 / 6.] * 6
-
-    dpnp.random.seed(seed)
-    res = dpnp.random.multinomial(n, pvals, size)
-    assert_allclose(n, sum(res), rtol=1e-07, atol=0)
-
-
-def test_multinomial_invalid_args():
-    size = 10
-    n = -10                # parameter `n`, non-negative expected
-    pvals = [1 / 6.] * 6   # parameter `pvals`, OK
-    with pytest.raises(ValueError):
-        dpnp.random.multinomial(n, pvals, size)
-    n = 10                 # parameter `n`, OK
-    pvals = [-1 / 6.] * 6  # parameter `pvals`, sum(pvals) expected between [0, 1]
-    with pytest.raises(ValueError):
-        dpnp.random.multinomial(n, pvals, size)
-    n = 10                          # parameter `n`, OK
-    pvals = [1 / 6.] * 6 + [1 / 6.]  # parameter `pvals`, sum(pvals) expected between [0, 1]
-    with pytest.raises(ValueError):
-        dpnp.random.multinomial(n, pvals, size)
-
-
-def test_multinomial_check_extreme_value():
-    seed = 28041990
-    dpnp.random.seed(seed)
-
-    n = 0
-    pvals = [1 / 6.] * 6
-
-    res = numpy.asarray(dpnp.random.multinomial(n, pvals, size=1))
-    assert len(numpy.unique(res)) == 1
-    assert numpy.unique(res)[0] == 0.0
-
-
-def test_multinomial_check_moments():
-    seed = 28041995
-    dpnp.random.seed(seed)
-    n = 10
-    pvals = [1 / 6.] * 6
-    size = 10**5
-
-    expected_mean = n * pvals[0]
-    expected_var = n * pvals[0] * (1 - pvals[0])
-
-    var = numpy.var(dpnp.random.multinomial(n=n, pvals=pvals, size=size))
-    mean = numpy.mean(dpnp.random.multinomial(n=n, pvals=pvals, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
-
-
-def test_multivariate_normal_output_shape_check():
-    seed = 28041990
-    size = 100
-    mean = [2.56, 3.23]
-    cov = [[1, 0], [0, 1]]
-    expected_shape = (100, 2)
-
-    dpnp.random.seed(seed)
-    res = dpnp.random.multivariate_normal(mean, cov, size=100)
-    assert res.shape == expected_shape
-
-
-def test_multivariate_normal_seed():
-    seed = 28041990
-    size = 100
-    mean = [2.56, 3.23]
-    cov = [[1, 0], [0, 1]]
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.multivariate_normal(mean, cov, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.multivariate_normal(mean, cov, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_multivariate_normal_invalid_args():
-    size = 10
-
-    mean = [2.56, 3.23]  # OK
-    cov = [[1, 0]]       # `mean` and `cov` must have same length
-    with pytest.raises(ValueError):
-        dpnp.random.multivariate_normal(mean=mean, cov=cov, size=size)
-
-    mean = [[2.56, 3.23]]   # `mean` must be 1 dimensional
-    cov = [[1, 0], [0, 1]]  # OK
-    with pytest.raises(ValueError):
-        dpnp.random.multivariate_normal(mean=mean, cov=cov, size=size)
-
-    mean = [2.56, 3.23]  # OK
-    cov = [1, 0, 0, 1]   # `cov` must be 2 dimensional and square
-    with pytest.raises(ValueError):
-        dpnp.random.multivariate_normal(mean=mean, cov=cov, size=size)
-
-
-def test_multivariate_normal_check_moments():
-    seed = 2804183
-    dpnp.random.seed(seed)
-
-    mean = [2.56, 3.23]
-    cov = [[1, 0], [0, 1]]
-    size = 10**5
-
-    res = numpy.array(dpnp.random.multivariate_normal(mean=mean, cov=cov, size=size))
-    res_mean = [numpy.mean(res.T[0]), numpy.mean(res.T[1])]
-
-    assert_allclose(res_mean, mean, rtol=1e-03, atol=0)
-
-
-def test_negative_binomial_seed():
-    seed = 28041990
-    size = 100
-    n, p = 10, .5  # number of trials, probability of each trial
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.negative_binomial(n, p, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.negative_binomial(n, p, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_negative_binomial_invalid_args():
-    size = 10
-    n = 10    # parameter `n`, OK
-    p = -0.5  # parameter `p`, expected between [0, 1]
-    with pytest.raises(ValueError):
-        dpnp.random.negative_binomial(n, p, size)
-    n = -10   # parameter `n`, expected non-negative
-    p = 0.5   # parameter `p`, OK
-    with pytest.raises(ValueError):
-        dpnp.random.negative_binomial(n, p, size)
-
-
-def test_negative_binomial_check_extreme_value():
-    seed = 28041990
-    dpnp.random.seed(seed)
-
-    n = 5
-    p = 1.0
-    res = numpy.asarray(dpnp.random.negative_binomial(n=n, p=p, size=10))
-    assert len(numpy.unique(res)) == 1
-    assert numpy.unique(res)[0] == 0.0
-
-    n = 5
-    p = 0.0
-    res = numpy.asarray(dpnp.random.negative_binomial(n=n, p=p, size=10))
-    check_val = numpy.iinfo(res.dtype).min
-    assert len(numpy.unique(res)) == 1
-    assert numpy.unique(res)[0] == check_val
-
-
-def test_normal_seed():
-    seed = 28041990
-    size = 100
-    loc = 2.56
-    scale = 0.8
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.normal(loc, scale, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.normal(loc, scale, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_normal_invalid_args():
-    size = 10
-
-    loc = 3.0     # OK
-    scale = -1.0  # non-negative `scale` is expected
-    with pytest.raises(ValueError):
-        dpnp.random.normal(loc=loc, scale=scale, size=size)
-
-
-def test_normal_check_moments():
-    seed = 28041995
-    dpnp.random.seed(seed)
-    loc = 2.56
-    scale = 0.8
-    size = 10**6
-    expected_mean = loc
-    expected_var = scale**2
-    var = numpy.var(dpnp.random.normal(loc=loc, scale=scale, size=size))
-    mean = numpy.mean(dpnp.random.normal(loc=loc, scale=scale, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
-
-
-def test_normal_check_extreme_value():
-    seed = 28041990
-    dpnp.random.seed(seed)
-
-    loc = 5
-    scale = 0.0
-    expected_val = loc
-    res = numpy.asarray(dpnp.random.normal(loc=loc, scale=scale, size=100))
-    assert len(numpy.unique(res)) == 1
-    assert numpy.unique(res)[0] == expected_val
-
-
-def test_poisson_seed():
-    seed = 28041990
-    size = 100
-    lam = 0.8
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.poisson(lam, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.poisson(lam, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_poisson_invalid_args():
-    size = 10
-    lam = -1.0    # non-negative `lam` is expected
-    with pytest.raises(ValueError):
-        dpnp.random.poisson(lam=lam, size=size)
-
-
-def test_poisson_check_moments():
-    seed = 28041995
-    dpnp.random.seed(seed)
-    lam = 0.8
-    size = 10**6
-    expected_mean = lam
-    expected_var = lam
-    var = numpy.var(dpnp.random.poisson(lam=lam, size=size))
-    mean = numpy.mean(dpnp.random.poisson(lam=lam, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
-
-
-def test_poisson_check_extreme_value():
-    seed = 28041990
-    dpnp.random.seed(seed)
-
-    lam = 0.0
-    res = numpy.asarray(dpnp.random.poisson(lam=lam, size=100))
-    assert len(numpy.unique(res)) == 1
-    assert numpy.unique(res)[0] == 0.0
-
-
 def test_randn_normal_distribution():
-    """ Check if the sample obtained from the dpnp.random.randn differs from
-    the normal distribution.
-    Using ``scipy.stats.normaltest``.
-
-    It is based on D’Agostino and Pearson’s test that combines skew
-    and kurtosis to produce an omnibus test of normality,
-    see: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.normaltest.html
     """
-    pts = 1000
+    Check the moments of the normal distribution sample obtained
+    from ``dpnp.random.randn``.
+
+    """
+
+    seed = 28041995
+    pts = 10**5
     alpha = 0.05
-    dpnp.random.seed(28041990)
-    x = dpnp.random.randn(pts)
-    _, p = stats.normaltest(x)
-    # null hypothesis: x comes from a normal distribution.
-    # The p-value is interpreted against an alpha of 5% and finds that the test
-    # dataset does not significantly deviate from normal.
-    # If p > alpha, the null hypothesis cannot be rejected.
-    assert p > alpha
-
-
-def test_rayleigh_seed():
-    seed = 28041990
-    size = 100
-    scale = 0.8
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.rayleigh(scale, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.rayleigh(scale, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_rayleigh_invalid_args():
-    size = 10
-
-    scale = -1.0  # positive `b` is expected
-    with pytest.raises(ValueError):
-        dpnp.random.rayleigh(scale=scale, size=size)
-
-
-def test_rayleigh_check_moments():
-    seed = 28041995
-    dpnp.random.seed(seed)
-    scale = 0.8
-    size = 10**6
-    expected_mean = scale * numpy.sqrt(numpy.pi / 2)
-    expected_var = ((4 - numpy.pi) / 2) * scale * scale
-    var = numpy.var(dpnp.random.rayleigh(scale=scale, size=size))
-    mean = numpy.mean(dpnp.random.rayleigh(scale=scale, size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
-
-
-def test_rayleigh_check_extreme_value():
-    seed = 28041990
-    dpnp.random.seed(seed)
-
-    scale = 0.0
-    res = numpy.asarray(dpnp.random.rayleigh(scale=scale, size=100))
-    assert len(numpy.unique(res)) == 1
-    assert numpy.unique(res)[0] == 0.0
-
-
-def test_standard_cauchy_seed():
-    seed = 28041990
-    size = 100
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.standard_cauchy(size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.standard_cauchy(size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_standard_exponential_seed():
-    seed = 28041990
-    size = 100
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.standard_exponential(size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.standard_exponential(size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_standard_exponential_check_moments():
-    seed = 28041995
-    dpnp.random.seed(seed)
-    size = 10**6
-    expected_mean = 1.0
-    expected_var = 1.0
-    var = numpy.var(dpnp.random.standard_exponential(size=size))
-    mean = numpy.mean(dpnp.random.standard_exponential(size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
-
-
-def test_standard_gamma_seed():
-    seed = 28041990
-    size = 100
-    shape = 3.0  # shape param for gamma distr
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.standard_gamma(shape=shape, size=size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.standard_gamma(shape=shape, size=size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_standard_gamma_invalid_args():
-    size = 10
-    shape = -1   # non-negative `shape` is expected
-    with pytest.raises(ValueError):
-        dpnp.random.standard_gamma(shape=shape, size=size)
-
-
-def test_standard_gamma_check_moments():
-    seed = 28041990
-    dpnp.random.seed(seed)
-    shape = 0.8
-
-    expected_mean = shape
-    expected_var = shape
-    var = numpy.var(dpnp.random.gamma(shape=shape, size=10**6))
-    mean = numpy.mean(dpnp.random.gamma(shape=shape, size=10**6))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
-
-
-def test_standard_gamma_check_extreme_value():
-    seed = 28041990
-    dpnp.random.seed(seed)
-
-    shape = 0.0
-
-    res = numpy.asarray(dpnp.random.gamma(shape=shape, size=100))
-    assert len(numpy.unique(res)) == 1
-    assert numpy.unique(res)[0] == 0.0
-
-
-def test_standard_normal_seed():
-    seed = 28041990
-    size = 100
-
-    dpnp.random.seed(seed)
-    a1 = dpnp.random.standard_normal(size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.standard_normal(size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
-
-
-def test_standard_normal_check_moments():
-    seed = 28041995
-    dpnp.random.seed(seed)
-    size = 10**6
     expected_mean = 0.0
     expected_var = 1.0
-    var = numpy.var(dpnp.random.standard_normal(size=size))
-    mean = numpy.mean(dpnp.random.standard_normal(size=size))
-    assert math.isclose(var, expected_var, abs_tol=0.003)
-    assert math.isclose(mean, expected_mean, abs_tol=0.003)
-
-
-def test_weibull_seed():
-    seed = 28041990
-    size = 100
-    a = 2.56
 
     dpnp.random.seed(seed)
-    a1 = dpnp.random.weibull(a, size)
-    dpnp.random.seed(seed)
-    a2 = dpnp.random.weibull(a, size)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+    res = dpnp.random.randn(pts)
+    var = numpy.var(res)
+    mean = numpy.mean(res)
+    assert math.isclose(var, expected_var, abs_tol=0.03)
+    assert math.isclose(mean, expected_mean, abs_tol=0.03)
 
 
-def test_weibull_invalid_args():
-    size = 10
-    a = -1.0  # non-negative `a` is expected
+class TestDistributionsBeta(TestDistribution):
 
-    with pytest.raises(ValueError):
-        dpnp.random.weibull(a=a, size=size)
+    def test_moments(self):
+        a = 2.56
+        b = 0.8
+        expected_mean = a / (a + b)
+        expected_var = (a * b) / ((a + b)**2 * (a + b + 1))
+        self.check_moments('beta', expected_mean, expected_var, {'a': a, 'b': b})
+
+    def test_invalid_args(self):
+        a = 3.0   # OK
+        b = -1.0  # positive `b` is expected
+        self.check_invalid_args('beta', {'a': a, 'b': b})
+        a = -1.0  # positive `a` is expected
+        b = 3.0   # OK
+        self.check_invalid_args('beta', {'a': a, 'b': b})
+
+    def test_seed(self):
+        a = 2.56
+        b = 0.8
+        self.check_seed('beta', {'a': a, 'b': b})
 
 
-def test_weibull_check_extreme_value():
-    seed = 28041990
-    dpnp.random.seed(seed)
+class TestDistributionsBinomial(TestDistribution):
 
-    a = 0.0
-    res = numpy.asarray(dpnp.random.weibull(a=a, size=100))
-    assert len(numpy.unique(res)) == 1
-    assert numpy.unique(res)[0] == 0.0
+    def test_extreme_value(self):
+        n = 5
+        p = 0.0
+        expected_val = p
+        self.check_extreme_value('binomial', expected_val, {'n': n, 'p': p})
+        n = 0
+        p = 0.5
+        expected_val = n
+        self.check_extreme_value('binomial', expected_val, {'n': n, 'p': p})
+        n = 5
+        p = 1.0
+        expected_val = n
+        self.check_extreme_value('binomial', expected_val, {'n': n, 'p': p})
+
+    def test_moments(self):
+        n = 5
+        p = 0.8
+        expected_mean = n * p
+        expected_var = n * p * (1 - p)
+        self.check_moments('binomial', expected_mean,
+                           expected_var, {'n': n, 'p': p})
+
+    def test_invalid_args(self):
+        n = -5     # non-negative `n` is expected
+        p = 0.4    # OK
+        self.check_invalid_args('binomial', {'n': n, 'p': p})
+        n = 5      # OK
+        p = -0.5   # `p` is expected from [0, 1]
+        self.check_invalid_args('binomial', {'n': n, 'p': p})
+
+    def test_seed(self):
+        n, p = 10, .5  # number of trials, probability of each trial
+        self.check_seed('binomial', {'n': n, 'p': p})
+
+
+class TestDistributionsChisquare(TestDistribution):
+
+    def test_invalid_args(self):
+        df = -1  # positive `df` is expected
+        self.check_invalid_args('chisquare', {'df': df})
+
+    def test_seed(self):
+        df = 3  # number of degrees of freedom
+        self.check_seed('chisquare', {'df': df})
+
+
+class TestDistributionsExponential(TestDistribution):
+
+    def test_invalid_args(self):
+        scale = -1  # non-negative `scale` is expected
+        self.check_invalid_args('exponential', {'scale': scale})
+
+    def test_seed(self):
+        scale = 3  # number of degrees of freedom
+        self.check_seed('exponential', {'scale': scale})
+
+
+class TestDistributionsGamma(TestDistribution):
+
+    def test_moments(self):
+        shape = 2.56
+        scale = 0.8
+        expected_mean = shape * scale
+        expected_var = shape * scale * scale
+        self.check_moments('gamma', expected_mean, expected_var,
+                           {'shape': shape, 'scale': scale})
+
+    def test_invalid_args(self):
+        size = 10
+        shape = -1   # non-negative `shape` is expected
+        self.check_invalid_args('gamma', {'shape': shape})
+        shape = 1.0   # OK
+        scale = -1.0  # non-negative `shape` is expected
+        self.check_invalid_args('gamma', {'shape': shape, 'scale': scale})
+
+    def test_seed(self):
+        shape = 3.0  # shape param for gamma distr
+        self.check_seed('gamma', {'shape': shape})
+
+
+class TestDistributionsGeometric(TestDistribution):
+
+    def test_extreme_value(self):
+        p = 1.0
+        expected_val = p
+        self.check_extreme_value('geometric', expected_val, {'p': p})
+
+    def test_moments(self):
+        p = 0.8
+        expected_mean = (1 - p) / p
+        expected_var = (1 - p) / (p**2)
+        self.check_moments('geometric', expected_mean, expected_var, {'p': p})
+
+    def test_invalid_args(self):
+        size = 10
+        p = -1.0  # `p` is expected from (0, 1]
+        self.check_invalid_args('geometric', {'p': p})
+
+    def test_seed(self):
+        p = 0.8
+        self.check_seed('geometric', {'p': p})
+
+
+class TestDistributionsGumbel(TestDistribution):
+
+    def test_extreme_value(self):
+        loc = 5
+        scale = 0.0
+        expected_val = loc
+        self.check_extreme_value('gumbel', expected_val,
+                                 {'loc': loc, 'scale': scale})
+
+    def test_moments(self):
+        loc = 12
+        scale = 0.8
+        expected_mean = loc + scale * numpy.euler_gamma
+        expected_var = (numpy.pi**2 / 6) * (scale ** 2)
+        self.check_moments('gumbel', expected_mean,
+                           expected_var, {'loc': loc, 'scale': scale})
+
+    def test_invalid_args(self):
+        size = 10
+        loc = 3.0     # OK
+        scale = -1.0  # non-negative `scale` is expected
+        self.check_invalid_args('gumbel', {'loc': loc, 'scale': scale})
+
+    def test_seed(self):
+        loc = 2.56
+        scale = 0.8
+        self.check_seed('gumbel', {'loc': loc, 'scale': scale})
+
+
+class TestDistributionsHypergeometric(TestDistribution):
+
+    def test_extreme_value(self):
+        ngood = 100
+        nbad = 0
+        nsample = 10
+        expected_val = nsample
+        self.check_extreme_value('hypergeometric', expected_val,
+                                 {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+        ngood = 0
+        nbad = 11
+        nsample = 10
+        expected_val = 0
+        self.check_extreme_value('hypergeometric', expected_val,
+                                 {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+
+    def test_moments(self):
+        ngood = 100
+        nbad = 2
+        nsample = 10
+        expected_mean = nsample * (ngood / (ngood + nbad))
+        expected_var = expected_mean * (nbad / (ngood + nbad)) * (((ngood + nbad) - nsample) / ((ngood + nbad) - 1))
+        self.check_moments('hypergeometric', expected_mean, expected_var,
+                           {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+
+    def test_invalid_args(self):
+        size = 10
+        ngood = 100    # OK
+        nbad = 2       # OK
+        nsample = -10  # non-negative `nsamp` is expected
+        self.check_invalid_args('hypergeometric',
+                                {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+
+        ngood = 100    # OK
+        nbad = -2      # non-negative `nbad` is expected
+        nsample = 10   # OK
+        self.check_invalid_args('hypergeometric',
+                                {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+
+        ngood = -100   # non-negative `ngood` is expected
+        nbad = 2       # OK
+        nsample = 10   # OK
+        self.check_invalid_args('hypergeometric',
+                                {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+
+        ngood = 10
+        nbad = 2
+        nsample = 100
+        # ngood + nbad >= nsample expected
+        self.check_invalid_args('hypergeometric',
+                                {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+
+        ngood = 10   # OK
+        nbad = 2     # OK
+        nsample = 0  # `nsample` is expected > 0
+        self.check_invalid_args('hypergeometric',
+                                {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+
+    def test_seed(self):
+        ngood = 100
+        nbad = 2
+        nsample = 10
+        self.check_seed('hypergeometric',
+                        {'ngood': ngood, 'nbad': nbad, 'nsample': nsample})
+
+
+class TestDistributionsLaplace(TestDistribution):
+
+    def test_extreme_value(self):
+        loc = 5
+        scale = 0.0
+        expected_val = scale
+        self.check_extreme_value('laplace', expected_val,
+                                 {'loc': loc, 'scale': scale})
+
+    def test_moments(self):
+        loc = 2.56
+        scale = 0.8
+        expected_mean = loc
+        expected_var = 2 * scale * scale
+        self.check_moments('laplace', expected_mean,
+                           expected_var, {'loc': loc, 'scale': scale})
+
+    def test_invalid_args(self):
+        loc = 3.0     # OK
+        scale = -1.0  # positive `b` is expected
+        self.check_invalid_args('laplace',
+                                {'loc': loc, 'scale': scale})
+
+    def test_seed(self):
+        loc = 2.56
+        scale = 0.8
+        self.check_seed('laplace', {'loc': loc, 'scale': scale})
+
+
+class TestDistributionsLognormal(TestDistribution):
+
+    def test_extreme_value(self):
+        mean = 0.5
+        sigma = 0.0
+        expected_val = numpy.exp(mean + (sigma ** 2) / 2)
+        self.check_extreme_value('lognormal', expected_val,
+                                 {'mean': mean, 'sigma': sigma})
+
+    def test_moments(self):
+        mean = 0.5
+        sigma = 0.8
+        expected_mean = numpy.exp(mean + (sigma ** 2) / 2)
+        expected_var = (numpy.exp(sigma**2) - 1) * numpy.exp(2 * mean + sigma**2)
+        self.check_moments('lognormal', expected_mean,
+                           expected_var, {'mean': mean, 'sigma': sigma})
+
+    def test_invalid_args(self):
+        mean = 0.0
+        sigma = -1.0  # non-negative `sigma` is expected
+        self.check_invalid_args('lognormal', {'mean': mean, 'sigma': sigma})
+
+    def test_seed(self):
+        mean = 0.0
+        sigma = 0.8
+        self.check_seed('lognormal', {'mean': mean, 'sigma': sigma})
+
+
+class TestDistributionsMultinomial(TestDistribution):
+
+    def test_extreme_value(self):
+        n = 0
+        pvals = [1 / 6.] * 6
+        self.check_extreme_value('multinomial', n, {'n': n, 'pvals': pvals})
+
+    def test_moments(self):
+        n = 10
+        pvals = [1 / 6.] * 6
+        size = 10**5
+        expected_mean = n * pvals[0]
+        expected_var = n * pvals[0] * (1 - pvals[0])
+        self.check_moments('multinomial', expected_mean,
+                           expected_var, {'n': n, 'pvals': pvals})
+
+    def test_check_sum(self):
+        seed = 28041990
+        size = 1
+        n = 20
+        pvals = [1 / 6.] * 6
+        dpnp.random.seed(seed)
+        res = dpnp.random.multinomial(n, pvals, size)
+        assert_allclose(n, sum(res), rtol=1e-07, atol=0)
+
+    def test_invalid_args(self):
+        n = -10                # parameter `n`, non-negative expected
+        pvals = [1 / 6.] * 6   # parameter `pvals`, OK
+        self.check_invalid_args('multinomial', {'n': n, 'pvals': pvals})
+        n = 10                 # parameter `n`, OK
+        pvals = [-1 / 6.] * 6  # parameter `pvals`, sum(pvals) expected between [0, 1]
+        self.check_invalid_args('multinomial', {'n': n, 'pvals': pvals})
+
+    def test_seed(self):
+        n = 20
+        pvals = [1 / 6.] * 6
+        self.check_seed('multinomial', {'n': n, 'pvals': pvals})
+
+
+class TestDistributionsMultivariateNormal(TestDistribution):
+
+    def test_moments(self):
+        seed = 2804183
+        dpnp.random.seed(seed)
+        mean = [2.56, 3.23]
+        cov = [[1, 0], [0, 1]]
+        size = 10**5
+        res = numpy.array(dpnp.random.multivariate_normal(mean=mean, cov=cov, size=size))
+        res_mean = [numpy.mean(res.T[0]), numpy.mean(res.T[1])]
+        assert_allclose(res_mean, mean, rtol=1e-02, atol=0)
+
+    def test_invalid_args(self):
+        mean = [2.56, 3.23]  # OK
+        cov = [[1, 0]]       # `mean` and `cov` must have same length
+        self.check_invalid_args('multivariate_normal', {'mean': mean, 'cov': cov})
+        mean = [[2.56, 3.23]]   # `mean` must be 1 dimensional
+        cov = [[1, 0], [0, 1]]  # OK
+        self.check_invalid_args('multivariate_normal', {'mean': mean, 'cov': cov})
+        mean = [2.56, 3.23]  # OK
+        cov = [1, 0, 0, 1]   # `cov` must be 2 dimensional and square
+        self.check_invalid_args('multivariate_normal', {'mean': mean, 'cov': cov})
+
+    def test_output_shape_check(self):
+        seed = 28041990
+        size = 100
+        mean = [2.56, 3.23]
+        cov = [[1, 0], [0, 1]]
+        expected_shape = (100, 2)
+        dpnp.random.seed(seed)
+        res = dpnp.random.multivariate_normal(mean, cov, size=100)
+        assert res.shape == expected_shape
+
+    def test_seed(self):
+        mean = [2.56, 3.23]
+        cov = [[1, 0], [0, 1]]
+        self.check_seed('multivariate_normal', {'mean': mean, 'cov': cov})
+
+
+class TestDistributionsNegativeBinomial(TestDistribution):
+
+    def test_extreme_value(self):
+        seed = 28041990
+        dpnp.random.seed(seed)
+        n = 5
+        p = 1.0
+        check_val = 0.0
+        self.check_extreme_value('negative_binomial', check_val, {'n': n, 'p': p})
+        n = 5
+        p = 0.0
+        res = numpy.asarray(dpnp.random.negative_binomial(n=n, p=p, size=10))
+        check_val = numpy.iinfo(res.dtype).min
+        assert len(numpy.unique(res)) == 1
+        assert numpy.unique(res)[0] == check_val
+
+    def test_invalid_args(self):
+        n = 10    # parameter `n`, OK
+        p = -0.5  # parameter `p`, expected between [0, 1]
+        self.check_invalid_args('negative_binomial', {'n': n, 'p': p})
+        n = -10   # parameter `n`, expected non-negative
+        p = 0.5   # parameter `p`, OK
+        self.check_invalid_args('negative_binomial', {'n': n, 'p': p})
+
+    def test_seed(self):
+        n, p = 10, .5  # number of trials, probability of each trial
+        self.check_seed('negative_binomial', {'n': n, 'p': p})
+
+
+class TestDistributionsNormal(TestDistribution):
+
+    def test_extreme_value(self):
+        loc = 5
+        scale = 0.0
+        expected_val = loc
+        self.check_extreme_value('normal', expected_val, {'loc': loc, 'scale': scale})
+
+    def test_moments(self):
+        loc = 2.56
+        scale = 0.8
+        expected_mean = loc
+        expected_var = scale**2
+        self.check_moments('normal', expected_mean,
+                           expected_var, {'loc': loc, 'scale': scale})
+
+    def test_invalid_args(self):
+        loc = 3.0     # OK
+        scale = -1.0  # non-negative `scale` is expected
+        self.check_invalid_args('normal', {'loc': loc, 'scale': scale})
+
+    def test_seed(self):
+        loc = 2.56
+        scale = 0.8
+        self.check_seed('normal', {'loc': loc, 'scale': scale})
+
+
+class TestDistributionsPoisson(TestDistribution):
+
+    def test_extreme_value(self):
+        lam = 0.0
+        self.check_extreme_value('poisson', lam, {'lam': lam})
+
+    def test_moments(self):
+        lam = 0.8
+        expected_mean = lam
+        expected_var = lam
+        self.check_moments('poisson', expected_mean,
+                           expected_var, {'lam': lam})
+
+    def test_invalid_args(self):
+        lam = -1.0    # non-negative `lam` is expected
+        self.check_invalid_args('poisson', {'lam': lam})
+
+    def test_seed(self):
+        lam = 0.8
+        self.check_seed('poisson', {'lam': lam})
+
+
+class TestDistributionsRayleigh(TestDistribution):
+
+    def test_extreme_value(self):
+        scale = 0.0
+        self.check_extreme_value('rayleigh', scale, {'scale': scale})
+
+    def test_moments(self):
+        scale = 0.8
+        expected_mean = scale * numpy.sqrt(numpy.pi / 2)
+        expected_var = ((4 - numpy.pi) / 2) * scale * scale
+        self.check_moments('rayleigh', expected_mean,
+                           expected_var, {'scale': scale})
+
+    def test_invalid_args(self):
+        scale = -1.0  # positive `b` is expected
+        self.check_invalid_args('rayleigh', {'scale': scale})
+
+    def test_seed(self):
+        scale = 0.8
+        self.check_seed('rayleigh', {'scale': scale})
+
+
+class TestDistributionsStandardCauchy(TestDistribution):
+
+    def test_seed(self):
+        self.check_seed('standard_cauchy', {})
+
+
+class TestDistributionsStandardExponential(TestDistribution):
+
+    def test_moments(self):
+        shape = 0.8
+        expected_mean = 1.0
+        expected_var = 1.0
+        self.check_moments('standard_exponential',
+                           expected_mean, expected_var, {})
+
+    def test_seed(self):
+        self.check_seed('standard_exponential', {})
+
+
+class TestDistributionsStandardGamma(TestDistribution):
+
+    def test_extreme_value(self):
+        self.check_extreme_value('standard_gamma', 0.0, {'shape': 0.0})
+
+    def test_moments(self):
+        shape = 0.8
+        expected_mean = shape
+        expected_var = shape
+        self.check_moments('standard_gamma', expected_mean,
+                           expected_var, {'shape': shape})
+
+    def test_invalid_args(self):
+        shape = -1   # non-negative `shape` is expected
+        self.check_invalid_args('standard_gamma', {'shape': shape})
+
+    def test_seed(self):
+        self.check_seed('standard_gamma', {'shape': 0.0})
+
+
+class TestDistributionsStandardNormal(TestDistribution):
+
+    def test_moments(self):
+        expected_mean = 0.0
+        expected_var = 1.0
+        self.check_moments('standard_normal',
+                           expected_mean, expected_var, {})
+
+    def test_seed(self):
+        self.check_seed('standard_normal', {})
+
+
+class TestDistributionsUniform(TestDistribution):
+
+    def test_extreme_value(self):
+        low = 1.0
+        high = 1.0
+        expected_val = low
+        self.check_extreme_value('uniform', expected_val,
+                                 {'low': low, 'high': high})
+
+    def test_moments(self):
+        low = 1.0
+        high = 2.0
+        expected_mean = (low + high) / 2
+        expected_var = ((high - low) ** 2) / 12
+        self.check_moments('uniform', expected_mean,
+                           expected_var, {'low': low, 'high': high})
+
+    def test_seed(self):
+        low = 1.0
+        high = 2.0
+        self.check_seed('uniform', {'low': low, 'high': high})
+
+
+class TestDistributionsWeibull(TestDistribution):
+
+    def test_extreme_value(self):
+        a = 0.0
+        expected_val = a
+        self.check_extreme_value('weibull', expected_val, {'a': a})
+
+    def test_invalid_args(self):
+        a = -1.0  # non-negative `a` is expected
+        self.check_invalid_args('weibull', {'a': a})
+
+    def test_seed(self):
+        a = 2.56
+        self.check_seed('weibull', {'a': a})

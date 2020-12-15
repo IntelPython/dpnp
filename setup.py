@@ -56,14 +56,14 @@ from utils.dpnp_build_utils import find_cmplr, find_dpl, find_mathlib, find_omp
 Python version check
 """
 if sys.version_info[:2] < (3, 6):
-    raise RuntimeError("DPNP: Python version >= 3.5 required.")
+    raise RuntimeError("DPNP: Python version >= 3.6 required.")
 
 
 """
 Get the project version
 """
 thefile_path = os.path.abspath(os.path.dirname(__file__))
-version_mod = imm.SourceFileLoader('version', os.path.join(thefile_path, 'dpnp', '_version.py')).load_module()
+version_mod = imm.SourceFileLoader('version', os.path.join(thefile_path, 'dpnp', 'version.py')).load_module()
 __version__ = version_mod.__version__
 
 
@@ -152,8 +152,8 @@ try:
 
     _dpctrl_include += [dpctl.get_include()]
     # _dpctrl_libpath = for package build + for local build
-    _dpctrl_libpath += ["$ORIGIN/../dpctl"] + [os.path.join(dpctl.get_include(), '..')]
-    _dpctrl_lib += ["DPPLSyclInterface"]
+    _dpctrl_libpath = ["$ORIGIN/../dpctl"] + [os.path.join(dpctl.get_include(), '..')]
+    _dpctrl_lib = ["DPCTLSyclInterface"]
 except ImportError:
     """
     Set local SYCL queue handler
@@ -282,18 +282,18 @@ dpnp_backend_c = [
                 "dpnp/backend/custom_kernels_linalg.cpp",
                 "dpnp/backend/custom_kernels_manipulation.cpp",
                 "dpnp/backend/custom_kernels_mathematical.cpp",
-                "dpnp/backend/custom_kernels_random.cpp",
                 "dpnp/backend/custom_kernels_reduction.cpp",
                 "dpnp/backend/custom_kernels_searching.cpp",
                 "dpnp/backend/custom_kernels_sorting.cpp",
                 "dpnp/backend/custom_kernels_statistics.cpp",
                 "dpnp/backend/dpnp_kernels_fft.cpp",
+                "dpnp/backend/dpnp_kernels_random.cpp",
                 "dpnp/backend/memory_sycl.cpp",
                 "dpnp/backend/queue_sycl.cpp"
             ],
             "include_dirs": _cmplr_include + _dpl_include + _mathlib_include + _project_backend_dir + _dpctrl_include,
             "library_dirs": _mathlib_path + _omp_libpath + _dpctrl_libpath,
-            "runtime_library_dirs": [],  # _project_rpath + _mathlib_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath,
+            "runtime_library_dirs": _project_rpath + _dpctrl_libpath, # + _mathlib_rpath + _cmplr_rpath + _omp_rpath,
             "extra_preargs": _project_cmplr_flag_sycl + _sdl_cflags,
             "extra_link_preargs": _project_cmplr_flag_compatibility + _sdl_ldflags,
             "extra_link_postargs": _project_cmplr_flag_lib,

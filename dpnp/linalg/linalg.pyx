@@ -81,9 +81,7 @@ cpdef dparray dpnp_cholesky(dparray input):
 cpdef dparray dpnp_det(dparray input):
     cdef size_t n = input.shape[-1]
     cdef size_t size_out = 1
-    if input.ndim == 2:
-        output_shape = (1, )
-    else:
+    if input.ndim != 2:
         output_shape = tuple((list(input.shape))[:-2])
         for i in range(len(output_shape)):
             size_out *= output_shape[i]

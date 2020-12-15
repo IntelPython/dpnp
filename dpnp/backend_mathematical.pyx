@@ -45,6 +45,9 @@ __all__ += [
     'dpnp_arctan2',
     "dpnp_ceil",
     "dpnp_copysign",
+    "dpnp_cumprod",
+    "dpnp_cumsum",
+    "dpnp_diff",
     "dpnp_divide",
     "dpnp_fabs",
     "dpnp_floor",
@@ -106,6 +109,70 @@ cpdef dparray dpnp_ceil(dparray x1):
 
 cpdef dparray dpnp_copysign(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_COPYSIGN, x1, x2, x1.shape)
+
+
+cpdef dparray dpnp_cumprod(dparray x1):
+
+    types_map = {
+        'int32': dpnp.int64,
+        'int64': dpnp.int64,
+        'float32': dpnp.float32,
+        'float64': dpnp.float64
+    }
+
+    res_type = types_map[x1.dtype.name]
+
+    cdef dparray result = dparray(x1.size, dtype=res_type)
+
+    cur_res = x1[0]
+    result._setitem_scalar(0, cur_res)
+    for i in range(1, result.size):
+        cur_res *= x1[i]
+        result._setitem_scalar(i, cur_res)
+
+    return result
+
+
+cpdef dparray dpnp_cumsum(dparray x1):
+
+    types_map = {
+        'int32': dpnp.int64,
+        'int64': dpnp.int64,
+        'float32': dpnp.float32,
+        'float64': dpnp.float64
+    }
+
+    res_type = types_map[x1.dtype.name]
+
+    cdef dparray result = dparray(x1.size, dtype=res_type)
+
+    cur_res = x1[0]
+    result._setitem_scalar(0, cur_res)
+    for i in range(1, result.size):
+        cur_res += x1[i] 
+        result._setitem_scalar(i, cur_res)
+
+    return result
+
+
+cpdef dparray dpnp_diff(dparray input):
+    size_i = input.size
+    shape_i = input.shape
+    list_shape_i = list(shape_i)
+    list_shape_i[-1] = list_shape_i[-1] - 1
+    output_shape = tuple(list_shape_i)
+    res = []
+    size_idx = output_shape[-1]
+    size_arr_ = size_i /shape_i[-1]
+    for i in range(size_arr_):
+        for j in range(size_idx):
+            idx = i * size_idx + j
+            input_elem = input.item(idx) - input.item(idx + 1)
+            res.appen(input_elem)
+
+    dpnp_array = dpnp.array(res)
+    dpnp_result_array = dpnp_array.reshape(output_shape)
+    return dpnp_result_array
 
 
 cpdef dparray dpnp_divide(dparray x1, dparray x2):

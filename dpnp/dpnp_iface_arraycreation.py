@@ -58,12 +58,20 @@ __all__ = [
     "diagflat",
     "empty",
     "empty_like",
+    "frombuffer",
+    "fromfile",
+    "fromfunction",
+    "fromiter",
+    "fromstring",
     "full",
     "full_like",
     "geomspace",
     "linspace",
+    "loadtxt",
     "logspace",
     "meshgrid",
+    "mgrid",
+    "ogrid",
     "ones",
     "ones_like",
     "tri",
@@ -495,6 +503,88 @@ def empty_like(prototype, dtype=None, order='C', subok=False, shape=None):
     return numpy.empty_like(prototype, dtype, order, subok, shape)
 
 
+def frombuffer(buffer, **kwargs):
+    """
+    Interpret a buffer as a 1-dimensional array.
+
+    For full documentation refer to :obj:`numpy.frombuffer`.
+
+    Limitations
+    -----------
+    Only float64, float32, int64, int32 types are supported.
+
+    """
+
+    return call_origin(numpy.frombuffer, buffer, **kwargs)
+
+
+def fromfile(file, **kwargs):
+    """
+    Construct an array from data in a text or binary file.
+
+    A highly efficient way of reading binary data with a known data-type,
+    as well as parsing simply formatted text files.  Data written using the
+    `tofile` method can be read using this function.
+
+    For full documentation refer to :obj:`numpy.fromfile`.
+
+    Limitations
+    -----------
+    Only float64, float32, int64, int32 types are supported.
+
+    """
+
+    return call_origin(numpy.fromfile, file, **kwargs)
+
+
+def fromfunction(function, shape, **kwargs):
+    """
+    Construct an array by executing a function over each coordinate.
+
+    The resulting array therefore has a value ``fn(x, y, z)`` at
+    coordinate ``(x, y, z)``.
+
+    For full documentation refer to :obj:`numpy.fromfunction`.
+
+    Limitations
+    -----------
+    Only float64, float32, int64, int32 types are supported.
+
+    """
+
+    return call_origin(numpy.fromfunction, function, shape, **kwargs)
+
+
+def fromiter(iterable, dtype, count=-1):
+    """
+    Create a new 1-dimensional array from an iterable object.
+
+    For full documentation refer to :obj:`numpy.fromiter`.
+
+    Limitations
+    -----------
+    Only float64, float32, int64, int32 types are supported.
+
+    """
+
+    return call_origin(numpy.fromiter, iterable, dtype, count)
+
+
+def fromstring(string, **kwargs):
+    """
+    A new 1-D array initialized from text data in a string.
+
+    For full documentation refer to :obj:`numpy.fromstring`.
+
+    Limitations
+    -----------
+    Only float64, float32, int64, int32 types are supported.
+
+    """
+
+    return call_origin(numpy.fromstring, string, **kwargs)
+
+
 # numpy.full(shape, fill_value, dtype=None, order='C')
 def full(shape, fill_value, dtype=None, order='C'):
     """
@@ -664,6 +754,32 @@ def linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis
     return call_origin(numpy.linspace, start, stop, num, endpoint, retstep, dtype, axis)
 
 
+def loadtxt(fname, **kwargs):
+    """
+    Load data from a text file.
+
+    Each row in the text file must have the same number of values.
+
+    For full documentation refer to :obj:`numpy.loadtxt`.
+
+    Limitations
+    -----------
+    Only float64, float32, int64, int32 types are supported.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> from io import StringIO   # StringIO behaves like a file object
+    >>> c = StringIO("0 1\n2 3")
+    >>> np.loadtxt(c)
+    array([[0., 1.],
+           [2., 3.]])
+
+    """
+
+    return call_origin(numpy.loadtxt, fname, **kwargs)
+
+
 def logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0):
     """
     Return numbers spaced evenly on a log scale.
@@ -769,6 +885,66 @@ def meshgrid(*xi, copy=True, sparse=False, indexing='xy'):
         return dpnp_meshgrid(xi, copy, sparse, indexing)
 
     return call_origin(numpy.meshgrid, xi, copy, sparse, indexing)
+
+
+class MGridClass:
+    """
+    Construct a dense multi-dimensional "meshgrid".
+
+    For full documentation refer to :obj:`numpy.mgrid`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.mgrid[0:5,0:5]
+    array([[[0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1],
+            [2, 2, 2, 2, 2],
+            [3, 3, 3, 3, 3],
+            [4, 4, 4, 4, 4]],
+           [[0, 1, 2, 3, 4],
+            [0, 1, 2, 3, 4],
+            [0, 1, 2, 3, 4],
+            [0, 1, 2, 3, 4],
+            [0, 1, 2, 3, 4]]])
+    >>> np.mgrid[-1:1:5j]
+    array([-1. , -0.5,  0. ,  0.5,  1. ])
+
+    """
+
+    def __getitem__(self, key):
+        return dpnp.array(numpy.mgrid[key])
+
+
+mgrid = MGridClass()
+
+
+class OGridClass:
+    """
+    Construct an open multi-dimensional "meshgrid".
+
+    For full documentation refer to :obj:`numpy.ogrid`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> from numpy import ogrid
+    >>> ogrid[-1:1:5j]
+    array([-1. , -0.5,  0. ,  0.5,  1. ])
+    >>> ogrid[0:5,0:5]
+    [array([[0],
+            [1],
+            [2],
+            [3],
+            [4]]), array([[0, 1, 2, 3, 4]])]
+
+    """
+
+    def __getitem__(self, key):
+        return dpnp.array(numpy.ogrid[key])
+
+
+ogrid = OGridClass()
 
 
 def ones(shape, dtype=None, order='C'):
@@ -962,7 +1138,7 @@ def zeros(shape, dtype=None, order='C'):
     [0.0, 0.0, 0.0, 0.0, 0.0]
     >>> x = np.zeros((2, 1))
     >>> x.ndim, x.size, x.shape
-    (2, 2, (2, 1))  
+    (2, 2, (2, 1))
     >>> [i for i in x]
     [0.0, 0.0]
 

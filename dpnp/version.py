@@ -1,5 +1,4 @@
-# cython: language_level=3
-# distutils: language = c++
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2020, Intel Corporation
@@ -27,53 +26,9 @@
 # *****************************************************************************
 
 """
-Interface of the array manipulation function of the dpnp
-
-Notes
------
-This module is a face or public interface file for the library
-it contains:
- - Interface functions
- - documentation for the functions
- - The functions parameters check
-
+DPNP version module
 """
 
+__version__: str = '0.4.0'
 
-import numpy
-import dpnp
-
-from dpnp.backend import *
-from dpnp.dparray import dparray
-from dpnp.dpnp_utils import *
-from dpnp.dpnp_iface_arraycreation import array
-
-__all__ = [
-    "asfarray",
-]
-
-
-def asfarray(a, dtype=numpy.float64):
-    """
-    Return an array converted to a float type.
-
-    For full documentation refer to :obj:`numpy.asfarray`.
-
-    Notes
-    -----
-    This function works exactly the same as :obj:`dpnp.array`.
-
-    """
-
-    if not use_origin_backend(a):
-        # behavior of original function: int types replaced with float64
-        if numpy.issubdtype(dtype, numpy.integer):
-            dtype = numpy.float64
-
-        # if type is the same then same object should be returned
-        if isinstance(a, dpnp.ndarray) and a.dtype == dtype:
-            return a
-
-        return array(a, dtype=dtype)
-
-    return call_origin(numpy.asfarray, a, dtype)
+version: str = __version__

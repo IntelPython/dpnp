@@ -21,7 +21,10 @@ def cos_2_args(input_A, input_B, lib):
 
 class TestDPNPTrigonometric(DPNPTestPerfBase):
 
-    @pytest.mark.parametrize("func_name", ["arccos", "arccosh", "arcsin", "arcsinh", "arctan", "arctanh", "cbrt", "cos", "cosh", "deg2rad", "degrees", "exp", "exp2", "expm1", "log", "log10", "log1p", "log2", "rad2deg", "radians", "reciprocal", "sin", "sinh", "sqrt", "square", "tan", "tanh"])
+    @pytest.mark.parametrize("func_name", ["arccos", "arccosh", "arcsin", "arcsinh", "arctan", "arctanh",
+                                           "cbrt", "cos", "cosh", "deg2rad", "degrees", "exp", "exp2",
+                                           "expm1", "log", "log10", "log1p", "log2", "rad2deg", "radians",
+                                           "reciprocal", "sin", "sinh", "sqrt", "square", "tan", "tanh"])
     @pytest.mark.parametrize("dtype", [numpy.float64, numpy.float32, numpy.int64, numpy.int32])
     @pytest.mark.parametrize("size", [512, 1024, 2048, 4096, 8192, 16384, 32768])
     def test_trig1(self, func_name, lib, dtype, size):
@@ -33,10 +36,11 @@ class TestDPNPTrigonometric(DPNPTestPerfBase):
     @pytest.mark.parametrize("size", [16777216])
     def test_app1(self, lib, dtype, size):
         """
-        /opt/intel/oneapi/vtune/2021.1-beta10/bin64/vtune -collect gpu-offload 
+        /opt/intel/oneapi/vtune/2021.1-beta10/bin64/vtune -collect gpu-offload
             -knob enable-stack-collection=true -app-working-dir /home/work/dpnp --
-            /home/work/anaconda3/bin/python -m pytest 
-                tests/tests_perf/math_tests/test_trigonometric.py::TestDPNPTrigonometric::test_app1[32768-float64-dpnp] -sv
+            /home/work/anaconda3/bin/python -m pytest
+                tests/tests_perf/math_tests/test_trigonometric.py::TestDPNPTrigonometric::test_app1[32768-float64-dpnp]
+                -sv
         """
         input1 = gen_array_1d(lib, size, dtype=dtype, seed=self.seed)
         input2 = gen_array_1d(lib, size, dtype=dtype, seed=self.seed)

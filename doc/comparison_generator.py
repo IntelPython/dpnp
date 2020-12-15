@@ -88,15 +88,38 @@ def section(header, base_mod, ref_mods, base_type, ref_types, cls=None):
 
 
 def generate():
-    base_mod, base_type = 'numpy', 'NumPy'
+    ref_mods = []
+    ref_types = []
+    ref_vers = []
+
+    try:
+        import dpnp
+        ref_mods += ['dpnp']
+        ref_types += ['DPNP']
+        ref_vers = ['DPNP(v' + dpnp.version.version + ')']
+    except ImportError as err:
+        print(f"DOCBUILD: Can't load DPNP module with error={err}")
+    except AttributeError as err: #delete this branch after dpnp.version.version implementation
+        print(f"DOCBUILD: Can't get DPNP version attribute with error={err}")
+        ref_vers += ['DPNP(v0.42)']
 
     try:
         import cupy
-        ref_mods, ref_types = ['cupy', 'dpnp'], ['CuPy', 'DPNP']
-    except ImportError:
-        ref_mods, ref_types = ['dpnp'], ['DPNP']
+        ref_mods += ['cupy']
+        ref_types += ['CuPy']
+        ref_vers += ['CuPy(v??)'] # cupy.version.version
+    except ImportError as err:
+        print(f"DOCBUILD: Can't load CuPy module with error={err}")
 
-    header = ' / '.join([base_type] + ref_types) + ' APIs'
+    try:
+        import numpy
+        base_mod = 'numpy' # TODO: Why string?
+        base_type = 'NumPy'
+        base_ver = base_type + '(v' + numpy.version.version + ')'
+    except ImportError as err:
+        print(f"DOCBUILD: Can't load {base_type} module with error={err}")
+
+    header = ' / '.join([base_ver] + ref_vers) + ' APIs'
     buf = [header, '-' * len(header), '']
 
     buf += section(
