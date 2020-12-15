@@ -24,6 +24,8 @@
 # if [ -n "${TBBROOT}" ]; then
 #    . ${TBBROOT}/env/vars.sh
 # fi
-
+printenv
+set
+env
 $PYTHON setup.py build_clib
 $PYTHON setup.py build_ext install
