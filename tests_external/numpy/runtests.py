@@ -152,7 +152,18 @@ Some replacements because of incomplete support:
 dpnp.array(dpnp.nan) -> dpnp.array([dpnp.nan])
 dpnp.array([None])   -> dpnp.array([dpnp.nan])
 
+dpnp.array([2. + 1j, 1. + 2j]) -> dpnp.array([])
+dpnp.array([2. + 1j, 1. + 2j, 3. - 3j]) -> dpnp.array([])
+
 dpnp.array([['one', 'two'], ['three', 'four']]) -> dpnp.array([[], []])
+dpnp.array([[1., 2 + 3j], [2 - 3j, 1]]) -> dpnp.array([[], []])
+dpnp.array([[1. + 2j, 2 + 3j], [3 + 4j, 4 + 5j]]) -> dpnp.array([[], []])
+dpnp.array([[2. + 1j, 1. + 2j], [1 - 1j, 2 - 2j]]) -> dpnp.array([[], []])
+dpnp.array([[2. + 1j, 1. + 2j, 1 + 3j], [1 - 2j, 1 - 3j, 1 - 6j]]) -> dpnp.array([[], []])
+dpnp.array([[1. + 1j, 2. + 2j, 3. - 3j], [3. - 5j, 4. + 9j, 6. + 2j]]) -> dpnp.array([[], []])
+
+dpnp.array([[2. + 1j, 1. + 2j], [1 - 1j, 2 - 2j], [1 - 1j, 2 - 2j]]) -> dpnp.array([[2., 1.], [1., 2.], [1., 2.]])
+dpnp.array([[1. + 1j, 2. + 2j], [3. - 3j, 4. - 9j], [5. - 4j, 6. + 8j]]) -> dpnp.array([[1., 2.], [3., 4.], [5., 6.]])
 
 dpnp.array(object, dtype='m8')       -> dpnp.array(object, dtype=None)
 dpnp.array(object, dtype=dpnp.uint8) -> dpnp.array(object, dtype=None)
@@ -172,9 +183,25 @@ dpnp.zeros(shape, dtype=dpnp.dtype(dict(
     itemsize=6
 ))) -> dpnp.zeros(shape, dtype=None)
 """
-dpnp.array = replace_arg_value(dpnp.array, 0, [dpnp.nan, [None]], [dpnp.nan])
-dpnp.array = replace_arg_value(dpnp.array, 0, [[['one', 'two'], ['three', 'four']]], [[], []])
+array_input_replace_map = [
+    (dpnp.nan, [dpnp.nan]),
+    ([None], [dpnp.nan]),
+    ([2. + 1j, 1. + 2j], []),
+    ([2. + 1j, 1. + 2j, 3. - 3j], []),
+    ([['one', 'two'], ['three', 'four']], [[], []]),
+    ([[1., 2 + 3j], [2 - 3j, 1]], [[], []]),
+    ([[1. + 2j, 2 + 3j], [3 + 4j, 4 + 5j]], [[], []]),
+    ([[2. + 1j, 1. + 2j], [1 - 1j, 2 - 2j]], [[], []]),
+    ([[2. + 1j, 1. + 2j, 1 + 3j], [1 - 2j, 1 - 3j, 1 - 6j]], [[], []]),
+    ([[1. + 1j, 2. + 2j, 3. - 3j], [3. - 5j, 4. + 9j, 6. + 2j]], [[], []]),
+    ([[2. + 1j, 1. + 2j], [1 - 1j, 2 - 2j], [1 - 1j, 2 - 2j]], [[2., 1.], [1., 2.], [1., 2.]]),
+    ([[1. + 1j, 2. + 2j], [3. - 3j, 4. - 9j], [5. - 4j, 6. + 8j]], [[1., 2.], [3., 4.], [5., 6.]]),
+]
+for in_value, out_value in array_input_replace_map:
+    dpnp.array = replace_arg_value(dpnp.array, 0, [in_value], out_value)
+
 dpnp.array = replace_kwarg_value(dpnp.array, 'dtype', ['m8', dpnp.uint8, 'i4,i4', object], None)
+
 dpnp.full = replace_arg_value(dpnp.full, 1, [-2**64 + 1], 0)
 dpnp.full = replace_kwarg_value(dpnp.full, 'dtype', [object], None)
 dpnp.ones = redefine_strides(dpnp.ones)
@@ -193,6 +220,7 @@ dpnp.allclose = dummy_func
 dpnp.complex64 = DummyClass
 dpnp.csingle = dpnp.complex64
 dpnp.double = dpnp.float64
+dpnp.identity = dummy_func
 dpnp.minimum.reduce = dummy_func
 dpnp.product = dummy_func
 dpnp.sctypes = dummy_sctypes
@@ -256,9 +284,15 @@ del numpy
 sys.modules['numpy'] = dpnp  # next import of numpy will be replaced with dpnp
 
 
-NUMPY_MODULES = [
+NUMPY_TESTS = [
     'core',
     'fft',
+    'linalg/tests/test_build.py',
+    'linalg/tests/test_deprecations.py',
+    # disabled due to __setitem__ limitation:
+    # https://github.com/numpy/numpy/blob/d7a75e8e8fefc433cf6e5305807d5f3180954273/numpy/linalg/tests/test_linalg.py#L293
+    # 'linalg/tests/test_linalg.py',
+    'linalg/tests/test_regression.py',
 ]
 NUMPY_NOT_FOUND = 3
 TESTS_EXT_PATH = Path(__file__).parents[1]
@@ -325,15 +359,15 @@ def tests_from_cmdline():
 
 
 def get_tests(base_path):
-    """Get tests paths from command line or NUMPY_MODULES"""
+    """Get tests paths from command line or NUMPY_TESTS"""
     tests_relpaths = tests_from_cmdline()
     if tests_relpaths:
         for test_relpath in tests_relpaths:
             yield base_path / test_relpath
         return None
 
-    for mod in NUMPY_MODULES:
-        yield base_path / mod / 'tests'
+    for test_relpath in NUMPY_TESTS:
+        yield base_path / test_relpath
 
     return None
 
@@ -346,10 +380,11 @@ def run():
 
     FAILED_TESTS_FILE.unlink(missing_ok=True)
 
-    pytest_args = [str(tests_path) for tests_path in get_tests(numpy_path)]
+    test_suites = [str(tests_path) for tests_path in get_tests(numpy_path)]
 
     try:
-        code = pytest.main(pytest_args)
+        for test_suite in test_suites:
+            code = pytest.main([test_suite])
     except SystemExit as exc:
         code = exc.code
 

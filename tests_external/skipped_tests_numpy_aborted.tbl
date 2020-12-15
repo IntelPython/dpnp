@@ -660,6 +660,7 @@ tests/test_regression.py::TestRegression::test_noncontiguous_fill
 tests/test_regression.py::TestRegression::test_nonnative_endian_fill
 tests/test_regression.py::TestRegression::test_nonscalar_item_method
 tests/test_regression.py::TestRegression::test_nonzero_byteswap
+tests/test_regression.py::TestRegression::test_norm_object_array
 tests/test_regression.py::TestRegression::test_numeric_carray_compare
 tests/test_regression.py::TestRegression::test_numpy_float_python_long_addition
 tests/test_regression.py::TestRegression::test_object_array_assign

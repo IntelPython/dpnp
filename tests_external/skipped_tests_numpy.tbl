@@ -1,6 +1,7 @@
 tests/test_abc.py::TestABC::test_abstract
 tests/test_api.py::test_array_array
 tests/test_api.py::test_array_astype
+tests/test_api.py::test_array_impossible_casts[False]
 tests/test_api.py::test_array_impossible_casts[True]
 tests/test_api.py::test_broadcast_arrays
 tests/test_api.py::test_contiguous_flags
@@ -390,6 +391,7 @@ tests/test_defchararray.py::TestOperations::test_radd
 tests/test_defchararray.py::TestOperations::test_rmod
 tests/test_defchararray.py::TestOperations::test_rmul
 tests/test_defchararray.py::TestOperations::test_slice
+tests/test_deprecations.py::test_qr_mode_full_future_warning
 tests/test_defchararray.py::TestVecString::test_invalid_args_tuple
 tests/test_defchararray.py::TestVecString::test_invalid_function_args
 tests/test_defchararray.py::TestVecString::test_invalid_result_type
@@ -2334,3 +2336,10 @@ tests/test_unicode.py::TestCreateZeros_2::test_zeros0D
 tests/test_unicode.py::TestCreateZeros_2::test_zerosMD
 tests/test_unicode.py::TestCreateZeros_2::test_zerosSD
 tests/test_unicode.py::test_string_cast
+tests/test_regression.py::TestRegression::test_eig_build
+tests/test_regression.py::TestRegression::test_eigh_build
+tests/test_regression.py::TestRegression::test_svd_build
+tests/test_regression.py::TestRegression::test_lapack_endian
+tests/test_regression.py::TestRegression::test_large_svd_32bit
+tests/test_regression.py::TestRegression::test_svd_no_uv
+tests/test_regression.py::TestRegression::test_lstsq_complex_larger_rhs
