@@ -1,5 +1,6 @@
 #!/bin/bash
 
+echo ===================run_test.sh=====================
 # if ONEAPI_ROOT is specified (use all from it)
 # if [ -n "${ONEAPI_ROOT}" ]; then
 #     export DPCPPROOT=${ONEAPI_ROOT}/compiler/latest
