@@ -103,7 +103,8 @@ jobs:
       conda list
       echo ========================= make DPNP package ===============================
       conda-build conda-recipe/
+      cp /opt/intel/oneapi/intelpython/latest/conda-bld/linux-64/dpnp* $(System.DefaultWorkingDirectory)
   - task: PublishPipelineArtifact@1
     inputs:
-      pathToPublish: '/opt/intel/oneapi/intelpython/latest/'
+      pathToPublish: '$(System.DefaultWorkingDirectory)'
       artifactName: DPNP_build_sandbox_$(system.JobId)
