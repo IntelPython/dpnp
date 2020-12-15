@@ -57,6 +57,8 @@ def find_library(var_name, rel_header_paths, rel_lib_paths,
     tuple(list(str), list(str))
         path to include directory, path to library directory
     """
+    print(f"=============find_library================")
+    print(f"var_name={var_name}, rel_header_paths={rel_header_paths}, rel_lib_paths={rel_lib_paths}, rel_include_path={rel_include_path}, rel_libdir_path={rel_libdir_path}")
     root_dir = os.getenv(var_name)
     if root_dir is None:
         return [], []
