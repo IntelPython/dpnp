@@ -27,5 +27,6 @@
 echo ====__1__======
 set
 echo ====__2__======
+export DPCPPROOT=${ONEAPI_ROOT}/compiler/latest
 $PYTHON setup.py build_clib
 $PYTHON setup.py build_ext install
