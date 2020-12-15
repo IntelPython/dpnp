@@ -82,3 +82,4 @@ class TestNanCumProd:
         result = dpnp.nancumsum(ia)
         expected = numpy.nancumsum(a)
         numpy.testing.assert_array_equal(expected, result)
+
