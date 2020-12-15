@@ -58,8 +58,6 @@ __all__ += [
     "dpnp_minimum",
     "dpnp_modf",
     "dpnp_multiply",
-    "dpnp_nancumprod",
-    "dpnp_nancumsum",
     "dpnp_nanprod",
     "dpnp_nansum",
     "dpnp_negative",
