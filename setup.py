@@ -49,21 +49,21 @@ from Cython.Compiler import Options as cython_options
 from utils.command_style import source_style
 from utils.command_clean import source_clean
 from utils.command_build_clib import custom_build_clib
-from utils.dpnp_build_utils import find_cmplr, find_mathlib, find_omp
+from utils.dpnp_build_utils import find_cmplr, find_dpl, find_mathlib, find_omp
 
 
 """
 Python version check
 """
 if sys.version_info[:2] < (3, 6):
-    raise RuntimeError("DPNP: Python version >= 3.5 required.")
+    raise RuntimeError("DPNP: Python version >= 3.6 required.")
 
 
 """
 Get the project version
 """
 thefile_path = os.path.abspath(os.path.dirname(__file__))
-version_mod = imm.SourceFileLoader('version', os.path.join(thefile_path, 'dpnp', '_version.py')).load_module()
+version_mod = imm.SourceFileLoader('version', os.path.join(thefile_path, 'dpnp', 'version.py')).load_module()
 __version__ = version_mod.__version__
 
 
@@ -113,10 +113,10 @@ else:
 Set compiler for the project
 """
 # default variables (for Linux)
-_project_compiler = "clang++"
-_project_linker = "clang++"
-_project_cmplr_flag_sycl_devel = ["-fsycl-device-code-split=per_kernel", "-DPSTL_USE_PARALLEL_POLICIES=0"]
-_project_cmplr_flag_sycl = ["-fsycl", "-DPSTL_USE_PARALLEL_POLICIES=0"]
+_project_compiler = "dpcpp"
+_project_linker = "dpcpp"
+_project_cmplr_flag_sycl_devel = ["-fsycl-device-code-split=per_kernel"]
+_project_cmplr_flag_sycl = ["-fsycl"]
 _project_cmplr_flag_compatibility = ["-Wl,--enable-new-dtags"]
 _project_cmplr_flag_lib = ["-shared"]
 _project_cmplr_flag_release_build = ["-O3", "-DNDEBUG", "-fPIC"]
@@ -137,6 +137,12 @@ _sdl_cflags = ["-fstack-protector-strong",
                "-fno-delete-null-pointer-checks"]
 _sdl_ldflags = ["-Wl,-z,noexecstack,-z,relro,-z,now"]
 
+# TODO remove when it will be fixed on TBB side. Details:
+# In GCC versions 9 and 10 the application that uses Parallel STL algorithms may fail to compile due to incompatible
+# interface changes between earlier versions of Intel TBB and oneTBB. Disable support for Parallel STL algorithms
+# by defining PSTL_USE_PARALLEL_POLICIES (in GCC 9), _GLIBCXX_USE_TBB_PAR_BACKEND (in GCC 10) macro to zero
+# before inclusion of the first standard header file in each translation unit.
+_project_cmplr_macro += [("PSTL_USE_PARALLEL_POLICIES", "0"), ("_GLIBCXX_USE_TBB_PAR_BACKEND", "0")]
 
 try:
     """
@@ -146,8 +152,8 @@ try:
 
     _dpctrl_include += [dpctl.get_include()]
     # _dpctrl_libpath = for package build + for local build
-    _dpctrl_libpath += ["$ORIGIN/../dpctl"] + [os.path.join(dpctl.get_include(), '..')]
-    _dpctrl_lib += ["DPPLSyclInterface"]
+    _dpctrl_libpath = ["$ORIGIN/../dpctl"] + [os.path.join(dpctl.get_include(), '..')]
+    _dpctrl_lib = ["DPCTLSyclInterface"]
 except ImportError:
     """
     Set local SYCL queue handler
@@ -157,32 +163,32 @@ except ImportError:
 
 # other OS specific
 if IS_WIN:
-    _project_compiler = "dpcpp"   # "clang-cl"
-    _project_linker = "lld-link"  # "dpcpp-cl"
+    _project_compiler = "dpcpp"
+    _project_linker = "lld-link"
     _project_cmplr_flag_sycl = []
     _project_cmplr_flag_compatibility = []
-    _project_cmplr_flag_lib = ['/DLL']
-    _project_cmplr_macro = [("_WIN", "1")]
+    _project_cmplr_flag_lib = ["/DLL"]
+    _project_cmplr_macro += [("_WIN", "1")]
     _project_rpath = []
-    # TODO obtain setuptools.compiler.buildline options line and replace /MD with /MT instead adding it
-    os.environ["CFLAGS"] = "/MT"
-    _sdl_cflags = ["-GS"]
+    # TODO this flag creates unexpected behavior during compilation, need to be fixed
+    # _sdl_cflags = ["-GS"]
+    _sdl_cflags = []
     _sdl_ldflags = ["-NXCompat", "-DynamicBase"]
 
 
-try:
-    """
-    set environment variables to control setuptools build procedure
-    """
-    # check if we have preset variables in environment
-    os.environ["CC"] == _project_compiler
-    os.environ["CXX"] == _project_compiler
-    os.environ["LD"] == _project_linker
-except KeyError:
-    # set variables if not presented in environment
-    os.environ["CC"] = _project_compiler
-    os.environ["CXX"] = _project_compiler
-    os.environ["LD"] = _project_linker
+# try:
+#     """
+#     set environment variables to control setuptools build procedure
+#     """
+#     # check if we have preset variables in environment
+#     os.environ["CC"] == _project_compiler
+#     os.environ["CXX"] == _project_compiler
+#     os.environ["LD"] == _project_linker
+# except KeyError:
+#     # set variables if not presented in environment
+#     os.environ["CC"] = _project_compiler
+#     os.environ["CXX"] = _project_compiler
+#     os.environ["LD"] = _project_linker
 
 
 """
@@ -228,11 +234,7 @@ elif IS_WIN:
 Get the compiler environemnt
 """
 _cmplr_include, _cmplr_libpath = find_cmplr(verbose=True)
-
-# DPL is in spandlone package in beta10
-# TODO fix the hardcode
-_cmplr_include += ["/opt/intel/oneapi/dpl/latest/linux/include"]
-
+_dpl_include, _ = find_dpl(verbose=True)
 _, _omp_libpath = find_omp(verbose=True)
 
 if IS_LIN:
@@ -274,23 +276,24 @@ dpnp_backend_c = [
         {
             "sources": [
                 "dpnp/backend/backend_iface_fptr.cpp",
-                "dpnp/backend/custom_kernels.cpp",
                 "dpnp/backend/custom_kernels_bitwise.cpp",
+                "dpnp/backend/custom_kernels.cpp",
                 "dpnp/backend/custom_kernels_elemwise.cpp",
                 "dpnp/backend/custom_kernels_linalg.cpp",
                 "dpnp/backend/custom_kernels_manipulation.cpp",
                 "dpnp/backend/custom_kernels_mathematical.cpp",
-                "dpnp/backend/custom_kernels_random.cpp",
                 "dpnp/backend/custom_kernels_reduction.cpp",
                 "dpnp/backend/custom_kernels_searching.cpp",
                 "dpnp/backend/custom_kernels_sorting.cpp",
                 "dpnp/backend/custom_kernels_statistics.cpp",
+                "dpnp/backend/dpnp_kernels_fft.cpp",
+                "dpnp/backend/dpnp_kernels_random.cpp",
                 "dpnp/backend/memory_sycl.cpp",
                 "dpnp/backend/queue_sycl.cpp"
             ],
-            "include_dirs": _cmplr_include + _mathlib_include + _project_backend_dir + _dpctrl_include,
+            "include_dirs": _cmplr_include + _dpl_include + _mathlib_include + _project_backend_dir + _dpctrl_include,
             "library_dirs": _mathlib_path + _omp_libpath + _dpctrl_libpath,
-            "runtime_library_dirs": _project_rpath + _mathlib_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath,
+            "runtime_library_dirs": _project_rpath + _dpctrl_libpath, # + _mathlib_rpath + _cmplr_rpath + _omp_rpath,
             "extra_preargs": _project_cmplr_flag_sycl + _sdl_cflags,
             "extra_link_preargs": _project_cmplr_flag_compatibility + _sdl_ldflags,
             "extra_link_postargs": _project_cmplr_flag_lib,
@@ -357,11 +360,20 @@ dpnp_linalg = Extension(
     language="c++"
 )
 
+dpnp_fft = Extension(
+    name="dpnp.fft.dpnp_algo_fft",
+    sources=["dpnp/fft/dpnp_algo_fft.pyx"],
+    include_dirs=[numpy.get_include()] + _project_backend_dir,
+    extra_compile_args=_sdl_cflags,
+    extra_link_args=_project_extra_link_args,
+    define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
+    language="c++"
+)
+
 cython_options.docstrings = True
-cython_options.embed_pos_in_docstring = True
 cython_options.warning_errors = True
 
-dpnp_cython_mods = cythonize([dpnp_backend, dpnp_dparray, dpnp_random, dpnp_utils, dpnp_linalg],
+dpnp_cython_mods = cythonize([dpnp_backend, dpnp_dparray, dpnp_random, dpnp_utils, dpnp_linalg, dpnp_fft],
                              compiler_directives={"language_level": sys.version_info[0],
                                                   "warn.unused": False,
                                                   "warn.unused_result": False,
@@ -397,8 +409,9 @@ setup(name="dpnp",
       ext_modules=dpnp_cython_mods,
       cmdclass=dpnp_build_commands,
       packages=['dpnp',
-                'dpnp.random',
+                'dpnp.fft',
                 'dpnp.linalg',
+                'dpnp.random'
                 ],
       package_data={'dpnp': ['libdpnp_backend_c.so']},
       include_package_data=True,

@@ -72,54 +72,38 @@ def all(in_array1, axis=None, out=None, keepdims=False):
     """
     Test whether all array elements along a given axis evaluate to True.
 
-    Parameters
-    ----------
-    a : array_like
-        Input array or object that can be converted to an array.
-    axis : None or int or tuple of ints, optional
-        Axis or axes along which a logical AND reduction is performed.
-        The default (``axis=None``) is to perform a logical AND over all
-        the dimensions of the input array. `axis` may be negative, in
-        which case it counts from the last to the first axis.
+    For full documentation refer to :obj:`numpy.all`.
 
-        .. versionadded:: 1.7.0
-
-        If this is a tuple of ints, a reduction is performed on multiple
-        axes, instead of a single axis or all the axes as before.
-    out : ndarray, optional
-        Alternate output array in which to place the result.
-        It must have the same shape as the expected output and its
-        type is preserved (e.g., if ``dtype(out)`` is float, the result
-        will consist of 0.0's and 1.0's). See `ufuncs-output-type` for more
-        details.
-
-    keepdims : bool, optional
-        If this is set to True, the axes which are reduced are left
-        in the result as dimensions with size one. With this option,
-        the result will broadcast correctly against the input array.
-
-        If the default value is passed, then `keepdims` will not be
-        passed through to the `all` method of sub-classes of
-        `ndarray`, however any non-default value will be.  If the
-        sub-class' method does not implement `keepdims` any
-        exceptions will be raised.
-
-    Returns
-    -------
-    all : ndarray, bool
-        A new boolean or array is returned unless `out` is specified,
-        in which case a reference to `out` is returned.
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameter ``axis`` is supported only with default value ``None``.
+    Parameter ``out`` is supported only with default value ``None``.
+    Parameter ``keepdims`` is supported only with default value ``False``.
 
     See Also
     --------
-    ndarray.all : equivalent method
-
-    any : Test whether any element along a given axis evaluates to True.
+    :obj:`dpnp.any` : Test whether any element along a given axis evaluates to True.
 
     Notes
     -----
     Not a Number (NaN), positive infinity and negative infinity
     evaluate to `True` because these are not equal to zero.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([[True, False], [True, True]])
+    >>> np.all(x)
+    False
+    >>> x2 = np.array([-1, 4, 5])
+    >>> np.all(x2)
+    True
+    >>> x3 = np.array([1.0, np.nan])
+    >>> np.all(x3)
+    True
 
     """
 
@@ -148,56 +132,38 @@ def any(in_array1, axis=None, out=None, keepdims=False):
     """
     Test whether any array element along a given axis evaluates to True.
 
-    Returns single boolean unless `axis` is not ``None``
+    For full documentation refer to :obj:`numpy.any`.
 
-    Parameters
-    ----------
-    a : array_like
-        Input array or object that can be converted to an array.
-    axis : None or int or tuple of ints, optional
-        Axis or axes along which a logical OR reduction is performed.
-        The default (``axis=None``) is to perform a logical OR over all
-        the dimensions of the input array. `axis` may be negative, in
-        which case it counts from the last to the first axis.
-
-        .. versionadded:: 1.7.0
-
-        If this is a tuple of ints, a reduction is performed on multiple
-        axes, instead of a single axis or all the axes as before.
-    out : ndarray, optional
-        Alternate output array in which to place the result.  It must have
-        the same shape as the expected output and its type is preserved
-        (e.g., if it is of type float, then it will remain so, returning
-        1.0 for True and 0.0 for False, regardless of the type of `a`).
-        See `ufuncs-output-type` for more details.
-
-    keepdims : bool, optional
-        If this is set to True, the axes which are reduced are left
-        in the result as dimensions with size one. With this option,
-        the result will broadcast correctly against the input array.
-
-        If the default value is passed, then `keepdims` will not be
-        passed through to the `any` method of sub-classes of
-        `ndarray`, however any non-default value will be.  If the
-        sub-class' method does not implement `keepdims` any
-        exceptions will be raised.
-
-    Returns
-    -------
-    any : bool or ndarray
-        A new boolean or `ndarray` is returned unless `out` is specified,
-        in which case a reference to `out` is returned.
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameter ``axis`` is supported only with default value ``None``.
+    Parameter ``out`` is supported only with default value ``None``.
+    Parameter ``keepdims`` is supported only with default value ``False``.
 
     See Also
     --------
-    ndarray.any : equivalent method
-
-    all : Test whether all elements along a given axis evaluate to True.
+    :obj:`dpnp.all` : Test whether all elements along a given axis evaluate to True.
 
     Notes
     -----
     Not a Number (NaN), positive infinity and negative infinity evaluate
     to `True` because these are not equal to zero.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([[True, False], [True, True]])
+    >>> np.any(x)
+    True
+    >>> x2 = np.array([0, 0, 0])
+    >>> np.any(x2)
+    False
+    >>> x3 = np.array([1.0, np.nan])
+    >>> np.any(x3)
+    True
 
     """
 
@@ -226,23 +192,31 @@ def equal(x1, x2):
     """
     Return (x1 == x2) element-wise.
 
-    Unlike `numpy.equal`, this comparison is performed by first
-    stripping whitespace characters from the end of the string.  This
-    behavior is provided for backward-compatibility with numarray.
+    For full documentation refer to :obj:`numpy.equal`.
 
-    Parameters
-    ----------
-    x1, x2 : array_like of str or unicode
-        Input arrays of the same shape.
-
-    Returns
-    -------
-    out : ndarray or bool
-        Output array of bools, or a single bool if x1 and x2 are scalars.
+    Limitations
+    -----------
+    Parameter ``x1`` is supported as :obj:`dpnp.ndarray`.
+    Parameter ``x2`` is supported as either :obj:`dpnp.ndarray` or int.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Sizes, shapes and data types of input arrays ``x1`` and ``x2`` are supported to be equal.
 
     See Also
     --------
-    not_equal, greater_equal, less_equal, greater, less
+    :obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.
+    :obj:`dpnp.greater_equal` : Return the truth value of (x1 >= x2) element-wise.
+    :obj:`dpnp.less_equal` : Return the truth value of (x1 =< x2) element-wise.
+    :obj:`dpnp.greater` : Return the truth value of (x1 > x2) element-wise.
+    :obj:`dpnp.less` : Return the truth value of (x1 < x2) element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x1 = np.array([0, 1, 3])
+    >>> x2 = np.arange(3)
+    >>> out = np.equal(x1, x2)
+    >>> [i for i in out]
+    [True, True, False]
 
     """
 
@@ -272,6 +246,31 @@ def greater(x1, x2):
     """
     Return (x1 > x2) element-wise.
 
+    For full documentation refer to :obj:`numpy.greater`.
+
+    Limitations
+    -----------
+    At least either ``x1`` or ``x2`` should be as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.greater_equal` : Return the truth value of (x1 >= x2) element-wise.
+    :obj:`dpnp.less` : Return the truth value of (x1 < x2) element-wise.
+    :obj:`dpnp.less_equal` : Return the truth value of (x1 =< x2) element-wise.
+    :obj:`dpnp.equal` : Return (x1 == x2) element-wise.
+    :obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x1 = np.array([4, 2])
+    >>> x2 = np.array([2, 2])
+    >>> out = np.greater(x1, x2)
+    >>> [i for i in out]
+    [True, False]
+
     """
 
     if (use_origin_backend(x1)):
@@ -287,6 +286,31 @@ def greater_equal(x1, x2):
     """
     Return (x1 >= x2) element-wise.
 
+    For full documentation refer to :obj:`numpy.greater_equal`.
+
+    Limitations
+    -----------
+    At least either ``x1`` or ``x2`` should be as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.greater` : Return the truth value of (x1 > x2) element-wise.
+    :obj:`dpnp.less` : Return the truth value of (x1 < x2) element-wise.
+    :obj:`dpnp.less_equal` : Return the truth value of (x1 =< x2) element-wise.
+    :obj:`dpnp.equal` : Return (x1 == x2) element-wise.
+    :obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x1 = np.array([4, 2, 1])
+    >>> x2 = np.array([2, 2, 2])
+    >>> out = np.greater_equal(x1, x2)
+    >>> [i for i in out]
+    [True, True, False]
+
     """
 
     if (use_origin_backend(x1)):
@@ -301,6 +325,28 @@ def greater_equal(x1, x2):
 def isclose(x1, x2, rtol=1e-05, atol=1e-08, equal_nan=False):
     """
     Returns a boolean array where two arrays are element-wise equal within a tolerance.
+
+    For full documentation refer to :obj:`numpy.isclose`.
+
+    Limitations
+    -----------
+    ``x2`` is supported to be integer if ``x1`` is :obj:`dpnp.ndarray` or
+    at least either ``x1`` or ``x2`` should be as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.allclose` : Returns True if two arrays are element-wise equal within a tolerance.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x1 = np.array([1e10,1e-7])
+    >>> x2 = np.array([1.00001e10,1e-8])
+    >>> out = np.isclose(x1, x2)
+    >>> [i for i in out]
+    [True, False]
 
     """
 
@@ -320,50 +366,39 @@ def isfinite(in_array1, out=None, where=True, **kwargs):
     """
     Test element-wise for finiteness (not infinity or not Not a Number).
 
-    The result is returned as a boolean array.
+    For full documentation refer to :obj:`numpy.isfinite`.
 
-    Parameters
-    ----------
-    x : array_like
-        Input values.
-    out : ndarray, None, or tuple of ndarray and None, optional
-        A location into which the result is stored. If provided, it must have
-        a shape that the inputs broadcast to. If not provided or None,
-        a freshly-allocated array is returned. A tuple (possible only as a
-        keyword argument) must have length equal to the number of outputs.
-    where : array_like, optional
-        This condition is broadcast over the input. At locations where the
-        condition is True, the `out` array will be set to the ufunc result.
-        Elsewhere, the `out` array will retain its original value.
-        Note that if an uninitialized `out` array is created via the default
-        ``out=None``, locations within it where the condition is False will
-        remain uninitialized.
-    **kwargs
-        For other keyword-only arguments, see the
-        :ref:`ufunc docs <ufuncs.kwargs>`.
-
-    Returns
-    -------
-    y : ndarray, bool
-        True where ``x`` is not positive infinity, negative infinity,
-        or NaN; false otherwise.
-        This is a scalar if `x` is a scalar.
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameter ``out`` is supported only with default value ``None``.
+    Parameter ``where`` is supported only with default value ``True``.
 
     See Also
     --------
-    isinf, isneginf, isposinf, isnan
+    :obj:`dpnp.isinf` : Test element-wise for positive or negative infinity.
+    :obj:`dpnp.isneginf` : Test element-wise for negative infinity,
+                           return result as bool array.
+    :obj:`dpnp.isposinf` : Test element-wise for positive infinity,
+                           return result as bool array.
+    :obj:`dpnp.isnan` : Test element-wise for NaN and
+                        return result as a boolean array.
 
     Notes
     -----
     Not a Number, positive infinity and negative infinity are considered
     to be non-finite.
 
-    NumPy uses the IEEE Standard for Binary Floating-Point for Arithmetic
-    (IEEE 754). This means that Not a Number is not equivalent to infinity.
-    Also that positive infinity is not equivalent to negative infinity. But
-    infinity is equivalent to positive infinity.  Errors result if the
-    second argument is also supplied when `x` is a scalar input, or if
-    first and second arguments have different shapes.
+    Examples
+    --------
+    >>> import numpy
+    >>> import dpnp as np
+    >>> x = np.array([-numpy.inf, 0., numpy.inf])
+    >>> out = np.isfinite(x)
+    >>> [i for i in out]
+    [False, True, False]
 
     """
 
@@ -386,47 +421,34 @@ def isinf(in_array1, out=None, where=True, **kwargs):
     """
     Test element-wise for positive or negative infinity.
 
-    Returns a boolean array of the same shape as `x`, True where ``x ==
-    +/-inf``, otherwise False.
+    For full documentation refer to :obj:`numpy.isinf`.
 
-    Parameters
-    ----------
-    x : array_like
-        Input values
-    out : ndarray, None, or tuple of ndarray and None, optional
-        A location into which the result is stored. If provided, it must have
-        a shape that the inputs broadcast to. If not provided or None,
-        a freshly-allocated array is returned. A tuple (possible only as a
-        keyword argument) must have length equal to the number of outputs.
-    where : array_like, optional
-        This condition is broadcast over the input. At locations where the
-        condition is True, the `out` array will be set to the ufunc result.
-        Elsewhere, the `out` array will retain its original value.
-        Note that if an uninitialized `out` array is created via the default
-        ``out=None``, locations within it where the condition is False will
-        remain uninitialized.
-    **kwargs
-        For other keyword-only arguments, see the
-        :ref:`ufunc docs <ufuncs.kwargs>`.
-
-    Returns
-    -------
-    y : bool (scalar) or boolean ndarray
-        True where ``x`` is positive or negative infinity, false otherwise.
-        This is a scalar if `x` is a scalar.
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameter ``out`` is supported only with default value ``None``.
+    Parameter ``where`` is supported only with default value ``True``.
 
     See Also
     --------
-    isneginf, isposinf, isnan, isfinite
+    :obj:`dpnp.isneginf` : Test element-wise for negative infinity,
+                           return result as bool array.
+    :obj:`dpnp.isposinf` : Test element-wise for positive infinity,
+                           return result as bool array.
+    :obj:`dpnp.isnan` : Test element-wise for NaN and
+                        return result as a boolean array.
+    :obj:`dpnp.isfinite` : Test element-wise for finiteness.
 
-    Notes
-    -----
-    NumPy uses the IEEE Standard for Binary Floating-Point for Arithmetic
-    (IEEE 754).
-
-    Errors result if the second argument is supplied when the first
-    argument is a scalar, or if the first and second arguments have
-    different shapes.
+    Examples
+    --------
+    >>> import numpy
+    >>> import dpnp as np
+    >>> x = np.array([-numpy.inf, 0., numpy.inf])
+    >>> out = np.isinf(x)
+    >>> [i for i in out]
+    [True, False, True]
 
     """
 
@@ -449,40 +471,35 @@ def isnan(in_array1, out=None, where=True, **kwargs):
     """
     Test element-wise for NaN and return result as a boolean array.
 
-    Parameters
-    ----------
-    x : array_like
-        Input array.
-    out : ndarray, None, or tuple of ndarray and None, optional
-        A location into which the result is stored. If provided, it must have
-        a shape that the inputs broadcast to. If not provided or None,
-        a freshly-allocated array is returned. A tuple (possible only as a
-        keyword argument) must have length equal to the number of outputs.
-    where : array_like, optional
-        This condition is broadcast over the input. At locations where the
-        condition is True, the `out` array will be set to the ufunc result.
-        Elsewhere, the `out` array will retain its original value.
-        Note that if an uninitialized `out` array is created via the default
-        ``out=None``, locations within it where the condition is False will
-        remain uninitialized.
-    **kwargs
-        For other keyword-only arguments, see the
-        :ref:`ufunc docs <ufuncs.kwargs>`.
+    For full documentation refer to :obj:`numpy.isnan`.
 
-    Returns
-    -------
-    y : ndarray or bool
-        True where ``x`` is NaN, false otherwise.
-        This is a scalar if `x` is a scalar.
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameter ``out`` is supported only with default value ``None``.
+    Parameter ``where`` is supported only with default value ``True``.
 
     See Also
     --------
-    isinf, isneginf, isposinf, isfinite, isnat
+    :obj:`dpnp.isinf` : Test element-wise for positive or negative infinity.
+    :obj:`dpnp.isneginf` : Test element-wise for negative infinity,
+                           return result as bool array.
+    :obj:`dpnp.isposinf` : Test element-wise for positive infinity,
+                           return result as bool array.
+    :obj:`dpnp.isfinite` : Test element-wise for finiteness.
+    :obj:`dpnp.isnat` : Test element-wise for NaT (not a time)
+                        and return result as a boolean array.
 
-    Notes
-    -----
-    NumPy uses the IEEE Standard for Binary Floating-Point for Arithmetic
-    (IEEE 754). This means that Not a Number is not equivalent to infinity.
+    Examples
+    --------
+    >>> import numpy
+    >>> import dpnp as np
+    >>> x = np.array([numpy.inf, 0., np.nan])
+    >>> out = np.isnan(x)
+    >>> [i for i in out]
+    [False, False, True]
 
     """
 
@@ -498,12 +515,37 @@ def isnan(in_array1, out=None, where=True, **kwargs):
 
     input1 = dpnp.asnumpy(in_array1) if is_dparray1 else in_array1
 
-    return numpy.isnan(input1, out, where, **kwargs)
+    return numpy.isnan(input1, out, where=where, **kwargs)
 
 
 def less(x1, x2):
     """
     Return (x1 < x2) element-wise.
+
+    For full documentation refer to :obj:`numpy.less`.
+
+    Limitations
+    -----------
+    At least either ``x1`` or ``x2`` should be as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.greater` : Return the truth value of (x1 > x2) element-wise.
+    :obj:`dpnp.less_equal` : Return the truth value of (x1 =< x2) element-wise.
+    :obj:`dpnp.greater_equal` : Return the truth value of (x1 >= x2) element-wise.
+    :obj:`dpnp.equal` : Return (x1 == x2) element-wise.
+    :obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x1 = np.array([1, 2])
+    >>> x2 = np.array([2, 2])
+    >>> out = np.less(x1, x2)
+    >>> [i for i in out]
+    [True, False]
 
     """
 
@@ -520,6 +562,31 @@ def less_equal(x1, x2):
     """
     Return (x1 <= x2) element-wise.
 
+    For full documentation refer to :obj:`numpy.less_equal`.
+
+    Limitations
+    -----------
+    At least either ``x1`` or ``x2`` should be as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.greater` : Return the truth value of (x1 > x2) element-wise.
+    :obj:`dpnp.less` : Return the truth value of (x1 < x2) element-wise.
+    :obj:`dpnp.greater_equal` : Return the truth value of (x1 >= x2) element-wise.
+    :obj:`dpnp.equal` : Return (x1 == x2) element-wise.
+    :obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x1 = np.array([4, 2, 1])
+    >>> x2 = np.array([2, 2, 2])
+    >>> out = np.less_equal(x1, x2)
+    >>> [i for i in out]
+    [False, True, True]
+
     """
 
     if (use_origin_backend(x1)):
@@ -535,37 +602,31 @@ def logical_and(x1, x2, out=None, where=True, **kwargs):
     """
     Compute the truth value of x1 AND x2 element-wise.
 
-    Parameters
-    ----------
-    x1, x2 : array_like
-        Input arrays. If ``x1.shape != x2.shape``, they must be broadcastable to a common shape (which becomes the shape of the output).
-    out : ndarray, None, or tuple of ndarray and None, optional
-        A location into which the result is stored. If provided, it must have
-        a shape that the inputs broadcast to. If not provided or None,
-        a freshly-allocated array is returned. A tuple (possible only as a
-        keyword argument) must have length equal to the number of outputs.
-    where : array_like, optional
-        This condition is broadcast over the input. At locations where the
-        condition is True, the `out` array will be set to the ufunc result.
-        Elsewhere, the `out` array will retain its original value.
-        Note that if an uninitialized `out` array is created via the default
-        ``out=None``, locations within it where the condition is False will
-        remain uninitialized.
-    **kwargs
-        For other keyword-only arguments, see the
-        :ref:`ufunc docs <ufuncs.kwargs>`.
+    For full documentation refer to :obj:`numpy.logical_and`.
 
-    Returns
-    -------
-    y : ndarray or bool
-        Boolean result of the logical AND operation applied to the elements
-        of `x1` and `x2`; the shape is determined by broadcasting.
-        This is a scalar if both `x1` and `x2` are scalars.
+    Limitations
+    -----------
+    Input arrays are supported as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameter ``out`` is supported only with default value ``None``.
+    Parameter ``where`` is supported only with default value ``True``.
 
     See Also
     --------
-    logical_or, logical_not, logical_xor
-    bitwise_and
+    :obj:`dpnp.logical_or` : Compute the truth value of x1 OR x2 element-wise.
+    :obj:`dpnp.logical_not` : Compute the truth value of NOT x element-wise.
+    :obj:`dpnp.logical_xor` : Compute the truth value of x1 XOR x2, element-wise.
+    :obj:`dpnp.bitwise_and` : Compute the bit-wise AND of two arrays element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x1 = np.array([True, False])
+    >>> x2 = np.array([False, False])
+    >>> out = np.logical_and(x1, x2)
+    >>> [i for i in out]
+    [False, False]
 
     """
 
@@ -590,36 +651,29 @@ def logical_not(x1, out=None, where=True, **kwargs):
     """
     Compute the truth value of NOT x element-wise.
 
-    Parameters
-    ----------
-    x : array_like
-        Logical NOT is applied to the elements of `x`.
-    out : ndarray, None, or tuple of ndarray and None, optional
-        A location into which the result is stored. If provided, it must have
-        a shape that the inputs broadcast to. If not provided or None,
-        a freshly-allocated array is returned. A tuple (possible only as a
-        keyword argument) must have length equal to the number of outputs.
-    where : array_like, optional
-        This condition is broadcast over the input. At locations where the
-        condition is True, the `out` array will be set to the ufunc result.
-        Elsewhere, the `out` array will retain its original value.
-        Note that if an uninitialized `out` array is created via the default
-        ``out=None``, locations within it where the condition is False will
-        remain uninitialized.
-    **kwargs
-        For other keyword-only arguments, see the
-        :ref:`ufunc docs <ufuncs.kwargs>`.
+    For full documentation refer to :obj:`numpy.logical_not`.
 
-    Returns
-    -------
-    y : bool or ndarray of bool
-        Boolean result with the same shape as `x` of the NOT operation
-        on elements of `x`.
-        This is a scalar if `x` is a scalar.
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameter ``out`` is supported only with default value ``None``.
+    Parameter ``where`` is supported only with default value ``True``.
 
     See Also
     --------
-    logical_and, logical_or, logical_xor
+    :obj:`dpnp.logical_and` : Compute the truth value of x1 AND x2 element-wise.
+    :obj:`dpnp.logical_or` : Compute the truth value of x1 OR x2 element-wise.
+    :obj:`dpnp.logical_xor` : Compute the truth value of x1 XOR x2, element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([True, False, 0, 1])
+    >>> out = np.logical_not(x)
+    >>> [i for i in out]
+    [False, True, True, False]
 
     """
 
@@ -642,38 +696,31 @@ def logical_or(x1, x2, out=None, where=True, **kwargs):
     """
     Compute the truth value of x1 OR x2 element-wise.
 
-    Parameters
-    ----------
-    x1, x2 : array_like
-        Logical OR is applied to the elements of `x1` and `x2`.
-        If ``x1.shape != x2.shape``, they must be broadcastable to a common shape (which becomes the shape of the output).
-    out : ndarray, None, or tuple of ndarray and None, optional
-        A location into which the result is stored. If provided, it must have
-        a shape that the inputs broadcast to. If not provided or None,
-        a freshly-allocated array is returned. A tuple (possible only as a
-        keyword argument) must have length equal to the number of outputs.
-    where : array_like, optional
-        This condition is broadcast over the input. At locations where the
-        condition is True, the `out` array will be set to the ufunc result.
-        Elsewhere, the `out` array will retain its original value.
-        Note that if an uninitialized `out` array is created via the default
-        ``out=None``, locations within it where the condition is False will
-        remain uninitialized.
-    **kwargs
-        For other keyword-only arguments, see the
-        :ref:`ufunc docs <ufuncs.kwargs>`.
+    For full documentation refer to :obj:`numpy.logical_or`.
 
-    Returns
-    -------
-    y : ndarray or bool
-        Boolean result of the logical OR operation applied to the elements
-        of `x1` and `x2`; the shape is determined by broadcasting.
-        This is a scalar if both `x1` and `x2` are scalars.
+    Limitations
+    -----------
+    Input arrays are supported as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameter ``out`` is supported only with default value ``None``.
+    Parameter ``where`` is supported only with default value ``True``.
 
     See Also
     --------
-    logical_and, logical_not, logical_xor
-    bitwise_or
+    :obj:`dpnp.logical_and` : Compute the truth value of x1 AND x2 element-wise.
+    :obj:`dpnp.logical_not` : Compute the truth value of NOT x element-wise.
+    :obj:`dpnp.logical_xor` : Compute the truth value of x1 XOR x2, element-wise.
+    :obj:`dpnp.bitwise_or` : Compute the bit-wise OR of two arrays element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x1 = np.array([True, False])
+    >>> x2 = np.array([False, False])
+    >>> out = np.logical_or(x1, x2)
+    >>> [i for i in out]
+    [True, False]
 
     """
 
@@ -698,36 +745,31 @@ def logical_xor(x1, x2, out=None, where=True, **kwargs):
     """
     Compute the truth value of x1 XOR x2, element-wise.
 
-    Parameters
-    ----------
-    x1, x2 : array_like
-        Logical XOR is applied to the elements of `x1` and `x2`. If ``x1.shape != x2.shape``, they must be broadcastable to a common shape (which becomes the shape of the output).
-    out : ndarray, None, or tuple of ndarray and None, optional
-        A location into which the result is stored. If provided, it must have
-        a shape that the inputs broadcast to. If not provided or None,
-        a freshly-allocated array is returned. A tuple (possible only as a
-        keyword argument) must have length equal to the number of outputs.
-    where : array_like, optional
-        This condition is broadcast over the input. At locations where the
-        condition is True, the `out` array will be set to the ufunc result.
-        Elsewhere, the `out` array will retain its original value.
-        Note that if an uninitialized `out` array is created via the default
-        ``out=None``, locations within it where the condition is False will
-        remain uninitialized.
-    **kwargs
-        For other keyword-only arguments, see the
-        :ref:`ufunc docs <ufuncs.kwargs>`.
+    For full documentation refer to :obj:`numpy.logical_xor`.
 
-    Returns
-    -------
-    y : bool or ndarray of bool
-        Boolean result of the logical XOR operation applied to the elements
-        of `x1` and `x2`; the shape is determined by broadcasting.
-        This is a scalar if both `x1` and `x2` are scalars.
+    Limitations
+    -----------
+    Input arrays are supported as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameter ``out`` is supported only with default value ``None``.
+    Parameter ``where`` is supported only with default value ``True``.
 
     See Also
     --------
-    logical_and, logical_or, logical_not, bitwise_xor
+    :obj:`dpnp.logical_and` : Compute the truth value of x1 AND x2 element-wise.
+    :obj:`dpnp.logical_or` : Compute the truth value of x1 OR x2 element-wise.
+    :obj:`dpnp.logical_not` : Compute the truth value of NOT x element-wise.
+    :obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x1 = np.array([True, True, False, False])
+    >>> x2 = np.array([True, False, True, False])
+    >>> out = np.logical_xor(x1, x2)
+    >>> [i for i in out]
+    [False, True, True, False]
 
     """
 
@@ -752,12 +794,49 @@ def not_equal(x1, x2):
     """
     Return (x1 != x2) element-wise.
 
+    For full documentation refer to :obj:`numpy.not_equal`.
+
+    Limitations
+    -----------
+    At least either ``x1`` or ``x2`` should be as :obj:`dpnp.ndarray`.
+    If either ``x1`` or ``x2`` is scalar then other one should be :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.equal` : Return (x1 == x2) element-wise.
+    :obj:`dpnp.greater` : Return the truth value of (x1 > x2) element-wise.
+    :obj:`dpnp.greater_equal` : Return the truth value of (x1 >= x2) element-wise.
+    :obj:`dpnp.less` : Return the truth value of (x1 < x2) element-wise.
+    :obj:`dpnp.less_equal` : Return the truth value of (x1 =< x2) element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x1 = np.array([1., 2.])
+    >>> x2 = np.arange(1., 3.)
+    >>> out = np.not_equal(x1, x2)
+    >>> [i for i in out]
+    [False, False]
+
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.not_equal(x1, x2)
+    is_x1_dparray = isinstance(x1, dparray)
+    is_x2_dparray = isinstance(x2, dparray)
 
-    if isinstance(x1, dparray) or isinstance(x2, dparray):
-        return dpnp_not_equal(x1, x2)
+    is_x1_scalar = numpy.isscalar(x1)
+    is_x2_scalar = numpy.isscalar(x2)
 
-    return numpy.not_equal(x1, x2)
+    if (not use_origin_backend(x1) and (is_x1_dparray or is_x1_scalar)) and \
+            (not use_origin_backend(x2) and (is_x2_dparray or is_x2_scalar)) and \
+            not(is_x1_scalar and is_x2_scalar):
+
+        if is_x1_scalar:
+            result = dpnp_not_equal(x2, x1)
+        else:
+            result = dpnp_not_equal(x1, x2)
+
+        return result
+
+    return call_origin(numpy.not_equal, x1, x2)

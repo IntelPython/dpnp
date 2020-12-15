@@ -86,19 +86,19 @@ void* get_backend_function_name(const char* func_name, const char* type_name)
     {
         if (!strncmp(type_name, supported_type1_name, strlen(supported_type1_name)))
         {
-            return reinterpret_cast<void*>(dpnp_dot_c<double>);
+            return reinterpret_cast<void*>(dpnp_dot_c<double, double, double>);
         }
         else if (!strncmp(type_name, supported_type2_name, strlen(supported_type2_name)))
         {
-            return reinterpret_cast<void*>(dpnp_dot_c<float>);
+            return reinterpret_cast<void*>(dpnp_dot_c<float, float, float>);
         }
         else if (!strncmp(type_name, supported_type3_name, strlen(supported_type3_name)))
         {
-            return reinterpret_cast<void*>(dpnp_dot_c<long>);
+            return reinterpret_cast<void*>(dpnp_dot_c<long, long, long>);
         }
         else if (!strncmp(type_name, supported_type4_name, strlen(supported_type4_name)))
         {
-            return reinterpret_cast<void*>(dpnp_dot_c<int>);
+            return reinterpret_cast<void*>(dpnp_dot_c<int, int, int>);
         }
     }
 
@@ -136,6 +136,7 @@ static func_map_t func_map_init()
 
     func_map_init_bitwise(fmap);
     func_map_init_elemwise(fmap);
+    func_map_init_fft_func(fmap);
     func_map_init_linalg(fmap);
     func_map_init_linalg_func(fmap);
     func_map_init_manipulation(fmap);

@@ -27,7 +27,10 @@
 #ifndef QUEUE_SYCL_H // Cython compatibility
 #define QUEUE_SYCL_H
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpass-failed"
 #include <CL/sycl.hpp>
+#pragma clang diagnostic pop
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
@@ -38,7 +41,7 @@
 #include <ctime>
 
 #if !defined(DPNP_LOCAL_QUEUE)
-#include <dppl_sycl_queue_manager.h>
+#include <dpctl_sycl_queue_manager.h>
 #endif
 
 #include "backend_pstl.hpp" // this header must be included after <mkl.hpp>
@@ -52,14 +55,14 @@ namespace mkl_rng = oneapi::mkl::rng;
  * This is container for the SYCL queue, random number generation engine and related functions like queue and engine
  * initialization and maintenance.
  * The queue could not be initialized as a global object. Global object initialization order is undefined.
- * This class postpone initialization of the SYCL queue and philox4x32x10 random number generation engine.
+ * This class postpone initialization of the SYCL queue and mt19937 random number generation engine.
  */
 class backend_sycl
 {
 #if defined(DPNP_LOCAL_QUEUE)
     static cl::sycl::queue* queue; /**< contains SYCL queue pointer initialized in @ref backend_sycl_queue_init */
 #endif
-    static mkl_rng::philox4x32x10* rng_engine; /**< RNG engine ptr. initialized in @ref backend_sycl_rng_engine_init */
+    static mkl_rng::mt19937* rng_engine; /**< RNG engine ptr. initialized in @ref backend_sycl_rng_engine_init */
 
     static void destroy()
     {
@@ -125,7 +128,7 @@ public:
         return *queue;
 #else
         // temporal solution. Started from Sept-2020
-        DPPLSyclQueueRef DPCtrl_queue = DPPLQueueMgr_GetCurrentQueue();
+        DPCTLSyclQueueRef DPCtrl_queue = DPCTLQueueMgr_GetCurrentQueue();
         return *(reinterpret_cast<cl::sycl::queue*>(DPCtrl_queue));
 #endif
     }
@@ -133,7 +136,7 @@ public:
     /**
      * Return the @ref rng_engine to the user
      */
-    static mkl_rng::philox4x32x10& get_rng_engine()
+    static mkl_rng::mt19937& get_rng_engine()
     {
         if (!rng_engine)
         {

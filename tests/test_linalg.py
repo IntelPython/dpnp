@@ -22,20 +22,31 @@ def vvsort(val, vec, size):
             vec[k, imax] = temp
 
 
-def test_det():
-    arrays = [
-        [[0, 0], [0, 0]],
-        [[1, 2], [1, 2]],
-        [[1, 2], [3, 4]],
-        [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]],
-        [[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]
-    ]
-    for array in arrays:
-        a = numpy.array(array)
-        ia = inp.array(a)
-        result = inp.linalg.det(ia)
-        expected = numpy.linalg.det(a)
-        numpy.testing.assert_allclose(expected, result)
+def test_cholesky():
+    a = numpy.array([[[1, -2], [2, 5]]])
+    ia = inp.array(a)
+    result = inp.linalg.cholesky(ia)
+    expected = numpy.linalg.cholesky(a)
+    numpy.testing.assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("array",
+                         [[[0, 0], [0, 0]],
+                          [[1, 2], [1, 2]],
+                          [[1, 2], [3, 4]],
+                          [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]],
+                          [[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]],
+                         ids=['[[0, 0], [0, 0]]',
+                              '[[1, 2], [1, 2]]',
+                              '[[1, 2], [3, 4]]',
+                              '[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]',
+                              '[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]'])
+def test_det(array):
+    a = numpy.array(array)
+    ia = inp.array(a)
+    result = inp.linalg.det(ia)
+    expected = numpy.linalg.det(a)
+    numpy.testing.assert_allclose(expected, result)
 
 
 @pytest.mark.parametrize("type",
@@ -76,6 +87,20 @@ def test_eig_arange(type, size):
     numpy.testing.assert_allclose(dpnp_vec, np_vec, rtol=1e-05, atol=1e-05)
 
 
+def test_eigvals():
+    arrays = [
+        [[0, 0], [0, 0]],
+        [[1, 2], [1, 2]],
+        [[1, 2], [3, 4]]
+    ]
+    for array in arrays:
+        a = numpy.array(array)
+        ia = inp.array(a)
+        result = inp.linalg.eigvals(ia)
+        expected = numpy.linalg.eigvals(a)
+        numpy.testing.assert_allclose(expected, result, atol=0.5)
+
+
 def test_matrix_rank():
     arrays = [
         [0, 0],
@@ -93,3 +118,54 @@ def test_matrix_rank():
             result = inp.linalg.matrix_rank(ia, tol=tol)
             expected = numpy.linalg.matrix_rank(a, tol=tol)
             numpy.testing.assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("array",
+                         [[7], [1, 2], [1, 0]],
+                         ids=['[7]', '[1, 2]', '[1, 0]'])
+@pytest.mark.parametrize("ord",
+                         [None, -numpy.Inf, -2, -1, 0, 1, 2, 3, numpy.Inf],
+                         ids=['None', '-numpy.Inf', '-2', '-1', '0', '1', '2', '3', 'numpy.Inf'])
+@pytest.mark.parametrize("axis",
+                         [0, None],
+                         ids=['0', 'None'])
+def test_norm1(array, ord, axis):
+    a = numpy.array(array)
+    ia = inp.array(a)
+    result = inp.linalg.norm(ia, ord=ord, axis=axis)
+    expected = numpy.linalg.norm(a, ord=ord, axis=axis)
+    numpy.testing.assert_allclose(expected, result)
+
+
+@pytest.mark.parametrize("array",
+                         [[[1, 0]], [[1, 2]], [[1, 0], [3, 0]], [[1, 2], [3, 4]]],
+                         ids=['[[1, 0]]', '[[1, 2]]', '[[1, 0], [3, 0]]', '[[1, 2], [3, 4]]'])
+@pytest.mark.parametrize("ord",
+                         [None, -numpy.Inf, -2, -1, 1, 2, numpy.Inf, 'fro', 'nuc'],
+                         ids=['None', '-numpy.Inf', '-2', '-1', '1', '2', 'numpy.Inf', '"fro"', '"nuc"'])
+@pytest.mark.parametrize("axis",
+                         [(0, 1), None],
+                         ids=['(0, 1)', 'None'])
+def test_norm2(array, ord, axis):
+    a = numpy.array(array)
+    ia = inp.array(a)
+    result = inp.linalg.norm(ia, ord=ord, axis=axis)
+    expected = numpy.linalg.norm(a, ord=ord, axis=axis)
+    numpy.testing.assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("array",
+                         [[[[1, 2], [3, 4]], [[5, 6], [7, 8]]], [[[1, 0], [3, 0]], [[5, 0], [7, 0]]]],
+                         ids=['[[[1, 2], [3, 4]], [[5, 6], [7, 8]]]', '[[[1, 0], [3, 0]], [[5, 0], [7, 0]]]'])
+@pytest.mark.parametrize("ord",
+                         [None, -numpy.Inf, -2, -1, 0, 1, 2, 3, numpy.Inf],
+                         ids=['None', '-numpy.Inf', '-2', '-1', '0', '1', '2', '3', 'numpy.Inf'])
+@pytest.mark.parametrize("axis",
+                         [None, 0, 1, 2, (0, 1), (0, 2), (1, 2)],
+                         ids=['None', '0', '1', '2', '(0, 1)', '(0, 2)', '(1, 2)'])
+def test_norm3(array, ord, axis):
+    a = numpy.array(array)
+    ia = inp.array(a)
+    result = inp.linalg.norm(ia, ord=ord, axis=axis)
+    expected = numpy.linalg.norm(a, ord=ord, axis=axis)
+    numpy.testing.assert_array_equal(expected, result)

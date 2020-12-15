@@ -57,7 +57,7 @@ def find_library(var_name, rel_header_paths, rel_lib_paths,
     tuple(list(str), list(str))
         path to include directory, path to library directory
     """
-    root_dir = os.environ.get(var_name)
+    root_dir = os.getenv(var_name)
     if root_dir is None:
         return [], []
 
@@ -128,9 +128,9 @@ def find_cmplr(verbose=False):
     return cmplr_include, cmplr_libpath
 
 
-def _find_mathlib_in_conda_root(verbose=False):
+def _find_dpl_in_oneapi_root(verbose=False):
     """
-    Find mathlib in conda root using $CONDA_PREFIX or $PREFIX.
+    Find DPL in oneAPI root using $ONEAPI_ROOT.
 
     Parameters
     ----------
@@ -142,16 +142,24 @@ def _find_mathlib_in_conda_root(verbose=False):
     tuple(list(str), list(str))
         path to include directory, path to library directory
     """
-    conda_root_var = "PREFIX" if IS_CONDA_BUILD else "CONDA_PREFIX"
-    rel_header_paths = [os.path.join("oneapi", "mkl.hpp")]
-    rel_lib_paths = ["libmkl_sycl.so"]
+    rel_header_paths = rel_lib_paths = []
 
-    return find_library(conda_root_var, rel_header_paths, rel_lib_paths, verbose=verbose)
+    if 'linux' in sys.platform:
+        rel_include_path = os.path.join('dpl', 'latest', 'linux', 'include')
+        rel_libdir_path = os.path.join('dpl', 'latest', 'linux', 'lib')
+    elif sys.platform in ['win32', 'cygwin']:
+        rel_include_path = os.path.join('dpl', 'latest', 'windows', 'include')
+        rel_libdir_path = os.path.join('dpl', 'latest', 'windows', 'lib')
+    else:
+        rel_include_path, rel_libdir_path = 'include', 'lib'
+
+    return find_library("ONEAPI_ROOT", rel_header_paths, rel_lib_paths,
+                        rel_include_path=rel_include_path, rel_libdir_path=rel_libdir_path, verbose=verbose)
 
 
-def _find_mathlib_in_mathlib_root(verbose=False):
+def find_dpl(verbose=False):
     """
-    Find mathlib in mathlib root using $MKLROOT.
+    Find DPL in environment.
 
     Parameters
     ----------
@@ -163,12 +171,12 @@ def _find_mathlib_in_mathlib_root(verbose=False):
     tuple(list(str), list(str))
         path to include directory, path to library directory
     """
-    rel_header_paths = ["mkl.hpp"]
-    rel_lib_paths = ["libmkl_sycl.so"]
-    rel_libdir_path = os.path.join("lib", "intel64")
+    dpl_include, dpl_libpath = _find_dpl_in_oneapi_root(verbose=verbose)
 
-    #return find_library("MKLROOT", rel_header_paths, rel_lib_paths, rel_libdir_path=rel_libdir_path, verbose=verbose)
-    return (["/opt/intel/oneapi/mkl/latest/include"], ["/opt/intel/oneapi/mkl/latest/lib/intel64"])
+    if not dpl_include or not dpl_libpath:
+        raise EnvironmentError(f"DPNP: Unable to find DPL. Please install Intel OneAPI environment")
+
+    return dpl_include, dpl_libpath
 
 
 def find_mathlib(verbose=False):
@@ -186,10 +194,19 @@ def find_mathlib(verbose=False):
         path to include directory, path to library directory
     """
 
-    mathlib_include, mathlib_path = _find_mathlib_in_conda_root(verbose=verbose)
+    rel_header_paths = [os.path.join("oneapi", "mkl.hpp")]
+    rel_lib_paths = ["libmkl_sycl.so"]
 
+    # try to find library in Python environment
+    conda_root_var = "PREFIX" if IS_CONDA_BUILD else "CONDA_PREFIX"
+    mathlib_include, mathlib_path = find_library(conda_root_var, rel_header_paths, rel_lib_paths, verbose=verbose)
+
+    # otherwise, try to find library in specified directory from $MKLROOT
     if not mathlib_include or not mathlib_path:
-        mathlib_include, mathlib_path = _find_mathlib_in_mathlib_root(verbose=verbose)
+        mathlib_include, mathlib_path = find_library("MKLROOT", rel_header_paths, rel_lib_paths,
+                                                     rel_include_path=os.path.join("include"),
+                                                     rel_libdir_path=os.path.join("lib", "intel64"),
+                                                     verbose=verbose)
 
     if not mathlib_include or not mathlib_path:
         raise EnvironmentError("DPNP: Unable to find math library")

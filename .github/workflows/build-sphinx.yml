@@ -1,0 +1,86 @@
+name: Build Sphinx
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy Docs
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+      - name: Install Intel repository
+        run: |
+          wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
+          sudo apt-get update
+      - name: Update libstdc++-dev
+        run: |
+          sudo apt remove -y gcc-7 g++-7 gcc-8 g++-8 gcc-10 g++-10
+          sudo apt remove -y libstdc++-10-dev
+          sudo apt autoremove
+          sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
+      - name: Install Intel OneAPI
+        run: |
+          sudo apt-get install intel-oneapi-mkl                \
+                               intel-oneapi-mkl-devel          \
+                               intel-oneapi-dpcpp-cpp-compiler
+      # https://github.com/marketplace/actions/checkout
+      - name: Install nvidia-cuda support drivers
+        run: |
+          sudo add-apt-repository ppa:graphics-drivers/ppa
+          sudo apt-get update
+          sudo apt-get install -y libnvidia-gl-450
+          sudo apt-get install -y nvidia-cuda-toolkit clinfo
+      - name: Checkout repo
+        uses: actions/checkout@v2
+      # https://github.com/marketplace/actions/setup-miniconda
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: dpnp
+          python-version: 3.7
+          auto-activate-base: false
+      - name: Conda info
+        shell: bash -l {0}
+        run: |
+          conda info
+          conda list
+      - name: Install sphinx dependencies
+        shell: bash -l {0}
+        run: |
+          conda install numpy cython sphinx sphinx_rtd_theme wheel
+      - name: Install cuPy dependencies
+        shell: bash -l {0}
+        run: |
+          conda install -c conda-forge cupy cudatoolkit=10.0
+      - name: Build library
+        shell: bash -l {0}
+        run: |
+          . /opt/intel/oneapi/setvars.sh
+          ./0.build.sh
+      - name: Build docs
+        shell: bash -l {0}
+        run: |
+          . /opt/intel/oneapi/setvars.sh
+          ./0.builddoc.sh
+        working-directory: doc
+      # https://github.com/marketplace/actions/doxygen-action
+      - name: Build backend docs
+        uses: mattnotmitt/doxygen-action@v1
+        with:
+            working-directory: 'dpnp/backend'
+      - name: Copy backend docs
+        run: cp -r dpnp/backend/html doc/_build/html/backend_doc
+      # https://github.com/marketplace/actions/github-pages-action
+      - name: Deploy docs
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: doc/_build/html/

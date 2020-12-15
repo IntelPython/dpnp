@@ -49,21 +49,60 @@ from dpnp.linalg.linalg import *
 
 
 __all__ = [
+    "cholesky",
     "det",
     "eig",
+    "eigvals",
     "matrix_power",
     "matrix_rank",
-    "multi_dot"
+    "multi_dot",
+    "norm"
 ]
+
+
+def cholesky(input):
+    """
+    Cholesky decomposition.
+    Return the Cholesky decomposition, `L * L.H`, of the square matrix `input`,
+    where `L` is lower-triangular and .H is the conjugate transpose operator
+    (which is the ordinary transpose if `input` is real-valued).  `input` must be
+    Hermitian (symmetric if real-valued) and positive-definite. No
+    checking is performed to verify whether `a` is Hermitian or not.
+    In addition, only the lower-triangular and diagonal elements of `input`
+    are used. Only `L` is actually returned.
+
+    Parameters
+    ----------
+    input : (..., M, M) array_like
+        Hermitian (symmetric if all elements are real), positive-definite
+        input matrix.
+
+    Returns
+    -------
+    L : (..., M, M) array_like
+        Upper or lower-triangular Cholesky factor of `input`.  Returns a
+        matrix object if `input` is a matrix object.
+    """
+    is_input_dparray = isinstance(input, dparray)
+
+    if not use_origin_backend(input) and is_input_dparray and input.ndim == 2 and \
+            input.shape[0] == input.shape[1] and input.shape[0] > 0:
+        result = dpnp_cholesky(input)
+
+        return result
+
+    return call_origin(numpy.linalg.cholesky, input)
 
 
 def det(input):
     """
     Compute the determinant of an array.
+
     Parameters
     ----------
     input : (..., M, M) array_like
         Input array to compute determinants for.
+
     Returns
     -------
     det : (...) array_like
@@ -88,7 +127,7 @@ def eig(x1):
     """
     Compute the eigenvalues and right eigenvectors of a square array.
 
-    .. seealso:: :func:`numpy.linalg.eig`
+    .. seealso:: :obj:`numpy.linalg.eig`
 
     """
 
@@ -99,6 +138,34 @@ def eig(x1):
             return dpnp_eig(x1)
 
     return call_origin(numpy.linalg.eig, x1)
+
+
+def eigvals(input):
+    """
+    Compute the eigenvalues of a general matrix.
+    Main difference between `eigvals` and `eig`: the eigenvectors aren't
+    returned.
+
+    Parameters
+    ----------
+    input : (..., M, M) array_like
+        A complex- or real-valued matrix whose eigenvalues will be computed.
+
+    Returns
+    -------
+    w : (..., M,) ndarray
+        The eigenvalues, each repeated according to its multiplicity.
+        They are not necessarily ordered, nor are they necessarily
+        real for real matrices.
+    """
+
+    is_input_dparray = isinstance(input, dparray)
+
+    if (not use_origin_backend(input) and is_input_dparray):
+        if (input.size > 0):
+            return dpnp_eigvals(input)
+
+    return call_origin(numpy.linalg.eigvals, input)
 
 
 def matrix_power(input, count):
@@ -116,7 +183,7 @@ def matrix_power(input, count):
 
     See Also
     --------
-    :meth:`numpy.linalg.matrix_power`
+    :obj:`numpy.linalg.matrix_power`
 
     """
 
@@ -161,6 +228,7 @@ def matrix_rank(input, tol=None, hermitian=False):
         If True, `M` is assumed to be Hermitian (symmetric if real-valued),
         enabling a more efficient method for finding singular values.
         Defaults to False.
+
     Returns
     -------
     rank : (...) array_like
@@ -207,7 +275,7 @@ def multi_dot(arrays, out=None):
 
     See Also
     --------
-    :meth:`numpy.multi_dot`
+    :obj:`numpy.multi_dot`
 
     """
 
@@ -221,3 +289,56 @@ def multi_dot(arrays, out=None):
         result = dpnp.dot(result, arrays[id])
 
     return result
+
+
+def norm(input, ord=None, axis=None, keepdims=False):
+    """
+    Matrix or vector norm.
+    This function is able to return one of eight different matrix norms,
+    or one of an infinite number of vector norms (described below), depending
+    on the value of the ``ord`` parameter.
+
+    Parameters
+    ----------
+    input : array_like
+        Input array.  If `axis` is None, `x` must be 1-D or 2-D, unless `ord`
+        is None. If both `axis` and `ord` are None, the 2-norm of
+        ``x.ravel`` will be returned.
+    ord : {non-zero int, inf, -inf, 'fro', 'nuc'}, optional
+        Order of the norm (see table under ``Notes``). inf means numpy's
+        `inf` object. The default is None.
+    axis : {None, int, 2-tuple of ints}, optional.
+        If `axis` is an integer, it specifies the axis of `x` along which to
+        compute the vector norms.  If `axis` is a 2-tuple, it specifies the
+        axes that hold 2-D matrices, and the matrix norms of these matrices
+        are computed.  If `axis` is None then either a vector norm (when `x`
+        is 1-D) or a matrix norm (when `x` is 2-D) is returned. The default
+        is None.
+    keepdims : bool, optional
+        If this is set to True, the axes which are normed over are left in the
+        result as dimensions with size one.  With this option the result will
+        broadcast correctly against the original `x`.
+
+    Returns
+    -------
+    n : float or ndarray
+        Norm of the matrix or vector(s).
+    """
+
+    is_input_dparray = isinstance(input, dparray)
+
+    if not use_origin_backend(input) and is_input_dparray:
+        if keepdims is not False:
+            checker_throw_value_error("norm", "keepdims", keepdims, False)
+        if not isinstance(axis, int) and not isinstance(axis, tuple) and axis is not None:
+            raise TypeError("'axis' must be None, an integer or a tuple of integers")
+
+        result = dpnp_norm(input, ord=ord, axis=axis)
+
+        # scalar returned
+        if result.shape == (1,) and axis is None:
+            return result.dtype.type(result[0])
+
+        return result
+
+    return call_origin(numpy.linalg.norm, input, ord, axis, keepdims)

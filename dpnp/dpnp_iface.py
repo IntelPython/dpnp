@@ -42,13 +42,14 @@ it contains:
 
 import os
 import numpy
+import collections
 
 from dpnp.backend import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
+from dpnp.fft import *
 from dpnp.linalg import *
 from dpnp.random import *
-import collections
 
 __all__ = [
     "array_equal",
@@ -62,6 +63,7 @@ __all__ = [
 from dpnp.dpnp_iface_arraycreation import *
 from dpnp.dpnp_iface_bitwise import *
 from dpnp.dpnp_iface_counting import *
+from dpnp.dpnp_iface_indexing import *
 from dpnp.dpnp_iface_libmath import *
 from dpnp.dpnp_iface_linearalgebra import *
 from dpnp.dpnp_iface_logic import *
@@ -75,6 +77,7 @@ from dpnp.dpnp_iface_trigonometric import *
 from dpnp.dpnp_iface_arraycreation import __all__ as __all__arraycreation
 from dpnp.dpnp_iface_bitwise import __all__ as __all__bitwise
 from dpnp.dpnp_iface_counting import __all__ as __all__counting
+from dpnp.dpnp_iface_indexing import __all__ as __all__indexing
 from dpnp.dpnp_iface_libmath import __all__ as __all__libmath
 from dpnp.dpnp_iface_linearalgebra import __all__ as __all__linearalgebra
 from dpnp.dpnp_iface_logic import __all__ as __all__logic
@@ -88,6 +91,7 @@ from dpnp.dpnp_iface_trigonometric import __all__ as __all__trigonometric
 __all__ += __all__arraycreation
 __all__ += __all__bitwise
 __all__ += __all__counting
+__all__ += __all__indexing
 __all__ += __all__libmath
 __all__ += __all__linearalgebra
 __all__ += __all__logic
@@ -100,22 +104,17 @@ __all__ += __all__trigonometric
 
 
 def array_equal(a1, a2, equal_nan=False):
-    """True if two arrays have the same shape and elements, False otherwise.
+    """
+    True if two arrays have the same shape and elements, False otherwise.
 
-    Parameters
-        a1, a2: array_like
-            Input arrays.
+    For full documentation refer to :obj:`numpy.array_equal`.
 
-        equal_nanbool
-            Whether to compare NaN’s as equal. If the dtype of a1 and a2 is complex,
-            values will be considered equal if either the real or the imaginary component of a given value is nan.
-            New in version 1.19.0.
-
-    Returns
-        b: bool
-            Returns True if the arrays are equal.
-
-    .. seealso:: :func:`numpy.allclose` :func:`numpy.array_equiv`
+    See Also
+    --------
+    :obj:`dpnp.allclose` : Returns True if two arrays are element-wise equal
+                           within a tolerance.
+    :obj:`dpnp.array_equiv` : Returns True if input arrays are shape consistent
+                              and all elements equal.
 
     """
 
@@ -123,12 +122,12 @@ def array_equal(a1, a2, equal_nan=False):
 
 
 def asnumpy(input, order='C'):
-    """Returns the NumPy array with input data.
+    """
+    Returns the NumPy array with input data.
 
-    Args:
-        input: Arbitrary object that can be converted to :class:`numpy.ndarray`.
-    Returns:
-        numpy.ndarray: array with input data.
+    Notes
+    -----
+    This function works exactly the same as :obj:`numpy.asarray`.
 
     """
 
@@ -147,24 +146,37 @@ def get_include():
 
 def matmul(in_array1, in_array2, out=None):
     """
-    Returns the matrix product of two arrays and is the implementation of
-    the `@` operator introduced in Python 3.5 following PEP465.
+    Matrix product of two arrays.
 
-    The main difference against dpnp.dot are the handling of arrays with more
-    than 2 dimensions. For more information see :func:`numpy.matmul`.
+    For full documentation refer to :obj:`numpy.matmul`.
 
-    .. note::
-        The out array as input is currently not supported.
+    Limitations
+    -----------
+    Input arrays are supported as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Parameter ``out`` is supported only with default value ``None``.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    Args:
-        in_array1 (dpnp.dparray): The left argument.
-        in_array2 (dpnp.dparray): The right argument.
-        out (dpnp.dparray): Output array.
+    See Also
+    --------
+    :obj:`dpnp.vdot` : Complex-conjugating dot product.
+    :obj:`dpnp.tensordot` : Sum products over arbitrary axes.
+    :obj:`dpnp.einsum` : Einstein summation convention.
+    :obj:`dpnp.dot` : Alternative matrix product with
+                      different broadcasting rules.
 
-    Returns:
-        dpnp.dparray: Output array.
-
-    .. seealso:: :func:`numpy.matmul`
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.ones([9, 5, 7, 4])
+    >>> c = np.ones([9, 5, 4, 3])
+    >>> np.matmul(a, c).shape
+    (9, 5, 7, 3)
+    >>> a = np.array([[1, 0], [0, 1]])
+    >>> b = np.array([[4, 1], [2, 2]])
+    >>> np.matmul(a, b)
+    array([[4, 1],
+           [2, 2]])
 
     """
 

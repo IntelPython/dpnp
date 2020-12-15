@@ -85,19 +85,26 @@ def arccos(x1):
     """
     Trigonometric inverse cosine, element-wise.
 
-    The inverse of cos so that, if y = cos(x), then x = arccos(y).
+    For full documentation refer to :obj:`numpy.arccos`.
 
-    Parameters
-    ----------
-    x1 : x-coordinate on the unit circle. For real arguments, the domain is [-1, 1].
-
-    Returns
-    -------
-    out : The angle of the ray intersecting the unit circle at the given x-coordinate in radians [0, pi]. This is a scalar if x is a scalar.
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    cos, arctan, arcsin, emath.arccos
+    :obj:`dpnp.cos` : Cosine element-wise.
+    :obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
+    :obj:`dpnp.arcsin` : Inverse sine, element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, -1])
+    >>> out = np.arccos(x)
+    >>> [i for i in out]
+    [0.0,  3.14159265]
 
     """
 
@@ -114,6 +121,30 @@ def arccosh(x1):
     """
     Trigonometric inverse hyperbolic cosine, element-wise.
 
+    For full documentation refer to :obj:`numpy.arccosh`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.cosh` : Hyperbolic cosine, element-wise.
+    :obj:`dpnp.arcsinh` : Inverse hyperbolic sine element-wise.
+    :obj:`dpnp.sinh` : Hyperbolic sine, element-wise.
+    :obj:`dpnp.arctanh` : Inverse hyperbolic tangent element-wise.
+    :obj:`dpnp.tanh` : Compute hyperbolic tangent element-wise.
+
+    Examples
+    --------
+    >>> import numpy
+    >>> import dpnp as np
+    >>> x = np.array([numpy.e, 10.0])
+    >>> out = np.arccosh(x)
+    >>> [i for i in out]
+    [1.65745445, 2.99322285]
+
     """
 
     if (use_origin_backend(x1)):
@@ -129,17 +160,30 @@ def arcsin(x1):
     """
     Inverse sine, element-wise.
 
-    Parameters
-    ----------
-    x1 : y-coordinate on the unit circle.
+    For full documentation refer to :obj:`numpy.arcsin`.
 
-    Returns
-    -------
-    out : The inverse sine of each element in x, in radians and in the closed interval [-pi/2, pi/2]. This is a scalar if x is a scalar.
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    sin, cos, arccos, tan, arctan, arctan2, emath.arcsin
+    :obj:`dpnp.sin` : Trigonometric sine, element-wise.
+    :obj:`dpnp.cos` : Cosine element-wise.
+    :obj:`dpnp.arccos` : Trigonometric inverse cosine, element-wise.
+    :obj:`dpnp.tan` : Compute tangent element-wise.
+    :obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
+    :obj:`dpnp.arctan2` : Element-wise arc tangent of ``x1/x2``
+                          choosing the quadrant correctly.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([0, 1, -1])
+    >>> out = np.arcsin(x)
+    >>> [i for i in out]
+    [0.0, 1.5707963267948966, -1.5707963267948966]
 
     """
 
@@ -156,6 +200,22 @@ def arcsinh(x1):
     """
     Inverse hyperbolic sine, element-wise.
 
+    For full documentation refer to :obj:`numpy.arcsinh`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import numpy
+    >>> import dpnp as np
+    >>> x = np.array([numpy.e, 10.0])
+    >>> out = np.arcsinh(x)
+    >>> [i for i in out]
+    [1.72538256, 2.99822295]
+
     """
 
     if (use_origin_backend(x1)):
@@ -171,19 +231,26 @@ def arctan(x1):
     """
     Trigonometric inverse tangent, element-wise.
 
-    The inverse of tan, so that if y = tan(x) then x = arctan(y).
+    For full documentation refer to :obj:`numpy.arctan`.
 
-    Parameters
-    ----------
-    x1 : array_like
-
-    Returns
-    -------
-    out : Out has the same shape as x. Its real part is in [-pi/2, pi/2] (arctan(+/-inf) returns +/-pi/2). This is a scalar if x is a scalar.
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    arctan2, angle
+    :obj:`dpnp.arctan2` : Element-wise arc tangent of ``x1/x2``
+                          choosing the quadrant correctly.
+    :obj:`dpnp.angle` : Argument of complex values.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([0, 1])
+    >>> out = np.arctan(x)
+    >>> [i for i in out]
+    [0.0, 0.78539816]
 
     """
 
@@ -200,6 +267,21 @@ def arctanh(x1):
     """
     Trigonometric hyperbolic inverse tangent, element-wise.
 
+    For full documentation refer to :obj:`numpy.arctanh`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([0, -0.5])
+    >>> out = np.arctanh(x)
+    >>> [i for i in out]
+    [0.0, -0.54930614]
+
     """
 
     if (use_origin_backend(x1)):
@@ -215,6 +297,21 @@ def cbrt(x1):
     """
     Return the cube-root of an array, element-wise.
 
+    For full documentation refer to :obj:`numpy.cbrt`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 8, 27])
+    >>> out = np.cbrt(x)
+    >>> [i for i in out]
+    [1.0, 2.0, 3.0]
+
     """
 
     if (use_origin_backend(x1)):
@@ -228,25 +325,32 @@ def cbrt(x1):
 
 def arctan2(x1, x2, out=None):
     """
-    Element-wise arc tangent of x1/x2 choosing the quadrant correctly.
+    Element-wise arc tangent of ``x1/x2`` choosing the quadrant correctly.
 
-    The quadrant (i.e., branch) is chosen so that arctan2(x1, x2) is the signed angle in radians between the ray ending at the origin and passing through the point (1,0), and the ray ending at the origin and passing through the point (x2, x1). (Note the role reversal: the “y-coordinate” is the first function parameter, the “x-coordinate” is the second.) By IEEE convention, this function is defined for x2 = +/-0 and for either or both of x1 and x2 = +/-inf (see Notes for specific values).
+    For full documentation refer to :obj:`numpy.arctan2`.
 
-    This function is not defined for complex-valued arguments; for the so-called argument of complex values, use angle.
-
-    Parameters
-    ----------
-    x1 : y-coordinates.
-
-    x2 : x-coordinates. If x1.shape != x2.shape, they must be broadcastable to a common shape (which becomes the shape of the output).
-
-    Returns
-    -------
-    out : Array of angles in radians, in the range [-pi, pi]. This is a scalar if both x1 and x2 are scalars.
+    Limitations
+    -----------
+    Input arrays are supported as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Parameter ``out`` is supported only with default value ``None``.
+    Sizes, shapes of input arrays are supported to be equal.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    arctan, tan, angle
+    :obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
+    :obj:`dpnp.tan` : Compute tangent element-wise.
+    :obj:`dpnp.angle` : Return the angle of the complex argument.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x1 = np.array([1., -1.])
+    >>> x2 = np.array([0., 0.])
+    >>> out = np.arctan2(x1, x2)
+    >>> [i for i in out]
+    [1.57079633, -1.57079633]
 
     """
 
@@ -272,18 +376,21 @@ def cos(x1):
     """
     Trigonometric cosine, element-wise.
 
-    Parameters
-    ----------
-    x1 : Angle, in radians (2 \pi rad equals 360 degrees).
+    For full documentation refer to :obj:`numpy.cos`.
 
-    Returns
-    -------
-    out : ndarray, None, or tuple of ndarray and None, optional
-        The cosine of each element of x. This is a scalar if x is a scalar
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    See Also
+    Examples
     --------
-    arccos, cosh, sin
+    >>> import numpy
+    >>> import dpnp as np
+    >>> x = np.array([0, numpy.pi/2, numpy.pi])
+    >>> out = np.cos(x)
+    >>> [i for i in out]
+    [1.0, 6.123233995736766e-17, -1.0]
 
     """
 
@@ -300,6 +407,21 @@ def cosh(x1):
     """
     Trigonometric hyperbolic cosine, element-wise.
 
+    For full documentation refer to :obj:`numpy.cosh`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([0])
+    >>> out = np.cosh(x)
+    >>> [i for i in out]
+    [1.0]
+
     """
 
     if (use_origin_backend(x1)):
@@ -314,19 +436,17 @@ def cosh(x1):
 def deg2rad(x1):
     """
     Convert angles from degrees to radians.
-    `radians` equivalent function
 
-    Parameters
-    ----------
-    x1 : Angles in degrees.
-
-    Returns
-    -------
-    out : The corresponding angle in radians. This is a scalar if x is a scalar.
+    For full documentation refer to :obj:`numpy.deg2rad`.
 
     See Also
     --------
-    rad2deg, unwrap
+    :obj:`dpnp.rad2deg` : Convert angles from radians to degrees.
+    :obj:`dpnp.unwrap` : Remove large jumps in angle by wrapping.
+
+    Notes
+    -----
+    This function works exactly the same as :obj:`dpnp.radians`.
 
     """
 
@@ -340,17 +460,23 @@ def degrees(x1):
     """
     Convert angles from radians to degrees.
 
-    Parameters
-    ----------
-    x1 : Input array in radians.
+    For full documentation refer to :obj:`numpy.degrees`.
 
-    Returns
-    -------
-    out : The corresponding degree values; if out was supplied this is a reference to it. This is a scalar if x is a scalar.
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    See Also
+    .. seealso:: :obj:`dpnp.rad2deg` convert angles from radians to degrees.
+
+    Examples
     --------
-    rad2deg
+    >>> import numpy
+    >>> import dpnp as np
+    >>> rad = np.arange(6.) * numpy.pi/6
+    >>> out = np.degrees(rad)
+    >>> [i for i in out]
+    [0.0, 30.0, 60.0, 90.0, 120.0, 150.0]
 
     """
 
@@ -367,6 +493,26 @@ def exp(x1):
     """
     Trigonometric exponent, element-wise.
 
+    For full documentation refer to :obj:`numpy.exp`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.expm1` : Calculate ``exp(x) - 1`` for all elements in the array.
+    :obj:`dpnp.exp2` : Calculate `2**x` for all elements in the array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(3.)
+    >>> out = np.exp(x)
+    >>> [i for i in out]
+    [1.0, 2.718281828, 7.389056099]
+
     """
 
     if (use_origin_backend(x1)):
@@ -381,6 +527,26 @@ def exp(x1):
 def exp2(x1):
     """
     Trigonometric exponent2, element-wise.
+
+    For full documentation refer to :obj:`numpy.exp2`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.power` : First array elements raised to powers from
+                        second array, element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(3.)
+    >>> out = np.exp2(x)
+    >>> [i for i in out]
+    [1.0, 2.0, 4.0]
 
     """
 
@@ -397,6 +563,23 @@ def expm1(x1):
     """
     Trigonometric exponent minus 1, element-wise.
 
+    For full documentation refer to :obj:`numpy.expm1`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    .. seealso:: :obj:`dpnp.log1p` ``log(1 + x)``, the inverse of expm1.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(3.)
+    >>> out = np.expm1(x)
+    >>> [i for i in out]
+    [0.0, 1.718281828, 6.389056099]
+
     """
 
     if (use_origin_backend(x1)):
@@ -410,17 +593,26 @@ def expm1(x1):
 
 def hypot(x1, x2, out=None):
     """
-    Given the “legs” of a right triangle, return its hypotenuse.
+    Given the "legs" of a right triangle, return its hypotenuse.
 
-    Equivalent to sqrt(x1**2 + x2**2), element-wise. If x1 or x2 is scalar_like (i.e., unambiguously cast-able to a scalar type), it is broadcast for use with each element of the other argument. (See Examples)
+    For full documentation refer to :obj:`numpy.hypot`.
 
-    Parameters
-    ----------
-    x1, x2 : Leg of the triangle(s). If x1.shape != x2.shape, they must be broadcastable to a common shape (which becomes the shape of the output).
+    Limitations
+    -----------
+    Input arrays are supported as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Parameter ``out`` is supported only with default value ``None``.
+    Sizes, shapes of input arrays are supported to be equal.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    Returns
-    -------
-    out : The hypotenuse of the triangle(s). This is a scalar if both x1 and x2 are scalars.
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x1 = 3 * np.ones(3)
+    >>> x2 = 4 * np.ones(3)
+    >>> out = np.hypot(x1, x2)
+    >>> [i for i in out]
+    [5.0, 5.0, 5.0]
 
     """
 
@@ -446,6 +638,30 @@ def log(x1):
     """
     Trigonometric logarithm, element-wise.
 
+    For full documentation refer to :obj:`numpy.log`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.log10` : Return the base 10 logarithm of the input array,
+                        element-wise.
+    :obj:`dpnp.log2` : Base-2 logarithm of x.
+    :obj:`dpnp.log1p` : Return the natural logarithm of one plus
+                        the input array, element-wise.
+
+    Examples
+    --------
+    >>> import numpy
+    >>> import dpnp as np
+    >>> x = np.array([1.0, numpy.e, numpy.e**2, 0.0])
+    >>> out = np.log(x)
+    >>> [i for i in out]
+    [0.0, 1.0, 2.0, -inf]
+
     """
 
     if (use_origin_backend(x1)):
@@ -460,6 +676,21 @@ def log(x1):
 def log10(x1):
     """
     Trigonometric logarithm, element-wise.
+
+    For full documentation refer to :obj:`numpy.log10`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(3.)
+    >>> out = np.log10(x)
+    >>> [i for i in out]
+    [-inf, 0.0, 0.30102999566]
 
     """
 
@@ -476,6 +707,25 @@ def log1p(x1):
     """
     Trigonometric logarithm, element-wise.
 
+    For full documentation refer to :obj:`numpy.log1p`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.expm1` : ``exp(x) - 1``, the inverse of :obj:`dpnp.log1p`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(3.)
+    >>> out = np.log1p(x)
+    >>> [i for i in out]
+    [0.0, 0.69314718, 1.09861229]
+
     """
 
     if (use_origin_backend(x1)):
@@ -490,6 +740,29 @@ def log1p(x1):
 def log2(x1):
     """
     Trigonometric logarithm, element-wise.
+
+    For full documentation refer to :obj:`numpy.log2`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.log` : Natural logarithm, element-wise.
+    :obj:`dpnp.log10` : Return the base 10 logarithm of the input array,
+                        element-wise.
+    :obj:`dpnp.log1p` : Return the natural logarithm of one plus
+                        the input array, element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([0, 1, 2, 2**4])
+    >>> out = np.log2(x)
+    >>> [i for i in out]
+    [-inf, 0.0, 1.0, 4.0]
 
     """
 
@@ -506,19 +779,23 @@ def reciprocal(x, **kwargs):
     """
     Return the reciprocal of the argument, element-wise.
 
-    Calculates 1/x.
+    For full documentation refer to :obj:`numpy.reciprocal`.
 
-    Parameters
-    ----------
-    x : array_like
-        Input array.
-    kwargs : dict
-        Remaining input parameters of the function.
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Keyword arguments ``kwargs`` are currently unsupported.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    Returns
-    -------
-    y : ndarray
-        Return array. This is a scalar if x is a scalar.
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 2., 3.33])
+    >>> out = np.reciprocal(x)
+    >>> [i for i in out]
+    [1.0, 0.5, 0.3003003]
+
     """
     if not use_origin_backend(x) and not kwargs:
         if not isinstance(x, dparray):
@@ -532,19 +809,17 @@ def reciprocal(x, **kwargs):
 def rad2deg(x1):
     """
     Convert angles from radians to degrees.
-    `degrees` equivalent function
 
-    Parameters
-    ----------
-    x1 : Angle in radians.
-
-    Returns
-    -------
-    out : The corresponding angle in degrees. This is a scalar if x is a scalar.
+    For full documentation refer to :obj:`numpy.rad2deg`.
 
     See Also
     --------
-    deg2rad, unwrap
+    :obj:`dpnp.deg2rad` : Convert angles from degrees to radians.
+    :obj:`dpnp.unwrap` : Remove large jumps in angle by wrapping.
+
+    Notes
+    -----
+    This function works exactly the same as :obj:`dpnp.degrees`.
 
     """
 
@@ -561,17 +836,22 @@ def radians(x1):
     """
     Convert angles from degrees to radians.
 
-    Parameters
-    ----------
-    x1 : Input array in degrees.
+    For full documentation refer to :obj:`numpy.radians`.
 
-    Returns
-    -------
-    out : The corresponding radian values. This is a scalar if x is a scalar.
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    See Also
+    .. seealso:: :obj:`dpnp.deg2rad` equivalent function.
+
+    Examples
     --------
-    deg2rad
+    >>> import dpnp as np
+    >>> deg = np.arange(6.) * 30.
+    >>> out = np.radians(deg)
+    >>> [i for i in out]
+    [0.0, 0.52359878, 1.04719755, 1.57079633, 2.0943951, 2.61799388]
 
     """
 
@@ -588,18 +868,27 @@ def sin(x1):
     """
     Trigonometric sine, element-wise.
 
-    Parameters
-    ----------
-    x1 : Angle, in radians (2 \pi rad equals 360 degrees).
+    For full documentation refer to :obj:`numpy.sin`.
 
-    Returns
-    -------
-    out : ndarray, None, or tuple of ndarray and None, optional
-        The sine of each element of x. This is a scalar if x is a scalar
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    arcsin, sinh, cos
+    :obj:`dpnp.arcsin` : Inverse sine, element-wise.
+    :obj:`dpnp.sinh` : Hyperbolic sine, element-wise.
+    :obj:`dpnp.cos` : Cosine element-wise.
+
+    Examples
+    --------
+    >>> import numpy
+    >>> import dpnp as np
+    >>> x = np.array([0, numpy.pi/2, numpy.pi])
+    >>> out = np.sin(x)
+    >>> [i for i in out]
+    [0.0, 1.0, 1.2246467991473532e-16]
 
     """
 
@@ -616,6 +905,22 @@ def sinh(x1):
     """
     Trigonometric hyperbolic sine, element-wise.
 
+    For full documentation refer to :obj:`numpy.sinh`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import numpy
+    >>> import dpnp as np
+    >>> x = np.array([0, numpy.pi/2, numpy.pi])
+    >>> out = np.sinh(x)
+    >>> [i for i in out]
+    [0.0, 2.3012989, 11.548739]
+
     """
 
     if (use_origin_backend(x1)):
@@ -631,6 +936,22 @@ def sqrt(x1):
     """
     Return the positive square-root of an array, element-wise.
 
+    For full documentation refer to :obj:`numpy.sqrt`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 4, 9])
+    >>> out = np.sqrt(x)
+    >>> [i for i in out]
+    [1.0, 2.0, 3.0]
+
     """
 
     if (use_origin_backend(x1)):
@@ -644,7 +965,29 @@ def sqrt(x1):
 
 def square(x1):
     """
-    Return X1 * x1, element-wise.
+    Return the element-wise square of the input.
+
+    For full documentation refer to :obj:`numpy.square`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.sqrt` : Return the positive square-root of an array,
+                       element-wise.
+    :obj:`dpnp.power` : First array elements raised to powers
+                        from second array, element-wise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 2, 3])
+    >>> out = np.square(x)
+    >>> [i for i in out]
+    [1, 4, 9]
 
     """
 
@@ -661,15 +1004,21 @@ def tan(x1):
     """
     Compute tangent element-wise.
 
-    Equivalent to np.sin(x)/np.cos(x) element-wise.
+    For full documentation refer to :obj:`numpy.tan`.
 
-    Parameters
-    ----------
-    x1 : Input array.
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
-    Returns
-    -------
-    out : The corresponding tangent values. This is a scalar if x is a scalar.
+    Examples
+    --------
+    >>> import numpy
+    >>> import dpnp as np
+    >>> x = np.array([-numpy.pi, numpy.pi/2, numpy.pi])
+    >>> out = np.tan(x)
+    >>> [i for i in out]
+    [1.22460635e-16, 1.63317787e+16, -1.22460635e-16]
 
     """
 
@@ -686,6 +1035,22 @@ def tanh(x1):
     """
     Compute hyperbolic tangent element-wise.
 
+    For full documentation refer to :obj:`numpy.tanh`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import numpy
+    >>> import dpnp as np
+    >>> x = np.array([-numpy.pi, numpy.pi/2, numpy.pi])
+    >>> out = np.tanh(x)
+    >>> [i for i in out]
+    [-0.996272, 0.917152, 0.996272]
+
     """
 
     if (use_origin_backend(x1)):
@@ -701,19 +1066,28 @@ def unwrap(x1):
     """
     Unwrap by changing deltas between values to 2*pi complement.
 
-    Unwrap radian phase p by changing absolute jumps greater than discont to their 2*pi complement along the given axis.
+    For full documentation refer to :obj:`numpy.unwrap`.
 
-    Parameters
-    ----------
-    x1 : Input array.
-
-    Returns
-    -------
-    out : Output array.
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-    rad2deg, deg2rad
+    :obj:`dpnp.rad2deg` : Convert angles from radians to degrees.
+    :obj:`dpnp.deg2rad` : Convert angles from degrees to radians.
+
+    Examples
+    --------
+    >>> import numpy
+    >>> import dpnp as np
+    >>> phase = np.linspace(0, numpy.pi, num=5)
+    >>> for i in range(3, 5):
+    >>>     phase[i] += numpy.pi
+    >>> out = np.unwrap(phase)
+    >>> [i for i in out]
+    [0.0, 0.78539816, 1.57079633, 5.49778714, 6.28318531]
 
     """
 

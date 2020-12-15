@@ -19,7 +19,7 @@ class TestRandint(unittest.TestCase):
 
     def test_lo_hi_equal(self):
         with self.assertRaises(ValueError):
-            random.randint(3, 3, size=0)
+            random.randint(3, 3, size=3)
 
         with self.assertRaises(ValueError):
             # int(-0.2) is not less than int(0.3)
@@ -27,26 +27,26 @@ class TestRandint(unittest.TestCase):
 
     def test_lo_hi_nonrandom(self):
         a = random.randint(-0.9, 1.1, size=3)
-        testing.assert_array_equal(a, cupy.full((3,), 0))
+        numpy.testing.assert_array_equal(a, cupy.full((3,), 0))
 
         a = random.randint(-1.1, -0.9, size=(2, 2))
-        testing.assert_array_equal(a, cupy.full((2, 2), -1))
+        numpy.testing.assert_array_equal(a, cupy.full((2, 2), -1))
 
     def test_zero_sizes(self):
         a = random.randint(10, size=(0,))
-        testing.assert_array_equal(a, cupy.array(()))
+        numpy.testing.assert_array_equal(a, cupy.array(()))
 
         a = random.randint(10, size=0)
-        testing.assert_array_equal(a, cupy.array(()))
+        numpy.testing.assert_array_equal(a, cupy.array(()))
 
 
-@testing.fix_random()
+# @testing.fix_random()
 @testing.gpu
 class TestRandint2(unittest.TestCase):
 
     @condition.repeat(3, 10)
     def test_bound_1(self):
-        vals = [random.randint(0, 10, (2, 3)).get() for _ in range(10)]
+        vals = [random.randint(0, 10, (2, 3)) for _ in range(10)]
         for val in vals:
             self.assertEqual(val.shape, (2, 3))
         self.assertEqual(min(_.min() for _ in vals), 0)
@@ -54,16 +54,16 @@ class TestRandint2(unittest.TestCase):
 
     @condition.repeat(3, 10)
     def test_bound_2(self):
-        vals = [random.randint(0, 2).get() for _ in range(20)]
+        vals = [random.randint(0, 2) for _ in range(20)]
         for val in vals:
             self.assertEqual(val.shape, ())
-        self.assertEqual(min(vals), 0)
-        self.assertEqual(max(vals), 1)
+        self.assertEqual(min(_.min() for _ in vals), 0)
+        self.assertEqual(max(_.max() for _ in vals), 1)
 
     @condition.repeat(3, 10)
     def test_bound_overflow(self):
         # 100 - (-100) exceeds the range of int8
-        val = random.randint(numpy.int8(-100), numpy.int8(100), size=20).get()
+        val = random.randint(numpy.int8(-100), numpy.int8(100), size=20)
         self.assertEqual(val.shape, (20,))
         self.assertGreaterEqual(val.min(), -100)
         self.assertLess(val.max(), 100)
@@ -74,14 +74,14 @@ class TestRandint2(unittest.TestCase):
         low, high = sorted(numpy.random.uniform(-5, 5, size=2))
         low -= 1
         high += 1
-        vals = [random.randint(low, high, (2, 3)).get() for _ in range(10)]
+        vals = [random.randint(low, high, (2, 3)) for _ in range(10)]
         for val in vals:
             self.assertEqual(val.shape, (2, 3))
         self.assertEqual(min(_.min() for _ in vals), int(low))
         self.assertEqual(max(_.max() for _ in vals), int(high) - 1)
 
     def test_bound_float2(self):
-        vals = [random.randint(-1.0, 1.0, (2, 3)).get() for _ in range(10)]
+        vals = [random.randint(-1.0, 1.0, (2, 3)) for _ in range(10)]
         for val in vals:
             self.assertEqual(val.shape, (2, 3))
         self.assertEqual(min(_.min() for _ in vals), -1)
@@ -91,16 +91,20 @@ class TestRandint2(unittest.TestCase):
     def test_goodness_of_fit(self):
         mx = 5
         trial = 100
-        vals = [random.randint(mx).get() for _ in range(trial)]
-        counts = numpy.histogram(vals, bins=numpy.arange(mx + 1))[0]
+        # vals = [random.randint(mx).get() for _ in range(trial)]
+        # counts = numpy.histogram(vals, bins=numpy.arange(mx + 1))[0]
+        vals = [random.randint(mx) for _ in range(trial)]
+        counts = numpy.histogram([i[0] for i in vals], bins=numpy.arange(mx + 1))[0]
         expected = numpy.array([float(trial) / mx] * mx)
         self.assertTrue(hypothesis.chi_square_test(counts, expected))
 
     @condition.repeat(3, 10)
     def test_goodness_of_fit_2(self):
         mx = 5
-        vals = random.randint(mx, size=(5, 20)).get()
-        counts = numpy.histogram(vals, bins=numpy.arange(mx + 1))[0]
+        # vals = random.randint(mx, size=(5, 20)).get()
+        # counts = numpy.histogram(vals, bins=numpy.arange(mx + 1))[0]
+        vals = random.randint(mx, size=(5, 20)).reshape(5 * 20)
+        counts = numpy.histogram(numpy.asarray(vals), bins=numpy.arange(mx + 1))[0]
         expected = numpy.array([float(vals.size) / mx] * mx)
         self.assertTrue(hypothesis.chi_square_test(counts, expected))
 
@@ -108,28 +112,29 @@ class TestRandint2(unittest.TestCase):
 @testing.gpu
 class TestRandintDtype(unittest.TestCase):
 
-    @testing.for_dtypes([
-        numpy.int8, numpy.uint8, numpy.int16, numpy.uint16, numpy.int32])
+    # numpy.int8, numpy.uint8, numpy.int16, numpy.uint16, numpy.int32])
+    @testing.for_dtypes([numpy.int32])
     def test_dtype(self, dtype):
         size = (1000,)
         low = numpy.iinfo(dtype).min
         high = numpy.iinfo(dtype).max + 1
-        x = random.randint(low, high, size, dtype).get()
+        x = random.randint(low, high, size, dtype)
         self.assertLessEqual(low, min(x))
         self.assertLessEqual(max(x), high)
 
-    @testing.for_int_dtypes(no_bool=True)
+    # @testing.for_int_dtypes(no_bool=True)
+    @testing.for_dtypes([numpy.int32])
     def test_dtype2(self, dtype):
         dtype = numpy.dtype(dtype)
 
         # randint does not support 64 bit integers
-        if dtype in (numpy.int64, numpy.uint64):
-            return
+        # if dtype in (numpy.int64, numpy.uint64):
+        #     return
 
         iinfo = numpy.iinfo(dtype)
         size = (10000,)
 
-        x = random.randint(iinfo.min, iinfo.max + 1, size, dtype).get()
+        x = random.randint(iinfo.min, iinfo.max + 1, size, dtype)
         self.assertEqual(x.dtype, dtype)
         self.assertLessEqual(iinfo.min, min(x))
         self.assertLessEqual(max(x), iinfo.max)
@@ -246,7 +251,7 @@ class TestChoice(unittest.TestCase):
         self.m.choice.assert_called_with(3, 1, True, [0.1, 0.1, 0.8])
 
 
-@testing.gpu
+# @testing.gpu
 class TestRandomSample(unittest.TestCase):
 
     def test_rand(self):
@@ -266,16 +271,14 @@ class TestRandomSample(unittest.TestCase):
             random.rand(1, 2, 3, unnecessary='unnecessary_argument')
 
     def test_randn(self):
-        with mock.patch('dpnp.random.distributions.normal') as m:
-            random.randn(1, 2, 3, dtype=numpy.float32)
-        m.assert_called_once_with(
-            size=(1, 2, 3), dtype=numpy.float32)
+        with mock.patch('dpnp.random.normal') as m:
+            random.randn(1, 2, 3)
+        m.assert_called_once_with(size=(1, 2, 3))
 
     def test_randn_default_dtype(self):
-        with mock.patch('dpnp.random.distributions.normal') as m:
+        with mock.patch('dpnp.random.normal') as m:
             random.randn(1, 2, 3)
-        m.assert_called_once_with(
-            size=(1, 2, 3), dtype=float)
+        m.assert_called_once_with(size=(1, 2, 3))
 
     def test_randn_invalid_argument(self):
         with self.assertRaises(TypeError):
