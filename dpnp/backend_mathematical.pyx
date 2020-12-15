@@ -156,21 +156,21 @@ cpdef dparray dpnp_cumsum(dparray x1):
 
 
 cpdef dparray dpnp_diff(dparray input):
-    size_i = input.size
-    shape_i = input.shape
-    list_shape_i = list(shape_i)
+    list_shape_i = list(input.shape)
     list_shape_i[-1] = list_shape_i[-1] - 1
     output_shape = tuple(list_shape_i)
     res = []
     size_idx = output_shape[-1]
-    size_arr_ = size_i /shape_i[-1]
-    for i in range(size_arr_):
-        for j in range(size_idx):
-            idx = i * size_idx + j
-            input_elem = input.item(idx) - input.item(idx + 1)
-            res.appen(input_elem)
+    counter = 0
+    for i in range(input.size):
+        if counter < size_idx:
+            counter += 1
+            input_elem = input.item(i + 1) - input.item(i)
+            res.append(input_elem)
+        else:
+            counter = 0
 
-    dpnp_array = dpnp.array(res)
+    dpnp_array = dpnp.array(res, dtype=input.dtype)
     dpnp_result_array = dpnp_array.reshape(output_shape)
     return dpnp_result_array
 

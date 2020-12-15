@@ -345,7 +345,7 @@ def diff(input, n=1, axis=-1, prepend=None, append=None):
             pass
         elif n != 1:
             pass
-        elif axis != 1:
+        elif axis != -1:
             pass
         elif prepend is not None:
             pass
