@@ -8,8 +8,8 @@ git clone --branch 0.5.0rc2 https://github.com/IntelPython/dpctl.git
 cd dpctl
 
 # didn't find better way to set required version
-git tag -d $(git tag -l)
-git tag 5.0
+# git tag -d $(git tag -l)
+# git tag 5.0
 
 # python ./setup.py develop
 # python ./setup.py install
@@ -21,7 +21,9 @@ conda build conda-recipe/ --no-test
 conda install /opt/intel/oneapi/intelpython/latest/conda-bld/linux-64/dpctl*
 
 echo ========================= DPCTL version ==================================
-python -c "import dpctl as sw; print(f\"sw.version={sw.version}\nsw.version.version={sw.version.version}\nsw.get_include={sw.get_include()}\")"
+python -c "import dpctl as sw; print(f\"sw.version={sw.version}\")"
+python -c "import dpctl as sw; print(f\"sw.version.version={sw.version.version}\")"
+python -c "import dpctl as sw; print(f\"sw.get_include()={sw.get_include()}\")"
 
 echo ========================= where DPCTL ===============================
 find /opt/intel -name libDPCTLSyclInterface.so
