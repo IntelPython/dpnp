@@ -86,6 +86,21 @@ jobs:
       echo ========================= run pytest ===============================
       pytest
 
+- job: make_package_bdist
+  displayName: bdist
+  pool:
+    vmImage: 'ubuntu-20.04'
+  steps:
+  - bash: |
+      ./scripts/install_system_deps.sh
+      . /opt/intel/oneapi/setvars.sh
+
+      ./scripts/install_python_deps.sh
+      ./scripts/build_deps_dpctl.sh
+
+      echo ========================= make DPNP bdist package ===============================
+      python ./setup.py bdist
+
 - job: make_package
   displayName: conda-build
   pool:
