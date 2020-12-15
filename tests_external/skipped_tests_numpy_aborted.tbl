@@ -549,6 +549,10 @@ tests/test_numeric.py::TestBoolArray::test_logical_and_or_xor
 tests/test_numeric.py::TestBoolArray::test_logical_not_abs
 tests/test_numeric.py::TestClip::test_clip_complex
 tests/test_numeric.py::TestClip::test_clip_with_out_transposed
+tests/test_pocketfft.py::TestFFT1D::test_axes[fftn]
+tests/test_pocketfft.py::TestFFT1D::test_axes[ifftn]
+tests/test_pocketfft.py::TestFFT1D::test_axes[rfftn]
+tests/test_pocketfft.py::TestFFT1D::test_all_1d_norm_preserving
 tests/test_regression.py::TestRegression::test_0d_string_scalar
 tests/test_regression.py::TestRegression::test_add_identity
 tests/test_regression.py::TestRegression::test_alignment_update

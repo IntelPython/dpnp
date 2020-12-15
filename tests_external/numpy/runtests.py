@@ -257,7 +257,8 @@ sys.modules['numpy'] = dpnp  # next import of numpy will be replaced with dpnp
 
 
 NUMPY_MODULES = [
-    'core'
+    'core',
+    'fft',
 ]
 NUMPY_NOT_FOUND = 3
 TESTS_EXT_PATH = Path(__file__).parents[1]
@@ -340,7 +341,7 @@ def get_tests(base_path):
 def run():
     numpy_path = find_pkg('numpy')
     if numpy_path is None:
-        print("Numpy not found in the environment.")
+        print('Numpy not found in the environment.')
         return NUMPY_NOT_FOUND
 
     FAILED_TESTS_FILE.unlink(missing_ok=True)
