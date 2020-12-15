@@ -841,7 +841,7 @@ def nancumprod(x1, **kwargs):
         if not isinstance(x1, dparray):
             pass
         else:
-            return dpnp_nancumprod(x1)
+            return dpnp_cumprod(x1, usenan=True)
 
     return call_origin(numpy.nancumprod, x1, **kwargs)
 
@@ -879,7 +879,7 @@ def nancumsum(x1, **kwargs):
         if not isinstance(x1, dparray):
             pass
         else:
-            return dpnp_nancumsum(x1)
+            return dpnp_cumsum(x1, usenan=True)
 
     return call_origin(numpy.nancumsum, x1, **kwargs)
 
