@@ -147,33 +147,50 @@ cpdef dparray dpnp_inv(dparray input):
     cpdef dparray_shape_type input_shape = input.shape
     cpdef size_t n = input.shape[0]
 
-    input_souz = dparray(input_shape)
+    e_arr = dparray((n, n))
+    a_arr = dpnp.copy(input)
+
     for i in range(n):
         for j in range(n):
-            m = dparray((n-1, n-1), dtype=input.dtype)
-            k_list = []
-            l_list = []
-            for t in range(n):
-                if t != i:
-                    k_list.append(t)
-                if t != j:
-                    l_list.append(t)
-            k_ind = 0
-            for k in k_list:
-                l_ind = 0
-                for l in l_list:
-                    m[k_ind, l_ind] = input[k, l]
-                    l_ind += 1
-                k_ind += 1
-            if n - 1 == 1:
-                input_souz[i, j] = m[0, 0]
-            else:
-                input_souz[i, j] = dpnp.linalg.det(m)
+            e_arr[i, j] = 1 if i==j else 0
 
-    input_souz_t = dpnp.transpose(input_souz)
-    input_det = dpnp.linalg.det(input)
-    res = (1/input_det) * input_souz_t
-    return res
+    for k in range(n):
+        if a_arr[k, k] == 0:
+            for i in range(k, n):
+                if a_arr[i, k] != 0:
+                    for j in range(n):
+                        c = a_arr[k, j]
+                        a_arr[k, j] = a_arr[i, j]
+                        a_arr[i, j] = c
+                        c_e = e_arr[k, j]
+                        e_arr[k, j] = e_arr[i, j]
+                        e_arr[i, j] = c_e
+                    break
+
+        temp = a_arr[k, k]
+
+        for j in range(n):
+            a_arr[k, j] = a_arr[k, j] / temp
+            e_arr[k, j] = e_arr[k, j] / temp
+
+        for i in range(k + 1, n):
+            temp = a_arr[i, k]
+
+            for j in range(n):
+                a_arr[i, j] = a_arr[i, j] - a_arr[k, j] * temp
+                e_arr[i, j] = e_arr[i, j] - e_arr[k, j] * temp
+
+    for k in range(n-1):
+        ind_k = n - 1 - k
+        for i in range(ind_k):
+            ind_i = ind_k - 1 - i
+
+            temp = a_arr[ind_i, ind_k]
+            for j in range(n):
+                a_arr[ind_i, j] = a_arr[ind_i, j] - a_arr[ind_k, j] * temp
+                e_arr[ind_i, j] = e_arr[ind_i, j] - e_arr[ind_k, j] * temp
+
+    return e_arr
 
 
 cpdef dparray dpnp_matrix_rank(dparray input):
