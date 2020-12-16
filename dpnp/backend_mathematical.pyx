@@ -157,8 +157,8 @@ cpdef dparray dpnp_cumsum(dparray x1):
 
 cpdef dparray dpnp_diff(dparray input, int n):
     if n == 0:
-        dpnp_result_array = input
-    elif n < input.shape[-1]:
+        return input
+    if n < input.shape[-1]:
         arr = input
         for _ in range(n):
             list_shape_i = list(arr.shape)
@@ -177,11 +177,9 @@ cpdef dparray dpnp_diff(dparray input, int n):
 
             dpnp_array = dpnp.array(res, dtype=input.dtype)
             arr = dpnp_array.reshape(output_shape)
-        dpnp_result_array = arr
+        return arr
     else:
-        dpnp_result_array = dpnp.array([], dtype=input.dtype)
-
-    return dpnp_result_array
+        return dpnp.array([], dtype=input.dtype)
 
 
 cpdef dparray dpnp_divide(dparray x1, dparray x2):
