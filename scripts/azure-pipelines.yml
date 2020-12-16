@@ -87,7 +87,7 @@ jobs:
       pytest
 
 - job: make_package_bdist
-  displayName: bdist
+  displayName: bdist_wheel
   pool:
     vmImage: 'ubuntu-20.04'
   steps:
@@ -96,11 +96,12 @@ jobs:
       . /opt/intel/oneapi/setvars.sh
 
       ./scripts/install_python_deps.sh
-      ./scripts/build_deps_dpctl.sh
+      # ./scripts/build_deps_dpctl.sh
 
       echo ========================= make DPNP bdist package ===============================
       . ./0.env.sh
-      python ./setup.py bdist
+      python ./setup.py bdist_wheel
+      ls -l
 
 - job: make_package
   displayName: conda-build
