@@ -171,17 +171,14 @@ def eigvals(input):
 
 def inv(input):
     """
-        Compute the (multiplicative) inverse of a matrix.
-        Given a square matrix `input`, return the matrix `ainv` satisfying
-        ``dot(input, ainv) = dot(ainv, input) = eye(input.shape[0])``.
-        Parameters
-        ----------
-        input : (..., M, M) array_like
-            Matrix to be inverted.
-        Returns
-        -------
-        ainv : (..., M, M) ndarray or matrix
-            (Multiplicative) inverse of the matrix `input`.
+    Divide arguments element-wise.
+
+    For full documentation refer to :obj:`numpy.linalg.inv`.
+
+    Limitations
+    -----------
+        Input array is supported as :obj:`dpnp.ndarray`.
+        Input array support with ndim = 2, shape[0] = shape[1], shape[0] >= 2.
     """
 
     is_input_dparray = isinstance(input, dparray)
