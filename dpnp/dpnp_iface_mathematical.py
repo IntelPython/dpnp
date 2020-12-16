@@ -337,7 +337,8 @@ def diff(input, n=1, axis=-1, prepend=None, append=None):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
-    Not supported parameters axis, prepend, append.
+    Parameters ``axis``, ``prepend`` and ``append`` are supported only with default values.
+    Otherwise the function will be executed sequentially on CPU.
     """
 
     if not use_origin_backend(input):
