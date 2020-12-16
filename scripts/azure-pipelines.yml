@@ -99,6 +99,7 @@ jobs:
       ./scripts/build_deps_dpctl.sh
 
       echo ========================= make DPNP bdist package ===============================
+      . ./0.env.sh
       python ./setup.py bdist
 
 - job: make_package
