@@ -51,6 +51,7 @@ import dpnp
 __all__ = [
     "diag_indices",
     "diag_indices_from",
+    "diagonal",
     "nonzero",
     "put",
     "tril_indices",
@@ -152,6 +153,36 @@ def diag_indices_from(arr):
         return dpnp_diag_indices(arr.shape[0], arr.ndim)
 
     return call_origin(numpy.diag_indices_from, arr)
+
+
+def diagonal(input, offset=0, axis1=0, axis2=1):
+    """
+    Return specified diagonals.
+
+    For full documentation refer to :obj:`numpy.diagonal`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters ``axis1`` and ``axis2`` are supported only with default values.
+    Otherwise the function will be executed sequentially on CPU.
+    """
+
+    if not use_origin_backend(input):
+        if not isinstance(input, dparray):
+            pass
+        elif not isinstance(offset, int):
+            pass
+        elif offset < 0:
+            pass
+        elif axis1 != 0:
+            pass
+        elif axis2 != 1:
+            pass
+        else:
+            return dpnp_diagonal(input, offset)
+
+    return call_origin(numpy.diagonal, input, offset, axis1, axis2)
 
 
 def nonzero(a):

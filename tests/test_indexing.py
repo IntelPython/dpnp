@@ -5,6 +5,21 @@ import dpnp
 import numpy
 
 
+@pytest.mark.parametrize("array",
+                         [[[0, 0], [0, 0]],
+                          [[1, 2], [1, 2]],
+                          [[1, 2], [3, 4]]],
+                         ids=['[[0, 0], [0, 0]]',
+                              '[[1, 2], [1, 2]]',
+                              '[[1, 2], [3, 4]]'])
+def test_diagonal(array):
+    a = numpy.array(array)
+    ia = dpnp.array(a)
+    expected = numpy.diagonal(a)
+    result = dpnp.diagonal(ia)
+    numpy.testing.assert_array_equal(expected, result)
+
+
 @pytest.mark.parametrize("v",
                          [0, 1, 2, 3, 4],
                          ids=['0', '1', '2', '3', '4'])

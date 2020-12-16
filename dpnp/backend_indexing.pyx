@@ -40,6 +40,7 @@ from dpnp.dpnp_iface_counting import count_nonzero
 
 __all__ += [
     "dpnp_diag_indices",
+    "dpnp_diagonal",
     "dpnp_nonzero",
     "dpnp_put",
     "dpnp_tril_indices",
@@ -58,6 +59,14 @@ cpdef tuple dpnp_diag_indices(n, ndim):
         result.append(res_item)
 
     return tuple(result)
+
+
+cpdef dparray dpnp_diagonal(dparray input, offset=0):
+    n = min(input.shape)
+    diagonal_list = []
+    for i in range(n):
+        diagonal_list.append(input[i, i])
+    return dpnp.array(diagonal_list)
 
 
 cpdef tuple dpnp_nonzero(dparray in_array1):
