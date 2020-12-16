@@ -178,7 +178,9 @@ def inv(input):
     Limitations
     -----------
         Input array is supported as :obj:`dpnp.ndarray`.
-        Input array support with ndim = 2, shape[0] = shape[1], shape[0] >= 2.
+        Dimension of input array is supported to be equal to ``2``.
+        Shape of input array is limited by ``input.shape[0] == input.shape[1]``, ``input.shape[0] >= 2``.
+        Otherwise the function will be executed sequentially on CPU.
     """
 
     is_input_dparray = isinstance(input, dparray)
