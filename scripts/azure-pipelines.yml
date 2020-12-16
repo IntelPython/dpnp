@@ -104,15 +104,9 @@ jobs:
       echo ========================= make DPNP bdist package ===============================
       . ./0.env.sh
       python ./setup.py bdist_wheel
-#  - task: CopyFiles@2
-#    inputs:
-#      sourceFolder: 'dist/'
-#      contents: '*'
-#      targetFolder: '$(Build.ArtifactStagingDirectory)'
-  - task: PublishPipelineArtifact@1
-    inputs:
-      pathToPublish: 'dist'
-      artifactName: bdist_wheel_local
+  - publish: dist
+    artifact: 'bdist_wheel_local_$(Agent.OS)_$(Agent.JobName)_$(python.architecture)'
+    displayName: setup.py bdist_wheel with no DPCtl and with public conda
 
 - job: make_package
   displayName: conda-build
