@@ -87,7 +87,7 @@ jobs:
       pytest
 
 - job: make_package_bdist
-  displayName: bdist_wheel
+  displayName: bdist_wheel_local
   pool:
     vmImage: 'ubuntu-20.04'
   steps:
@@ -101,7 +101,16 @@ jobs:
       echo ========================= make DPNP bdist package ===============================
       . ./0.env.sh
       python ./setup.py bdist_wheel
-      ls -l
+      ls -la dist/
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: 'dist/'
+      contents: '*'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+  - task: PublishPipelineArtifact@1
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: bdist_wheel_local
 
 - job: make_package
   displayName: conda-build
