@@ -86,6 +86,9 @@ jobs:
       echo ========================= run pytest ===============================
       pytest
 
+# test python ./setup.py bdist_wheel command with
+# no oneapi python environment
+# no dpctl
 - job: make_package_bdist
   displayName: bdist_wheel_local
   pool:
@@ -101,15 +104,14 @@ jobs:
       echo ========================= make DPNP bdist package ===============================
       . ./0.env.sh
       python ./setup.py bdist_wheel
-      ls -la dist/
-  - task: CopyFiles@2
-    inputs:
-      sourceFolder: 'dist/'
-      contents: '*'
-      targetFolder: '$(Build.ArtifactStagingDirectory)'
+#  - task: CopyFiles@2
+#    inputs:
+#      sourceFolder: 'dist/'
+#      contents: '*'
+#      targetFolder: '$(Build.ArtifactStagingDirectory)'
   - task: PublishPipelineArtifact@1
     inputs:
-      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      pathToPublish: 'dist'
       artifactName: bdist_wheel_local
 
 - job: make_package
