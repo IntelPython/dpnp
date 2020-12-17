@@ -42,7 +42,8 @@ cimport numpy
 __all__ += [
     "dpnp_absolute",
     "dpnp_add",
-    'dpnp_arctan2',
+    "dpnp_arctan2",
+    "dpnp_around",
     "dpnp_ceil",
     "dpnp_copysign",
     "dpnp_cumprod",
@@ -101,6 +102,20 @@ cpdef dparray dpnp_add(dparray x1, dparray x2):
 
 cpdef dparray dpnp_arctan2(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_ARCTAN2, x1, x2, x1.shape)
+
+
+cpdef dpnp_around(dparray a, decimals, out):
+    cdef dparray result
+
+    if out is None:
+        result = dparray(a.shape, dtype=a.dtype)
+    else:
+        result = out
+
+    for i in range(result.size):
+        result[i] = round(a[i], decimals)
+
+    return result
 
 
 cpdef dparray dpnp_ceil(dparray x1):

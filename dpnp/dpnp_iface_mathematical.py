@@ -52,6 +52,7 @@ __all__ = [
     "abs",
     "absolute",
     "add",
+    "around",
     "ceil",
     "copysign",
     "cumprod",
@@ -75,6 +76,7 @@ __all__ = [
     "power",
     "prod",
     "remainder",
+    "round_",
     "sign",
     "subtract",
     "sum",
@@ -180,6 +182,37 @@ def add(x1, x2, **kwargs):
         return dpnp_add(x1, x2)
 
     return call_origin(numpy.add, x1, x2, **kwargs)
+
+
+def around(a, decimals=0, out=None):
+    """
+    Evenly round to the given number of decimals.
+
+    For full documentation refer to :obj:`numpy.around`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.around([0.37, 1.64])
+    array([0.,  2.])
+    >>> np.around([0.37, 1.64], decimals=1)
+    array([0.4,  1.6])
+    >>> np.around([.5, 1.5, 2.5, 3.5, 4.5]) # rounds to nearest even value
+    array([0.,  2.,  2.,  4.,  4.])
+    >>> np.around([1,2,3,11], decimals=1) # ndarray of ints is returned
+    array([ 1,  2,  3, 11])
+    >>> np.around([1,2,3,11], decimals=-1)
+    array([ 0,  0,  0, 10])
+
+    """
+
+    if not use_origin_backend(a):
+        if not isinstance(a, dparray):
+            pass
+        else:
+            return dpnp_around(a, decimals, out)
+
+    return call_origin(numpy.around, a, decimals, out)
 
 
 def ceil(x1, **kwargs):
@@ -1022,6 +1055,21 @@ def remainder(x1, x2, **kwargs):
         return dpnp_remainder(x1, x2)
 
     return call_origin(numpy.remainder, x1, x2, **kwargs)
+
+
+def round_(a, decimals=0, out=None):
+    """
+    Round an array to the given number of decimals.
+
+    For full documentation refer to :obj:`numpy.round_`.
+
+    See Also
+    --------
+        :obj:`dpnp.around` : equivalent function; see for details.
+
+    """
+
+    return around(a, decimals, out)
 
 
 def sign(x1, **kwargs):
