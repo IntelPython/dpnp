@@ -337,22 +337,25 @@ def diff(input, n=1, axis=-1, prepend=None, append=None):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
-    Not supported parameters n, axis, prepend, append.
+    Parameters ``axis``, ``prepend`` and ``append`` are supported only with default values.
+    Otherwise the function will be executed sequentially on CPU.
     """
 
     if not use_origin_backend(input):
         if not isinstance(input, dparray):
             pass
-        elif n != 1:
+        elif not isinstance(n, int):
             pass
-        elif axis != 1:
+        elif n < 1:
+            pass
+        elif axis != -1:
             pass
         elif prepend is not None:
             pass
         elif append is not None:
             pass
         else:
-            return dpnp_diff(input)
+            return dpnp_diff(input, n)
 
     return call_origin(numpy.diff, input, n, axis, prepend, append)
 

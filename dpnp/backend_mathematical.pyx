@@ -155,24 +155,31 @@ cpdef dparray dpnp_cumsum(dparray x1):
     return result
 
 
-cpdef dparray dpnp_diff(dparray input):
-    size_i = input.size
-    shape_i = input.shape
-    list_shape_i = list(shape_i)
-    list_shape_i[-1] = list_shape_i[-1] - 1
-    output_shape = tuple(list_shape_i)
-    res = []
-    size_idx = output_shape[-1]
-    size_arr_ = size_i /shape_i[-1]
-    for i in range(size_arr_):
-        for j in range(size_idx):
-            idx = i * size_idx + j
-            input_elem = input.item(idx) - input.item(idx + 1)
-            res.appen(input_elem)
+cpdef dparray dpnp_diff(dparray input, int n):
+    if n == 0:
+        return input
+    if n < input.shape[-1]:
+        arr = input
+        for _ in range(n):
+            list_shape_i = list(arr.shape)
+            list_shape_i[-1] = list_shape_i[-1] - 1
+            output_shape = tuple(list_shape_i)
+            res = []
+            size_idx = output_shape[-1]
+            counter = 0
+            for i in range(arr.size):
+                if counter < size_idx:
+                    counter += 1
+                    arr_elem = arr.item(i + 1) - arr.item(i)
+                    res.append(arr_elem)
+                else:
+                    counter = 0
 
-    dpnp_array = dpnp.array(res)
-    dpnp_result_array = dpnp_array.reshape(output_shape)
-    return dpnp_result_array
+            dpnp_array = dpnp.array(res, dtype=input.dtype)
+            arr = dpnp_array.reshape(output_shape)
+        return arr
+    else:
+        return dpnp.array([], dtype=input.dtype)
 
 
 cpdef dparray dpnp_divide(dparray x1, dparray x2):

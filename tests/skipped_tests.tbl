@@ -1223,8 +1223,6 @@ tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_2_{axis=2}::
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_2_{axis=2}::test_cumsum_numpy_array
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_2_{axis=2}::test_cumsum_out_noncontiguous
 tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_2_{axis=2}::test_ndarray_cumsum_axis
-tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_1dim
-tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_1dim_with_n
 tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_2dim_with_append
 tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_2dim_with_axis
 tests/third_party/cupy/math_tests/test_sumprod.py::TestDiff::test_diff_2dim_with_n_and_axis
