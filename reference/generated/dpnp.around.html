@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.prod &mdash; dpnp 0.4.0 documentation</title>
+  <title>dpnp.around &mdash; dpnp 0.4.0 documentation</title>
   
 
   
@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.sum" href="dpnp.sum.html" />
-    <link rel="prev" title="dpnp.round_" href="dpnp.round_.html" /> 
+    <link rel="next" title="dpnp.round_" href="dpnp.round_.html" />
+    <link rel="prev" title="dpnp.unwrap" href="dpnp.unwrap.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -99,8 +99,8 @@
 <li class="toctree-l3 current"><a class="reference internal" href="../math.html">Mathematical Functions</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../math.html#trigonometric-functions">Trigonometric functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#hyperbolic-functions">Hyperbolic functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../math.html#rounding">Rounding</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../math.html#sums-products-differences">Sums, products, differences</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../math.html#rounding">Rounding</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../math.html#sums-products-differences">Sums, products, differences</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#exponents-and-logarithms">Exponents and logarithms</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#other-special-functions">Other special functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../math.html#floating-point-routines">Floating point routines</a></li>
@@ -175,13 +175,13 @@
         
           <li><a href="../math.html">Mathematical Functions</a> &raquo;</li>
         
-      <li>dpnp.prod</li>
+      <li>dpnp.around</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.prod.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.around.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -194,24 +194,25 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-prod">
-<h1>dpnp.prod<a class="headerlink" href="#dpnp-prod" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-around">
+<h1>dpnp.around<a class="headerlink" href="#dpnp-around" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.prod">
-<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">prod</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_mathematical.html#prod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.prod" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate product of array elements over a given axis.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.prod.html#numpy.prod" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.prod</span></code></a>.</p>
-<p class="rubric">Limitations</p>
-<p>Parameter <code class="docutils literal notranslate"><span class="pre">x1</span></code> is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
-Keyword arguments <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are currently unsupported.
-Otherwise the functions will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
+<dt id="dpnp.around">
+<code class="sig-prename descclassname">dpnp.</code><code class="sig-name descname">around</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">decimals</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_mathematical.html#around"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.around" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evenly round to the given number of decimals.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.around.html#numpy.around" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.around</span></code></a>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]]))</span>
-<span class="go">24</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
-<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">([</span><span class="mf">0.37</span><span class="p">,</span> <span class="mf">1.64</span><span class="p">])</span>
+<span class="go">array([0.,  2.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">([</span><span class="mf">0.37</span><span class="p">,</span> <span class="mf">1.64</span><span class="p">],</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">array([0.4,  1.6])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">([</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">])</span> <span class="c1"># rounds to nearest even value</span>
+<span class="go">array([0.,  2.,  2.,  4.,  4.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">11</span><span class="p">],</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># ndarray of ints is returned</span>
+<span class="go">array([ 1,  2,  3, 11])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">11</span><span class="p">],</span> <span class="n">decimals</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">array([ 0,  0,  0, 10])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -226,10 +227,10 @@ Input array data types are limited by supported DPNP <a class="reference interna
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.sum.html" class="btn btn-neutral float-right" title="dpnp.sum" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.round_.html" class="btn btn-neutral float-right" title="dpnp.round_" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.round_.html" class="btn btn-neutral float-left" title="dpnp.round_" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.unwrap.html" class="btn btn-neutral float-left" title="dpnp.unwrap" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

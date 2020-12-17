@@ -83,6 +83,9 @@
    .. automethod:: reshape
 
 
+   .. automethod:: round
+
+
    .. automethod:: sort
 
 
