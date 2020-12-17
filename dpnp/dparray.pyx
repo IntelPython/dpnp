@@ -590,6 +590,15 @@ cdef class dparray:
         """
         return repeat(self, *args, **kwds)
 
+    def round(self, decimals=0, out=None):
+        """ Return array with each element rounded to the given number of decimals.
+
+        .. seealso::
+           :obj:`dpnp.around` for full documentation.
+
+        """
+        return around(self, decimals, out)
+
     def std(self, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
         """ Returns the variance of the array elements, along given axis.
 

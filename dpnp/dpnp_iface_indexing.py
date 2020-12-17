@@ -52,6 +52,7 @@ __all__ = [
     "diag_indices",
     "diag_indices_from",
     "nonzero",
+    "put",
     "tril_indices",
     "tril_indices_from",
     "triu_indices",
@@ -202,6 +203,32 @@ def nonzero(a):
         return dpnp_nonzero(a)
 
     return call_origin(numpy.nonzero, a)
+
+
+def put(input, ind, v, mode='raise'):
+    """
+    Replaces specified elements of an array with given values.
+    For full documentation refer to :obj:`numpy.put`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Not supported parameter mode.
+    """
+
+    if not use_origin_backend(input):
+        if not isinstance(input, dparray):
+            pass
+        elif mode != 'raise':
+            pass
+        elif type(ind) != type(v):
+            pass
+        elif numpy.max(ind) > input.size:
+            pass
+        else:
+            return dpnp_put(input, ind, v)
+
+    return call_origin(numpy.put, input, ind, v, mode)
 
 
 def tril_indices(n, k=0, m=None):

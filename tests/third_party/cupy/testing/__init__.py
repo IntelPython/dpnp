@@ -26,9 +26,9 @@ from tests.third_party.cupy.testing.helper import for_float_dtypes
 from tests.third_party.cupy.testing.helper import for_int_dtypes
 # from tests.third_party.cupy.testing.helper import for_int_dtypes_combination
 from tests.third_party.cupy.testing.helper import for_orders
-# from tests.third_party.cupy.testing.helper import for_signed_dtypes
+from tests.third_party.cupy.testing.helper import for_signed_dtypes
 # from tests.third_party.cupy.testing.helper import for_signed_dtypes_combination
-# from tests.third_party.cupy.testing.helper import for_unsigned_dtypes
+from tests.third_party.cupy.testing.helper import for_unsigned_dtypes
 # from tests.third_party.cupy.testing.helper import for_unsigned_dtypes_combination
 from tests.third_party.cupy.testing.helper import numpy_cupy_allclose
 from tests.third_party.cupy.testing.helper import numpy_cupy_array_almost_equal

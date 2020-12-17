@@ -21,6 +21,6 @@ import numpy
 def test_diff(array):
     a = numpy.array(array)
     ia = inp.array(a)
-    result = inp.linalg.det(ia)
-    expected = numpy.linalg.det(a)
+    expected = numpy.diff(a)
+    result = inp.diff(ia)
     numpy.testing.assert_allclose(expected, result)

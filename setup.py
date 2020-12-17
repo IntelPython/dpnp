@@ -387,7 +387,7 @@ dpnp_cython_mods = cythonize([dpnp_backend, dpnp_dparray, dpnp_random, dpnp_util
                              annotate=False,
                              quiet=False)
 
-setup(name="DPNP",
+setup(name="dpnp",
       version=__version__,
       description="Subclass of numpy.ndarray that uses mkl_malloc",
       long_description=__readme_file__,
