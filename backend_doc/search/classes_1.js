@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['backend_5fsycl_217',['backend_sycl',['../classbackend__sycl.html',1,'']]]
+  ['dpnpfuncdata_234',['DPNPFuncData',['../struct_d_p_n_p_func_data.html',1,'']]]
 ];

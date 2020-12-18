@@ -1,11 +1,22 @@
 var searchData=
 [
-  ['backend_20c_2b_2b_20library_20interface_20api_2',['Backend C++ library interface API',['../group___b_a_c_k_e_n_d___a_p_i.html',1,'']]],
-  ['backend_20c_2b_2b_20library_20interface_20fft_20api_3',['Backend C++ library interface FFT API',['../group___b_a_c_k_e_n_d___f_f_t___a_p_i.html',1,'']]],
-  ['backend_20c_2b_2b_20library_20runtime_20interface_20api_4',['Backend C++ library runtime interface API',['../group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html',1,'']]],
-  ['backend_5fsycl_5',['backend_sycl',['../classbackend__sycl.html',1,'backend_sycl'],['../classbackend__sycl.html#a30a828cca8de39d1b782696819820566',1,'backend_sycl::backend_sycl()']]],
-  ['backend_5fsycl_5fis_5fcpu_6',['backend_sycl_is_cpu',['../classbackend__sycl.html#acbfb9c9036f30c6ffdfdc773f80fc9e1',1,'backend_sycl']]],
-  ['backend_5fsycl_5fqueue_5finit_7',['backend_sycl_queue_init',['../classbackend__sycl.html#a299f7e42c037f7ae60853df21ecf4848',1,'backend_sycl']]],
-  ['backend_5fsycl_5frng_5fengine_5finit_8',['backend_sycl_rng_engine_init',['../classbackend__sycl.html#aa19e6be66be2be23d07b588adc1ac919',1,'backend_sycl']]],
-  ['backend_20c_2b_2b_20library_20utilities_9',['Backend C++ library utilities',['../group___b_a_c_k_e_n_d___u_t_i_l_s.html',1,'']]]
+  ['cpu_5fselector_8',['CPU_SELECTOR',['../group___b_a_c_k_e_n_d___a_p_i.html#ggaae520250ac00985feaadcbd984c30ab1acc7580c6d50ad116c1c0deb3f7adf468',1,'backend_iface.hpp']]],
+  ['custom_5fargmax_5fc_9',['custom_argmax_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gaabe3a968977d394c41abf46deafb4823',1,'backend_iface.hpp']]],
+  ['custom_5fargmin_5fc_10',['custom_argmin_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gad925a19d35ea974cdb0a9e23e31c5cb7',1,'backend_iface.hpp']]],
+  ['custom_5fargsort_5fc_11',['custom_argsort_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gad607ce18859c93bb70014cf446ab5787',1,'backend_iface.hpp']]],
+  ['custom_5fcholesky_5fc_12',['custom_cholesky_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga0f669af7d821b7135aca6632b324103d',1,'backend_iface.hpp']]],
+  ['custom_5fcov_5fc_13',['custom_cov_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gadfea36ba00daa8231c5197dc61d4f95e',1,'backend_iface.hpp']]],
+  ['custom_5fdet_5fc_14',['custom_det_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gaf2ba17b5fa37eff32d8ca4d35c4bbcae',1,'backend_iface.hpp']]],
+  ['custom_5felemwise_5fabsolute_5fc_15',['custom_elemwise_absolute_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga8e440593dd207f34626c7d4a7f562e89',1,'backend_iface.hpp']]],
+  ['custom_5felemwise_5ftranspose_5fc_16',['custom_elemwise_transpose_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga1e0ad4e335285cc0304e8fee8ebcd805',1,'backend_iface.hpp']]],
+  ['custom_5fmatrix_5frank_5fc_17',['custom_matrix_rank_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga86e30feafaa67a6aabd87f724b1a7faa',1,'backend_iface.hpp']]],
+  ['custom_5fmax_5fc_18',['custom_max_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga5ca634f076900c3443ff3de5d7126151',1,'backend_iface.hpp']]],
+  ['custom_5fmean_5fc_19',['custom_mean_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga176790913b12b8d15e07b4989dfc26ed',1,'backend_iface.hpp']]],
+  ['custom_5fmedian_5fc_20',['custom_median_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gade7dec469a74faaba90f1571e83bc35b',1,'backend_iface.hpp']]],
+  ['custom_5fmin_5fc_21',['custom_min_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gad945a5de663dda1a7d1fb41b332cc51a',1,'backend_iface.hpp']]],
+  ['custom_5fprod_5fc_22',['custom_prod_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga678dbb163f4d1dd95988861f6ec67308',1,'backend_iface.hpp']]],
+  ['custom_5fsort_5fc_23',['custom_sort_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga927f47afe2d6036cec18b41c18125b0f',1,'backend_iface.hpp']]],
+  ['custom_5fstd_5fc_24',['custom_std_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga9a5f0b2afa4d43dcdac7bdbff4042666',1,'backend_iface.hpp']]],
+  ['custom_5fsum_5fc_25',['custom_sum_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gaae1f19c21fe74a79edcd5832568e3804',1,'backend_iface.hpp']]],
+  ['custom_5fvar_5fc_26',['custom_var_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga598d818af4a94d77931ea73c9b92659e',1,'backend_iface.hpp']]]
 ];

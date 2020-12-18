@@ -1,7 +1,0 @@
-<map id="backend_sycl::backend_sycl_queue_init" name="backend_sycl::backend_sycl_queue_init">
-<area shape="rect" id="node1" title=" " alt="" coords="623,23,779,65"/>
-<area shape="rect" id="node2" href="$group___b_a_c_k_e_n_d___a_p_i.html#gaa395545039faec446a1d206b139b1afc" title="SYCL queue initialization." alt="" coords="412,5,571,32"/>
-<area shape="rect" id="node3" href="$classbackend__sycl.html#ae542c859b7075e058f14197b025a1b4b" title=" " alt="" coords="408,56,575,83"/>
-<area shape="rect" id="node4" href="$classbackend__sycl.html#acbfb9c9036f30c6ffdfdc773f80fc9e1" title=" " alt="" coords="204,49,360,90"/>
-<area shape="rect" id="node5" href="$group___b_a_c_k_e_n_d___a_p_i.html#gadb54ac533c7a0dba465246f7e5a89161" title="SYCL queue device status." alt="" coords="5,56,156,83"/>
-</map>

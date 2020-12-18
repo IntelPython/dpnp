@@ -127,87 +127,130 @@ $(document).ready(function(){initNavTree('custom__1arg__2type__tbl_8hpp_source.h
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="preprocessor">#error &quot;MACRO_CUSTOM_1ARG_2TYPES_OP is not defined&quot;</span></div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_acos_c,</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;                            cl::sycl::acos(input_elem),</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                            oneapi::mkl::vm::acos(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_acosh_c,</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;                            cl::sycl::acosh(input_elem),</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                            oneapi::mkl::vm::acosh(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_asin_c,</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;                            cl::sycl::asin(input_elem),</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;                            oneapi::mkl::vm::asin(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_asinh_c,</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                            cl::sycl::asinh(input_elem),</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                            oneapi::mkl::vm::asinh(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_atan_c,</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                            cl::sycl::atan(input_elem),</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                            oneapi::mkl::vm::atan(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_atanh_c,</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                            cl::sycl::atanh(input_elem),</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                            oneapi::mkl::vm::atanh(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_cbrt_c,</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                            cl::sycl::cbrt(input_elem),</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                            oneapi::mkl::vm::cbrt(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_ceil_c,</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                            cl::sycl::ceil(input_elem),</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                            oneapi::mkl::vm::ceil(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_cos_c,</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                            cl::sycl::cos(input_elem),</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                            oneapi::mkl::vm::cos(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_cosh_c,</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;                            cl::sycl::cosh(input_elem),</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                            oneapi::mkl::vm::cosh(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_degrees_c, cl::sycl::degrees(input_elem), DPNP_QUEUE.submit(kernel_func))</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_exp2_c,</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                            cl::sycl::exp2(input_elem),</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                            oneapi::mkl::vm::exp2(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_exp_c,</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                            cl::sycl::exp(input_elem),</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                            oneapi::mkl::vm::exp(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_expm1_c,</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                            cl::sycl::expm1(input_elem),</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;                            oneapi::mkl::vm::expm1(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_fabs_c,</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;                            cl::sycl::fabs(input_elem),</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;                            oneapi::mkl::vm::abs(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_floor_c,</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;                            cl::sycl::floor(input_elem),</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;                            oneapi::mkl::vm::floor(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_log10_c,</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;                            cl::sycl::log10(input_elem),</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;                            oneapi::mkl::vm::log10(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_log1p_c,</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                            cl::sycl::log1p(input_elem),</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                            oneapi::mkl::vm::log1p(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_log2_c,</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;                            cl::sycl::log2(input_elem),</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;                            oneapi::mkl::vm::log2(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_log_c,</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;                            cl::sycl::log(input_elem),</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;                            oneapi::mkl::vm::ln(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_radians_c, cl::sycl::radians(input_elem), DPNP_QUEUE.submit(kernel_func))</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_sin_c,</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;                            cl::sycl::sin(input_elem),</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;                            oneapi::mkl::vm::sin(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_sinh_c,</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;                            cl::sycl::sinh(input_elem),</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;                            oneapi::mkl::vm::sinh(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_sqrt_c,</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;                            cl::sycl::sqrt(input_elem),</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;                            oneapi::mkl::vm::sqrt(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_tan_c,</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;                            cl::sycl::tan(input_elem),</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;                            oneapi::mkl::vm::tan(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_tanh_c,</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;                            cl::sycl::tanh(input_elem),</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;                            oneapi::mkl::vm::tanh(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_trunc_c,</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;                            cl::sycl::trunc(input_elem),</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;                            oneapi::mkl::vm::trunc(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160; </div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;<span class="preprocessor">#undef MACRO_CUSTOM_1ARG_2TYPES_OP</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="preprocessor">#ifdef _SECTION_DOCUMENTATION_GENERATION_</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="preprocessor">#define MACRO_CUSTOM_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)                                           \</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="preprocessor"> \</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="preprocessor"> \</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="preprocessor"> \</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="preprocessor"> \</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor"> \</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="preprocessor"> \</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="preprocessor"> \</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="preprocessor"> \</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="preprocessor">    template &lt;typename _DataType_input, typename _DataType_output&gt;                                                      \</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor">    void __name__(void* array1, void* result1, size_t size);</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga82638acf96407e401fb1554cb0a223fc">dpnp_acos_c</a>,</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                            cl::sycl::acos(input_elem),</div>
+<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga82638acf96407e401fb1554cb0a223fc">   60</a></span>&#160;                            oneapi::mkl::vm::acos(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gaf1dfc57d1f0023703130641e617689bf">dpnp_acosh_c</a>,</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                            cl::sycl::acosh(input_elem),</div>
+<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#gaf1dfc57d1f0023703130641e617689bf">   63</a></span>&#160;                            oneapi::mkl::vm::acosh(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gaad7b181075c76074fe0b17484767dac6">dpnp_asin_c</a>,</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                            cl::sycl::asin(input_elem),</div>
+<div class="line"><a name="l00066"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#gaad7b181075c76074fe0b17484767dac6">   66</a></span>&#160;                            oneapi::mkl::vm::asin(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gacf1514c0356e6afd9d1a42870b14b892">dpnp_asinh_c</a>,</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                            cl::sycl::asinh(input_elem),</div>
+<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#gacf1514c0356e6afd9d1a42870b14b892">   69</a></span>&#160;                            oneapi::mkl::vm::asinh(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga4ec759afa272fb94f4e29ced10354864">dpnp_atan_c</a>,</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                            cl::sycl::atan(input_elem),</div>
+<div class="line"><a name="l00072"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga4ec759afa272fb94f4e29ced10354864">   72</a></span>&#160;                            oneapi::mkl::vm::atan(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gaf104ca98ee4465f95421740cd4028062">dpnp_atanh_c</a>,</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                            cl::sycl::atanh(input_elem),</div>
+<div class="line"><a name="l00075"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#gaf104ca98ee4465f95421740cd4028062">   75</a></span>&#160;                            oneapi::mkl::vm::atanh(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga1c46a27841ac0c609fb6d83743921d4a">dpnp_cbrt_c</a>,</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                            cl::sycl::cbrt(input_elem),</div>
+<div class="line"><a name="l00078"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga1c46a27841ac0c609fb6d83743921d4a">   78</a></span>&#160;                            oneapi::mkl::vm::cbrt(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga195a1ff42f4243c2cc4315447694f89e">dpnp_ceil_c</a>,</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                            cl::sycl::ceil(input_elem),</div>
+<div class="line"><a name="l00081"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga195a1ff42f4243c2cc4315447694f89e">   81</a></span>&#160;                            oneapi::mkl::vm::ceil(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga7383b77007f41e7e96858088bf46d046">dpnp_cos_c</a>,</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;                            cl::sycl::cos(input_elem),</div>
+<div class="line"><a name="l00084"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga7383b77007f41e7e96858088bf46d046">   84</a></span>&#160;                            oneapi::mkl::vm::cos(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gaa2c797216624b21d93ac230b23193dc8">dpnp_cosh_c</a>,</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;                            cl::sycl::cosh(input_elem),</div>
+<div class="line"><a name="l00087"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#gaa2c797216624b21d93ac230b23193dc8">   87</a></span>&#160;                            oneapi::mkl::vm::cosh(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00088"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#gad0b499cc7d5d6d40bec16b3543f815b4">   88</a></span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gad0b499cc7d5d6d40bec16b3543f815b4">dpnp_degrees_c</a>, cl::sycl::degrees(input_elem), DPNP_QUEUE.submit(kernel_func))</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga6c157cc4305f594d872b82e8fede8c74">dpnp_exp2_c</a>,</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;                            cl::sycl::exp2(input_elem),</div>
+<div class="line"><a name="l00091"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga6c157cc4305f594d872b82e8fede8c74">   91</a></span>&#160;                            oneapi::mkl::vm::exp2(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga5635e77eba00f78f20d00bf6b5c217d9">dpnp_exp_c</a>,</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                            cl::sycl::exp(input_elem),</div>
+<div class="line"><a name="l00094"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga5635e77eba00f78f20d00bf6b5c217d9">   94</a></span>&#160;                            oneapi::mkl::vm::exp(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga5ecc8eb53942342e819e2a357a15ac19">dpnp_expm1_c</a>,</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;                            cl::sycl::expm1(input_elem),</div>
+<div class="line"><a name="l00097"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga5ecc8eb53942342e819e2a357a15ac19">   97</a></span>&#160;                            oneapi::mkl::vm::expm1(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gae189a473127125ebb678239f69a08aaa">dpnp_fabs_c</a>,</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;                            cl::sycl::fabs(input_elem),</div>
+<div class="line"><a name="l00100"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#gae189a473127125ebb678239f69a08aaa">  100</a></span>&#160;                            oneapi::mkl::vm::abs(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga1188618a247b67777c106b8f2c9f6eca">dpnp_floor_c</a>,</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;                            cl::sycl::floor(input_elem),</div>
+<div class="line"><a name="l00103"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga1188618a247b67777c106b8f2c9f6eca">  103</a></span>&#160;                            oneapi::mkl::vm::floor(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gacf32392a8bcf6e99c519bc4ced015201">dpnp_log10_c</a>,</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;                            cl::sycl::log10(input_elem),</div>
+<div class="line"><a name="l00106"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#gacf32392a8bcf6e99c519bc4ced015201">  106</a></span>&#160;                            oneapi::mkl::vm::log10(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gaef80e156976ed63a272317c1d89932bb">dpnp_log1p_c</a>,</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;                            cl::sycl::log1p(input_elem),</div>
+<div class="line"><a name="l00109"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#gaef80e156976ed63a272317c1d89932bb">  109</a></span>&#160;                            oneapi::mkl::vm::log1p(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga1a233378c931297047ab084758826972">dpnp_log2_c</a>,</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;                            cl::sycl::log2(input_elem),</div>
+<div class="line"><a name="l00112"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga1a233378c931297047ab084758826972">  112</a></span>&#160;                            oneapi::mkl::vm::log2(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga3f857c48532f6d8c2a227746205ffa56">dpnp_log_c</a>,</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;                            cl::sycl::log(input_elem),</div>
+<div class="line"><a name="l00115"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga3f857c48532f6d8c2a227746205ffa56">  115</a></span>&#160;                            oneapi::mkl::vm::ln(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00116"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga49dcacfecef40446301ddd1d4d63f57d">  116</a></span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga49dcacfecef40446301ddd1d4d63f57d">dpnp_radians_c</a>, cl::sycl::radians(input_elem), DPNP_QUEUE.submit(kernel_func))</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gacb9f222f176766ccc1761a7c940ce813">dpnp_sin_c</a>,</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;                            cl::sycl::sin(input_elem),</div>
+<div class="line"><a name="l00119"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#gacb9f222f176766ccc1761a7c940ce813">  119</a></span>&#160;                            oneapi::mkl::vm::sin(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gadcba3abd5387a46f51b0ececa82bf3cd">dpnp_sinh_c</a>,</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;                            cl::sycl::sinh(input_elem),</div>
+<div class="line"><a name="l00122"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#gadcba3abd5387a46f51b0ececa82bf3cd">  122</a></span>&#160;                            oneapi::mkl::vm::sinh(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gadd5f5495388d375ad5e5728955effdc3">dpnp_sqrt_c</a>,</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;                            cl::sycl::sqrt(input_elem),</div>
+<div class="line"><a name="l00125"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#gadd5f5495388d375ad5e5728955effdc3">  125</a></span>&#160;                            oneapi::mkl::vm::sqrt(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga312e6d54042adcf5f3142b602c111bd3">dpnp_tan_c</a>,</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;                            cl::sycl::tan(input_elem),</div>
+<div class="line"><a name="l00128"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga312e6d54042adcf5f3142b602c111bd3">  128</a></span>&#160;                            oneapi::mkl::vm::tan(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga2de426275f6882f5a355e72aeb76c59d">dpnp_tanh_c</a>,</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;                            cl::sycl::tanh(input_elem),</div>
+<div class="line"><a name="l00131"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga2de426275f6882f5a355e72aeb76c59d">  131</a></span>&#160;                            oneapi::mkl::vm::tanh(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;MACRO_CUSTOM_1ARG_2TYPES_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga5650891f669fd10b7f15b6fbd3833400">dpnp_trunc_c</a>,</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;                            cl::sycl::trunc(input_elem),</div>
+<div class="line"><a name="l00134"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga5650891f669fd10b7f15b6fbd3833400">  134</a></span>&#160;                            oneapi::mkl::vm::trunc(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160; </div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;<span class="preprocessor">#undef MACRO_CUSTOM_1ARG_2TYPES_OP</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_gacf32392a8bcf6e99c519bc4ced015201"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#gacf32392a8bcf6e99c519bc4ced015201">dpnp_log10_c</a></div><div class="ttdeci">void dpnp_log10_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_log10_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga2de426275f6882f5a355e72aeb76c59d"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga2de426275f6882f5a355e72aeb76c59d">dpnp_tanh_c</a></div><div class="ttdeci">void dpnp_tanh_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_tanh_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_gadd5f5495388d375ad5e5728955effdc3"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#gadd5f5495388d375ad5e5728955effdc3">dpnp_sqrt_c</a></div><div class="ttdeci">void dpnp_sqrt_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_sqrt_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_gadcba3abd5387a46f51b0ececa82bf3cd"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#gadcba3abd5387a46f51b0ececa82bf3cd">dpnp_sinh_c</a></div><div class="ttdeci">void dpnp_sinh_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_sinh_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga312e6d54042adcf5f3142b602c111bd3"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga312e6d54042adcf5f3142b602c111bd3">dpnp_tan_c</a></div><div class="ttdeci">void dpnp_tan_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_tan_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga7383b77007f41e7e96858088bf46d046"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga7383b77007f41e7e96858088bf46d046">dpnp_cos_c</a></div><div class="ttdeci">void dpnp_cos_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_cos_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga1a233378c931297047ab084758826972"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga1a233378c931297047ab084758826972">dpnp_log2_c</a></div><div class="ttdeci">void dpnp_log2_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_log2_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga82638acf96407e401fb1554cb0a223fc"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga82638acf96407e401fb1554cb0a223fc">dpnp_acos_c</a></div><div class="ttdeci">void dpnp_acos_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_acos_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga5650891f669fd10b7f15b6fbd3833400"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga5650891f669fd10b7f15b6fbd3833400">dpnp_trunc_c</a></div><div class="ttdeci">void dpnp_trunc_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_trunc_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_gaf104ca98ee4465f95421740cd4028062"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#gaf104ca98ee4465f95421740cd4028062">dpnp_atanh_c</a></div><div class="ttdeci">void dpnp_atanh_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_atanh_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_gad0b499cc7d5d6d40bec16b3543f815b4"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#gad0b499cc7d5d6d40bec16b3543f815b4">dpnp_degrees_c</a></div><div class="ttdeci">void dpnp_degrees_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_degrees_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_gaa2c797216624b21d93ac230b23193dc8"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#gaa2c797216624b21d93ac230b23193dc8">dpnp_cosh_c</a></div><div class="ttdeci">void dpnp_cosh_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_cosh_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_gaad7b181075c76074fe0b17484767dac6"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#gaad7b181075c76074fe0b17484767dac6">dpnp_asin_c</a></div><div class="ttdeci">void dpnp_asin_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_asin_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_gae189a473127125ebb678239f69a08aaa"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#gae189a473127125ebb678239f69a08aaa">dpnp_fabs_c</a></div><div class="ttdeci">void dpnp_fabs_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_fabs_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga1188618a247b67777c106b8f2c9f6eca"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga1188618a247b67777c106b8f2c9f6eca">dpnp_floor_c</a></div><div class="ttdeci">void dpnp_floor_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_floor_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga6c157cc4305f594d872b82e8fede8c74"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga6c157cc4305f594d872b82e8fede8c74">dpnp_exp2_c</a></div><div class="ttdeci">void dpnp_exp2_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_exp2_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga5635e77eba00f78f20d00bf6b5c217d9"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga5635e77eba00f78f20d00bf6b5c217d9">dpnp_exp_c</a></div><div class="ttdeci">void dpnp_exp_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_exp_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_gacf1514c0356e6afd9d1a42870b14b892"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#gacf1514c0356e6afd9d1a42870b14b892">dpnp_asinh_c</a></div><div class="ttdeci">void dpnp_asinh_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_asinh_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga5ecc8eb53942342e819e2a357a15ac19"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga5ecc8eb53942342e819e2a357a15ac19">dpnp_expm1_c</a></div><div class="ttdeci">void dpnp_expm1_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_expm1_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga195a1ff42f4243c2cc4315447694f89e"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga195a1ff42f4243c2cc4315447694f89e">dpnp_ceil_c</a></div><div class="ttdeci">void dpnp_ceil_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_ceil_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga49dcacfecef40446301ddd1d4d63f57d"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga49dcacfecef40446301ddd1d4d63f57d">dpnp_radians_c</a></div><div class="ttdeci">void dpnp_radians_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_radians_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga1c46a27841ac0c609fb6d83743921d4a"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga1c46a27841ac0c609fb6d83743921d4a">dpnp_cbrt_c</a></div><div class="ttdeci">void dpnp_cbrt_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_cbrt_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_gacb9f222f176766ccc1761a7c940ce813"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#gacb9f222f176766ccc1761a7c940ce813">dpnp_sin_c</a></div><div class="ttdeci">void dpnp_sin_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_sin_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga4ec759afa272fb94f4e29ced10354864"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga4ec759afa272fb94f4e29ced10354864">dpnp_atan_c</a></div><div class="ttdeci">void dpnp_atan_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_atan_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_gaf1dfc57d1f0023703130641e617689bf"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#gaf1dfc57d1f0023703130641e617689bf">dpnp_acosh_c</a></div><div class="ttdeci">void dpnp_acosh_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_acosh_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_gaef80e156976ed63a272317c1d89932bb"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#gaef80e156976ed63a272317c1d89932bb">dpnp_log1p_c</a></div><div class="ttdeci">void dpnp_log1p_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_log1p_c</div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga3f857c48532f6d8c2a227746205ffa56"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga3f857c48532f6d8c2a227746205ffa56">dpnp_log_c</a></div><div class="ttdeci">void dpnp_log_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_log_c</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

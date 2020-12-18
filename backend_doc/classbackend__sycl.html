@@ -103,12 +103,12 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a299f7e42c037f7ae60853df21ecf4848"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbackend__sycl.html#a299f7e42c037f7ae60853df21ecf4848">backend_sycl_queue_init</a> (<a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaae520250ac00985feaadcbd984c30ab1">QueueOptions</a> selector=QueueOptions::CPU_SELECTOR)</td></tr>
-<tr class="separator:a299f7e42c037f7ae60853df21ecf4848"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acbfb9c9036f30c6ffdfdc773f80fc9e1"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbackend__sycl.html#acbfb9c9036f30c6ffdfdc773f80fc9e1">backend_sycl_is_cpu</a> ()</td></tr>
-<tr class="separator:acbfb9c9036f30c6ffdfdc773f80fc9e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa19e6be66be2be23d07b588adc1ac919"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbackend__sycl.html#aa19e6be66be2be23d07b588adc1ac919">backend_sycl_rng_engine_init</a> (size_t seed=1)</td></tr>
-<tr class="separator:aa19e6be66be2be23d07b588adc1ac919"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44575a403c1ef8e750611b09e60990ee"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbackend__sycl.html#a44575a403c1ef8e750611b09e60990ee">backend_sycl_queue_init</a> (<a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaae520250ac00985feaadcbd984c30ab1">QueueOptions</a> selector=QueueOptions::CPU_SELECTOR)</td></tr>
+<tr class="separator:a44575a403c1ef8e750611b09e60990ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4294b3addf34cf0b1416c6f11229ca26"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbackend__sycl.html#a4294b3addf34cf0b1416c6f11229ca26">backend_sycl_is_cpu</a> ()</td></tr>
+<tr class="separator:a4294b3addf34cf0b1416c6f11229ca26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e1c099a21299e72a2b8fc9e4414c78d"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbackend__sycl.html#a1e1c099a21299e72a2b8fc9e4414c78d">backend_sycl_rng_engine_init</a> (size_t seed=1)</td></tr>
+<tr class="separator:a1e1c099a21299e72a2b8fc9e4414c78d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae542c859b7075e058f14197b025a1b4b"><td class="memItemLeft" align="right" valign="top">static cl::sycl::queue &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbackend__sycl.html#ae542c859b7075e058f14197b025a1b4b">get_queue</a> ()</td></tr>
 <tr class="separator:ae542c859b7075e058f14197b025a1b4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9531c22868410d767bc1d959d036e286"><td class="memItemLeft" align="right" valign="top">static mkl_rng::mt19937 &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbackend__sycl.html#a9531c22868410d767bc1d959d036e286">get_rng_engine</a> ()</td></tr>
@@ -147,8 +147,8 @@ Static Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="acbfb9c9036f30c6ffdfdc773f80fc9e1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acbfb9c9036f30c6ffdfdc773f80fc9e1">&#9670;&nbsp;</a></span>backend_sycl_is_cpu()</h2>
+<a id="a4294b3addf34cf0b1416c6f11229ca26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4294b3addf34cf0b1416c6f11229ca26">&#9670;&nbsp;</a></span>backend_sycl_is_cpu()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -157,7 +157,7 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool backend_sycl::backend_sycl_is_cpu </td>
+          <td class="memname">static bool backend_sycl::backend_sycl_is_cpu </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -171,31 +171,10 @@ Static Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Return True if current queue is related to cpu or host device </p>
 
-<p class="definition">Definition at line <a class="el" href="queue__sycl_8cpp_source.html#l00124">124</a> of file <a class="el" href="queue__sycl_8cpp_source.html">queue_sycl.cpp</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="classbackend__sycl_acbfb9c9036f30c6ffdfdc773f80fc9e1_cgraph.png" border="0" usemap="#aclassbackend__sycl_acbfb9c9036f30c6ffdfdc773f80fc9e1_cgraph" alt=""/></div>
-<map name="classbackend__sycl_acbfb9c9036f30c6ffdfdc773f80fc9e1_cgraph" id="aclassbackend__sycl_acbfb9c9036f30c6ffdfdc773f80fc9e1_cgraph">
-<area shape="rect" title=" " alt="" coords="5,5,161,47"/>
-<area shape="rect" href="classbackend__sycl.html#ae542c859b7075e058f14197b025a1b4b" title=" " alt="" coords="209,13,376,39"/>
-<area shape="rect" href="classbackend__sycl.html#a299f7e42c037f7ae60853df21ecf4848" title=" " alt="" coords="424,5,580,47"/>
-</map>
-</div>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="classbackend__sycl_acbfb9c9036f30c6ffdfdc773f80fc9e1_icgraph.png" border="0" usemap="#aclassbackend__sycl_acbfb9c9036f30c6ffdfdc773f80fc9e1_icgraph" alt=""/></div>
-<map name="classbackend__sycl_acbfb9c9036f30c6ffdfdc773f80fc9e1_icgraph" id="aclassbackend__sycl_acbfb9c9036f30c6ffdfdc773f80fc9e1_icgraph">
-<area shape="rect" title=" " alt="" coords="204,5,360,47"/>
-<area shape="rect" href="group___b_a_c_k_e_n_d___a_p_i.html#gadb54ac533c7a0dba465246f7e5a89161" title="SYCL queue device status." alt="" coords="5,13,156,39"/>
-</map>
-</div>
-
 </div>
 </div>
-<a id="a299f7e42c037f7ae60853df21ecf4848"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a299f7e42c037f7ae60853df21ecf4848">&#9670;&nbsp;</a></span>backend_sycl_queue_init()</h2>
+<a id="a44575a403c1ef8e750611b09e60990ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44575a403c1ef8e750611b09e60990ee">&#9670;&nbsp;</a></span>backend_sycl_queue_init()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -204,7 +183,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void backend_sycl::backend_sycl_queue_init </td>
+          <td class="memname">static void backend_sycl::backend_sycl_queue_init </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaae520250ac00985feaadcbd984c30ab1">QueueOptions</a>&#160;</td>
           <td class="paramname"><em>selector</em> = <code>QueueOptions::CPU_SELECTOR</code></td><td>)</td>
@@ -218,25 +197,20 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 <p>Initialize queue </p>
-
-<p class="definition">Definition at line <a class="el" href="queue__sycl_8cpp_source.html#l00080">80</a> of file <a class="el" href="queue__sycl_8cpp_source.html">queue_sycl.cpp</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classbackend__sycl_a299f7e42c037f7ae60853df21ecf4848_icgraph.png" border="0" usemap="#aclassbackend__sycl_a299f7e42c037f7ae60853df21ecf4848_icgraph" alt=""/></div>
-<map name="classbackend__sycl_a299f7e42c037f7ae60853df21ecf4848_icgraph" id="aclassbackend__sycl_a299f7e42c037f7ae60853df21ecf4848_icgraph">
-<area shape="rect" title=" " alt="" coords="623,23,779,65"/>
-<area shape="rect" href="group___b_a_c_k_e_n_d___a_p_i.html#gaa395545039faec446a1d206b139b1afc" title="SYCL queue initialization." alt="" coords="412,5,571,32"/>
-<area shape="rect" href="classbackend__sycl.html#ae542c859b7075e058f14197b025a1b4b" title=" " alt="" coords="408,56,575,83"/>
-<area shape="rect" href="classbackend__sycl.html#acbfb9c9036f30c6ffdfdc773f80fc9e1" title=" " alt="" coords="204,49,360,90"/>
-<area shape="rect" href="group___b_a_c_k_e_n_d___a_p_i.html#gadb54ac533c7a0dba465246f7e5a89161" title="SYCL queue device status." alt="" coords="5,56,156,83"/>
+<div class="center"><img src="classbackend__sycl_a44575a403c1ef8e750611b09e60990ee_icgraph.png" border="0" usemap="#aclassbackend__sycl_a44575a403c1ef8e750611b09e60990ee_icgraph" alt=""/></div>
+<map name="classbackend__sycl_a44575a403c1ef8e750611b09e60990ee_icgraph" id="aclassbackend__sycl_a44575a403c1ef8e750611b09e60990ee_icgraph">
+<area shape="rect" title=" " alt="" coords="220,5,376,47"/>
+<area shape="rect" href="classbackend__sycl.html#ae542c859b7075e058f14197b025a1b4b" title=" " alt="" coords="5,13,172,39"/>
 </map>
 </div>
 
 </div>
 </div>
-<a id="aa19e6be66be2be23d07b588adc1ac919"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa19e6be66be2be23d07b588adc1ac919">&#9670;&nbsp;</a></span>backend_sycl_rng_engine_init()</h2>
+<a id="a1e1c099a21299e72a2b8fc9e4414c78d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e1c099a21299e72a2b8fc9e4414c78d">&#9670;&nbsp;</a></span>backend_sycl_rng_engine_init()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -245,7 +219,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void backend_sycl::backend_sycl_rng_engine_init </td>
+          <td class="memname">static void backend_sycl::backend_sycl_rng_engine_init </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>seed</em> = <code>1</code></td><td>)</td>
@@ -259,16 +233,13 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 <p>Initialize rng_engine </p>
-
-<p class="definition">Definition at line <a class="el" href="queue__sycl_8cpp_source.html#l00136">136</a> of file <a class="el" href="queue__sycl_8cpp_source.html">queue_sycl.cpp</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classbackend__sycl_aa19e6be66be2be23d07b588adc1ac919_icgraph.png" border="0" usemap="#aclassbackend__sycl_aa19e6be66be2be23d07b588adc1ac919_icgraph" alt=""/></div>
-<map name="classbackend__sycl_aa19e6be66be2be23d07b588adc1ac919_icgraph" id="aclassbackend__sycl_aa19e6be66be2be23d07b588adc1ac919_icgraph">
-<area shape="rect" title=" " alt="" coords="204,27,360,69"/>
-<area shape="rect" href="group___b_a_c_k_e_n_d___a_p_i.html#ga0038297e25b24c5eb47820c31f12be8d" title="initializer for basic random number generator." alt="" coords="29,5,132,32"/>
-<area shape="rect" href="classbackend__sycl.html#a9531c22868410d767bc1d959d036e286" title=" " alt="" coords="5,57,156,98"/>
+<div class="center"><img src="classbackend__sycl_a1e1c099a21299e72a2b8fc9e4414c78d_icgraph.png" border="0" usemap="#aclassbackend__sycl_a1e1c099a21299e72a2b8fc9e4414c78d_icgraph" alt=""/></div>
+<map name="classbackend__sycl_a1e1c099a21299e72a2b8fc9e4414c78d_icgraph" id="aclassbackend__sycl_a1e1c099a21299e72a2b8fc9e4414c78d_icgraph">
+<area shape="rect" title=" " alt="" coords="204,5,360,47"/>
+<area shape="rect" href="classbackend__sycl.html#a9531c22868410d767bc1d959d036e286" title=" " alt="" coords="5,5,156,47"/>
 </map>
 </div>
 
@@ -305,17 +276,7 @@ Here is the call graph for this function:</div>
 <div class="center"><img src="classbackend__sycl_ae542c859b7075e058f14197b025a1b4b_cgraph.png" border="0" usemap="#aclassbackend__sycl_ae542c859b7075e058f14197b025a1b4b_cgraph" alt=""/></div>
 <map name="classbackend__sycl_ae542c859b7075e058f14197b025a1b4b_cgraph" id="aclassbackend__sycl_ae542c859b7075e058f14197b025a1b4b_cgraph">
 <area shape="rect" title=" " alt="" coords="5,13,172,39"/>
-<area shape="rect" href="classbackend__sycl.html#a299f7e42c037f7ae60853df21ecf4848" title=" " alt="" coords="220,5,376,47"/>
-</map>
-</div>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="classbackend__sycl_ae542c859b7075e058f14197b025a1b4b_icgraph.png" border="0" usemap="#aclassbackend__sycl_ae542c859b7075e058f14197b025a1b4b_icgraph" alt=""/></div>
-<map name="classbackend__sycl_ae542c859b7075e058f14197b025a1b4b_icgraph" id="aclassbackend__sycl_ae542c859b7075e058f14197b025a1b4b_icgraph">
-<area shape="rect" title=" " alt="" coords="408,13,575,39"/>
-<area shape="rect" href="classbackend__sycl.html#acbfb9c9036f30c6ffdfdc773f80fc9e1" title=" " alt="" coords="204,5,360,47"/>
-<area shape="rect" href="group___b_a_c_k_e_n_d___a_p_i.html#gadb54ac533c7a0dba465246f7e5a89161" title="SYCL queue device status." alt="" coords="5,13,156,39"/>
+<area shape="rect" href="classbackend__sycl.html#a44575a403c1ef8e750611b09e60990ee" title=" " alt="" coords="220,5,376,47"/>
 </map>
 </div>
 
@@ -352,15 +313,14 @@ Here is the call graph for this function:</div>
 <div class="center"><img src="classbackend__sycl_a9531c22868410d767bc1d959d036e286_cgraph.png" border="0" usemap="#aclassbackend__sycl_a9531c22868410d767bc1d959d036e286_cgraph" alt=""/></div>
 <map name="classbackend__sycl_a9531c22868410d767bc1d959d036e286_cgraph" id="aclassbackend__sycl_a9531c22868410d767bc1d959d036e286_cgraph">
 <area shape="rect" title=" " alt="" coords="5,5,156,47"/>
-<area shape="rect" href="classbackend__sycl.html#aa19e6be66be2be23d07b588adc1ac919" title=" " alt="" coords="204,5,360,47"/>
+<area shape="rect" href="classbackend__sycl.html#a1e1c099a21299e72a2b8fc9e4414c78d" title=" " alt="" coords="204,5,360,47"/>
 </map>
 </div>
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following files:<ul>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li><a class="el" href="queue__sycl_8hpp_source.html">queue_sycl.hpp</a></li>
-<li><a class="el" href="queue__sycl_8cpp_source.html">queue_sycl.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
