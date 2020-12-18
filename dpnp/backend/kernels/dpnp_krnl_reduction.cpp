@@ -48,10 +48,8 @@ void custom_sum_c(void* array1_in, void* result1, size_t size)
 
     if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
     {
-        // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-make_dataset.html
         auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, size, array_1);
 
-        // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-raw_sum.html
         cl::sycl::event event = mkl_stats::raw_sum(DPNP_QUEUE, dataset, result);
 
         event.wait();
