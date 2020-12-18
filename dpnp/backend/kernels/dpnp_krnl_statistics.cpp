@@ -144,10 +144,8 @@ void custom_max_c(void* array1_in, void* result1, const size_t* shape, size_t nd
         // Required initializing the result before call the function
         result[0] = array_1[0];
 
-        // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-make_dataset.html
         auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, size, array_1);
 
-        // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-max.html
         cl::sycl::event event = mkl_stats::max(DPNP_QUEUE, dataset, result);
 
         event.wait();
@@ -187,10 +185,8 @@ void custom_mean_c(void* array1_in, void* result1, const size_t* shape, size_t n
     {
         _ResultType* array = reinterpret_cast<_DataType*>(array1_in);
 
-        // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-make_dataset.html
         auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, size, array);
 
-        // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-mean.html
         cl::sycl::event event = mkl_stats::mean(DPNP_QUEUE, dataset, result);
 
         event.wait();
@@ -263,10 +259,8 @@ void custom_min_c(void* array1_in, void* result1, const size_t* shape, size_t nd
             // Required initializing the result before call the function
             result[0] = array_1[0];
 
-            // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-make_dataset.html
             auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, size, array_1);
 
-            // https://docs.oneapi.com/versions/latest/onemkl/mkl-stats-min.html
             cl::sycl::event event = mkl_stats::min(DPNP_QUEUE, dataset, result);
 
             event.wait();

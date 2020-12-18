@@ -17,7 +17,7 @@ python setup.py build_ext --inplace
 
 echo
 echo =========example3==============
-clang++ -g -fPIC examples/example3.cpp -Idpnp -Idpnp/backend -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example3
+clang++ -g -fPIC dpnp/backend/examples/example3.cpp -Idpnp -Idpnp/backend -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example3
 ./example3
 
 echo
