@@ -136,7 +136,7 @@ void dpnp_fft_fft_c(const void* array1_in,
 #if 0 // keep this code
     oneapi::mkl::dft::descriptor<mkl_dft::precision::DOUBLE, mkl_dft::domain::COMPLEX> desc(result_size);
     desc.set_value(mkl_dft::config_param::FORWARD_SCALE, static_cast<double>(result_size));
-    desc.set_value(mkl_dft::config_param::PLACEMENT, DFTI_NOT_INPLACE); // enum value from MKL C interface
+    desc.set_value(mkl_dft::config_param::PLACEMENT, DFTI_NOT_INPLACE); // enum value from math library C interface
     desc.commit(DPNP_QUEUE);
 
     event = mkl_dft::compute_forward(desc, array_1, result);
