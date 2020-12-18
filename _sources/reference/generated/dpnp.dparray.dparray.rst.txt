@@ -98,6 +98,18 @@
    .. automethod:: sum
 
 
+   .. automethod:: tobytes
+
+
+   .. automethod:: tofile
+
+
+   .. automethod:: tolist
+
+
+   .. automethod:: tostring
+
+
    .. automethod:: transpose
 
 
