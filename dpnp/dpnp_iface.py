@@ -139,7 +139,7 @@ def get_include():
     Return the directory that contains the DPNP C++ backend \\*.h header files.
     """
 
-    dpnp_path = os.path.join(os.path.dirname(__file__), 'backend')
+    dpnp_path = os.path.join(os.path.dirname(__file__), "backend", "include")
 
     return dpnp_path
 

@@ -27,9 +27,9 @@
 #include <iostream>
 #include <vector>
 
-#include <backend_iface.hpp>
-#include "backend_fptr.hpp"
-#include "backend_utils.hpp"
+#include <dpnp_iface.hpp>
+#include "dpnp_fptr.hpp"
+#include "dpnp_utils.hpp"
 #include "queue_sycl.hpp"
 
 template <typename _KernelNameSpecialization>

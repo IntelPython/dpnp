@@ -39,9 +39,7 @@
 #ifndef BACKEND_IFACE_FPTR_H // Cython compatibility
 #define BACKEND_IFACE_FPTR_H
 
-#include <vector>
-
-#include <backend_iface.hpp>
+#include <dpnp_iface.hpp>
 
 /**
  * @defgroup BACKEND_FUNC_PTR_API Backend C++ library runtime interface API

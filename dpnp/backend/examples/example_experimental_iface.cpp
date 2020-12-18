@@ -29,13 +29,13 @@
  * This example shows how to get a runtime pointer from DPNP C++ Backend library
  *
  * Possible compile line:
- * clang++ examples/example_experimental_iface.cpp -o example_experimental_iface -Idpnp -Idpnp/backend -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c
+ * clang++ examples/example_experimental_iface.cpp -o example_experimental_iface -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c
  *
  */
 
 #include <iostream>
 
-#include <backend_iface_fptr.hpp>
+#include <dpnp_iface_fptr.hpp>
 // TODO #include <backend/backend_utils.hpp>
 
 int main(int, char**)

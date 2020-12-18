@@ -27,9 +27,9 @@
 #include <iostream>
 #include <type_traits>
 
-#include <backend_iface.hpp>
-#include "backend_fptr.hpp"
-#include "backend_utils.hpp"
+#include <dpnp_iface.hpp>
+#include "dpnp_fptr.hpp"
+#include "dpnp_utils.hpp"
 #include "queue_sycl.hpp"
 
 namespace mkl_blas = oneapi::mkl::blas;

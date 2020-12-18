@@ -25,8 +25,8 @@
 
 #include <iostream>
 
-#include "backend_fptr.hpp"
-#include "backend_iface.hpp"
+#include "dpnp_fptr.hpp"
+#include "dpnp_iface.hpp"
 #include "queue_sycl.hpp"
 
 template <typename _KernelNameSpecialization>
@@ -96,7 +96,7 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
         event.wait();                                                                                                  \
     }
 
-#include <custom_2arg_1type_tbl.hpp>
+#include <dpnp_gen_2arg_1type_tbl.hpp>
 
 static void func_map_init_bitwise_2arg_1type(func_map_t& fmap)
 {

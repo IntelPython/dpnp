@@ -26,8 +26,8 @@
 #include <cmath>
 #include <iostream>
 
-#include <backend_iface.hpp>
-#include "backend_fptr.hpp"
+#include <dpnp_iface.hpp>
+#include "dpnp_fptr.hpp"
 #include "queue_sycl.hpp"
 
 namespace mkl_stats = oneapi::mkl::stats;

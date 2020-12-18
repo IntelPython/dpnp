@@ -30,13 +30,13 @@
  * to calculate sum of the given elements vector
  *
  * Possible compile line:
- * clang++ -g -fPIC examples/example9.cpp -Idpnp -Idpnp/backend -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example9
+ * clang++ -g -fPIC examples/example9.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example9
  *
  */
 
 #include <iostream>
 
-#include "backend_iface.hpp"
+#include "dpnp_iface.hpp"
 
 int main(int, char**)
 {
