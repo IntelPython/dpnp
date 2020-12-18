@@ -59,6 +59,7 @@ __all__ = [
     "cumsum",
     "diff",
     "divide",
+    "ediff1d",
     "fabs",
     "floor",
     "floor_divide",
@@ -429,6 +430,57 @@ def divide(x1, x2, **kwargs):
         return dpnp_divide(x1, x2)
 
     return call_origin(numpy.divide, x1, x2, **kwargs)
+
+
+def ediff1d(x1, to_end=None, to_begin=None):
+    """
+    The differences between consecutive elements of an array.
+
+    For full documentation refer to :obj:`numpy.ediff1d`.
+
+    Limitations
+    -----------
+        Parameter ``x1``, ``to_begin``, ``to_end`` are supported as :obj:`dpnp.ndarray`.
+        Otherwise the function will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    ..seealso:: :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given axis.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 4, 7, 0])
+    >>> result = np.ediff1d(a)
+    >>> [x for x in result]
+    [1, 2, 3, -7]
+    >>> result = np.ediff1d(a, to_begin=np.array([-99, -88]), to_end=np.array([88, 99]))
+    >>> [x for x in result]
+    [-99, -88, 1, 2, 3, -7, 88, 99]
+    >>> b = np.array([[1, 2, 4], [1, 6, 24]])
+    >>> result = np.ediff1d(b)
+    >>> [x for x in result]
+    [1, 2, -3, 5, 18]
+
+    """
+
+    if not use_origin_backend(x1):
+
+        if not isinstance(x1, dparray):
+            pass
+        elif not isinstance(to_end, dparray) and to_end is not None:
+            pass
+        elif not isinstance(to_begin, dparray) and to_begin is not None:
+            pass
+        else:
+
+            if to_end is None:
+                to_end = dpnp.empty(0, dtype=x1.dtype)
+            if to_begin is None:
+                to_begin = dpnp.empty(0, dtype=x1.dtype)
+
+            return dpnp_ediff1d(x1, to_end=to_end, to_begin=to_begin)
+
+    return call_origin(numpy.ediff1d, x1, to_end=to_end, to_begin=to_begin)
 
 
 def fabs(x1, **kwargs):

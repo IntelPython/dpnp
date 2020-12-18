@@ -50,6 +50,7 @@ __all__ += [
     "dpnp_cumsum",
     "dpnp_diff",
     "dpnp_divide",
+    "dpnp_ediff1d",
     "dpnp_fabs",
     "dpnp_floor",
     "dpnp_floor_divide",
@@ -199,6 +200,40 @@ cpdef dparray dpnp_diff(dparray input, int n):
 
 cpdef dparray dpnp_divide(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_DIVIDE, x1, x2, x1.shape)
+
+
+cpdef dparray dpnp_ediff1d(dparray x1, dparray to_end, dparray to_begin):
+
+    types_map = {
+        'int32': dpnp.int64,
+        'int64': dpnp.int64,
+        'float32': dpnp.float32,
+        'float64': dpnp.float64
+    }
+
+    res_type = types_map[x1.dtype.name]
+
+    res_size = x1.size - 1 + to_end.size + to_begin.size
+
+    cdef dparray result = dparray(res_size, dtype=res_type)
+
+    ind = 0
+
+    for i in range(ind, to_begin.size):
+        result._setitem_scalar(i, to_begin[i])
+
+    ind += to_begin.size
+
+    for i in range(ind, ind + x1.size - 1):
+        cur_res = x1[i - ind + 1] - x1[i - ind]
+        result._setitem_scalar(i, cur_res)
+
+    ind += x1.size - 1
+
+    for i in range(ind, ind + to_end.size):
+        result._setitem_scalar(i, to_end[i - ind])
+
+    return result
 
 
 cpdef dparray dpnp_fabs(dparray x1):
