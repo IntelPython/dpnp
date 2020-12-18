@@ -39,6 +39,23 @@
 #error "MACRO_CUSTOM_2ARG_3TYPES_OP is not defined"
 #endif
 
+#ifdef _SECTION_DOCUMENTATION_GENERATION_
+
+#define MACRO_CUSTOM_2ARG_3TYPES_OP(__name__, __operation1__, __operation2__)                                           \
+    /** @ingroup BACKEND_API                                                                                         */ \
+    /** @brief Per element operation function __name__                                                               */ \
+    /**                                                                                                              */ \
+    /** Function "__name__" executes operator "__operation1__" over corresponding elements of input arrays           */ \
+    /**                                                                                                              */ \
+    /** @param[in]  array1   Input array 1.                                                                          */ \
+    /** @param[in]  array2   Input array 2.                                                                          */ \
+    /** @param[out] result1  Output array.                                                                           */ \
+    /** @param[in]  size     Number of elements in the output array.                                                 */ \
+    template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>                          \
+    void __name__(void* array1, void* array2, void* result1, size_t size);
+
+#endif
+
 MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_add_c, input_elem1 + input_elem2, oneapi::mkl::vm::add)
 MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_arctan2_c,
                             cl::sycl::atan2((double)input_elem1, (double)input_elem2),
