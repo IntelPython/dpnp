@@ -105,6 +105,6 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_tan_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga312e6d54042adcf5f3142b602c111bd3", null ],
     [ "dpnp_tanh_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga2de426275f6882f5a355e72aeb76c59d", null ],
     [ "dpnp_trunc_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga5650891f669fd10b7f15b6fbd3833400", null ],
-    [ "get_dpnp_function_ptr", "group___b_a_c_k_e_n_d___a_p_i.html#ga257d96b384892c9c961137fa8f870a11", null ],
-    [ "get_dpnp_function_ptr1", "group___b_a_c_k_e_n_d___a_p_i.html#gadfa7d3c5bbdbfb6ff8cc44bee40b621f", null ]
+    [ "get_dpnp_function_ptr", "group___b_a_c_k_e_n_d___a_p_i.html#ga5d37203d4448c22f7b046710d639fd4e", null ],
+    [ "get_dpnp_function_ptr1", "group___b_a_c_k_e_n_d___a_p_i.html#gaa4be84f68fb1e6f7a0706e22378d54e0", null ]
 ];
