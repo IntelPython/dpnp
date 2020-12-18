@@ -504,36 +504,12 @@ INP_DLLEXPORT void custom_var_c(
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
 
-/**
- * @ingroup BACKEND_API
- * @brief Bitwise function __name__
- *
- * __name__ function called with the SYCL backend.
- *
- * @param [in]  array1_in  First input array.
- *
- * @param [in]  array2_in  Second input array.
- *
- * @param [out] result1    Output array.
- *
- * @param [in]  size       Number of elements in the input array.
- *
- */
 #define MACRO_CUSTOM_2ARG_1TYPE_OP(__name__, __operation__)                                                            \
     template <typename _DataType>                                                                                      \
     INP_DLLEXPORT void __name__(void* array1_in1, void* array2_in, void* result1, size_t size);
 
 #include <custom_2arg_1type_tbl.hpp>
 
-/**
- * @ingroup BACKEND_API
- * @brief Element wise function __name__
- *
- * __name__ function called with the SYCL backend.
- *
- * @param [in]  size  Number of elements in the input array.
- *
- */
 #define MACRO_CUSTOM_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                           \
     template <typename _DataType>                                                                                      \
     INP_DLLEXPORT void __name__(void* array1, void* result1, size_t size);

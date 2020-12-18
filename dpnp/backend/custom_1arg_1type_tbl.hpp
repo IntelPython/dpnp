@@ -39,6 +39,22 @@
 #error "MACRO_CUSTOM_1ARG_1TYPE_OP is not defined"
 #endif
 
+#ifdef _SECTION_DOCUMENTATION_GENERATION_
+
+#define MACRO_CUSTOM_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                            \
+    /** @ingroup BACKEND_API                                                                                         */ \
+    /** @brief Per element operation function __name__                                                               */ \
+    /**                                                                                                              */ \
+    /** Function "__name__" executes operator "__operation1__" over each element of the array                        */ \
+    /**                                                                                                              */ \
+    /** @param[in]  array1   Input array.                                                                            */ \
+    /** @param[out] result1  Output array.                                                                           */ \
+    /** @param[in]  size     Number of elements in the input array.                                                  */ \
+    template <typename _DataType>                                                                                       \
+    void __name__(void* array1, void* result1, size_t size);
+
+#endif
+
 MACRO_CUSTOM_1ARG_1TYPE_OP(dpnp_recip_c,
                            _DataType(1) / input_elem,
                            DPNP_QUEUE.submit(kernel_func)) // error: no member named 'recip' in namespace 'cl::sycl'

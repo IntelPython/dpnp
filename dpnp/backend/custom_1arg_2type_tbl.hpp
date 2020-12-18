@@ -39,6 +39,22 @@
 #error "MACRO_CUSTOM_1ARG_2TYPES_OP is not defined"
 #endif
 
+#ifdef _SECTION_DOCUMENTATION_GENERATION_
+
+#define MACRO_CUSTOM_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)                                           \
+    /** @ingroup BACKEND_API                                                                                         */ \
+    /** @brief Per element operation function __name__                                                               */ \
+    /**                                                                                                              */ \
+    /** Function "__name__" executes operator "__operation1__" over each element of the array                        */ \
+    /**                                                                                                              */ \
+    /** @param[in]  array1   Input array.                                                                            */ \
+    /** @param[out] result1  Output array.                                                                           */ \
+    /** @param[in]  size     Number of elements in the input array.                                                  */ \
+    template <typename _DataType_input, typename _DataType_output>                                                      \
+    void __name__(void* array1, void* result1, size_t size);
+
+#endif
+
 MACRO_CUSTOM_1ARG_2TYPES_OP(dpnp_acos_c,
                             cl::sycl::acos(input_elem),
                             oneapi::mkl::vm::acos(DPNP_QUEUE, size, array1, result))
