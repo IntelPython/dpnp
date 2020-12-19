@@ -248,7 +248,9 @@ Final set of arguments for extentions
 _project_extra_link_args = _project_cmplr_flag_compatibility + \
     ["-Wl,-rpath," + x for x in _project_rpath] + _sdl_ldflags
 _project_dir = os.path.dirname(os.path.abspath(__file__))
-_project_backend_dir = [os.path.join(_project_dir, "dpnp", "backend")]
+_project_backend_dir = [os.path.join(_project_dir, "dpnp", "backend", "include"),
+                        os.path.join(_project_dir, "dpnp", "backend", "src") # not a public headers location
+                        ]
 
 
 """
@@ -275,7 +277,6 @@ dpnp_backend_c = [
     ["dpnp_backend_c",
         {
             "sources": [
-                "dpnp/backend/backend_iface_fptr.cpp",
                 "dpnp/backend/kernels/dpnp_krnl_bitwise.cpp",
                 "dpnp/backend/kernels/dpnp_krnl_common.cpp",
                 "dpnp/backend/kernels/dpnp_krnl_elemwise.cpp",
@@ -288,8 +289,9 @@ dpnp_backend_c = [
                 "dpnp/backend/kernels/dpnp_krnl_searching.cpp",
                 "dpnp/backend/kernels/dpnp_krnl_sorting.cpp",
                 "dpnp/backend/kernels/dpnp_krnl_statistics.cpp",
-                "dpnp/backend/memory_sycl.cpp",
-                "dpnp/backend/queue_sycl.cpp"
+                "dpnp/backend/src/dpnp_iface_fptr.cpp",
+                "dpnp/backend/src/memory_sycl.cpp",
+                "dpnp/backend/src/queue_sycl.cpp"
             ],
             "include_dirs": _cmplr_include + _dpl_include + _mathlib_include + _project_backend_dir + _dpctrl_include,
             "library_dirs": _mathlib_path + _omp_libpath + _dpctrl_libpath,

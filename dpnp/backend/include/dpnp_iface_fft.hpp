@@ -39,7 +39,7 @@
 #ifndef BACKEND_IFACE_FFT_H // Cython compatibility
 #define BACKEND_IFACE_FFT_H
 
-#include <cstdint>
+// #include <cstdint>
 
 // TODO needs to move into common place like backend_defs.hpp
 #ifdef _WIN

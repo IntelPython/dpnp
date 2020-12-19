@@ -35,7 +35,7 @@
 #include <cstring>
 #include <stdexcept>
 
-#include "backend_fptr.hpp"
+#include "dpnp_fptr.hpp"
 
 static func_map_t func_map_init();
 

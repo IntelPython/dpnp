@@ -27,7 +27,7 @@
 #include <exception>
 #include <iostream>
 
-#include <backend_iface.hpp>
+#include <dpnp_iface.hpp>
 #include "queue_sycl.hpp"
 
 #if defined(DPNP_LOCAL_QUEUE)

@@ -26,9 +26,9 @@
 #include <cmath>
 #include <iostream>
 
-#include <backend_iface.hpp>
-#include "backend_fptr.hpp"
-#include "backend_utils.hpp"
+#include <dpnp_iface.hpp>
+#include "dpnp_fptr.hpp"
+#include "dpnp_utils.hpp"
 #include "queue_sycl.hpp"
 
 #define MACRO_CUSTOM_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)                                          \
@@ -68,7 +68,7 @@
         event.wait();                                                                                                  \
     }
 
-#include <custom_1arg_2type_tbl.hpp>
+#include <dpnp_gen_1arg_2type_tbl.hpp>
 
 static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
 {
@@ -247,7 +247,7 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
         event.wait();                                                                                                  \
     }
 
-#include <custom_1arg_1type_tbl.hpp>
+#include <dpnp_gen_1arg_1type_tbl.hpp>
 
 template <typename _KernelNameSpecialization>
 class dpnp_arange_c_kernel;
@@ -351,7 +351,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
         event.wait();                                                                                                  \
     }
 
-#include <custom_2arg_3type_tbl.hpp>
+#include <dpnp_gen_2arg_3type_tbl.hpp>
 
 static void func_map_init_elemwise_2arg_3type(func_map_t& fmap)
 {

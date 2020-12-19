@@ -34,7 +34,7 @@
 
 #include <map>
 
-#include <backend_iface_fptr.hpp>
+#include <dpnp_iface_fptr.hpp>
 
 /**
  * Data storage type of the FPTR interface

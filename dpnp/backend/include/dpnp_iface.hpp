@@ -42,7 +42,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "backend_iface_fft.hpp"
+#include "dpnp_iface_fft.hpp"
 
 #ifdef _WIN
 #define INP_DLLEXPORT __declspec(dllexport)
@@ -508,25 +508,25 @@ INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
     template <typename _DataType>                                                                                      \
     INP_DLLEXPORT void __name__(void* array1_in1, void* array2_in, void* result1, size_t size);
 
-#include <custom_2arg_1type_tbl.hpp>
+#include <dpnp_gen_2arg_1type_tbl.hpp>
 
 #define MACRO_CUSTOM_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                           \
     template <typename _DataType>                                                                                      \
     INP_DLLEXPORT void __name__(void* array1, void* result1, size_t size);
 
-#include <custom_1arg_1type_tbl.hpp>
+#include <dpnp_gen_1arg_1type_tbl.hpp>
 
 #define MACRO_CUSTOM_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)                                          \
     template <typename _DataType_input, typename _DataType_output>                                                     \
     INP_DLLEXPORT void __name__(void* array1, void* result1, size_t size);
 
-#include <custom_1arg_2type_tbl.hpp>
+#include <dpnp_gen_1arg_2type_tbl.hpp>
 
 #define MACRO_CUSTOM_2ARG_3TYPES_OP(__name__, __operation1__, __operation2__)                                          \
     template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>                         \
     INP_DLLEXPORT void __name__(void* array1, void* array2, void* result1, size_t size);
 
-#include <custom_2arg_3type_tbl.hpp>
+#include <dpnp_gen_2arg_3type_tbl.hpp>
 
 /**
  * @ingroup BACKEND_API

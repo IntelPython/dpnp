@@ -31,7 +31,7 @@
 #include <iostream>
 #include <iterator>
 
-#include <backend_iface_fptr.hpp>
+#include <dpnp_iface_fptr.hpp>
 
 /**
  * @defgroup BACKEND_UTILS Backend C++ library utilities
