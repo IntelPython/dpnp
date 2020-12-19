@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.20"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>DPNP C++ backend kernel library: /github/workspace/dpnp/backend/queue_sycl.hpp Source File</title>
+<title>DPNP C++ backend kernel library: /github/workspace/dpnp/backend/src/queue_sycl.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -84,7 +84,7 @@ $(document).ready(function(){initNavTree('queue__sycl_8hpp_source.html',''); ini
 
 <div class="header">
   <div class="headertitle">
-<div class="title">/github/workspace/dpnp/backend/queue_sycl.hpp</div>  </div>
+<div class="title">queue_sycl.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">//*****************************************************************************</span></div>
@@ -133,7 +133,7 @@ $(document).ready(function(){initNavTree('queue__sycl_8hpp_source.html',''); ini
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="preprocessor">#include &lt;dpctl_sycl_queue_manager.h&gt;</span></div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="preprocessor">#include &quot;backend_pstl.hpp&quot;</span> <span class="comment">// this header must be included after &lt;mkl.hpp&gt;</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="preprocessor">#include &quot;dpnp_pstl.hpp&quot;</span> <span class="comment">// this header must be included after &lt;mkl.hpp&gt;</span></div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keyword">namespace </span>mkl_rng = oneapi::mkl::rng;</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
@@ -218,13 +218,13 @@ $(document).ready(function(){initNavTree('queue__sycl_8hpp_source.html',''); ini
 <div class="ttc" id="aclassbackend__sycl_html_a9531c22868410d767bc1d959d036e286"><div class="ttname"><a href="classbackend__sycl.html#a9531c22868410d767bc1d959d036e286">backend_sycl::get_rng_engine</a></div><div class="ttdeci">static mkl_rng::mt19937 &amp; get_rng_engine()</div><div class="ttdef"><b>Definition:</b> <a href="queue__sycl_8hpp_source.html#l00139">queue_sycl.hpp:139</a></div></div>
 <div class="ttc" id="aclassbackend__sycl_html_ae542c859b7075e058f14197b025a1b4b"><div class="ttname"><a href="classbackend__sycl.html#ae542c859b7075e058f14197b025a1b4b">backend_sycl::get_queue</a></div><div class="ttdeci">static cl::sycl::queue &amp; get_queue()</div><div class="ttdef"><b>Definition:</b> <a href="queue__sycl_8hpp_source.html#l00120">queue_sycl.hpp:120</a></div></div>
 <div class="ttc" id="aclassbackend__sycl_html"><div class="ttname"><a href="classbackend__sycl.html">backend_sycl</a></div><div class="ttdef"><b>Definition:</b> <a href="queue__sycl_8hpp_source.html#l00060">queue_sycl.hpp:61</a></div></div>
-<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_gaae520250ac00985feaadcbd984c30ab1"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#gaae520250ac00985feaadcbd984c30ab1">QueueOptions</a></div><div class="ttdeci">QueueOptions</div><div class="ttdoc">SYCL queue initialization selector.</div><div class="ttdef"><b>Definition:</b> <a href="backend__iface_8hpp_source.html#l00067">backend_iface.hpp:68</a></div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_gaae520250ac00985feaadcbd984c30ab1"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#gaae520250ac00985feaadcbd984c30ab1">QueueOptions</a></div><div class="ttdeci">QueueOptions</div><div class="ttdoc">SYCL queue initialization selector.</div><div class="ttdef"><b>Definition:</b> <a href="dpnp__iface_8hpp_source.html#l00067">dpnp_iface.hpp:68</a></div></div>
 <div class="ttc" id="aclassbackend__sycl_html_a30a828cca8de39d1b782696819820566"><div class="ttname"><a href="classbackend__sycl.html#a30a828cca8de39d1b782696819820566">backend_sycl::backend_sycl</a></div><div class="ttdeci">backend_sycl(const backend_sycl &amp;)=delete</div></div>
 <div class="ttc" id="aclassbackend__sycl_html_a4294b3addf34cf0b1416c6f11229ca26"><div class="ttname"><a href="classbackend__sycl.html#a4294b3addf34cf0b1416c6f11229ca26">backend_sycl::backend_sycl_is_cpu</a></div><div class="ttdeci">static bool backend_sycl_is_cpu()</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><b>queue_sycl.hpp</b></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><b>queue_sycl.hpp</b></li>
     <li class="footer">Generated by <a href="http://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.8.20 </li>
   </ul>
 </div>
