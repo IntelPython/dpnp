@@ -43,10 +43,8 @@ set(CMAKE_CXX_FLAGS "-fsycl -DDPNP_LOCAL_QUEUE=1 -DMKL_ILP64=1")
 # TODO replace this hardcode with finding of libs
 set(CMAKE_SHARED_LINKER_FLAGS "-lmkl_rt -lmkl_sycl -lmkl_intel_ilp64 -lmkl_sequential -lmkl_core -lsycl -lOpenCL -lpthread -lm -ldl")
 
-add_library(
-    dpnp_backend_c
-    SHARED
-    backend_iface_fptr.cpp
+add_library(dpnp_backend_c SHARED
+    src/dpnp_iface_fptr.cpp
     kernels/dpnp_krnl_bitwise.cpp
     kernels/dpnp_krnl_common.cpp
     kernels/dpnp_krnl_elemwise.cpp
@@ -58,8 +56,8 @@ add_library(
     kernels/dpnp_krnl_searching.cpp
     kernels/dpnp_krnl_sorting.cpp
     kernels/dpnp_krnl_statistics.cpp
-    memory_sycl.cpp
-    queue_sycl.cpp
+    src/memory_sycl.cpp
+    src/queue_sycl.cpp
 )
 
 target_include_directories(

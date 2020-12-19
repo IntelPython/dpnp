@@ -35,6 +35,9 @@ to run specific test case:
 >>> python -m tests_external.numpy.runtests core/tests/test_umath.py::TestHypot::test_simple
 """
 
+import numpy.conftest
+import numpy.core._rational_tests
+import numpy
 import argparse
 import unittest
 import site
@@ -172,7 +175,7 @@ dpnp.zeros(shape, dtype=dpnp.dtype(dict(
 dpnp.array = replace_arg_value(dpnp.array, 0, [dpnp.nan, [None]], [dpnp.nan])
 dpnp.array = replace_arg_value(dpnp.array, 0, [[['one', 'two'], ['three', 'four']]], [[], []])
 dpnp.array = replace_kwarg_value(dpnp.array, 'dtype', ['m8', dpnp.uint8, 'i4,i4', object], None)
-dpnp.full = replace_arg_value(dpnp.full, 1, [-2**64+1], 0)
+dpnp.full = replace_arg_value(dpnp.full, 1, [-2**64 + 1], 0)
 dpnp.full = replace_kwarg_value(dpnp.full, 'dtype', [object], None)
 dpnp.ones = redefine_strides(dpnp.ones)
 dpnp.zeros = replace_kwarg_value(dpnp.zeros, 'dtype', [
@@ -224,11 +227,6 @@ dpnp.linalg._umath_linalg = dummymodule
 dpnp.ufunc = types.FunctionType
 
 
-import numpy
-import numpy.core._rational_tests
-
-import numpy.conftest
-
 # setting some numpy attrubutes to dpnp
 NUMPY_ONLY_ATTRS = [
     '_NoValue', 'errstate', 'finfo', 'iinfo', 'inf', 'intp', 'longdouble',
@@ -243,13 +241,13 @@ LD_INFO = numpy.finfo(numpy.longdouble)
 ldbl = 1 + LD_INFO.eps
 D_INFO = numpy.finfo(numpy.float64)
 dbl = 1 + D_INFO.eps
-dpnp.array = replace_arg_value(dpnp.array, 0, [[ldbl]*5], [dbl]*5)
+dpnp.array = replace_arg_value(dpnp.array, 0, [[ldbl] * 5], [dbl] * 5)
 
 # to be able to import core/tests/test_ufunc.py
 unary_ufuncs = [obj for obj in numpy.core.umath.__dict__.values()
-                    if isinstance(obj, numpy.ufunc)]
+                if isinstance(obj, numpy.ufunc)]
 unary_object_ufuncs_names = {uf.__name__ for uf in unary_ufuncs
-                                         if 'O->O' in uf.types}
+                             if 'O->O' in uf.types}
 define_func_types(dpnp, unary_object_ufuncs_names, 'O->O')
 
 dpnp.conftest = numpy.conftest
