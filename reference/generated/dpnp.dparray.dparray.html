@@ -409,6 +409,12 @@ Otherwise, it returns a (possibly casted) copy of the array.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="dpnp.dparray.dparray.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of the array.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="dpnp.dparray.dparray.fill">
 <code class="sig-name descname">fill</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.fill" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fill the array with a scalar value.</p>
@@ -514,6 +520,10 @@ Otherwise, it returns a (possibly casted) copy of the array.</p>
 <dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Unlike the free function <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.reshape</span></code>, this method on <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>
+allows the elements of the shape parameter to be passed in as separate arguments.
+For example, <code class="docutils literal notranslate"><span class="pre">a.reshape(10,</span> <span class="pre">11)</span></code> is equivalent to <code class="docutils literal notranslate"><span class="pre">a.reshape((10,</span> <span class="pre">11))</span></code>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="dpnp.ravel.html#dpnp.ravel" title="dpnp.ravel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ravel</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.flat</span></code></p>
