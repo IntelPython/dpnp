@@ -47,17 +47,17 @@ add_library(
     dpnp_backend_c
     SHARED
     backend_iface_fptr.cpp
-    custom_kernels.cpp
-    custom_kernels_bitwise.cpp
-    custom_kernels_elemwise.cpp
-    custom_kernels_linalg.cpp
-    custom_kernels_manipulation.cpp
-    custom_kernels_mathematical.cpp
-    custom_kernels_reduction.cpp
-    custom_kernels_searching.cpp
-    custom_kernels_sorting.cpp
-    custom_kernels_statistics.cpp
-    dpnp_kernels_random.cpp
+    kernels/dpnp_krnl_bitwise.cpp
+    kernels/dpnp_krnl_common.cpp
+    kernels/dpnp_krnl_elemwise.cpp
+    kernels/dpnp_krnl_linalg.cpp
+    kernels/dpnp_krnl_manipulation.cpp
+    kernels/dpnp_krnl_mathematical.cpp
+    kernels/dpnp_krnl_random.cpp
+    kernels/dpnp_krnl_reduction.cpp
+    kernels/dpnp_krnl_searching.cpp
+    kernels/dpnp_krnl_sorting.cpp
+    kernels/dpnp_krnl_statistics.cpp
     memory_sycl.cpp
     queue_sycl.cpp
 )

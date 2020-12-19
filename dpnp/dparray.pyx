@@ -1024,8 +1024,36 @@ cdef class dparray:
         else:
             return transpose(self)
 
-    cpdef item(self, size_t id):
-        """Return the item described by id."""
+    cpdef item(self, id=None):
+        """Copy an element of an array to a standard Python scalar and return it.
+
+        For full documentation refer to :obj:`numpy.ndarray.item`.
+
+        Examples
+        --------
+        >>> np.random.seed(123)
+        >>> x = np.random.randint(9, size=(3, 3))
+        >>> x
+        array([[2, 2, 6],
+               [1, 3, 6],
+               [1, 0, 1]])
+        >>> x.item(3)
+        1
+        >>> x.item(7)
+        0
+        >>> x.item((0, 1))
+        2
+        >>> x.item((2, 2))
+        1
+
+        """
+
+        if id is None:
+            if self.size != 1:
+                raise ValueError("DPNP dparray::item(): can only convert an array of size 1 to a Python scalar")
+            else:
+                id = 0
+
         return self[id]
 
     cdef void * get_data(self):
@@ -1058,3 +1086,88 @@ cdef class dparray:
     def copy(self, order="C"):
         """Return a copy of the array."""
         return copy(self, order=order)
+
+    def tobytes(self, order='C'):
+        """ Construct Python bytes containing the raw data bytes in the array.
+
+        For full documentation refer to :obj:`numpy.ndarray.tobytes`.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.array([[0, 1], [2, 3]], dtype='<u2')
+        >>> x.tobytes()
+        b'\x00\x00\x01\x00\x02\x00\x03\x00'
+        >>> x.tobytes('C') == x.tobytes()
+        True
+        >>> x.tobytes('F')
+        b'\x00\x00\x02\x00\x01\x00\x03\x00'
+
+        """
+
+        return asnumpy(self).tobytes(order)
+
+    def tofile(self, fid, sep="", format="%s"):
+        """ Write array to a file as text or binary (default).
+
+        For full documentation refer to :obj:`numpy.ndarray.tofile`.
+
+        """
+
+        return asnumpy(self).tobytes(fid, sep, format)
+
+    def tolist(self):
+        """ Return the array as an ``a.ndim``-levels deep nested list of Python scalars.
+
+        For full documentation refer to :obj:`numpy.ndarray.tolist`.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        For a 1D array, ``a.tolist()`` is almost the same as ``list(a)``,
+        except that ``tolist`` changes numpy scalars to Python scalars:
+
+        >>> a = np.uint32([1, 2])
+        >>> a_list = list(a)
+        >>> a_list
+        [1, 2]
+        >>> type(a_list[0])
+        <class 'numpy.uint32'>
+        >>> a_tolist = a.tolist()
+        >>> a_tolist
+        [1, 2]
+        >>> type(a_tolist[0])
+        <class 'int'>
+
+        Additionally, for a 2D array, ``tolist`` applies recursively:
+
+        >>> a = np.array([[1, 2], [3, 4]])
+        >>> list(a)
+        [array([1, 2]), array([3, 4])]
+        >>> a.tolist()
+        [[1, 2], [3, 4]]
+
+        The base case for this recursion is a 0D array:
+
+        >>> a = np.array(1)
+        >>> list(a)
+        Traceback (most recent call last):
+          ...
+        TypeError: iteration over a 0-d array
+        >>> a.tolist()
+        1
+
+        """
+
+        return asnumpy(self).tolist()
+
+    def tostring(self, order='C'):
+        """ Construct Python bytes containing the raw data bytes in the array.
+
+        This function is a compatibility alias for tobytes. Despite its name it returns bytes not strings.
+
+        For full documentation refer to :obj:`numpy.ndarray.tostring`.
+
+        """
+
+        return asnumpy(self).tostring(order)

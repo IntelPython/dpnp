@@ -248,7 +248,9 @@ Final set of arguments for extentions
 _project_extra_link_args = _project_cmplr_flag_compatibility + \
     ["-Wl,-rpath," + x for x in _project_rpath] + _sdl_ldflags
 _project_dir = os.path.dirname(os.path.abspath(__file__))
-_project_backend_dir = [os.path.join(_project_dir, "dpnp", "backend")]
+_project_backend_dir = [os.path.join(_project_dir, "dpnp", "backend", "include"),
+                        os.path.join(_project_dir, "dpnp", "backend", "src") # not a public headers location
+                        ]
 
 
 """
@@ -275,21 +277,21 @@ dpnp_backend_c = [
     ["dpnp_backend_c",
         {
             "sources": [
-                "dpnp/backend/backend_iface_fptr.cpp",
-                "dpnp/backend/custom_kernels_bitwise.cpp",
-                "dpnp/backend/custom_kernels.cpp",
-                "dpnp/backend/custom_kernels_elemwise.cpp",
-                "dpnp/backend/custom_kernels_linalg.cpp",
-                "dpnp/backend/custom_kernels_manipulation.cpp",
-                "dpnp/backend/custom_kernels_mathematical.cpp",
-                "dpnp/backend/custom_kernels_reduction.cpp",
-                "dpnp/backend/custom_kernels_searching.cpp",
-                "dpnp/backend/custom_kernels_sorting.cpp",
-                "dpnp/backend/custom_kernels_statistics.cpp",
-                "dpnp/backend/dpnp_kernels_fft.cpp",
-                "dpnp/backend/dpnp_kernels_random.cpp",
-                "dpnp/backend/memory_sycl.cpp",
-                "dpnp/backend/queue_sycl.cpp"
+                "dpnp/backend/kernels/dpnp_krnl_bitwise.cpp",
+                "dpnp/backend/kernels/dpnp_krnl_common.cpp",
+                "dpnp/backend/kernels/dpnp_krnl_elemwise.cpp",
+                "dpnp/backend/kernels/dpnp_krnl_fft.cpp",
+                "dpnp/backend/kernels/dpnp_krnl_linalg.cpp",
+                "dpnp/backend/kernels/dpnp_krnl_manipulation.cpp",
+                "dpnp/backend/kernels/dpnp_krnl_mathematical.cpp",
+                "dpnp/backend/kernels/dpnp_krnl_random.cpp",
+                "dpnp/backend/kernels/dpnp_krnl_reduction.cpp",
+                "dpnp/backend/kernels/dpnp_krnl_searching.cpp",
+                "dpnp/backend/kernels/dpnp_krnl_sorting.cpp",
+                "dpnp/backend/kernels/dpnp_krnl_statistics.cpp",
+                "dpnp/backend/src/dpnp_iface_fptr.cpp",
+                "dpnp/backend/src/memory_sycl.cpp",
+                "dpnp/backend/src/queue_sycl.cpp"
             ],
             "include_dirs": _cmplr_include + _dpl_include + _mathlib_include + _project_backend_dir + _dpctrl_include,
             "library_dirs": _mathlib_path + _omp_libpath + _dpctrl_libpath,
