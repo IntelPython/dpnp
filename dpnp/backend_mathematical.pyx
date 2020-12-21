@@ -114,13 +114,13 @@ cpdef dparray dpnp_copysign(dparray x1, dparray x2):
 cpdef dparray dpnp_cumprod(dparray x1, bint usenan=False):
 
     types_map = {
-        'int32': dpnp.int64,
-        'int64': dpnp.int64,
-        'float32': dpnp.float32,
-        'float64': dpnp.float64
+        dpnp.int32: dpnp.int64,
+        dpnp.int64: dpnp.int64,
+        dpnp.float32: dpnp.float32,
+        dpnp.float64: dpnp.float64
     }
 
-    res_type = types_map[x1.dtype.name]
+    res_type = types_map[x1.dtype.type]
 
     cdef dparray result = dparray(x1.size, dtype=res_type)
 
@@ -139,13 +139,13 @@ cpdef dparray dpnp_cumprod(dparray x1, bint usenan=False):
 cpdef dparray dpnp_cumsum(dparray x1, bint usenan=False):
 
     types_map = {
-        'int32': dpnp.int64,
-        'int64': dpnp.int64,
-        'float32': dpnp.float32,
-        'float64': dpnp.float64
+        dpnp.int32: dpnp.int64,
+        dpnp.int64: dpnp.int64,
+        dpnp.float32: dpnp.float32,
+        dpnp.float64: dpnp.float64
     }
 
-    res_type = types_map[x1.dtype.name]
+    res_type = types_map[x1.dtype.type]
 
     cdef dparray result = dparray(x1.size, dtype=res_type)
 
