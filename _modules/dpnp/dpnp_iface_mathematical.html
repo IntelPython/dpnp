@@ -211,6 +211,7 @@
     <span class="s2">&quot;cumsum&quot;</span><span class="p">,</span>
     <span class="s2">&quot;diff&quot;</span><span class="p">,</span>
     <span class="s2">&quot;divide&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ediff1d&quot;</span><span class="p">,</span>
     <span class="s2">&quot;fabs&quot;</span><span class="p">,</span>
     <span class="s2">&quot;floor&quot;</span><span class="p">,</span>
     <span class="s2">&quot;floor_divide&quot;</span><span class="p">,</span>
@@ -580,6 +581,57 @@
         <span class="k">return</span> <span class="n">dpnp_divide</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">divide</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">ediff1d</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">to_end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">to_begin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The differences between consecutive elements of an array.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.ediff1d`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">        Parameter ``x1``, ``to_begin``, ``to_end`` are supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">        Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">        Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+
+<span class="sd">    ..seealso:: :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given axis.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 2, 4, 7, 0])</span>
+<span class="sd">    &gt;&gt;&gt; result = np.ediff1d(a)</span>
+<span class="sd">    &gt;&gt;&gt; [x for x in result]</span>
+<span class="sd">    [1, 2, 3, -7]</span>
+<span class="sd">    &gt;&gt;&gt; result = np.ediff1d(a, to_begin=np.array([-99, -88]), to_end=np.array([88, 99]))</span>
+<span class="sd">    &gt;&gt;&gt; [x for x in result]</span>
+<span class="sd">    [-99, -88, 1, 2, 3, -7, 88, 99]</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([[1, 2, 4], [1, 6, 24]])</span>
+<span class="sd">    &gt;&gt;&gt; result = np.ediff1d(b)</span>
+<span class="sd">    &gt;&gt;&gt; [x for x in result]</span>
+<span class="sd">    [1, 2, -3, 5, 18]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">to_end</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">to_end</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">to_begin</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">to_begin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">to_end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">to_end</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x1</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">to_begin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">to_begin</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x1</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">dpnp_ediff1d</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">to_end</span><span class="o">=</span><span class="n">to_end</span><span class="p">,</span> <span class="n">to_begin</span><span class="o">=</span><span class="n">to_begin</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">ediff1d</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">to_end</span><span class="o">=</span><span class="n">to_end</span><span class="p">,</span> <span class="n">to_begin</span><span class="o">=</span><span class="n">to_begin</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="fabs"><a class="viewcode-back" href="../../reference/generated/dpnp.fabs.html#dpnp.fabs">[docs]</a><span class="k">def</span> <span class="nf">fabs</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
