@@ -6,17 +6,17 @@
 # full list see the documentation:
 # http://www.sphinx-doc.org/en/master/config
 
-# -- Path setup --------------------------------------------------------------
+try:
+    import comparison_generator
+except ImportError:
+    # If extensions (or modules to document with autodoc) are in another directory,
+    # add these directories to sys.path here. If the directory is relative to the
+    # documentation root, use os.path.abspath to make it absolute, like shown here.
+    import os
+    import sys
 
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-
-import os
-import sys
-
-sys.path.insert(0, os.path.abspath('.'))
-import comparison_generator
+    sys.path.insert(0, os.path.abspath('.'))
+    import comparison_generator
 
 
 # Generate comparison table.

@@ -1,4 +1,3 @@
-# cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2020, Intel Corporation
@@ -25,31 +24,17 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""Module DParray
-Represents multi-dimensional array using USM interface for an Intel GPU device.
-
+"""
+To run numpy tests under dpnp.
+>>> python -m tests.third_party.numpy_ext
+to run specific test suite:
+>>> python -m tests.third_party.numpy_ext core/tests/test_umath.py
+to run specific test case:
+>>> python -m tests.third_party.numpy_ext core/tests/test_umath.py::TestHypot::test_simple
 """
 
+from tests_external.numpy import runtests
 
-from libcpp.vector cimport vector
 
-
-ctypedef vector.vector[long] dparray_shape_type
-
-cdef class dparray:
-    """Multi-dimensional array using USM interface for an Intel GPU device.
-
-    """
-
-    cdef:
-        readonly Py_ssize_t _dparray_size
-        public dparray_shape_type _dparray_shape
-        public dparray_shape_type _dparray_strides
-        readonly object _dparray_dtype
-        readonly char * _dparray_data
-        size_t iter_idx
-
-    cdef void * get_data(self)
-
-    cpdef item(self, id=*)
-    cpdef dparray astype(self, dtype, order=*, casting=*, subok=*, copy=*)
+code = runtests.run()
+exit(code)

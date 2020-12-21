@@ -1,5 +1,3 @@
-# cython: language_level=3
-# -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2020, Intel Corporation
 # All rights reserved.
@@ -25,31 +23,25 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""Module DParray
-Represents multi-dimensional array using USM interface for an Intel GPU device.
+# The following variables are optionally searched for defaults
+#  PSTL_ROOT_DIR:     Base directory where all components are found
+#
+# The following are set after configuration is done:
+#  PSTL_FOUND
+#  PSTL_INCLUDE_DIR
 
-"""
+include(FindPackageHandleStandardArgs)
 
+set(PSTL_ROOT_DIR "/opt/intel/oneapi/dpl" CACHE PATH "Folder contains mathlib")
 
-from libcpp.vector cimport vector
+find_path(PSTL_INCLUDE_DIR oneapi/dpl/algorithm
+    HINTS ENV CONDA_PREFIX ${PSTL_ROOT_DIR}      # search order is important
+    PATH_SUFFIXES include latest/linux/include
+    DOC "Path to PSTL include files")
 
+find_package_handle_standard_args(PSTL DEFAULT_MSG PSTL_INCLUDE_DIR)
 
-ctypedef vector.vector[long] dparray_shape_type
-
-cdef class dparray:
-    """Multi-dimensional array using USM interface for an Intel GPU device.
-
-    """
-
-    cdef:
-        readonly Py_ssize_t _dparray_size
-        public dparray_shape_type _dparray_shape
-        public dparray_shape_type _dparray_strides
-        readonly object _dparray_dtype
-        readonly char * _dparray_data
-        size_t iter_idx
-
-    cdef void * get_data(self)
-
-    cpdef item(self, id=*)
-    cpdef dparray astype(self, dtype, order=*, casting=*, subok=*, copy=*)
+if(PSTL_FOUND)
+    message(STATUS "Found PSTL: (include: ${PSTL_INCLUDE_DIR})")
+    mark_as_advanced(PSTL_ROOT_DIR PSTL_INCLUDE_DIR)
+endif()

@@ -1,5 +1,3 @@
-# cython: language_level=3
-# -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2020, Intel Corporation
 # All rights reserved.
@@ -25,31 +23,36 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""Module DParray
-Represents multi-dimensional array using USM interface for an Intel GPU device.
+# The following variables are optionally searched for defaults
+#  MATHLIB_ROOT_DIR:     Base directory where all components are found
+#
+# The following are set after configuration is done:
+#  MATHLIB_FOUND
+#  MATHLIB_INCLUDE_DIR
+#  MATHLIB_LIBRARY_DIR
 
-"""
+include(FindPackageHandleStandardArgs)
 
+set(MATHLIB_ROOT_DIR "/opt/intel/oneapi/mkl" CACHE PATH "Folder contains mathlib")
+set(MATHLIB_SYCL_LIB ${CMAKE_SHARED_LIBRARY_PREFIX}mkl_sycl${CMAKE_SHARED_LIBRARY_SUFFIX})
 
-from libcpp.vector cimport vector
+find_path(MATHLIB_INCLUDE_DIR oneapi/mkl.hpp
+    HINTS ENV CONDA_PREFIX ${MATHLIB_ROOT_DIR}   # search order is important
+    PATH_SUFFIXES include latest/include
+    DOC "Path to mathlib include files")
 
+find_path(MATHLIB_LIBRARY_DIR ${MATHLIB_SYCL_LIB}
+    HINTS ENV CONDA_PREFIX ${MATHLIB_ROOT_DIR}   # search order is important
+    PATH_SUFFIXES lib latest/lib/intel64
+    DOC "Path to mathlib library files")
 
-ctypedef vector.vector[long] dparray_shape_type
+# TODO implement recurcive searching
+# file(GLOB_RECURSE MY_PATH "/opt/intel/*/mkl.hpp")
+# message(STATUS "+++++++++++++: (include: ${MY_PATH})")
 
-cdef class dparray:
-    """Multi-dimensional array using USM interface for an Intel GPU device.
+find_package_handle_standard_args(MathLib DEFAULT_MSG MATHLIB_INCLUDE_DIR MATHLIB_LIBRARY_DIR)
 
-    """
-
-    cdef:
-        readonly Py_ssize_t _dparray_size
-        public dparray_shape_type _dparray_shape
-        public dparray_shape_type _dparray_strides
-        readonly object _dparray_dtype
-        readonly char * _dparray_data
-        size_t iter_idx
-
-    cdef void * get_data(self)
-
-    cpdef item(self, id=*)
-    cpdef dparray astype(self, dtype, order=*, casting=*, subok=*, copy=*)
+if(MathLib_FOUND)
+    message(STATUS "Found MathLib: (include: ${MATHLIB_INCLUDE_DIR}, library: ${MATHLIB_LIBRARY_DIR})")
+    mark_as_advanced(MATHLIB_ROOT_DIR MATHLIB_INCLUDE_DIR MATHLIB_LIBRARY_DIR)
+endif()
