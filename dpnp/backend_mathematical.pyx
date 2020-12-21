@@ -205,13 +205,16 @@ cpdef dparray dpnp_divide(dparray x1, dparray x2):
 cpdef dparray dpnp_ediff1d(dparray x1, dparray to_end, dparray to_begin):
 
     types_map = {
-        'int32': dpnp.int64,
-        'int64': dpnp.int64,
-        'float32': dpnp.float32,
-        'float64': dpnp.float64
+        dpnp.int32: dpnp.int64,
+        dpnp.int64: dpnp.int64,
+        dpnp.float32: dpnp.float32,
+        dpnp.float64: dpnp.float64
     }
 
-    res_type = types_map[x1.dtype.name]
+    if x1.dtype.type in types_map:
+        res_type = types_map[x1.dtype.type]
+    else: 
+        dpnp.dpnp_utils.checker_throw_type_error("ediff1d", x1.dtype)
 
     res_size = x1.size - 1 + to_end.size + to_begin.size
 
