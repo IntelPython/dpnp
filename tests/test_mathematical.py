@@ -26,59 +26,25 @@ def test_diff(array):
     numpy.testing.assert_allclose(expected, result)
 
 
-class TestNanCumSum:
+@pytest.mark.parametrize("array", [[1, 2, 3, 4, 5],
+                                   [1, 2, numpy.nan, 4, 5],
+                                   [[1, 2, numpy.nan], [3, -4, -5]]])
+def test_nancumprod(array):
+    a = numpy.array(array)
+    ia = inp.array(a)
 
-    def test_nancumsum_dim1_int(self):
-        a = numpy.array([1, 2, 3, 4, 5])
-        ia = dpnp.array(a)
-
-        result = dpnp.nancumsum(ia)
-        expected = numpy.nancumsum(a)
-        numpy.testing.assert_array_equal(expected, result)
-
-
-    def test_nancumsum_dim1_nan(self):
-        a = numpy.array([1, 2, numpy.nan, 4, 5])
-        ia = dpnp.array(a)
-
-        result = dpnp.nancumsum(ia)
-        expected = numpy.nancumsum(a)
-        numpy.testing.assert_array_equal(expected, result)
+    result = inp.nancumsum(ia)
+    expected = numpy.nancumsum(a)
+    numpy.testing.assert_array_equal(expected, result)
 
 
-    def test_nancumsum_dim2_nan(self):
-        a = numpy.array([[1, 2, numpy.nan], [3, -4, -5]])
-        ia = dpnp.array(a)
+@pytest.mark.parametrize("array", [[1, 2, 3, 4, 5],
+                                   [1, 2, numpy.nan, 4, 5],
+                                   [[1, 2, numpy.nan], [3, -4, -5]]])
+def test_nancumsum(array):
+    a = numpy.array(array)
+    ia = inp.array(a)
 
-        result = dpnp.nancumsum(ia)
-        expected = numpy.nancumsum(a)
-        numpy.testing.assert_array_equal(expected, result)
-
-
-class TestNanCumProd:
-
-    def test_nancumprod_dim1_int(self):
-        a = numpy.array([1, 2, 3, 4, 5])
-        ia = dpnp.array(a)
-
-        result = dpnp.nancumprod(ia)
-        expected = numpy.nancumprod(a)
-        numpy.testing.assert_array_equal(expected, result)
-
-
-    def test_nancumprod_dim1_nan(self):
-        a = numpy.array([1, 2, numpy.nan, 4, 5])
-        ia = dpnp.array(a)
-
-        result = dpnp.nancumprod(ia)
-        expected = numpy.nancumprod(a)
-        numpy.testing.assert_array_equal(expected, result)
-
-
-    def test_nancumprod_dim2_nan(self):
-        a = numpy.array([[1, 2, numpy.nan], [3, -4, -5]])
-        ia = dpnp.array(a)
-
-        result = dpnp.nancumsum(ia)
-        expected = numpy.nancumsum(a)
-        numpy.testing.assert_array_equal(expected, result)
+    result = inp.nancumsum(ia)
+    expected = numpy.nancumsum(a)
+    numpy.testing.assert_array_equal(expected, result)
