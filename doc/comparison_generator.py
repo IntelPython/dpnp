@@ -104,7 +104,7 @@ def generate():
         import cupy
         ref_mods += ['cupy']
         ref_types += ['CuPy']
-        ref_vers += ['CuPy(v{})'.format(dpnp.__version__)]
+        ref_vers += ['CuPy(v{})'.format(cupy.__version__)]
     except ImportError as err:
         print(f"DOCBUILD: Can't load CuPy module with error={err}")
 
