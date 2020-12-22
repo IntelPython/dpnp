@@ -96,18 +96,15 @@ def generate():
         import dpnp
         ref_mods += ['dpnp']
         ref_types += ['DPNP']
-        ref_vers = ['DPNP(v{})'.format(dpnp.version.version)]
+        ref_vers = ['DPNP(v{})'.format(dpnp.__version__)]
     except ImportError as err:
         print(f"DOCBUILD: Can't load DPNP module with error={err}")
-    except AttributeError as err:  # delete this branch after dpnp.version.version implementation
-        print(f"DOCBUILD: Can't get DPNP version attribute with error={err}")
-        ref_vers += ['DPNP(v0.42)']
 
     try:
         import cupy
         ref_mods += ['cupy']
         ref_types += ['CuPy']
-        ref_vers += ['CuPy(v??)']  # cupy.version.version
+        ref_vers += ['CuPy(v{})'.format(dpnp.__version__)]
     except ImportError as err:
         print(f"DOCBUILD: Can't load CuPy module with error={err}")
 
@@ -115,7 +112,7 @@ def generate():
         import numpy
         base_mod = 'numpy'  # TODO: Why string?
         base_type = 'NumPy'
-        base_ver = '{}(v{})'.format(base_type, numpy.version.version)
+        base_ver = '{}(v{})'.format(base_type, numpy.__version__)
     except ImportError as err:
         print(f"DOCBUILD: Can't load {base_type} module with error={err}")
 
