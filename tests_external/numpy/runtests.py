@@ -378,13 +378,16 @@ def run():
         print('Numpy not found in the environment.')
         return NUMPY_NOT_FOUND
 
-    FAILED_TESTS_FILE.unlink(missing_ok=True)
+    if FAILED_TESTS_FILE.exists():
+        FAILED_TESTS_FILE.unlink()
 
     test_suites = [str(tests_path) for tests_path in get_tests(numpy_path)]
 
     try:
         for test_suite in test_suites:
             code = pytest.main([test_suite])
+            if code:
+                break
     except SystemExit as exc:
         code = exc.code
 

@@ -772,6 +772,7 @@ tests/test_multiarray.py::TestFlags::test_writeable_from_buffer
 tests/test_multiarray.py::TestFlags::test_writeable_from_readonly
 tests/test_multiarray.py::TestFlags::test_writeable_pickle
 tests/test_multiarray.py::TestHash::test_int
+tests/test_multiarray.py::TestPickling::test_correct_protocol5_error_message
 tests/test_nditer.py::test_0d_iter
 tests/test_nditer.py::test_close_equivalent
 tests/test_nditer.py::test_close_raises
@@ -1544,6 +1545,8 @@ tests/test_ufunc.py::TestUfuncGenericLoops::test_unary_PyUFunc_O_O_method_full[a
 tests/test_ufunc.py::TestUfuncGenericLoops::test_unary_PyUFunc_O_O_method_full[arctanh]
 tests/test_ufunc.py::TestUfuncGenericLoops::test_unary_PyUFunc_O_O_method_full[cbrt]
 tests/test_ufunc.py::TestUfuncGenericLoops::test_unary_PyUFunc_O_O_method_full[ceil]
+tests/test_ufunc.py::TestUfuncGenericLoops::test_unary_PyUFunc_O_O_method_full[conjugate0]
+tests/test_ufunc.py::TestUfuncGenericLoops::test_unary_PyUFunc_O_O_method_full[conjugate1]
 tests/test_ufunc.py::TestUfuncGenericLoops::test_unary_PyUFunc_O_O_method_full[cos]
 tests/test_ufunc.py::TestUfuncGenericLoops::test_unary_PyUFunc_O_O_method_full[cosh]
 tests/test_ufunc.py::TestUfuncGenericLoops::test_unary_PyUFunc_O_O_method_full[deg2rad]
@@ -1582,6 +1585,8 @@ tests/test_ufunc.py::test_ufunc_noncontiguous[arctan]
 tests/test_ufunc.py::test_ufunc_noncontiguous[arctanh]
 tests/test_ufunc.py::test_ufunc_noncontiguous[cbrt]
 tests/test_ufunc.py::test_ufunc_noncontiguous[ceil]
+tests/test_ufunc.py::test_ufunc_noncontiguous[conjugate0]
+tests/test_ufunc.py::test_ufunc_noncontiguous[conjugate1]
 tests/test_ufunc.py::test_ufunc_noncontiguous[cos]
 tests/test_ufunc.py::test_ufunc_noncontiguous[cosh]
 tests/test_ufunc.py::test_ufunc_noncontiguous[deg2rad]
@@ -1610,6 +1615,8 @@ tests/test_ufunc.py::test_ufunc_noncontiguous[square]
 tests/test_ufunc.py::test_ufunc_noncontiguous[tan]
 tests/test_ufunc.py::test_ufunc_noncontiguous[tanh]
 tests/test_ufunc.py::test_ufunc_noncontiguous[trunc]
+tests/test_ufunc.py::test_ufunc_types[conjugate0]
+tests/test_ufunc.py::test_ufunc_types[conjugate1]
 tests/test_ufunc.py::TestUfunc::test_axes_argument
 tests/test_ufunc.py::TestUfunc::test_axis_argument
 tests/test_ufunc.py::TestUfunc::test_axis_out_of_bounds
