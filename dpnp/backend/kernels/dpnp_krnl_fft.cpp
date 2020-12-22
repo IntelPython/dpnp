@@ -32,6 +32,12 @@
 
 namespace mkl_dft = oneapi::mkl::dft;
 
+#ifdef WIN32
+    #ifndef M_PI  // Windows compatibility
+        #define M_PI 3.14159265358979323846
+    #endif
+#endif
+
 template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2>
 class dpnp_fft_fft_c_kernel;
 
