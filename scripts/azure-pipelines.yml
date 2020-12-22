@@ -128,3 +128,21 @@ jobs:
   - publish: /opt/intel/oneapi/intelpython/latest/conda-bld
     artifact: 'package_$(Agent.JobName)_$(Agent.OS)'
     displayName: conda_build_oneapi_dpctl
+
+- job: make_backend
+  displayName: backend_make_local_win
+  pool:
+    vmImage: 'windows-2019'
+  steps:
+  - bash: |
+      conda list
+
+      cd dpnp/backend
+      mkdir 0.build
+      cd 0.build
+
+      echo ========================= cmake DPNP package ===============================
+      cmake -G Ninja ..
+      echo ========================= build DPNP package ===============================
+      ninja -v
+      ninja -v install
