@@ -127,45 +127,51 @@ cpdef dparray dpnp_copysign(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_COPYSIGN, x1, x2, x1.shape)
 
 
-cpdef dparray dpnp_cumprod(dparray x1):
+cpdef dparray dpnp_cumprod(dparray x1, bint usenan=False):
 
     types_map = {
-        'int32': dpnp.int64,
-        'int64': dpnp.int64,
-        'float32': dpnp.float32,
-        'float64': dpnp.float64
+        dpnp.int32: dpnp.int64,
+        dpnp.int64: dpnp.int64,
+        dpnp.float32: dpnp.float32,
+        dpnp.float64: dpnp.float64
     }
 
-    res_type = types_map[x1.dtype.name]
+    res_type = types_map[x1.dtype.type]
 
     cdef dparray result = dparray(x1.size, dtype=res_type)
 
-    cur_res = x1[0]
-    result._setitem_scalar(0, cur_res)
-    for i in range(1, result.size):
-        cur_res *= x1[i]
+    cur_res = 1
+
+    for i in range(result.size):
+
+        if not usenan or not dpnp.isnan(x1[i]):
+            cur_res *= x1[i]
+
         result._setitem_scalar(i, cur_res)
 
     return result
 
 
-cpdef dparray dpnp_cumsum(dparray x1):
+cpdef dparray dpnp_cumsum(dparray x1, bint usenan=False):
 
     types_map = {
-        'int32': dpnp.int64,
-        'int64': dpnp.int64,
-        'float32': dpnp.float32,
-        'float64': dpnp.float64
+        dpnp.int32: dpnp.int64,
+        dpnp.int64: dpnp.int64,
+        dpnp.float32: dpnp.float32,
+        dpnp.float64: dpnp.float64
     }
 
-    res_type = types_map[x1.dtype.name]
+    res_type = types_map[x1.dtype.type]
 
     cdef dparray result = dparray(x1.size, dtype=res_type)
 
-    cur_res = x1[0]
-    result._setitem_scalar(0, cur_res)
-    for i in range(1, result.size):
-        cur_res += x1[i]
+    cur_res = 0
+
+    for i in range(result.size):
+
+        if not usenan or not dpnp.isnan(x1[i]):
+            cur_res += x1[i]
+
         result._setitem_scalar(i, cur_res)
 
     return result
