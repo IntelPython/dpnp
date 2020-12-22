@@ -24,3 +24,27 @@ def test_diff(array):
     expected = numpy.diff(a)
     result = inp.diff(ia)
     numpy.testing.assert_allclose(expected, result)
+
+
+@pytest.mark.parametrize("array", [[1, 2, 3, 4, 5],
+                                   [1, 2, numpy.nan, 4, 5],
+                                   [[1, 2, numpy.nan], [3, -4, -5]]])
+def test_nancumprod(array):
+    a = numpy.array(array)
+    ia = inp.array(a)
+
+    result = inp.nancumsum(ia)
+    expected = numpy.nancumsum(a)
+    numpy.testing.assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("array", [[1, 2, 3, 4, 5],
+                                   [1, 2, numpy.nan, 4, 5],
+                                   [[1, 2, numpy.nan], [3, -4, -5]]])
+def test_nancumsum(array):
+    a = numpy.array(array)
+    ia = inp.array(a)
+
+    result = inp.nancumsum(ia)
+    expected = numpy.nancumsum(a)
+    numpy.testing.assert_array_equal(expected, result)
