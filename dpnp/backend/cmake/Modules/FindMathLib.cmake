@@ -33,8 +33,8 @@
 
 include(FindPackageHandleStandardArgs)
 
-set(MATHLIB_ROOT_DIR "/opt/intel/oneapi/mkl" CACHE PATH "Folder contains mathlib")
-set(MATHLIB_SYCL_LIB ${CMAKE_SHARED_LIBRARY_PREFIX}mkl_sycl${CMAKE_SHARED_LIBRARY_SUFFIX})
+set(MATHLIB_ROOT_DIR "$ENV{ONEAPI_ROOT}/mkl" CACHE PATH "Folder contains mathlib")
+set(MATHLIB_SYCL_LIB ${CMAKE_SHARED_LIBRARY_PREFIX}mkl_sycl_dll${CMAKE_STATIC_LIBRARY_SUFFIX})
 
 find_path(MATHLIB_INCLUDE_DIR oneapi/mkl.hpp
     HINTS ENV CONDA_PREFIX ${MATHLIB_ROOT_DIR}   # search order is important
