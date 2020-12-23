@@ -138,18 +138,24 @@ jobs:
       curl.exe --output webimage.exe --url https://registrationcenter-download.intel.com/akdlm/irc_nas/17453/w_BaseKit_p_2021.1.0.2664_offline.exe --retry 5 --retry-delay 5
       start /b /wait webimage.exe -s -x -f webimage_extracted --log extract.log
       del webimage.exe
+      echo ========================= install onepai ===============================
       webimage_extracted\bootstrapper.exe -s --action install --eula=accept --continue-with-optional-error=yes -p=NEED_VS2017_INTEGRATION=0 -p=NEED_VS2019_INTEGRATION=0 --log-dir=.
 
-      # opencl config
+      echo ========================= copy OpenCL ===============================
       cp opencl/OpenCL.dll C:/Windows/System32/
       
       echo ========================= configure VS ===============================
+      dir "C:\Program Files (x86)\Microsoft Visual Studio"
+      dir "C:\Program Files (x86)\Microsoft Visual Studio\2019"
+      dir "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTool"
       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
       echo ========================= configure oneapi ===============================
+      dir "C:\Program Files (x86)\Intel\oneAPI"
       call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
       echo ========================= conda list ===============================
       conda list
 
+      echo ========================= cmake generators list ===============================
       cd dpnp/backend
       mkdir 0.build
       cd 0.build
