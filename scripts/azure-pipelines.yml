@@ -140,9 +140,10 @@ jobs:
       cd dpnp/backend
       mkdir 0.build
       cd 0.build
-
+      cmake -G
       echo ========================= cmake DPNP package ===============================
       cmake -G Ninja ..
       echo ========================= build DPNP package ===============================
       ninja -v
       ninja -v install
+      ls -la
