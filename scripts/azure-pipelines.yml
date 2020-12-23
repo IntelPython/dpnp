@@ -145,20 +145,20 @@ jobs:
       cp opencl/OpenCL.dll C:/Windows/System32/
       
       echo ========================= configure VS ===============================
-      dir "C:\Program Files (x86)\Microsoft Visual Studio"
-      dir "C:\Program Files (x86)\Microsoft Visual Studio\2019"
-      dir "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTool"
+      dir "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise"
       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+      call vcvars64.bat
       echo ========================= configure oneapi ===============================
       dir "C:\Program Files (x86)\Intel\oneAPI"
       call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
       echo ========================= conda list ===============================
       conda list
 
-      echo ========================= cmake generators list ===============================
+      echo ========================= cmake 1 generators list ===============================
       cd dpnp/backend
       mkdir 0.build
       cd 0.build
+      echo ========================= cmake 2 generators list ===============================
       cmake -G
       echo ========================= cmake DPNP package ===============================
       cmake -G Ninja ..
