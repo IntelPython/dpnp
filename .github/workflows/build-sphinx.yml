@@ -75,9 +75,9 @@ jobs:
       - name: Build backend docs
         uses: mattnotmitt/doxygen-action@v1
         with:
-            working-directory: 'dpnp/backend'
+            working-directory: 'dpnp/backend/doc'
       - name: Copy backend docs
-        run: cp -r dpnp/backend/html doc/_build/html/backend_doc
+        run: cp -r dpnp/backend/doc/html doc/_build/html/backend_doc
       # https://github.com/marketplace/actions/github-pages-action
       - name: Deploy docs
         uses: peaceiris/actions-gh-pages@v3

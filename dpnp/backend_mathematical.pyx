@@ -42,13 +42,15 @@ cimport numpy
 __all__ += [
     "dpnp_absolute",
     "dpnp_add",
-    'dpnp_arctan2',
+    "dpnp_arctan2",
+    "dpnp_around",
     "dpnp_ceil",
     "dpnp_copysign",
     "dpnp_cumprod",
     "dpnp_cumsum",
     "dpnp_diff",
     "dpnp_divide",
+    "dpnp_ediff1d",
     "dpnp_fabs",
     "dpnp_floor",
     "dpnp_floor_divide",
@@ -70,8 +72,8 @@ __all__ += [
 ]
 
 
-ctypedef void(*fptr_custom_elemwise_absolute_1in_1out_t)(void *, void * , size_t)
-ctypedef void(*fptr_1in_2out_t)(void *, void * , void * , size_t)
+ctypedef void(*fptr_custom_elemwise_absolute_1in_1out_t)(void * , void * , size_t)
+ctypedef void(*fptr_1in_2out_t)(void * , void * , void * , size_t)
 
 
 cpdef dparray dpnp_absolute(dparray input):
@@ -84,7 +86,7 @@ cpdef dparray dpnp_absolute(dparray input):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ABSOLUTE, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(input_shape, dtype=result_type)
 
@@ -103,6 +105,20 @@ cpdef dparray dpnp_arctan2(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_ARCTAN2, x1, x2, x1.shape)
 
 
+cpdef dpnp_around(dparray a, decimals, out):
+    cdef dparray result
+
+    if out is None:
+        result = dparray(a.shape, dtype=a.dtype)
+    else:
+        result = out
+
+    for i in range(result.size):
+        result[i] = round(a[i], decimals)
+
+    return result
+
+
 cpdef dparray dpnp_ceil(dparray x1):
     return call_fptr_1in_1out(DPNP_FN_CEIL, x1, x1.shape)
 
@@ -111,72 +127,122 @@ cpdef dparray dpnp_copysign(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_COPYSIGN, x1, x2, x1.shape)
 
 
-cpdef dparray dpnp_cumprod(dparray x1):
+cpdef dparray dpnp_cumprod(dparray x1, bint usenan=False):
 
     types_map = {
-        'int32': dpnp.int64,
-        'int64': dpnp.int64,
-        'float32': dpnp.float32,
-        'float64': dpnp.float64
+        dpnp.int32: dpnp.int64,
+        dpnp.int64: dpnp.int64,
+        dpnp.float32: dpnp.float32,
+        dpnp.float64: dpnp.float64
     }
 
-    res_type = types_map[x1.dtype.name]
+    res_type = types_map[x1.dtype.type]
 
     cdef dparray result = dparray(x1.size, dtype=res_type)
 
-    cur_res = x1[0]
-    result._setitem_scalar(0, cur_res)
-    for i in range(1, result.size):
-        cur_res *= x1[i]
+    cur_res = 1
+
+    for i in range(result.size):
+
+        if not usenan or not dpnp.isnan(x1[i]):
+            cur_res *= x1[i]
+
         result._setitem_scalar(i, cur_res)
 
     return result
 
 
-cpdef dparray dpnp_cumsum(dparray x1):
+cpdef dparray dpnp_cumsum(dparray x1, bint usenan=False):
 
     types_map = {
-        'int32': dpnp.int64,
-        'int64': dpnp.int64,
-        'float32': dpnp.float32,
-        'float64': dpnp.float64
+        dpnp.int32: dpnp.int64,
+        dpnp.int64: dpnp.int64,
+        dpnp.float32: dpnp.float32,
+        dpnp.float64: dpnp.float64
     }
 
-    res_type = types_map[x1.dtype.name]
+    res_type = types_map[x1.dtype.type]
 
     cdef dparray result = dparray(x1.size, dtype=res_type)
 
-    cur_res = x1[0]
-    result._setitem_scalar(0, cur_res)
-    for i in range(1, result.size):
-        cur_res += x1[i] 
+    cur_res = 0
+
+    for i in range(result.size):
+
+        if not usenan or not dpnp.isnan(x1[i]):
+            cur_res += x1[i]
+
         result._setitem_scalar(i, cur_res)
 
     return result
 
 
-cpdef dparray dpnp_diff(dparray input):
-    size_i = input.size
-    shape_i = input.shape
-    list_shape_i = list(shape_i)
-    list_shape_i[-1] = list_shape_i[-1] - 1
-    output_shape = tuple(list_shape_i)
-    res = []
-    size_idx = output_shape[-1]
-    size_arr_ = size_i /shape_i[-1]
-    for i in range(size_arr_):
-        for j in range(size_idx):
-            idx = i * size_idx + j
-            input_elem = input.item(idx) - input.item(idx + 1)
-            res.appen(input_elem)
+cpdef dparray dpnp_diff(dparray input, int n):
+    if n == 0:
+        return input
+    if n < input.shape[-1]:
+        arr = input
+        for _ in range(n):
+            list_shape_i = list(arr.shape)
+            list_shape_i[-1] = list_shape_i[-1] - 1
+            output_shape = tuple(list_shape_i)
+            res = []
+            size_idx = output_shape[-1]
+            counter = 0
+            for i in range(arr.size):
+                if counter < size_idx:
+                    counter += 1
+                    arr_elem = arr.item(i + 1) - arr.item(i)
+                    res.append(arr_elem)
+                else:
+                    counter = 0
 
-    dpnp_array = dpnp.array(res)
-    dpnp_result_array = dpnp_array.reshape(output_shape)
-    return dpnp_result_array
+            dpnp_array = dpnp.array(res, dtype=input.dtype)
+            arr = dpnp_array.reshape(output_shape)
+        return arr
+    else:
+        return dpnp.array([], dtype=input.dtype)
 
 
 cpdef dparray dpnp_divide(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_DIVIDE, x1, x2, x1.shape)
+
+
+cpdef dparray dpnp_ediff1d(dparray x1, dparray to_end, dparray to_begin):
+
+    types_map = {
+        dpnp.int32: dpnp.int64,
+        dpnp.int64: dpnp.int64,
+        dpnp.float32: dpnp.float32,
+        dpnp.float64: dpnp.float64
+    }
+
+    if x1.dtype.type in types_map:
+        res_type = types_map[x1.dtype.type]
+    else: 
+        dpnp.dpnp_utils.checker_throw_type_error("ediff1d", x1.dtype)
+
+    res_size = x1.size - 1 + to_end.size + to_begin.size
+
+    cdef dparray result = dparray(res_size, dtype=res_type)
+
+    ind = 0
+
+    for i in range(ind, to_begin.size):
+        result._setitem_scalar(i, to_begin[i])
+
+    ind += to_begin.size
+
+    for i in range(ind, ind + x1.size - 1):
+        cur_res = x1[i - ind + 1] - x1[i - ind]
+        result._setitem_scalar(i, cur_res)
+
+    ind += x1.size - 1
+
+    for i in range(ind, ind + to_end.size):
+        result._setitem_scalar(i, to_end[i - ind])
+
+    return result
 
 
 cpdef dparray dpnp_fabs(dparray x1):
@@ -214,7 +280,7 @@ cpdef tuple dpnp_modf(dparray x1):
     """ get the FPTR data structure """
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MODF, param1_type, DPNP_FT_NONE)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     """ Create result arrays with type given by FPTR data """
     cdef dparray result1 = dparray(x1.shape, dtype=result_type)
     cdef dparray result2 = dparray(x1.shape, dtype=result_type)

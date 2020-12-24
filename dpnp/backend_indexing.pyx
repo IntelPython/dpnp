@@ -185,7 +185,7 @@ cpdef tuple dpnp_tril_indices(n, k=0, m=None):
     else:
         for i in range(n):
             for j in range(i + 1 + k):
-                if j < m :
+                if j < m:
                     array1.append(i)
                     array2.append(j)
 
@@ -210,7 +210,7 @@ cpdef tuple dpnp_tril_indices_from(arr, k=0):
     else:
         for i in range(n):
             for j in range(i + 1 + k):
-                if j < m :
+                if j < m:
                     array1.append(i)
                     array2.append(j)
 
