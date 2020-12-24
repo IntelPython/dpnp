@@ -33,26 +33,40 @@
 
 include(FindPackageHandleStandardArgs)
 
-set(MATHLIB_ROOT_DIR "$ENV{ONEAPI_ROOT}/mkl" CACHE PATH "Folder contains mathlib")
-set(MATHLIB_SYCL_LIB ${CMAKE_SHARED_LIBRARY_PREFIX}mkl_sycl_dll${CMAKE_STATIC_LIBRARY_SUFFIX})
+set(MATHLIB_ROOT_DIR
+    "${DPNP_ONEAPI_ROOT}/mkl"
+    CACHE PATH "Folder contains mathlib")
 
-find_path(MATHLIB_INCLUDE_DIR oneapi/mkl.hpp
-    HINTS ENV CONDA_PREFIX ${MATHLIB_ROOT_DIR}   # search order is important
-    PATH_SUFFIXES include latest/include
-    DOC "Path to mathlib include files")
+if(UNIX)
+  set(MATHLIB_SYCL_LIB
+      ${CMAKE_SHARED_LIBRARY_PREFIX}mkl_sycl${CMAKE_SHARED_LIBRARY_SUFFIX}
+      CACHE PATH "SYCL math lib")
+elseif(WIN32)
+  set(MATHLIB_SYCL_LIB
+      mkl_sycl_dll${CMAKE_STATIC_LIBRARY_SUFFIX}
+      CACHE PATH "SYCL math lib")
+else()
+  message(FATAL_ERROR "Unsupported system ${CMAKE_SYSTEM} in MATHLIB_SYCL_LIB selection")
+endif()
 
-find_path(MATHLIB_LIBRARY_DIR ${MATHLIB_SYCL_LIB}
-    HINTS ENV CONDA_PREFIX ${MATHLIB_ROOT_DIR}   # search order is important
-    PATH_SUFFIXES lib latest/lib/intel64
-    DOC "Path to mathlib library files")
+find_path(
+  MATHLIB_INCLUDE_DIR oneapi/mkl.hpp
+  HINTS ENV CONDA_PREFIX ${MATHLIB_ROOT_DIR} # search order is important
+  PATH_SUFFIXES include latest/include
+  DOC "Path to mathlib include files")
 
-# TODO implement recurcive searching
-# file(GLOB_RECURSE MY_PATH "/opt/intel/*/mkl.hpp")
-# message(STATUS "+++++++++++++: (include: ${MY_PATH})")
+find_path(
+  MATHLIB_LIBRARY_DIR ${MATHLIB_SYCL_LIB}
+  HINTS ENV CONDA_PREFIX ${MATHLIB_ROOT_DIR} # search order is important
+  PATH_SUFFIXES lib latest/lib/intel64
+  DOC "Path to mathlib library files")
+
+# TODO implement recurcive searching file (GLOB_RECURSE MY_PATH "/opt/intel/*/mkl.hpp")
+# message(STATUS "+++++++++++++:(include: ${MY_PATH})")
 
 find_package_handle_standard_args(MathLib DEFAULT_MSG MATHLIB_INCLUDE_DIR MATHLIB_LIBRARY_DIR)
 
 if(MathLib_FOUND)
-    message(STATUS "Found MathLib: (include: ${MATHLIB_INCLUDE_DIR}, library: ${MATHLIB_LIBRARY_DIR})")
-    mark_as_advanced(MATHLIB_ROOT_DIR MATHLIB_INCLUDE_DIR MATHLIB_LIBRARY_DIR)
+  message(STATUS "Found MathLib:                   (include: ${MATHLIB_INCLUDE_DIR}, library: ${MATHLIB_LIBRARY_DIR})")
+  mark_as_advanced(MATHLIB_ROOT_DIR MATHLIB_INCLUDE_DIR MATHLIB_LIBRARY_DIR)
 endif()
