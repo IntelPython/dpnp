@@ -149,10 +149,11 @@ jobs:
       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
       call vcvars64.bat
       echo ========================= configure oneapi ===============================
+      dir /s/b "C:\Program Files (x86)\Microsoft Visual Studio\2019\*.bat"
       dir "C:\Program Files (x86)\Intel\oneAPI"
       call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
       echo ========================= conda list ===============================
-      conda list
+      # conda list
 
       echo ========================= cmake 1 generators list ===============================
       cd dpnp/backend
