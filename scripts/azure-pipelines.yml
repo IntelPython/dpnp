@@ -142,19 +142,18 @@ jobs:
       webimage_extracted\bootstrapper.exe -s --action install --eula=accept --continue-with-optional-error=yes -p=NEED_VS2017_INTEGRATION=0 -p=NEED_VS2019_INTEGRATION=0 --log-dir=.
 
       echo ========================= copy OpenCL ===============================
-      cp opencl/OpenCL.dll C:/Windows/System32/
+      copy "C:\Program Files (x86)\Intel\oneAPI\intelpython\python3.7\Library\OpenCL.dll" C:/Windows/System32/
       
       echo ========================= configure VS ===============================
       dir "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise"
-      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
-      call vcvars64.bat
+      dir /s/b "C:\Program Files (x86)\Microsoft Visual Studio\*.bat"
+      # call "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+      # call vcvars64.bat
       echo ========================= configure oneapi ===============================
-      dir /s/b "C:\Program Files (x86)\Microsoft Visual Studio\2019\*.bat"
       dir "C:\Program Files (x86)\Intel\oneAPI"
       call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
       echo ========================= conda list ===============================
       # conda list
-
       echo ========================= cmake 1 generators list ===============================
       cd dpnp/backend
       mkdir 0.build
