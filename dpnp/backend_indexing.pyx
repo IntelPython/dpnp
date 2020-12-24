@@ -62,11 +62,75 @@ cpdef tuple dpnp_diag_indices(n, ndim):
 
 
 cpdef dparray dpnp_diagonal(dparray input, offset=0):
-    n = min(input.shape)
-    diagonal_list = []
-    for i in range(n):
-        diagonal_list.append(input[i, i])
-    return dpnp.array(diagonal_list)
+    n = min(input.shape[0], input.shape[1])
+    res_shape = [None] * (input.ndim - 1)
+
+    if input.ndim > 2:
+        for i in range(input.ndim - 2):
+            res_shape[i] = input.shape[i + 2]
+
+    if (n + offset) > input.shape[1]:
+        res_shape[-1] = input.shape[1] - offset
+    elif (n + offset) > input.shape[0]:
+        res_shape[-1] = input.shape[0]
+    else:
+        res_shape[-1] = n + offset
+
+    res_size = 1
+    for i in range(len(res_shape)):
+        res_size *= res_shape[i]
+
+    xyz = {}
+    if input.ndim > 2:
+        for i in range(res_shape[0]):
+            xyz[i] = [i]
+
+        index = 1
+
+        while index < len(res_shape) - 1:
+            shape_element = res_shape[index]
+            new_shape_array = {}
+            ind = 0
+            for i in range(shape_element):
+                for j in range(len(xyz)):
+                    new_shape = []
+                    list_ind = xyz[j]
+                    for k in range(len(list_ind)):
+                        new_shape.append(list_ind[k])
+                    new_shape.append(i)
+                    new_shape_array[ind] = new_shape
+                    ind += 1
+            for k in range(len(new_shape_array)):
+                if k < len(xyz):
+                    del xyz[k]
+                list_ind = new_shape_array[k]
+                xyz[k] = list_ind
+            index += 1
+
+
+    result = dparray(res_shape, dtype=input.dtype)
+    for i in range(res_shape[-1]):
+        if len(xyz) != 0:
+            for j in range(len(xyz)):
+                ind_input_ = [i, i + offset]
+                ind_output_ = []
+                ind_list = xyz[j]
+                for k in range(len(ind_list)):
+                    ind_input_.append(ind_list[k])
+                    ind_output_.append(ind_list[k])
+                ind_output_.append(ind_input_[0])
+                ind_input = tuple(ind_input_)
+                ind_output = tuple(ind_output_)
+                result[ind_output] = input[ind_input]
+        else:
+            ind_input_ = [i, i + offset]
+            ind_output_ = []
+            ind_output_.append(ind_input_[0])
+            ind_input = tuple(ind_input_)
+            ind_output = tuple(ind_output_)
+            result[ind_output] = input[ind_input]
+
+    return result
 
 
 cpdef tuple dpnp_nonzero(dparray in_array1):
