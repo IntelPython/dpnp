@@ -32,6 +32,7 @@ This module contains differnt helpers and utilities
 """
 
 from libcpp cimport bool as cpp_bool
+from libcpp.complex cimport complex as cpp_complex
 import dpnp
 import dpnp.config as config
 import numpy
@@ -143,6 +144,8 @@ cdef long copy_values_to_dparray(dparray dst, input_obj, size_t dst_idx=0) excep
                 ( < int * > dst.get_data())[dst_idx] = elem_value
             elif elem_dtype == numpy.bool_ or elem_dtype == numpy.bool:
                 (< cpp_bool * > dst.get_data())[dst_idx] = elem_value
+            elif elem_dtype == numpy.complex128:
+                (< cpp_complex[double] * > dst.get_data())[dst_idx] = elem_value
             else:
                 checker_throw_type_error("copy_values_to_dparray", elem_dtype)
 

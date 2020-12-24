@@ -45,6 +45,7 @@ __all__ += [
     "dpnp_arctan2",
     "dpnp_around",
     "dpnp_ceil",
+    "dpnp_conjugate",
     "dpnp_copysign",
     "dpnp_cumprod",
     "dpnp_cumsum",
@@ -121,6 +122,10 @@ cpdef dpnp_around(dparray a, decimals, out):
 
 cpdef dparray dpnp_ceil(dparray x1):
     return call_fptr_1in_1out(DPNP_FN_CEIL, x1, x1.shape)
+
+
+cpdef dparray dpnp_conjugate(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_CONJIGUATE, x1, x1.shape)
 
 
 cpdef dparray dpnp_copysign(dparray x1, dparray x2):
