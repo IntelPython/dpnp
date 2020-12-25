@@ -38,18 +38,12 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
 # Project build options...
 # -----------------------------------------------------------------------------------------------
 if(DEFINED ENV{ONEAPI_ROOT})
-  set(DPNP_ONEAPI_ROOT
-      "$ENV{ONEAPI_ROOT}"
-      CACHE PATH "Folder contains oneapi tool set")
+  set(DPNP_ONEAPI_ROOT "$ENV{ONEAPI_ROOT}" CACHE PATH "Folder contains oneapi tool set")
 else()
   if(UNIX)
-    set(DPNP_ONEAPI_ROOT
-        "/opt/intel/oneapi"
-        CACHE PATH "Folder contains oneapi tool set")
+    set(DPNP_ONEAPI_ROOT "/opt/intel/oneapi" CACHE PATH "Folder contains oneapi tool set")
   elseif(WIN32)
-    set(DPNP_ONEAPI_ROOT
-        "C:\Program Files (x86)\Intel\oneAPI"
-        CACHE PATH "Folder contains oneapi tool set")
+    set(DPNP_ONEAPI_ROOT "C:\Program Files (x86)\Intel\oneAPI" CACHE PATH "Folder contains oneapi tool set")
   else()
     message(FATAL_ERROR "Unsupported system ${CMAKE_SYSTEM}")
   endif()
@@ -73,6 +67,7 @@ if(UNIX)
   set(CMAKE_CXX_COMPILER "dpcpp")
 elseif(WIN32)
   set(CMAKE_CXX_COMPILER "dpcpp")
+  set(CMAKE_LINKER "lld-link")
   add_compile_options(/Ox)
   add_compile_options(/EHsc) # /Ox /W3 /GL /DNDEBUG /MD /EHsc
 else()
@@ -90,9 +85,7 @@ add_compile_options(-fsycl)
 add_compile_options(-fsycl-device-code-split=per_kernel)
 
 # debug/release compile definitions
-set(DPNP_WARNING_FLAGS
-    "-W -Wextra -Wshadow -Wall -Wstrict-prototypes"
-    CACHE STRING "set of warning compiler switches")
+set(DPNP_WARNING_FLAGS "-W -Wextra -Wshadow -Wall -Wstrict-prototypes" CACHE STRING "set of warning compiler switches")
 if(DPNP_DEBUG_ENABLE)
   set(CMAKE_BUILD_TYPE "Debug")
   add_definitions(-O1 ${DPNP_WARNING_FLAGS})
@@ -152,7 +145,7 @@ target_include_directories(dpnp_backend_c PUBLIC "${DPNP_INCLUDE_PATH}")
 find_package(MathLib REQUIRED)
 add_definitions(-DMKL_ILP64=1)
 target_include_directories(dpnp_backend_c PUBLIC ${MATHLIB_INCLUDE_DIR})
-target_link_directories(dpnp_backend_c PUBLIC ${MATHLIB_LIBRARY_DIR})
+link_directories(dpnp_backend_c PUBLIC ${MATHLIB_LIBRARY_DIR})
 
 if(UNIX)
 # Link Line Advisor v6.13
@@ -175,10 +168,11 @@ elseif(WIN32)
 # -DMKL_ILP64 -I"%MKLROOT%\include"
 # mkl_sycl_dll.lib mkl_intel_ilp64_dll.lib mkl_sequential_dll.lib mkl_core_dll.lib sycl.lib OpenCL.lib
   set(DPNP_DEP_LIBS
-      mkl_sycl_dll
-      mkl_intel_ilp64_dll
-      mkl_sequential_dll
-      mkl_core_dll
+      mkl_rt
+      mkl_sycl #_dll
+      mkl_intel_ilp64 #_dll
+      mkl_sequential #_dll
+      mkl_core #_dll
       sycl
       OpenCL
       CACHE STRING "Set of libraries to link")
@@ -214,4 +208,6 @@ install(TARGETS dpnp_backend_c DESTINATION "install")
 # Print Global Options
 # -----------------------------------------------------------------------------------------------
 message(STATUS "CXX_STANDARD:                    ${CMAKE_CXX_STANDARD}")
+message(STATUS "CMAKE_CXX_COMPILER:              ${CMAKE_CXX_COMPILER}")
+message(STATUS "CMAKE_LINKER:                    ${CMAKE_LINKER}")
 message(STATUS "DPNP_INSTALL_PREFIX:             ${CMAKE_INSTALL_PREFIX}")
