@@ -129,8 +129,8 @@ jobs:
     artifact: 'package_$(Agent.JobName)_$(Agent.OS)'
     displayName: conda_build_oneapi_dpctl
 
-- job: make_backend
-  displayName: backend_make_local_win
+- job: make_backend_win
+  displayName: cmake_win
   pool:
     vmImage: 'windows-2019'
   steps:
@@ -165,3 +165,19 @@ jobs:
       echo ========================= install DPNP package ===============================
       ninja -v install
       rem ls -la
+- job: make_backend_lin
+  displayName: cmake_lin
+  pool:
+    vmImage: 'ubuntu-20.04'
+  steps:
+  - bash: |
+      ./scripts/install_system_deps.sh
+      . /opt/intel/oneapi/setvars.sh
+      mkdir -p dpnp/backend/0.build
+      cd dpnp/backend/0.build
+      echo ========================= cmake DPNP package ===============================
+      cmake ..
+      echo ========================= build DPNP package ===============================
+      make VERBOSE=1
+      echo ========================= install DPNP package ===============================
+      make VERBOSE=1 install
