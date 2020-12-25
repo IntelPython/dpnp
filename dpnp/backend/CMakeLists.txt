@@ -73,6 +73,7 @@ if(UNIX)
   set(CMAKE_CXX_COMPILER "dpcpp")
 elseif(WIN32)
   set(CMAKE_CXX_COMPILER "dpcpp")
+  set(CMAKE_CXX_FLAGS_RELEASE /Ox /EHsc) # /Ox /W3 /GL /DNDEBUG /MD /EHsc
 else()
   message(FATAL_ERROR "Unsupported system ${CMAKE_SYSTEM} in compiler selection case")
 endif()
