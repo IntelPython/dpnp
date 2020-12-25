@@ -32,16 +32,19 @@
 
 include(FindPackageHandleStandardArgs)
 
-set(PSTL_ROOT_DIR "/opt/intel/oneapi/dpl" CACHE PATH "Folder contains mathlib")
+set(PSTL_ROOT_DIR
+    "${DPNP_ONEAPI_ROOT}/dpl"
+    CACHE PATH "Folder contains PSTL headers")
 
-find_path(PSTL_INCLUDE_DIR oneapi/dpl/algorithm
-    HINTS ENV CONDA_PREFIX ${PSTL_ROOT_DIR}      # search order is important
-    PATH_SUFFIXES include latest/linux/include
-    DOC "Path to PSTL include files")
+find_path(
+  PSTL_INCLUDE_DIR oneapi/dpl/algorithm
+  HINTS ENV CONDA_PREFIX ${PSTL_ROOT_DIR} # search order is important
+  PATH_SUFFIXES include latest/linux/include
+  DOC "Path to PSTL include files")
 
 find_package_handle_standard_args(PSTL DEFAULT_MSG PSTL_INCLUDE_DIR)
 
 if(PSTL_FOUND)
-    message(STATUS "Found PSTL: (include: ${PSTL_INCLUDE_DIR})")
-    mark_as_advanced(PSTL_ROOT_DIR PSTL_INCLUDE_DIR)
+  message(STATUS "Found PSTL:                      (include: ${PSTL_INCLUDE_DIR})")
+  # mark_as_advanced(PSTL_ROOT_DIR PSTL_INCLUDE_DIR)
 endif()

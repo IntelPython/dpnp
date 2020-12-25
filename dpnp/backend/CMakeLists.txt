@@ -37,9 +37,32 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
 # -----------------------------------------------------------------------------------------------
 # Project build options...
 # -----------------------------------------------------------------------------------------------
+if(DEFINED ENV{ONEAPI_ROOT})
+  set(DPNP_ONEAPI_ROOT
+      "$ENV{ONEAPI_ROOT}"
+      CACHE PATH "Folder contains oneapi tool set")
+else()
+  if(UNIX)
+    set(DPNP_ONEAPI_ROOT
+        "/opt/intel/oneapi"
+        CACHE PATH "Folder contains oneapi tool set")
+  elseif(WIN32)
+    set(DPNP_ONEAPI_ROOT
+        "C:\Program Files (x86)\Intel\oneAPI"
+        CACHE PATH "Folder contains oneapi tool set")
+  else()
+    message(FATAL_ERROR "Unsupported system ${CMAKE_SYSTEM}")
+  endif()
+endif()
+
 option(DPNP_STATIC_LIB_ENABLE "Enable build DPNP static library" FALSE)
 option(DPNP_DEBUG_ENABLE "Enable output for DPNP_DEBUG statements" FALSE)
 
+message(STATUS "CMAKE_SYSTEM:                    ${CMAKE_SYSTEM}")
+message(STATUS "CMAKE_SYSTEM_VERSION:            ${CMAKE_SYSTEM_VERSION}")
+message(STATUS "CMAKE_SYSTEM_PROCESSOR:          ${CMAKE_SYSTEM_PROCESSOR}")
+message(STATUS "CMAKE_HOST_SYSTEM_NAME:          ${CMAKE_HOST_SYSTEM_NAME}")
+message(STATUS "DPNP_ONEAPI_ROOT:                ${DPNP_ONEAPI_ROOT}")
 message(STATUS "DPNP_STATIC_LIB_ENABLE:          ${DPNP_STATIC_LIB_ENABLE}")
 message(STATUS "DPNP_DEBUG_ENABLE:               ${DPNP_DEBUG_ENABLE}")
 
@@ -50,32 +73,32 @@ if(UNIX)
   set(CMAKE_CXX_COMPILER "dpcpp")
 elseif(WIN32)
   set(CMAKE_CXX_COMPILER "dpcpp")
+  add_compile_options(/Ox)
+  add_compile_options(/EHsc) # /Ox /W3 /GL /DNDEBUG /MD /EHsc
 else()
-  message(FATAL_ERROR "Unsupported system.")
+  message(FATAL_ERROR "Unsupported system ${CMAKE_SYSTEM} in compiler selection case")
 endif()
 
 set(DPNP_INCLUDE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-add_definitions(-fsycl-device-code-split=per_kernel)
-add_definitions(-fsycl)
-# add_definitions(-std=c++17)
+# set language version
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_BUILD_TYPE "Release")
+# SYCL related compile options
+add_compile_options(-fsycl)
+add_compile_options(-fsycl-device-code-split=per_kernel)
 
+# debug/release compile definitions
+set(DPNP_WARNING_FLAGS
+    "-W -Wextra -Wshadow -Wall -Wstrict-prototypes"
+    CACHE STRING "set of warning compiler switches")
 if(DPNP_DEBUG_ENABLE)
-  add_definitions(
-    -g
-    -O1
-    -W
-    -Wextra
-    -Wshadow
-    -Wall
-    -Wstrict-prototypes)
   set(CMAKE_BUILD_TYPE "Debug")
+  add_definitions(-O1 ${DPNP_WARNING_FLAGS})
 else()
-  add_definitions(-O3 -DNDEBUG)
+  set(CMAKE_BUILD_TYPE "Release")
+  add_definitions(${DPNP_WARNING_FLAGS})
 endif()
 
 # -----------------------------------------------------------------------------------------------
@@ -92,24 +115,9 @@ endif()
 add_definitions(-DPSTL_USE_PARALLEL_POLICIES=0 -D_GLIBCXX_USE_TBB_PAR_BACKEND=0)
 
 # -----------------------------------------------------------------------------------------------
-# Print Global Options
-# -----------------------------------------------------------------------------------------------
-message(STATUS "COMPILE_OPTIONS:                 ${COMPILE_OPTIONS}")
-message(STATUS "INTERFACE_COMPILE_OPTIONS:       ${INTERFACE_COMPILE_OPTIONS}")
-message(STATUS "CMAKE_HOST_WIN32:                ${CMAKE_HOST_WIN32}")
-message(STATUS "CMAKE_HOST_UNIX:                 ${CMAKE_HOST_UNIX}")
-message(STATUS "WINDOWS:                         ${WINDOWS}")
-message(STATUS "LINUX:                           ${LINUX}")
-message(STATUS "CXX_STANDARD:                    ${CMAKE_CXX_STANDARD}")
-message(STATUS "Compile Flags:                   ${CMAKE_CXX_FLAGS}")
-message(STATUS "CMAKE_CXX_FLAGS_RELEASE          ${CMAKE_CXX_FLAGS_RELEASE}")
-message(STATUS "CMAKE_CXX_FLAGS_DEBUG            ${CMAKE_CXX_FLAGS_DEBUG}")
-
-# -----------------------------------------------------------------------------------------------
 # Building logic...
 # -----------------------------------------------------------------------------------------------
 set(DPNP_SRC
-    src/dpnp_iface_fptr.cpp
     kernels/dpnp_krnl_bitwise.cpp
     kernels/dpnp_krnl_common.cpp
     kernels/dpnp_krnl_elemwise.cpp
@@ -122,6 +130,7 @@ set(DPNP_SRC
     kernels/dpnp_krnl_searching.cpp
     kernels/dpnp_krnl_sorting.cpp
     kernels/dpnp_krnl_statistics.cpp
+    src/dpnp_iface_fptr.cpp
     src/memory_sycl.cpp
     src/queue_sycl.cpp)
 
@@ -141,16 +150,42 @@ target_include_directories(dpnp_backend_c PUBLIC "${DPNP_INCLUDE_PATH}")
 # -----------------------------------------------------------------------------------------------
 # Math library
 find_package(MathLib REQUIRED)
-target_include_directories(dpnp_backend_c PUBLIC ${MATHLIB_INCLUDE_DIR})
 add_definitions(-DMKL_ILP64=1)
-set(DPNP_DEP_LIBS
-    mkl_rt
-    mkl_sycl
-    mkl_intel_ilp64
-    mkl_sequential
-    mkl_core
-    sycl
-    OpenCL)
+target_include_directories(dpnp_backend_c PUBLIC ${MATHLIB_INCLUDE_DIR})
+target_link_directories(dpnp_backend_c PUBLIC ${MATHLIB_LIBRARY_DIR})
+
+if(UNIX)
+# Link Line Advisor v6.13
+# -DMKL_ILP64 -I"${MKLROOT}/include"
+# -lmkl_sycl -lmkl_intel_ilp64 -lmkl_sequential -lmkl_core -lsycl -lOpenCL -lpthread -lm -ldl
+  set(DPNP_DEP_LIBS
+      mkl_rt
+      mkl_sycl
+      mkl_intel_ilp64
+      mkl_sequential
+      mkl_core
+      sycl
+      OpenCL
+      pthread
+      m
+      dl
+      CACHE STRING "Set of libraries to link")
+elseif(WIN32)
+# Link Line Advisor v6.13
+# -DMKL_ILP64 -I"%MKLROOT%\include"
+# mkl_sycl_dll.lib mkl_intel_ilp64_dll.lib mkl_sequential_dll.lib mkl_core_dll.lib sycl.lib OpenCL.lib
+  set(DPNP_DEP_LIBS
+      mkl_sycl_dll
+      mkl_intel_ilp64_dll
+      mkl_sequential_dll
+      mkl_core_dll
+      sycl
+      OpenCL
+      CACHE STRING "Set of libraries to link")
+else()
+  message(FATAL_ERROR "Unsupported system ${CMAKE_SYSTEM} in MathLib libraries set")
+endif()
+
 target_link_libraries(dpnp_backend_c PUBLIC ${DPNP_DEP_LIBS})
 
 # Parallel STL from DPC++
@@ -170,8 +205,13 @@ set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/package_dpnp)
 if(DEFINED DPNP_INSTALL_PREFIX)
   set(CMAKE_INSTALL_PREFIX ${DPNP_INSTALL_PREFIX})
 endif()
-message(STATUS "Installation directory:          ${CMAKE_INSTALL_PREFIX}")
 
 set_target_properties(dpnp_backend_c PROPERTIES VERSION ${DPNP_VERSION} SOVERSION ${DPNP_API_VERSION})
 
 install(TARGETS dpnp_backend_c DESTINATION "install")
+
+# -----------------------------------------------------------------------------------------------
+# Print Global Options
+# -----------------------------------------------------------------------------------------------
+message(STATUS "CXX_STANDARD:                    ${CMAKE_CXX_STANDARD}")
+message(STATUS "DPNP_INSTALL_PREFIX:             ${CMAKE_INSTALL_PREFIX}")
