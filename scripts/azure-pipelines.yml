@@ -137,7 +137,7 @@ jobs:
   - script: |
       curl.exe --output webimage.exe --url https://registrationcenter-download.intel.com/akdlm/irc_nas/17453/w_BaseKit_p_2021.1.0.2664_offline.exe --retry 5 --retry-delay 5
       start /b /wait webimage.exe -s -x -f webimage_extracted
-      rem del webimage.exe
+      del webimage.exe
       echo ========================= install onepai ===============================
       webimage_extracted\bootstrapper.exe -s --action install --eula=accept --continue-with-optional-error=yes -p=NEED_VS2017_INTEGRATION=0 -p=NEED_VS2019_INTEGRATION=0
 
@@ -152,15 +152,16 @@ jobs:
       call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
       rem echo ========================= conda list ===============================
       rem conda list
-      echo ========================= cmake 1 generators list ===============================
+      rem echo ========================= cmake 1 generators list ===============================
       cd dpnp/backend
       mkdir 0.build
       cd 0.build
-      echo ========================= cmake 2 generators list ===============================
-      cmake -G
+      rem echo ========================= cmake 2 generators list ===============================
+      rem cmake -G
       echo ========================= cmake DPNP package ===============================
       cmake -G Ninja ..
       echo ========================= build DPNP package ===============================
       ninja -v
+      echo ========================= install DPNP package ===============================
       ninja -v install
-      ls -la
+      rem ls -la
