@@ -144,9 +144,9 @@ jobs:
       echo ========================= copy OpenCL ===============================
       copy "C:\Program Files (x86)\Intel\oneAPI\intelpython\python3.7\Library\OpenCL.dll" C:\Windows\System32\
       
-      echo ========================= configure VS ===============================
+      rem echo ========================= configure VS ===============================
       rem dir /s/b "C:\Program Files (x86)\Microsoft Visual Studio\*.bat"
-      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+      rem call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
       echo ========================= configure oneapi ===============================
       dir "C:\Program Files (x86)\Intel\oneAPI"
       call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
