@@ -162,12 +162,16 @@ jobs:
       rem echo ========================= cmake 2 generators list ===============================
       rem cmake -G
       echo ========================= cmake DPNP package ===============================
-      cmake -DCMAKE_CXX_COMPILER=dpcpp -DCMAKE_LINKER=lld-link -G Ninja ..
+      # cmake -DCMAKE_CXX_COMPILER=dpcpp -DCMAKE_LINKER=lld-link -G Ninja ..
+      cmake -G Ninja ..
       echo ========================= build DPNP package ===============================
       rem ninja -v
       cmake --build . -- -v
       echo ========================= install DPNP package ===============================
       ninja -v install
+      echo ========================= 1111111111111 ===============================
+      cmake -G "NMake Makefiles" ..
+      cmake --build .
       rem ls -la
 - job: make_backend_lin
   displayName: cmake_lin
