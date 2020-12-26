@@ -27,7 +27,6 @@
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-project("DPNP: NumPy-like API accelerated with SYCL" LANGUAGES CXX)
 set(DPNP_VERSION 0.4.0)
 set(DPNP_API_VERSION 0.4)
 
@@ -52,10 +51,6 @@ endif()
 option(DPNP_STATIC_LIB_ENABLE "Enable build DPNP static library" FALSE)
 option(DPNP_DEBUG_ENABLE "Enable output for DPNP_DEBUG statements" FALSE)
 
-message(STATUS "CMAKE_SYSTEM:                    ${CMAKE_SYSTEM}")
-message(STATUS "CMAKE_SYSTEM_VERSION:            ${CMAKE_SYSTEM_VERSION}")
-message(STATUS "CMAKE_SYSTEM_PROCESSOR:          ${CMAKE_SYSTEM_PROCESSOR}")
-message(STATUS "CMAKE_HOST_SYSTEM_NAME:          ${CMAKE_HOST_SYSTEM_NAME}")
 message(STATUS "DPNP_ONEAPI_ROOT:                ${DPNP_ONEAPI_ROOT}")
 message(STATUS "DPNP_STATIC_LIB_ENABLE:          ${DPNP_STATIC_LIB_ENABLE}")
 message(STATUS "DPNP_DEBUG_ENABLE:               ${DPNP_DEBUG_ENABLE}")
@@ -106,6 +101,11 @@ endif()
 
 # disable PSTL policies due to compiler bug
 add_definitions(-DPSTL_USE_PARALLEL_POLICIES=0 -D_GLIBCXX_USE_TBB_PAR_BACKEND=0)
+
+project(dpnp_backend_c
+        VERSION ${DPNP_VERSION}
+        DESCRIPTION "DPNP: NumPy-like API accelerated with SYCL"
+        LANGUAGES CXX)
 
 # -----------------------------------------------------------------------------------------------
 # Building logic...
@@ -209,6 +209,10 @@ install(TARGETS dpnp_backend_c DESTINATION "install")
 # -----------------------------------------------------------------------------------------------
 message(STATUS "CMAKE_VERSION:                   ${CMAKE_VERSION}")
 message(STATUS "CMAKE_GENERATOR:                 ${CMAKE_GENERATOR}")
+message(STATUS "CMAKE_SYSTEM:                    ${CMAKE_SYSTEM}")
+message(STATUS "CMAKE_SYSTEM_VERSION:            ${CMAKE_SYSTEM_VERSION}")
+message(STATUS "CMAKE_SYSTEM_PROCESSOR:          ${CMAKE_SYSTEM_PROCESSOR}")
+message(STATUS "CMAKE_HOST_SYSTEM_NAME:          ${CMAKE_HOST_SYSTEM_NAME}")
 message(STATUS "CXX_STANDARD:                    ${CMAKE_CXX_STANDARD}")
 message(STATUS "CMAKE_CXX_COMPILER:              ${CMAKE_CXX_COMPILER}")
 message(STATUS "CMAKE_LINKER:                    ${CMAKE_LINKER}")
