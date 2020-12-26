@@ -207,6 +207,8 @@ install(TARGETS dpnp_backend_c DESTINATION "install")
 # -----------------------------------------------------------------------------------------------
 # Print Global Options
 # -----------------------------------------------------------------------------------------------
+message(STATUS "CMAKE_VERSION:                   ${CMAKE_VERSION}")
+message(STATUS "CMAKE_GENERATOR:                 ${CMAKE_GENERATOR}")
 message(STATUS "CXX_STANDARD:                    ${CMAKE_CXX_STANDARD}")
 message(STATUS "CMAKE_CXX_COMPILER:              ${CMAKE_CXX_COMPILER}")
 message(STATUS "CMAKE_LINKER:                    ${CMAKE_LINKER}")
