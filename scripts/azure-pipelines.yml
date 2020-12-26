@@ -181,3 +181,6 @@ jobs:
       make VERBOSE=1
       echo ========================= install DPNP package ===============================
       make VERBOSE=1 install
+  - publish: dpnp/backend/package_dpnp
+    artifact: 'package_backend_$(Agent.JobName)_$(Agent.OS)'
+    displayName: backend_cmake_oneapi_local
