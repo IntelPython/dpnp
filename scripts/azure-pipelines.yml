@@ -150,6 +150,7 @@ jobs:
       echo ========================= configure oneapi ===============================
       dir "C:\Program Files (x86)\Intel\oneAPI"
       call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
+      dir "C:\Program Files (x86)\Intel\oneAPI\compiler\latest\windows\bin"
       rem echo ========================= conda list ===============================
       rem conda list
       rem echo ========================= cmake 1 generators list ===============================
