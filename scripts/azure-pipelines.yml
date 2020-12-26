@@ -161,7 +161,8 @@ jobs:
       echo ========================= cmake DPNP package ===============================
       cmake -G Ninja ..
       echo ========================= build DPNP package ===============================
-      ninja -v
+      rem ninja -v
+      cmake --build . -- -v
       echo ========================= install DPNP package ===============================
       ninja -v install
       rem ls -la
