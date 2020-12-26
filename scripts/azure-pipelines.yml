@@ -132,7 +132,7 @@ jobs:
 - job: make_backend_win
   displayName: cmake_win
   pool:
-    vmImage: 'windows-2017'
+    vmImage: 'vs2017-win2016' # 'windows-2019'
   steps:
   - script: |
       curl.exe --output webimage.exe --url https://registrationcenter-download.intel.com/akdlm/irc_nas/17453/w_BaseKit_p_2021.1.0.2664_offline.exe --retry 5 --retry-delay 5
