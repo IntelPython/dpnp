@@ -77,8 +77,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_compile_options(-fsycl)
 add_compile_options(-fsycl-device-code-split=per_kernel)
 
-# debug/release compile definitions
+# warning flag set
 set(DPNP_WARNING_FLAGS "-W -Wextra -Wshadow -Wall -Wstrict-prototypes" CACHE STRING "set of warning compiler switches")
+
+# debug/release compile definitions
 if(DPNP_DEBUG_ENABLE)
   set(CMAKE_BUILD_TYPE "Debug")
   add_definitions(-O1 ${DPNP_WARNING_FLAGS})
@@ -100,7 +102,7 @@ endif()
 # disable PSTL policies due to compiler bug
 add_definitions(-DPSTL_USE_PARALLEL_POLICIES=0 -D_GLIBCXX_USE_TBB_PAR_BACKEND=0)
 
-project(dpnp_backend_c
+project(dpnp_project
         VERSION ${DPNP_VERSION}
         DESCRIPTION "DPNP: NumPy-like API accelerated with SYCL"
         HOMEPAGE_URL https://github.com/IntelPython/dpnp
