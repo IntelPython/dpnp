@@ -60,6 +60,7 @@ message(STATUS "DPNP_DEBUG_ENABLE:               ${DPNP_DEBUG_ENABLE}")
 # -----------------------------------------------------------------------------------------------
 if(UNIX)
   set(CMAKE_CXX_COMPILER "dpcpp")
+  add_compile_options(-fPIC)
 elseif(WIN32)
   set(CMAKE_CXX_COMPILER "dpcpp")
   set(CMAKE_LINKER "lld-link")
@@ -137,8 +138,8 @@ set(DPNP_SRC
 if(DPNP_STATIC_LIB_ENABLE)
   add_library(dpnp_backend_c STATIC ${DPNP_SRC})
 else()
-  set(CMAKE_POSITION_INDEPENDENT_CODE ON)
   add_library(dpnp_backend_c SHARED ${DPNP_SRC})
+  # doesn't work set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
 target_include_directories(dpnp_backend_c PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

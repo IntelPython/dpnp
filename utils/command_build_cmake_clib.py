@@ -29,35 +29,58 @@ Module to call cmake based procedure by build_cmake_clib command
 """
 
 import os
+import sys
 import pathlib
 from setuptools.command import build_clib
+from distutils import log
+
+IS_WIN = False
+IS_MAC = False
+IS_LIN = False
+
+if 'linux' in sys.platform:
+    IS_LIN = True
+elif sys.platform == 'darwin':
+    IS_MAC = True
+elif sys.platform in ['win32', 'cygwin']:
+    IS_WIN = True
+else:
+    raise EnvironmentError("DPNP cmake builder: " + sys.platform + " not supported")
 
 class custom_build_cmake_clib(build_clib.build_clib):
     def run(self):
-        work_directory = pathlib.Path().absolute()
-        print(f"===========call run ====={self.build_temp}====={work_directory}=")
+        root_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
+        log.info(f"Project directory is: {root_dir}")
+
+        # work_directory = pathlib.Path().absolute()
+        backend_directory = os.path.join(root_dir, "dpnp", "backend")
+        install_directory = os.path.join(root_dir, "dpnp")
 
         build_temp = pathlib.Path(self.build_temp)
         build_temp.mkdir(parents=True, exist_ok=True)
-        # extdir = pathlib.Path(self.get_ext_fullpath(ext.name))
-        # extdir.mkdir(parents=True, exist_ok=True)
 
-        config = 'Debug' if self.debug else 'Release'
+        config = "Debug" if self.debug else "Release"
+
+        cmake_generator = str()
+        if IS_WIN:
+            cmake_generator = "-GNinja"
+
         cmake_args = [
-            # '-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + str(extdir.parent.absolute()),
-            '-DCMAKE_BUILD_TYPE=' + config
+            # "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=" + str(install_directory),
+            cmake_generator,
+            "-DCMAKE_BUILD_TYPE=" + config,
+            "-DDPNP_INSTALL_PREFIX=" + install_directory
         ]
 
-        # example of build args
         build_args = [
-            '--config', config,
-            '--', '-j2'
+            # "--config", config,
+            "--", "-v"
         ]
 
         os.chdir(str(build_temp))
-        self.spawn(['cmake', str(work_directory) + "/dpnp/backend"] + cmake_args)
+        self.spawn(["cmake", backend_directory] + cmake_args)
         if not self.dry_run:
-            self.spawn(['cmake', '--build', '.'] + build_args)
-        # Troubleshooting: if fail on line above then delete all possible 
-        # temporary CMake files including "CMakeCache.txt" in top level dir.
-        os.chdir(str(work_directory))
+            self.spawn(["cmake", "--build", "."] + build_args)
+            self.spawn(["cmake", "--build", ".", "--target", "install"] + build_args)
+
+        # os.chdir(str(root_dir))
