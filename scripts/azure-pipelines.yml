@@ -162,7 +162,7 @@ jobs:
       rem echo ========================= cmake 2 generators list ===============================
       rem cmake -G
       echo ========================= cmake DPNP package ===============================
-      # cmake -DCMAKE_CXX_COMPILER=dpcpp -DCMAKE_LINKER=lld-link -G Ninja ..
+      rem cmake -DCMAKE_CXX_COMPILER=dpcpp -DCMAKE_LINKER=lld-link -G Ninja ..
       cmake -G Ninja ..
       echo ========================= build DPNP package ===============================
       rem ninja -v
