@@ -69,8 +69,6 @@ else()
   message(FATAL_ERROR "Unsupported system ${CMAKE_SYSTEM} in compiler selection case")
 endif()
 
-set(DPNP_INCLUDE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src)
-
 # set language version
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -127,16 +125,14 @@ set(DPNP_SRC
     src/memory_sycl.cpp
     src/queue_sycl.cpp)
 
+target_include_directories(dpnp_backend_c PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(dpnp_backend_c PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
 if(DPNP_STATIC_LIB_ENABLE)
   add_library(dpnp_backend_c STATIC ${DPNP_SRC})
 else()
   add_library(dpnp_backend_c SHARED ${DPNP_SRC})
 endif()
-
-set_property(TARGET dpnp_backend_c PROPERTY CXX_STANDARD 17)
-set_property(TARGET dpnp_backend_c PROPERTY CXX_STANDARD_REQUIRED ON)
-
-target_include_directories(dpnp_backend_c PUBLIC "${DPNP_INCLUDE_PATH}")
 
 # -----------------------------------------------------------------------------------------------
 # Dependencies logic...
