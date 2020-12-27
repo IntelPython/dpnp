@@ -125,14 +125,14 @@ set(DPNP_SRC
     src/memory_sycl.cpp
     src/queue_sycl.cpp)
 
-target_include_directories(dpnp_backend_c PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_include_directories(dpnp_backend_c PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-
 if(DPNP_STATIC_LIB_ENABLE)
   add_library(dpnp_backend_c STATIC ${DPNP_SRC})
 else()
   add_library(dpnp_backend_c SHARED ${DPNP_SRC})
 endif()
+
+target_include_directories(dpnp_backend_c PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(dpnp_backend_c PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # -----------------------------------------------------------------------------------------------
 # Dependencies logic...
