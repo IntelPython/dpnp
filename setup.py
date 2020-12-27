@@ -49,6 +49,7 @@ from Cython.Compiler import Options as cython_options
 from utils.command_style import source_style
 from utils.command_clean import source_clean
 from utils.command_build_clib import custom_build_clib
+from utils.command_build_cmake_clib import custom_build_cmake_clib
 from utils.dpnp_build_utils import find_cmplr, find_dpl, find_mathlib, find_omp
 
 
@@ -265,6 +266,7 @@ Extra defined commands for the build system
 TODO: spell check, valgrind, code coverage
 """
 dpnp_build_commands = {'style': source_style,
+                       # 'build_clib': custom_build_cmake_clib,
                        'build_clib': custom_build_clib,
                        'clean': source_clean
                        }
