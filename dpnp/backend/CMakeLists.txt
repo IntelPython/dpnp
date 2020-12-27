@@ -69,7 +69,6 @@ elseif(WIN32)
   # set(CMAKE_RANLIB "llvm-ranlib") 
   # set(CMAKE_CXX_FLAGS "/EHsc") 
 
-  add_compile_options(/Ox)
   add_compile_options(/EHsc) # /Ox /W3 /GL /DNDEBUG /MD /EHsc
 else()
   message(FATAL_ERROR "Unsupported system ${CMAKE_SYSTEM} in compiler selection case")
@@ -85,14 +84,15 @@ add_compile_options(-fsycl-device-code-split=per_kernel)
 
 # warning flag set
 set(DPNP_WARNING_FLAGS "-W -Wextra -Wshadow -Wall -Wstrict-prototypes" CACHE STRING "set of warning compiler switches")
+add_definitions(${DPNP_WARNING_FLAGS})
 
 # debug/release compile definitions
 if(DPNP_DEBUG_ENABLE)
   set(CMAKE_BUILD_TYPE "Debug")
-  add_definitions(-O1 ${DPNP_WARNING_FLAGS})
+  add_compile_options(-O1)
 else()
   set(CMAKE_BUILD_TYPE "Release")
-  add_definitions(${DPNP_WARNING_FLAGS})
+  add_compile_options(-O3)
 endif()
 
 # -----------------------------------------------------------------------------------------------
@@ -137,6 +137,7 @@ set(DPNP_SRC
 if(DPNP_STATIC_LIB_ENABLE)
   add_library(dpnp_backend_c STATIC ${DPNP_SRC})
 else()
+  set(CMAKE_POSITION_INDEPENDENT_CODE ON)
   add_library(dpnp_backend_c SHARED ${DPNP_SRC})
 endif()
 
@@ -218,6 +219,7 @@ message(STATUS "CMAKE_SYSTEM:                    ${CMAKE_SYSTEM}")
 message(STATUS "CMAKE_SYSTEM_VERSION:            ${CMAKE_SYSTEM_VERSION}")
 message(STATUS "CMAKE_SYSTEM_PROCESSOR:          ${CMAKE_SYSTEM_PROCESSOR}")
 message(STATUS "CMAKE_HOST_SYSTEM_NAME:          ${CMAKE_HOST_SYSTEM_NAME}")
+message(STATUS "CMAKE_BUILD_TYPE:                ${CMAKE_BUILD_TYPE}")
 message(STATUS "CXX_STANDARD:                    ${CMAKE_CXX_STANDARD}")
 message(STATUS "CMAKE_CXX_COMPILER:              ${CMAKE_CXX_COMPILER}")
 message(STATUS "CMAKE_LINKER:                    ${CMAKE_LINKER}")
