@@ -103,6 +103,7 @@ add_definitions(-DPSTL_USE_PARALLEL_POLICIES=0 -D_GLIBCXX_USE_TBB_PAR_BACKEND=0)
 project(dpnp_backend_c
         VERSION ${DPNP_VERSION}
         DESCRIPTION "DPNP: NumPy-like API accelerated with SYCL"
+        HOMEPAGE_URL https://github.com/IntelPython/dpnp
         LANGUAGES CXX)
 
 # -----------------------------------------------------------------------------------------------
