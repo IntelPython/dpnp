@@ -170,6 +170,7 @@ jobs:
       echo ========================= install DPNP package ===============================
       ninja -v install
       echo ========================= 1111111111111 ===============================
+      rm -rf *
       cmake -G "NMake Makefiles" ..
       cmake --build .
       rem ls -la
