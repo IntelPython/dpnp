@@ -183,10 +183,13 @@ jobs:
   - bash: |
       ./scripts/install_system_deps.sh
 
-      # sudo apt-get update
-      # sudo apt-get upgrade
-      sudo apt-get --only-upgrade install cmake # cmake 3.19.1 has a bug
-
+      echo ========================= cmake upgrade ===============================
+      sudo apt-get update
+      sudo apt-get upgrade
+      # sudo apt-get --only-upgrade install cmake # cmake 3.19.1 has a bug
+      which cmake
+      cmake --version
+      echo ========================= Intel OneAPI setvars ===============================
       . /opt/intel/oneapi/setvars.sh
 
       export DPNP_BACKEND_BUILD_DIR=dpnp/backend/0.build
