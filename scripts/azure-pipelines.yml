@@ -185,10 +185,10 @@ jobs:
       ./scripts/install_system_deps.sh
 
       echo ========================= cmake upgrade ===============================
-      sudo apt-get update
-      sudo apt-get upgrade
-      sudo apt-get -y install cmake # cmake 3.19.1 has a bug
-      # sudo apt-get -y --only-upgrade install cmake # cmake 3.19.1 has a bug
+      # sudo apt-get update
+      # sudo apt-get upgrade
+      # sudo apt-get install cmake # cmake 3.19.1 has a bug
+      # sudo apt-get --only-upgrade install cmake # cmake 3.19.1 has a bug
       which cmake
       cmake --version
       echo ========================= Intel OneAPI setvars ===============================
