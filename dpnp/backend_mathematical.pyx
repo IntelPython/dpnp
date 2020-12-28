@@ -68,6 +68,7 @@ __all__ += [
     "dpnp_sign",
     "dpnp_subtract",
     "dpnp_sum",
+    "dpnp_trapz",
     "dpnp_trunc"
 ]
 
@@ -516,6 +517,27 @@ cpdef dparray dpnp_sum(dparray input, axis=None):
     dpnp_array = dpnp.array(result_array, dtype=input.dtype)
     dpnp_result_array = dpnp_array.reshape(output_shape)
     return dpnp_result_array
+
+
+cpdef dpnp_trapz(dparray y, dparray x, int dx):
+
+    len = y.size
+
+    cdef dparray diff = dparray(len - 1, dtype=y.dtype)
+
+    if x.size == 0:
+        diff = dpnp.full(len - 1, dx)
+    else:
+        diff = dpnp.ediff1d(x)
+
+    square = diff[0] * y[0] + diff[len - 2] * y[len - 1]
+
+    for i in range(1, len - 1):
+        square += y[i] * (diff[i-1] + diff[i])
+
+    square *= 0.5
+
+    return square
 
 
 cpdef dparray dpnp_trunc(dparray x1):
