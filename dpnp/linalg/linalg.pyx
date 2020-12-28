@@ -144,15 +144,11 @@ cpdef dparray dpnp_eigvals(dparray input):
 
 
 cpdef dparray dpnp_inv(dparray input):
-    cpdef dparray_shape_type input_shape = input.shape
     cpdef size_t n = input.shape[0]
 
-    e_arr = dparray((n, n))
-    a_arr = dpnp.copy(input)
-
-    for i in range(n):
-        for j in range(n):
-            e_arr[i, j] = 1 if i==j else 0
+    # TODO: replace with dpnp.eye(n) when it will be implemented
+    e_arr = dpnp.diag(dpnp.full((n,), 1, dtype=dpnp.float64))
+    a_arr = input.astype(dpnp.float64)
 
     for k in range(n):
         if a_arr[k, k] == 0:
