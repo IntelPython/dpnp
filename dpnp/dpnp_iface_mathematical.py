@@ -54,6 +54,8 @@ __all__ = [
     "add",
     "around",
     "ceil",
+    "conj",
+    "conjugate",
     "copysign",
     "cumprod",
     "cumsum",
@@ -252,6 +254,39 @@ def ceil(x1, **kwargs):
         return dpnp_ceil(x1)
 
     return call_origin(numpy.ceil, x1, **kwargs)
+
+
+def conjugate(x1, **kwargs):
+    """
+    Return the complex conjugate, element-wise.
+
+    The complex conjugate of a complex number is obtained by changing the
+    sign of its imaginary part.
+
+    For full documentation refer to :obj:`numpy.conjugate`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.conjugate(1+2j)
+    (1-2j)
+
+    >>> x = np.eye(2) + 1j * np.eye(2)
+    >>> np.conjugate(x)
+    array([[ 1.-1.j,  0.-0.j],
+           [ 0.-0.j,  1.-1.j]])
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
+        return dpnp_conjugate(x1)
+
+    return call_origin(numpy.conjugate, x1, **kwargs)
+
+
+conj = conjugate
 
 
 def copysign(x1, x2, **kwargs):

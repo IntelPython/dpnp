@@ -787,6 +787,32 @@ cdef class dparray:
 
         return dpnp_astype(self, dtype)
 
+    def conj(self):
+        """
+        Complex-conjugate all elements.
+
+        For full documentation refer to :obj:`numpy.ndarray.conj`.
+
+        """
+
+        if not numpy.issubsctype(self.dtype, numpy.complex):
+            return self
+        else:
+            return conjugate(self)
+
+    def conjugate(self):
+        """
+        Return the complex conjugate, element-wise.
+
+        For full documentation refer to :obj:`numpy.ndarray.conjugate`.
+
+        """
+
+        if not numpy.issubsctype(self.dtype, numpy.complex):
+            return self
+        else:
+            return conjugate(self)
+
     """
     -------------------------------------------------------------------------
     Calculation

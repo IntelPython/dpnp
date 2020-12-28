@@ -77,6 +77,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_CBRT,                     /**< Used in numpy.cbrt() implementation  */
     DPNP_FN_CEIL,                     /**< Used in numpy.ceil() implementation  */
     DPNP_FN_CHOLESKY,                 /**< Used in numpy.linalg.cholesky() implementation  */
+    DPNP_FN_CONJIGUATE,               /**< Used in numpy.conjugate() implementation  */
     DPNP_FN_COPYSIGN,                 /**< Used in numpy.copysign() implementation  */
     DPNP_FN_CORRELATE,                /**< Used in numpy.correlate() implementation  */
     DPNP_FN_COS,                      /**< Used in numpy.cos() implementation  */
