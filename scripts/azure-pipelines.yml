@@ -144,7 +144,9 @@ jobs:
       start /b /wait webimage.exe -s -x -f webimage_extracted
       del webimage.exe
       echo ========================= install onepai ===============================
-      webimage_extracted\bootstrapper.exe -s --action install --eula=accept --continue-with-optional-error=yes -p=NEED_VS2017_INTEGRATION=0 -p=NEED_VS2019_INTEGRATION=0
+      webimage_extracted\bootstrapper.exe -s --action install      \
+        --eula=accept --continue-with-optional-error=yes           \
+        -p=NEED_VS2017_INTEGRATION=0 -p=NEED_VS2019_INTEGRATION=0
 
       echo ========================= copy OpenCL ===============================
       copy "C:\Program Files (x86)\Intel\oneAPI\intelpython\python3.7\Library\OpenCL.dll" C:\Windows\System32\
@@ -155,7 +157,9 @@ jobs:
       dir "C:\Program Files (x86)\Intel\oneAPI\compiler\latest\windows\bin"
       rem echo ========================= conda list ===============================
       rem conda list
-      rem echo ========================= cmake 1 generators list ===============================
+      echo ========================= python build ===============================
+      python ./setup.py build_clib
+      echo ========================= cd backend dir ===============================
       cd dpnp/backend
       mkdir 0.build
       cd 0.build
@@ -168,11 +172,8 @@ jobs:
       rem ninja -v
       cmake --build . -- -v
       echo ========================= install DPNP package ===============================
+      cmake --install . -- -v
       ninja -v install
-      echo ========================= 1111111111111 ===============================
-      rm -rf *
-      cmake -G "NMake Makefiles" ..
-      cmake --build .
       rem ls -la
 - job: make_backend_lin
   displayName: cmake_lin
@@ -181,15 +182,23 @@ jobs:
   steps:
   - bash: |
       ./scripts/install_system_deps.sh
+
+      # sudo apt-get update
+      # sudo apt-get upgrade
+      sudo apt-get --only-upgrade install cmake # cmake 3.19.1 has a bug
+
       . /opt/intel/oneapi/setvars.sh
-      mkdir -p dpnp/backend/0.build
-      cd dpnp/backend/0.build
+
+      export DPNP_BACKEND_BUILD_DIR=dpnp/backend/0.build
+      mkdir -p $DPNP_BACKEND_BUILD_DIR
+      cd $DPNP_BACKEND_BUILD_DIR
+
       echo ========================= cmake DPNP package ===============================
       cmake ..
       echo ========================= build DPNP package ===============================
-      make VERBOSE=1
+      cmake --build . -- -v # make VERBOSE=1
       echo ========================= install DPNP package ===============================
-      make VERBOSE=1 install
+      cmake --install . -- -v # make VERBOSE=1 install
   - publish: dpnp/backend/package_dpnp
     artifact: 'package_backend_$(Agent.JobName)_$(Agent.OS)'
     displayName: backend_cmake_oneapi_local

@@ -117,11 +117,16 @@ endif()
 # disable PSTL policies due to compiler bug
 add_definitions(-DPSTL_USE_PARALLEL_POLICIES=0 -D_GLIBCXX_USE_TBB_PAR_BACKEND=0)
 
+# -----------------------------------------------------------------------------------------------
+# Create project...
+# -----------------------------------------------------------------------------------------------
+# set(CMAKE_CXX_COMPILER "clang++")
 project(dpnp_project
         VERSION ${DPNP_VERSION}
         DESCRIPTION "DPNP: NumPy-like API accelerated with SYCL"
         HOMEPAGE_URL https://github.com/IntelPython/dpnp
         LANGUAGES CXX)
+# set(CMAKE_CXX_COMPILER "dpcpp")
 
 # -----------------------------------------------------------------------------------------------
 # Building logic...
@@ -230,6 +235,8 @@ message(STATUS "CMAKE_SYSTEM_PROCESSOR:          ${CMAKE_SYSTEM_PROCESSOR}")
 message(STATUS "CMAKE_HOST_SYSTEM_NAME:          ${CMAKE_HOST_SYSTEM_NAME}")
 message(STATUS "CMAKE_BUILD_TYPE:                ${CMAKE_BUILD_TYPE}")
 message(STATUS "CXX_STANDARD:                    ${CMAKE_CXX_STANDARD}")
+message(STATUS "CMAKE_CXX_COMPILER_ID:           ${CMAKE_CXX_COMPILER_ID}")
+message(STATUS "CMAKE_CXX_COMPILER_VERSION:      ${CMAKE_CXX_COMPILER_VERSION}")
 message(STATUS "CMAKE_CXX_COMPILER:              ${CMAKE_CXX_COMPILER}")
 message(STATUS "CMAKE_LINKER:                    ${CMAKE_LINKER}")
 message(STATUS "CMAKE_SOURCE_DIR:                ${CMAKE_SOURCE_DIR}")
