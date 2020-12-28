@@ -27,7 +27,6 @@
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-project("DPNP: NumPy-like API accelerated with SYCL" LANGUAGES CXX)
 set(DPNP_VERSION 0.4.0)
 set(DPNP_API_VERSION 0.4)
 
@@ -52,10 +51,6 @@ endif()
 option(DPNP_STATIC_LIB_ENABLE "Enable build DPNP static library" FALSE)
 option(DPNP_DEBUG_ENABLE "Enable output for DPNP_DEBUG statements" FALSE)
 
-message(STATUS "CMAKE_SYSTEM:                    ${CMAKE_SYSTEM}")
-message(STATUS "CMAKE_SYSTEM_VERSION:            ${CMAKE_SYSTEM_VERSION}")
-message(STATUS "CMAKE_SYSTEM_PROCESSOR:          ${CMAKE_SYSTEM_PROCESSOR}")
-message(STATUS "CMAKE_HOST_SYSTEM_NAME:          ${CMAKE_HOST_SYSTEM_NAME}")
 message(STATUS "DPNP_ONEAPI_ROOT:                ${DPNP_ONEAPI_ROOT}")
 message(STATUS "DPNP_STATIC_LIB_ENABLE:          ${DPNP_STATIC_LIB_ENABLE}")
 message(STATUS "DPNP_DEBUG_ENABLE:               ${DPNP_DEBUG_ENABLE}")
@@ -65,16 +60,21 @@ message(STATUS "DPNP_DEBUG_ENABLE:               ${DPNP_DEBUG_ENABLE}")
 # -----------------------------------------------------------------------------------------------
 if(UNIX)
   set(CMAKE_CXX_COMPILER "dpcpp")
+  add_compile_options(-fPIC)
 elseif(WIN32)
   set(CMAKE_CXX_COMPILER "dpcpp")
-  set(CMAKE_LINKER "lld-link")
-  add_compile_options(/Ox)
+  set(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=lld-link")
+  # set(CMAKE_LINKER "lld-link")
+  # include (Platform/Windows-Clang) 
+  # set(CMAKE_LINKER "dpcpp") 
+  # set(CMAKE_AR "llvm-ar") 
+  # set(CMAKE_RANLIB "llvm-ranlib") 
+  # set(CMAKE_CXX_FLAGS "/EHsc") 
+
   add_compile_options(/EHsc) # /Ox /W3 /GL /DNDEBUG /MD /EHsc
 else()
   message(FATAL_ERROR "Unsupported system ${CMAKE_SYSTEM} in compiler selection case")
 endif()
-
-set(DPNP_INCLUDE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # set language version
 set(CMAKE_CXX_STANDARD 17)
@@ -84,14 +84,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_compile_options(-fsycl)
 add_compile_options(-fsycl-device-code-split=per_kernel)
 
-# debug/release compile definitions
+# warning flag set
 set(DPNP_WARNING_FLAGS "-W -Wextra -Wshadow -Wall -Wstrict-prototypes" CACHE STRING "set of warning compiler switches")
+add_definitions(${DPNP_WARNING_FLAGS})
+
+# debug/release compile definitions
 if(DPNP_DEBUG_ENABLE)
   set(CMAKE_BUILD_TYPE "Debug")
-  add_definitions(-O1 ${DPNP_WARNING_FLAGS})
+  add_compile_options(-O1)
 else()
   set(CMAKE_BUILD_TYPE "Release")
-  add_definitions(${DPNP_WARNING_FLAGS})
+  add_compile_options(-O3)
 endif()
 
 # -----------------------------------------------------------------------------------------------
@@ -106,6 +109,12 @@ endif()
 
 # disable PSTL policies due to compiler bug
 add_definitions(-DPSTL_USE_PARALLEL_POLICIES=0 -D_GLIBCXX_USE_TBB_PAR_BACKEND=0)
+
+project(dpnp_project
+        VERSION ${DPNP_VERSION}
+        DESCRIPTION "DPNP: NumPy-like API accelerated with SYCL"
+        HOMEPAGE_URL https://github.com/IntelPython/dpnp
+        LANGUAGES CXX)
 
 # -----------------------------------------------------------------------------------------------
 # Building logic...
@@ -131,12 +140,11 @@ if(DPNP_STATIC_LIB_ENABLE)
   add_library(dpnp_backend_c STATIC ${DPNP_SRC})
 else()
   add_library(dpnp_backend_c SHARED ${DPNP_SRC})
+  # doesn't work set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
-set_property(TARGET dpnp_backend_c PROPERTY CXX_STANDARD 17)
-set_property(TARGET dpnp_backend_c PROPERTY CXX_STANDARD_REQUIRED ON)
-
-target_include_directories(dpnp_backend_c PUBLIC "${DPNP_INCLUDE_PATH}")
+target_include_directories(dpnp_backend_c PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(dpnp_backend_c PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # -----------------------------------------------------------------------------------------------
 # Dependencies logic...
@@ -207,7 +215,15 @@ install(TARGETS dpnp_backend_c DESTINATION "install")
 # -----------------------------------------------------------------------------------------------
 # Print Global Options
 # -----------------------------------------------------------------------------------------------
+message(STATUS "CMAKE_VERSION:                   ${CMAKE_VERSION}")
+message(STATUS "CMAKE_GENERATOR:                 ${CMAKE_GENERATOR}")
+message(STATUS "CMAKE_SYSTEM:                    ${CMAKE_SYSTEM}")
+message(STATUS "CMAKE_SYSTEM_VERSION:            ${CMAKE_SYSTEM_VERSION}")
+message(STATUS "CMAKE_SYSTEM_PROCESSOR:          ${CMAKE_SYSTEM_PROCESSOR}")
+message(STATUS "CMAKE_HOST_SYSTEM_NAME:          ${CMAKE_HOST_SYSTEM_NAME}")
+message(STATUS "CMAKE_BUILD_TYPE:                ${CMAKE_BUILD_TYPE}")
 message(STATUS "CXX_STANDARD:                    ${CMAKE_CXX_STANDARD}")
 message(STATUS "CMAKE_CXX_COMPILER:              ${CMAKE_CXX_COMPILER}")
 message(STATUS "CMAKE_LINKER:                    ${CMAKE_LINKER}")
+message(STATUS "CMAKE_SOURCE_DIR:                ${CMAKE_SOURCE_DIR}")
 message(STATUS "DPNP_INSTALL_PREFIX:             ${CMAKE_INSTALL_PREFIX}")
