@@ -45,6 +45,7 @@ __all__ = [
     "dpnp_det",
     "dpnp_eig",
     "dpnp_eigvals",
+    "dpnp_inv",
     "dpnp_matrix_rank",
     "dpnp_norm"
 ]
@@ -140,6 +141,52 @@ cpdef dparray dpnp_eigvals(dparray input):
     func(input.get_data(), res_val.get_data(), size)
 
     return res_val
+
+
+cpdef dparray dpnp_inv(dparray input):
+    cpdef size_t n = input.shape[0]
+
+    # TODO: replace with dpnp.eye(n) when it will be implemented
+    e_arr = dpnp.diag(dpnp.full((n,), 1, dtype=dpnp.float64))
+    a_arr = input.astype(dpnp.float64)
+
+    for k in range(n):
+        if a_arr[k, k] == 0:
+            for i in range(k, n):
+                if a_arr[i, k] != 0:
+                    for j in range(n):
+                        c = a_arr[k, j]
+                        a_arr[k, j] = a_arr[i, j]
+                        a_arr[i, j] = c
+                        c_e = e_arr[k, j]
+                        e_arr[k, j] = e_arr[i, j]
+                        e_arr[i, j] = c_e
+                    break
+
+        temp = a_arr[k, k]
+
+        for j in range(n):
+            a_arr[k, j] = a_arr[k, j] / temp
+            e_arr[k, j] = e_arr[k, j] / temp
+
+        for i in range(k + 1, n):
+            temp = a_arr[i, k]
+
+            for j in range(n):
+                a_arr[i, j] = a_arr[i, j] - a_arr[k, j] * temp
+                e_arr[i, j] = e_arr[i, j] - e_arr[k, j] * temp
+
+    for k in range(n-1):
+        ind_k = n - 1 - k
+        for i in range(ind_k):
+            ind_i = ind_k - 1 - i
+
+            temp = a_arr[ind_i, ind_k]
+            for j in range(n):
+                a_arr[ind_i, j] = a_arr[ind_i, j] - a_arr[ind_k, j] * temp
+                e_arr[ind_i, j] = e_arr[ind_i, j] - e_arr[ind_k, j] * temp
+
+    return e_arr
 
 
 cpdef dparray dpnp_matrix_rank(dparray input):

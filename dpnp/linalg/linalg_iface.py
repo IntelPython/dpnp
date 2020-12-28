@@ -53,6 +53,7 @@ __all__ = [
     "det",
     "eig",
     "eigvals",
+    "inv",
     "matrix_power",
     "matrix_rank",
     "multi_dot",
@@ -166,6 +167,29 @@ def eigvals(input):
             return dpnp_eigvals(input)
 
     return call_origin(numpy.linalg.eigvals, input)
+
+
+def inv(input):
+    """
+    Divide arguments element-wise.
+
+    For full documentation refer to :obj:`numpy.linalg.inv`.
+
+    Limitations
+    -----------
+        Input array is supported as :obj:`dpnp.ndarray`.
+        Dimension of input array is supported to be equal to ``2``.
+        Shape of input array is limited by ``input.shape[0] == input.shape[1]``, ``input.shape[0] >= 2``.
+        Otherwise the function will be executed sequentially on CPU.
+    """
+
+    is_input_dparray = isinstance(input, dparray)
+
+    if (not use_origin_backend(input) and is_input_dparray):
+        if input.ndim == 2 and input.shape[0] == input.shape[1] and input.shape[0] >= 2:
+            return dpnp_inv(input)
+
+    return call_origin(numpy.linalg.inv, input)
 
 
 def matrix_power(input, count):
