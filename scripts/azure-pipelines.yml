@@ -187,7 +187,8 @@ jobs:
       echo ========================= cmake upgrade ===============================
       sudo apt-get update
       sudo apt-get upgrade
-      # sudo apt-get --only-upgrade install cmake # cmake 3.19.1 has a bug
+      sudo apt-get -y install cmake # cmake 3.19.1 has a bug
+      # sudo apt-get -y --only-upgrade install cmake # cmake 3.19.1 has a bug
       which cmake
       cmake --version
       echo ========================= Intel OneAPI setvars ===============================
@@ -200,9 +201,9 @@ jobs:
       echo ========================= cmake DPNP package ===============================
       cmake ..
       echo ========================= build DPNP package ===============================
-      cmake --build . -- -v # make VERBOSE=1
+      make VERBOSE=1
       echo ========================= install DPNP package ===============================
-      cmake --install . -- -v # make VERBOSE=1 install
+      make VERBOSE=1 install
   - publish: dpnp/backend/package_dpnp
     artifact: 'package_backend_$(Agent.JobName)_$(Agent.OS)'
     displayName: backend_cmake_oneapi_local
