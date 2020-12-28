@@ -101,6 +101,16 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ga5171957071778a1384c1592cf3968234"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
+<tr class="memitem:ga5171957071778a1384c1592cf3968234"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga5171957071778a1384c1592cf3968234">dpnp_conjugate_c</a> (void *array1, void *result1, size_t size)</td></tr>
+<tr class="memdesc:ga5171957071778a1384c1592cf3968234"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per element operation function dpnp_conjugate_c <br  />
+  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga5171957071778a1384c1592cf3968234">More...</a><br /></td></tr>
+<tr class="separator:ga5171957071778a1384c1592cf3968234"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac7b853ef3509cb2369f7f8a8cadb7fe5"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
+<tr class="memitem:gac7b853ef3509cb2369f7f8a8cadb7fe5"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gac7b853ef3509cb2369f7f8a8cadb7fe5">dpnp_copy_c</a> (void *array1, void *result1, size_t size)</td></tr>
+<tr class="memdesc:gac7b853ef3509cb2369f7f8a8cadb7fe5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per element operation function dpnp_copy_c <br  />
+  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gac7b853ef3509cb2369f7f8a8cadb7fe5">More...</a><br /></td></tr>
+<tr class="separator:gac7b853ef3509cb2369f7f8a8cadb7fe5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga4d59b79f49490c33cdc691250460ef53"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:ga4d59b79f49490c33cdc691250460ef53"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga4d59b79f49490c33cdc691250460ef53">dpnp_recip_c</a> (void *array1, void *result1, size_t size)</td></tr>
 <tr class="memdesc:ga4d59b79f49490c33cdc691250460ef53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per element operation function dpnp_recip_c <br  />
@@ -2358,6 +2368,110 @@ template&lt;typename _DataType_input , typename _DataType_output &gt; </div>
  </p>
 <p><br  />
  Function "dpnp_ceil_c" executes operator "cl::sycl::ceil(input_elem)" over each element of the array <br  />
+ </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">array1</td><td>Input array. <br  />
+ </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result1</td><td>Output array. <br  />
+ </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in the input array. <br  />
+ </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga5171957071778a1384c1592cf3968234"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga5171957071778a1384c1592cf3968234">&#9670;&nbsp;</a></span>dpnp_conjugate_c()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename _DataType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void dpnp_conjugate_c </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>array1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>result1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Per element operation function dpnp_conjugate_c <br  />
+ </p>
+<p><br  />
+ Function "dpnp_conjugate_c" executes operator "std::conj(input_elem)" over each element of the array <br  />
+ </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">array1</td><td>Input array. <br  />
+ </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result1</td><td>Output array. <br  />
+ </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in the input array. <br  />
+ </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gac7b853ef3509cb2369f7f8a8cadb7fe5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gac7b853ef3509cb2369f7f8a8cadb7fe5">&#9670;&nbsp;</a></span>dpnp_copy_c()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename _DataType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void dpnp_copy_c </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>array1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>result1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Per element operation function dpnp_copy_c <br  />
+ </p>
+<p><br  />
+ Function "dpnp_copy_c" executes operator "input_elem" over each element of the array <br  />
  </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">array1</td><td>Input array. <br  />

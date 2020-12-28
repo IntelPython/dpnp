@@ -56,6 +56,12 @@
    .. automethod:: astype
 
 
+   .. automethod:: conj
+
+
+   .. automethod:: conjugate
+
+
    .. automethod:: copy
 
 
