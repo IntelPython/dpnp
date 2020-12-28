@@ -1,0 +1,6 @@
+﻿dpnp.linalg.inv
+===============
+
+.. currentmodule:: dpnp.linalg
+
+.. autofunction:: inv
