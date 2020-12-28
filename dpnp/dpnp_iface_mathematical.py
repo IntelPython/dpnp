@@ -83,6 +83,7 @@ __all__ = [
     "sign",
     "subtract",
     "sum",
+    "trapz",
     "true_divide",
     "trunc"
 ]
@@ -1309,6 +1310,52 @@ def sum(x1, **kwargs):
         return result
 
     return call_origin(numpy.sum, x1, **kwargs)
+
+
+def trapz(y, x=None, dx=1.0, **kwargs):
+    """
+    Integrate along the given axis using the composite trapezoidal rule.
+
+    For full documentation refer to :obj:`numpy.trapz`.
+
+    Limitations
+    -----------
+        Parameters ``y1`` and ``x1`` are supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 3])
+    >>> b = np.array([4, 6, 8])
+    >>> np.trapz(a)
+    4.0
+    >>> np.trapz(a, x=b)
+    8.0
+    >>> np.trapz(a, dx=2)
+    8.0
+
+    """
+
+    if not use_origin_backend(y):
+
+        if not isinstance(y, dparray):
+            pass
+        elif not isinstance(x, dparray) and x is not None:
+            pass
+        elif x is not None and y.size != x.size:
+            pass
+        elif x is not None and y.shape != x.shape:
+            pass
+        else:
+            if x is None:
+                x = dpnp.empty(0, dtype=y.dtype)
+
+            return dpnp_trapz(y, x=x, dx=dx)
+
+    return call_origin(numpy.trapz, y, x=x, dx=dx, **kwargs)
 
 
 def true_divide(*args, **kwargs):
