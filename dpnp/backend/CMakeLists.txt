@@ -58,12 +58,17 @@ message(STATUS "DPNP_DEBUG_ENABLE:               ${DPNP_DEBUG_ENABLE}")
 # -----------------------------------------------------------------------------------------------
 # Compiler-specific logic...
 # -----------------------------------------------------------------------------------------------
+
+# cmake 3.19.1 has a bug in dpcpp compiler detection. Let's assume it is a clang 
+set(CMAKE_CXX_COMPILER_ID "Clang")
+set(CMAKE_CXX_COMPILER_VERSION 12.0)
+
 if(UNIX)
   set(CMAKE_CXX_COMPILER "dpcpp")
-  add_compile_options(-fPIC)
+  # add_compile_options(-fPIC)
 elseif(WIN32)
   set(CMAKE_CXX_COMPILER "dpcpp")
-  set(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=lld-link")
+  # set(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=lld-link")
   # set(CMAKE_LINKER "lld-link")
   # include (Platform/Windows-Clang) 
   # set(CMAKE_LINKER "dpcpp") 
@@ -82,7 +87,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # SYCL related compile options
 add_compile_options(-fsycl)
+add_link_options(-fsycl)
 add_compile_options(-fsycl-device-code-split=per_kernel)
+add_link_options(-fsycl-device-code-split=per_kernel)
 
 # warning flag set
 set(DPNP_WARNING_FLAGS "-W -Wextra -Wshadow -Wall -Wstrict-prototypes" CACHE STRING "set of warning compiler switches")
@@ -91,7 +98,7 @@ add_definitions(${DPNP_WARNING_FLAGS})
 # debug/release compile definitions
 if(DPNP_DEBUG_ENABLE)
   set(CMAKE_BUILD_TYPE "Debug")
-  add_compile_options(-O1)
+  add_compile_options(-O0)
 else()
   set(CMAKE_BUILD_TYPE "Release")
   add_compile_options(-O3)
@@ -140,7 +147,7 @@ if(DPNP_STATIC_LIB_ENABLE)
   add_library(dpnp_backend_c STATIC ${DPNP_SRC})
 else()
   add_library(dpnp_backend_c SHARED ${DPNP_SRC})
-  # doesn't work set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+  set(CMAKE_POSITION_INDEPENDENT_CODE ON) # looks like this option doesn't work 
 endif()
 
 target_include_directories(dpnp_backend_c PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
