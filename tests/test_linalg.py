@@ -101,11 +101,14 @@ def test_eigvals():
         numpy.testing.assert_allclose(expected, result, atol=0.5)
 
 
+@pytest.mark.parametrize("type",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['float64', 'float32', 'int64', 'int32'])
 @pytest.mark.parametrize("array",
                          [[[1., 2.], [3., 4.]], [[0, 1, 2], [3, 2, -1], [4, -2, 3]]],
                          ids=['[[1., 2.], [3., 4.]]', '[[0, 1, 2], [3, 2, -1], [4, -2, 3]]'])
-def test_inv(array):
-    a = numpy.array(array)
+def test_inv(type, array):
+    a = numpy.array(array, dtype=type)
     ia = inp.array(a)
     result = inp.linalg.inv(ia)
     expected = numpy.linalg.inv(a)
