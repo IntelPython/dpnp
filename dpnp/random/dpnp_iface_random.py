@@ -38,10 +38,10 @@ Set of functions to implement NumPy random module API
 import dpnp
 import numpy
 
-from dpnp.backend import *
+from dpnp.dpnp_algo import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
-from dpnp.random._random import *
+from dpnp.random.dpnp_algo_random import *
 
 import operator
 

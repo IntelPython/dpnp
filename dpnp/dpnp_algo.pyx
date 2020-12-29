@@ -53,18 +53,18 @@ __all__ = [
 ]
 
 
-include "backend_arraycreation.pyx"
-include "backend_bitwise.pyx"
-include "backend_counting.pyx"
-include "backend_indexing.pyx"
-include "backend_linearalgebra.pyx"
-include "backend_logic.pyx"
-include "backend_manipulation.pyx"
-include "backend_mathematical.pyx"
-include "backend_searching.pyx"
-include "backend_sorting.pyx"
-include "backend_statistics.pyx"
-include "backend_trigonometric.pyx"
+include "dpnp_algo_arraycreation.pyx"
+include "dpnp_algo_bitwise.pyx"
+include "dpnp_algo_counting.pyx"
+include "dpnp_algo_indexing.pyx"
+include "dpnp_algo_linearalgebra.pyx"
+include "dpnp_algo_logic.pyx"
+include "dpnp_algo_manipulation.pyx"
+include "dpnp_algo_mathematical.pyx"
+include "dpnp_algo_searching.pyx"
+include "dpnp_algo_sorting.pyx"
+include "dpnp_algo_statistics.pyx"
+include "dpnp_algo_trigonometric.pyx"
 
 
 ctypedef void(*fptr_dpnp_arange_t)(size_t, size_t, void * , size_t)

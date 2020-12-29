@@ -34,7 +34,7 @@ and the rest of the library
 
 import dpnp
 from dpnp.dpnp_utils cimport *
-from dpnp.backend cimport *
+from dpnp.dpnp_algo cimport *
 from dpnp.dparray cimport dparray, dparray_shape_type
 import numpy
 cimport numpy

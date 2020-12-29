@@ -312,9 +312,9 @@ dpnp_backend_c = [
      ]
 ]
 
-dpnp_backend = Extension(
-    name="dpnp.backend",
-    sources=["dpnp/backend.pyx"],
+dpnp_algo = Extension(
+    name="dpnp.dpnp_algo",
+    sources=["dpnp/dpnp_algo.pyx"],
     libraries=[],
     include_dirs=[numpy.get_include()] + _project_backend_dir,
     extra_compile_args=_sdl_cflags,
@@ -335,18 +335,8 @@ dpnp_dparray = Extension(
 )
 
 dpnp_random = Extension(
-    name="dpnp.random._random",
-    sources=["dpnp/random/_random.pyx"],
-    include_dirs=[numpy.get_include()] + _project_backend_dir,
-    extra_compile_args=_sdl_cflags,
-    extra_link_args=_project_extra_link_args,
-    define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-    language="c++"
-)
-
-dpnp_utils = Extension(
-    name="dpnp.dpnp_utils",
-    sources=["dpnp/dpnp_utils.pyx"],
+    name="dpnp.random.dpnp_algo_random",
+    sources=["dpnp/random/dpnp_algo_random.pyx"],
     include_dirs=[numpy.get_include()] + _project_backend_dir,
     extra_compile_args=_sdl_cflags,
     extra_link_args=_project_extra_link_args,
@@ -355,8 +345,8 @@ dpnp_utils = Extension(
 )
 
 dpnp_linalg = Extension(
-    name="dpnp.linalg.linalg",
-    sources=["dpnp/linalg/linalg.pyx"],
+    name="dpnp.linalg.dpnp_algo_linalg",
+    sources=["dpnp/linalg/dpnp_algo_linalg.pyx"],
     include_dirs=[numpy.get_include()] + _project_backend_dir,
     extra_compile_args=_sdl_cflags,
     extra_link_args=_project_extra_link_args,
@@ -374,10 +364,20 @@ dpnp_fft = Extension(
     language="c++"
 )
 
+dpnp_utils = Extension(
+    name="dpnp.dpnp_utils",
+    sources=["dpnp/dpnp_utils.pyx"],
+    include_dirs=[numpy.get_include()] + _project_backend_dir,
+    extra_compile_args=_sdl_cflags,
+    extra_link_args=_project_extra_link_args,
+    define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
+    language="c++"
+)
+
 cython_options.docstrings = True
 cython_options.warning_errors = True
 
-dpnp_cython_mods = cythonize([dpnp_backend, dpnp_dparray, dpnp_random, dpnp_utils, dpnp_linalg, dpnp_fft],
+dpnp_cython_mods = cythonize([dpnp_algo, dpnp_dparray, dpnp_random, dpnp_utils, dpnp_linalg, dpnp_fft],
                              compiler_directives={"language_level": sys.version_info[0],
                                                   "warn.unused": False,
                                                   "warn.unused_result": False,
