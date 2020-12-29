@@ -34,7 +34,7 @@ and the rest of the library
 
 
 import dpnp
-from dpnp.backend cimport *
+from dpnp.dpnp_algo cimport *
 from dpnp.dpnp_utils cimport *
 
 

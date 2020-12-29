@@ -45,7 +45,7 @@ import numpy
 
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
-from dpnp.linalg.linalg import *
+from dpnp.linalg.dpnp_algo_linalg import *
 
 
 __all__ = [

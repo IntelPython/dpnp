@@ -37,7 +37,7 @@ import dpnp
 import numpy
 
 from dpnp.dpnp_utils cimport *
-from dpnp.backend cimport *
+from dpnp.dpnp_algo cimport *
 
 
 __all__ += [
