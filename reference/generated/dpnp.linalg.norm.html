@@ -193,7 +193,7 @@
 <h1>dpnp.linalg.norm<a class="headerlink" href="#dpnp-linalg-norm" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="dpnp.linalg.norm">
-<code class="sig-prename descclassname">dpnp.linalg.</code><code class="sig-name descname">norm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input</span></em>, <em class="sig-param"><span class="n">ord</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keepdims</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/linalg_iface.html#norm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.linalg.norm" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">dpnp.linalg.</code><code class="sig-name descname">norm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input</span></em>, <em class="sig-param"><span class="n">ord</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keepdims</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#norm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.linalg.norm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Matrix or vector norm.
 This function is able to return one of eight different matrix norms,
 or one of an infinite number of vector norms (described below), depending
@@ -204,9 +204,9 @@ on the value of the <code class="docutils literal notranslate"><span class="pre"
 <li><p><strong>input</strong> (<em>array_like</em>) – Input array.  If <cite>axis</cite> is None, <cite>x</cite> must be 1-D or 2-D, unless <cite>ord</cite>
 is None. If both <cite>axis</cite> and <cite>ord</cite> are None, the 2-norm of
 <code class="docutils literal notranslate"><span class="pre">x.ravel</span></code> will be returned.</p></li>
-<li><p><strong>ord</strong> (<em>{non-zero int</em><em>, </em><em>inf</em><em>, </em><em>-inf</em><em>, </em><em>'fro'</em><em>, </em><em>'nuc'}</em><em>, </em><em>optional</em>) – Order of the norm (see table under <code class="docutils literal notranslate"><span class="pre">Notes</span></code>). inf means numpy’s
+<li><p><strong>ord</strong> (<em>optional</em>) – Order of the norm (see table under <code class="docutils literal notranslate"><span class="pre">Notes</span></code>). inf means numpy’s
 <cite>inf</cite> object. The default is None.</p></li>
-<li><p><strong>axis</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>2-tuple of ints}</em><em>, </em><em>optional.</em>) – If <cite>axis</cite> is an integer, it specifies the axis of <cite>x</cite> along which to
+<li><p><strong>axis</strong> (<em>optional.</em>) – If <cite>axis</cite> is an integer, it specifies the axis of <cite>x</cite> along which to
 compute the vector norms.  If <cite>axis</cite> is a 2-tuple, it specifies the
 axes that hold 2-D matrices, and the matrix norms of these matrices
 are computed.  If <cite>axis</cite> is None then either a vector norm (when <cite>x</cite>
