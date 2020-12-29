@@ -60,8 +60,24 @@ message(STATUS "DPNP_DEBUG_ENABLE:               ${DPNP_DEBUG_ENABLE}")
 # -----------------------------------------------------------------------------------------------
 
 # cmake 3.19.1 has a bug in dpcpp compiler detection. Let's assume it is a clang 
-set(CMAKE_CXX_COMPILER_ID "Clang")
-set(CMAKE_CXX_COMPILER_VERSION 12.0)
+# set(CMAKE_CXX_COMPILER_ID "Clang")
+# set(CMAKE_CXX_COMPILER_VERSION 12.0)
+if (CMAKE_VERSION VERSION_EQUAL 3.19.1)
+    message(FATAL_ERROR
+      " Unsupported cmake version ${CMAKE_VERSION}\n"
+      " Please use other cmake version, for example:\n"
+      "in Linux:\n"
+      " curl --output cmake_webimage.tar.gz --url https://cmake.org/files/v3.19/cmake-3.19.2-Linux-x86_64.tar.gz --retry 5 --retry-delay 5\n"
+      " tar -xzf cmake_webimage.tar.gz\n"
+      " rm -f cmake_webimage.tar.gz\n"
+      " export PATH=`pwd`/cmake-3.19.2-Linux-x86_64/bin:$PATH\n"
+      "in Windows:\n"
+      " curl.exe --output cmake_webimage.zip --url https://cmake.org/files/v3.19/cmake-3.19.2-win64-x64.zip --retry 5 --retry-delay 5\n"
+      " tar -xf cmake_webimage.zip\n"
+      " del cmake_webimage.zip\n"
+      " set PATH=%CD%\\cmake-3.19.2-win64-x64\\bin;%PATH%\n"
+        )
+endif()
 
 if(UNIX)
   set(CMAKE_CXX_COMPILER "dpcpp")
@@ -87,8 +103,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # SYCL related compile options
 add_compile_options(-fsycl)
-add_link_options(-fsycl)
 add_compile_options(-fsycl-device-code-split=per_kernel)
+add_link_options(-fsycl)
 add_link_options(-fsycl-device-code-split=per_kernel)
 
 # warning flag set
@@ -189,10 +205,10 @@ elseif(WIN32)
 # mkl_sycl_dll.lib mkl_intel_ilp64_dll.lib mkl_sequential_dll.lib mkl_core_dll.lib sycl.lib OpenCL.lib
   set(DPNP_DEP_LIBS
       mkl_rt
-      mkl_sycl #_dll
-      mkl_intel_ilp64 #_dll
-      mkl_sequential #_dll
-      mkl_core #_dll
+      mkl_sycl        # _dll
+      mkl_intel_ilp64 # _dll
+      mkl_sequential  # _dll
+      mkl_core        # _dll
       sycl
       OpenCL
       CACHE STRING "Set of libraries to link")
