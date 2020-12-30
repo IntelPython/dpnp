@@ -413,6 +413,7 @@ setup(name="dpnp",
       ext_modules=dpnp_cython_mods,
       cmdclass=dpnp_build_commands,
       packages=['dpnp',
+                'dpnp.dpnp_algo',
                 'dpnp.fft',
                 'dpnp.linalg',
                 'dpnp.random'
