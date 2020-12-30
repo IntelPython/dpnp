@@ -130,7 +130,7 @@ $(document).ready(function(){initNavTree('dpnp__gen__1arg__1type__tbl_8hpp_sourc
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="preprocessor">#ifdef _SECTION_DOCUMENTATION_GENERATION_</span></div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="preprocessor">#define MACRO_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                            \</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="preprocessor">#define MACRO_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                                   \</span></div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="preprocessor"> \</span></div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="preprocessor"> \</span></div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="preprocessor"> \</span></div>
@@ -147,16 +147,14 @@ $(document).ready(function(){initNavTree('dpnp__gen__1arg__1type__tbl_8hpp_sourc
 <div class="line"><a name="l00058"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga5171957071778a1384c1592cf3968234">   58</a></span>&#160;MACRO_1ARG_1TYPE_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga5171957071778a1384c1592cf3968234">dpnp_conjugate_c</a>, std::conj(input_elem), DPNP_QUEUE.submit(kernel_func))</div>
 <div class="line"><a name="l00059"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#gac7b853ef3509cb2369f7f8a8cadb7fe5">   59</a></span>&#160;MACRO_1ARG_1TYPE_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gac7b853ef3509cb2369f7f8a8cadb7fe5">dpnp_copy_c</a>, input_elem, DPNP_QUEUE.submit(kernel_func))</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;MACRO_1ARG_1TYPE_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga4d59b79f49490c33cdc691250460ef53">dpnp_recip_c</a>,</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                           _DataType(1) / input_elem,</div>
-<div class="line"><a name="l00062"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga4d59b79f49490c33cdc691250460ef53">   62</a></span>&#160;                           DPNP_QUEUE.submit(kernel_func)) <span class="comment">// error: no member named &#39;recip&#39; in namespace &#39;cl::sycl&#39;</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                    _DataType(1) / input_elem,</div>
+<div class="line"><a name="l00062"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga4d59b79f49490c33cdc691250460ef53">   62</a></span>&#160;                    DPNP_QUEUE.submit(kernel_func)) <span class="comment">// error: no member named &#39;recip&#39; in namespace &#39;cl::sycl&#39;</span></div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;MACRO_1ARG_1TYPE_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga3b38955d72748f52e9c4ccc6a176fa49">dpnp_sign_c</a>,</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                           cl::sycl::sign((<span class="keywordtype">double</span>)input_elem),</div>
-<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga3b38955d72748f52e9c4ccc6a176fa49">   65</a></span>&#160;                           DPNP_QUEUE.submit(kernel_func)) <span class="comment">// no sycl::sign for int and long</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;MACRO_1ARG_1TYPE_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga4be0683bdd194e811b98e5a4d7c30926">dpnp_square_c</a>,</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                           input_elem* input_elem,</div>
-<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga4be0683bdd194e811b98e5a4d7c30926">   68</a></span>&#160;                           oneapi::mkl::vm::sqr(DPNP_QUEUE, size, array1, result))</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="preprocessor">#undef MACRO_1ARG_1TYPE_OP</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                    cl::sycl::sign((<span class="keywordtype">double</span>)input_elem),</div>
+<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga3b38955d72748f52e9c4ccc6a176fa49">   65</a></span>&#160;                    DPNP_QUEUE.submit(kernel_func)) <span class="comment">// no sycl::sign for int and long</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga4be0683bdd194e811b98e5a4d7c30926">   66</a></span>&#160;MACRO_1ARG_1TYPE_OP(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga4be0683bdd194e811b98e5a4d7c30926">dpnp_square_c</a>, input_elem* input_elem, oneapi::mkl::vm::sqr(DPNP_QUEUE, size, array1, result))</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="preprocessor">#undef MACRO_1ARG_1TYPE_OP</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_ga5171957071778a1384c1592cf3968234"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#ga5171957071778a1384c1592cf3968234">dpnp_conjugate_c</a></div><div class="ttdeci">void dpnp_conjugate_c(void *array1, void *result1, size_t size)</div><div class="ttdoc">Per element operation function dpnp_conjugate_c</div></div>

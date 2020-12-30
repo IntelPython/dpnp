@@ -233,25 +233,25 @@ $(document).ready(function(){initNavTree('dpnp__iface_8hpp_source.html',''); ini
 <div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> _DataType&gt;</div>
 <div class="line"><a name="l00505"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga4cd44ff6610bb2de9635f6a5ecae63fe">  505</a></span>&#160;INP_DLLEXPORT <span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga4cd44ff6610bb2de9635f6a5ecae63fe">dpnp_invert_c</a>(<span class="keywordtype">void</span>* array1_in, <span class="keywordtype">void</span>* result, <span class="keywordtype">size_t</span> size);</div>
 <div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160; </div>
-<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;<span class="preprocessor">#define MACRO_2ARG_1TYPE_OP(__name__, __operation__)                                                            \</span></div>
+<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;<span class="preprocessor">#define MACRO_2ARG_1TYPE_OP(__name__, __operation__)                                                                   \</span></div>
 <div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;<span class="preprocessor">    template &lt;typename _DataType&gt;                                                                                      \</span></div>
 <div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;<span class="preprocessor">    INP_DLLEXPORT void __name__(void* array1_in1, void* array2_in, void* result1, size_t size);</span></div>
 <div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160; </div>
 <div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;<span class="preprocessor">#include &lt;dpnp_gen_2arg_1type_tbl.hpp&gt;</span></div>
 <div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160; </div>
-<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;<span class="preprocessor">#define MACRO_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                           \</span></div>
+<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;<span class="preprocessor">#define MACRO_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                                  \</span></div>
 <div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;<span class="preprocessor">    template &lt;typename _DataType&gt;                                                                                      \</span></div>
 <div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;<span class="preprocessor">    INP_DLLEXPORT void __name__(void* array1, void* result1, size_t size);</span></div>
 <div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160; </div>
 <div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;<span class="preprocessor">#include &lt;dpnp_gen_1arg_1type_tbl.hpp&gt;</span></div>
 <div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160; </div>
-<div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;<span class="preprocessor">#define MACRO_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)                                          \</span></div>
+<div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;<span class="preprocessor">#define MACRO_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)                                                 \</span></div>
 <div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;<span class="preprocessor">    template &lt;typename _DataType_input, typename _DataType_output&gt;                                                     \</span></div>
 <div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;<span class="preprocessor">    INP_DLLEXPORT void __name__(void* array1, void* result1, size_t size);</span></div>
 <div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160; </div>
 <div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;<span class="preprocessor">#include &lt;dpnp_gen_1arg_2type_tbl.hpp&gt;</span></div>
 <div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160; </div>
-<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;<span class="preprocessor">#define MACRO_2ARG_3TYPES_OP(__name__, __operation1__, __operation2__)                                          \</span></div>
+<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;<span class="preprocessor">#define MACRO_2ARG_3TYPES_OP(__name__, __operation1__, __operation2__)                                                 \</span></div>
 <div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160;<span class="preprocessor">    template &lt;typename _DataType_input1, typename _DataType_input2, typename _DataType_output&gt;                         \</span></div>
 <div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160;<span class="preprocessor">    INP_DLLEXPORT void __name__(void* array1, void* array2, void* result1, size_t size);</span></div>
 <div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160; </div>
@@ -268,11 +268,11 @@ $(document).ready(function(){initNavTree('dpnp__iface_8hpp_source.html',''); ini
 <div class="line"><a name="l00578"></a><span class="lineno">  578</span>&#160; </div>
 <div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> _DataType&gt;</div>
 <div class="line"><a name="l00597"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga058819136a38345be92b95467090a84b">  597</a></span>&#160;INP_DLLEXPORT <span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga058819136a38345be92b95467090a84b">dpnp_elemwise_transpose_c</a>(<span class="keywordtype">void</span>* array1_in,</div>
-<div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;                                               <span class="keyword">const</span> std::vector&lt;long&gt;&amp; input_shape,</div>
-<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;                                               <span class="keyword">const</span> std::vector&lt;long&gt;&amp; result_shape,</div>
-<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;                                               <span class="keyword">const</span> std::vector&lt;long&gt;&amp; permute_axes,</div>
-<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;                                               <span class="keywordtype">void</span>* result1,</div>
-<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;                                               <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;                                             <span class="keyword">const</span> std::vector&lt;long&gt;&amp; input_shape,</div>
+<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;                                             <span class="keyword">const</span> std::vector&lt;long&gt;&amp; result_shape,</div>
+<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;                                             <span class="keyword">const</span> std::vector&lt;long&gt;&amp; permute_axes,</div>
+<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;                                             <span class="keywordtype">void</span>* result1,</div>
+<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;                                             <span class="keywordtype">size_t</span> size);</div>
 <div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160; </div>
 <div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> _DataType&gt;</div>
 <div class="line"><a name="l00618"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___a_p_i.html#ga1cb984d8303a7a8a5377206649e033fe">  618</a></span>&#160;INP_DLLEXPORT <span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#ga1cb984d8303a7a8a5377206649e033fe">dpnp_rng_beta_c</a>(<span class="keywordtype">void</span>* result, _DataType a, _DataType b, <span class="keywordtype">size_t</span> size);</div>
