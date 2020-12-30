@@ -45,7 +45,7 @@ int main(int, char**)
     }
     std::cout << std::endl;
 
-    custom_argsort_c<double, int>(array, result, size);
+    dpnp_argsort_c<double, int>(array, result, size);
 
     std::cout << "array with 'sorted' indeces" << std::endl;
     for (size_t i = 0; i < size; ++i)

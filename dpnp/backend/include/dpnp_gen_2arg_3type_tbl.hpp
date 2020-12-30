@@ -26,7 +26,7 @@
 /*
  * This header file contains single argument element wise functions definitions
  *
- * Macro `MACRO_CUSTOM_2ARG_3TYPES_OP` must be defined before usage
+ * Macro `MACRO_2ARG_3TYPES_OP` must be defined before usage
  *
  * Parameters:
  * - public name of the function and kernel name
@@ -35,13 +35,13 @@
  *
  */
 
-#ifndef MACRO_CUSTOM_2ARG_3TYPES_OP
-#error "MACRO_CUSTOM_2ARG_3TYPES_OP is not defined"
+#ifndef MACRO_2ARG_3TYPES_OP
+#error "MACRO_2ARG_3TYPES_OP is not defined"
 #endif
 
 #ifdef _SECTION_DOCUMENTATION_GENERATION_
 
-#define MACRO_CUSTOM_2ARG_3TYPES_OP(__name__, __operation1__, __operation2__)                                           \
+#define MACRO_2ARG_3TYPES_OP(__name__, __operation1__, __operation2__)                                           \
     /** @ingroup BACKEND_API                                                                                         */ \
     /** @brief Per element operation function __name__                                                               */ \
     /**                                                                                                              */ \
@@ -56,24 +56,24 @@
 
 #endif
 
-MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_add_c, input_elem1 + input_elem2, oneapi::mkl::vm::add)
-MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_arctan2_c,
+MACRO_2ARG_3TYPES_OP(dpnp_add_c, input_elem1 + input_elem2, oneapi::mkl::vm::add)
+MACRO_2ARG_3TYPES_OP(dpnp_arctan2_c,
                             cl::sycl::atan2((double)input_elem1, (double)input_elem2),
                             oneapi::mkl::vm::atan2)
-MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_copysign_c,
+MACRO_2ARG_3TYPES_OP(dpnp_copysign_c,
                             cl::sycl::copysign((double)input_elem1, (double)input_elem2),
                             oneapi::mkl::vm::copysign)
-MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_divide_c, input_elem1 / input_elem2, oneapi::mkl::vm::div)
-MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_fmod_c,
+MACRO_2ARG_3TYPES_OP(dpnp_divide_c, input_elem1 / input_elem2, oneapi::mkl::vm::div)
+MACRO_2ARG_3TYPES_OP(dpnp_fmod_c,
                             cl::sycl::fmod((double)input_elem1, (double)input_elem2),
                             oneapi::mkl::vm::fmod)
-MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_hypot_c,
+MACRO_2ARG_3TYPES_OP(dpnp_hypot_c,
                             cl::sycl::hypot((double)input_elem1, (double)input_elem2),
                             oneapi::mkl::vm::hypot)
-MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_maximum_c, cl::sycl::max(input_elem1, input_elem2), oneapi::mkl::vm::fmax)
-MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_minimum_c, cl::sycl::min(input_elem1, input_elem2), oneapi::mkl::vm::fmin)
-MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_multiply_c, input_elem1* input_elem2, oneapi::mkl::vm::mul)
-MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_power_c, cl::sycl::pow((double)input_elem1, (double)input_elem2), oneapi::mkl::vm::pow)
-MACRO_CUSTOM_2ARG_3TYPES_OP(dpnp_subtract_c, input_elem1 - input_elem2, oneapi::mkl::vm::sub)
+MACRO_2ARG_3TYPES_OP(dpnp_maximum_c, cl::sycl::max(input_elem1, input_elem2), oneapi::mkl::vm::fmax)
+MACRO_2ARG_3TYPES_OP(dpnp_minimum_c, cl::sycl::min(input_elem1, input_elem2), oneapi::mkl::vm::fmin)
+MACRO_2ARG_3TYPES_OP(dpnp_multiply_c, input_elem1* input_elem2, oneapi::mkl::vm::mul)
+MACRO_2ARG_3TYPES_OP(dpnp_power_c, cl::sycl::pow((double)input_elem1, (double)input_elem2), oneapi::mkl::vm::pow)
+MACRO_2ARG_3TYPES_OP(dpnp_subtract_c, input_elem1 - input_elem2, oneapi::mkl::vm::sub)
 
-#undef MACRO_CUSTOM_2ARG_3TYPES_OP
+#undef MACRO_2ARG_3TYPES_OP

@@ -26,7 +26,7 @@
 /*
  * This header file contains single argument element wise functions definitions
  *
- * Macro `MACRO_CUSTOM_1ARG_1TYPE_OP` must be defined before usage
+ * Macro `MACRO_1ARG_1TYPE_OP` must be defined before usage
  *
  * Parameters:
  * - public name of the function and kernel name
@@ -35,13 +35,13 @@
  *
  */
 
-#ifndef MACRO_CUSTOM_1ARG_1TYPE_OP
-#error "MACRO_CUSTOM_1ARG_1TYPE_OP is not defined"
+#ifndef MACRO_1ARG_1TYPE_OP
+#error "MACRO_1ARG_1TYPE_OP is not defined"
 #endif
 
 #ifdef _SECTION_DOCUMENTATION_GENERATION_
 
-#define MACRO_CUSTOM_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                            \
+#define MACRO_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                            \
     /** @ingroup BACKEND_API                                                                                         */ \
     /** @brief Per element operation function __name__                                                               */ \
     /**                                                                                                              */ \
@@ -55,16 +55,16 @@
 
 #endif
 
-MACRO_CUSTOM_1ARG_1TYPE_OP(dpnp_conjugate_c, std::conj(input_elem), DPNP_QUEUE.submit(kernel_func))
-MACRO_CUSTOM_1ARG_1TYPE_OP(dpnp_copy_c, input_elem, DPNP_QUEUE.submit(kernel_func))
-MACRO_CUSTOM_1ARG_1TYPE_OP(dpnp_recip_c,
+MACRO_1ARG_1TYPE_OP(dpnp_conjugate_c, std::conj(input_elem), DPNP_QUEUE.submit(kernel_func))
+MACRO_1ARG_1TYPE_OP(dpnp_copy_c, input_elem, DPNP_QUEUE.submit(kernel_func))
+MACRO_1ARG_1TYPE_OP(dpnp_recip_c,
                            _DataType(1) / input_elem,
                            DPNP_QUEUE.submit(kernel_func)) // error: no member named 'recip' in namespace 'cl::sycl'
-MACRO_CUSTOM_1ARG_1TYPE_OP(dpnp_sign_c,
+MACRO_1ARG_1TYPE_OP(dpnp_sign_c,
                            cl::sycl::sign((double)input_elem),
                            DPNP_QUEUE.submit(kernel_func)) // no sycl::sign for int and long
-MACRO_CUSTOM_1ARG_1TYPE_OP(dpnp_square_c,
+MACRO_1ARG_1TYPE_OP(dpnp_square_c,
                            input_elem* input_elem,
                            oneapi::mkl::vm::sqr(DPNP_QUEUE, size, array1, result))
 
-#undef MACRO_CUSTOM_1ARG_1TYPE_OP
+#undef MACRO_1ARG_1TYPE_OP
