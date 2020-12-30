@@ -47,6 +47,7 @@ elif sys.platform in ['win32', 'cygwin']:
 else:
     raise EnvironmentError("DPNP cmake builder: " + sys.platform + " not supported")
 
+
 class custom_build_cmake_clib(build_clib.build_clib):
     def run(self):
         root_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))

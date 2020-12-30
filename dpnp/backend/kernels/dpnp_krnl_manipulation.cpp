@@ -38,11 +38,11 @@ class dpnp_elemwise_transpose_c_kernel;
 
 template <typename _DataType>
 void dpnp_elemwise_transpose_c(void* array1_in,
-                                 const std::vector<long>& input_shape,
-                                 const std::vector<long>& result_shape,
-                                 const std::vector<long>& permute_axes,
-                                 void* result1,
-                                 size_t size)
+                               const std::vector<long>& input_shape,
+                               const std::vector<long>& result_shape,
+                               const std::vector<long>& permute_axes,
+                               void* result1,
+                               size_t size)
 {
     if (!size)
     {

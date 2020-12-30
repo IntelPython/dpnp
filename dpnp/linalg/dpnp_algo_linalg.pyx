@@ -176,7 +176,7 @@ cpdef dparray dpnp_inv(dparray input):
                 a_arr[i, j] = a_arr[i, j] - a_arr[k, j] * temp
                 e_arr[i, j] = e_arr[i, j] - e_arr[k, j] * temp
 
-    for k in range(n-1):
+    for k in range(n - 1):
         ind_k = n - 1 - k
         for i in range(ind_k):
             ind_i = ind_k - 1 - i
