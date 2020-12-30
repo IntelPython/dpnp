@@ -34,10 +34,10 @@
 namespace mkl_blas = oneapi::mkl::blas::row_major;
 
 template <typename _DataType>
-class custom_cholesky_c_kernel;
+class dpnp_cholesky_c_kernel;
 
 template <typename _DataType>
-void custom_cholesky_c(void* array1_in, void* result1, size_t* shape)
+void dpnp_cholesky_c(void* array1_in, void* result1, size_t* shape)
 {
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* l_result = reinterpret_cast<_DataType*>(result1);
@@ -77,10 +77,10 @@ void custom_cholesky_c(void* array1_in, void* result1, size_t* shape)
 }
 
 template <typename _DataType>
-class custom_det_c_kernel;
+class dpnp_det_c_kernel;
 
 template <typename _DataType>
-void custom_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
+void dpnp_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
 {
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
@@ -176,10 +176,10 @@ void custom_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
 }
 
 template <typename _DataType>
-class custom_matrix_rank_c_kernel;
+class dpnp_matrix_rank_c_kernel;
 
 template <typename _DataType>
-void custom_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
+void dpnp_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
 {
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
@@ -212,20 +212,20 @@ void custom_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t 
 
 void func_map_init_linalg_func(func_map_t& fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_INT][eft_INT] = {eft_INT, (void*)custom_cholesky_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_cholesky_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_cholesky_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_cholesky_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_cholesky_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_cholesky_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_cholesky_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_cholesky_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_DET][eft_INT][eft_INT] = {eft_INT, (void*)custom_det_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_DET][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_det_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_DET][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_det_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_DET][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_det_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_DET][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_det_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_DET][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_det_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_DET][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_det_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_DET][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_det_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_INT][eft_INT] = {eft_INT, (void*)custom_matrix_rank_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_matrix_rank_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_matrix_rank_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_matrix_rank_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_matrix_rank_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_matrix_rank_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_matrix_rank_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_matrix_rank_c<double>};
 
     return;
 }

@@ -26,7 +26,7 @@
 /*
  * This header file contains single argument bitwise functions definitions
  *
- * Macro `MACRO_CUSTOM_2ARG_1TYPE_OP` must be defined before usage
+ * Macro `MACRO_2ARG_1TYPE_OP` must be defined before usage
  *
  * Parameters:
  * - public name of the function and kernel name
@@ -34,13 +34,13 @@
  *
  */
 
-#ifndef MACRO_CUSTOM_2ARG_1TYPE_OP
-#error "MACRO_CUSTOM_2ARG_1TYPE_OP is not defined"
+#ifndef MACRO_2ARG_1TYPE_OP
+#error "MACRO_2ARG_1TYPE_OP is not defined"
 #endif
 
 #ifdef _SECTION_DOCUMENTATION_GENERATION_
 
-#define MACRO_CUSTOM_2ARG_1TYPE_OP(__name__, __operation__)                                                             \
+#define MACRO_2ARG_1TYPE_OP(__name__, __operation__)                                                             \
     /** @ingroup BACKEND_API                                                                                         */ \
     /** @brief Element wise operation function __name__                                                              */ \
     /**                                                                                                              */ \
@@ -55,10 +55,10 @@
 
 #endif
 
-MACRO_CUSTOM_2ARG_1TYPE_OP(dpnp_bitwise_and_c, input_elem1& input_elem2)
-MACRO_CUSTOM_2ARG_1TYPE_OP(dpnp_bitwise_or_c, input_elem1 | input_elem2)
-MACRO_CUSTOM_2ARG_1TYPE_OP(dpnp_bitwise_xor_c, input_elem1 ^ input_elem2)
-MACRO_CUSTOM_2ARG_1TYPE_OP(dpnp_left_shift_c, input_elem1 << input_elem2)
-MACRO_CUSTOM_2ARG_1TYPE_OP(dpnp_right_shift_c, input_elem1 >> input_elem2)
+MACRO_2ARG_1TYPE_OP(dpnp_bitwise_and_c, input_elem1& input_elem2)
+MACRO_2ARG_1TYPE_OP(dpnp_bitwise_or_c, input_elem1 | input_elem2)
+MACRO_2ARG_1TYPE_OP(dpnp_bitwise_xor_c, input_elem1 ^ input_elem2)
+MACRO_2ARG_1TYPE_OP(dpnp_left_shift_c, input_elem1 << input_elem2)
+MACRO_2ARG_1TYPE_OP(dpnp_right_shift_c, input_elem1 >> input_elem2)
 
-#undef MACRO_CUSTOM_2ARG_1TYPE_OP
+#undef MACRO_2ARG_1TYPE_OP

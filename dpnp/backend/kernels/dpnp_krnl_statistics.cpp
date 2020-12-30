@@ -45,10 +45,10 @@ void dpnp_correlate_c(void* array1_in, void* array2_in, void* result1, size_t si
 }
 
 template <typename _DataType>
-class custom_cov_c_kernel;
+class dpnp_cov_c_kernel;
 
 template <typename _DataType>
-void custom_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols)
+void dpnp_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols)
 {
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
@@ -58,7 +58,7 @@ void custom_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols)
         return;
     }
 
-    auto policy = oneapi::dpl::execution::make_device_policy<class custom_cov_c_kernel<_DataType>>(DPNP_QUEUE);
+    auto policy = oneapi::dpl::execution::make_device_policy<class dpnp_cov_c_kernel<_DataType>>(DPNP_QUEUE);
 
     _DataType* mean = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(nrows * sizeof(_DataType)));
     for (size_t i = 0; i < nrows; ++i)
@@ -109,7 +109,7 @@ void custom_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols)
     };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
-        cgh.parallel_for<class custom_cov_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+        cgh.parallel_for<class dpnp_cov_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
 
     event = DPNP_QUEUE.submit(kernel_func);
@@ -123,10 +123,10 @@ void custom_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols)
 }
 
 template <typename _DataType>
-class custom_max_c_kernel;
+class dpnp_max_c_kernel;
 
 template <typename _DataType>
-void custom_max_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
+void dpnp_max_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
 {
     __attribute__((unused)) void* tmp = (void*)(axis + naxis);
 
@@ -152,7 +152,7 @@ void custom_max_c(void* array1_in, void* result1, const size_t* shape, size_t nd
     }
     else
     {
-        auto policy = oneapi::dpl::execution::make_device_policy<class custom_max_c_kernel<_DataType>>(DPNP_QUEUE);
+        auto policy = oneapi::dpl::execution::make_device_policy<class dpnp_max_c_kernel<_DataType>>(DPNP_QUEUE);
 
         _DataType* res = std::max_element(policy, array_1, array_1 + size);
         policy.queue().wait();
@@ -164,7 +164,7 @@ void custom_max_c(void* array1_in, void* result1, const size_t* shape, size_t nd
 }
 
 template <typename _DataType, typename _ResultType>
-void custom_mean_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
+void dpnp_mean_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
 {
     __attribute__((unused)) void* tmp = (void*)(axis + naxis);
 
@@ -195,7 +195,7 @@ void custom_mean_c(void* array1_in, void* result1, const size_t* shape, size_t n
     {
         _DataType* sum = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(1 * sizeof(_DataType)));
 
-        custom_sum_c<_DataType>(array1_in, sum, size);
+        dpnp_sum_c<_DataType>(array1_in, sum, size);
 
         result[0] = static_cast<_ResultType>(sum[0]) / static_cast<_ResultType>(size);
 
@@ -206,7 +206,7 @@ void custom_mean_c(void* array1_in, void* result1, const size_t* shape, size_t n
 }
 
 template <typename _DataType, typename _ResultType>
-void custom_median_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
+void dpnp_median_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
 {
     __attribute__((unused)) void* tmp = (void*)(axis + naxis);
 
@@ -220,7 +220,7 @@ void custom_median_c(void* array1_in, void* result1, const size_t* shape, size_t
 
     _DataType* sorted = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
 
-    custom_sort_c<_DataType>(array1_in, sorted, size);
+    dpnp_sort_c<_DataType>(array1_in, sorted, size);
 
     if (size % 2 == 0)
     {
@@ -237,10 +237,10 @@ void custom_median_c(void* array1_in, void* result1, const size_t* shape, size_t
 }
 
 template <typename _DataType>
-class custom_min_c_kernel;
+class dpnp_min_c_kernel;
 
 template <typename _DataType>
-void custom_min_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
+void dpnp_min_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
 {
     if (naxis == 0)
     {
@@ -267,7 +267,7 @@ void custom_min_c(void* array1_in, void* result1, const size_t* shape, size_t nd
         }
         else
         {
-            auto policy = oneapi::dpl::execution::make_device_policy<class custom_min_c_kernel<_DataType>>(DPNP_QUEUE);
+            auto policy = oneapi::dpl::execution::make_device_policy<class dpnp_min_c_kernel<_DataType>>(DPNP_QUEUE);
 
             _DataType* res = std::min_element(policy, array_1, array_1 + size);
             policy.queue().wait();
@@ -429,14 +429,14 @@ void custom_min_c(void* array1_in, void* result1, const size_t* shape, size_t nd
 }
 
 template <typename _DataType, typename _ResultType>
-void custom_std_c(
+void dpnp_std_c(
     void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof)
 {
     _DataType* array1 = reinterpret_cast<_DataType*>(array1_in);
     _ResultType* result = reinterpret_cast<_ResultType*>(result1);
 
     _ResultType* var = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(1 * sizeof(_ResultType)));
-    custom_var_c<_DataType, _ResultType>(array1, var, shape, ndim, axis, naxis, ddof);
+    dpnp_var_c<_DataType, _ResultType>(array1, var, shape, ndim, axis, naxis, ddof);
 
     dpnp_sqrt_c<_ResultType, _ResultType>(var, result, 1);
 
@@ -446,10 +446,10 @@ void custom_std_c(
 }
 
 template <typename _DataType, typename _ResultType>
-class custom_var_c_kernel;
+class dpnp_var_c_kernel;
 
 template <typename _DataType, typename _ResultType>
-void custom_var_c(
+void dpnp_var_c(
     void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof)
 {
     cl::sycl::event event;
@@ -457,7 +457,7 @@ void custom_var_c(
     _ResultType* result = reinterpret_cast<_ResultType*>(result1);
 
     _ResultType* mean = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(1 * sizeof(_ResultType)));
-    custom_mean_c<_DataType, _ResultType>(array1, mean, shape, ndim, axis, naxis);
+    dpnp_mean_c<_DataType, _ResultType>(array1, mean, shape, ndim, axis, naxis);
     _ResultType mean_val = mean[0];
 
     size_t size = 1;
@@ -478,14 +478,14 @@ void custom_var_c(
     };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
-        cgh.parallel_for<class custom_var_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
+        cgh.parallel_for<class dpnp_var_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
     };
 
     event = DPNP_QUEUE.submit(kernel_func);
 
     event.wait();
 
-    custom_mean_c<_ResultType, _ResultType>(squared_deviations, mean, shape, ndim, axis, naxis);
+    dpnp_mean_c<_ResultType, _ResultType>(squared_deviations, mean, shape, ndim, axis, naxis);
     mean_val = mean[0];
 
     result[0] = mean_val * size / static_cast<_ResultType>(size - ddof);
@@ -516,40 +516,40 @@ void func_map_init_statistics(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_DBL] = {eft_DBL,
                                                                (void*)dpnp_correlate_c<double, double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_COV][eft_INT][eft_INT] = {eft_DBL, (void*)custom_cov_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_COV][eft_LNG][eft_LNG] = {eft_DBL, (void*)custom_cov_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_COV][eft_FLT][eft_FLT] = {eft_DBL, (void*)custom_cov_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_COV][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_cov_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_COV][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_cov_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_COV][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_cov_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_COV][eft_FLT][eft_FLT] = {eft_DBL, (void*)dpnp_cov_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_COV][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_cov_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_MAX][eft_INT][eft_INT] = {eft_INT, (void*)custom_max_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_MAX][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_max_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_MAX][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_max_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_MAX][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_max_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_MAX][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_max_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_MAX][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_max_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_MAX][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_max_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_MAX][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_max_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_MEAN][eft_INT][eft_INT] = {eft_DBL, (void*)custom_mean_c<int, double>};
-    fmap[DPNPFuncName::DPNP_FN_MEAN][eft_LNG][eft_LNG] = {eft_DBL, (void*)custom_mean_c<long, double>};
-    fmap[DPNPFuncName::DPNP_FN_MEAN][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_mean_c<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_MEAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_mean_c<double, double>};
+    fmap[DPNPFuncName::DPNP_FN_MEAN][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_mean_c<int, double>};
+    fmap[DPNPFuncName::DPNP_FN_MEAN][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_mean_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_MEAN][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_mean_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_MEAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_mean_c<double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_INT][eft_INT] = {eft_DBL, (void*)custom_median_c<int, double>};
-    fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_LNG][eft_LNG] = {eft_DBL, (void*)custom_median_c<long, double>};
-    fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_median_c<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_median_c<double, double>};
+    fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_median_c<int, double>};
+    fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_median_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_median_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_median_c<double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_MIN][eft_INT][eft_INT] = {eft_INT, (void*)custom_min_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_MIN][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_min_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_MIN][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_min_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_MIN][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_min_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_MIN][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_min_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_MIN][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_min_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_MIN][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_min_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_MIN][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_min_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_STD][eft_INT][eft_INT] = {eft_DBL, (void*)custom_std_c<int, double>};
-    fmap[DPNPFuncName::DPNP_FN_STD][eft_LNG][eft_LNG] = {eft_DBL, (void*)custom_std_c<long, double>};
-    fmap[DPNPFuncName::DPNP_FN_STD][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_std_c<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_STD][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_std_c<double, double>};
+    fmap[DPNPFuncName::DPNP_FN_STD][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_std_c<int, double>};
+    fmap[DPNPFuncName::DPNP_FN_STD][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_std_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_STD][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_std_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_STD][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_std_c<double, double>};
 
-    fmap[DPNPFuncName::DPNP_FN_VAR][eft_INT][eft_INT] = {eft_DBL, (void*)custom_var_c<int, double>};
-    fmap[DPNPFuncName::DPNP_FN_VAR][eft_LNG][eft_LNG] = {eft_DBL, (void*)custom_var_c<long, double>};
-    fmap[DPNPFuncName::DPNP_FN_VAR][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_var_c<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_VAR][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_var_c<double, double>};
+    fmap[DPNPFuncName::DPNP_FN_VAR][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_var_c<int, double>};
+    fmap[DPNPFuncName::DPNP_FN_VAR][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_var_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_VAR][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_var_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_VAR][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_var_c<double, double>};
 
     return;
 }

@@ -33,10 +33,10 @@
 #include "queue_sycl.hpp"
 
 template <typename _KernelNameSpecialization>
-class custom_elemwise_absolute_c_kernel;
+class dpnp_elemwise_absolute_c_kernel;
 
 template <typename _DataType>
-void custom_elemwise_absolute_c(void* array1_in, void* result1, size_t size)
+void dpnp_elemwise_absolute_c(void* array1_in, void* result1, size_t size)
 {
     if (!size)
     {
@@ -69,7 +69,7 @@ void custom_elemwise_absolute_c(void* array1_in, void* result1, size_t size)
         };
 
         auto kernel_func = [&](cl::sycl::handler& cgh) {
-            cgh.parallel_for<class custom_elemwise_absolute_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+            cgh.parallel_for<class dpnp_elemwise_absolute_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
         };
 
         event = DPNP_QUEUE.submit(kernel_func);
@@ -78,10 +78,10 @@ void custom_elemwise_absolute_c(void* array1_in, void* result1, size_t size)
     event.wait();
 }
 
-template void custom_elemwise_absolute_c<double>(void* array1_in, void* result1, size_t size);
-template void custom_elemwise_absolute_c<float>(void* array1_in, void* result1, size_t size);
-template void custom_elemwise_absolute_c<long>(void* array1_in, void* result1, size_t size);
-template void custom_elemwise_absolute_c<int>(void* array1_in, void* result1, size_t size);
+template void dpnp_elemwise_absolute_c<double>(void* array1_in, void* result1, size_t size);
+template void dpnp_elemwise_absolute_c<float>(void* array1_in, void* result1, size_t size);
+template void dpnp_elemwise_absolute_c<long>(void* array1_in, void* result1, size_t size);
+template void dpnp_elemwise_absolute_c<int>(void* array1_in, void* result1, size_t size);
 
 template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2, typename _KernelNameSpecialization3>
 class dpnp_floor_divide_c_kernel;

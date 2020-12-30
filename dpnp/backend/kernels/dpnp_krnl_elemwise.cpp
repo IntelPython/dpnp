@@ -31,7 +31,7 @@
 #include "dpnp_utils.hpp"
 #include "queue_sycl.hpp"
 
-#define MACRO_CUSTOM_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)                                          \
+#define MACRO_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)                                          \
     template <typename _KernelNameSpecialization>                                                                      \
     class __name__##_kernel;                                                                                           \
                                                                                                                        \
@@ -210,7 +210,7 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
     return;
 }
 
-#define MACRO_CUSTOM_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                           \
+#define MACRO_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                           \
     template <typename _KernelNameSpecialization>                                                                      \
     class __name__##_kernel;                                                                                           \
                                                                                                                        \
@@ -315,7 +315,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
     return;
 }
 
-#define MACRO_CUSTOM_2ARG_3TYPES_OP(__name__, __operation1__, __operation2__)                                          \
+#define MACRO_2ARG_3TYPES_OP(__name__, __operation1__, __operation2__)                                          \
     template <typename _KernelNameSpecialization1,                                                                     \
               typename _KernelNameSpecialization2,                                                                     \
               typename _KernelNameSpecialization3>                                                                     \

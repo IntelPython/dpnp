@@ -65,7 +65,7 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
     return;
 }
 
-#define MACRO_CUSTOM_2ARG_1TYPE_OP(__name__, __operation__)                                                            \
+#define MACRO_2ARG_1TYPE_OP(__name__, __operation__)                                                            \
     template <typename _KernelNameSpecialization>                                                                      \
     class __name__##_kernel;                                                                                           \
                                                                                                                        \

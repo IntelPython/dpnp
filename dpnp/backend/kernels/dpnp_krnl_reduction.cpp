@@ -33,10 +33,10 @@
 namespace mkl_stats = oneapi::mkl::stats;
 
 template <typename _KernelNameSpecialization>
-class custom_sum_c_kernel;
+class dpnp_sum_c_kernel;
 
 template <typename _DataType>
-void custom_sum_c(void* array1_in, void* result1, size_t size)
+void dpnp_sum_c(void* array1_in, void* result1, size_t size)
 {
     if (!size)
     {
@@ -57,7 +57,7 @@ void custom_sum_c(void* array1_in, void* result1, size_t size)
     else
     {
         // cl::sycl::range<1> gws(size);
-        auto policy = oneapi::dpl::execution::make_device_policy<custom_sum_c_kernel<_DataType>>(DPNP_QUEUE);
+        auto policy = oneapi::dpl::execution::make_device_policy<dpnp_sum_c_kernel<_DataType>>(DPNP_QUEUE);
 
         // sycl::buffer<_DataType, 1> array_1_buf(array_1, gws);
         // auto it_begin = oneapi::dpl::begin(array_1_buf);
@@ -75,10 +75,10 @@ void custom_sum_c(void* array1_in, void* result1, size_t size)
 }
 
 template <typename _KernelNameSpecialization>
-class custom_prod_c_kernel;
+class dpnp_prod_c_kernel;
 
 template <typename _DataType>
-void custom_prod_c(void* array1_in, void* result1, size_t size)
+void dpnp_prod_c(void* array1_in, void* result1, size_t size)
 {
     if (!size)
     {
@@ -88,7 +88,7 @@ void custom_prod_c(void* array1_in, void* result1, size_t size)
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    auto policy = oneapi::dpl::execution::make_device_policy<custom_prod_c_kernel<_DataType>>(DPNP_QUEUE);
+    auto policy = oneapi::dpl::execution::make_device_policy<dpnp_prod_c_kernel<_DataType>>(DPNP_QUEUE);
 
     result[0] = std::reduce(policy, array_1, array_1 + size, _DataType(1), std::multiplies<_DataType>());
 
@@ -99,15 +99,15 @@ void custom_prod_c(void* array1_in, void* result1, size_t size)
 
 void func_map_init_reduction(func_map_t& fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_PROD][eft_INT][eft_INT] = {eft_INT, (void*)custom_prod_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_PROD][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_prod_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_PROD][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_prod_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_PROD][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_prod_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_PROD][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_prod_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_PROD][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_prod_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_PROD][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_prod_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_PROD][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_prod_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_SUM][eft_INT][eft_INT] = {eft_INT, (void*)custom_sum_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_SUM][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_sum_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_SUM][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_sum_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_SUM][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_sum_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_SUM][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_sum_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_SUM][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_sum_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_SUM][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_sum_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_SUM][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_sum_c<double>};
 
     return;
 }

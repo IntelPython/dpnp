@@ -152,7 +152,7 @@ INP_DLLEXPORT void
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_elemwise_absolute_c(void* array1_in, void* result1, size_t size);
+INP_DLLEXPORT void dpnp_elemwise_absolute_c(void* array1_in, void* result1, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -181,7 +181,7 @@ INP_DLLEXPORT void dpnp_dot_c(void* array1, void* array2, void* result1, size_t 
  * @param [out] result Output array contains one element.
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_sum_c(void* array, void* result, size_t size);
+INP_DLLEXPORT void dpnp_sum_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -194,7 +194,7 @@ INP_DLLEXPORT void custom_sum_c(void* array, void* result, size_t size);
  * @param [out] result Output array contains one element.
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_prod_c(void* array, void* result, size_t size);
+INP_DLLEXPORT void dpnp_prod_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -238,7 +238,7 @@ INP_DLLEXPORT void dpnp_eigvals_c(const void* array_in, void* result1, size_t si
  *
  */
 template <typename _DataType, typename _idx_DataType>
-INP_DLLEXPORT void custom_argsort_c(void* array, void* result, size_t size);
+INP_DLLEXPORT void dpnp_argsort_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -252,7 +252,7 @@ INP_DLLEXPORT void custom_argsort_c(void* array, void* result, size_t size);
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_sort_c(void* array, void* result, size_t size);
+INP_DLLEXPORT void dpnp_sort_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -266,7 +266,7 @@ INP_DLLEXPORT void custom_sort_c(void* array, void* result, size_t size);
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_cholesky_c(void* array1_in, void* result1, size_t* shape);
+INP_DLLEXPORT void dpnp_cholesky_c(void* array1_in, void* result1, size_t* shape);
 
 /**
  * @ingroup BACKEND_API
@@ -298,7 +298,7 @@ INP_DLLEXPORT void dpnp_correlate_c(void* array1_in, void* array2_in, void* resu
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols);
+INP_DLLEXPORT void dpnp_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols);
 
 /**
  * @ingroup BACKEND_API
@@ -314,7 +314,7 @@ INP_DLLEXPORT void custom_cov_c(void* array1_in, void* result1, size_t nrows, si
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim);
+INP_DLLEXPORT void dpnp_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim);
 
 /**
  * @ingroup BACKEND_API
@@ -330,7 +330,7 @@ INP_DLLEXPORT void custom_det_c(void* array1_in, void* result1, size_t* shape, s
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t ndim);
+INP_DLLEXPORT void dpnp_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t ndim);
 
 /**
  * @ingroup BACKEND_API
@@ -351,7 +351,7 @@ INP_DLLEXPORT void custom_matrix_rank_c(void* array1_in, void* result1, size_t* 
  */
 template <typename _DataType>
 INP_DLLEXPORT void
-    custom_max_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
+    dpnp_max_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
@@ -372,7 +372,7 @@ INP_DLLEXPORT void
  */
 template <typename _DataType, typename _ResultType>
 INP_DLLEXPORT void
-    custom_mean_c(void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
+    dpnp_mean_c(void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
@@ -393,7 +393,7 @@ INP_DLLEXPORT void
  */
 template <typename _DataType, typename _ResultType>
 INP_DLLEXPORT void
-    custom_median_c(void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
+    dpnp_median_c(void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
@@ -414,7 +414,7 @@ INP_DLLEXPORT void
  */
 template <typename _DataType>
 INP_DLLEXPORT void
-    custom_min_c(void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
+    dpnp_min_c(void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
@@ -428,7 +428,7 @@ INP_DLLEXPORT void
  *
  */
 template <typename _DataType, typename _idx_DataType>
-INP_DLLEXPORT void custom_argmax_c(void* array, void* result, size_t size);
+INP_DLLEXPORT void dpnp_argmax_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -442,7 +442,7 @@ INP_DLLEXPORT void custom_argmax_c(void* array, void* result, size_t size);
  *
  */
 template <typename _DataType, typename _idx_DataType>
-INP_DLLEXPORT void custom_argmin_c(void* array, void* result, size_t size);
+INP_DLLEXPORT void dpnp_argmin_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -464,7 +464,7 @@ INP_DLLEXPORT void custom_argmin_c(void* array, void* result, size_t size);
  *
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void custom_std_c(
+INP_DLLEXPORT void dpnp_std_c(
     void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
 
 /**
@@ -487,7 +487,7 @@ INP_DLLEXPORT void custom_std_c(
  *
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void custom_var_c(
+INP_DLLEXPORT void dpnp_var_c(
     void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
 
 /**
@@ -504,25 +504,25 @@ INP_DLLEXPORT void custom_var_c(
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
 
-#define MACRO_CUSTOM_2ARG_1TYPE_OP(__name__, __operation__)                                                            \
+#define MACRO_2ARG_1TYPE_OP(__name__, __operation__)                                                            \
     template <typename _DataType>                                                                                      \
     INP_DLLEXPORT void __name__(void* array1_in1, void* array2_in, void* result1, size_t size);
 
 #include <dpnp_gen_2arg_1type_tbl.hpp>
 
-#define MACRO_CUSTOM_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                           \
+#define MACRO_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                           \
     template <typename _DataType>                                                                                      \
     INP_DLLEXPORT void __name__(void* array1, void* result1, size_t size);
 
 #include <dpnp_gen_1arg_1type_tbl.hpp>
 
-#define MACRO_CUSTOM_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)                                          \
+#define MACRO_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)                                          \
     template <typename _DataType_input, typename _DataType_output>                                                     \
     INP_DLLEXPORT void __name__(void* array1, void* result1, size_t size);
 
 #include <dpnp_gen_1arg_2type_tbl.hpp>
 
-#define MACRO_CUSTOM_2ARG_3TYPES_OP(__name__, __operation1__, __operation2__)                                          \
+#define MACRO_2ARG_3TYPES_OP(__name__, __operation1__, __operation2__)                                          \
     template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>                         \
     INP_DLLEXPORT void __name__(void* array1, void* array2, void* result1, size_t size);
 
@@ -594,7 +594,7 @@ INP_DLLEXPORT void dpnp_remainder_c(void* array1_in, void* array2_in, void* resu
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void custom_elemwise_transpose_c(void* array1_in,
+INP_DLLEXPORT void dpnp_elemwise_transpose_c(void* array1_in,
                                                const std::vector<long>& input_shape,
                                                const std::vector<long>& result_shape,
                                                const std::vector<long>& permute_axes,

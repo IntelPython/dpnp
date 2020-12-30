@@ -40,7 +40,7 @@ mkl_rng::mt19937* backend_sycl::rng_engine = nullptr;
  *
  * TODO it is not the best idea to just a call some kernel. Needs better solution.
  */
-static long dpnp_custom_kernels_link()
+static long dpnp_kernels_link()
 {
     /* must use memory pre-allocated at the current queue */
     long* value_ptr = reinterpret_cast<long*>(dpnp_memory_alloc_c(1 * sizeof(long)));
@@ -107,7 +107,7 @@ void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
 #endif
 
     std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
-    dpnp_custom_kernels_link();
+    dpnp_kernels_link();
     std::chrono::high_resolution_clock::time_point t4 = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> time_kernels_link =
         std::chrono::duration_cast<std::chrono::duration<double>>(t4 - t3);

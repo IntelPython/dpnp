@@ -34,10 +34,10 @@
 #include "queue_sycl.hpp"
 
 template <typename _KernelNameSpecialization>
-class custom_elemwise_transpose_c_kernel;
+class dpnp_elemwise_transpose_c_kernel;
 
 template <typename _DataType>
-void custom_elemwise_transpose_c(void* array1_in,
+void dpnp_elemwise_transpose_c(void* array1_in,
                                  const std::vector<long>& input_shape,
                                  const std::vector<long>& result_shape,
                                  const std::vector<long>& permute_axes,
@@ -93,7 +93,7 @@ void custom_elemwise_transpose_c(void* array1_in,
     };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
-        cgh.parallel_for<class custom_elemwise_transpose_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+        cgh.parallel_for<class dpnp_elemwise_transpose_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
 
     event = DPNP_QUEUE.submit(kernel_func);
@@ -106,10 +106,10 @@ void custom_elemwise_transpose_c(void* array1_in,
 
 void func_map_init_manipulation(func_map_t& fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_INT][eft_INT] = {eft_INT, (void*)custom_elemwise_transpose_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_LNG][eft_LNG] = {eft_LNG, (void*)custom_elemwise_transpose_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_FLT][eft_FLT] = {eft_FLT, (void*)custom_elemwise_transpose_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_DBL][eft_DBL] = {eft_DBL, (void*)custom_elemwise_transpose_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_elemwise_transpose_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_elemwise_transpose_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_elemwise_transpose_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_elemwise_transpose_c<double>};
 
     return;
 }
