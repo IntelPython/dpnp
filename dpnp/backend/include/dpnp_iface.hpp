@@ -504,25 +504,25 @@ INP_DLLEXPORT void dpnp_var_c(
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
 
-#define MACRO_2ARG_1TYPE_OP(__name__, __operation__)                                                            \
+#define MACRO_2ARG_1TYPE_OP(__name__, __operation__)                                                                   \
     template <typename _DataType>                                                                                      \
     INP_DLLEXPORT void __name__(void* array1_in1, void* array2_in, void* result1, size_t size);
 
 #include <dpnp_gen_2arg_1type_tbl.hpp>
 
-#define MACRO_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                           \
+#define MACRO_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                                  \
     template <typename _DataType>                                                                                      \
     INP_DLLEXPORT void __name__(void* array1, void* result1, size_t size);
 
 #include <dpnp_gen_1arg_1type_tbl.hpp>
 
-#define MACRO_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)                                          \
+#define MACRO_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)                                                 \
     template <typename _DataType_input, typename _DataType_output>                                                     \
     INP_DLLEXPORT void __name__(void* array1, void* result1, size_t size);
 
 #include <dpnp_gen_1arg_2type_tbl.hpp>
 
-#define MACRO_2ARG_3TYPES_OP(__name__, __operation1__, __operation2__)                                          \
+#define MACRO_2ARG_3TYPES_OP(__name__, __operation1__, __operation2__)                                                 \
     template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>                         \
     INP_DLLEXPORT void __name__(void* array1, void* array2, void* result1, size_t size);
 
@@ -595,11 +595,11 @@ INP_DLLEXPORT void dpnp_remainder_c(void* array1_in, void* array2_in, void* resu
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_elemwise_transpose_c(void* array1_in,
-                                               const std::vector<long>& input_shape,
-                                               const std::vector<long>& result_shape,
-                                               const std::vector<long>& permute_axes,
-                                               void* result1,
-                                               size_t size);
+                                             const std::vector<long>& input_shape,
+                                             const std::vector<long>& result_shape,
+                                             const std::vector<long>& permute_axes,
+                                             void* result1,
+                                             size_t size);
 
 /**
  * @ingroup BACKEND_API

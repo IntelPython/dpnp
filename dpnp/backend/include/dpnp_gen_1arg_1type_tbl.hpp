@@ -41,7 +41,7 @@
 
 #ifdef _SECTION_DOCUMENTATION_GENERATION_
 
-#define MACRO_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                            \
+#define MACRO_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                                   \
     /** @ingroup BACKEND_API                                                                                         */ \
     /** @brief Per element operation function __name__                                                               */ \
     /**                                                                                                              */ \
@@ -58,13 +58,11 @@
 MACRO_1ARG_1TYPE_OP(dpnp_conjugate_c, std::conj(input_elem), DPNP_QUEUE.submit(kernel_func))
 MACRO_1ARG_1TYPE_OP(dpnp_copy_c, input_elem, DPNP_QUEUE.submit(kernel_func))
 MACRO_1ARG_1TYPE_OP(dpnp_recip_c,
-                           _DataType(1) / input_elem,
-                           DPNP_QUEUE.submit(kernel_func)) // error: no member named 'recip' in namespace 'cl::sycl'
+                    _DataType(1) / input_elem,
+                    DPNP_QUEUE.submit(kernel_func)) // error: no member named 'recip' in namespace 'cl::sycl'
 MACRO_1ARG_1TYPE_OP(dpnp_sign_c,
-                           cl::sycl::sign((double)input_elem),
-                           DPNP_QUEUE.submit(kernel_func)) // no sycl::sign for int and long
-MACRO_1ARG_1TYPE_OP(dpnp_square_c,
-                           input_elem* input_elem,
-                           oneapi::mkl::vm::sqr(DPNP_QUEUE, size, array1, result))
+                    cl::sycl::sign((double)input_elem),
+                    DPNP_QUEUE.submit(kernel_func)) // no sycl::sign for int and long
+MACRO_1ARG_1TYPE_OP(dpnp_square_c, input_elem* input_elem, oneapi::mkl::vm::sqr(DPNP_QUEUE, size, array1, result))
 
 #undef MACRO_1ARG_1TYPE_OP

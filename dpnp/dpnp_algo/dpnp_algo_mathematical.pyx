@@ -225,7 +225,7 @@ cpdef dparray dpnp_ediff1d(dparray x1, dparray to_end, dparray to_begin):
 
     if x1.dtype.type in types_map:
         res_type = types_map[x1.dtype.type]
-    else: 
+    else:
         dpnp.dpnp_utils.checker_throw_type_error("ediff1d", x1.dtype)
 
     res_size = x1.size - 1 + to_end.size + to_begin.size
@@ -538,7 +538,7 @@ cpdef dpnp_trapz(dparray y, dparray x, int dx):
     square = diff[0] * y[0] + diff[len - 2] * y[len - 1]
 
     for i in range(1, len - 1):
-        square += y[i] * (diff[i-1] + diff[i])
+        square += y[i] * (diff[i - 1] + diff[i])
 
     square *= 0.5
 

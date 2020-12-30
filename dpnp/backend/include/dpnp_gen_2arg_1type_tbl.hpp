@@ -40,7 +40,7 @@
 
 #ifdef _SECTION_DOCUMENTATION_GENERATION_
 
-#define MACRO_2ARG_1TYPE_OP(__name__, __operation__)                                                             \
+#define MACRO_2ARG_1TYPE_OP(__name__, __operation__)                                                                    \
     /** @ingroup BACKEND_API                                                                                         */ \
     /** @brief Element wise operation function __name__                                                              */ \
     /**                                                                                                              */ \

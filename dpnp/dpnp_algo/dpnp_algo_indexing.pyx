@@ -107,7 +107,6 @@ cpdef dparray dpnp_diagonal(dparray input, offset=0):
                 xyz[k] = list_ind
             index += 1
 
-
     result = dparray(res_shape, dtype=input.dtype)
     for i in range(res_shape[-1]):
         if len(xyz) != 0:
