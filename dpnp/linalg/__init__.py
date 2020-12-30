@@ -24,7 +24,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-from dpnp.linalg.linalg_iface import *
-from dpnp.linalg.linalg_iface import __all__ as __all__linalg
+from dpnp.linalg.dpnp_iface_linalg import *
+from dpnp.linalg.dpnp_iface_linalg import __all__ as __all__linalg
 
 __all__ = __all__linalg

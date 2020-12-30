@@ -159,64 +159,24 @@ jobs:
     vmImage: 'windows-2019' # 'vs2017-win2016'
   steps:
   - script: |
-      echo ========================= configure VS ===============================
-      rem dir /s/b "C:\Program Files (x86)\Microsoft Visual Studio\*.bat"
-      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+      call ./scripts/install_system_deps_win.bat
+      call ./scripts/install_cmake_win.bat
 
-      echo ========================= download onepai ===============================
-      curl.exe --output webimage.exe                                                                                  ^
-        --url https://registrationcenter-download.intel.com/akdlm/irc_nas/17453/w_BaseKit_p_2021.1.0.2664_offline.exe ^
-        --retry 5 --retry-delay 5
-      start /b /wait webimage.exe -s -x -f webimage_extracted
-      del webimage.exe
-
-      echo ========================= install onepai ===============================
-      rem it is expected that multy-line end-line symbol will be diffrent on MS :-)
-      webimage_extracted\bootstrapper.exe -s --action install      ^
-        --eula=accept --continue-with-optional-error=yes           ^
-        -p=NEED_VS2017_INTEGRATION=0 -p=NEED_VS2019_INTEGRATION=0
-
-      echo ========================= copy OpenCL ===============================
-      copy "C:\Program Files (x86)\Intel\oneAPI\intelpython\python3.7\Library\OpenCL.dll" C:\Windows\System32\
-
-      echo ========================= install cmake ===============================
-      rem curl.exe --output cmake_webimage.msi --url https://cmake.org/files/v3.19/cmake-3.19.2-win64-x64.msi --retry 5 --retry-delay 5
-      rem msiexec /i cmake_webimage.msi /quiet /qn /norestart /log install.log
-      rem dir "C:\Program Files\"
-      rem dir "C:\Program Files\CMake"
-      rem dir "C:\Program Files\CMake\bin"
-      rem set PATH="C:\Program Files\CMake\bin";%PATH%
-
-      curl.exe --output cmake_webimage.zip --url https://cmake.org/files/v3.19/cmake-3.19.2-win64-x64.zip --retry 5 --retry-delay 5
-      tar -xf cmake_webimage.zip
-      set PATH=%CD%\cmake-3.19.2-win64-x64\bin;%PATH%
-
-      cmake --version
-      del cmake_webimage.zip
-      echo ========================= configure oneapi ===============================
-      dir "C:\Program Files (x86)\Intel\oneAPI"
+      echo ========================= Intel OneAPI setvars ===============================
+      :: "C:\Program Files (x86)\Intel\oneAPI"
       call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019
-      rem dir "C:\Program Files (x86)\Intel\oneAPI\compiler\latest\windows\bin"
-      rem echo ========================= conda list ===============================
-      rem conda list
-      echo ========================= python build ===============================
-      python ./setup.py build_clib
-      echo ========================= cd backend dir ===============================
+      :: dir "C:\Program Files (x86)\Intel\oneAPI\compiler\latest\windows\bin"
+
       cd dpnp/backend
       mkdir 0.build
       cd 0.build
-      rem echo ========================= cmake 2 generators list ===============================
-      rem cmake -G
-      echo ========================= cmake DPNP package ===============================
-      rem cmake -DCMAKE_CXX_COMPILER=dpcpp -DCMAKE_LINKER=lld-link -G Ninja ..
-      cmake -G Ninja ..
+
       echo ========================= build DPNP package ===============================
-      rem ninja -v
-      cmake --build . -- -v
-      echo ========================= install DPNP package ===============================
-      cmake --install . -- -v
-      ninja -v install
-      rem ls -la
+      cmake -G Ninja ..
+      cmake --build . --target install -- -v
+  - publish: dpnp/backend/package_dpnp
+    artifact: 'package_backend_$(Agent.JobName)_$(Agent.OS)'
+    displayName: backend_cmake_oneapi_local_win
 - job: make_backend_lin
   displayName: cmake_lin
   pool:
@@ -224,20 +184,8 @@ jobs:
   steps:
   - bash: |
       ./scripts/install_system_deps.sh
+      . ./scripts/install_cmake_lin.sh
 
-      echo ========================= install cmake ===============================
-      curl --output cmake_webimage.tar.gz --url https://cmake.org/files/v3.19/cmake-3.19.2-Linux-x86_64.tar.gz --retry 5 --retry-delay 5
-      tar -xzf cmake_webimage.tar.gz
-      rm -f cmake_webimage.tar.gz
-      export PATH=`pwd`/cmake-3.19.2-Linux-x86_64/bin:$PATH
-
-      # echo ========================= cmake upgrade ===============================
-      # sudo apt-get update
-      # sudo apt-get upgrade
-      # sudo apt-get install cmake # cmake 3.19.1 has a bug
-      # sudo apt-get --only-upgrade install cmake # cmake 3.19.1 has a bug
-      which cmake
-      cmake --version
       echo ========================= Intel OneAPI setvars ===============================
       . /opt/intel/oneapi/setvars.sh
 
@@ -245,12 +193,9 @@ jobs:
       mkdir -p $DPNP_BACKEND_BUILD_DIR
       cd $DPNP_BACKEND_BUILD_DIR
 
-      echo ========================= cmake DPNP package ===============================
-      cmake ..
       echo ========================= build DPNP package ===============================
-      make VERBOSE=1
-      echo ========================= install DPNP package ===============================
-      make VERBOSE=1 install
+      cmake ..
+      cmake --build . --target install -- VERBOSE=1
   - publish: dpnp/backend/package_dpnp
     artifact: 'package_backend_$(Agent.JobName)_$(Agent.OS)'
-    displayName: backend_cmake_oneapi_local
+    displayName: backend_cmake_oneapi_local_lin

@@ -43,7 +43,7 @@ it contains:
 import numpy
 import dpnp
 
-from dpnp.backend import *
+from dpnp.dpnp_algo import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 

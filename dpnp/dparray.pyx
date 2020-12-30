@@ -38,7 +38,7 @@ from libcpp cimport bool as cpp_bool
 
 from dpnp.dpnp_iface_types import *
 from dpnp.dpnp_iface import *
-from dpnp.backend cimport *
+from dpnp.dpnp_algo cimport *
 from dpnp.dpnp_iface_statistics import min, max
 from dpnp.dpnp_iface_logic import all, any
 import numpy
