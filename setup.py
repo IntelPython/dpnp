@@ -313,8 +313,8 @@ dpnp_backend_c = [
 ]
 
 dpnp_algo = Extension(
-    name="dpnp.dpnp_algo",
-    sources=["dpnp/dpnp_algo.pyx"],
+    name="dpnp.dpnp_algo.dpnp_algo",
+    sources=["dpnp/dpnp_algo/dpnp_algo.pyx"],
     libraries=[],
     include_dirs=[numpy.get_include()] + _project_backend_dir,
     extra_compile_args=_sdl_cflags,

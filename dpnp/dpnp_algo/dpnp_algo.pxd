@@ -29,7 +29,7 @@ from libcpp.vector cimport vector
 from libcpp cimport bool as cpp_bool
 from dpnp.dparray cimport dparray, dparray_shape_type
 
-cdef extern from "backend/include/dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
+cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
     cdef enum DPNPFuncName "DPNPFuncName":
         DPNP_FN_ABSOLUTE
         DPNP_FN_ADD
@@ -131,7 +131,7 @@ cdef extern from "backend/include/dpnp_iface_fptr.hpp" namespace "DPNPFuncName":
         DPNP_FN_TRUNC
         DPNP_FN_VAR
 
-cdef extern from "backend/include/dpnp_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
+cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
     cdef enum DPNPFuncType "DPNPFuncType":
         DPNP_FT_NONE
         DPNP_FT_INT
@@ -140,7 +140,7 @@ cdef extern from "backend/include/dpnp_iface_fptr.hpp" namespace "DPNPFuncType":
         DPNP_FT_DOUBLE
         DPNP_FT_CMPLX128
 
-cdef extern from "backend/include/dpnp_iface_fptr.hpp":
+cdef extern from "dpnp_iface_fptr.hpp":
     struct DPNPFuncData:
         DPNPFuncType return_type
         void * ptr
@@ -148,12 +148,12 @@ cdef extern from "backend/include/dpnp_iface_fptr.hpp":
     DPNPFuncData get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type)
 
 
-cdef extern from "backend/include/dpnp_iface.hpp" namespace "QueueOptions":  # need this namespace for Enum import
+cdef extern from "dpnp_iface.hpp" namespace "QueueOptions":  # need this namespace for Enum import
     cdef enum QueueOptions "QueueOptions":
         CPU_SELECTOR
         GPU_SELECTOR
 
-cdef extern from "backend/include/dpnp_iface.hpp":
+cdef extern from "dpnp_iface.hpp":
     void dpnp_queue_initialize_c(QueueOptions selector)
     size_t dpnp_queue_is_cpu_c()
 
