@@ -170,8 +170,8 @@ dpnp_fft = Extension(
 )
 
 dpnp_utils = Extension(
-    name="dpnp.dpnp_utils",
-    sources=["dpnp/dpnp_utils.pyx"],
+    name="dpnp.dpnp_utils.dpnp_algo_utils",
+    sources=["dpnp/dpnp_utils/dpnp_algo_utils.pyx"],
     include_dirs=[numpy.get_include()] + _project_backend_dir,
     extra_compile_args=_sdl_cflags,
     extra_link_args=_project_extra_link_args,
@@ -219,6 +219,7 @@ setup(name="dpnp",
       cmdclass=dpnp_build_commands,
       packages=['dpnp',
                 'dpnp.dpnp_algo',
+                'dpnp.dpnp_utils',
                 'dpnp.fft',
                 'dpnp.linalg',
                 'dpnp.random'
