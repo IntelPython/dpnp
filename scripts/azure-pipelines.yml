@@ -120,6 +120,7 @@ jobs:
   steps:
   - bash: |
       ./scripts/install_system_deps.sh
+      . ./scripts/install_cmake_lin.sh
       . /opt/intel/oneapi/setvars.sh
 
       ./scripts/install_python_deps.sh
@@ -139,6 +140,7 @@ jobs:
   steps:
   - bash: |
       ./scripts/install_system_deps.sh
+      . ./scripts/install_cmake_lin.sh
       ./scripts/install_system_deps_intelpython.sh
 
       . /opt/intel/oneapi/setvars.sh
