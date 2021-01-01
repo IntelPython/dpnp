@@ -27,8 +27,8 @@
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-set(DPNP_VERSION 0.4.0)
-set(DPNP_API_VERSION 0.4)
+# set(DPNP_VERSION 0.4.0)
+# set(DPNP_API_VERSION 0.4)
 
 # set directory where the custom finders live
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
@@ -50,10 +50,12 @@ endif()
 
 option(DPNP_STATIC_LIB_ENABLE "Enable build DPNP static library" FALSE)
 option(DPNP_DEBUG_ENABLE "Enable output for DPNP_DEBUG statements" FALSE)
+option(DPNP_INSTALL_STRUCTURED "if FALSE, install package files into same directory" TRUE)
 
 message(STATUS "DPNP_ONEAPI_ROOT:                ${DPNP_ONEAPI_ROOT}")
 message(STATUS "DPNP_STATIC_LIB_ENABLE:          ${DPNP_STATIC_LIB_ENABLE}")
 message(STATUS "DPNP_DEBUG_ENABLE:               ${DPNP_DEBUG_ENABLE}")
+message(STATUS "DPNP_INSTALL_STRUCTURED:         ${DPNP_INSTALL_STRUCTURED}")
 
 # -----------------------------------------------------------------------------------------------
 # Compiler-specific logic...
@@ -138,7 +140,7 @@ add_definitions(-DPSTL_USE_PARALLEL_POLICIES=0 -D_GLIBCXX_USE_TBB_PAR_BACKEND=0)
 # -----------------------------------------------------------------------------------------------
 # set(CMAKE_CXX_COMPILER "clang++")
 project(dpnp_project
-        VERSION ${DPNP_VERSION}
+        # VERSION ${DPNP_VERSION}
         DESCRIPTION "DPNP: NumPy-like API accelerated with SYCL"
         HOMEPAGE_URL https://github.com/IntelPython/dpnp
         LANGUAGES CXX)
@@ -181,7 +183,8 @@ target_include_directories(dpnp_backend_c PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src
 find_package(MathLib REQUIRED)
 add_definitions(-DMKL_ILP64=1)
 target_include_directories(dpnp_backend_c PUBLIC ${MATHLIB_INCLUDE_DIR})
-link_directories(dpnp_backend_c PUBLIC ${MATHLIB_LIBRARY_DIR})
+link_directories(dpnp_backend_c PUBLIC ${MATHLIB_LIBRARY_DIR}) # does not work with some cmake versions
+target_link_directories(dpnp_backend_c PUBLIC ${MATHLIB_LIBRARY_DIR}) # duplicate link_directories 
 
 if(UNIX)
 # Link Line Advisor v6.13
@@ -236,9 +239,17 @@ if(DEFINED DPNP_INSTALL_PREFIX)
   set(CMAKE_INSTALL_PREFIX ${DPNP_INSTALL_PREFIX})
 endif()
 
-set_target_properties(dpnp_backend_c PROPERTIES VERSION ${DPNP_VERSION} SOVERSION ${DPNP_API_VERSION})
+if(NOT DPNP_INSTALL_STRUCTURED)
+  set(CMAKE_INSTALL_BINDIR ${CMAKE_INSTALL_PREFIX})
+  set(CMAKE_INSTALL_LIBDIR ${CMAKE_INSTALL_PREFIX})
+  set(CMAKE_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_PREFIX})
+endif()
 
-install(TARGETS dpnp_backend_c DESTINATION "install")
+# set_target_properties(dpnp_backend_c PROPERTIES VERSION ${DPNP_VERSION} SOVERSION ${DPNP_API_VERSION})
+
+install(TARGETS dpnp_backend_c
+        PERMISSIONS OWNER_WRITE OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+        )
 
 # -----------------------------------------------------------------------------------------------
 # Print Global Options
@@ -257,3 +268,4 @@ message(STATUS "CMAKE_CXX_COMPILER:              ${CMAKE_CXX_COMPILER}")
 message(STATUS "CMAKE_LINKER:                    ${CMAKE_LINKER}")
 message(STATUS "CMAKE_SOURCE_DIR:                ${CMAKE_SOURCE_DIR}")
 message(STATUS "DPNP_INSTALL_PREFIX:             ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "CMAKE_VERBOSE_MAKEFILE:          ${CMAKE_VERBOSE_MAKEFILE}")
