@@ -12,6 +12,7 @@ echo ========================= current machine kernel =========================
 uname -a
 
 ${THEDIR}/install_system_deps.sh
+. ./scripts/install_cmake_lin.sh
 
 echo ========================= setup Intel OneAPI python changed to Intel OneAPI ====
 . /opt/intel/oneapi/setvars.sh
