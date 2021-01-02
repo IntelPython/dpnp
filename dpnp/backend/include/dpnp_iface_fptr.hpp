@@ -240,6 +240,6 @@ void* get_dpnp_function_ptr1(DPNPFuncType& result_type,
  * parameter @ref type_name will be converted into var_args or char *[] with extra length parameter
  */
 INP_DLLEXPORT
-void* get_backend_function_name(const char* func_name, const char* type_name) __attribute__((deprecated));
+void* get_backend_function_name(const char* func_name, const char* type_name);
 
 #endif // BACKEND_IFACE_FPTR_H
