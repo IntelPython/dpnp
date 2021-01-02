@@ -1,4 +1,6 @@
-echo ========================= configure VS ================================
+echo =============== update setuptools required by VS procedure================
+pip install --upgrade setuptools
+echo ========================= configure VS ===================================
 :: dir /s/b "C:\Program Files (x86)\Microsoft Visual Studio\*.bat"
 call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
 
