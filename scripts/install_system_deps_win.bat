@@ -1,3 +1,4 @@
+dir "c:\Program Files (x86)\Microsoft Visual Studio\Installer"
 echo =============== update setuptools required by VS procedure================
 pip install --upgrade setuptools
 echo ========================= configure VS ===================================
