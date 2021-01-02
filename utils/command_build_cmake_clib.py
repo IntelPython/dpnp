@@ -32,7 +32,7 @@ import os
 import sys
 import pathlib
 from setuptools.command import build_clib
-from distutils import log
+from distutils import log, errors
 
 IS_WIN = False
 IS_MAC = False
@@ -53,12 +53,13 @@ class custom_build_cmake_clib(build_clib.build_clib):
         root_dir = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
         log.info(f"Project directory is: {root_dir}")
 
-        # work_directory = pathlib.Path().absolute()
         backend_directory = os.path.join(root_dir, "dpnp", "backend")
         install_directory = os.path.join(root_dir, "dpnp")
 
         build_temp = pathlib.Path(self.build_temp)
         build_temp.mkdir(parents=True, exist_ok=True)
+        abs_build_temp_path = str(os.path.abspath(build_temp))
+        log.info(f"build directory is: {abs_build_temp_path}")
 
         config = "Debug" if self.debug else "Release"
 
@@ -67,21 +68,17 @@ class custom_build_cmake_clib(build_clib.build_clib):
             cmake_generator = "-GNinja"
 
         cmake_args = [
-            # "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=" + str(install_directory),
             cmake_generator,
+            "-S" + backend_directory,
+            "-B" + abs_build_temp_path,
             "-DCMAKE_BUILD_TYPE=" + config,
-            "-DDPNP_INSTALL_PREFIX=" + install_directory
+            "-DDPNP_INSTALL_PREFIX=" + install_directory,
+            "-DDPNP_INSTALL_STRUCTURED=OFF",
+            # "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=" + install_directory,
+            "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON"
         ]
 
-        build_args = [
-            # "--config", config,
-            "--", "-v"
-        ]
-
-        os.chdir(str(build_temp))
-        self.spawn(["cmake", backend_directory] + cmake_args)
+        self.spawn(["cmake"] + cmake_args + [backend_directory])
         if not self.dry_run:
-            self.spawn(["cmake", "--build", "."] + build_args)
-            self.spawn(["cmake", "--build", ".", "--target", "install"] + build_args)
-
-        # os.chdir(str(root_dir))
+            self.spawn(["cmake", "--build", abs_build_temp_path])
+            self.spawn(["cmake", "--install", abs_build_temp_path])
