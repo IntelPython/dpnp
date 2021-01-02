@@ -32,7 +32,7 @@ import os
 import sys
 import pathlib
 from setuptools.command import build_clib
-from distutils import log, errors
+from distutils import log
 
 IS_WIN = False
 IS_MAC = False
@@ -72,7 +72,7 @@ class custom_build_cmake_clib(build_clib.build_clib):
             "-S" + backend_directory,
             "-B" + abs_build_temp_path,
             "-DCMAKE_BUILD_TYPE=" + config,
-            "-DDPNP_INSTALL_PREFIX=" + install_directory,
+            "-DDPNP_INSTALL_PREFIX=" + install_directory.replace(os.sep, "/" ), # adjust to cmake requirenments
             "-DDPNP_INSTALL_STRUCTURED=OFF",
             # "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=" + install_directory,
             "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON"

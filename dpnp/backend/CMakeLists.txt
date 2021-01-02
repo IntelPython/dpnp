@@ -52,6 +52,9 @@ option(DPNP_STATIC_LIB_ENABLE "Enable build DPNP static library" FALSE)
 option(DPNP_DEBUG_ENABLE "Enable output for DPNP_DEBUG statements" FALSE)
 option(DPNP_INSTALL_STRUCTURED "if FALSE, install package files into same directory" TRUE)
 
+message(STATUS "CMAKE_VERSION:                   ${CMAKE_VERSION}")
+message(STATUS "CMAKE_GENERATOR:                 ${CMAKE_GENERATOR}")
+message(STATUS "CMAKE_HOST_SYSTEM_NAME:          ${CMAKE_HOST_SYSTEM_NAME}")
 message(STATUS "DPNP_ONEAPI_ROOT:                ${DPNP_ONEAPI_ROOT}")
 message(STATUS "DPNP_STATIC_LIB_ENABLE:          ${DPNP_STATIC_LIB_ENABLE}")
 message(STATUS "DPNP_DEBUG_ENABLE:               ${DPNP_DEBUG_ENABLE}")
@@ -254,12 +257,9 @@ install(TARGETS dpnp_backend_c
 # -----------------------------------------------------------------------------------------------
 # Print Global Options
 # -----------------------------------------------------------------------------------------------
-message(STATUS "CMAKE_VERSION:                   ${CMAKE_VERSION}")
-message(STATUS "CMAKE_GENERATOR:                 ${CMAKE_GENERATOR}")
 message(STATUS "CMAKE_SYSTEM:                    ${CMAKE_SYSTEM}")
 message(STATUS "CMAKE_SYSTEM_VERSION:            ${CMAKE_SYSTEM_VERSION}")
 message(STATUS "CMAKE_SYSTEM_PROCESSOR:          ${CMAKE_SYSTEM_PROCESSOR}")
-message(STATUS "CMAKE_HOST_SYSTEM_NAME:          ${CMAKE_HOST_SYSTEM_NAME}")
 message(STATUS "CMAKE_BUILD_TYPE:                ${CMAKE_BUILD_TYPE}")
 message(STATUS "CXX_STANDARD:                    ${CMAKE_CXX_STANDARD}")
 message(STATUS "CMAKE_CXX_COMPILER_ID:           ${CMAKE_CXX_COMPILER_ID}")
