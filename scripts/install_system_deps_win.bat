@@ -1,6 +1,6 @@
-:: echo ========================= configure VS ================================
+echo ========================= configure VS ================================
 :: dir /s/b "C:\Program Files (x86)\Microsoft Visual Studio\*.bat"
-:: call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
 
 echo ========================= download oneapi ================================
 curl.exe --output webimage.exe                                                                                  ^
