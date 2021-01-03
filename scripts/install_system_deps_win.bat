@@ -3,11 +3,13 @@ pip install --upgrade setuptools
 echo ========================= Install VS components ==========================
 dir "c:\Program Files (x86)\Microsoft Visual Studio\Installer"
 
-"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installershell.exe" ^
-  modify --add Microsoft.VisualStudio.Workload.NativeDesktop                     ^
+start /b /wait "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe"      ^
+  update --add Microsoft.VisualStudio.Workload.VCTools                           ^
   --installpath "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise" ^
   --includeOptional --includeRecommended --passive --norestart
 
+:: --add Microsoft.VisualStudio.Workload.NativeDesktop
+:: --add Microsoft.VisualStudio.Workload.VCTools
 :: "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installershell.exe" --add Microsoft.VisualStudio.Workload.VCTools --includeOptional --includeRecommended --nocache
 
 echo ========================= configure VS ===================================
