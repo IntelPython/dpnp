@@ -117,67 +117,43 @@ dpnp_build_commands = {'style': source_style,
 """
 The project modules description
 """
+kwargs_common = {
+    "include_dirs": [numpy.get_include()] + _project_backend_dir,
+    "extra_compile_args": _sdl_cflags,
+    "extra_link_args": _project_extra_link_args,
+    "define_macros": [("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
+    "language": "c++"
+}
+
 dpnp_algo = Extension(
     name="dpnp.dpnp_algo.dpnp_algo",
-    sources=["dpnp/dpnp_algo/dpnp_algo.pyx"],
-    libraries=[],
-    include_dirs=[numpy.get_include()] + _project_backend_dir,
-    extra_compile_args=_sdl_cflags,
-    extra_link_args=_project_extra_link_args,
-    define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-    language="c++"
-)
+    sources=[os.path.join("dpnp", "dpnp_algo", "dpnp_algo.pyx")],
+    **kwargs_common)
 
 dpnp_dparray = Extension(
     name="dpnp.dparray",
-    sources=["dpnp/dparray.pyx"],
-    libraries=[],
-    include_dirs=[numpy.get_include()] + _project_backend_dir,
-    extra_compile_args=_sdl_cflags,
-    extra_link_args=_project_extra_link_args,
-    define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-    language="c++"
-)
+    sources=[os.path.join("dpnp", "dparray.pyx")],
+    **kwargs_common)
 
 dpnp_random = Extension(
     name="dpnp.random.dpnp_algo_random",
-    sources=["dpnp/random/dpnp_algo_random.pyx"],
-    include_dirs=[numpy.get_include()] + _project_backend_dir,
-    extra_compile_args=_sdl_cflags,
-    extra_link_args=_project_extra_link_args,
-    define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-    language="c++"
-)
+    sources=[os.path.join("dpnp", "random", "dpnp_algo_random.pyx")],
+    **kwargs_common)
 
 dpnp_linalg = Extension(
     name="dpnp.linalg.dpnp_algo_linalg",
-    sources=["dpnp/linalg/dpnp_algo_linalg.pyx"],
-    include_dirs=[numpy.get_include()] + _project_backend_dir,
-    extra_compile_args=_sdl_cflags,
-    extra_link_args=_project_extra_link_args,
-    define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-    language="c++"
-)
+    sources=[os.path.join("dpnp", "linalg", "dpnp_algo_linalg.pyx")],
+    **kwargs_common)
 
 dpnp_fft = Extension(
     name="dpnp.fft.dpnp_algo_fft",
-    sources=["dpnp/fft/dpnp_algo_fft.pyx"],
-    include_dirs=[numpy.get_include()] + _project_backend_dir,
-    extra_compile_args=_sdl_cflags,
-    extra_link_args=_project_extra_link_args,
-    define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-    language="c++"
-)
+    sources=[os.path.join("dpnp", "fft", "dpnp_algo_fft.pyx")],
+    **kwargs_common)
 
 dpnp_utils = Extension(
     name="dpnp.dpnp_utils.dpnp_algo_utils",
-    sources=["dpnp/dpnp_utils/dpnp_algo_utils.pyx"],
-    include_dirs=[numpy.get_include()] + _project_backend_dir,
-    extra_compile_args=_sdl_cflags,
-    extra_link_args=_project_extra_link_args,
-    define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-    language="c++"
-)
+    sources=[os.path.join("dpnp", "dpnp_utils", "dpnp_algo_utils.pyx")],
+    **kwargs_common)
 
 cython_options.docstrings = True
 cython_options.warning_errors = True
