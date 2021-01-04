@@ -44,7 +44,7 @@
 
 #include "dpnp_iface_fft.hpp"
 
-#ifdef _WIN
+#ifdef _WIN32
 #define INP_DLLEXPORT __declspec(dllexport)
 #else
 #define INP_DLLEXPORT
