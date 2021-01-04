@@ -169,13 +169,15 @@ jobs:
       call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019
       :: dir "C:\Program Files (x86)\Intel\oneAPI\compiler\latest\windows\bin"
 
-      cd dpnp/backend
-      mkdir 0.build
-      cd 0.build
+      :: cd dpnp/backend
+      :: mkdir 0.build
+      :: cd 0.build
 
       echo ========================= build DPNP package ===============================
-      cmake -G Ninja ..
-      cmake --build . --target install -- -v
+      :: cmake -G Ninja ..
+      :: cmake --build . --target install -- -v
+      python setup.py build_clib
+      python setup.py build_ext --inplace
   - publish: dpnp/backend/package_dpnp
     artifact: 'package_backend_$(Agent.JobName)_$(Agent.OS)'
     displayName: backend_cmake_oneapi_local_win

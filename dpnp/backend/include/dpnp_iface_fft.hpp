@@ -42,7 +42,7 @@
 // #include <cstdint>
 
 // TODO needs to move into common place like backend_defs.hpp
-#ifdef _WIN
+#ifdef _WIN32
 #define INP_DLLEXPORT __declspec(dllexport)
 #else
 #define INP_DLLEXPORT
