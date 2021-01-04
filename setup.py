@@ -113,6 +113,7 @@ dpnp_build_commands = {'style': source_style,
                        'clean': source_clean
                        }
 
+os.environ["CC"] = "dpcpp"
 
 """
 The project modules description
