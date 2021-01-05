@@ -160,6 +160,8 @@ jobs:
   pool:
     vmImage: 'windows-2019' # 'vs2017-win2016'
   steps:
+  - powershell: |
+      Start-Process -Wait -FilePath  "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" -ArgumentList " modify --add Microsoft.VisualStudio.Workload.NativeDesktop --passive --norestart --installpath ""C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise"""
   - script: |
       call ./scripts/install_system_deps_win.bat
       call ./scripts/install_cmake_win.bat
