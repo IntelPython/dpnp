@@ -175,6 +175,7 @@ jobs:
       :: mkdir 0.build
       :: cd 0.build
 
+  - script: |
       echo ========================= build DPNP package ===============================
       :: cmake -G Ninja ..
       :: cmake --build . --target install -- -v
