@@ -10,7 +10,11 @@
 
 :: --add Microsoft.VisualStudio.Workload.NativeDesktop
 :: --add Microsoft.VisualStudio.Workload.VCTools
-:: "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installershell.exe" --add Microsoft.VisualStudio.Workload.VCTools --includeOptional --includeRecommended --nocache
+"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" ^
+    modify ^
+    --add Microsoft.VisualStudio.Workload.NativeDesktop ^
+    --installpath "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise" ^
+    --passive --norestart
 
 :: echo ========================= configure VS ===================================
 :: dir /s/b "C:\Program Files (x86)\Microsoft Visual Studio\*.bat"
