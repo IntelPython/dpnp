@@ -166,6 +166,7 @@ jobs:
       call ./scripts/install_system_deps_win.bat
       call ./scripts/install_cmake_win.bat
 
+  - script: |
       echo ========================= Intel OneAPI setvars ===============================
       :: "C:\Program Files (x86)\Intel\oneAPI"
       call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019
@@ -175,7 +176,6 @@ jobs:
       :: mkdir 0.build
       :: cd 0.build
 
-  - script: |
       echo ========================= build DPNP package ===============================
       :: cmake -G Ninja ..
       :: cmake --build . --target install -- -v
