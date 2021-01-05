@@ -162,11 +162,12 @@ jobs:
   steps:
   - powershell: |
       Start-Process -Wait -FilePath  "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" -ArgumentList " modify --add Microsoft.VisualStudio.Workload.NativeDesktop --passive --norestart --installpath ""C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise"""
-  - script: |
-      call ./scripts/install_system_deps_win.bat
-      call ./scripts/install_cmake_win.bat
 
   - script: |
+      call ./scripts/install_system_deps_win.bat
+
+  - script: |
+      call ./scripts/install_cmake_win.bat
       echo ========================= Intel OneAPI setvars ===============================
       :: "C:\Program Files (x86)\Intel\oneAPI"
       call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019
