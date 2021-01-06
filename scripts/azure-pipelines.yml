@@ -160,13 +160,10 @@ jobs:
   pool:
     vmImage: 'windows-2019' # 'vs2017-win2016'
   steps:
-  - powershell: |
-      Start-Process -Wait -FilePath  "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" -ArgumentList "modify --add Microsoft.VisualStudio.Workload.NativeDesktop --add Microsoft.Component.MSBuild --add Microsoft.VisualStudio.Component.Windows10SDK --add Microsoft.VisualStudio.Component.VC.CoreBuildTools --passive --norestart --installpath ""C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise"""
-
   - script: |
+      :: - powershell: |
+      ::     Start-Process -Wait -FilePath  "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" -ArgumentList "modify --add Microsoft.VisualStudio.Workload.NativeDesktop --add Microsoft.Component.MSBuild --add Microsoft.VisualStudio.Component.Windows10SDK --add Microsoft.VisualStudio.Component.VC.CoreBuildTools --passive --norestart --installpath ""C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise"""
       call ./scripts/install_system_deps_win.bat
-
-  - script: |
       call ./scripts/install_cmake_win.bat
       echo ========================= Intel OneAPI setvars ===============================
       :: "C:\Program Files (x86)\Intel\oneAPI"
