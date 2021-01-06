@@ -9,7 +9,7 @@ curl -o webimage.exe ^
 dir
 
 start /b /wait webimage.exe ^
-  --add Microsoft.VisualStudio.Workload.VCTools ^
+  --add Microsoft.VisualStudio.Component.Roslyn.Compiler ^
   --add Microsoft.Component.MSBuild ^
   --add Microsoft.VisualStudio.Component.CoreBuildTools ^
   --add Microsoft.VisualStudio.Workload.MSBuildTools ^
@@ -20,6 +20,10 @@ start /b /wait webimage.exe ^
   --add Microsoft.VisualStudio.Component.Windows10SDK.18362 ^
   --add Microsoft.VisualStudio.Component.VC.CMake.Project ^
   --add Microsoft.VisualStudio.Component.TestTools.BuildTools ^
+  --add Microsoft.VisualStudio.Component.VC.ATL ^
+  --add Microsoft.VisualStudio.Component.VC.ATLMFC ^
+  --add Microsoft.Net.Component.4.8.SDK ^
+  --add Microsoft.Net.Component.4.6.1.TargetingPack ^
   --add Microsoft.VisualStudio.Component.VC.CLI.Support ^
   --add Microsoft.VisualStudio.Component.VC.ASAN ^
   --add Microsoft.VisualStudio.Component.VC.Modules.x86.x64 ^
@@ -35,6 +39,7 @@ start /b /wait webimage.exe ^
   --add Microsoft.VisualStudio.Component.VC.v141.x86.x64 ^
   --add Microsoft.Component.VC.Runtime.UCRTSDK ^
   --add Microsoft.VisualStudio.Component.VC.140 ^
+  --add Microsoft.VisualStudio.Workload.VCTools ^
   --includeOptional --includeRecommended --nocache --wait --passive --quiet
 
 del webimage.exe
@@ -54,9 +59,9 @@ del webimage.exe
 ::     --installpath "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise" ^
 ::     --passive --norestart
 
-:: echo ========================= configure VS ===================================
+echo ========================= configure VS ===================================
 :: dir /s/b "C:\Program Files (x86)\Microsoft Visual Studio\*.bat"
-:: call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
 
 echo ========================= download oneapi ================================
 curl.exe --output webimage.exe                                                                                  ^
