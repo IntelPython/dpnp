@@ -1,2 +1,2 @@
-exclude dpnp/backend/*.cpp
-include dpnp/backend/*.hpp
+recursive-exclude *.cpp
+include dpnp/backend/include/*.hpp
