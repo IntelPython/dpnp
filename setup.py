@@ -48,7 +48,7 @@ from Cython.Compiler import Options as cython_options
 
 from utils.command_style import source_style
 from utils.command_clean import source_clean
-from utils.command_build_clib import custom_build_clib, dpnp_backend_c_description, _project_backend_dir, _sdl_cflags, _project_extra_link_args, IS_WIN, _project_compiler
+from utils.command_build_clib import custom_build_clib, dpnp_backend_c_description, _project_backend_dir, _sdl_cflags, _project_extra_link_args #, IS_WIN, _project_compiler
 from utils.command_build_cmake_clib import custom_build_cmake_clib
 
 
@@ -113,8 +113,8 @@ dpnp_build_commands = {'style': source_style,
                        'clean': source_clean
                        }
 
-if IS_WIN:
-    os.environ["CC"] = _project_compiler
+# if IS_WIN:
+#     os.environ["CC"] = _project_compiler
 
 """
 The project modules description
