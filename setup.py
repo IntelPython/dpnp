@@ -202,7 +202,7 @@ setup(name="dpnp",
                 'dpnp.linalg',
                 'dpnp.random'
                 ],
-      package_data={'dpnp': ['libdpnp_backend_c.so']},
+      package_data={'dpnp': ['libdpnp_backend_c.so', 'dpnp_backend_c.lib', 'dpnp_backend_c.dll']},
       include_package_data=True,
 
       # this is needed for 'build' command to automatically call 'build_clib'
