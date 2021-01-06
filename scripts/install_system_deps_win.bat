@@ -1,6 +1,19 @@
-:: echo =============== update setuptools required by VS procedure ===============
-:: pip install --upgrade setuptools
-:: echo ========================= Install VS components ==========================
+echo =============== update setuptools required by VS procedure ===============
+pip install --upgrade setuptools
+
+echo ========================= Install VS components ==========================
+curl -o webimage.exe ^
+  --retry 5 --retry-delay 5 ^
+  -L https://download.visualstudio.microsoft.com/download/pr/9b3476ff-6d0a-4ff8-956d-270147f21cd4/ccfb9355f4f753315455542f966025f96de734292d3908c8c3717e9685b709f0/vs_BuildTools.exe
+
+dir
+
+start /b /wait webimage.exe ^
+  --add Microsoft.VisualStudio.Workload.VCTools ^
+  --includeOptional --includeRecommended --nocache --wait --passive --quiet
+
+del webimage.exe
+
 :: dir "c:\Program Files (x86)\Microsoft Visual Studio\Installer"
 
 :: start /b /wait "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe"      ^
