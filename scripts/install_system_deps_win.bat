@@ -4,7 +4,7 @@ pip install --upgrade setuptools
 echo =============== VS config ===============
 "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" ^
   export ^
-  --installPath "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional" ^
+  --installPath "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise" ^
   --config "%CD%\vs_config.txt" ^
   --passive
 type "%CD%\vs_config.txt"
@@ -75,7 +75,7 @@ call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliar
 echo =============== VS config ===============
 "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" ^
   export ^
-  --installPath "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional" ^
+  --installPath "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise" ^
   --config "%CD%\vs_config.txt" ^
   --passive
 type "%CD%\vs_config.txt"
