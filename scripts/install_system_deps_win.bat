@@ -1,6 +1,15 @@
 echo =============== update setuptools required by VS procedure ===============
 pip install --upgrade setuptools
 
+echo =============== VS config ===============
+"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" ^
+  export ^
+  --installPath "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional" ^
+  --config "%CD%\vs_config.txt" ^
+  --passive
+type "%CD%\vs_config.txt"
+del "%CD%\vs_config.txt"
+
 echo ========================= Install VS components ==========================
 curl -o webimage.exe ^
   --retry 5 --retry-delay 5 ^
@@ -62,6 +71,15 @@ del webimage.exe
 echo ========================= configure VS ===================================
 :: dir /s/b "C:\Program Files (x86)\Microsoft Visual Studio\*.bat"
 call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+
+echo =============== VS config ===============
+"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" ^
+  export ^
+  --installPath "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional" ^
+  --config "%CD%\vs_config.txt" ^
+  --passive
+type "%CD%\vs_config.txt"
+del "%CD%\vs_config.txt"
 
 echo ========================= download oneapi ================================
 curl.exe --output webimage.exe                                                                                  ^
