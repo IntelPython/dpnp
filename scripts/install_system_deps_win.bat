@@ -49,7 +49,8 @@ start /b /wait webimage.exe ^
   --add Microsoft.Component.VC.Runtime.UCRTSDK ^
   --add Microsoft.VisualStudio.Component.VC.140 ^
   --add Microsoft.VisualStudio.Workload.VCTools ^
-  --includeOptional --includeRecommended --nocache --wait --passive --quiet
+  --includeOptional --includeRecommended --nocache --wait --passive --quiet ^
+  --installpath "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise"
 
 del webimage.exe
 
