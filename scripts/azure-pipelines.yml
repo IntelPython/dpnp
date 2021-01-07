@@ -167,14 +167,15 @@ jobs:
       echo ========================= Intel OneAPI setvars ===============================
       call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019
 
-      echo ========================= build DPNP package ===============================
+      echo =================== build DPNP bdist_wheel package ===========================
       :: cmake -G Ninja ..
       :: cmake --build . --target install -- -v
-      python setup.py build_clib
-      python setup.py build_ext --inplace
-  - publish: dpnp/backend/package_dpnp
-    artifact: 'package_backend_$(Agent.JobName)_$(Agent.OS)'
-    displayName: backend_cmake_oneapi_local_win
+      :: python setup.py build_clib
+      :: python setup.py build_ext --inplace
+      python setup.py bdist_wheel
+  - publish: dist
+    artifact: 'package_$(Agent.JobName)_$(Agent.OS)'
+    displayName: bdist_wheel_local_win
 - job: make_backend_lin
   displayName: cmake_lin
   pool:
