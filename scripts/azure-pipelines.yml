@@ -161,19 +161,12 @@ jobs:
     vmImage: 'windows-2019' # 'vs2017-win2016'
   steps:
   - script: |
-      :: - powershell: |
-      ::     Start-Process -Wait -FilePath  "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" -ArgumentList "modify --add Microsoft.VisualStudio.Workload.NativeDesktop --add Microsoft.Component.MSBuild --add Microsoft.VisualStudio.Component.Windows10SDK --add Microsoft.VisualStudio.Component.VC.CoreBuildTools --passive --norestart --installpath ""C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise"""
       call ./scripts/install_system_deps_win.bat
       call ./scripts/install_cmake_win.bat
-      echo ========================= Intel OneAPI setvars ===============================
-      :: "C:\Program Files (x86)\Intel\oneAPI"
-      call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019
-      :: dir "C:\Program Files (x86)\Intel\oneAPI\compiler\latest\windows\bin"
 
-      :: cd dpnp/backend
-      :: mkdir 0.build
-      :: cd 0.build
-      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+      echo ========================= Intel OneAPI setvars ===============================
+      call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019
+
       echo ========================= build DPNP package ===============================
       :: cmake -G Ninja ..
       :: cmake --build . --target install -- -v
