@@ -131,7 +131,7 @@ jobs:
       python ./setup.py bdist_wheel
   - publish: dist
     artifact: 'package_$(Agent.JobName)_$(Agent.OS)'
-    displayName: bdist_wheel_local
+    displayName: bdist_wheel_local_lin
 
 - job: make_package
   displayName: conda-build
@@ -173,6 +173,7 @@ jobs:
       :: python setup.py build_clib
       :: python setup.py build_ext --inplace
       python setup.py bdist_wheel
+      mkdir dist
   - publish: dist
     artifact: 'package_$(Agent.JobName)_$(Agent.OS)'
     displayName: bdist_wheel_local_win
