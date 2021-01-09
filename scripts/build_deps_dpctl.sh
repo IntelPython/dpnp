@@ -2,26 +2,27 @@
 
 THEDIR=$(dirname $(readlink -e ${BASH_SOURCE[0]}))
 
-echo +++++++++++++++++++++++++ Build DPCTL 0.5.0rc2 +++++++++++++++++++++++++++
-git clone --branch 0.5.0rc2 https://github.com/IntelPython/dpctl.git 
+DPCTL_TARGET_VERSION=0.5.0rc2
+echo +++++++++++++++++++++++++ Build DPCTL ${DPCTL_TARGET_VERSION} +++++++++++++++++++++++++++
+git clone --branch ${DPCTL_TARGET_VERSION} https://github.com/IntelPython/dpctl.git 
 
 cd dpctl
 
 # didn't find better way to set required version
 git tag -d $(git tag -l)
-git tag 5.0
+git tag ${DPCTL_TARGET_VERSION}
 
 # python ./setup.py develop
 # python ./setup.py install
 
-conda build conda-recipe/ --no-test
+conda build conda-recipe/ --no-test -c ${ONEAPI_ROOT}/conda_channel
 
 # ls -lR /opt/intel/oneapi/intelpython/latest/conda-bld
 
 conda install /opt/intel/oneapi/intelpython/latest/conda-bld/linux-64/dpctl*
 
 echo ========================= DPCTL version ==================================
-python -c "import dpctl as sw; print(f\"sw.version={sw.version}\nsw.version.version={sw.version.version}\nsw.get_include={sw.get_include()}\")"
+python -c "import dpctl as sw; print(f\"sw.__version__={sw.__version__}\nsw.get_include={sw.get_include()}\")"
 
 echo ========================= where DPCTL ===============================
 find /opt/intel -name libDPCTLSyclInterface.so
