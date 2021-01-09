@@ -110,11 +110,9 @@ jobs:
       echo ========================= run tests ===============================
       # stopped working. python -m tests_external.numpy.runtests
 
-# test python ./setup.py bdist_wheel command with
-# no oneapi python environment
-# no dpctl
-- job: make_package_bdist
-  displayName: bdist_wheel_local
+# test python ./setup.py bdist_wheel command with no dpctl
+- job: wheel_dpnp_local_lin
+  displayName: bdist_wheel_dpnp_local_lin
   pool:
     vmImage: 'ubuntu-20.04'
   steps:
@@ -127,11 +125,53 @@ jobs:
       # ./scripts/build_deps_dpctl.sh
 
       echo ========================= make DPNP bdist package ===============================
-      . ./0.env.sh
       python ./setup.py bdist_wheel
   - publish: dist
     artifact: 'package_$(Agent.JobName)_$(Agent.OS)'
     displayName: bdist_wheel_local_lin
+
+- job: wheel_dpnp_local_win
+  displayName: bdist_wheel_local_win
+  pool:
+    vmImage: 'windows-2019' # 'vs2017-win2016'
+  steps:
+  - script: |
+      call ./scripts/install_system_deps_win.bat
+      call ./scripts/install_cmake_win.bat
+
+      echo ========================= Intel OneAPI setvars ===============================
+      call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019
+
+      echo =================== build DPNP bdist_wheel package ===========================
+      :: cmake -G Ninja ..
+      :: cmake --build . --target install -- -v
+      :: python setup.py build_clib
+      :: python setup.py build_ext --inplace
+      python setup.py bdist_wheel
+      mkdir dist
+  - publish: dist
+    artifact: 'package_$(Agent.JobName)_$(Agent.OS)'
+    displayName: bdist_wheel_local_win
+
+# test python ./setup.py bdist_wheel command with dpctl
+- job: wheel_dpnp_dpctl_lin
+  displayName: bdist_wheel_dpnp_dpctl_lin
+  pool:
+    vmImage: 'ubuntu-20.04'
+  steps:
+  - bash: |
+      ./scripts/install_system_deps.sh
+      . ./scripts/install_cmake_lin.sh
+      . /opt/intel/oneapi/setvars.sh
+
+      ./scripts/install_python_deps.sh
+      ./scripts/build_deps_dpctl.sh
+
+      echo ========================= make DPNP+DPCTL bdist package ===============================
+      python ./setup.py bdist_wheel
+  - publish: dist
+    artifact: 'package_dpnp_dpctl_$(Agent.JobName)_$(Agent.OS)'
+    displayName: bdist_wheel_dpnp_dpctl_lin
 
 - job: make_package
   displayName: conda-build
@@ -155,28 +195,6 @@ jobs:
     artifact: 'package_$(Agent.JobName)_$(Agent.OS)'
     displayName: conda_build_oneapi_dpctl
 
-- job: make_backend_win
-  displayName: cmake_win
-  pool:
-    vmImage: 'windows-2019' # 'vs2017-win2016'
-  steps:
-  - script: |
-      call ./scripts/install_system_deps_win.bat
-      call ./scripts/install_cmake_win.bat
-
-      echo ========================= Intel OneAPI setvars ===============================
-      call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019
-
-      echo =================== build DPNP bdist_wheel package ===========================
-      :: cmake -G Ninja ..
-      :: cmake --build . --target install -- -v
-      :: python setup.py build_clib
-      :: python setup.py build_ext --inplace
-      python setup.py bdist_wheel
-      mkdir dist
-  - publish: dist
-    artifact: 'package_$(Agent.JobName)_$(Agent.OS)'
-    displayName: bdist_wheel_local_win
 - job: make_backend_lin
   displayName: cmake_lin
   pool:

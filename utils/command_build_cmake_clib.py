@@ -34,6 +34,10 @@ import pathlib
 from setuptools.command import build_clib
 from distutils import log
 
+
+"""
+Detect platform
+"""
 IS_WIN = False
 IS_MAC = False
 IS_LIN = False
@@ -46,6 +50,33 @@ elif sys.platform in ['win32', 'cygwin']:
     IS_WIN = True
 else:
     raise EnvironmentError("DPNP cmake builder: " + sys.platform + " not supported")
+
+
+"""
+Detect external SYCL queue manager
+"""
+_dpctrl_include_dir = "No_sycl_queue_mgr_include_dir"
+_dpctrl_library_dir = "No_sycl_queue_mgr_library_dir"
+_dpctrl_exists = "OFF"
+try:
+    """
+    Detect external SYCL queue handling library
+    """
+    import dpctl
+
+    _dpctrl_include_dir = str(os.path.abspath(dpctl.get_include()))
+    _dpctrl_library_dir = str(os.path.abspath(os.path.join(dpctl.get_include(), "..")))
+    _dpctrl_exists = "ON"
+except ImportError:
+    """
+    Set local SYCL queue handler set by default in CmakeList.txt
+    """
+    pass
+
+
+"""
+CmakeList.txt based build_clib
+"""
 
 
 class custom_build_cmake_clib(build_clib.build_clib):
@@ -75,6 +106,9 @@ class custom_build_cmake_clib(build_clib.build_clib):
             "-DDPNP_INSTALL_PREFIX=" + install_directory.replace(os.sep, "/"),  # adjust to cmake requirenments
             "-DDPNP_INSTALL_STRUCTURED=OFF",
             # "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=" + install_directory,
+            "-DDPNP_SYCL_QUEUE_MGR_ENABLE:BOOL=" + _dpctrl_exists,
+            "-DDPNP_QUEUEMGR_INCLUDE_DIR=" + _dpctrl_include_dir,
+            "-DDPNP_QUEUEMGR_LIB_DIR=" + _dpctrl_library_dir,
             "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON"
         ]
 
