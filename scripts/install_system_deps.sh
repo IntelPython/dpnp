@@ -36,17 +36,17 @@ sudo apt-get install cmake valgrind
 #sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
 
 
-echo ========================= SW versions ====================================
-sudo apt list --installed
+# echo ========================= SW versions ====================================
+# sudo apt list --installed
 
-gcc --version
-which gcc
+# gcc --version
+# which gcc
 
-clang++ --version
-which clang++
+# clang++ --version
+# which clang++
 
-dpcpp --version
-which dpcpp
+# dpcpp --version
+# which dpcpp
 
-valgrind --version
-which valgrind
+# valgrind --version
+# which valgrind
