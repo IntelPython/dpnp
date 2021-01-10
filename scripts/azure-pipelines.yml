@@ -173,6 +173,8 @@ jobs:
       :: mkdir 0.build
       :: cd 0.build
 
+
+      call ./scripts/build_deps_dpctl_win.bat
       echo ========================= build DPNP package ===============================
       :: cmake -G Ninja ..
       :: cmake --build . --target install -- -v
