@@ -18,8 +18,8 @@ jobs:
       conda activate CondaCodeStyle
       echo ========================= Run style check ===============================
       # variables are not used but have to be installed for setuptools
-      export ONEAPI_ROOT=/opt/intel
-      export MKLROOT=/opt/intel
+      # export ONEAPI_ROOT=/opt/intel
+      # export MKLROOT=/opt/intel
       python ./setup.py style
       echo ========================= style check finished ===============================
 
