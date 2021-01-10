@@ -161,6 +161,8 @@ jobs:
   steps:
   - bash: |
       ./scripts/install_system_deps.sh
+      ./scripts/install_system_deps_intelpython.sh
+
       . ./scripts/install_cmake_lin.sh
       . /opt/intel/oneapi/setvars.sh
 
@@ -173,8 +175,8 @@ jobs:
     artifact: 'package_dpnp_dpctl_$(Agent.JobName)_$(Agent.OS)'
     displayName: bdist_wheel_dpnp_dpctl_lin
 
-- job: make_package
-  displayName: conda-build
+- job: conda_build_dpnp_dpctl_lin
+  displayName: conda_dpnp_dpctl_lin
   pool:
     vmImage: 'ubuntu-20.04'
   steps:
@@ -193,7 +195,7 @@ jobs:
       conda-build conda-recipe/
   - publish: /opt/intel/oneapi/intelpython/latest/conda-bld
     artifact: 'package_$(Agent.JobName)_$(Agent.OS)'
-    displayName: conda_build_oneapi_dpctl
+    displayName: conda_build_dpnp_dpctl_lin
 
 - job: make_backend_lin
   displayName: cmake_lin
