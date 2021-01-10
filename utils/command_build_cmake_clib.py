@@ -66,7 +66,8 @@ try:
 
     _dpctrl_include_dir = str(os.path.abspath(dpctl.get_include()))
     _dpctrl_library_dir = str(os.path.abspath(os.path.join(dpctl.get_include(), "..")))
-    _dpctrl_exists = "ON"
+    if IS_LIN:
+        _dpctrl_exists = "ON"
 except ImportError:
     """
     Set local SYCL queue handler set by default in CmakeList.txt
