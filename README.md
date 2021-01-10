@@ -14,19 +14,19 @@ The project contains:
 
 ## How to run
 By default main CPU SYCL queue is used. To use Intel GPU please use:
-```python
+```bash
 DPNP_QUEUE_GPU=1 python examples/example1.py
 ```
 
 ## Build from source:
-```
+```bash
 git clone https://github.com/IntelPython/dpnp
 cd dpnp
 ./0.build.sh
 ```
 
 ## Run test
-```python
+```bash
 . ./0.env
 pytest
 # or
@@ -36,7 +36,7 @@ python -m unittest tests/test_mixins.py
 ```
 
 ## Run numpy external test
-```
+```bash
 . ./0.env
 python -m tests.third_party.numpy_ext
 # or
@@ -46,7 +46,7 @@ python -m tests.third_party.numpy_ext core/tests/test_umath.py::TestHypot::test_
 ```
 
 ### Building documentation:
-```
+```bash
 Prerequisites:
 $ conda install sphinx sphinx_rtd_theme
 Building:
@@ -56,25 +56,38 @@ Building:
 ```
 
 ## Packaging:
-```
+```bash
 . ./0.env
 conda-build conda-recipe/
 ```
 
 ## Run benchmark:
+```bash
+cd benchmarks/
+
+asv run --python=python --bench <filename without .py>
+# example:
+asv run --python=python --bench bench_elementwise
+
+# or
+
+asv run --python=python --bench <class>.<bench>
+# example:
+asv run --python=python --bench Elementwise.time_square
+
+# add --quick option to run every case once but looks like first execution has additional overheads and takes a lot of time (need to be investigated)
 ```
-$ cd benchmarks/
 
-$ asv run --python=python --bench <filename without .py>
-example:
-$ asv run --python=python --bench bench_elementwise
 
-or
-
-$ asv run --python=python --bench <class>.<bench>
-example:
-$ asv run --python=python --bench Elementwise.time_square
-
-add --quick option to run every case once
-but looks like first execution has additional overheads and takes a lot of time (need to be investigated)
-```
+## Tests matrix:
+| # |Name                                |OS   |distributive|interpreter|python used from|SYCL queue manager|build commands set                                                                                                                              |forced environment                                                                                                       |
+|---|------------------------------------|-----|------------|-----------|:--------------:|:----------------:|------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|
+|1  |Ubuntu 20.04 Python37               |Linux|Ubuntu 20.04|Python 3.7 |  IntelOneAPI   |      local       |export DPNP_DEBUG=1 python setup.py clean python setup.py build_clib python setup.py build_ext --inplace pytest                                 |cmake-3.19.2, valgrind, pytest-valgrind, conda-build, pytest, hypothesis                                                 |
+|2  |Ubuntu 20.04 Python38               |Linux|Ubuntu 20.04|Python 3.8 |  IntelOneAPI   |      local       |export DPNP_DEBUG=1 python setup.py clean python setup.py build_clib python setup.py build_ext --inplace pytest                                 |cmake-3.19.2, valgrind, pytest-valgrind, conda-build, pytest, hypothesis                                                 |
+|3  |Ubuntu 20.04 Python39               |Linux|Ubuntu 20.04|Python 3.9 |  IntelOneAPI   |      local       |export DPNP_DEBUG=1 python setup.py clean python setup.py build_clib python setup.py build_ext --inplace pytest                                 |cmake-3.19.2, valgrind, pytest-valgrind, conda-build, pytest, hypothesis                                                 |
+|4  |Ubuntu 20.04 External Tests Python37|Linux|Ubuntu 20.04|Python 3.7 |  IntelOneAPI   |      local       |export DPNP_DEBUG=1 python setup.py clean python setup.py build_clib python setup.py build_ext --inplace python -m tests_external.numpy.runtests|cmake-3.19.2, valgrind, pytest-valgrind, conda-build, pytest, hypothesis                                                 |
+|5  |Ubuntu 20.04 External Tests Python38|Linux|Ubuntu 20.04|Python 3.8 |  IntelOneAPI   |      local       |export DPNP_DEBUG=1 python setup.py clean python setup.py build_clib python setup.py build_ext --inplace python -m tests_external.numpy.runtests|cmake-3.19.2, valgrind, pytest-valgrind, conda-build, pytest, hypothesis                                                 |
+|6  |Ubuntu 20.04 External Tests Python39|Linux|Ubuntu 20.04|Python 3.9 |  IntelOneAPI   |      local       |export DPNP_DEBUG=1 python setup.py clean python setup.py build_clib python setup.py build_ext --inplace python -m tests_external.numpy.runtests|cmake-3.19.2, valgrind, pytest-valgrind, conda-build, pytest, hypothesis                                                 |
+|7  |Code style                          |Linux|Ubuntu 20.04|Python 3.8 |  IntelOneAPI   |      local       |python ./setup.py style                                                                                                                         |cmake-3.19.2, valgrind, pytest-valgrind, conda-build, pytest, hypothesis, conda-verify, pycodestyle, autopep8, black     |
+|8  |Valgrind                            |Linux|Ubuntu 20.04|           |  IntelOneAPI   |      local       |export DPNP_DEBUG=1 python setup.py clean python setup.py build_clib python setup.py build_ext --inplace                                        |cmake-3.19.2, valgrind, pytest-valgrind, conda-build, pytest, hypothesis                                                 |
+|9  |Code coverage                       |Linux|Ubuntu 20.04|Python 3.8 |  IntelOneAPI   |      local       |export DPNP_DEBUG=1 python setup.py clean python setup.py build_clib python setup.py build_ext --inplace                                        |cmake-3.19.2, valgrind, pytest-valgrind, conda-build, pytest, hypothesis, conda-verify, pycodestyle, autopep8, pytest-cov|
