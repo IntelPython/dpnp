@@ -179,6 +179,8 @@ tests/test_multiarray.py::TestIO::test_malformed
 tests/test_multiarray.py::TestIO::test_nan
 tests/test_multiarray.py::TestIO::test_nofile
 tests/test_multiarray.py::TestIO::test_numbers
+tests/test_multiarray.py::TestIO::test_parsing_subarray_unsupported
+tests/test_multiarray.py::TestIO::test_read_shorter_than_count_subarray
 tests/test_multiarray.py::TestIO::test_roundtrip_binary_str
 tests/test_multiarray.py::TestIO::test_roundtrip_dump_pathlib
 tests/test_multiarray.py::TestIO::test_roundtrip_file
@@ -188,6 +190,7 @@ tests/test_multiarray.py::TestIO::test_roundtrip_repr
 tests/test_multiarray.py::TestIO::test_roundtrip_str
 tests/test_multiarray.py::TestIO::test_string
 tests/test_multiarray.py::TestIO::test_string_with_ws
+tests/test_multiarray.py::TestIO::test_tofile_cleanup
 tests/test_multiarray.py::TestIO::test_tofile_format
 tests/test_multiarray.py::TestIO::test_tofile_sep
 tests/test_multiarray.py::TestIO::test_uint64_fromstring
