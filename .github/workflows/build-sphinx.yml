@@ -64,6 +64,7 @@ jobs:
         shell: bash -l {0}
         run: |
           . /opt/intel/oneapi/setvars.sh
+          . ./scripts/install_cmake_lin.sh
           ./0.build.sh
       - name: Build docs
         shell: bash -l {0}
