@@ -302,6 +302,7 @@ tests/test_datetime.py::TestDateTime::test_timedelta_nat_argsort_stability[1000]
 tests/test_datetime.py::TestDateTime::test_timedelta_nat_argsort_stability[21]
 tests/test_datetime.py::TestDateTime::test_timedelta_nat_argsort_stability[217]
 tests/test_datetime.py::TestDateTime::test_timedelta_nat_argsort_stability[3]
+tests/test_datetime.py::TestDateTime::test_timedelta_nat_format
 tests/test_datetime.py::TestDateTime::test_timedelta_np_int_construction[as]
 tests/test_datetime.py::TestDateTime::test_timedelta_np_int_construction[D]
 tests/test_datetime.py::TestDateTime::test_timedelta_np_int_construction[fs]
@@ -553,6 +554,7 @@ tests/test_errstate.py::TestErrstate::test_divide
 tests/test_errstate.py::TestErrstate::test_errcall
 tests/test_errstate.py::TestErrstate::test_errstate_decorator
 tests/test_errstate.py::TestErrstate::test_invalid
+tests/test__exceptions.py::TestArrayMemoryError::test_pickling
 tests/test__exceptions.py::TestArrayMemoryError::test__size_to_string
 tests/test__exceptions.py::TestArrayMemoryError::test__total_size
 tests/test_extint128.py::test_add_128
@@ -762,6 +764,14 @@ tests/test_multiarray.py::TestAttributes::test_fill_max_uint64
 tests/test_multiarray.py::TestAttributes::test_fill_struct_array
 tests/test_multiarray.py::TestAttributes::test_set_stridesattr
 tests/test_multiarray.py::TestAttributes::test_stridesattr
+tests/test_multiarray.py::TestCreation::test_bad_array_like_attributes[__array_interface__-MemoryError]
+tests/test_multiarray.py::TestCreation::test_bad_array_like_attributes[__array_interface__-RecursionError]
+tests/test_multiarray.py::TestCreation::test_bad_array_like_attributes[__array__-MemoryError]
+tests/test_multiarray.py::TestCreation::test_bad_array_like_attributes[__array__-RecursionError]
+tests/test_multiarray.py::TestCreation::test_bad_array_like_attributes[__array_struct__-MemoryError]
+tests/test_multiarray.py::TestCreation::test_bad_array_like_attributes[__array_struct__-RecursionError]
+tests/test_multiarray.py::TestCreation::test_bad_array_like_bad_length[MemoryError]
+tests/test_multiarray.py::TestCreation::test_bad_array_like_bad_length[RecursionError]
 tests/test_multiarray.py::TestFlags::test_otherflags
 tests/test_multiarray.py::TestFlags::test_string_align
 tests/test_multiarray.py::TestFlags::test_void_align
