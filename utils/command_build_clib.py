@@ -29,16 +29,6 @@ Originally, 'build_clib' command produce static C library only.
 This modification add:
  - build shared C library
  - copy this library to the project tree
- - extra option 'libraries'
- - extra option 'library_dirs'
- - extra option 'runtime_library_dirs'
- - extra option 'extra_preargs'
- - extra option 'extra_link_postargs'
- - extra option 'force_build'
- - extra option 'compiler'
- - extra option 'linker'
- - extra option 'default_flags'
- - extra option 'language'
  - a check if source needs to be rebuilt based on time stamp
  - a check if librayr needs to be rebuilt based on time stamp
 """
@@ -50,6 +40,146 @@ from setuptools.command import build_clib
 from distutils import log
 from distutils.dep_util import newer_group
 from distutils.file_util import copy_file
+
+from utils.dpnp_build_utils import find_cmplr, find_dpl, find_mathlib, find_omp
+
+IS_WIN = False
+IS_MAC = False
+IS_LIN = False
+
+if 'linux' in sys.platform:
+    IS_LIN = True
+elif sys.platform == 'darwin':
+    IS_MAC = True
+elif sys.platform in ['win32', 'cygwin']:
+    IS_WIN = True
+else:
+    raise EnvironmentError("DPNP: " + sys.platform + " not supported")
+
+"""
+Set compiler for the project
+"""
+# default variables (for Linux)
+_project_compiler = "dpcpp"
+_project_linker = "dpcpp"
+_project_cmplr_flag_sycl_devel = ["-fsycl-device-code-split=per_kernel"]
+_project_cmplr_flag_sycl = ["-fsycl"]
+_project_cmplr_flag_compatibility = ["-Wl,--enable-new-dtags"]
+_project_cmplr_flag_lib = ["-shared"]
+_project_cmplr_flag_release_build = ["-O3", "-DNDEBUG", "-fPIC"]
+_project_cmplr_flag_debug_build = ["-g", "-O1", "-W", "-Wextra", "-Wshadow", "-Wall", "-Wstrict-prototypes", "-fPIC"]
+_project_cmplr_flag_default_build = []
+_project_cmplr_macro = []
+_project_force_build = False
+_project_sycl_queue_control_macro = [("DPNP_LOCAL_QUEUE", "1")]
+_project_rpath = ["$ORIGIN", os.path.join("$ORIGIN", "..")]
+_dpctrl_include = []
+_dpctrl_libpath = []
+_dpctrl_lib = []
+_sdl_cflags = ["-fstack-protector-strong",
+               "-fPIC", "-D_FORTIFY_SOURCE=2",
+               "-Wformat",
+               "-Wformat-security",
+               "-fno-strict-overflow",
+               "-fno-delete-null-pointer-checks"]
+_sdl_ldflags = ["-Wl,-z,noexecstack,-z,relro,-z,now"]
+
+# TODO remove when it will be fixed on TBB side. Details:
+# In GCC versions 9 and 10 the application that uses Parallel STL algorithms may fail to compile due to incompatible
+# interface changes between earlier versions of Intel TBB and oneTBB. Disable support for Parallel STL algorithms
+# by defining PSTL_USE_PARALLEL_POLICIES (in GCC 9), _GLIBCXX_USE_TBB_PAR_BACKEND (in GCC 10) macro to zero
+# before inclusion of the first standard header file in each translation unit.
+_project_cmplr_macro += [("PSTL_USE_PARALLEL_POLICIES", "0"), ("_GLIBCXX_USE_TBB_PAR_BACKEND", "0")]
+
+try:
+    """
+    Detect external SYCL queue handling library
+    """
+    import dpctl
+
+    _dpctrl_include += [dpctl.get_include()]
+    # _dpctrl_libpath = for package build + for local build
+    _dpctrl_libpath = ["$ORIGIN/../dpctl"] + [os.path.join(dpctl.get_include(), '..')]
+    _dpctrl_lib = ["DPCTLSyclInterface"]
+except ImportError:
+    """
+    Set local SYCL queue handler
+    """
+    _project_cmplr_macro += _project_sycl_queue_control_macro
+
+# other OS specific
+if IS_WIN:
+    _project_compiler = "dpcpp"
+    _project_linker = "lld-link"
+    _project_cmplr_flag_sycl = []
+    _project_cmplr_flag_compatibility = []
+    _project_cmplr_flag_lib = ["/DLL"]
+    _project_cmplr_macro += [("_WIN", "1")]
+    _project_rpath = []
+    # TODO this flag creates unexpected behavior during compilation, need to be fixed
+    # _sdl_cflags = ["-GS"]
+    _sdl_cflags = []
+    _sdl_ldflags = ["-NXCompat", "-DynamicBase"]
+
+"""
+Get the project build type
+"""
+__dpnp_debug__ = os.environ.get('DPNP_DEBUG', None)
+if __dpnp_debug__ is not None:
+    """
+    Debug configuration
+    """
+    _project_cmplr_flag_sycl += _project_cmplr_flag_sycl_devel
+    _project_cmplr_flag_default_build = _project_cmplr_flag_debug_build
+else:
+    """
+    Release configuration
+    """
+    _project_cmplr_flag_default_build = _project_cmplr_flag_release_build
+
+"""
+Get the math library environemnt
+"""
+_project_cmplr_macro += [("MKL_ILP64", "1")]  # using 64bit integers in MKL interface (long)
+if IS_LIN:
+    _mathlibs = ["mkl_rt", "mkl_sycl", "mkl_intel_ilp64", "mkl_sequential",
+                 "mkl_core", "sycl", "OpenCL", "pthread", "m", "dl"]
+elif IS_WIN:
+    _mathlibs = ["mkl_sycl", "mkl_intel_ilp64", "mkl_tbb_thread", "mkl_core", "sycl", "OpenCL", "tbb"]
+
+"""
+Final set of arguments for extentions
+"""
+_project_extra_link_args = _project_cmplr_flag_compatibility + \
+    ["-Wl,-rpath," + x for x in _project_rpath] + _sdl_ldflags
+_project_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+_project_backend_dir = [os.path.join(_project_dir, "dpnp", "backend", "include"),
+                        os.path.join(_project_dir, "dpnp", "backend", "src")  # not a public headers location
+                        ]
+
+dpnp_backend_c_description = [
+    ["dpnp_backend_c",
+        {
+            "sources": [
+                "dpnp/backend/kernels/dpnp_krnl_bitwise.cpp",
+                "dpnp/backend/kernels/dpnp_krnl_common.cpp",
+                "dpnp/backend/kernels/dpnp_krnl_elemwise.cpp",
+                "dpnp/backend/kernels/dpnp_krnl_fft.cpp",
+                "dpnp/backend/kernels/dpnp_krnl_linalg.cpp",
+                "dpnp/backend/kernels/dpnp_krnl_manipulation.cpp",
+                "dpnp/backend/kernels/dpnp_krnl_mathematical.cpp",
+                "dpnp/backend/kernels/dpnp_krnl_random.cpp",
+                "dpnp/backend/kernels/dpnp_krnl_reduction.cpp",
+                "dpnp/backend/kernels/dpnp_krnl_searching.cpp",
+                "dpnp/backend/kernels/dpnp_krnl_sorting.cpp",
+                "dpnp/backend/kernels/dpnp_krnl_statistics.cpp",
+                "dpnp/backend/src/dpnp_iface_fptr.cpp",
+                "dpnp/backend/src/memory_sycl.cpp",
+                "dpnp/backend/src/queue_sycl.cpp"
+            ],
+        }
+     ]
+]
 
 
 class custom_build_clib(build_clib.build_clib):
@@ -74,23 +204,34 @@ class custom_build_clib(build_clib.build_clib):
 
             log.info(f"DPNP: building {lib_name} library")
 
-            macros = build_info.get('macros')
-            include_dirs = build_info.get('include_dirs')
-            libraries = build_info.get("libraries")
-            library_dirs = build_info.get("library_dirs")
-            runtime_library_dirs = build_info.get("runtime_library_dirs")
-            extra_preargs = build_info.get("extra_preargs")
-            extra_link_postargs = build_info.get("extra_link_postargs")
-            extra_link_preargs = build_info.get("extra_link_preargs")
-            force_build = build_info.get("force_build")
-            compiler = build_info.get("compiler")
-            linker = build_info.get("linker")
-            default_flags = build_info.get("default_flags")
-            language = build_info.get("language")
+            """
+            Get the compiler environemnt
+            """
+            _cmplr_include, _cmplr_libpath = find_cmplr(verbose=True)
+            _mathlib_include, _mathlib_path = find_mathlib(verbose=True)
+            _, _omp_libpath = find_omp(verbose=True)
+            _dpl_include, _ = find_dpl(verbose=True)
+
+            macros = _project_cmplr_macro
+            include_dirs = _cmplr_include + _dpl_include + _mathlib_include + _project_backend_dir + _dpctrl_include
+            libraries = _mathlibs + _dpctrl_lib
+            library_dirs = _mathlib_path + _omp_libpath + _dpctrl_libpath
+            runtime_library_dirs = _project_rpath + _dpctrl_libpath
+            extra_preargs = _project_cmplr_flag_sycl + _sdl_cflags
+            extra_link_postargs = _project_cmplr_flag_lib
+            extra_link_preargs = _project_cmplr_flag_compatibility + _sdl_ldflags
+            force_build = _project_force_build
+            compiler = [_project_compiler]
+            linker = [_project_linker]
+            default_flags = _project_cmplr_flag_default_build
+            language = "c++"
 
             # set compiler and options
             self.compiler.compiler_so = compiler + default_flags
+            self.compiler.compiler = self.compiler.compiler_so
+            self.compiler.compiler_cxx = self.compiler.compiler_so
             self.compiler.linker_so = linker + default_flags
+            self.compiler.linker_exe = self.compiler.linker_so
 
             objects = []
             """

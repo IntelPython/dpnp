@@ -48,22 +48,22 @@ from Cython.Compiler import Options as cython_options
 
 from utils.command_style import source_style
 from utils.command_clean import source_clean
-from utils.command_build_clib import custom_build_clib
-from utils.dpnp_build_utils import find_cmplr, find_dpl, find_mathlib, find_omp
+from utils.command_build_clib import custom_build_clib, dpnp_backend_c_description, _project_backend_dir, _sdl_cflags, _project_extra_link_args, IS_WIN
+from utils.command_build_cmake_clib import custom_build_cmake_clib
 
 
 """
 Python version check
 """
 if sys.version_info[:2] < (3, 6):
-    raise RuntimeError("DPNP: Python version >= 3.5 required.")
+    raise RuntimeError("DPNP: Python version >= 3.6 required.")
 
 
 """
 Get the project version
 """
 thefile_path = os.path.abspath(os.path.dirname(__file__))
-version_mod = imm.SourceFileLoader('version', os.path.join(thefile_path, 'dpnp', '_version.py')).load_module()
+version_mod = imm.SourceFileLoader('version', os.path.join(thefile_path, 'dpnp', 'version.py')).load_module()
 __version__ = version_mod.__version__
 
 
@@ -96,161 +96,6 @@ Operating System :: Unix
 Operating System :: MacOS
 """
 
-IS_WIN = False
-IS_MAC = False
-IS_LIN = False
-
-if 'linux' in sys.platform:
-    IS_LIN = True
-elif sys.platform == 'darwin':
-    IS_MAC = True
-elif sys.platform in ['win32', 'cygwin']:
-    IS_WIN = True
-else:
-    raise EnvironmentError("DPNP: " + sys.platform + " not supported")
-
-"""
-Set compiler for the project
-"""
-# default variables (for Linux)
-_project_compiler = "clang++"
-_project_linker = "clang++"
-_project_cmplr_flag_sycl_devel = ["-fsycl-device-code-split=per_kernel"]
-_project_cmplr_flag_sycl = ["-fsycl"]
-_project_cmplr_flag_compatibility = ["-Wl,--enable-new-dtags"]
-_project_cmplr_flag_lib = ["-shared"]
-_project_cmplr_flag_release_build = ["-O3", "-DNDEBUG", "-fPIC"]
-_project_cmplr_flag_debug_build = ["-g", "-O1", "-W", "-Wextra", "-Wshadow", "-Wall", "-Wstrict-prototypes", "-fPIC"]
-_project_cmplr_flag_default_build = []
-_project_cmplr_macro = []
-_project_force_build = False
-_project_sycl_queue_control_macro = [("DPNP_LOCAL_QUEUE", "1")]
-_project_rpath = ["$ORIGIN"]
-_dpctrl_include = []
-_dpctrl_libpath = []
-_dpctrl_lib = []
-_sdl_cflags = ["-fstack-protector-strong",
-               "-fPIC", "-D_FORTIFY_SOURCE=2",
-               "-Wformat",
-               "-Wformat-security",
-               "-fno-strict-overflow",
-               "-fno-delete-null-pointer-checks"]
-_sdl_ldflags = ["-Wl,-z,noexecstack,-z,relro,-z,now"]
-
-# TODO remove when it will be fixed on TBB side. Details:
-# In GCC versions 9 and 10 the application that uses Parallel STL algorithms may fail to compile due to incompatible
-# interface changes between earlier versions of Intel TBB and oneTBB. Disable support for Parallel STL algorithms
-# by defining PSTL_USE_PARALLEL_POLICIES (in GCC 9), _GLIBCXX_USE_TBB_PAR_BACKEND (in GCC 10) macro to zero
-# before inclusion of the first standard header file in each translation unit.
-_project_cmplr_macro += [("PSTL_USE_PARALLEL_POLICIES", "0"), ("_GLIBCXX_USE_TBB_PAR_BACKEND", "0")]
-
-try:
-    """
-    Detect external SYCL queue handling library
-    """
-    import dpctl
-
-    _dpctrl_include += [dpctl.get_include()]
-    # _dpctrl_libpath = for package build + for local build
-    _dpctrl_libpath += ["$ORIGIN/../dpctl"] + [os.path.join(dpctl.get_include(), '..')]
-    _dpctrl_lib += ["DPPLSyclInterface"]
-except ImportError:
-    """
-    Set local SYCL queue handler
-    """
-    _project_cmplr_macro += _project_sycl_queue_control_macro
-
-
-# other OS specific
-if IS_WIN:
-    _project_compiler = "dpcpp"
-    _project_linker = "lld-link"
-    _project_cmplr_flag_sycl = []
-    _project_cmplr_flag_compatibility = []
-    _project_cmplr_flag_lib = ["/DLL"]
-    _project_cmplr_macro += [("_WIN", "1")]
-    _project_rpath = []
-    # TODO this flag creates unexpected behavior during compilation, need to be fixed
-    # _sdl_cflags = ["-GS"]
-    _sdl_cflags = []
-    _sdl_ldflags = ["-NXCompat", "-DynamicBase"]
-
-
-try:
-    """
-    set environment variables to control setuptools build procedure
-    """
-    # check if we have preset variables in environment
-    os.environ["CC"] == _project_compiler
-    os.environ["CXX"] == _project_compiler
-    os.environ["LD"] == _project_linker
-except KeyError:
-    # set variables if not presented in environment
-    os.environ["CC"] = _project_compiler
-    os.environ["CXX"] = _project_compiler
-    os.environ["LD"] = _project_linker
-
-
-"""
-Get the project build type
-"""
-__dpnp_debug__ = os.environ.get('DPNP_DEBUG', None)
-if __dpnp_debug__ is not None:
-    """
-    Debug configuration
-    """
-    _project_cmplr_flag_sycl += _project_cmplr_flag_sycl_devel
-    _project_cmplr_flag_default_build = _project_cmplr_flag_debug_build
-else:
-    """
-    Release configuration
-    """
-    _project_cmplr_flag_default_build = _project_cmplr_flag_release_build
-
-
-"""
-Search and set math library environemnt
-"""
-_mathlib_rpath = []
-_cmplr_rpath = []
-_omp_rpath = []
-
-
-"""
-Get the math library environemnt
-"""
-_mathlib_include, _mathlib_path = find_mathlib(verbose=True)
-
-_project_cmplr_macro += [("MKL_ILP64", "1")]  # using 64bit integers in MKL interface (long)
-_mathlibs = ["mkl_rt", "mkl_sycl", "mkl_intel_ilp64", "mkl_sequential",
-             "mkl_core", "sycl", "OpenCL", "pthread", "m", "dl"]
-
-if IS_LIN:
-    _mathlib_rpath = _mathlib_path
-elif IS_WIN:
-    _mathlibs = ["mkl_sycl", "mkl_intel_ilp64", "mkl_tbb_thread", "mkl_core", "sycl", "OpenCL", "tbb"]
-
-"""
-Get the compiler environemnt
-"""
-_cmplr_include, _cmplr_libpath = find_cmplr(verbose=True)
-_dpl_include, _ = find_dpl(verbose=True)
-_, _omp_libpath = find_omp(verbose=True)
-
-if IS_LIN:
-    _cmplr_rpath = _cmplr_libpath
-    _omp_rpath = _omp_libpath
-
-
-"""
-Final set of arguments for extentions
-"""
-_project_extra_link_args = _project_cmplr_flag_compatibility + \
-    ["-Wl,-rpath," + x for x in _project_rpath] + _sdl_ldflags
-_project_dir = os.path.dirname(os.path.abspath(__file__))
-_project_backend_dir = [os.path.join(_project_dir, "dpnp", "backend")]
-
-
 """
 Extra defined commands for the build system
 
@@ -263,117 +108,64 @@ Extra defined commands for the build system
 TODO: spell check, valgrind, code coverage
 """
 dpnp_build_commands = {'style': source_style,
-                       'build_clib': custom_build_clib,
+                       'build_clib': custom_build_cmake_clib,
+                       # 'build_clib': custom_build_clib,
                        'clean': source_clean
                        }
 
+if IS_WIN:
+    '''
+    This variable controls setuptools execution on windows
+    to avoid automatically search and confirm workability of the compiler
+    If not set, error "Microsoft Visual C++ 14.0 or greater is required." appiars
+    '''
+    os.environ["DISTUTILS_USE_SDK"] = "1"
 
 """
 The project modules description
 """
-dpnp_backend_c = [
-    ["dpnp_backend_c",
-        {
-            "sources": [
-                "dpnp/backend/backend_iface_fptr.cpp",
-                "dpnp/backend/custom_kernels_bitwise.cpp",
-                "dpnp/backend/custom_kernels.cpp",
-                "dpnp/backend/custom_kernels_elemwise.cpp",
-                "dpnp/backend/custom_kernels_linalg.cpp",
-                "dpnp/backend/custom_kernels_manipulation.cpp",
-                "dpnp/backend/custom_kernels_mathematical.cpp",
-                "dpnp/backend/custom_kernels_random.cpp",
-                "dpnp/backend/custom_kernels_reduction.cpp",
-                "dpnp/backend/custom_kernels_searching.cpp",
-                "dpnp/backend/custom_kernels_sorting.cpp",
-                "dpnp/backend/custom_kernels_statistics.cpp",
-                "dpnp/backend/dpnp_kernels_fft.cpp",
-                "dpnp/backend/memory_sycl.cpp",
-                "dpnp/backend/queue_sycl.cpp"
-            ],
-            "include_dirs": _cmplr_include + _dpl_include + _mathlib_include + _project_backend_dir + _dpctrl_include,
-            "library_dirs": _mathlib_path + _omp_libpath + _dpctrl_libpath,
-            "runtime_library_dirs": [],  # _project_rpath + _mathlib_rpath + _cmplr_rpath + _omp_rpath + _dpctrl_libpath,
-            "extra_preargs": _project_cmplr_flag_sycl + _sdl_cflags,
-            "extra_link_preargs": _project_cmplr_flag_compatibility + _sdl_ldflags,
-            "extra_link_postargs": _project_cmplr_flag_lib,
-            "libraries": _mathlibs + _dpctrl_lib,
-            "macros": _project_cmplr_macro,
-            "force_build": _project_force_build,
-            "compiler": [_project_compiler],
-            "linker": [_project_linker],
-            "default_flags": _project_cmplr_flag_default_build,
-            "language": "c++"
-        }
-     ]
-]
+kwargs_common = {
+    "include_dirs": [numpy.get_include()] + _project_backend_dir,
+    "extra_compile_args": _sdl_cflags,
+    "extra_link_args": _project_extra_link_args,
+    "define_macros": [("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
+    "language": "c++"
+}
 
-dpnp_backend = Extension(
-    name="dpnp.backend",
-    sources=["dpnp/backend.pyx"],
-    libraries=[],
-    include_dirs=[numpy.get_include()] + _project_backend_dir,
-    extra_compile_args=_sdl_cflags,
-    extra_link_args=_project_extra_link_args,
-    define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-    language="c++"
-)
+dpnp_algo = Extension(
+    name="dpnp.dpnp_algo.dpnp_algo",
+    sources=[os.path.join("dpnp", "dpnp_algo", "dpnp_algo.pyx")],
+    **kwargs_common)
 
 dpnp_dparray = Extension(
     name="dpnp.dparray",
-    sources=["dpnp/dparray.pyx"],
-    libraries=[],
-    include_dirs=[numpy.get_include()] + _project_backend_dir,
-    extra_compile_args=_sdl_cflags,
-    extra_link_args=_project_extra_link_args,
-    define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-    language="c++"
-)
+    sources=[os.path.join("dpnp", "dparray.pyx")],
+    **kwargs_common)
 
 dpnp_random = Extension(
-    name="dpnp.random._random",
-    sources=["dpnp/random/_random.pyx"],
-    include_dirs=[numpy.get_include()] + _project_backend_dir,
-    extra_compile_args=_sdl_cflags,
-    extra_link_args=_project_extra_link_args,
-    define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-    language="c++"
-)
-
-dpnp_utils = Extension(
-    name="dpnp.dpnp_utils",
-    sources=["dpnp/dpnp_utils.pyx"],
-    include_dirs=[numpy.get_include()] + _project_backend_dir,
-    extra_compile_args=_sdl_cflags,
-    extra_link_args=_project_extra_link_args,
-    define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-    language="c++"
-)
+    name="dpnp.random.dpnp_algo_random",
+    sources=[os.path.join("dpnp", "random", "dpnp_algo_random.pyx")],
+    **kwargs_common)
 
 dpnp_linalg = Extension(
-    name="dpnp.linalg.linalg",
-    sources=["dpnp/linalg/linalg.pyx"],
-    include_dirs=[numpy.get_include()] + _project_backend_dir,
-    extra_compile_args=_sdl_cflags,
-    extra_link_args=_project_extra_link_args,
-    define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-    language="c++"
-)
+    name="dpnp.linalg.dpnp_algo_linalg",
+    sources=[os.path.join("dpnp", "linalg", "dpnp_algo_linalg.pyx")],
+    **kwargs_common)
 
 dpnp_fft = Extension(
     name="dpnp.fft.dpnp_algo_fft",
-    sources=["dpnp/fft/dpnp_algo_fft.pyx"],
-    include_dirs=[numpy.get_include()] + _project_backend_dir,
-    extra_compile_args=_sdl_cflags,
-    extra_link_args=_project_extra_link_args,
-    define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],
-    language="c++"
-)
+    sources=[os.path.join("dpnp", "fft", "dpnp_algo_fft.pyx")],
+    **kwargs_common)
+
+dpnp_utils = Extension(
+    name="dpnp.dpnp_utils.dpnp_algo_utils",
+    sources=[os.path.join("dpnp", "dpnp_utils", "dpnp_algo_utils.pyx")],
+    **kwargs_common)
 
 cython_options.docstrings = True
 cython_options.warning_errors = True
 
-dpnp_cython_mods = cythonize([dpnp_backend, dpnp_dparray, dpnp_random, dpnp_utils, dpnp_linalg, dpnp_fft],
+dpnp_cython_mods = cythonize([dpnp_algo, dpnp_dparray, dpnp_random, dpnp_utils, dpnp_linalg, dpnp_fft],
                              compiler_directives={"language_level": sys.version_info[0],
                                                   "warn.unused": False,
                                                   "warn.unused_result": False,
@@ -387,20 +179,20 @@ dpnp_cython_mods = cythonize([dpnp_backend, dpnp_dparray, dpnp_random, dpnp_util
                              annotate=False,
                              quiet=False)
 
-setup(name="DPNP",
+setup(name="dpnp",
       version=__version__,
-      description="Subclass of numpy.ndarray that uses mkl_malloc",
+      description="NumPy-like API accelerated with SYCL",
       long_description=__readme_file__,
       author="Intel Corporation",
       author_email="Intel Corporation",
       maintainer="Intel Corp.",
       maintainer_email="scripting@intel.com",
-      url="http://github.com/IntelPython/mkl_array",
-      download_url="http://github.com/IntelPython/mkl_array",
+      url="https://intelpython.github.io/dpnp/",
+      download_url="https://github.com/IntelPython/dpnp",
       license=__license_file__,
       classifiers=[_f for _f in CLASSIFIERS.split('\n') if _f],
-      keywords="python numeric algebra blas",
-      platforms=["Linux", "Windows", "Mac OS-X"],
+      keywords="sycl numpy python3 intel mkl oneapi gpu dpcpp pstl",
+      platforms=["Linux", "Windows"],
       test_suite="pytest",
       python_requires=">=3.6",
       install_requires=["numpy>=1.15"],
@@ -409,14 +201,16 @@ setup(name="DPNP",
       ext_modules=dpnp_cython_mods,
       cmdclass=dpnp_build_commands,
       packages=['dpnp',
+                'dpnp.dpnp_algo',
+                'dpnp.dpnp_utils',
                 'dpnp.fft',
                 'dpnp.linalg',
                 'dpnp.random'
                 ],
-      package_data={'dpnp': ['libdpnp_backend_c.so']},
+      package_data={'dpnp': ['libdpnp_backend_c.so', 'dpnp_backend_c.lib', 'dpnp_backend_c.dll']},
       include_package_data=True,
 
       # this is needed for 'build' command to automatically call 'build_clib'
       # it attach the library to all extensions (it is not needed)
-      libraries=dpnp_backend_c
+      libraries=dpnp_backend_c_description
       )

@@ -42,7 +42,7 @@ it contains:
 
 import numpy
 
-from dpnp.backend import *
+from dpnp.dpnp_algo import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 import dpnp
@@ -52,9 +52,16 @@ __all__ = [
     "abs",
     "absolute",
     "add",
+    "around",
     "ceil",
+    "conj",
+    "conjugate",
     "copysign",
+    "cumprod",
+    "cumsum",
+    "diff",
     "divide",
+    "ediff1d",
     "fabs",
     "floor",
     "floor_divide",
@@ -66,15 +73,19 @@ __all__ = [
     "mod",
     "modf",
     "multiply",
+    "nancumprod",
+    "nancumsum",
     "nanprod",
     "nansum",
     "negative",
     "power",
     "prod",
     "remainder",
+    "round_",
     "sign",
     "subtract",
     "sum",
+    "trapz",
     "true_divide",
     "trunc"
 ]
@@ -163,20 +174,50 @@ def add(x1, x2, **kwargs):
     [2, 4, 6]
 
     """
-
-    is_x1_dparray = isinstance(x1, dparray)
-    is_x2_dparray = isinstance(x2, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
-        if (x1.size != x2.size):
-            checker_throw_value_error("add", "size", x1.size, x2.size)
-
-        if (x1.shape != x2.shape):
-            checker_throw_value_error("add", "shape", x1.shape, x2.shape)
-
-        return dpnp_add(x1, x2)
+    if not use_origin_backend(x1) and not kwargs:
+        if not isinstance(x1, dparray):
+            pass
+        elif not isinstance(x2, dparray):
+            pass
+        elif x1.size != x2.size:
+            pass
+        elif (x1.shape != x2.shape):
+            pass
+        else:
+            return dpnp_add(x1, x2)
 
     return call_origin(numpy.add, x1, x2, **kwargs)
+
+
+def around(a, decimals=0, out=None):
+    """
+    Evenly round to the given number of decimals.
+
+    For full documentation refer to :obj:`numpy.around`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.around([0.37, 1.64])
+    array([0.,  2.])
+    >>> np.around([0.37, 1.64], decimals=1)
+    array([0.4,  1.6])
+    >>> np.around([.5, 1.5, 2.5, 3.5, 4.5]) # rounds to nearest even value
+    array([0.,  2.,  2.,  4.,  4.])
+    >>> np.around([1,2,3,11], decimals=1) # ndarray of ints is returned
+    array([ 1,  2,  3, 11])
+    >>> np.around([1,2,3,11], decimals=-1)
+    array([ 0,  0,  0, 10])
+
+    """
+
+    if not use_origin_backend(a):
+        if not isinstance(a, dparray):
+            pass
+        else:
+            return dpnp_around(a, decimals, out)
+
+    return call_origin(numpy.around, a, decimals, out)
 
 
 def ceil(x1, **kwargs):
@@ -213,6 +254,39 @@ def ceil(x1, **kwargs):
         return dpnp_ceil(x1)
 
     return call_origin(numpy.ceil, x1, **kwargs)
+
+
+def conjugate(x1, **kwargs):
+    """
+    Return the complex conjugate, element-wise.
+
+    The complex conjugate of a complex number is obtained by changing the
+    sign of its imaginary part.
+
+    For full documentation refer to :obj:`numpy.conjugate`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.conjugate(1+2j)
+    (1-2j)
+
+    >>> x = np.eye(2) + 1j * np.eye(2)
+    >>> np.conjugate(x)
+    array([[ 1.-1.j,  0.-0.j],
+           [ 0.-0.j,  1.-1.j]])
+
+    """
+
+    is_x1_dparray = isinstance(x1, dparray)
+
+    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
+        return dpnp_conjugate(x1)
+
+    return call_origin(numpy.conjugate, x1, **kwargs)
+
+
+conj = conjugate
 
 
 def copysign(x1, x2, **kwargs):
@@ -253,6 +327,110 @@ def copysign(x1, x2, **kwargs):
     return call_origin(numpy.copysign, x1, x2, **kwargs)
 
 
+def cumprod(x1, **kwargs):
+    """
+    Return the cumulative product of elements along a given axis.
+
+    For full documentation refer to :obj:`numpy.cumprod`.
+
+    Limitations
+    -----------
+        Parameter ``x`` is supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 3])
+    >>> result = np.cumprod(a)
+    >>> [x for x in result]
+    [1, 2, 6]
+    >>> b = np.array([[1, 2, 3], [4, 5, 6]])
+    >>> result = np.cumprod(b)
+    >>> [x for x in result]
+    [1, 2, 6, 24, 120, 720]
+
+    """
+
+    if not use_origin_backend(x1) and not kwargs:
+        if not isinstance(x1, dparray):
+            pass
+        else:
+            return dpnp_cumprod(x1)
+
+    return call_origin(numpy.cumprod, x1, **kwargs)
+
+
+def cumsum(x1, **kwargs):
+    """
+    Return the cumulative sum of the elements along a given axis.
+
+    For full documentation refer to :obj:`numpy.cumsum`.
+
+    Limitations
+    -----------
+        Parameter ``x`` is supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 4])
+    >>> result = np.cumsum(a)
+    >>> [x for x in result]
+    [1, 2, 7]
+    >>> b = np.array([[1, 2, 3], [4, 5, 6]])
+    >>> result = np.cumsum(b)
+    >>> [x for x in result]
+    [1, 2, 6, 10, 15, 21]
+
+    """
+
+    if not use_origin_backend(x1) and not kwargs:
+        if not isinstance(x1, dparray):
+            pass
+        else:
+            return dpnp_cumsum(x1)
+
+    return call_origin(numpy.cumsum, x1, **kwargs)
+
+
+def diff(input, n=1, axis=-1, prepend=None, append=None):
+    """
+    Calculate the n-th discrete difference along the given axis.
+
+    For full documentation refer to :obj:`numpy.diff`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters ``axis``, ``prepend`` and ``append`` are supported only with default values.
+    Otherwise the function will be executed sequentially on CPU.
+    """
+
+    if not use_origin_backend(input):
+        if not isinstance(input, dparray):
+            pass
+        elif not isinstance(n, int):
+            pass
+        elif n < 1:
+            pass
+        elif axis != -1:
+            pass
+        elif prepend is not None:
+            pass
+        elif append is not None:
+            pass
+        else:
+            return dpnp_diff(input, n)
+
+    return call_origin(numpy.diff, input, n, axis, prepend, append)
+
+
 def divide(x1, x2, **kwargs):
     """
     Divide arguments element-wise.
@@ -289,6 +467,57 @@ def divide(x1, x2, **kwargs):
         return dpnp_divide(x1, x2)
 
     return call_origin(numpy.divide, x1, x2, **kwargs)
+
+
+def ediff1d(x1, to_end=None, to_begin=None):
+    """
+    The differences between consecutive elements of an array.
+
+    For full documentation refer to :obj:`numpy.ediff1d`.
+
+    Limitations
+    -----------
+        Parameter ``x1``, ``to_begin``, ``to_end`` are supported as :obj:`dpnp.ndarray`.
+        Otherwise the function will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    ..seealso:: :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given axis.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 4, 7, 0])
+    >>> result = np.ediff1d(a)
+    >>> [x for x in result]
+    [1, 2, 3, -7]
+    >>> result = np.ediff1d(a, to_begin=np.array([-99, -88]), to_end=np.array([88, 99]))
+    >>> [x for x in result]
+    [-99, -88, 1, 2, 3, -7, 88, 99]
+    >>> b = np.array([[1, 2, 4], [1, 6, 24]])
+    >>> result = np.ediff1d(b)
+    >>> [x for x in result]
+    [1, 2, -3, 5, 18]
+
+    """
+
+    if not use_origin_backend(x1):
+
+        if not isinstance(x1, dparray):
+            pass
+        elif not isinstance(to_end, dparray) and to_end is not None:
+            pass
+        elif not isinstance(to_begin, dparray) and to_begin is not None:
+            pass
+        else:
+
+            if to_end is None:
+                to_end = dpnp.empty(0, dtype=x1.dtype)
+            if to_begin is None:
+                to_begin = dpnp.empty(0, dtype=x1.dtype)
+
+            return dpnp_ediff1d(x1, to_end=to_end, to_begin=to_begin)
+
+    return call_origin(numpy.ediff1d, x1, to_end=to_end, to_begin=to_begin)
 
 
 def fabs(x1, **kwargs):
@@ -340,10 +569,10 @@ def floor(x1, **kwargs):
     --------
         :obj:`dpnp.ceil` : Compute  the ceiling of the input, element-wise.
         :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
-    
+
     Notes
     -----
-        Some spreadsheet programs calculate the “floor-towards-zero”, in other words floor(-2.5) == -2.
+        Some spreadsheet programs calculate the "floor-towards-zero", in other words floor(-2.5) == -2.
         dpNP instead uses the definition of floor where floor(-2.5) == -3.
 
     Examples
@@ -684,16 +913,98 @@ def multiply(x1, x2, **kwargs):
     is_x1_dparray = isinstance(x1, dparray)
     is_x2_dparray = isinstance(x2, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
-        if (x1.size != x2.size):
-            checker_throw_value_error("multiply", "size", x1.size, x2.size)
+    is_x1_scalar = dpnp.isscalar(x1)
+    is_x2_scalar = dpnp.isscalar(x2)
 
-        if (x1.shape != x2.shape):
-            checker_throw_value_error("multiply", "shape", x1.shape, x2.shape)
+    if (not use_origin_backend(x1) and (is_x1_dparray or is_x1_scalar)) and \
+            (not use_origin_backend(x2) and (is_x2_dparray or is_x2_scalar)) and \
+            not (is_x1_scalar and is_x2_scalar) and not kwargs:
 
-        return dpnp_multiply(x1, x2)
+        if is_x1_scalar:
+            return dpnp_multiply(x2, x1)
+        else:
+            if is_x1_dparray and is_x2_dparray:
+                if (x1.size == x2.size) and (x1.shape == x2.shape):
+                    return dpnp_multiply(x1, x2)
 
     return call_origin(numpy.multiply, x1, x2, **kwargs)
+
+
+def nancumprod(x1, **kwargs):
+    """
+    Return the cumulative product of array elements over a given axis treating Not a Numbers (NaNs) as one.
+
+    For full documentation refer to :obj:`numpy.nancumprod`.
+
+    Limitations
+    -----------
+        Parameter ``x`` is supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    .. seealso:: :obj:`dpnp.cumprod` : Return the cumulative product of elements along a given axis.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1., np.nan])
+    >>> result = np.nancumprod(a)
+    >>> [x for x in result]
+    [1.0, 1.0]
+    >>> b = np.array([[1., 2., np.nan], [4., np.nan, 6.]])
+    >>> result = np.nancumprod(b)
+    >>> [x for x in result]
+    [1.0, 2.0, 2.0, 8.0, 8.0, 48.0]
+
+
+    """
+
+    if not use_origin_backend(x1) and not kwargs:
+        if not isinstance(x1, dparray):
+            pass
+        else:
+            return dpnp_cumprod(x1, usenan=True)
+
+    return call_origin(numpy.nancumprod, x1, **kwargs)
+
+
+def nancumsum(x1, **kwargs):
+    """
+    Return the cumulative sum of the elements along a given axis.
+
+    For full documentation refer to :obj:`numpy.nancumsum`.
+
+    Limitations
+    -----------
+        Parameter ``x`` is supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    .. seealso:: :obj:`dpnp.cumsum` : Return the cumulative sum of the elements along a given axis.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1., np.nan])
+    >>> result = np.nancumsum(a)
+    >>> [x for x in result]
+    [1.0, 1.0]
+    >>> b = np.array([[1., 2., np.nan], [4., np.nan, 6.]])
+    >>> result = np.nancumprod(b)
+    >>> [x for x in result]
+    [1.0, 3.0, 3.0, 7.0, 7.0, 13.0]
+
+    """
+
+    if not use_origin_backend(x1) and not kwargs:
+        if not isinstance(x1, dparray):
+            pass
+        else:
+            return dpnp_cumsum(x1, usenan=True)
+
+    return call_origin(numpy.nancumsum, x1, **kwargs)
 
 
 def nanprod(x1, **kwargs):
@@ -912,6 +1223,21 @@ def remainder(x1, x2, **kwargs):
     return call_origin(numpy.remainder, x1, x2, **kwargs)
 
 
+def round_(a, decimals=0, out=None):
+    """
+    Round an array to the given number of decimals.
+
+    For full documentation refer to :obj:`numpy.round_`.
+
+    See Also
+    --------
+        :obj:`dpnp.around` : equivalent function; see for details.
+
+    """
+
+    return around(a, decimals, out)
+
+
 def sign(x1, **kwargs):
     """
     Returns an element-wise indication of the sign of a number.
@@ -1019,6 +1345,52 @@ def sum(x1, **kwargs):
         return result
 
     return call_origin(numpy.sum, x1, **kwargs)
+
+
+def trapz(y, x=None, dx=1.0, **kwargs):
+    """
+    Integrate along the given axis using the composite trapezoidal rule.
+
+    For full documentation refer to :obj:`numpy.trapz`.
+
+    Limitations
+    -----------
+        Parameters ``y1`` and ``x1`` are supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 3])
+    >>> b = np.array([4, 6, 8])
+    >>> np.trapz(a)
+    4.0
+    >>> np.trapz(a, x=b)
+    8.0
+    >>> np.trapz(a, dx=2)
+    8.0
+
+    """
+
+    if not use_origin_backend(y):
+
+        if not isinstance(y, dparray):
+            pass
+        elif not isinstance(x, dparray) and x is not None:
+            pass
+        elif x is not None and y.size != x.size:
+            pass
+        elif x is not None and y.shape != x.shape:
+            pass
+        else:
+            if x is None:
+                x = dpnp.empty(0, dtype=y.dtype)
+
+            return dpnp_trapz(y, x=x, dx=dx)
+
+    return call_origin(numpy.trapz, y, x=x, dx=dx, **kwargs)
 
 
 def true_divide(*args, **kwargs):

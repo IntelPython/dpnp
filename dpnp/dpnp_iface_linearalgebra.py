@@ -42,7 +42,7 @@ it contains:
 
 import numpy
 
-from dpnp.backend import *
+from dpnp.dpnp_algo import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 import dpnp
@@ -134,7 +134,7 @@ def einsum(*args, **kwargs):
 
 def einsum_path(*args, **kwargs):
     """
-    Evaluates the lowest cost contraction order for an einsum expression 
+    Evaluates the lowest cost contraction order for an einsum expression
     by considering the creation of intermediate arrays.
 
     For full documentation refer to :obj:`numpy.einsum_path`.
@@ -214,7 +214,7 @@ def kron(x1, x2, **kwargs):
 def outer(x1, x2, **kwargs):
     """
     Returns the outer product of two arrays.
-    
+
     For full documentation refer to :obj:`numpy.outer`.
 
     Limitations

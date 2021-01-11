@@ -179,48 +179,6 @@ def find_dpl(verbose=False):
     return dpl_include, dpl_libpath
 
 
-def _find_mathlib_in_conda_root(verbose=False):
-    """
-    Find mathlib in conda root using $CONDA_PREFIX or $PREFIX.
-
-    Parameters
-    ----------
-    verbose : bool
-        to print paths to include and library directories
-
-    Returns
-    -------
-    tuple(list(str), list(str))
-        path to include directory, path to library directory
-    """
-    conda_root_var = "PREFIX" if IS_CONDA_BUILD else "CONDA_PREFIX"
-    rel_header_paths = [os.path.join("oneapi", "mkl.h")]
-    rel_lib_paths = ["libmkl_sycl.so"]
-
-    return find_library(conda_root_var, rel_header_paths, rel_lib_paths, verbose=verbose)
-
-
-def _find_mathlib_in_mathlib_root(verbose=False):
-    """
-    Find mathlib in mathlib root using $MKLROOT.
-
-    Parameters
-    ----------
-    verbose : bool
-        to print paths to include and library directories
-
-    Returns
-    -------
-    tuple(list(str), list(str))
-        path to include directory, path to library directory
-    """
-    rel_header_paths = ["mkl.h"]
-    rel_lib_paths = ["libmkl_sycl.so"]
-    rel_libdir_path = os.path.join("lib", "intel64")
-
-    return find_library("MKLROOT", rel_header_paths, rel_lib_paths, rel_libdir_path=rel_libdir_path, verbose=verbose)
-
-
 def find_mathlib(verbose=False):
     """
     Find mathlib in conda root then in mathlib root.
@@ -236,10 +194,19 @@ def find_mathlib(verbose=False):
         path to include directory, path to library directory
     """
 
-    mathlib_include, mathlib_path = _find_mathlib_in_conda_root(verbose=verbose)
+    rel_header_paths = [os.path.join("oneapi", "mkl.hpp")]
+    rel_lib_paths = ["libmkl_sycl.so"]
 
+    # try to find library in Python environment
+    conda_root_var = "PREFIX" if IS_CONDA_BUILD else "CONDA_PREFIX"
+    mathlib_include, mathlib_path = find_library(conda_root_var, rel_header_paths, rel_lib_paths, verbose=verbose)
+
+    # otherwise, try to find library in specified directory from $MKLROOT
     if not mathlib_include or not mathlib_path:
-        mathlib_include, mathlib_path = _find_mathlib_in_mathlib_root(verbose=verbose)
+        mathlib_include, mathlib_path = find_library("MKLROOT", rel_header_paths, rel_lib_paths,
+                                                     rel_include_path=os.path.join("include"),
+                                                     rel_libdir_path=os.path.join("lib", "intel64"),
+                                                     verbose=verbose)
 
     if not mathlib_include or not mathlib_path:
         raise EnvironmentError("DPNP: Unable to find math library")

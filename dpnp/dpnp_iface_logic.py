@@ -43,7 +43,7 @@ it contains:
 import numpy
 import dpnp
 
-from dpnp.backend import *
+from dpnp.dpnp_algo import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 
@@ -219,27 +219,23 @@ def equal(x1, x2):
     [True, True, False]
 
     """
+    if not use_origin_backend(x1):
+        if not isinstance(x1, dparray):
+            pass
+        elif isinstance(x2, int):
+            return dpnp_equal(x1, x2)
+        elif not isinstance(x2, dparray):
+            pass
+        elif x1.size != x2.size:
+            pass
+        elif x1.dtype != x2.dtype:
+            pass
+        elif x1.shape != x2.shape:
+            pass
+        else:
+            return dpnp_equal(x1, x2)
 
-    if (use_origin_backend(x1)):
-        return numpy.equal(x1, x2)
-
-    if isinstance(x1, dparray) and isinstance(x2, int):  # hack to satisfy current test system requirements
-        return dpnp_equal(x1, x2)
-
-    for input in (x1, x2):
-        if not isinstance(input, dparray):
-            raise TypeError(f"DPNP equal(): Unsupported input={type(input)}")
-
-    if x1.size != x2.size:
-        utils.checker_throw_value_error("equal", "array sizes", x1.size, x2.size)
-
-    if not x1.dtype == x2.dtype:
-        raise TypeError(f"DPNP equal(): Input types must be equal ({x1.dtype} != {x2.dtype})")
-
-    if x1.shape != x2.shape:
-        utils.checker_throw_value_error("equal", "array shapes", x1.shape, x2.shape)
-
-    return dpnp_equal(x1, x2)
+    return call_origin(numpy.equal, x1, x2)
 
 
 def greater(x1, x2):

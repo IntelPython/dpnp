@@ -21,9 +21,9 @@ NumPy-compatible API in DPNP is based on `NumPy <https://numpy.org/>`_ 1.18+.
 Installing DPNP from conda-forge
 --------------------------------
 
-You can install DPNP with Conda/Anaconda from the ``intel/label/oneapibeta`` channel::
+You can install DPNP with Conda/Anaconda from the ``intel`` channel::
 
-    $ conda install -c intel/label/oneapibeta dpnp
+    $ conda install -c intel dpnp
 
 .. _install_dpnp_from_source:
 

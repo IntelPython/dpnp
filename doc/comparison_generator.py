@@ -88,16 +88,36 @@ def section(header, base_mod, ref_mods, base_type, ref_types, cls=None):
 
 
 def generate():
-    base_mod, base_type = 'numpy', 'NumPy'
+    ref_mods = []
+    ref_types = []
+    ref_vers = []
+
+    try:
+        import dpnp
+        ref_mods += ['dpnp']
+        ref_types += ['DPNP']
+        ref_vers = ['DPNP(v{})'.format(dpnp.__version__)]
+    except ImportError as err:
+        print(f"DOCBUILD: Can't load DPNP module with error={err}")
 
     try:
         import cupy
-        ref_mods, ref_types = ['cupy', 'dpnp'], ['CuPy', 'DPNP']
-    except ImportError:
-        ref_mods, ref_types = ['dpnp'], ['DPNP']
+        ref_mods += ['cupy']
+        ref_types += ['CuPy']
+        ref_vers += ['CuPy(v{})'.format(cupy.__version__)]
+    except ImportError as err:
+        print(f"DOCBUILD: Can't load CuPy module with error={err}")
 
-    header = ' / '.join([base_type] + ref_types) + ' APIs'
-    buf = [header, '-' * len(header), '']
+    try:
+        import numpy
+        base_mod = 'numpy'  # TODO: Why string?
+        base_type = 'NumPy'
+        base_ver = '{}(v{})'.format(base_type, numpy.__version__)
+    except ImportError as err:
+        print(f"DOCBUILD: Can't load {base_type} module with error={err}")
+
+    header = ' / '.join([base_ver] + ref_vers) + ' APIs'
+    buf = ['**{}**'.format(header), '']
 
     buf += section(
         'Module-Level',

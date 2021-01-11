@@ -42,7 +42,7 @@ it contains:
 
 import numpy
 
-from dpnp.backend import *
+from dpnp.dpnp_algo import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 
@@ -514,14 +514,13 @@ def exp(x1):
     [1.0, 2.718281828, 7.389056099]
 
     """
+    if use_origin_backend(x1):
+        if not isinstance(x1, dparray):
+            pass
+        else:
+            dpnp_exp(x1)
 
-    if (use_origin_backend(x1)):
-        return numpy.exp(x1)
-
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP exp(): Unsupported x1={type(x1)}")
-
-    return dpnp_exp(x1)
+    return call_origin(numpy.exp, x1)
 
 
 def exp2(x1):
@@ -593,7 +592,7 @@ def expm1(x1):
 
 def hypot(x1, x2, out=None):
     """
-    Given the “legs” of a right triangle, return its hypotenuse.
+    Given the "legs" of a right triangle, return its hypotenuse.
 
     For full documentation refer to :obj:`numpy.hypot`.
 
@@ -663,14 +662,13 @@ def log(x1):
     [0.0, 1.0, 2.0, -inf]
 
     """
+    if use_origin_backend(x1):
+        if not isinstance(x1, dparray):
+            pass
+        else:
+            dpnp_log(x1)
 
-    if (use_origin_backend(x1)):
-        return numpy.log(x1)
-
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP log(): Unsupported x1={type(x1)}")
-
-    return dpnp_log(x1)
+    return call_origin(numpy.log, x1)
 
 
 def log10(x1):

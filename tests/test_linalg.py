@@ -44,20 +44,23 @@ def test_cond(arr, p):
     numpy.testing.assert_array_equal(expected, result)
 
 
-def test_det():
-    arrays = [
-        [[0, 0], [0, 0]],
-        [[1, 2], [1, 2]],
-        [[1, 2], [3, 4]],
-        [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]],
-        [[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]
-    ]
-    for array in arrays:
-        a = numpy.array(array)
-        ia = inp.array(a)
-        result = inp.linalg.det(ia)
-        expected = numpy.linalg.det(a)
-        numpy.testing.assert_allclose(expected, result)
+@pytest.mark.parametrize("array",
+                         [[[0, 0], [0, 0]],
+                          [[1, 2], [1, 2]],
+                          [[1, 2], [3, 4]],
+                          [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]],
+                          [[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]],
+                         ids=['[[0, 0], [0, 0]]',
+                              '[[1, 2], [1, 2]]',
+                              '[[1, 2], [3, 4]]',
+                              '[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]',
+                              '[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]'])
+def test_det(array):
+    a = numpy.array(array)
+    ia = inp.array(a)
+    result = inp.linalg.det(ia)
+    expected = numpy.linalg.det(a)
+    numpy.testing.assert_allclose(expected, result)
 
 
 @pytest.mark.parametrize("type",
@@ -110,6 +113,20 @@ def test_eigvals():
         result = inp.linalg.eigvals(ia)
         expected = numpy.linalg.eigvals(a)
         numpy.testing.assert_allclose(expected, result, atol=0.5)
+
+
+@pytest.mark.parametrize("type",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("array",
+                         [[[1., 2.], [3., 4.]], [[0, 1, 2], [3, 2, -1], [4, -2, 3]]],
+                         ids=['[[1., 2.], [3., 4.]]', '[[0, 1, 2], [3, 2, -1], [4, -2, 3]]'])
+def test_inv(type, array):
+    a = numpy.array(array, dtype=type)
+    ia = inp.array(a)
+    result = inp.linalg.inv(ia)
+    expected = numpy.linalg.inv(a)
+    numpy.testing.assert_allclose(expected, result)
 
 
 def test_matrix_rank():
