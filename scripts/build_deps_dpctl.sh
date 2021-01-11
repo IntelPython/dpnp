@@ -3,7 +3,7 @@
 THEDIR=$(dirname $(readlink -e ${BASH_SOURCE[0]}))
 
 DPCTL_TARGET_VERSION=0.5.0rc2
-echo +++++++++++++++++++++++++ Build DPCTL ${DPCTL_TARGET_VERSION} +++++++++++++++++++++++++++
+echo ++++++++++++++++++ Build DPCTL ${DPCTL_TARGET_VERSION} +++++++++++++++++++
 git clone --branch ${DPCTL_TARGET_VERSION} https://github.com/IntelPython/dpctl.git 
 
 cd dpctl
@@ -21,13 +21,12 @@ conda build conda-recipe/ --no-test -c ${ONEAPI_ROOT}/conda_channel
 
 conda install /opt/intel/oneapi/intelpython/latest/conda-bld/linux-64/dpctl*
 
+echo ==================== delete DPCTL build tree==============================
+cd ..
+rm -rf dpctl
+
 echo ========================= DPCTL version ==================================
 python -c "import dpctl as sw; print(f\"sw.__version__={sw.__version__}\nsw.get_include={sw.get_include()}\")"
 
-echo ========================= where DPCTL ===============================
+echo ========================= where DPCTL ====================================
 find /opt/intel -name libDPCTLSyclInterface.so
-echo ========================= where mkl_sycl ===============================
-find /opt/intel -name libmkl_sycl.so
-
-cd ..
-rm -rf dpctl

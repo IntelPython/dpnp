@@ -108,8 +108,8 @@ Extra defined commands for the build system
 TODO: spell check, valgrind, code coverage
 """
 dpnp_build_commands = {'style': source_style,
-                       # 'build_clib': custom_build_cmake_clib,
-                       'build_clib': custom_build_clib,
+                       'build_clib': custom_build_cmake_clib,
+                       # 'build_clib': custom_build_clib,
                        'clean': source_clean
                        }
 

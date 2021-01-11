@@ -51,6 +51,7 @@ endif()
 option(DPNP_STATIC_LIB_ENABLE "Enable build DPNP static library" FALSE)
 option(DPNP_DEBUG_ENABLE "Enable output for DPNP_DEBUG statements" FALSE)
 option(DPNP_INSTALL_STRUCTURED "if FALSE, install package files into same directory" TRUE)
+option(DPNP_SYCL_QUEUE_MGR_ENABLE "Use external manager for SYCL queue" FALSE)
 
 message(STATUS "CMAKE_VERSION:                   ${CMAKE_VERSION}")
 message(STATUS "CMAKE_GENERATOR:                 ${CMAKE_GENERATOR}")
@@ -59,6 +60,9 @@ message(STATUS "DPNP_ONEAPI_ROOT:                ${DPNP_ONEAPI_ROOT}")
 message(STATUS "DPNP_STATIC_LIB_ENABLE:          ${DPNP_STATIC_LIB_ENABLE}")
 message(STATUS "DPNP_DEBUG_ENABLE:               ${DPNP_DEBUG_ENABLE}")
 message(STATUS "DPNP_INSTALL_STRUCTURED:         ${DPNP_INSTALL_STRUCTURED}")
+message(STATUS "DPNP_SYCL_QUEUE_MGR_ENABLE:      ${DPNP_SYCL_QUEUE_MGR_ENABLE}")
+message(STATUS " |- DPNP_QUEUEMGR_INCLUDE_DIR:   ${DPNP_QUEUEMGR_INCLUDE_DIR}")
+message(STATUS " |- DPNP_QUEUEMGR_LIB_DIR:       ${DPNP_QUEUEMGR_LIB_DIR}")
 
 # -----------------------------------------------------------------------------------------------
 # Compiler-specific logic...
@@ -193,7 +197,7 @@ if(UNIX)
 # Link Line Advisor v6.13
 # -DMKL_ILP64 -I"${MKLROOT}/include"
 # -lmkl_sycl -lmkl_intel_ilp64 -lmkl_sequential -lmkl_core -lsycl -lOpenCL -lpthread -lm -ldl
-  set(DPNP_DEP_LIBS
+  set(DPNP_MATHLIB_DEP_LIBS
       mkl_rt
       mkl_sycl
       mkl_intel_ilp64
@@ -209,7 +213,7 @@ elseif(WIN32)
 # Link Line Advisor v6.13
 # -DMKL_ILP64 -I"%MKLROOT%\include"
 # mkl_sycl_dll.lib mkl_intel_ilp64_dll.lib mkl_sequential_dll.lib mkl_core_dll.lib sycl.lib OpenCL.lib
-  set(DPNP_DEP_LIBS
+  set(DPNP_MATHLIB_DEP_LIBS
       mkl_rt
       mkl_sycl        # _dll
       mkl_intel_ilp64 # _dll
@@ -222,7 +226,7 @@ else()
   message(FATAL_ERROR "Unsupported system ${CMAKE_SYSTEM} in MathLib libraries set")
 endif()
 
-target_link_libraries(dpnp_backend_c PUBLIC ${DPNP_DEP_LIBS})
+target_link_libraries(dpnp_backend_c PUBLIC ${DPNP_MATHLIB_DEP_LIBS})
 
 # Parallel STL from DPC++
 if(NOT WIN32)
@@ -231,7 +235,19 @@ if(NOT WIN32)
 endif()
 
 # SYCL queue manager
-add_definitions(-DDPNP_LOCAL_QUEUE=1)
+if(DPNP_SYCL_QUEUE_MGR_ENABLE)
+    target_include_directories(dpnp_backend_c PUBLIC ${DPNP_QUEUEMGR_INCLUDE_DIR})
+    target_link_directories(dpnp_backend_c PUBLIC ${DPNP_QUEUEMGR_LIB_DIR}) 
+    target_link_libraries(dpnp_backend_c PUBLIC "DPCTLSyclInterface")
+
+    # not sure but add runpath
+    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_RPATH}:${DPNP_QUEUEMGR_LIB_DIR}")
+    
+    # disable stripping rpath in installation logic
+    set_target_properties(dpnp_backend_c PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+else()
+    add_definitions(-DDPNP_LOCAL_QUEUE=1)
+endif()
 
 # -----------------------------------------------------------------------------------------------
 # Installation logic...
