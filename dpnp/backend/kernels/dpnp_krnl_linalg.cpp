@@ -176,6 +176,104 @@ void dpnp_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
 }
 
 template <typename _DataType>
+class dpnp_inv_c_kernel;
+
+template <typename _DataType>
+void dpnp_inv_c(void* array1_in, void* result1, size_t* shape)
+{
+    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    size_t n = shape[0];
+
+    _DataType a_arr[n][n];
+    _DataType e_arr[n][n];
+
+    for (size_t i=0; i < n; i++)
+    {
+        for (size_t j=0; j<n; j++)
+        {
+            a_arr[i][j] = array_1[i * n + j];
+            if (i==j)
+            {
+                e_arr[i][j] = 1;
+            }
+            else
+            {
+                e_arr[i][j] = 0;
+            }
+        }
+    }
+
+    for (size_t k=0; k < n; k++)
+    {
+        if (a_arr[k][k] == 0)
+        {
+            for (size_t i=k; i<n; i++)
+            {
+                if (a_arr[i][k] != 0)
+                {
+                    for (size_t j=0; j<n; j++)
+                    {
+                        float c = a_arr[k][j];
+                        a_arr[k][j] = a_arr[i][j];
+                        a_arr[i][j] = c;
+                        float c_e = e_arr[k][j];
+                        e_arr[k][j] = e_arr[i][j];
+                        e_arr[i][j] = c_e;
+                    }
+                    break;
+                }
+            }
+        }
+
+        float temp = a_arr[k][k];
+
+        for (size_t j=0; j<n; j++)
+        {
+            a_arr[k][j] = a_arr[k][j] / temp;
+            e_arr[k][j] = e_arr[k][j] / temp;
+        }
+
+        for (size_t i=k+1; i<n; i++)
+        {
+            temp = a_arr[i][k];
+            for (size_t j=0; j<n; j++)
+            {
+                a_arr[i][j] = a_arr[i][j] - a_arr[k][j] * temp;
+                e_arr[i][j] = e_arr[i][j] - e_arr[k][j] * temp;
+            }
+        }
+    }
+
+    for (size_t k=0; k<n-1; k++)
+    {
+        size_t ind_k = n - 1 - k;
+        for (size_t i=0; i<ind_k; i++)
+        {
+            size_t ind_i = ind_k - 1 - i;
+
+            float temp = a_arr[ind_i][ind_k];
+            for (size_t j=0; j<n; j++)
+            {
+                a_arr[ind_i][j] = a_arr[ind_i][j] - a_arr[ind_k][j] * temp;
+                e_arr[ind_i][j] = e_arr[ind_i][j] - e_arr[ind_k][j] * temp;
+            }
+        }
+    }
+
+    for (size_t i=0; i < n; i++)
+    {
+        for (size_t j=0; j<n; j++)
+        {
+            result[i * n + j] = e_arr[i][j];
+        }
+    }
+
+    return;
+}
+
+template <typename _DataType>
 class dpnp_matrix_rank_c_kernel;
 
 template <typename _DataType>
@@ -221,6 +319,11 @@ void func_map_init_linalg_func(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_DET][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_det_c<long>};
     fmap[DPNPFuncName::DPNP_FN_DET][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_det_c<float>};
     fmap[DPNPFuncName::DPNP_FN_DET][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_det_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_INV][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_inv_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_INV][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_inv_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_INV][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_inv_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_INV][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_inv_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_matrix_rank_c<int>};
     fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_matrix_rank_c<long>};

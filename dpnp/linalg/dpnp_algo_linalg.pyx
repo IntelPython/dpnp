@@ -143,50 +143,20 @@ cpdef dparray dpnp_eigvals(dparray input):
     return res_val
 
 
-cpdef dparray dpnp_inv(dparray input):
-    cpdef size_t n = input.shape[0]
+cpdef dparray dpnp_inv(dparray input_):
+    cdef dparray input = input_.astype(dpnp.float64)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
-    # TODO: replace with dpnp.eye(n) when it will be implemented
-    e_arr = dpnp.diag(dpnp.full((n,), 1, dtype=dpnp.float64))
-    a_arr = input.astype(dpnp.float64)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_INV, param1_type, param1_type)
 
-    for k in range(n):
-        if a_arr[k, k] == 0:
-            for i in range(k, n):
-                if a_arr[i, k] != 0:
-                    for j in range(n):
-                        c = a_arr[k, j]
-                        a_arr[k, j] = a_arr[i, j]
-                        a_arr[i, j] = c
-                        c_e = e_arr[k, j]
-                        e_arr[k, j] = e_arr[i, j]
-                        e_arr[i, j] = c_e
-                    break
+    cdef dparray result = dparray(input.size, dtype=dpnp.float64)
 
-        temp = a_arr[k, k]
+    cdef custom_linalg_1in_1out_func_ptr_t_ func = <custom_linalg_1in_1out_func_ptr_t_ > kernel_data.ptr
 
-        for j in range(n):
-            a_arr[k, j] = a_arr[k, j] / temp
-            e_arr[k, j] = e_arr[k, j] / temp
+    func(input.get_data(), result.get_data(), < size_t * > input._dparray_shape.data())
 
-        for i in range(k + 1, n):
-            temp = a_arr[i, k]
-
-            for j in range(n):
-                a_arr[i, j] = a_arr[i, j] - a_arr[k, j] * temp
-                e_arr[i, j] = e_arr[i, j] - e_arr[k, j] * temp
-
-    for k in range(n - 1):
-        ind_k = n - 1 - k
-        for i in range(ind_k):
-            ind_i = ind_k - 1 - i
-
-            temp = a_arr[ind_i, ind_k]
-            for j in range(n):
-                a_arr[ind_i, j] = a_arr[ind_i, j] - a_arr[ind_k, j] * temp
-                e_arr[ind_i, j] = e_arr[ind_i, j] - e_arr[ind_k, j] * temp
-
-    return e_arr
+    dpnp_result = result.reshape(input.shape)
+    return dpnp_result
 
 
 cpdef dparray dpnp_matrix_rank(dparray input):
