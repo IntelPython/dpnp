@@ -136,13 +136,14 @@ jobs:
     vmImage: 'windows-2019' # 'vs2017-win2016'
   steps:
   - script: |
-      call scripts/install_system_deps_win.bat
-      call scripts/install_cmake_win.bat
+      call scripts\install_system_deps_win.bat
+      call scripts\install_cmake_win.bat
 
       echo ========================= Intel OneAPI setvars ===============================
       call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019
-
-      call scripts/build_deps_dpctl_win.bat
+      
+      call scripts\install_python_deps.sh
+      call scripts\build_deps_dpctl_win.bat
       echo =================== build DPNP bdist_wheel package ===========================
       :: cmake -G Ninja ..
       :: cmake --build . --target install -- -v
