@@ -83,8 +83,8 @@ cpdef dparray dpnp_cond(dparray input, p):
     if p in ('f', 'fro'):
         input = input.ravel(order='K')
         sqnorm = dpnp.dot(input, input)
-        ret = dpnp.sqrt(sqnorm)
-        return dpnp.array([ret])
+        res = dpnp.sqrt(sqnorm)
+        ret = dpnp.array([res])
     elif p == numpy.inf:
         dpnp_sum_val = dpnp.array([dpnp.sum(dpnp.abs(input), axis=1)])
         ret = dpnp.array([dpnp_sum_val.max()])
