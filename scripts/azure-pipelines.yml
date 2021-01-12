@@ -144,7 +144,7 @@ jobs:
       
       echo =================== conda install conda-build ===========================
       :: call scripts\install_python_deps.sh
-      conda install -y conda-build numpy cython pytest hypothesis
+      conda install -y conda-build -c "%ONEAPI_ROOT%\conda_channel"
 
       call scripts\build_deps_dpctl_win.bat
       echo =================== build DPNP bdist_wheel package ===========================
