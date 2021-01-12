@@ -179,7 +179,7 @@ template <typename _DataType>
 class dpnp_inv_c_kernel;
 
 template <typename _DataType>
-void dpnp_inv_c(void* array1_in, void* result1, size_t* shape)
+void dpnp_inv_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
 {
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
@@ -189,12 +189,12 @@ void dpnp_inv_c(void* array1_in, void* result1, size_t* shape)
     _DataType a_arr[n][n];
     _DataType e_arr[n][n];
 
-    for (size_t i=0; i < n; i++)
+    for (size_t i = 0; i < n; ++i)
     {
-        for (size_t j=0; j<n; j++)
+        for (size_t j = 0; j < n; ++j)
         {
             a_arr[i][j] = array_1[i * n + j];
-            if (i==j)
+            if (i == j)
             {
                 e_arr[i][j] = 1;
             }
@@ -205,15 +205,15 @@ void dpnp_inv_c(void* array1_in, void* result1, size_t* shape)
         }
     }
 
-    for (size_t k=0; k < n; k++)
+    for (size_t k = 0; k < n; ++k)
     {
         if (a_arr[k][k] == 0)
         {
-            for (size_t i=k; i<n; i++)
+            for (size_t i = k; i < n; ++i)
             {
                 if (a_arr[i][k] != 0)
                 {
-                    for (size_t j=0; j<n; j++)
+                    for (size_t j = 0; j < n; ++j)
                     {
                         float c = a_arr[k][j];
                         a_arr[k][j] = a_arr[i][j];
@@ -229,16 +229,16 @@ void dpnp_inv_c(void* array1_in, void* result1, size_t* shape)
 
         float temp = a_arr[k][k];
 
-        for (size_t j=0; j<n; j++)
+        for (size_t j = 0; j < n; ++j)
         {
             a_arr[k][j] = a_arr[k][j] / temp;
             e_arr[k][j] = e_arr[k][j] / temp;
         }
 
-        for (size_t i=k+1; i<n; i++)
+        for (size_t i = k + 1; i < n; ++i)
         {
             temp = a_arr[i][k];
-            for (size_t j=0; j<n; j++)
+            for (size_t j = 0; j < n; j++)
             {
                 a_arr[i][j] = a_arr[i][j] - a_arr[k][j] * temp;
                 e_arr[i][j] = e_arr[i][j] - e_arr[k][j] * temp;
@@ -246,15 +246,15 @@ void dpnp_inv_c(void* array1_in, void* result1, size_t* shape)
         }
     }
 
-    for (size_t k=0; k<n-1; k++)
+    for (size_t k = 0; k < n - 1; ++k)
     {
         size_t ind_k = n - 1 - k;
-        for (size_t i=0; i<ind_k; i++)
+        for (size_t i = 0; i < ind_k; ++i)
         {
             size_t ind_i = ind_k - 1 - i;
 
             float temp = a_arr[ind_i][ind_k];
-            for (size_t j=0; j<n; j++)
+            for (size_t j = 0; j < n; ++j)
             {
                 a_arr[ind_i][j] = a_arr[ind_i][j] - a_arr[ind_k][j] * temp;
                 e_arr[ind_i][j] = e_arr[ind_i][j] - e_arr[ind_k][j] * temp;
@@ -262,9 +262,9 @@ void dpnp_inv_c(void* array1_in, void* result1, size_t* shape)
         }
     }
 
-    for (size_t i=0; i < n; i++)
+    for (size_t i = 0; i < n; ++i)
     {
-        for (size_t j=0; j<n; j++)
+        for (size_t j = 0; j < n; ++j)
         {
             result[i * n + j] = e_arr[i][j];
         }

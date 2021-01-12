@@ -175,9 +175,9 @@ cpdef dparray dpnp_inv(dparray input_):
 
     cdef dparray result = dparray(input.size, dtype=dpnp.float64)
 
-    cdef custom_linalg_1in_1out_func_ptr_t_ func = <custom_linalg_1in_1out_func_ptr_t_ > kernel_data.ptr
+    cdef custom_linalg_1in_1out_func_ptr_t func = <custom_linalg_1in_1out_func_ptr_t > kernel_data.ptr
 
-    func(input.get_data(), result.get_data(), < size_t * > input._dparray_shape.data())
+    func(input.get_data(), result.get_data(), < size_t * > input._dparray_shape.data(), input.ndim)
 
     dpnp_result = result.reshape(input.shape)
     return dpnp_result

@@ -330,7 +330,7 @@ INP_DLLEXPORT void dpnp_det_c(void* array1_in, void* result1, size_t* shape, siz
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_inv_c(void* array1_in, void* result1, size_t* shape);
+INP_DLLEXPORT void dpnp_inv_c(void* array1_in, void* result1, size_t* shape, size_t ndim);
 
 /**
  * @ingroup BACKEND_API
