@@ -556,6 +556,7 @@ tests/test_pocketfft.py::TestFFT1D::test_axes[fftn]
 tests/test_pocketfft.py::TestFFT1D::test_axes[ifftn]
 tests/test_pocketfft.py::TestFFT1D::test_axes[rfftn]
 tests/test_pocketfft.py::TestFFT1D::test_all_1d_norm_preserving
+tests/test_randomstate_regression.py::TestRegression::test_logseries_convergence
 tests/test_regression.py::TestRegression::test_0d_string_scalar
 tests/test_regression.py::TestRegression::test_add_identity
 tests/test_regression.py::TestRegression::test_alignment_update
@@ -638,6 +639,7 @@ tests/test_regression.py::TestRegression::test_lexsort_zerolen_custom_strides
 tests/test_regression.py::TestRegression::test_lexsort_zerolen_custom_strides_2d
 tests/test_regression.py::TestRegression::test_lexsort_zerolen_element
 tests/test_regression.py::TestRegression::test_log1p_compiler_shenanigans
+tests/test_regression.py::TestRegression::test_logseries_convergence
 tests/test_regression.py::TestRegression::test_mem_0d_array_index
 tests/test_regression.py::TestRegression::test_mem_around
 tests/test_regression.py::TestRegression::test_mem_array_creation_invalid_specification

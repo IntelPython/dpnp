@@ -293,6 +293,7 @@ NUMPY_TESTS = [
     # https://github.com/numpy/numpy/blob/d7a75e8e8fefc433cf6e5305807d5f3180954273/numpy/linalg/tests/test_linalg.py#L293
     # 'linalg/tests/test_linalg.py',
     'linalg/tests/test_regression.py',
+    'random',
 ]
 NUMPY_NOT_FOUND = 3
 TESTS_EXT_PATH = Path(__file__).parents[1]
