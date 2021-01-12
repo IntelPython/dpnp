@@ -52,6 +52,7 @@ __all__ = [
     "diag_indices",
     "diag_indices_from",
     "diagonal",
+    "fill_diagonal",
     "nonzero",
     "put",
     "tril_indices",
@@ -183,6 +184,35 @@ def diagonal(input, offset=0, axis1=0, axis2=1):
             return dpnp_diagonal(input, offset)
 
     return call_origin(numpy.diagonal, input, offset, axis1, axis2)
+
+
+def fill_diagonal(input, val, wrap=False):
+    """
+    Fill the main diagonal of the given array of any dimensionality.
+
+    For full documentation refer to :obj:`numpy.fill_diagonal`.
+
+    Limitations
+    -----------
+    Parameter ``wrap`` is supported only with default values.
+
+    See Also
+    --------
+    :obj:`dpnp.diag_indices` : Return the indices to access the main diagonal of an array.
+    :obj:`dpnp.diag_indices_from` : Return the indices to access the main diagonal of an n-dimensional array.
+    """
+
+    if not use_origin_backend(input):
+        if not isinstance(input, dparray):
+            pass
+        elif not dpnp.isscalar(val):
+            pass
+        elif not wrap:
+            pass
+        else:
+            return dpnp_fill_diagonal(input, val)
+
+    return call_origin(numpy.fill_diagonal, input, val, wrap)
 
 
 def nonzero(a):
