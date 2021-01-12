@@ -406,6 +406,10 @@ Functions</h2></td></tr>
 <tr class="memitem:gacae5a64647bf0415e3aacad5544d0753"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gacae5a64647bf0415e3aacad5544d0753">dpnp_det_c</a> (void *array1_in, void *result1, size_t *shape, size_t ndim)</td></tr>
 <tr class="memdesc:gacae5a64647bf0415e3aacad5544d0753"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of det function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gacae5a64647bf0415e3aacad5544d0753">More...</a><br /></td></tr>
 <tr class="separator:gacae5a64647bf0415e3aacad5544d0753"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4fbe904ef278f65b77ae23e17a8651d9"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
+<tr class="memitem:ga4fbe904ef278f65b77ae23e17a8651d9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga4fbe904ef278f65b77ae23e17a8651d9">dpnp_inv_c</a> (void *array1_in, void *result1, size_t *shape, size_t ndim)</td></tr>
+<tr class="memdesc:ga4fbe904ef278f65b77ae23e17a8651d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of inv function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga4fbe904ef278f65b77ae23e17a8651d9">More...</a><br /></td></tr>
+<tr class="separator:ga4fbe904ef278f65b77ae23e17a8651d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga5567dc424276574ab4a302e38faf4a8b"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:ga5567dc424276574ab4a302e38faf4a8b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga5567dc424276574ab4a302e38faf4a8b">dpnp_matrix_rank_c</a> (void *array1_in, void *result1, size_t *shape, size_t ndim)</td></tr>
 <tr class="memdesc:ga5567dc424276574ab4a302e38faf4a8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of matrix_rank function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga5567dc424276574ab4a302e38faf4a8b">More...</a><br /></td></tr>
@@ -2760,6 +2764,59 @@ template&lt;typename _DataType_input1 , typename _DataType_input2 , typename _Da
  </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in the output array. <br  />
  </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga4fbe904ef278f65b77ae23e17a8651d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga4fbe904ef278f65b77ae23e17a8651d9">&#9670;&nbsp;</a></span>dpnp_inv_c()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename _DataType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void dpnp_inv_c </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>array1_in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>result1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>shape</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>ndim</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>math library implementation of inv function </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">array</td><td>Input array with data.</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">shape</td><td>Shape of input array.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ndim</td><td>Number of elements in shape. </td></tr>
   </table>
   </dd>
 </dl>
