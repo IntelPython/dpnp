@@ -207,7 +207,7 @@ def fill_diagonal(input, val, wrap=False):
             pass
         elif not dpnp.isscalar(val):
             pass
-        elif not wrap:
+        elif wrap:
             pass
         else:
             return dpnp_fill_diagonal(input, val)
