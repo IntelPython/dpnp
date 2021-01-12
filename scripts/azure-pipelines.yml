@@ -142,7 +142,10 @@ jobs:
       echo ========================= Intel OneAPI setvars ===============================
       call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019
       
-      call scripts\install_python_deps.sh
+      echo =================== conda install conda-build ===========================
+      :: call scripts\install_python_deps.sh
+      conda install -y conda-build numpy cython pytest hypothesis
+
       call scripts\build_deps_dpctl_win.bat
       echo =================== build DPNP bdist_wheel package ===========================
       :: cmake -G Ninja ..
