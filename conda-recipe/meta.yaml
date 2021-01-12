@@ -36,11 +36,13 @@ test:
     source_files:
         - examples
         - tests
+        - tests_external
         - setup.cfg
     commands:
       - python -c "import dpnp"
       - conda list
       - pytest
+      - python -m tests_external.numpy.runtests
 
 about:
     home: https://github.com/IntelPython/dpnp
