@@ -197,13 +197,12 @@ jobs:
     displayName: conda_build_dpnp_dpctl_lin
 
 - job: make_backend_lin
-  displayName: cmake_lin
+  displayName: cmake_3_16_3_lin
   pool:
     vmImage: 'ubuntu-20.04'
   steps:
   - bash: |
       ./scripts/install_system_deps.sh
-      # . ./scripts/install_cmake_lin.sh
       echo ========================= install cmake 3.16.3 ===============================
       curl --output cmake_webimage.tar.gz \
         --url https://cmake.org/files/v3.16/cmake-3.16.3-Linux-x86_64.tar.gz \
