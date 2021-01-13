@@ -40,6 +40,8 @@ it contains:
 """
 
 
+import collections
+
 import numpy
 
 from dpnp.dpnp_algo import *
@@ -245,7 +247,7 @@ def place(arr, mask, vals):
     Limitations
     -----------
     Input arrays ``arr`` and ``mask``  are supported as :obj:`dpnp.ndarray`.
-    Parameter ``vals`` is 1-D sequence.
+    Parameter ``vals`` is supported as 1-D sequence.
     """
 
     if not use_origin_backend(arr):
@@ -253,7 +255,7 @@ def place(arr, mask, vals):
             pass
         elif not isinstance(mask, dparray):
             pass
-        elif dpnp.isscalar(vals):
+        elif not isinstance(vals, collections.Sequence):
             pass
         else:
             return dpnp_place(arr, mask, vals)
