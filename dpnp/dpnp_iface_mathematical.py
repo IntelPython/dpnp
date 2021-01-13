@@ -338,11 +338,11 @@ def cross(x1, x2, **kwargs):
     -----------
         Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
         Keyword arguments ``kwargs`` are currently unsupported.
-        Otherwise the functions will be executed sequentially on CPU.
-        Input array data types are limited by supported DPNP :ref:`Data types`.
         Sizes of input arrays are limited by ``x1.size == 3 and x2.size == 3``.
         Shapes of input arrays are limited by ``x1.shape == (3,) and x2.shape == (3,)``.
-    
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
     Examples
     --------
     >>> import dpnp as np
