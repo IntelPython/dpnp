@@ -1137,8 +1137,8 @@ def negative(x1, **kwargs):
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
-        return dpnp_negative(x1, x2)
+    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
+        return dpnp_negative(x1)
 
     return call_origin(numpy.negative, x1, **kwargs)
 
