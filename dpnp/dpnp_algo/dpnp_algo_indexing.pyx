@@ -44,6 +44,7 @@ __all__ += [
     "dpnp_fill_diagonal",
     "dpnp_nonzero",
     "dpnp_put",
+    "dpnp_take",
     "dpnp_tril_indices",
     "dpnp_tril_indices_from",
     "dpnp_triu_indices",
@@ -176,6 +177,16 @@ cpdef dpnp_put(input, ind, v):
             if i == ind:
                 input[i] = v
                 in_ind = 1
+
+
+cpdef dparray dpnp_take(dparray input, dparray indices):
+    indices_size = indices.size
+    res_array = dparray(indices_size, dtype=input.dtype)
+    for i in range(indices_size):
+        ind = indices[i]
+        res_array[i] = input[ind]
+    result = res_array.reshape(indices.shape)
+    return result
 
 
 cpdef tuple dpnp_tril_indices(n, k=0, m=None):

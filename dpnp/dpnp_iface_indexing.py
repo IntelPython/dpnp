@@ -55,6 +55,7 @@ __all__ = [
     "fill_diagonal",
     "nonzero",
     "put",
+    "take",
     "tril_indices",
     "tril_indices_from",
     "triu_indices",
@@ -290,6 +291,40 @@ def put(input, ind, v, mode='raise'):
             return dpnp_put(input, ind, v)
 
     return call_origin(numpy.put, input, ind, v, mode)
+
+
+def take(input, indices, axis=None, out=None, mode='raise'):
+    """
+    Take elements from an array.
+    For full documentation refer to :obj:`numpy.take`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters ``axis``, ``out`` and ``mode`` are supported only with default values.
+    Parameter ``indices`` is supported as :obj:`dpnp.ndarray`.
+
+    See Also
+    --------
+    :obj:`dpnp.compress` : Take elements using a boolean mask.
+    :obj:`take_along_axis` : Take elements by matching the array and the index arrays.
+    """
+
+    if not use_origin_backend(input):
+        if not isinstance(input, dparray):
+            pass
+        elif not isinstance(indices, dparray):
+            pass
+        elif axis is not None:
+            pass
+        elif out is not None:
+            pass
+        elif mode != 'raise':
+            pass
+        else:
+            return dpnp_take(input, indices)
+
+    return call_origin(numpy.take, input, indices, axis, out, mode)
 
 
 def tril_indices(n, k=0, m=None):
