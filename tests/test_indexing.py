@@ -36,6 +36,30 @@ def test_diagonal(array, offset):
     numpy.testing.assert_array_equal(expected, result)
 
 
+@pytest.mark.parametrize("val",
+                         [-1, 0, 1],
+                         ids=['-1', '0', '1'])
+@pytest.mark.parametrize("array",
+                         [[[0, 0], [0, 0]],
+                          [[1, 2], [1, 2]],
+                          [[1, 2], [3, 4]],
+                          [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+                          [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]],
+                          [[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]],
+                         ids=['[[0, 0], [0, 0]]',
+                              '[[1, 2], [1, 2]]',
+                              '[[1, 2], [3, 4]]',
+                              '[[0, 1, 2], [3, 4, 5], [6, 7, 8]]',
+                              '[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]',
+                              '[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]'])
+def test_fill_diagonal(array, val):
+    a = numpy.array(array)
+    ia = dpnp.array(a)
+    expected = numpy.fill_diagonal(a, val)
+    result = dpnp.fill_diagonal(ia, val)
+    numpy.testing.assert_array_equal(expected, result)
+
+
 @pytest.mark.parametrize("v",
                          [0, 1, 2, 3, 4],
                          ids=['0', '1', '2', '3', '4'])
