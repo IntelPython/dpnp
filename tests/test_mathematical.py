@@ -123,3 +123,23 @@ class TestTrapz:
         result = inp.trapz(iy, dx=dx)
         expected = numpy.trapz(y, dx=dx)
         numpy.testing.assert_array_equal(expected, result)
+
+
+class TestCross:
+
+    @pytest.mark.parametrize("x1", [[1, 2, 3],
+                                    [1., 2.5, 6.],
+                                    [2, 4, 6]])
+    @pytest.mark.parametrize("x2", [[4, 5, 6],
+                                    [1., 5., 2.],
+                                    [6, 4, 3]])
+    def test_cross_3x3(self, x1, x2):
+        x1_ = numpy.array(x1)
+        ix1_ = inp.array(x1_)
+
+        x2_ = numpy.array(x2)
+        ix2_ = inp.array(x2_)
+
+        result = inp.cross(ix1_, ix2_)
+        expected = numpy.cross(x1_, x2_)
+        numpy.testing.assert_array_equal(expected, result)

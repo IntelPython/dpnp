@@ -57,6 +57,7 @@ __all__ = [
     "conj",
     "conjugate",
     "copysign",
+    "cross",
     "cumprod",
     "cumsum",
     "diff",
@@ -325,6 +326,47 @@ def copysign(x1, x2, **kwargs):
             return dpnp_copysign(x1, x2)
 
     return call_origin(numpy.copysign, x1, x2, **kwargs)
+
+
+def cross(x1, x2, **kwargs):
+    """
+    Return the cross product of two (arrays of) vectors.
+
+    For full documentation refer to :obj:`numpy.cross`.
+
+    Limitations
+    -----------
+        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Sizes of input arrays are limited by ``x1.size == 3 and x2.size == 3``.
+        Shapes of input arrays are limited by ``x1.shape == (3,) and x2.shape == (3,)``.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = [1, 2, 3]
+    >>> y = [4, 5, 6]
+    >>> result = np.cross(x, y)
+    >>> [x for x in result]
+    [-3,  6, -3]
+    
+    """
+
+    if not use_origin_backend(x1) and not kwargs:
+        if not isinstance(x1, dparray):
+            pass
+        elif not isinstance(x2, dparray):
+            pass
+        elif x1.size != 3 or x2.size != 3:
+            pass
+        elif x1.shape != (3,) or x2.shape != (3,):
+            pass
+        else:
+            return dpnp_cross(x1, x2)
+
+    return call_origin(numpy.cross, x1, x2, **kwargs)
 
 
 def cumprod(x1, **kwargs):
