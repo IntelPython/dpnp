@@ -340,7 +340,8 @@ def cross(x1, x2, **kwargs):
         Keyword arguments ``kwargs`` are currently unsupported.
         Otherwise the functions will be executed sequentially on CPU.
         Input array data types are limited by supported DPNP :ref:`Data types`.
-        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
+        Sizes of input arrays are limited by ``x1.size == 3 and x2.size == 3``.
+        Shapes of input arrays are limited by ``x1.shape == (3,) and x2.shape == (3,)``.
     
     Examples
     --------
@@ -358,9 +359,9 @@ def cross(x1, x2, **kwargs):
             pass
         elif not isinstance(x2, dparray):
             pass
-        elif x1.size != 3 and x2.size != 3:
+        elif x1.size != 3 or x2.size != 3:
             pass
-        elif x1.shape == (3,) and x2.shape == (3,):
+        elif x1.shape != (3,) or x2.shape != (3,):
             pass
         else:
             return dpnp_cross(x1, x2)
