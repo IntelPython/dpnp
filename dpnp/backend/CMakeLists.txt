@@ -142,6 +142,9 @@ endif()
 # disable PSTL policies due to compiler bug
 add_definitions(-DPSTL_USE_PARALLEL_POLICIES=0 -D_GLIBCXX_USE_TBB_PAR_BACKEND=0)
 
+# disable PSTL predefined policies objects (global queues, prevent fail on Windows)
+add_definitions(-DONEDPL_USE_PREDEFINED_POLICIES=0)
+
 # -----------------------------------------------------------------------------------------------
 # Create project...
 # -----------------------------------------------------------------------------------------------

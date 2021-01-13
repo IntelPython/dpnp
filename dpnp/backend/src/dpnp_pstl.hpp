@@ -48,6 +48,7 @@
 
 #include <oneapi/dpl/algorithm>
 #include <oneapi/dpl/execution>
+#include <oneapi/dpl/numeric>
 
 #pragma clang diagnostic pop
 
