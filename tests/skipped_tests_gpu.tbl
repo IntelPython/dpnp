@@ -750,18 +750,6 @@ tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmask::test_putmask_
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmask::test_putmask_scalar_values
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmaskDifferentDtypes::test_putmask_differnt_dtypes_mask
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmaskDifferentDtypes::test_putmask_differnt_dtypes_raises
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_0_{n_vals=0, shape=(7,)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_1_{n_vals=0, shape=(2, 3)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_2_{n_vals=0, shape=(4, 3, 2)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_3_{n_vals=1, shape=(7,)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_4_{n_vals=1, shape=(2, 3)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_5_{n_vals=1, shape=(4, 3, 2)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_6_{n_vals=3, shape=(7,)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_7_{n_vals=3, shape=(2, 3)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_8_{n_vals=3, shape=(4, 3, 2)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_9_{n_vals=15, shape=(7,)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_10_{n_vals=15, shape=(2, 3)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_11_{n_vals=15, shape=(4, 3, 2)}::test_place
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPlaceRaises_param_0_{shape=(7,)}::test_place_empty_value_error
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPlaceRaises_param_0_{shape=(7,)}::test_place_shape_unmatch_error
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPlaceRaises_param_1_{shape=(2, 3)}::test_place_empty_value_error

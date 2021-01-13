@@ -53,6 +53,7 @@ __all__ = [
     "diag_indices_from",
     "diagonal",
     "nonzero",
+    "place",
     "put",
     "tril_indices",
     "tril_indices_from",
@@ -234,6 +235,30 @@ def nonzero(a):
         return dpnp_nonzero(a)
 
     return call_origin(numpy.nonzero, a)
+
+
+def place(arr, mask, vals):
+    """
+    Change elements of an array based on conditional and input values.
+    For full documentation refer to :obj:`numpy.place`.
+
+    Limitations
+    -----------
+    Input arrays ``arr`` and ``mask``  are supported as :obj:`dpnp.ndarray`.
+    Parameter ``vals`` is 1-D sequence.
+    """
+
+    if not use_origin_backend(arr):
+        if not isinstance(arr, dparray):
+            pass
+        elif not isinstance(mask, dparray):
+            pass
+        elif dpnp.isscalar(vals):
+            pass
+        else:
+            return dpnp_place(arr, mask, vals)
+
+    return call_origin(numpy.place, arr, mask, vals)
 
 
 def put(input, ind, v, mode='raise'):

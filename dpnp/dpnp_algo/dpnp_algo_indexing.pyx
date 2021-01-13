@@ -42,6 +42,7 @@ __all__ += [
     "dpnp_diag_indices",
     "dpnp_diagonal",
     "dpnp_nonzero",
+    "dpnp_place",
     "dpnp_put",
     "dpnp_tril_indices",
     "dpnp_tril_indices_from",
@@ -152,6 +153,15 @@ cpdef tuple dpnp_nonzero(dparray in_array1):
             idx = idx + 1
 
     return result
+
+
+cpdef dpnp_place(dparray arr, dparray mask, vals):
+    cpdef int counter = 0
+    cpdef int vals_len = len(vals)
+    for i in range(arr.size):
+        if mask[i]:
+            arr[i] = vals[counter % vals_len]
+            counter += 1
 
 
 cpdef dpnp_put(input, ind, v):
