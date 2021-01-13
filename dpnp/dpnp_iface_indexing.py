@@ -272,6 +272,7 @@ def take(input, indices, axis=None, out=None, mode='raise'):
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
     Parameters ``axis``, ``out`` and ``mode`` are supported only with default values.
+    Parameter ``indices`` is supported as :obj:`dpnp.ndarray`.
 
     See Also
     --------

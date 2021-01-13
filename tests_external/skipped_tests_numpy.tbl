@@ -1188,7 +1188,6 @@ tests/test_numeric.py::TestNonarrayArgs::test_searchsorted
 tests/test_numeric.py::TestNonarrayArgs::test_size
 tests/test_numeric.py::TestNonarrayArgs::test_std
 tests/test_numeric.py::TestNonarrayArgs::test_sum
-tests/test_numeric.py::TestNonarrayArgs::test_take
 tests/test_numeric.py::TestNonarrayArgs::test_trace
 tests/test_numeric.py::TestNonarrayArgs::test_var
 tests/test_numeric.py::TestNonzero::test_array_method
