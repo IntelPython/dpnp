@@ -111,7 +111,7 @@ jobs:
       python -m tests_external.numpy.runtests
 
 # test python ./setup.py bdist_wheel command with no dpctl
-- job: wheel_dpnp_local_lin
+- job: bdist_wheel_dpnp_local_lin
   displayName: bdist_wheel_dpnp_local_lin
   pool:
     vmImage: 'ubuntu-20.04'
@@ -128,10 +128,10 @@ jobs:
       python ./setup.py bdist_wheel
   - publish: dist
     artifact: 'package_$(Agent.JobName)_$(Agent.OS)'
-    displayName: bdist_wheel_local_lin
+    displayName: bdist_wheel_dpnp_local_lin_package
 
-- job: wheel_dpnp_local_win
-  displayName: bdist_wheel_local_win
+- job: bdist_wheel_dpnp_local_win
+  displayName: bdist_wheel_dpnp_local_win
   pool:
     vmImage: 'windows-2019' # 'vs2017-win2016'
   steps:
@@ -150,7 +150,7 @@ jobs:
       python setup.py bdist_wheel
   - publish: dist
     artifact: 'package_$(Agent.JobName)_$(Agent.OS)'
-    displayName: bdist_wheel_local_win
+    displayName: bdist_wheel_dpnp_local_win_package
 
 # test python ./setup.py bdist_wheel command with dpctl
 - job: wheel_dpnp_dpctl_lin
@@ -172,7 +172,7 @@ jobs:
       python ./setup.py bdist_wheel
   - publish: dist
     artifact: 'package_dpnp_dpctl_$(Agent.JobName)_$(Agent.OS)'
-    displayName: bdist_wheel_dpnp_dpctl_lin
+    displayName: bdist_wheel_dpnp_dpctl_lin_package
 
 - job: conda_build_dpnp_dpctl_lin
   displayName: conda_dpnp_dpctl_lin
@@ -194,7 +194,7 @@ jobs:
       conda-build conda-recipe/
   - publish: /opt/intel/oneapi/intelpython/latest/conda-bld
     artifact: 'package_$(Agent.JobName)_$(Agent.OS)'
-    displayName: conda_build_dpnp_dpctl_lin
+    displayName: conda_build_dpnp_dpctl_lin_package
 
 - job: make_backend_lin
   displayName: cmake_3_16_3_lin
@@ -228,4 +228,4 @@ jobs:
       cmake --build . --target install -- VERBOSE=1
   - publish: dpnp/backend/package_dpnp
     artifact: 'package_backend_$(Agent.JobName)_$(Agent.OS)'
-    displayName: backend_cmake_oneapi_local_lin
+    displayName: backend_cmake_oneapi_local_lin_package

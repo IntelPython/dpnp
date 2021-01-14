@@ -351,7 +351,7 @@ def cross(x1, x2, **kwargs):
     >>> result = np.cross(x, y)
     >>> [x for x in result]
     [-3,  6, -3]
-    
+
     """
 
     if not use_origin_backend(x1) and not kwargs:
