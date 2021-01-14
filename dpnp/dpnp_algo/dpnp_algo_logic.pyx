@@ -97,20 +97,32 @@ cpdef dparray dpnp_equal(dparray array1, input2):
     return result
 
 
-cpdef dparray dpnp_greater(dparray input1, dparray input2):
+cpdef dparray dpnp_greater(dparray input1, input2):
+    input2_is_scalar = dpnp.isscalar(input2)
+
     cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
 
-    for i in range(result.size):
-        result[i] = numpy.bool(input1[i] > input2[i])
+    if input2_is_scalar:
+        for i in range(result.size):
+            result[i] = dpnp.bool(input1[i] > input2)
+    else:
+        for i in range(result.size):
+            result[i] = dpnp.bool(input1[i] > input2[i])
 
     return result
 
 
-cpdef dparray dpnp_greater_equal(dparray input1, dparray input2):
+cpdef dparray dpnp_greater_equal(dparray input1, input2):
+    input2_is_scalar = dpnp.isscalar(input2)
+
     cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
 
-    for i in range(result.size):
-        result[i] = numpy.bool(input1[i] >= input2[i])
+    if input2_is_scalar:
+        for i in range(result.size):
+            result[i] = dpnp.bool(input1[i] >= input2)
+    else:
+        for i in range(result.size):
+            result[i] = dpnp.bool(input1[i] >= input2[i])
 
     return result
 
@@ -155,20 +167,32 @@ cpdef dparray dpnp_isnan(dparray input1):
     return result
 
 
-cpdef dparray dpnp_less(dparray input1, dparray input2):
+cpdef dparray dpnp_less(dparray input1, input2):
+    input2_is_scalar = dpnp.isscalar(input2)
+
     cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
 
-    for i in range(result.size):
-        result[i] = numpy.bool(input1[i] < input2[i])
+    if input2_is_scalar:
+        for i in range(result.size):
+            result[i] = dpnp.bool(input1[i] < input2)
+    else:
+        for i in range(result.size):
+            result[i] = dpnp.bool(input1[i] < input2[i])
 
     return result
 
 
-cpdef dparray dpnp_less_equal(dparray input1, dparray input2):
+cpdef dparray dpnp_less_equal(dparray input1, input2):
+    input2_is_scalar = dpnp.isscalar(input2)
+
     cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
 
-    for i in range(result.size):
-        result[i] = numpy.bool(input1[i] <= input2[i])
+    if input2_is_scalar:
+        for i in range(result.size):
+            result[i] = dpnp.bool(input1[i] <= input2)
+    else:
+        for i in range(result.size):
+            result[i] = dpnp.bool(input1[i] <= input2[i])
 
     return result
 
