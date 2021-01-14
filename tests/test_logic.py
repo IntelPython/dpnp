@@ -71,6 +71,42 @@ def test_any(type, shape):
         numpy.testing.assert_allclose(dpnp_res, np_res)
 
 
+def test_greater():
+    a = numpy.array([1, 2, 3, 4, 5, 6, 7, 8])
+    ia = dpnp.array(a)
+    for i in range(len(a) + 1):
+        np_res = (a > i)
+        dpnp_res = (ia > i)
+        numpy.testing.assert_equal(dpnp_res, np_res)
+
+
+def test_greater_equal():
+    a = numpy.array([1, 2, 3, 4, 5, 6, 7, 8])
+    ia = dpnp.array(a)
+    for i in range(len(a) + 1):
+        np_res = (a >= i)
+        dpnp_res = (ia >= i)
+        numpy.testing.assert_equal(dpnp_res, np_res)
+
+
+def test_less():
+    a = numpy.array([1, 2, 3, 4, 5, 6, 7, 8])
+    ia = dpnp.array(a)
+    for i in range(len(a) + 1):
+        np_res = (a < i)
+        dpnp_res = (ia < i)
+        numpy.testing.assert_equal(dpnp_res, np_res)
+
+
+def test_less_equal():
+    a = numpy.array([1, 2, 3, 4, 5, 6, 7, 8])
+    ia = dpnp.array(a)
+    for i in range(len(a) + 1):
+        np_res = (a <= i)
+        dpnp_res = (ia <= i)
+        numpy.testing.assert_equal(dpnp_res, np_res)
+
+
 def test_not_equal():
     a = numpy.array([1, 2, 3, 4, 5, 6, 7, 8])
     ia = dpnp.array(a)
