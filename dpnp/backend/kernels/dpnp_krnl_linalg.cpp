@@ -181,6 +181,7 @@ class dpnp_inv_c_kernel;
 template <typename _DataType>
 void dpnp_inv_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
 {
+    (void)ndim; // avoid warning unused variable
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
