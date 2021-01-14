@@ -237,5 +237,6 @@ jobs:
   steps:
   - bash: |
       ./scripts/install_system_deps.sh  # no intel python
+      conda list
       echo ========================= build DPNP package ===============================
       ./0.build.sh
