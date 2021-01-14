@@ -40,6 +40,8 @@ it contains:
 """
 
 
+import collections
+
 import numpy
 
 from dpnp.dpnp_algo import *
@@ -52,8 +54,11 @@ __all__ = [
     "diag_indices",
     "diag_indices_from",
     "diagonal",
+    "fill_diagonal",
     "nonzero",
+    "place",
     "put",
+    "take",
     "tril_indices",
     "tril_indices_from",
     "triu_indices",
@@ -185,6 +190,35 @@ def diagonal(input, offset=0, axis1=0, axis2=1):
     return call_origin(numpy.diagonal, input, offset, axis1, axis2)
 
 
+def fill_diagonal(input, val, wrap=False):
+    """
+    Fill the main diagonal of the given array of any dimensionality.
+
+    For full documentation refer to :obj:`numpy.fill_diagonal`.
+
+    Limitations
+    -----------
+    Parameter ``wrap`` is supported only with default values.
+
+    See Also
+    --------
+    :obj:`dpnp.diag_indices` : Return the indices to access the main diagonal of an array.
+    :obj:`dpnp.diag_indices_from` : Return the indices to access the main diagonal of an n-dimensional array.
+    """
+
+    if not use_origin_backend(input):
+        if not isinstance(input, dparray):
+            pass
+        elif not dpnp.isscalar(val):
+            pass
+        elif wrap:
+            pass
+        else:
+            return dpnp_fill_diagonal(input, val)
+
+    return call_origin(numpy.fill_diagonal, input, val, wrap)
+
+
 def nonzero(a):
     """
     Return the indices of the elements that are non-zero.
@@ -236,6 +270,30 @@ def nonzero(a):
     return call_origin(numpy.nonzero, a)
 
 
+def place(arr, mask, vals):
+    """
+    Change elements of an array based on conditional and input values.
+    For full documentation refer to :obj:`numpy.place`.
+
+    Limitations
+    -----------
+    Input arrays ``arr`` and ``mask``  are supported as :obj:`dpnp.ndarray`.
+    Parameter ``vals`` is supported as 1-D sequence.
+    """
+
+    if not use_origin_backend(arr):
+        if not isinstance(arr, dparray):
+            pass
+        elif not isinstance(mask, dparray):
+            pass
+        elif not isinstance(vals, collections.Sequence):
+            pass
+        else:
+            return dpnp_place(arr, mask, vals)
+
+    return call_origin(numpy.place, arr, mask, vals)
+
+
 def put(input, ind, v, mode='raise'):
     """
     Replaces specified elements of an array with given values.
@@ -260,6 +318,40 @@ def put(input, ind, v, mode='raise'):
             return dpnp_put(input, ind, v)
 
     return call_origin(numpy.put, input, ind, v, mode)
+
+
+def take(input, indices, axis=None, out=None, mode='raise'):
+    """
+    Take elements from an array.
+    For full documentation refer to :obj:`numpy.take`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters ``axis``, ``out`` and ``mode`` are supported only with default values.
+    Parameter ``indices`` is supported as :obj:`dpnp.ndarray`.
+
+    See Also
+    --------
+    :obj:`dpnp.compress` : Take elements using a boolean mask.
+    :obj:`take_along_axis` : Take elements by matching the array and the index arrays.
+    """
+
+    if not use_origin_backend(input):
+        if not isinstance(input, dparray):
+            pass
+        elif not isinstance(indices, dparray):
+            pass
+        elif axis is not None:
+            pass
+        elif out is not None:
+            pass
+        elif mode != 'raise':
+            pass
+        else:
+            return dpnp_take(input, indices)
+
+    return call_origin(numpy.take, input, indices, axis, out, mode)
 
 
 def tril_indices(n, k=0, m=None):

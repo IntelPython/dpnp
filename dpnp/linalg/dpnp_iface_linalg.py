@@ -98,35 +98,19 @@ def cholesky(input):
 
 def cond(input, p=None):
     """
-       Compute the condition number of a matrix.
-       This function is capable of returning the condition number using
-       one of seven different norms, depending on the value of `p` (see
-       Parameters below).
-       Parameters
-       ----------
-       x : (..., M, N) array_like
-           The matrix whose condition number is sought.
-       p : {None, 1, -1, 2, -2, inf, -inf, 'fro'}, optional
-           Order of the norm:
-           =====  ============================
-           p      norm for matrices
-           =====  ============================
-           None   2-norm, computed directly using the ``SVD``
-           'fro'  Frobenius norm
-           inf    max(sum(abs(x), axis=1))
-           -inf   min(sum(abs(x), axis=1))
-           1      max(sum(abs(x), axis=0))
-           -1     min(sum(abs(x), axis=0))
-           2      2-norm (largest sing. value)
-           -2     smallest singular value
-           =====  ============================
-           inf means the numpy.inf object, and the Frobenius norm is
-           the root-of-sum-of-squares norm.
-       Returns
-       -------
-       c : {float, inf}
-           The condition number of the matrix. May be infinite.
+    Compute the condition number of a matrix.
+    For full documentation refer to :obj:`numpy.linalg.cond`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameter p=[None, 1, -1, 2, -2, numpy.inf, -numpy.inf, 'fro'] is supported.
+
+    See Also
+    --------
+    :obj:`dpnp.norm` : Matrix or vector norm.
     """
+
     is_input_dparray = isinstance(input, dparray)
 
     if (not use_origin_backend(input) and is_input_dparray):

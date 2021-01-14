@@ -318,6 +318,22 @@ INP_DLLEXPORT void dpnp_det_c(void* array1_in, void* result1, size_t* shape, siz
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of inv function
+ *
+ * @param [in]  array   Input array with data.
+ *
+ * @param [out] result  Output array.
+ *
+ * @param [in]  shape   Shape of input array.
+ *
+ * @param [in]  ndim    Number of elements in shape.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_inv_c(void* array1_in, void* result1, size_t* shape, size_t ndim);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of matrix_rank function
  *
  * @param [in]  array   Input array with data.

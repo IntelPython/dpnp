@@ -71,6 +71,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FLOOR_DIVIDE
         DPNP_FN_FMOD
         DPNP_FN_HYPOT
+        DPNP_FN_INV
         DPNP_FN_INVERT
         DPNP_FN_LEFT_SHIFT
         DPNP_FN_LOG
@@ -197,11 +198,11 @@ cpdef dparray dpnp_right_shift(dparray array1, dparray array2)
 Logic functions
 """
 cpdef dparray dpnp_equal(dparray array1, input2)
-cpdef dparray dpnp_greater(dparray input1, dparray input2)
-cpdef dparray dpnp_greater_equal(dparray input1, dparray input2)
+cpdef dparray dpnp_greater(dparray input1, input2)
+cpdef dparray dpnp_greater_equal(dparray input1, input2)
 cpdef dparray dpnp_isclose(dparray input1, input2, double rtol=*, double atol=*, cpp_bool equal_nan=*)
-cpdef dparray dpnp_less(dparray input1, dparray input2)
-cpdef dparray dpnp_less_equal(dparray input1, dparray input2)
+cpdef dparray dpnp_less(dparray input1, input2)
+cpdef dparray dpnp_less_equal(dparray input1, input2)
 cpdef dparray dpnp_logical_and(dparray input1, dparray input2)
 cpdef dparray dpnp_logical_not(dparray input1)
 cpdef dparray dpnp_logical_or(dparray input1, dparray input2)

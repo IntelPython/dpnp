@@ -36,6 +36,105 @@ def test_diagonal(array, offset):
     numpy.testing.assert_array_equal(expected, result)
 
 
+@pytest.mark.parametrize("val",
+                         [-1, 0, 1],
+                         ids=['-1', '0', '1'])
+@pytest.mark.parametrize("array",
+                         [[[0, 0], [0, 0]],
+                          [[1, 2], [1, 2]],
+                          [[1, 2], [3, 4]],
+                          [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+                          [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]],
+                          [[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]],
+                         ids=['[[0, 0], [0, 0]]',
+                              '[[1, 2], [1, 2]]',
+                              '[[1, 2], [3, 4]]',
+                              '[[0, 1, 2], [3, 4, 5], [6, 7, 8]]',
+                              '[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]',
+                              '[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]'])
+def test_fill_diagonal(array, val):
+    a = numpy.array(array)
+    ia = dpnp.array(a)
+    expected = numpy.fill_diagonal(a, val)
+    result = dpnp.fill_diagonal(ia, val)
+    numpy.testing.assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("vals",
+                         [[100, 200],
+                          (100, 200)],
+                         ids=['[100, 200]',
+                              '(100, 200)'])
+@pytest.mark.parametrize("mask",
+                         [[[True, False], [False, True]],
+                          [[False, True], [True, False]],
+                          [[False, False], [True, True]]],
+                         ids=['[[True, False], [False, True]]',
+                              '[[False, True], [True, False]]',
+                              '[[False, False], [True, True]]'])
+@pytest.mark.parametrize("arr",
+                         [[[0, 0], [0, 0]],
+                          [[1, 2], [1, 2]],
+                          [[1, 2], [3, 4]]],
+                         ids=['[[0, 0], [0, 0]]',
+                              '[[1, 2], [1, 2]]',
+                              '[[1, 2], [3, 4]]'])
+def test_place1(arr, mask, vals):
+    a = numpy.array(arr)
+    ia = dpnp.array(a)
+    m = numpy.array(mask)
+    im = dpnp.array(m)
+    numpy.place(a, m, vals)
+    dpnp.place(ia, im, vals)
+    numpy.testing.assert_array_equal(a, ia)
+
+
+@pytest.mark.parametrize("vals",
+                         [[100, 200],
+                          [100, 200, 300, 400, 500, 600],
+                          [100, 200, 300, 400, 500, 600, 800, 900]],
+                         ids=['[100, 200]',
+                              '[100, 200, 300, 400, 500, 600]',
+                              '[100, 200, 300, 400, 500, 600, 800, 900]'])
+@pytest.mark.parametrize("mask",
+                         [[[[True, False], [False, True]], [[False, True], [True, False]], [[False, False], [True, True]]]],
+                         ids=['[[[True, False], [False, True]], [[False, True], [True, False]], [[False, False], [True, True]]]'])
+@pytest.mark.parametrize("arr",
+                         [[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]],
+                         ids=['[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]'])
+def test_place2(arr, mask, vals):
+    a = numpy.array(arr)
+    ia = dpnp.array(a)
+    m = numpy.array(mask)
+    im = dpnp.array(m)
+    numpy.place(a, m, vals)
+    dpnp.place(ia, im, vals)
+    numpy.testing.assert_array_equal(a, ia)
+
+
+@pytest.mark.parametrize("vals",
+                         [[100, 200],
+                          [100, 200, 300, 400, 500, 600],
+                          [100, 200, 300, 400, 500, 600, 800, 900]],
+                         ids=['[100, 200]',
+                              '[100, 200, 300, 400, 500, 600]',
+                              '[100, 200, 300, 400, 500, 600, 800, 900]'])
+@pytest.mark.parametrize("mask",
+                         [[[[[False, False], [True, True]], [[True, True], [True, True]]], [[[False, False], [True, True]], [[False, False], [False, False]]]]],
+                         ids=['[[[[False, False], [True, True]], [[True, True], [True, True]]], [[[False, False], [True, True]], [[False, False], [False, False]]]]'])
+@pytest.mark.parametrize("arr",
+                         [[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]],
+                         ids=['[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]'])
+def test_place3(arr, mask, vals):
+    a = numpy.array(arr)
+    ia = dpnp.array(a)
+    m = numpy.array(mask)
+    im = dpnp.array(m)
+    numpy.place(a, m, vals)
+    dpnp.place(ia, im, vals)
+    numpy.testing.assert_array_equal(a, ia)
+
+
 @pytest.mark.parametrize("v",
                          [0, 1, 2, 3, 4],
                          ids=['0', '1', '2', '3', '4'])
@@ -92,6 +191,37 @@ def test_put3():
     dpnp.put(ia, [0, 2], [-44, -55])
     numpy.put(a, [0, 2], [-44, -55])
     numpy.testing.assert_array_equal(a, ia)
+
+
+@pytest.mark.parametrize("indices",
+                         [[[0, 0], [0, 0]],
+                          [[1, 2], [1, 2]],
+                          [[1, 2], [3, 4]]],
+                         ids=['[[0, 0], [0, 0]]',
+                              '[[1, 2], [1, 2]]',
+                              '[[1, 2], [3, 4]]'])
+@pytest.mark.parametrize("array",
+                         [[[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+                          [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]],
+                          [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]],
+                          [[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]],
+                          [[[[1, 2, 3], [3, 4, 5]], [[1, 2, 3], [2, 1, 0]]], [
+                              [[1, 3, 5], [3, 1, 0]], [[0, 1, 2], [1, 3, 4]]]],
+                          [[[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]], [[[13, 14, 15], [16, 17, 18]], [[19, 20, 21], [22, 23, 24]]]]],
+                         ids=['[[0, 1, 2], [3, 4, 5], [6, 7, 8]]',
+                              '[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]',
+                              '[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]',
+                              '[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]',
+                              '[[[[1, 2, 3], [3, 4, 5]], [[1, 2, 3], [2, 1, 0]]], [[[1, 3, 5], [3, 1, 0]], [[0, 1, 2], [1, 3, 4]]]]',
+                              '[[[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]], [[[13, 14, 15], [16, 17, 18]], [[19, 20, 21], [22, 23, 24]]]]'])
+def test_take(array, indices):
+    a = numpy.array(array)
+    ind = numpy.array(indices)
+    ia = dpnp.array(a)
+    iind = dpnp.array(ind)
+    expected = numpy.take(a, ind)
+    result = dpnp.take(ia, iind)
+    numpy.testing.assert_array_equal(expected, result)
 
 
 @pytest.mark.parametrize("m",

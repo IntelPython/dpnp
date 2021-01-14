@@ -269,11 +269,11 @@ def greater(x1, x2):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.greater(x1, x2)
-
-    if isinstance(x1, dparray) or isinstance(x2, dparray):
-        return dpnp_greater(x1, x2)
+    if not (use_origin_backend(x1)):
+        if not isinstance(x1, dparray):
+            pass
+        else:
+            return dpnp_greater(x1, x2)
 
     return numpy.greater(x1, x2)
 
@@ -309,11 +309,11 @@ def greater_equal(x1, x2):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.greater_equal(x1, x2)
-
-    if isinstance(x1, dparray) or isinstance(x2, dparray):
-        return dpnp_greater_equal(x1, x2)
+    if not (use_origin_backend(x1)):
+        if not isinstance(x1, dparray):
+            pass
+        else:
+            return dpnp_greater_equal(x1, x2)
 
     return numpy.greater_equal(x1, x2)
 
@@ -545,11 +545,11 @@ def less(x1, x2):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.less(x1, x2)
-
-    if isinstance(x1, dparray) or isinstance(x2, dparray):
-        return dpnp_less(x1, x2)
+    if not (use_origin_backend(x1)):
+        if not isinstance(x1, dparray):
+            pass
+        else:
+            return dpnp_less(x1, x2)
 
     return numpy.less(x1, x2)
 
@@ -585,11 +585,11 @@ def less_equal(x1, x2):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.less_equal(x1, x2)
-
-    if isinstance(x1, dparray) or isinstance(x2, dparray):
-        return dpnp_less_equal(x1, x2)
+    if not (use_origin_backend(x1)):
+        if not isinstance(x1, dparray):
+            pass
+        else:
+            return dpnp_less_equal(x1, x2)
 
     return numpy.less_equal(x1, x2)
 

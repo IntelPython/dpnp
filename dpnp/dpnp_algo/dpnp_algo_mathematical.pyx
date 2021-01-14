@@ -47,6 +47,7 @@ __all__ += [
     "dpnp_ceil",
     "dpnp_conjugate",
     "dpnp_copysign",
+    "dpnp_cross",
     "dpnp_cumprod",
     "dpnp_cumsum",
     "dpnp_diff",
@@ -131,6 +132,32 @@ cpdef dparray dpnp_conjugate(dparray x1):
 
 cpdef dparray dpnp_copysign(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_COPYSIGN, x1, x2, x1.shape)
+
+
+cpdef dparray dpnp_cross(dparray x1, dparray x2):
+
+    types_map = {
+        (dpnp.int32, dpnp.int32): dpnp.int32,
+        (dpnp.int32, dpnp.int64): dpnp.int64,
+        (dpnp.int64, dpnp.int32): dpnp.int64,
+        (dpnp.int64, dpnp.int64): dpnp.int64,
+        (dpnp.float32, dpnp.float32): dpnp.float32,
+    }
+
+    res_type = types_map.get((x1.dtype, x2.dtype), dpnp.float64)
+
+    cdef dparray result = dparray(3, dtype=res_type)
+
+    cur_res = x1[1] * x2[2] - x1[2] * x2[1]
+    result._setitem_scalar(0, cur_res)
+
+    cur_res = x1[2] * x2[0] - x1[0] * x2[2]
+    result._setitem_scalar(1, cur_res)
+
+    cur_res = x1[0] * x2[1] - x1[1] * x2[0]
+    result._setitem_scalar(2, cur_res)
+
+    return result
 
 
 cpdef dparray dpnp_cumprod(dparray x1, bint usenan=False):
