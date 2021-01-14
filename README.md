@@ -27,7 +27,7 @@ cd dpnp
 
 ## Run test
 ```bash
-. ./0.env
+. ./0.env.sh
 pytest
 # or
 pytest tests/test_matmul.py -s -v
