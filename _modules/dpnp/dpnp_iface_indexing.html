@@ -191,6 +191,8 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
+<span class="kn">import</span> <span class="nn">collections</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span>
 
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>
@@ -205,6 +207,7 @@
     <span class="s2">&quot;diagonal&quot;</span><span class="p">,</span>
     <span class="s2">&quot;fill_diagonal&quot;</span><span class="p">,</span>
     <span class="s2">&quot;nonzero&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;place&quot;</span><span class="p">,</span>
     <span class="s2">&quot;put&quot;</span><span class="p">,</span>
     <span class="s2">&quot;take&quot;</span><span class="p">,</span>
     <span class="s2">&quot;tril_indices&quot;</span><span class="p">,</span>
@@ -416,6 +419,30 @@
         <span class="k">return</span> <span class="n">dpnp_nonzero</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">nonzero</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">place</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Change elements of an array based on conditional and input values.</span>
+<span class="sd">    For full documentation refer to :obj:`numpy.place`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Input arrays ``arr`` and ``mask``  are supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Parameter ``vals`` is supported as 1-D sequence.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Sequence</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_place</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">place</span><span class="p">,</span> <span class="n">arr</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">vals</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">):</span>

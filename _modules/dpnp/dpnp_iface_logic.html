@@ -420,11 +420,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">dpnp_greater</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_greater</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></div>
 
@@ -460,11 +460,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">dpnp_greater_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_greater_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></div>
 
@@ -696,11 +696,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">dpnp_less</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_less</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></div>
 
@@ -736,11 +736,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">less_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">dpnp_less_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_less_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">less_equal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></div>
 
