@@ -45,6 +45,7 @@ __all__ += [
     "dpnp_nonzero",
     "dpnp_place",
     "dpnp_put",
+    "dpnp_putmask",
     "dpnp_take",
     "dpnp_tril_indices",
     "dpnp_tril_indices_from",
@@ -187,6 +188,13 @@ cpdef dpnp_put(input, ind, v):
             if i == ind:
                 input[i] = v
                 in_ind = 1
+
+
+cpdef dpnp_putmask(dparray arr, dparray mask, dparray values):
+    cpdef int values_size = values.size
+    for i in range(arr.size):
+        if mask[i]:
+            arr[i] = values[i % values_size]
 
 
 cpdef dparray dpnp_take(dparray input, dparray indices):
