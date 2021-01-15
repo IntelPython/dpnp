@@ -58,6 +58,7 @@ __all__ = [
     "nonzero",
     "place",
     "put",
+    "putmask",
     "take",
     "tril_indices",
     "tril_indices_from",
@@ -318,6 +319,29 @@ def put(input, ind, v, mode='raise'):
             return dpnp_put(input, ind, v)
 
     return call_origin(numpy.put, input, ind, v, mode)
+
+
+def putmask(arr, mask, values):
+    """
+    Changes elements of an array based on conditional and input values.
+    For full documentation refer to :obj:`numpy.putmask`.
+
+    Limitations
+    -----------
+    Input arrays ``arr``, ``mask`` and ``values``  are supported as :obj:`dpnp.ndarray`.
+    """
+
+    if not use_origin_backend(arr):
+        if not isinstance(arr, dparray):
+            pass
+        elif not isinstance(mask, dparray):
+            pass
+        elif not isinstance(values, dparray):
+            pass
+        else:
+            return dpnp_putmask(arr, mask, values)
+
+    return call_origin(numpy.putmask, arr, mask, values)
 
 
 def take(input, indices, axis=None, out=None, mode='raise'):
