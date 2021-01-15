@@ -60,6 +60,16 @@ def test_fill_diagonal(array, val):
     numpy.testing.assert_array_equal(expected, result)
 
 
+@pytest.mark.parametrize("dimension",
+                         [(1, ), (2, ), (1, 2), (2, 3), (3, 2), [1], [2], [1, 2], [2, 3], [3, 2]],
+                         ids=['(1, )', '(2, )', '(1, 2)', '(2, 3)', '(3, 2)',
+                              '[1]', '[2]', '[1, 2]', '[2, 3]', '[3, 2]'])
+def test_indices(dimension):
+    expected = numpy.indices(dimension)
+    result = dpnp.indices(dimension)
+    numpy.testing.assert_array_equal(expected, result)
+
+
 @pytest.mark.parametrize("vals",
                          [[100, 200],
                           (100, 200)],

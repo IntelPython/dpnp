@@ -55,6 +55,7 @@ __all__ = [
     "diag_indices_from",
     "diagonal",
     "fill_diagonal",
+    "indices",
     "nonzero",
     "place",
     "put",
@@ -218,6 +219,32 @@ def fill_diagonal(input, val, wrap=False):
             return dpnp_fill_diagonal(input, val)
 
     return call_origin(numpy.fill_diagonal, input, val, wrap)
+
+
+def indices(dimensions, dtype=int, sparse=False):
+    """
+    Return an array representing the indices of a grid.
+
+    For full documentation refer to :obj:`numpy.indices`.
+
+    Limitations
+    -----------
+    Parameters ``dtype`` and ``sparse`` are supported only with default values.
+    Parameter ``dimensions`` is supported with len <=2.
+    """
+
+    if not isinstance(dimensions, (tuple, list)):
+        pass
+    elif len(dimensions) > 2 or len(dimensions) == 0:
+        pass
+    elif dtype != int:
+        pass
+    elif sparse:
+        pass
+    else:
+        return dpnp_indices(dimensions)
+
+    return call_origin(numpy.indices, dimensions, dtype, sparse)
 
 
 def nonzero(a):
