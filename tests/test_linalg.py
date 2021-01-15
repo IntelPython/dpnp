@@ -197,3 +197,50 @@ def test_norm3(array, ord, axis):
     result = inp.linalg.norm(ia, ord=ord, axis=axis)
     expected = numpy.linalg.norm(a, ord=ord, axis=axis)
     numpy.testing.assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("type",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.complex128],
+                         ids=['float64', 'float32', 'int64', 'int32', 'complex128'])
+@pytest.mark.parametrize("shape",
+                         [(2,2), (3,4), (5,3), (16,16)],
+                         ids=['(2,2)', '(3,4)', '(5,3)', '(16,16)'])
+def test_svd_arange(type, shape):
+    a = numpy.arange(shape[0] * shape[1], dtype=type).reshape(shape)
+    ia = inp.array(a)
+
+    np_u, np_s, np_vt = numpy.linalg.svd(a)
+    dpnp_u, dpnp_s, dpnp_vt = inp.linalg.svd(ia)
+
+    assert (dpnp_u.dtype == np_u.dtype)
+    assert (dpnp_s.dtype == np_s.dtype)
+    assert (dpnp_vt.dtype == np_vt.dtype)
+    assert (dpnp_u.shape == np_u.shape)
+    assert (dpnp_s.shape == np_s.shape)
+    assert (dpnp_vt.shape == np_vt.shape)
+
+    if type == numpy.float32:
+        tol = 1e-03
+    else:
+        tol = 1e-12
+
+    # check decomposition
+    dpnp_diag_s = numpy.zeros(shape, dtype=dpnp_s.dtype)
+    for i in range(len(dpnp_s)):
+        dpnp_diag_s[i, i] = dpnp_s[i]
+    numpy.testing.assert_allclose(ia, numpy.dot(dpnp_u, numpy.dot(dpnp_diag_s, dpnp_vt)), rtol=tol, atol=tol)
+
+    # compare singular values
+    numpy.testing.assert_allclose(dpnp_s, np_s, rtol=tol, atol=tol)
+
+    # change sign of vectors
+    for i in range(min(shape[0], shape[1])):
+        if np_u[0, i] * dpnp_u[0, i] < 0:
+            print("zamena", i)
+            np_u[:, i] = -np_u[:, i]
+            np_vt[i, :] = -np_vt[i, :]
+
+    # compare vectors for non-zero values
+    for i in range(numpy.count_nonzero(np_s > tol)):
+        numpy.testing.assert_allclose(numpy.array(dpnp_u)[:, i], np_u[:, i], rtol=tol, atol=tol)
+        numpy.testing.assert_allclose(numpy.array(dpnp_vt)[i, :], np_vt[i, :], rtol=tol, atol=tol)
