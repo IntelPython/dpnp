@@ -132,6 +132,7 @@ jobs:
 
 - job: bdist_wheel_dpnp_local_win
   displayName: bdist_wheel_dpnp_local_win
+  timeoutInMinutes: 60
   pool:
     vmImage: 'windows-2019' # 'vs2017-win2016'
   steps:
@@ -139,8 +140,13 @@ jobs:
     displayName: Add conda to PATH
 
   - script: |
-      call activate
       call scripts\install_system_deps_win.bat
+    displayName: Install Intel ONE API
+    timeoutInMinutes: 30
+
+  - script: |
+      call activate
+      :: call scripts\install_system_deps_win.bat
       call scripts\install_cmake_win.bat
 
       echo ========================= Intel OneAPI setvars ===============================
