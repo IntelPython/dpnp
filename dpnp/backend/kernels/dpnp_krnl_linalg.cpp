@@ -32,6 +32,7 @@
 #include "queue_sycl.hpp"
 
 namespace mkl_blas = oneapi::mkl::blas::row_major;
+namespace mkl_lapack = oneapi::mkl::lapack;
 
 template <typename _DataType>
 class dpnp_cholesky_c_kernel;
@@ -309,6 +310,58 @@ void dpnp_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t nd
     return;
 }
 
+template <typename _InputDT, typename _ComputeDT, typename _SVDT>
+void dpnp_svd_c(void* array1_in, void* result1, void* result2, void* result3, size_t size_m, size_t size_n)
+{
+    cl::sycl::event event;
+
+    _InputDT* in_array = reinterpret_cast<_InputDT*>(array1_in);
+
+    // math lib gesvd func overrides input
+    _ComputeDT* in_a = reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(size_m * size_n * sizeof(_ComputeDT)));
+    for (size_t it = 0; it < size_m * size_n; ++it)
+    {
+        in_a[it] = in_array[it];
+    }
+
+    _ComputeDT* res_u = reinterpret_cast<_ComputeDT*>(result1);
+    _SVDT* res_s = reinterpret_cast<_SVDT*>(result2);
+    _ComputeDT* res_vt = reinterpret_cast<_ComputeDT*>(result3);
+
+    const std::int64_t m = size_m;
+    const std::int64_t n = size_n;
+
+    const std::int64_t lda = std::max<size_t>(1UL, n);
+    const std::int64_t ldu = std::max<size_t>(1UL, m);
+    const std::int64_t ldvt = std::max<size_t>(1UL, n);
+
+    const std::int64_t scratchpad_size1 = mkl_lapack::gesvd_scratchpad_size<_ComputeDT>(
+        DPNP_QUEUE, oneapi::mkl::jobsvd::vectors, oneapi::mkl::jobsvd::vectors, n, m, lda, ldvt, ldu);
+
+    const std::int64_t scratchpad_size = scratchpad_size1;
+
+    _ComputeDT* scratchpad = reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(_ComputeDT)));
+
+    event = mkl_lapack::gesvd(DPNP_QUEUE,
+                              oneapi::mkl::jobsvd::vectors, // onemkl::job jobu,
+                              oneapi::mkl::jobsvd::vectors, // onemkl::job jobvt,
+                              n,
+                              m,
+                              in_a,
+                              lda,
+                              res_s,
+                              res_vt,
+                              ldvt,
+                              res_u,
+                              ldu,
+                              scratchpad,
+                              scratchpad_size);
+
+    event.wait();
+
+    dpnp_memory_free_c(scratchpad);
+}
+
 void func_map_init_linalg_func(func_map_t& fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_cholesky_c<int>};
@@ -330,6 +383,13 @@ void func_map_init_linalg_func(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_matrix_rank_c<long>};
     fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_matrix_rank_c<float>};
     fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_matrix_rank_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_SVD][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_svd_c<int, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_SVD][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_svd_c<long, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_SVD][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_svd_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_SVD][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_svd_c<double, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_SVD][eft_C128][eft_C128] = {
+        eft_C128, (void*)dpnp_svd_c<std::complex<double>, std::complex<double>, double>};
 
     return;
 }

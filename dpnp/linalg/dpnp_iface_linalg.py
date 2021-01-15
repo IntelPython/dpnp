@@ -58,7 +58,8 @@ __all__ = [
     "matrix_power",
     "matrix_rank",
     "multi_dot",
-    "norm"
+    "norm",
+    "svd",
 ]
 
 
@@ -394,3 +395,77 @@ def norm(input, ord=None, axis=None, keepdims=False):
         return result
 
     return call_origin(numpy.linalg.norm, input, ord, axis, keepdims)
+
+
+def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
+    """
+    Singular Value Decomposition.
+
+    For full documentation refer to :obj:`numpy.linalg.svd`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.random.randn(9, 6) + 1j*np.random.randn(9, 6)
+    >>> b = np.random.randn(2, 7, 8, 3) + 1j*np.random.randn(2, 7, 8, 3)
+
+    Reconstruction based on full SVD, 2D case:
+
+    >>> u, s, vh = np.linalg.svd(a, full_matrices=True)
+    >>> u.shape, s.shape, vh.shape
+    ((9, 9), (6,), (6, 6))
+    >>> np.allclose(a, np.dot(u[:, :6] * s, vh))
+    True
+    >>> smat = np.zeros((9, 6), dtype=complex)
+    >>> smat[:6, :6] = np.diag(s)
+    >>> np.allclose(a, np.dot(u, np.dot(smat, vh)))
+    True
+
+    Reconstruction based on reduced SVD, 2D case:
+
+    >>> u, s, vh = np.linalg.svd(a, full_matrices=False)
+    >>> u.shape, s.shape, vh.shape
+    ((9, 6), (6,), (6, 6))
+    >>> np.allclose(a, np.dot(u * s, vh))
+    True
+    >>> smat = np.diag(s)
+    >>> np.allclose(a, np.dot(u, np.dot(smat, vh)))
+    True
+
+    Reconstruction based on full SVD, 4D case:
+
+    >>> u, s, vh = np.linalg.svd(b, full_matrices=True)
+    >>> u.shape, s.shape, vh.shape
+    ((2, 7, 8, 8), (2, 7, 3), (2, 7, 3, 3))
+    >>> np.allclose(b, np.matmul(u[..., :3] * s[..., None, :], vh))
+    True
+    >>> np.allclose(b, np.matmul(u[..., :3], s[..., None] * vh))
+    True
+
+    Reconstruction based on reduced SVD, 4D case:
+
+    >>> u, s, vh = np.linalg.svd(b, full_matrices=False)
+    >>> u.shape, s.shape, vh.shape
+    ((2, 7, 8, 3), (2, 7, 3), (2, 7, 3, 3))
+    >>> np.allclose(b, np.matmul(u * s[..., None, :], vh))
+    True
+    >>> np.allclose(b, np.matmul(u, s[..., None] * vh))
+    True
+
+    """
+
+    if not use_origin_backend(a):
+        if not isinstance(a, dparray):
+            pass
+        if not a.ndim == 2:
+            pass
+        if not full_matrices == True:
+            pass
+        if not compute_uv == True:
+            pass
+        if not hermitian == False:
+            pass
+        else:
+            return dpnp_svd(a, full_matrices, compute_uv, hermitian)
+
+    return call_origin(numpy.linalg.svd, a, full_matrices, compute_uv, hermitian)
