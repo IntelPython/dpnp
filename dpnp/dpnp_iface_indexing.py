@@ -40,6 +40,8 @@ it contains:
 """
 
 
+import collections
+
 import numpy
 
 from dpnp.dpnp_algo import *
@@ -55,6 +57,7 @@ __all__ = [
     "fill_diagonal",
     "indices",
     "nonzero",
+    "place",
     "put",
     "take",
     "tril_indices",
@@ -292,6 +295,30 @@ def nonzero(a):
         return dpnp_nonzero(a)
 
     return call_origin(numpy.nonzero, a)
+
+
+def place(arr, mask, vals):
+    """
+    Change elements of an array based on conditional and input values.
+    For full documentation refer to :obj:`numpy.place`.
+
+    Limitations
+    -----------
+    Input arrays ``arr`` and ``mask``  are supported as :obj:`dpnp.ndarray`.
+    Parameter ``vals`` is supported as 1-D sequence.
+    """
+
+    if not use_origin_backend(arr):
+        if not isinstance(arr, dparray):
+            pass
+        elif not isinstance(mask, dparray):
+            pass
+        elif not isinstance(vals, collections.Sequence):
+            pass
+        else:
+            return dpnp_place(arr, mask, vals)
+
+    return call_origin(numpy.place, arr, mask, vals)
 
 
 def put(input, ind, v, mode='raise'):

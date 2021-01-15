@@ -136,21 +136,28 @@ jobs:
     vmImage: 'windows-2019' # 'vs2017-win2016'
   steps:
   - script: |
-      call ./scripts/install_system_deps_win.bat
-      call ./scripts/install_cmake_win.bat
+      call scripts\install_system_deps_win.bat
+      call scripts\install_cmake_win.bat
 
       echo ========================= Intel OneAPI setvars ===============================
-      call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019
+      # call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019
+      set "ONEAPI_ROOT=C:\Program Files (x86)\Intel\oneAPI\"
+      
+      echo =================== conda install conda-build ===========================
+      :: call scripts\install_python_deps.sh
+      conda install -y conda-build -c "%ONEAPI_ROOT%\conda_channel"
 
+      call scripts\build_deps_dpctl_win.bat
       echo =================== build DPNP bdist_wheel package ===========================
       :: cmake -G Ninja ..
       :: cmake --build . --target install -- -v
       :: python setup.py build_clib
       :: python setup.py build_ext --inplace
       python setup.py bdist_wheel
-  - publish: dist
-    artifact: 'package_$(Agent.JobName)_$(Agent.OS)'
-    displayName: bdist_wheel_dpnp_local_win_package
+      dir
+      :: - publish: dist
+      ::   artifact: 'package_$(Agent.JobName)_$(Agent.OS)'
+      ::   displayName: bdist_wheel_local_win
 
 # test python ./setup.py bdist_wheel command with dpctl
 - job: wheel_dpnp_dpctl_lin
@@ -229,3 +236,14 @@ jobs:
   - publish: dpnp/backend/package_dpnp
     artifact: 'package_backend_$(Agent.JobName)_$(Agent.OS)'
     displayName: backend_cmake_oneapi_local_lin_package
+
+- job: devenv_lin
+  displayName: devenv_lin
+  pool:
+    vmImage: 'ubuntu-20.04'
+  steps:
+  - bash: |
+      ./scripts/install_system_deps.sh  # no intel python
+      ./scripts/install_python_deps.sh  # numpy, conda-build and etc.
+      echo ========================= build DPNP package ===============================
+      ./0.build.sh

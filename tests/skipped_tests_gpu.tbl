@@ -746,18 +746,6 @@ tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmask::test_putmask_
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmask::test_putmask_scalar_values
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmaskDifferentDtypes::test_putmask_differnt_dtypes_mask
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmaskDifferentDtypes::test_putmask_differnt_dtypes_raises
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_0_{n_vals=0, shape=(7,)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_1_{n_vals=0, shape=(2, 3)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_2_{n_vals=0, shape=(4, 3, 2)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_3_{n_vals=1, shape=(7,)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_4_{n_vals=1, shape=(2, 3)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_5_{n_vals=1, shape=(4, 3, 2)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_6_{n_vals=3, shape=(7,)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_7_{n_vals=3, shape=(2, 3)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_8_{n_vals=3, shape=(4, 3, 2)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_9_{n_vals=15, shape=(7,)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_10_{n_vals=15, shape=(2, 3)}::test_place
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_11_{n_vals=15, shape=(4, 3, 2)}::test_place
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPlaceRaises_param_0_{shape=(7,)}::test_place_empty_value_error
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPlaceRaises_param_0_{shape=(7,)}::test_place_shape_unmatch_error
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPlaceRaises_param_1_{shape=(2, 3)}::test_place_empty_value_error
@@ -1079,78 +1067,6 @@ tests/third_party/cupy/logic_tests/test_comparison.py::TestComparisonOperator::t
 tests/third_party/cupy/logic_tests/test_comparison.py::TestComparisonOperator::test_binary_array_pyscalar
 tests/third_party/cupy/logic_tests/test_comparison.py::TestComparisonOperator::test_binary_npscalar_array
 tests/third_party/cupy/logic_tests/test_comparison.py::TestComparisonOperator::test_binary_pyscalar_array
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestBasic::test_copyto_broadcast
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestBasic::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_0_{dst_shape=(), src=3.2}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_0_{dst_shape=(), src=3.2}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_10_{dst_shape=(0,), src=-4}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_10_{dst_shape=(0,), src=-4}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_11_{dst_shape=(0,), src=True}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_11_{dst_shape=(0,), src=True}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_12_{dst_shape=(0,), src=False}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_12_{dst_shape=(0,), src=False}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_13_{dst_shape=(0,), src=(1+1j)}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_13_{dst_shape=(0,), src=(1+1j)}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_14_{dst_shape=(1,), src=3.2}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_14_{dst_shape=(1,), src=3.2}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_15_{dst_shape=(1,), src=0}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_15_{dst_shape=(1,), src=0}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_16_{dst_shape=(1,), src=4}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_16_{dst_shape=(1,), src=4}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_17_{dst_shape=(1,), src=-4}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_17_{dst_shape=(1,), src=-4}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_18_{dst_shape=(1,), src=True}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_18_{dst_shape=(1,), src=True}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_19_{dst_shape=(1,), src=False}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_19_{dst_shape=(1,), src=False}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_1_{dst_shape=(), src=0}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_1_{dst_shape=(), src=0}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_20_{dst_shape=(1,), src=(1+1j)}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_20_{dst_shape=(1,), src=(1+1j)}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_21_{dst_shape=(1, 1), src=3.2}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_21_{dst_shape=(1, 1), src=3.2}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_22_{dst_shape=(1, 1), src=0}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_22_{dst_shape=(1, 1), src=0}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_23_{dst_shape=(1, 1), src=4}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_23_{dst_shape=(1, 1), src=4}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_24_{dst_shape=(1, 1), src=-4}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_24_{dst_shape=(1, 1), src=-4}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_25_{dst_shape=(1, 1), src=True}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_25_{dst_shape=(1, 1), src=True}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_26_{dst_shape=(1, 1), src=False}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_26_{dst_shape=(1, 1), src=False}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_27_{dst_shape=(1, 1), src=(1+1j)}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_27_{dst_shape=(1, 1), src=(1+1j)}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_28_{dst_shape=(2, 2), src=3.2}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_28_{dst_shape=(2, 2), src=3.2}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_29_{dst_shape=(2, 2), src=0}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_29_{dst_shape=(2, 2), src=0}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_2_{dst_shape=(), src=4}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_2_{dst_shape=(), src=4}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_30_{dst_shape=(2, 2), src=4}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_30_{dst_shape=(2, 2), src=4}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_31_{dst_shape=(2, 2), src=-4}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_31_{dst_shape=(2, 2), src=-4}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_32_{dst_shape=(2, 2), src=True}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_32_{dst_shape=(2, 2), src=True}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_33_{dst_shape=(2, 2), src=False}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_33_{dst_shape=(2, 2), src=False}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_34_{dst_shape=(2, 2), src=(1+1j)}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_34_{dst_shape=(2, 2), src=(1+1j)}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_3_{dst_shape=(), src=-4}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_3_{dst_shape=(), src=-4}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_4_{dst_shape=(), src=True}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_4_{dst_shape=(), src=True}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_5_{dst_shape=(), src=False}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_5_{dst_shape=(), src=False}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_6_{dst_shape=(), src=(1+1j)}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_6_{dst_shape=(), src=(1+1j)}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_7_{dst_shape=(0,), src=3.2}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_7_{dst_shape=(0,), src=3.2}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_8_{dst_shape=(0,), src=0}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_8_{dst_shape=(0,), src=0}::test_copyto_where
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_9_{dst_shape=(0,), src=4}::test_copyto
-tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_9_{dst_shape=(0,), src=4}::test_copyto_where
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_broadcast_to
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_broadcast_to_fail
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_broadcast_to_fail_numpy19
