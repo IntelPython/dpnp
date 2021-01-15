@@ -135,12 +135,16 @@ jobs:
   pool:
     vmImage: 'windows-2019' # 'vs2017-win2016'
   steps:
+  - powershell: Write-Host "##vso[task.prependpath]$env:CONDA\Scripts"
+    displayName: Add conda to PATH
+
   - script: |
+      call activate
       call scripts\install_system_deps_win.bat
       call scripts\install_cmake_win.bat
 
       echo ========================= Intel OneAPI setvars ===============================
-      # call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019
+      :: call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019
       set "ONEAPI_ROOT=C:\Program Files (x86)\Intel\oneAPI\"
       
       echo =================== conda install conda-build ===========================
