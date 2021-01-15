@@ -54,7 +54,7 @@ namespace mkl_rng = oneapi::mkl::rng;
 #define DPNP_RNG_STREAM backend_sycl::get_rng_stream()
 
 #define METHOD  VSL_RNG_METHOD_BETA_CJA
-#define BRNG    VSL_BRNG_MCG31  // TODO: will be changed
+#define BRNG    VSL_BRNG_MT19937
 
 /**
  * This is container for the SYCL queue, random number generation engine and related functions like queue and engine
@@ -68,7 +68,7 @@ class backend_sycl
     static cl::sycl::queue* queue; /**< contains SYCL queue pointer initialized in @ref backend_sycl_queue_init */
 #endif
     static mkl_rng::mt19937* rng_engine; /**< RNG engine ptr. initialized in @ref backend_sycl_rng_engine_init */
-    static VSLStreamStatePtr stream; /**< TODO ?>**/
+    static VSLStreamStatePtr stream; /**< Ptr. to the stream state structure @ref backend_sycl_rng_stream_init */
 
     static void destroy()
     {
@@ -78,7 +78,6 @@ class backend_sycl
         delete queue;
         queue = nullptr;
 #endif
-
     }
 
     static void destroy_rng_engine()
@@ -131,7 +130,7 @@ public:
     static void backend_sycl_rng_engine_init(size_t seed = 1);
 
     /**
-     * Initialize @ref rng_engine
+     * Initialize @ref stream
      */
     static void backend_sycl_rng_stream_init(size_t seed = 1);
 
