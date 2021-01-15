@@ -205,7 +205,7 @@ def test_norm3(array, ord, axis):
 @pytest.mark.parametrize("shape",
                          [(2,2), (3,4), (5,3), (16,16)],
                          ids=['(2,2)', '(3,4)', '(5,3)', '(16,16)'])
-def test_svd_arange(type, shape):
+def test_svd(type, shape):
     a = numpy.arange(shape[0] * shape[1], dtype=type).reshape(shape)
     ia = inp.array(a)
 
