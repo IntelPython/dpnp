@@ -27,6 +27,7 @@
 #include "dpnp_fptr.hpp"
 #include "dpnp_utils.hpp"
 #include "queue_sycl.hpp"
+#include "mkl_vsl.h"
 
 #include <vector>
 
@@ -36,10 +37,7 @@ namespace mkl_blas = oneapi::mkl::blas;
 template <typename _DataType>
 void dpnp_rng_beta_c(void* result, _DataType a, _DataType b, size_t size)
 {
-    if (!size)
-    {
-        return;
-    }
+    int errcode;  // status TODO: using (could be redesigne)
 
     _DataType displacement = _DataType(0.0);
 
@@ -47,10 +45,23 @@ void dpnp_rng_beta_c(void* result, _DataType a, _DataType b, size_t size)
 
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    mkl_rng::beta<_DataType> distribution(a, b, displacement, scalefactor);
-    // perform generation
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
+    if (!size)
+    {
+        return;
+    }
+
+    if(dpnp_queue_is_cpu_c())
+    {
+        mkl_rng::beta<_DataType> distribution(a, b, displacement, scalefactor);
+        // perform generation
+        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+        event_out.wait();
+    }
+    else
+    {
+        errcode = vdRngBeta(METHOD, DPNP_RNG_STREAM, size, result1, a, b, displacement, scalefactor);
+        assert(errcode == VSL_STATUS_OK);
+    }
 }
 
 template <typename _DataType>
@@ -439,7 +450,6 @@ void dpnp_rng_weibull_c(void* result, double alpha, size_t size)
 void func_map_init_random(func_map_t& fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_RNG_BETA][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_beta_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_RNG_BETA][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_beta_c<float>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_BINOMIAL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_binomial_c<int>};
 

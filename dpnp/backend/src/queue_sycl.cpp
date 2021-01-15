@@ -34,6 +34,7 @@
 cl::sycl::queue* backend_sycl::queue = nullptr;
 #endif
 mkl_rng::mt19937* backend_sycl::rng_engine = nullptr;
+VSLStreamStatePtr backend_sycl::stream = NULL;
 
 /**
  * Function push the SYCL kernels to be linked (final stage of the compilation) for the current queue
@@ -142,6 +143,16 @@ void backend_sycl::backend_sycl_rng_engine_init(size_t seed)
     rng_engine = new mkl_rng::mt19937(DPNP_QUEUE, seed);
 }
 
+void backend_sycl::backend_sycl_rng_stream_init(size_t seed)
+{
+    if (stream)
+    {
+        backend_sycl::destroy_rng_stream();
+    }
+    vslNewStream(&stream, BRNG, seed);
+}
+
+
 void dpnp_queue_initialize_c(QueueOptions selector)
 {
     backend_sycl::backend_sycl_queue_init(selector);
@@ -155,4 +166,5 @@ size_t dpnp_queue_is_cpu_c()
 void dpnp_srand_c(size_t seed)
 {
     backend_sycl::backend_sycl_rng_engine_init(seed);
+    backend_sycl::backend_sycl_rng_stream_init(seed);
 }
