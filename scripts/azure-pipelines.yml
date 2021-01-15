@@ -132,7 +132,7 @@ jobs:
 
 - job: bdist_wheel_dpnp_local_win
   displayName: bdist_wheel_dpnp_local_win
-  timeoutInMinutes: 60
+  timeoutInMinutes: 120
   pool:
     vmImage: 'windows-2019' # 'vs2017-win2016'
   steps:
@@ -145,7 +145,7 @@ jobs:
   - script: |
       call scripts\install_system_deps_win.bat
     displayName: Install Intel ONE API
-    timeoutInMinutes: 30
+    timeoutInMinutes: 60
 
   - script: |
       call activate
