@@ -335,20 +335,14 @@ void dpnp_svd_c(void* array1_in, void* result1, void* result2, void* result3, si
     const std::int64_t ldu = std::max<size_t>(1UL, m);
     const std::int64_t ldvt = std::max<size_t>(1UL, n);
 
-    const std::int64_t scratchpad_size1 = mkl_lapack::gesvd_scratchpad_size<_ComputeDT>(DPNP_QUEUE,
-                                                                                      oneapi::mkl::jobsvd::vectors,
-                                                                                      oneapi::mkl::jobsvd::vectors,
-                                                                                      n,
-                                                                                      m,
-                                                                                      lda,
-                                                                                      ldvt,
-                                                                                      ldu);
+    const std::int64_t scratchpad_size1 = mkl_lapack::gesvd_scratchpad_size<_ComputeDT>(
+        DPNP_QUEUE, oneapi::mkl::jobsvd::vectors, oneapi::mkl::jobsvd::vectors, n, m, lda, ldvt, ldu);
 
     const std::int64_t scratchpad_size = scratchpad_size1;
 
     _ComputeDT* scratchpad = reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(_ComputeDT)));
 
-    event = mkl_lapack::gesvd(DPNP_QUEUE, //queue,
+    event = mkl_lapack::gesvd(DPNP_QUEUE,
                               oneapi::mkl::jobsvd::vectors, // onemkl::job jobu,
                               oneapi::mkl::jobsvd::vectors, // onemkl::job jobvt,
                               n,
@@ -394,7 +388,8 @@ void func_map_init_linalg_func(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_SVD][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_svd_c<long, double, double>};
     fmap[DPNPFuncName::DPNP_FN_SVD][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_svd_c<float, float, float>};
     fmap[DPNPFuncName::DPNP_FN_SVD][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_svd_c<double, double, double>};
-    fmap[DPNPFuncName::DPNP_FN_SVD][eft_C128][eft_C128] = {eft_C128, (void*)dpnp_svd_c<std::complex<double>, std::complex<double>, double>};
+    fmap[DPNPFuncName::DPNP_FN_SVD][eft_C128][eft_C128] = {
+        eft_C128, (void*)dpnp_svd_c<std::complex<double>, std::complex<double>, double>};
 
     return;
 }
