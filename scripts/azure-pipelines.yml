@@ -147,7 +147,7 @@ jobs:
       :: call scripts\install_python_deps.sh
       conda install -y conda-build -c "%ONEAPI_ROOT%\conda_channel"
 
-      call scripts\build_deps_dpctl_win.bat
+      :: call scripts\build_deps_dpctl_win.bat
       echo =================== build DPNP bdist_wheel package ===========================
       :: cmake -G Ninja ..
       :: cmake --build . --target install -- -v
