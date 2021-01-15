@@ -136,6 +136,9 @@ jobs:
   pool:
     vmImage: 'windows-2019' # 'vs2017-win2016'
   steps:
+  - script: set PYTHONUNBUFFERED=1
+    displayName: make output unbuffered
+
   - powershell: Write-Host "##vso[task.prependpath]$env:CONDA\Scripts"
     displayName: Add conda to PATH
 
