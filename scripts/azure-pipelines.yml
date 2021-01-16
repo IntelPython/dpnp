@@ -154,6 +154,8 @@ jobs:
       :: call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019
       set "ONEAPI_ROOT=C:\Program Files (x86)\Intel\oneAPI\"
       call "%ONEAPI_ROOT%\compiler\latest\env\vars.bat"
+      call "%ONEAPI_ROOT%\dpl\latest\env\vars.bat"
+      call "%ONEAPI_ROOT%\tbb\latest\env\vars.bat"
       echo =================== conda install conda-build ===========================
       :: call scripts\install_python_deps.sh
       :: conda install -y conda-build numpy cython pytest hypothesis -c "%ONEAPI_ROOT%\conda_channel"
