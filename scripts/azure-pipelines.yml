@@ -157,12 +157,8 @@ jobs:
       call "%ONEAPI_ROOT%\tbb\latest\env\vars.bat"
       echo =================== conda install conda-build ===========================
       conda install -y conda-build numpy cython pytest hypothesis
-      echo =================== build DPNP bdist_wheel package ===========================
+      echo =================== build DPNP wheel package ===========================
       python setup.py bdist_wheel
-      :: call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019
-      :: call scripts\install_python_deps.sh
-      :: conda install -y conda-build numpy cython pytest hypothesis -c "%ONEAPI_ROOT%\conda_channel"
-      :: call scripts\build_deps_dpctl_win.bat
     displayName: build_bdist_wheel
   - publish: dist
     artifact: 'package_$(Agent.JobName)_$(Agent.OS)'
