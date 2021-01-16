@@ -151,8 +151,8 @@ jobs:
       call activate
       call scripts\install_cmake_win.bat
       echo ========================= Intel OneAPI setvars ===============================
-      :: call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019
-      set "ONEAPI_ROOT=C:\Program Files (x86)\Intel\oneAPI\"
+      call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019
+      :: set "ONEAPI_ROOT=C:\Program Files (x86)\Intel\oneAPI\"
       echo =================== conda install conda-build ===========================
       call scripts\install_python_deps.sh
       :: conda install -y conda-build -c "%ONEAPI_ROOT%\conda_channel"
