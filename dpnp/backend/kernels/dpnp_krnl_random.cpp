@@ -23,21 +23,58 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <mkl_vsl.h>
+#include <stdexcept>
+#include <vector>
+
 #include <dpnp_iface.hpp>
+
 #include "dpnp_fptr.hpp"
 #include "dpnp_utils.hpp"
 #include "queue_sycl.hpp"
-#include "mkl_vsl.h"
-
-#include <vector>
 
 namespace mkl_rng = oneapi::mkl::rng;
 namespace mkl_blas = oneapi::mkl::blas;
 
+/**
+ * Use get/set functions to access/modify this variable
+ */
+static VSLStreamStatePtr rng_stream = nullptr;
+
+static void set_rng_stream(size_t seed = 1)
+{
+    if (rng_stream)
+    {
+        vslDeleteStream(&rng_stream);
+        rng_stream = nullptr;
+    }
+
+    vslNewStream(&rng_stream, VSL_BRNG_MT19937, seed);
+}
+
+static VSLStreamStatePtr get_rng_stream()
+{
+    if (!rng_stream)
+    {
+        set_rng_stream();
+    }
+
+    return rng_stream;
+}
+
+void dpnp_srand_c(size_t seed)
+{
+    backend_sycl::backend_sycl_rng_engine_init(seed);
+    set_rng_stream(seed);
+}
+
 template <typename _DataType>
 void dpnp_rng_beta_c(void* result, _DataType a, _DataType b, size_t size)
 {
-    int errcode;  // status TODO: using (could be redesigne)
+    if (!size)
+    {
+        return;
+    }
 
     _DataType displacement = _DataType(0.0);
 
@@ -45,12 +82,7 @@ void dpnp_rng_beta_c(void* result, _DataType a, _DataType b, size_t size)
 
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    if (!size)
-    {
-        return;
-    }
-
-    if(dpnp_queue_is_cpu_c())
+    if (dpnp_queue_is_cpu_c())
     {
         mkl_rng::beta<_DataType> distribution(a, b, displacement, scalefactor);
         // perform generation
@@ -59,9 +91,15 @@ void dpnp_rng_beta_c(void* result, _DataType a, _DataType b, size_t size)
     }
     else
     {
-        errcode = vdRngBeta(METHOD, DPNP_RNG_STREAM, size, result1, a, b, displacement, scalefactor);
-        assert(errcode == VSL_STATUS_OK);
+        int errcode =
+            vdRngBeta(VSL_RNG_METHOD_BETA_CJA, get_rng_stream(), size, result1, a, b, displacement, scalefactor);
+        if (errcode != VSL_STATUS_OK)
+        {
+            throw std::runtime_error("DPNP RNG Error: dpnp_rng_beta_c() failed.");
+        }
     }
+
+    return;
 }
 
 template <typename _DataType>

@@ -39,7 +39,6 @@
 #pragma clang diagnostic pop
 
 #include <ctime>
-#include <mkl_vsl.h>
 
 #if !defined(DPNP_LOCAL_QUEUE)
 #include <dpctl_sycl_queue_manager.h>
@@ -51,10 +50,6 @@ namespace mkl_rng = oneapi::mkl::rng;
 
 #define DPNP_QUEUE      backend_sycl::get_queue()
 #define DPNP_RNG_ENGINE backend_sycl::get_rng_engine()
-#define DPNP_RNG_STREAM backend_sycl::get_rng_stream()
-
-#define METHOD  VSL_RNG_METHOD_BETA_CJA
-#define BRNG    VSL_BRNG_MT19937
 
 /**
  * This is container for the SYCL queue, random number generation engine and related functions like queue and engine
@@ -68,12 +63,10 @@ class backend_sycl
     static cl::sycl::queue* queue; /**< contains SYCL queue pointer initialized in @ref backend_sycl_queue_init */
 #endif
     static mkl_rng::mt19937* rng_engine; /**< RNG engine ptr. initialized in @ref backend_sycl_rng_engine_init */
-    static VSLStreamStatePtr stream; /**< Ptr. to the stream state structure @ref backend_sycl_rng_stream_init */
 
     static void destroy()
     {
         backend_sycl::destroy_rng_engine();
-        backend_sycl::destroy_rng_stream();
 #if defined(DPNP_LOCAL_QUEUE)
         delete queue;
         queue = nullptr;
@@ -86,20 +79,12 @@ class backend_sycl
         rng_engine = nullptr;
     }
 
-    static void destroy_rng_stream()
-    {
-        if(stream) {
-            vslDeleteStream(&stream);
-        }
-    }
-
 public:
     backend_sycl()
     {
 #if defined(DPNP_LOCAL_QUEUE)
         queue = nullptr;
         rng_engine = nullptr;
-        stream = NULL;
 #endif
     }
 
@@ -130,11 +115,6 @@ public:
     static void backend_sycl_rng_engine_init(size_t seed = 1);
 
     /**
-     * Initialize @ref stream
-     */
-    static void backend_sycl_rng_stream_init(size_t seed = 1);
-
-    /**
      * Return the @ref queue to the user
      */
     static cl::sycl::queue& get_queue()
@@ -163,18 +143,6 @@ public:
             backend_sycl_rng_engine_init();
         }
         return *rng_engine;
-    }
-
-    /**
-     * Return the @ref stream to the user
-     */
-    static VSLStreamStatePtr get_rng_stream()
-    {
-        if (!stream)
-        {
-            backend_sycl_rng_stream_init();
-        }
-        return stream;
     }
 };
 
