@@ -151,21 +151,22 @@ jobs:
       call activate
       call scripts\install_cmake_win.bat
       echo ========================= Intel OneAPI setvars ===============================
-      :: call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019
       set "ONEAPI_ROOT=C:\Program Files (x86)\Intel\oneAPI\"
       call "%ONEAPI_ROOT%\compiler\latest\env\vars.bat"
       call "%ONEAPI_ROOT%\dpl\latest\env\vars.bat"
       call "%ONEAPI_ROOT%\tbb\latest\env\vars.bat"
       echo =================== conda install conda-build ===========================
-      :: call scripts\install_python_deps.sh
-      :: conda install -y conda-build numpy cython pytest hypothesis -c "%ONEAPI_ROOT%\conda_channel"
       conda install -y conda-build numpy cython pytest hypothesis
-      :: call scripts\build_deps_dpctl_win.bat
       echo =================== build DPNP bdist_wheel package ===========================
       python setup.py bdist_wheel
+      :: call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64 vs2019
+      :: call scripts\install_python_deps.sh
+      :: conda install -y conda-build numpy cython pytest hypothesis -c "%ONEAPI_ROOT%\conda_channel"
+      :: call scripts\build_deps_dpctl_win.bat
+    displayName: build_bdist_wheel
   - publish: dist
     artifact: 'package_$(Agent.JobName)_$(Agent.OS)'
-    displayName: bdist_wheel_local_win
+    displayName: bdist_wheel_local_win_package
 
 # test python ./setup.py bdist_wheel command with dpctl
 - job: wheel_dpnp_dpctl_lin
