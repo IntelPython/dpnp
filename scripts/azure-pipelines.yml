@@ -158,6 +158,7 @@ jobs:
       echo =================== conda install conda-build ===========================
       conda install -y conda-build numpy cython pytest hypothesis
       echo =================== build DPNP wheel package ===========================
+      mkdir dist
       python setup.py bdist_wheel
     displayName: build_bdist_wheel
   - publish: dist
