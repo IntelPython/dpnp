@@ -147,7 +147,7 @@ jobs:
     displayName: Install Intel ONE API
     timeoutInMinutes: 60
 
-- script: |
+  - script: |
       call activate
       conda install -y conda-build numpy cython pytest hypothesis
     displayName: Install extra conda packages
