@@ -159,7 +159,17 @@ jobs:
       ::   artifact: 'package_$(Agent.JobName)_$(Agent.OS)'
       ::   displayName: bdist_wheel_local_win
 
-# test python ./setup.py bdist_wheel command with dpctl
+- job: win_oneapi_inst
+  pool:
+    vmImage: 'windows-2019' # 'vs2017-win2016'
+  steps:
+  - script: set PYTHONUNBUFFERED=1
+  - powershell: Write-Host "##vso[task.prependpath]$env:CONDA\Scripts"
+  - script: |
+      conda install -y -c intel dpcpp_cpp_rt tbb tbb-devel mkl-devel mkl-include mkl mkl-dpcpp
+      dpcpp --version
+      python ./setup.py build_clib
+      python ./setup.py build_ext --inplace
 - job: wheel_dpnp_dpctl_lin
   displayName: bdist_wheel_dpnp_dpctl_lin
   pool:
