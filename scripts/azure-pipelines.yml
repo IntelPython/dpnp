@@ -147,6 +147,11 @@ jobs:
     displayName: Install Intel ONE API
     timeoutInMinutes: 60
 
+- script: |
+      call activate
+      conda install -y conda-build numpy cython pytest hypothesis
+    displayName: Install extra conda packages
+
   - script: |
       call activate
       call scripts\install_cmake_win.bat
@@ -155,10 +160,7 @@ jobs:
       call "%ONEAPI_ROOT%\compiler\latest\env\vars.bat"
       call "%ONEAPI_ROOT%\dpl\latest\env\vars.bat"
       call "%ONEAPI_ROOT%\tbb\latest\env\vars.bat"
-      echo =================== conda install conda-build ===========================
-      conda install -y conda-build numpy cython pytest hypothesis
       echo =================== build DPNP wheel package ===========================
-      mkdir dist
       python setup.py bdist_wheel
     displayName: build_bdist_wheel
   - publish: dist
