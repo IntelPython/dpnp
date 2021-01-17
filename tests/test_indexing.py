@@ -130,7 +130,8 @@ def test_place2(arr, mask, vals):
                               '[100, 200, 300, 400, 500, 600]',
                               '[100, 200, 300, 400, 500, 600, 800, 900]'])
 @pytest.mark.parametrize("mask",
-                         [[[[[False, False], [True, True]], [[True, True], [True, True]]], [[[False, False], [True, True]], [[False, False], [False, False]]]]],
+                         [[[[[False, False], [True, True]], [[True, True], [True, True]]], [
+                             [[False, False], [True, True]], [[False, False], [False, False]]]]],
                          ids=['[[[[False, False], [True, True]], [[True, True], [True, True]]], [[[False, False], [True, True]], [[False, False], [False, False]]]]'])
 @pytest.mark.parametrize("arr",
                          [[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]],
@@ -265,7 +266,8 @@ def test_putmask2(arr, mask, vals):
                               '[100, 200, 300, 400, 500, 600]',
                               '[100, 200, 300, 400, 500, 600, 800, 900]'])
 @pytest.mark.parametrize("mask",
-                         [[[[[False, False], [True, True]], [[True, True], [True, True]]], [[[False, False], [True, True]], [[False, False], [False, False]]]]],
+                         [[[[[False, False], [True, True]], [[True, True], [True, True]]], [
+                             [[False, False], [True, True]], [[False, False], [False, False]]]]],
                          ids=['[[[[False, False], [True, True]], [[True, True], [True, True]]], [[[False, False], [True, True]], [[False, False], [False, False]]]]'])
 @pytest.mark.parametrize("arr",
                          [[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]],
