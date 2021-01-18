@@ -91,8 +91,8 @@ void dpnp_rng_beta_c(void* result, _DataType a, _DataType b, size_t size)
     }
     else
     {
-        int errcode =
-            vdRngBeta(VSL_RNG_METHOD_BETA_CJA, get_rng_stream(), size, result1, a, b, displacement, scalefactor);
+        int errcode = vdRngBeta(VSL_RNG_METHOD_BETA_CJA, get_rng_stream(), size, 
+            result1, a, b, displacement, scalefactor);
         if (errcode != VSL_STATUS_OK)
         {
             throw std::runtime_error("DPNP RNG Error: dpnp_rng_beta_c() failed.");
@@ -120,8 +120,8 @@ void dpnp_rng_binomial_c(void* result, int ntrial, double p, size_t size)
     }
     else
     {
-        int errcode =
-            viRngBinomial(VSL_RNG_METHOD_BINOMIAL_BTPE, get_rng_stream(), size, result1, ntrial, p);
+        int errcode = viRngBinomial(VSL_RNG_METHOD_BINOMIAL_BTPE, get_rng_stream(),
+            size, result1, ntrial, p);
         if (errcode != VSL_STATUS_OK)
         {
             throw std::runtime_error("DPNP RNG Error: dpnp_rng_binomial_c() failed.");
@@ -147,8 +147,8 @@ void dpnp_rng_chi_square_c(void* result, int df, size_t size)
     }
     else
     {
-        int errcode =
-            vdRngChiSquare(VSL_RNG_METHOD_CHISQUARE_CHI2GAMMA, get_rng_stream(), size, result1, df);
+        int errcode = vdRngChiSquare(VSL_RNG_METHOD_CHISQUARE_CHI2GAMMA, get_rng_stream(),
+            size, result1, df);
         if (errcode != VSL_STATUS_OK)
         {
             throw std::runtime_error("DPNP RNG Error: dpnp_rng_chi_square_c() failed.");
@@ -197,8 +197,8 @@ void dpnp_rng_gamma_c(void* result, _DataType shape, _DataType scale, size_t siz
     }
     else
     {
-        int errcode =
-            vdRngGamma(VSL_RNG_METHOD_GAMMA_GNORM, get_rng_stream(), size, result1, shape, a, scale);
+        int errcode = vdRngGamma(VSL_RNG_METHOD_GAMMA_GNORM, get_rng_stream(), size,
+            result1, shape, a, scale);
         if (errcode != VSL_STATUS_OK)
         {
             throw std::runtime_error("DPNP RNG Error: dpnp_rng_gamma_c() failed.");
@@ -276,8 +276,8 @@ void dpnp_rng_hypergeometric_c(void* result, int l, int s, int m, size_t size)
     }
     else
     {
-        int errcode =
-            viRngHypergeometric(VSL_RNG_METHOD_HYPERGEOMETRIC_H2PE, get_rng_stream(), size, result1, l, s, m);
+        int errcode = viRngHypergeometric(VSL_RNG_METHOD_HYPERGEOMETRIC_H2PE, get_rng_stream(),
+            size, result1, l, s, m);
         if (errcode != VSL_STATUS_OK)
         {
             throw std::runtime_error("DPNP RNG Error: dpnp_rng_hypergeometric_c() failed.");
@@ -320,7 +320,11 @@ void dpnp_rng_lognormal_c(void* result, _DataType mean, _DataType stddev, size_t
 }
 
 template <typename _DataType>
-void dpnp_rng_multinomial_c(void* result, int ntrial, const double* p_vector, const size_t p_vector_size, size_t size)
+void dpnp_rng_multinomial_c(void* result,
+                            int ntrial,
+                            const double* p_vector,
+                            const size_t p_vector_size,
+                            size_t size)
 {
     if (!size)
     {
@@ -343,8 +347,8 @@ void dpnp_rng_multinomial_c(void* result, int ntrial, const double* p_vector, co
     }
     else
     {
-        int errcode =
-            viRngMultinomial(VSL_RNG_METHOD_MULTINOMIAL_MULTPOISSON, get_rng_stream(), n, result1, ntrial, p_vector_size, p_vector);
+        int errcode = viRngMultinomial(VSL_RNG_METHOD_MULTINOMIAL_MULTPOISSON, get_rng_stream(),
+            n, result1, ntrial, p_vector_size, p_vector);
         if (errcode != VSL_STATUS_OK)
         {
             throw std::runtime_error("DPNP RNG Error: dpnp_rng_multinomial_c() failed.");
@@ -373,11 +377,19 @@ void dpnp_rng_multivariate_normal_c(void* result,
     // `result` is a array for random numbers
     // `size` is a `result`'s len.
     // `size1` is a number of random values to be generated for each dimension.
-    mkl_rng::gaussian_mv<_DataType> distribution(dimen, mean, cov);
     size_t size1 = size / dimen;
 
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size1, result1);
-    event_out.wait();
+    if (dpnp_queue_is_cpu_c())
+    {
+        mkl_rng::gaussian_mv<_DataType> distribution(dimen, mean, cov);
+        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size1, result1);
+        event_out.wait();
+    }
+    else
+    {
+        int errcode = vdRngGaussianMV(VSL_RNG_METHOD_GAUSSIANMV_BOXMULLER2,  get_rng_stream(),
+            size1, result1, dimen, VSL_MATRIX_STORAGE_FULL, mean_vector, cov_vector );
+    }
 }
 
 template <typename _DataType>
@@ -398,8 +410,8 @@ void dpnp_rng_negative_binomial_c(void* result, double a, double p, size_t size)
     }
     else
     {
-        int errcode =
-            viRngNegbinomial(VSL_RNG_METHOD_NEGBINOMIAL_NBAR, get_rng_stream(), size, result1, a, p);
+        int errcode = viRngNegbinomial(VSL_RNG_METHOD_NEGBINOMIAL_NBAR, get_rng_stream(),
+            size, result1, a, p);
         if (errcode != VSL_STATUS_OK)
         {
             throw std::runtime_error("DPNP RNG Error: dpnp_rng_negative_binomial_c() failed.");
