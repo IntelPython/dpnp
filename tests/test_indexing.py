@@ -284,6 +284,18 @@ def test_putmask3(arr, mask, vals):
     numpy.testing.assert_array_equal(a, ia)
 
 
+def test_select():
+    x = numpy.arange(10)
+    ix = dpnp.array(x)
+    condlist = [x < 3, x > 5]
+    icondlist = [ix < 3, ix > 5]
+    choicelist = [x, x ** 2]
+    ichoicelist = [ix, ix ** 2]
+    expected = numpy.select(condlist, choicelist)
+    result = dpnp.select(icondlist, ichoicelist)
+    numpy.testing.assert_array_equal(expected, result)
+
+
 @pytest.mark.parametrize("indices",
                          [[[0, 0], [0, 0]],
                           [[1, 2], [1, 2]],
