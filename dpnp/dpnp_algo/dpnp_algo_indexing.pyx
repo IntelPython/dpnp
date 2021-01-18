@@ -47,6 +47,7 @@ __all__ += [
     "dpnp_place",
     "dpnp_put",
     "dpnp_putmask",
+    "dpnp_select",
     "dpnp_take",
     "dpnp_tril_indices",
     "dpnp_tril_indices_from",
@@ -230,6 +231,16 @@ cpdef dpnp_putmask(dparray arr, dparray mask, dparray values):
     for i in range(arr.size):
         if mask[i]:
             arr[i] = values[i % values_size]
+
+
+cpdef dparray dpnp_select(condlist, choicelist):
+    size_ = condlist[0].size
+    res_array = dparray(size_, dtype=choicelist[0].dtype)
+    for i in range(len(condlist)):
+        for j in range(size_):
+            if (condlist[i])[j]:
+                res_array[j] = (choicelist[i])[j]
+    return res_array.reshape(condlist[0].shape)
 
 
 cpdef dparray dpnp_take(dparray input, dparray indices):
