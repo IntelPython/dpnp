@@ -151,8 +151,3 @@ size_t dpnp_queue_is_cpu_c()
 {
     return backend_sycl::backend_sycl_is_cpu();
 }
-
-void dpnp_srand_c(size_t seed)
-{
-    backend_sycl::backend_sycl_rng_engine_init(seed);
-}

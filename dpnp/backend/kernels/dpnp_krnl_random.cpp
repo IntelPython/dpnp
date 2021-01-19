@@ -23,15 +23,50 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <mkl_vsl.h>
+#include <stdexcept>
+#include <vector>
+
 #include <dpnp_iface.hpp>
+
 #include "dpnp_fptr.hpp"
 #include "dpnp_utils.hpp"
 #include "queue_sycl.hpp"
 
-#include <vector>
-
 namespace mkl_rng = oneapi::mkl::rng;
 namespace mkl_blas = oneapi::mkl::blas;
+
+/**
+ * Use get/set functions to access/modify this variable
+ */
+static VSLStreamStatePtr rng_stream = nullptr;
+
+static void set_rng_stream(size_t seed = 1)
+{
+    if (rng_stream)
+    {
+        vslDeleteStream(&rng_stream);
+        rng_stream = nullptr;
+    }
+
+    vslNewStream(&rng_stream, VSL_BRNG_MT19937, seed);
+}
+
+static VSLStreamStatePtr get_rng_stream()
+{
+    if (!rng_stream)
+    {
+        set_rng_stream();
+    }
+
+    return rng_stream;
+}
+
+void dpnp_srand_c(size_t seed)
+{
+    backend_sycl::backend_sycl_rng_engine_init(seed);
+    set_rng_stream(seed);
+}
 
 template <typename _DataType>
 void dpnp_rng_beta_c(void* result, _DataType a, _DataType b, size_t size)
@@ -47,10 +82,24 @@ void dpnp_rng_beta_c(void* result, _DataType a, _DataType b, size_t size)
 
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    mkl_rng::beta<_DataType> distribution(a, b, displacement, scalefactor);
-    // perform generation
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
+    if (dpnp_queue_is_cpu_c())
+    {
+        mkl_rng::beta<_DataType> distribution(a, b, displacement, scalefactor);
+        // perform generation
+        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+        event_out.wait();
+    }
+    else
+    {
+        int errcode = vdRngBeta(VSL_RNG_METHOD_BETA_CJA, get_rng_stream(), size, 
+            result1, a, b, displacement, scalefactor);
+        if (errcode != VSL_STATUS_OK)
+        {
+            throw std::runtime_error("DPNP RNG Error: dpnp_rng_beta_c() failed.");
+        }
+    }
+
+    return;
 }
 
 template <typename _DataType>
@@ -62,10 +111,22 @@ void dpnp_rng_binomial_c(void* result, int ntrial, double p, size_t size)
     }
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    mkl_rng::binomial<_DataType> distribution(ntrial, p);
-    // perform generation
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
+    if (dpnp_queue_is_cpu_c())
+    {
+        mkl_rng::binomial<_DataType> distribution(ntrial, p);
+        // perform generation
+        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+        event_out.wait();
+    }
+    else
+    {
+        int errcode = viRngBinomial(VSL_RNG_METHOD_BINOMIAL_BTPE, get_rng_stream(),
+            size, result1, ntrial, p);
+        if (errcode != VSL_STATUS_OK)
+        {
+            throw std::runtime_error("DPNP RNG Error: dpnp_rng_binomial_c() failed.");
+        }
+    }
 }
 
 template <typename _DataType>
@@ -77,10 +138,22 @@ void dpnp_rng_chi_square_c(void* result, int df, size_t size)
     }
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    mkl_rng::chi_square<_DataType> distribution(df);
-    // perform generation
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
+    if (dpnp_queue_is_cpu_c())
+    {
+        mkl_rng::chi_square<_DataType> distribution(df);
+        // perform generation
+        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+        event_out.wait();
+    }
+    else
+    {
+        int errcode = vdRngChiSquare(VSL_RNG_METHOD_CHISQUARE_CHI2GAMMA, get_rng_stream(),
+            size, result1, df);
+        if (errcode != VSL_STATUS_OK)
+        {
+            throw std::runtime_error("DPNP RNG Error: dpnp_rng_chi_square_c() failed.");
+        }
+    }
 }
 
 template <typename _DataType>
@@ -115,10 +188,22 @@ void dpnp_rng_gamma_c(void* result, _DataType shape, _DataType scale, size_t siz
 
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    mkl_rng::gamma<_DataType> distribution(shape, a, scale);
-    // perform generation
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
+    if (dpnp_queue_is_cpu_c())
+    {
+        mkl_rng::gamma<_DataType> distribution(shape, a, scale);
+        // perform generation
+        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+        event_out.wait();
+    }
+    else
+    {
+        int errcode = vdRngGamma(VSL_RNG_METHOD_GAMMA_GNORM, get_rng_stream(), size,
+            result1, shape, a, scale);
+        if (errcode != VSL_STATUS_OK)
+        {
+            throw std::runtime_error("DPNP RNG Error: dpnp_rng_gamma_c() failed.");
+        }
+    }
 }
 
 template <typename _DataType>
@@ -182,10 +267,22 @@ void dpnp_rng_hypergeometric_c(void* result, int l, int s, int m, size_t size)
     }
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    mkl_rng::hypergeometric<_DataType> distribution(l, s, m);
-    // perform generation
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
+    if (dpnp_queue_is_cpu_c())
+    {
+        mkl_rng::hypergeometric<_DataType> distribution(l, s, m);
+        // perform generation
+        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+        event_out.wait();
+    }
+    else
+    {
+        int errcode = viRngHypergeometric(VSL_RNG_METHOD_HYPERGEOMETRIC_H2PE, get_rng_stream(),
+            size, result1, l, s, m);
+        if (errcode != VSL_STATUS_OK)
+        {
+            throw std::runtime_error("DPNP RNG Error: dpnp_rng_hypergeometric_c() failed.");
+        }
+    }
 }
 
 template <typename _DataType>
@@ -223,7 +320,11 @@ void dpnp_rng_lognormal_c(void* result, _DataType mean, _DataType stddev, size_t
 }
 
 template <typename _DataType>
-void dpnp_rng_multinomial_c(void* result, int ntrial, const double* p_vector, const size_t p_vector_size, size_t size)
+void dpnp_rng_multinomial_c(void* result,
+                            int ntrial,
+                            const double* p_vector,
+                            const size_t p_vector_size,
+                            size_t size)
 {
     if (!size)
     {
@@ -231,16 +332,28 @@ void dpnp_rng_multinomial_c(void* result, int ntrial, const double* p_vector, co
     }
     std::int32_t* result1 = reinterpret_cast<std::int32_t*>(result);
     std::vector<double> p(p_vector, p_vector + p_vector_size);
-
-    mkl_rng::multinomial<std::int32_t> distribution(ntrial, p);
     // size = size
     // `result` is a array for random numbers
     // `size` is a `result`'s len. `size = n * p.size()`
     // `n` is a number of random values to be generated.
     size_t n = size / p.size();
-    // perform generation
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, n, result1);
-    event_out.wait();
+
+    if (dpnp_queue_is_cpu_c())
+    {
+        mkl_rng::multinomial<std::int32_t> distribution(ntrial, p);
+        // perform generation
+        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, n, result1);
+        event_out.wait();
+    }
+    else
+    {
+        int errcode = viRngMultinomial(VSL_RNG_METHOD_MULTINOMIAL_MULTPOISSON, get_rng_stream(),
+            n, result1, ntrial, p_vector_size, p_vector);
+        if (errcode != VSL_STATUS_OK)
+        {
+            throw std::runtime_error("DPNP RNG Error: dpnp_rng_multinomial_c() failed.");
+        }
+    }
 }
 
 template <typename _DataType>
@@ -264,11 +377,19 @@ void dpnp_rng_multivariate_normal_c(void* result,
     // `result` is a array for random numbers
     // `size` is a `result`'s len.
     // `size1` is a number of random values to be generated for each dimension.
-    mkl_rng::gaussian_mv<_DataType> distribution(dimen, mean, cov);
     size_t size1 = size / dimen;
 
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size1, result1);
-    event_out.wait();
+    if (dpnp_queue_is_cpu_c())
+    {
+        mkl_rng::gaussian_mv<_DataType> distribution(dimen, mean, cov);
+        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size1, result1);
+        event_out.wait();
+    }
+    else
+    {
+        int errcode = vdRngGaussianMV(VSL_RNG_METHOD_GAUSSIANMV_BOXMULLER2,  get_rng_stream(),
+            size1, result1, dimen, VSL_MATRIX_STORAGE_FULL, mean_vector, cov_vector );
+    }
 }
 
 template <typename _DataType>
@@ -280,10 +401,22 @@ void dpnp_rng_negative_binomial_c(void* result, double a, double p, size_t size)
     }
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    mkl_rng::negative_binomial<_DataType> distribution(a, p);
-    // perform generation
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
+    if (dpnp_queue_is_cpu_c())
+    {
+        mkl_rng::negative_binomial<_DataType> distribution(a, p);
+        // perform generation
+        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+        event_out.wait();
+    }
+    else
+    {
+        int errcode = viRngNegbinomial(VSL_RNG_METHOD_NEGBINOMIAL_NBAR, get_rng_stream(),
+            size, result1, a, p);
+        if (errcode != VSL_STATUS_OK)
+        {
+            throw std::runtime_error("DPNP RNG Error: dpnp_rng_negative_binomial_c() failed.");
+        }
+    }
 }
 
 template <typename _DataType>
@@ -439,18 +572,15 @@ void dpnp_rng_weibull_c(void* result, double alpha, size_t size)
 void func_map_init_random(func_map_t& fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_RNG_BETA][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_beta_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_RNG_BETA][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_beta_c<float>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_BINOMIAL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_binomial_c<int>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_CHISQUARE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_chi_square_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_RNG_CHISQUARE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_chi_square_c<float>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_EXPONENTIAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_exponential_c<double>};
     fmap[DPNPFuncName::DPNP_FN_RNG_EXPONENTIAL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_exponential_c<float>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_GAMMA][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_gamma_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_RNG_GAMMA][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_gamma_c<float>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_GAUSSIAN][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_gaussian_c<double>};
     fmap[DPNPFuncName::DPNP_FN_RNG_GAUSSIAN][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_gaussian_c<float>};

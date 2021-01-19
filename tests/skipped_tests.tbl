@@ -522,10 +522,6 @@ tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_12_{n=15, norm=None
 tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_13_{n=15, norm=None, shape=(10, 10)}::test_rfft
 tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_14_{n=15, norm='ortho', shape=(10,)}::test_rfft
 tests/third_party/cupy/fft_tests/test_fft.py::TestRfft_param_15_{n=15, norm='ortho', shape=(10, 10)}::test_rfft
-tests/third_party/cupy/indexing_tests/test_generate.py::TestIndices::test_indices_list0
-tests/third_party/cupy/indexing_tests/test_generate.py::TestIndices::test_indices_list1
-tests/third_party/cupy/indexing_tests/test_generate.py::TestIndices::test_indices_list2
-tests/third_party/cupy/indexing_tests/test_generate.py::TestIndices::test_indices_list3
 tests/third_party/cupy/indexing_tests/test_generate.py::TestIX_::test_ix_bool_ndarray
 tests/third_party/cupy/indexing_tests/test_generate.py::TestIX_::test_ix_empty_ndarray
 tests/third_party/cupy/indexing_tests/test_generate.py::TestIX_::test_ix_list

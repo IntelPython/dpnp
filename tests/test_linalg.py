@@ -203,7 +203,7 @@ def test_norm3(array, ord, axis):
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.complex128],
                          ids=['float64', 'float32', 'int64', 'int32', 'complex128'])
 @pytest.mark.parametrize("shape",
-                         [(2,2), (3,4), (5,3), (16,16)],
+                         [(2, 2), (3, 4), (5, 3), (16, 16)],
                          ids=['(2,2)', '(3,4)', '(5,3)', '(16,16)'])
 def test_svd(type, shape):
     a = numpy.arange(shape[0] * shape[1], dtype=type).reshape(shape)
