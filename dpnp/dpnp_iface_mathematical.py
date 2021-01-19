@@ -69,6 +69,7 @@ __all__ = [
     "fmax",
     "fmin",
     "fmod",
+    "gradient",
     "maximum",
     "minimum",
     "mod",
@@ -785,6 +786,46 @@ def fmod(x1, x2, **kwargs):
         return dpnp_fmod(x1, x2)
 
     return call_origin(numpy.fmod, x1, x2, **kwargs)
+
+
+def gradient(y1, *varargs, **kwargs):
+    """
+    Return the gradient of an array.
+
+    For full documentation refer to :obj:`numpy.gradient`.
+
+    Limitations
+    -----------
+        Parameter ``y1`` is supported as :obj:`dpnp.ndarray`.
+        Argument ``varargs[0]`` is supported as `int`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+   
+    Example
+    -------
+    >>> import dpnp as np
+    >>> y = np.array([1, 2, 4, 7, 11, 16], dtype=float)
+    >>> result = np.gradient(y)
+    >>> [x for x in result]
+    [1.0, 1.5, 2.5, 3.5, 4.5, 5.0]
+    >>> result = np.gradient(y, 2)
+    >>> [x for x in result]
+    [0.5, 0.75, 1.25, 1.75, 2.25, 2.5]
+
+    """
+    if not use_origin_backend(y1) and not kwargs:
+        if not isinstance(y1, dparray):
+            pass
+        elif len(varargs) != 0 and not isinstance(varargs[0], int):
+            pass
+        else:
+            if len(varargs) == 0:
+                return dpnp_gradient(y1)
+
+            return dpnp_gradient(y1, varargs[0])
+
+    return call_origin(numpy.gradient, y1, *varargs, **kwargs)
 
 
 def maximum(x1, x2, **kwargs):

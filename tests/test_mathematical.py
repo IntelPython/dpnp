@@ -143,3 +143,29 @@ class TestCross:
         result = inp.cross(ix1_, ix2_)
         expected = numpy.cross(x1_, x2_)
         numpy.testing.assert_array_equal(expected, result)
+
+
+class TestGradient:
+
+    @pytest.mark.parametrize("array", [[2, 3, 6, 8, 4, 9],
+                                       [3., 4., 7.5, 9.],
+                                       [2, 6, 8, 10]])
+    def test_gradient_y1(self, array):
+        y1 = numpy.array(array)
+        iy1 = inp.array(y1)
+
+        result = inp.gradient(iy1)
+        expected = numpy.gradient(y1)
+        numpy.testing.assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("array", [[2, 3, 6, 8, 4, 9],
+                                       [3., 4., 7.5, 9.],
+                                       [2, 6, 8, 10]])
+    @pytest.mark.parametrize("dx", [2, 3.5])
+    def test_gradient_y1(self, array, dx):
+        y1 = numpy.array(array)
+        iy1 = inp.array(y1)
+
+        result = inp.gradient(iy1, dx)
+        expected = numpy.gradient(y1, dx)
+        numpy.testing.assert_array_equal(expected, result)
