@@ -113,8 +113,8 @@ class DPNPTestPerfBase:
         print(f"lib".center(pw[2]), end=self.sep)
         print(f"size".center(pw[3]), end=self.sep)
         print(f"median".center(pwn), end=self.sep)
-        print(f"max".center(pwn), end=self.sep)
         print(f"min".center(pwn), end=self.sep)
+        print(f"max".center(pwn), end=self.sep)
         print()
 
     def print_csv(self):
