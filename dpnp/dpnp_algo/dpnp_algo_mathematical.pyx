@@ -326,16 +326,17 @@ cpdef tuple dpnp_modf(dparray x1):
 
 
 cpdef dparray dpnp_multiply(dparray x1, x2):
-    x2_is_scalar = dpnp.isscalar(x2)
-    cdef dparray x2_
-
-    if x2_is_scalar:
-        x2_ = dparray(x1.shape, dtype=type(x2))
-        for i in range(x2_.size):
-            x2_[i] = x2
+    cdef dparray result
+    if dpnp.isscalar(x2):
+        res_type = x1.dtype
+        if isinstance(x2, float) and (res_type == dpnp.int64 or res_type == dpnp.int32):
+            res_type = dpnp.float64
+        result = dparray(x1.size, dtype=res_type)
+        for i in range(x1.size):
+            result[i] = x1[i] * x2
+        return result.reshape(x1.shape)
     else:
-        x2_ = x2
-    return call_fptr_2in_1out(DPNP_FN_MULTIPLY, x1, x2_, x1.shape)
+        return call_fptr_2in_1out(DPNP_FN_MULTIPLY, x1, x2, x1.shape)
 
 
 cpdef dpnp_nanprod(dparray x1):
