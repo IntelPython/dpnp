@@ -94,9 +94,6 @@ class DPNPTestPerfBase:
         else:
             examine_function = custom_fptr
 
-        # warming up
-        result = examine_function(*args, **kwargs)
-
         exec_times = []
         for iteration in range(self.repeat):
             start_time = time.perf_counter()
