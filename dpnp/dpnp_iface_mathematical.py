@@ -817,7 +817,9 @@ def gradient(y1, *varargs, **kwargs):
     if not use_origin_backend(y1) and not kwargs:
         if not isinstance(y1, dparray):
             pass
-        elif len(varargs) != 0 and not isinstance(varargs[0], int):
+        elif len(varargs) > 1:
+            pass
+        elif len(varargs) == 1 and not isinstance(varargs[0], int):
             pass
         else:
             if len(varargs) == 0:

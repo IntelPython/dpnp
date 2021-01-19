@@ -296,9 +296,9 @@ cpdef dparray dpnp_fmod(dparray x1, dparray x2):
 
 cpdef dparray dpnp_gradient(dparray y1, int dx=1):
 
-    len = y1.size
+    size = y1.size
 
-    cdef dparray result = dparray(len, dtype=dpnp.float64)
+    cdef dparray result = dparray(size, dtype=dpnp.float64)
    
     cur = (y1[1] - y1[0]) / dx
 
@@ -306,7 +306,7 @@ cpdef dparray dpnp_gradient(dparray y1, int dx=1):
 
     cur = (y1[-1] - y1[-2]) / dx
 
-    result._setitem_scalar(len - 1, cur)
+    result._setitem_scalar(size - 1, cur)
   
     for i in range(1, len - 1):
         cur = (y1[i + 1] - y1[i - 1]) / (2 * dx)

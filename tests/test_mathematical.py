@@ -162,7 +162,7 @@ class TestGradient:
                                        [3., 4., 7.5, 9.],
                                        [2, 6, 8, 10]])
     @pytest.mark.parametrize("dx", [2, 3.5])
-    def test_gradient_y1(self, array, dx):
+    def test_gradient_y1_dx(self, array, dx):
         y1 = numpy.array(array)
         iy1 = inp.array(y1)
 
