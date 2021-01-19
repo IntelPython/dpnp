@@ -389,6 +389,10 @@ void dpnp_rng_multivariate_normal_c(void* result,
     {
         int errcode = vdRngGaussianMV(VSL_RNG_METHOD_GAUSSIANMV_BOXMULLER2,  get_rng_stream(),
             size1, result1, dimen, VSL_MATRIX_STORAGE_FULL, mean_vector, cov_vector );
+        if (errcode != VSL_STATUS_OK)
+        {
+            throw std::runtime_error("DPNP RNG Error: dpnp_rng_multivariate_normal_c() failed.");
+        }
     }
 }
 
