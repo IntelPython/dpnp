@@ -328,7 +328,7 @@ def copysign(x1, x2, **kwargs):
     return call_origin(numpy.copysign, x1, x2, **kwargs)
 
 
-def cross(x1, x2, **kwargs):
+def cross(x1, x2, axisa=-1, axisb=-1, axisc=-1, axis=None):
     """
     Return the cross product of two (arrays of) vectors.
 
@@ -354,7 +354,7 @@ def cross(x1, x2, **kwargs):
 
     """
 
-    if not use_origin_backend(x1) and not kwargs:
+    if not use_origin_backend(x1):
         if not isinstance(x1, dparray):
             pass
         elif not isinstance(x2, dparray):
@@ -363,10 +363,18 @@ def cross(x1, x2, **kwargs):
             pass
         elif x1.shape != (3,) or x2.shape != (3,):
             pass
+        elif axisa != -1:
+            pass
+        elif axisb != -1:
+            pass
+        elif axisc != -1:
+            pass
+        elif axis is not None:
+            pass
         else:
             return dpnp_cross(x1, x2)
 
-    return call_origin(numpy.cross, x1, x2, **kwargs)
+    return call_origin(numpy.cross, x1, x2, axisa, axisb, axisc, axis)
 
 
 def cumprod(x1, **kwargs):

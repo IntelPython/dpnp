@@ -137,11 +137,11 @@ cpdef dparray dpnp_copysign(dparray x1, dparray x2):
 cpdef dparray dpnp_cross(dparray x1, dparray x2):
 
     types_map = {
-        (dpnp.int32, dpnp.int32): dpnp.int32,
-        (dpnp.int32, dpnp.int64): dpnp.int64,
-        (dpnp.int64, dpnp.int32): dpnp.int64,
-        (dpnp.int64, dpnp.int64): dpnp.int64,
-        (dpnp.float32, dpnp.float32): dpnp.float32,
+        (dpnp.dtype(dpnp.int32), dpnp.dtype(dpnp.int32)): dpnp.int32,
+        (dpnp.dtype(dpnp.int32), dpnp.dtype(dpnp.int64)): dpnp.int64,
+        (dpnp.dtype(dpnp.int64), dpnp.dtype(dpnp.int32)): dpnp.int64,
+        (dpnp.dtype(dpnp.int64), dpnp.dtype(dpnp.int64)): dpnp.int64,
+        (dpnp.dtype(dpnp.float32), dpnp.dtype(dpnp.float32)): dpnp.float32,
     }
 
     res_type = types_map.get((x1.dtype, x2.dtype), dpnp.float64)

@@ -817,16 +817,6 @@ tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumLarge_param_9_{opt
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperationWithScalar::test_scalar_float
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperationWithScalar::test_scalar_int
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestListArgEinSumError::test_invalid_sub1
-tests/third_party/cupy/linalg_tests/test_product.py::TestCrossProduct_param_0_{params=((3,), (3,), -1, -1, -1)}::test_cross
-tests/third_party/cupy/linalg_tests/test_product.py::TestCrossProduct_param_1_{params=((1, 2), (1, 2), -1, -1, 1)}::test_cross
-tests/third_party/cupy/linalg_tests/test_product.py::TestCrossProduct_param_2_{params=((1, 3), (1, 3), 1, -1, -1)}::test_cross
-tests/third_party/cupy/linalg_tests/test_product.py::TestCrossProduct_param_3_{params=((1, 2), (1, 3), -1, -1, 1)}::test_cross
-tests/third_party/cupy/linalg_tests/test_product.py::TestCrossProduct_param_4_{params=((2, 2), (1, 3), -1, -1, 0)}::test_cross
-tests/third_party/cupy/linalg_tests/test_product.py::TestCrossProduct_param_5_{params=((3, 3), (1, 2), 0, -1, -1)}::test_cross
-tests/third_party/cupy/linalg_tests/test_product.py::TestCrossProduct_param_6_{params=((0, 3), (0, 3), -1, -1, -1)}::test_cross
-tests/third_party/cupy/linalg_tests/test_product.py::TestCrossProduct_param_7_{params=((2, 0, 3), (2, 0, 3), 0, 0, 0)}::test_cross
-tests/third_party/cupy/linalg_tests/test_product.py::TestCrossProduct_param_8_{params=((2, 4, 5, 3), (2, 4, 5, 3), -1, -1, 0)}::test_cross
-tests/third_party/cupy/linalg_tests/test_product.py::TestCrossProduct_param_9_{params=((2, 4, 5, 2), (2, 4, 5, 2), 0, 0, -1)}::test_cross
 tests/third_party/cupy/linalg_tests/test_product.py::TestDotFor0Dim_param_10_{shape=((4, 2), ()), trans_a=False, trans_b=True}::test_dot
 tests/third_party/cupy/linalg_tests/test_product.py::TestDotFor0Dim_param_11_{shape=((4, 2), ()), trans_a=False, trans_b=False}::test_dot
 tests/third_party/cupy/linalg_tests/test_product.py::TestDotFor0Dim_param_4_{shape=((), (2, 4)), trans_a=True, trans_b=True}::test_dot
