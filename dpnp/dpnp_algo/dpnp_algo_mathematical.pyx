@@ -425,13 +425,19 @@ cpdef dparray dpnp_negative(dparray array1):
 cpdef dparray dpnp_power(dparray x1, x2):
     cdef dparray result
     if dpnp.isscalar(x2):
-        res_type = x1.dtype
-        if isinstance(x2, float) and (res_type == dpnp.int64 or res_type == dpnp.int32):
-            res_type = dpnp.float64
-        result = dparray(x1.size, dtype=res_type)
+        x2_ = dpnp.array([x2])
+
+        types_map = {
+            (dpnp.dtype(dpnp.int32), dpnp.dtype(dpnp.float64)): dpnp.float64,
+            (dpnp.dtype(dpnp.int64), dpnp.dtype(dpnp.float64)): dpnp.float64,
+        }
+
+        res_type = types_map.get((x1.dtype, x2_.dtype), x1.dtype)
+
+        result = dparray(x1.shape, dtype=res_type)
         for i in range(x1.size):
             result[i] = x1[i] ** x2
-        return result.reshape(x1.shape)
+        return result
     else:
         return call_fptr_2in_1out(DPNP_FN_POWER, x1, x2, x1.shape)
 
