@@ -144,7 +144,7 @@ cpdef dparray dpnp_cross(dparray x1, dparray x2):
         (dpnp.float32, dpnp.float32): dpnp.float32,
     }
 
-    res_type = types_map.get((x1.dtype, x2.dtype), dpnp.float64)
+    res_type = types_map.get((x1.dtype.type, x2.dtype.type), dpnp.float64)
 
     cdef dparray result = dparray(3, dtype=res_type)
 

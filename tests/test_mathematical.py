@@ -127,19 +127,33 @@ class TestTrapz:
 
 class TestCross:
 
+    @pytest.mark.parametrize("axis", [None, 0],
+                             ids=['None', '0'])
+    @pytest.mark.parametrize("axisc", [-1, 0],
+                             ids=['-1', '0'])
+    @pytest.mark.parametrize("axisb", [-1, 0],
+                             ids=['-1', '0'])
+    @pytest.mark.parametrize("axisa", [-1, 0],
+                             ids=['-1', '0'])
     @pytest.mark.parametrize("x1", [[1, 2, 3],
                                     [1., 2.5, 6.],
-                                    [2, 4, 6]])
+                                    [2, 4, 6]],
+                             ids=['[1, 2, 3]',
+                                  '[1., 2.5, 6.]',
+                                  '[2, 4, 6]'])
     @pytest.mark.parametrize("x2", [[4, 5, 6],
                                     [1., 5., 2.],
-                                    [6, 4, 3]])
-    def test_cross_3x3(self, x1, x2):
+                                    [6, 4, 3]],
+                             ids=['[4, 5, 6]',
+                                  '[1., 5., 2.]',
+                                  '[6, 4, 3]'])
+    def test_cross_3x3(self, x1, x2, axisa, axisb, axisc, axis):
         x1_ = numpy.array(x1)
         ix1_ = inp.array(x1_)
 
         x2_ = numpy.array(x2)
         ix2_ = inp.array(x2_)
 
-        result = inp.cross(ix1_, ix2_)
-        expected = numpy.cross(x1_, x2_)
+        result = inp.cross(ix1_, ix2_, axisa, axisb, axisc, axis)
+        expected = numpy.cross(x1_, x2_, axisa, axisb, axisc, axis)
         numpy.testing.assert_array_equal(expected, result)
