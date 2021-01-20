@@ -331,11 +331,11 @@ cpdef dparray dpnp_multiply(dparray x1, x2):
         x2_ = dpnp.array([x2])
 
         types_map = {
-            (dpnp.dtype(dpnp.int32), dpnp.dtype(dpnp.float64)): dpnp.float64,
-            (dpnp.dtype(dpnp.int64), dpnp.dtype(dpnp.float64)): dpnp.float64,
+            (dpnp.int32, dpnp.float64): dpnp.float64,
+            (dpnp.int64, dpnp.float64): dpnp.float64,
         }
 
-        res_type = types_map.get((x1.dtype, x2_.dtype), x1.dtype)
+        res_type = types_map.get((x1.dtype.type, x2_.dtype.type), x1.dtype)
         result = dparray(x1.shape, dtype=res_type)
         for i in range(x1.size):
             result[i] = x1[i] * x2
