@@ -291,6 +291,12 @@ void dpnp_kron_c(void* array1_in, void* array2_in, void* result1, size_t* in1_sh
         size *= res_shape[i];
     }
 
+    size_t* _in1_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
+    size_t* _in2_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
+
+    dpnp_memory_memcpy_c(_in1_shape, in1_shape, ndim * sizeof(size_t));
+    dpnp_memory_memcpy_c(_in2_shape, in2_shape, ndim * sizeof(size_t));
+
     size_t* in1_offsets = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
     size_t* in2_offsets = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
     size_t* res_offsets = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
@@ -308,11 +314,11 @@ void dpnp_kron_c(void* array1_in, void* array2_in, void* result1, size_t* in1_sh
         size_t reminder = idx;
         for (size_t axis = 0; axis < ndim; ++axis)
         {
-            size_t res_axis = reminder / res_offsets[axis];
+            const size_t res_axis = reminder / res_offsets[axis];
             reminder = reminder - res_axis * res_offsets[axis];
 
-            size_t in1_axis = res_axis / in2_shape[axis];
-            size_t in2_axis = res_axis - in1_axis * in2_shape[axis];
+            const size_t in1_axis = res_axis / _in2_shape[axis];
+            const size_t in2_axis = res_axis - in1_axis * _in2_shape[axis];
 
             idx1 += in1_axis * in1_offsets[axis];
             idx2 += in2_axis * in2_offsets[axis];
