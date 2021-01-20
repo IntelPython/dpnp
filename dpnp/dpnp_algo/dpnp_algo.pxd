@@ -73,6 +73,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_HYPOT
         DPNP_FN_INV
         DPNP_FN_INVERT
+        DPNP_FN_KRON
         DPNP_FN_LEFT_SHIFT
         DPNP_FN_LOG
         DPNP_FN_LOG10

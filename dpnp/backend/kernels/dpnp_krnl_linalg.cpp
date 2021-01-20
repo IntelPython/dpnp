@@ -275,6 +275,61 @@ void dpnp_inv_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
     return;
 }
 
+template <typename _DataType1, typename _DataType2, typename _ResultType>
+class dpnp_kron_c_kernel;
+
+template <typename _DataType1, typename _DataType2, typename _ResultType>
+void dpnp_kron_c(void* array1_in, void* array2_in, void* result1, size_t* in1_shape, size_t* in2_shape, size_t* res_shape, size_t ndim)
+{
+    _DataType1* array1 = reinterpret_cast<_DataType1*>(array1_in);
+    _DataType2* array2 = reinterpret_cast<_DataType2*>(array2_in);
+    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
+
+    size_t size = 1;
+    for (size_t i = 0; i < ndim; ++i)
+    {
+        size *= res_shape[i];
+    }
+
+    size_t* in1_offsets = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
+    size_t* in2_offsets = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
+    size_t* res_offsets = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
+
+    get_shape_offsets_inkernel<size_t>(in1_shape, ndim, in1_offsets);
+    get_shape_offsets_inkernel<size_t>(in2_shape, ndim, in2_offsets);
+    get_shape_offsets_inkernel<size_t>(res_shape, ndim, res_offsets);
+
+    cl::sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        const size_t idx = global_id[0];
+
+        size_t idx1 = 0;
+        size_t idx2 = 0;
+        size_t reminder = idx;
+        for (size_t axis = 0; axis < ndim; ++axis)
+        {
+            size_t res_axis = reminder / res_offsets[axis];
+            reminder = reminder - res_axis * res_offsets[axis];
+
+            size_t in1_axis = res_axis / in2_shape[axis];
+            size_t in2_axis = res_axis - in1_axis * in2_shape[axis];
+
+            idx1 += in1_axis * in1_offsets[axis];
+            idx2 += in2_axis * in2_offsets[axis];
+        }
+
+        result[idx] = array1[idx1] * array2[idx2];
+    };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_kron_c_kernel<_DataType1, _DataType2, _ResultType>>(gws, kernel_parallel_for_func);
+    };
+
+    cl::sycl::event event = DPNP_QUEUE.submit(kernel_func);
+
+    event.wait();
+}
+
 template <typename _DataType>
 class dpnp_matrix_rank_c_kernel;
 
@@ -378,6 +433,41 @@ void func_map_init_linalg_func(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_INV][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_inv_c<long>};
     fmap[DPNPFuncName::DPNP_FN_INV][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_inv_c<float>};
     fmap[DPNPFuncName::DPNP_FN_INV][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_inv_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_kron_c<int, int, int>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_kron_c<int, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_INT][eft_FLT] = {eft_FLT, (void*)dpnp_kron_c<int, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_kron_c<int, double, double>};
+    // fmap[DPNPFuncName::DPNP_FN_KRON][eft_INT][eft_C128] = {
+        // eft_C128, (void*)dpnp_kron_c<int, std::complex<double>, std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_LNG][eft_INT] = {eft_LNG, (void*)dpnp_kron_c<long, int, long>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_kron_c<long, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_LNG][eft_FLT] = {eft_FLT, (void*)dpnp_kron_c<long, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_kron_c<long, double, double>};
+    // fmap[DPNPFuncName::DPNP_FN_KRON][eft_LNG][eft_C128] = {
+        // eft_C128, (void*)dpnp_kron_c<long, std::complex<double>, std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_FLT][eft_INT] = {eft_FLT, (void*)dpnp_kron_c<float, int, float>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_FLT][eft_LNG] = {eft_FLT, (void*)dpnp_kron_c<float, long, float>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_kron_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_FLT][eft_DBL] = {eft_DBL, (void*)dpnp_kron_c<float, double, double>};
+    // fmap[DPNPFuncName::DPNP_FN_KRON][eft_FLT][eft_C128] = {
+        // eft_C128, (void*)dpnp_kron_c<float, std::complex<double>, std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_kron_c<double, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_kron_c<double, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_kron_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_kron_c<double, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_DBL][eft_C128] = {
+        eft_C128, (void*)dpnp_kron_c<double, std::complex<double>, std::complex<double>>};
+    // fmap[DPNPFuncName::DPNP_FN_KRON][eft_C128][eft_INT] = {
+        // eft_C128, (void*)dpnp_kron_c<std::complex<double>, int, std::complex<double>>};
+    // fmap[DPNPFuncName::DPNP_FN_KRON][eft_C128][eft_LNG] = {
+        // eft_C128, (void*)dpnp_kron_c<std::complex<double>, long, std::complex<double>>};
+    // fmap[DPNPFuncName::DPNP_FN_KRON][eft_C128][eft_FLT] = {
+        // eft_C128, (void*)dpnp_kron_c<std::complex<double>, float, std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_C128][eft_DBL] = {
+        eft_C128, (void*)dpnp_kron_c<std::complex<double>, double, std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_C128][eft_C128] = {
+        eft_C128, (void*)dpnp_kron_c<std::complex<double>, std::complex<double>, std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_matrix_rank_c<int>};
     fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_matrix_rank_c<long>};
