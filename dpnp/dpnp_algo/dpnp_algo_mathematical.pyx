@@ -308,7 +308,7 @@ cpdef dparray dpnp_gradient(dparray y1, int dx=1):
 
     result._setitem_scalar(size - 1, cur)
   
-    for i in range(1, len - 1):
+    for i in range(1, size - 1):
         cur = (y1[i + 1] - y1[i - 1]) / (2 * dx)
         result._setitem_scalar(i, cur)
 
