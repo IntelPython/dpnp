@@ -279,7 +279,13 @@ template <typename _DataType1, typename _DataType2, typename _ResultType>
 class dpnp_kron_c_kernel;
 
 template <typename _DataType1, typename _DataType2, typename _ResultType>
-void dpnp_kron_c(void* array1_in, void* array2_in, void* result1, size_t* in1_shape, size_t* in2_shape, size_t* res_shape, size_t ndim)
+void dpnp_kron_c(void* array1_in,
+                 void* array2_in,
+                 void* result1,
+                 size_t* in1_shape,
+                 size_t* in2_shape,
+                 size_t* res_shape,
+                 size_t ndim)
 {
     _DataType1* array1 = reinterpret_cast<_DataType1*>(array1_in);
     _DataType2* array2 = reinterpret_cast<_DataType2*>(array2_in);
@@ -445,19 +451,19 @@ void func_map_init_linalg_func(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_INT][eft_FLT] = {eft_FLT, (void*)dpnp_kron_c<int, float, float>};
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_kron_c<int, double, double>};
     // fmap[DPNPFuncName::DPNP_FN_KRON][eft_INT][eft_C128] = {
-        // eft_C128, (void*)dpnp_kron_c<int, std::complex<double>, std::complex<double>>};
+    // eft_C128, (void*)dpnp_kron_c<int, std::complex<double>, std::complex<double>>};
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_LNG][eft_INT] = {eft_LNG, (void*)dpnp_kron_c<long, int, long>};
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_kron_c<long, long, long>};
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_LNG][eft_FLT] = {eft_FLT, (void*)dpnp_kron_c<long, float, float>};
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_kron_c<long, double, double>};
     // fmap[DPNPFuncName::DPNP_FN_KRON][eft_LNG][eft_C128] = {
-        // eft_C128, (void*)dpnp_kron_c<long, std::complex<double>, std::complex<double>>};
+    // eft_C128, (void*)dpnp_kron_c<long, std::complex<double>, std::complex<double>>};
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_FLT][eft_INT] = {eft_FLT, (void*)dpnp_kron_c<float, int, float>};
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_FLT][eft_LNG] = {eft_FLT, (void*)dpnp_kron_c<float, long, float>};
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_kron_c<float, float, float>};
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_FLT][eft_DBL] = {eft_DBL, (void*)dpnp_kron_c<float, double, double>};
     // fmap[DPNPFuncName::DPNP_FN_KRON][eft_FLT][eft_C128] = {
-        // eft_C128, (void*)dpnp_kron_c<float, std::complex<double>, std::complex<double>>};
+    // eft_C128, (void*)dpnp_kron_c<float, std::complex<double>, std::complex<double>>};
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_kron_c<double, int, double>};
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_kron_c<double, long, double>};
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_kron_c<double, float, double>};
@@ -465,11 +471,11 @@ void func_map_init_linalg_func(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_DBL][eft_C128] = {
         eft_C128, (void*)dpnp_kron_c<double, std::complex<double>, std::complex<double>>};
     // fmap[DPNPFuncName::DPNP_FN_KRON][eft_C128][eft_INT] = {
-        // eft_C128, (void*)dpnp_kron_c<std::complex<double>, int, std::complex<double>>};
+    // eft_C128, (void*)dpnp_kron_c<std::complex<double>, int, std::complex<double>>};
     // fmap[DPNPFuncName::DPNP_FN_KRON][eft_C128][eft_LNG] = {
-        // eft_C128, (void*)dpnp_kron_c<std::complex<double>, long, std::complex<double>>};
+    // eft_C128, (void*)dpnp_kron_c<std::complex<double>, long, std::complex<double>>};
     // fmap[DPNPFuncName::DPNP_FN_KRON][eft_C128][eft_FLT] = {
-        // eft_C128, (void*)dpnp_kron_c<std::complex<double>, float, std::complex<double>>};
+    // eft_C128, (void*)dpnp_kron_c<std::complex<double>, float, std::complex<double>>};
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_C128][eft_DBL] = {
         eft_C128, (void*)dpnp_kron_c<std::complex<double>, double, std::complex<double>>};
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_C128][eft_C128] = {
