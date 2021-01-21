@@ -835,13 +835,11 @@ tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matri
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_dot_vec2
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_multidim_vdot
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_inner
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_kron
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_outer
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_vdot
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_tensordot_zero_dim
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_dot_with_out_f_contiguous
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_multidim_vdot
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_zerodim_kron
 tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_array_scalar
 tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_finite
 tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_infinite
