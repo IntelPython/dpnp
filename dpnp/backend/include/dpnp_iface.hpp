@@ -933,6 +933,19 @@ INP_DLLEXPORT void dpnp_rng_standard_exponential_c(void* result, size_t size);
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_rng_standard_gamma_c(void* result, _DataType shape, size_t size);
 
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (standard normal distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ *
+ * @param [out] result Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_rng_standard_normal_c(void* result, size_t size);
+
 /**
  * @ingroup BACKEND_API
  * @brief math library implementation of random number generator (uniform distribution)
