@@ -897,18 +897,6 @@ INP_DLLEXPORT void dpnp_rng_standard_cauchy_c(void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (standard normal distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- *
- * @param [out] result Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_standard_normal_c(void* result, size_t size);
-
-/**
- * @ingroup BACKEND_API
  * @brief math library implementation of random number generator (standard exponential distribution)
  *
  * @param [in]  size   Number of elements in `result` arrays.
