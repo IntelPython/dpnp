@@ -326,58 +326,20 @@ cpdef tuple dpnp_modf(dparray x1):
 
 
 cpdef dparray dpnp_multiply(dparray x1, x2):
-    x2_is_scalar = dpnp.isscalar(x2)
+    cdef dparray result
+    if dpnp.isscalar(x2):
+        x2_ = dpnp.array([x2])
 
-    x1_dtype_ = x1.dtype
-    x2_dtype_ = type(x2) if x2_is_scalar else x2.dtype
+        types_map = {
+            (dpnp.int32, dpnp.float64): dpnp.float64,
+            (dpnp.int64, dpnp.float64): dpnp.float64,
+        }
 
-    types_map = {float: dpnp.float64, int: dpnp.int64}
-    x1_dtype = types_map.get(x1_dtype_, x1_dtype_)
-    x2_dtype = types_map.get(x2_dtype_, x2_dtype_)
-
-    if x1_dtype == dpnp.float64:
-        if x2_dtype == dpnp.float64:
-            res_type = dpnp.float64
-        elif x2_dtype == dpnp.float32:
-            res_type = dpnp.float64
-        elif x2_dtype == dpnp.int64:
-            res_type = dpnp.float64
-        elif x2_dtype == dpnp.int32:
-            res_type = dpnp.float64
-    elif x1_dtype == dpnp.float32:
-        if x2_dtype == dpnp.float64:
-            res_type = dpnp.float32
-        elif x2_dtype == dpnp.float32:
-            res_type = dpnp.float32
-        elif x2_dtype == dpnp.int64:
-            res_type = dpnp.float32
-        elif x2_dtype == dpnp.int32:
-            res_type = dpnp.float32
-    elif x1_dtype == dpnp.int64:
-        if x2_dtype == dpnp.float64:
-            res_type = dpnp.float64
-        elif x2_dtype == dpnp.float32:
-            res_type = dpnp.float32
-        elif x2_dtype == dpnp.int64:
-            res_type = dpnp.int64
-        elif x2_dtype == dpnp.int32:
-            res_type = dpnp.int64
-    elif x1_dtype == dpnp.int32:
-        if x2_dtype == dpnp.float64:
-            res_type = dpnp.float64
-        elif x2_dtype == dpnp.float32:
-            res_type = dpnp.float32
-        elif x2_dtype == dpnp.int64:
-            res_type = dpnp.int32
-        elif x2_dtype == dpnp.int32:
-            res_type = dpnp.int32
-
-    cdef dparray result = dparray(x1.shape, dtype=res_type)
-
-    if x2_is_scalar:
-        for i in range(result.size):
+        res_type = types_map.get((x1.dtype.type, x2_.dtype.type), x1.dtype)
+        result = dparray(x1.shape, dtype=res_type)
+        for i in range(x1.size):
             result[i] = x1[i] * x2
-        return result
+        return result.reshape(x1.shape)
     else:
         return call_fptr_2in_1out(DPNP_FN_MULTIPLY, x1, x2, x1.shape)
 

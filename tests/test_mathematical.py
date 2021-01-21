@@ -26,6 +26,35 @@ def test_diff(array):
     numpy.testing.assert_allclose(expected, result)
 
 
+@pytest.mark.parametrize("val_type",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
+@pytest.mark.parametrize("data_type",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
+@pytest.mark.parametrize("val",
+                         [0, 1, 5],
+                         ids=['0', '1', '5'])
+@pytest.mark.parametrize("array",
+                         [[[0, 0], [0, 0]],
+                          [[1, 2], [1, 2]],
+                          [[1, 2], [3, 4]],
+                          [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]],
+                          [[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]],
+                         ids=['[[0, 0], [0, 0]]',
+                              '[[1, 2], [1, 2]]',
+                              '[[1, 2], [3, 4]]',
+                              '[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]',
+                              '[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]'])
+def test_multiply(array, val, data_type, val_type):
+    a = numpy.array(array, dtype=data_type)
+    ia = inp.array(a)
+    val_ = val_type(val)
+    result = inp.multiply(ia, val_)
+    expected = numpy.multiply(ia, val_)
+    numpy.testing.assert_array_equal(expected, result)
+
+
 @pytest.mark.parametrize("array", [[1, 2, 3, 4, 5],
                                    [1, 2, numpy.nan, 4, 5],
                                    [[1, 2, numpy.nan], [3, -4, -5]]])
