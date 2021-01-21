@@ -66,6 +66,7 @@ __all__ = [
     "dpnp_standard_exponential",
     "dpnp_standard_gamma",
     "dpnp_standard_normal",
+    "dpnp_standard_t",
     "dpnp_uniform",
     "dpnp_weibull"
 ]
@@ -98,6 +99,7 @@ ctypedef void(*fptr_dpnp_rng_standard_cauchy_c_1out_t)(void *, size_t) except +
 ctypedef void(*fptr_dpnp_rng_standard_exponential_c_1out_t)(void *, size_t) except +
 ctypedef void(*fptr_dpnp_rng_standard_gamma_c_1out_t)(void *, double, size_t) except +
 ctypedef void(*fptr_dpnp_rng_standard_normal_c_1out_t)(void *, size_t) except +
+ctypedef void(*fptr_dpnp_rng_standard_t_c_1out_t)(void *, double, size_t) except +
 ctypedef void(*fptr_dpnp_rng_uniform_c_1out_t)(void *, long, long, size_t) except +
 ctypedef void(*fptr_dpnp_rng_weibull_c_1out_t)(void *, double, size_t) except +
 
@@ -836,6 +838,30 @@ cpdef dparray dpnp_standard_normal(size):
     cdef fptr_dpnp_rng_standard_normal_c_1out_t func = < fptr_dpnp_rng_standard_normal_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), result.size)
+
+    return result
+
+cpdef dparray dpnp_standard_t(double df, size):
+    """
+    Returns an array populated with samples from standard t distribution.
+    `dpnp_standard_t` generates a matrix filled with random floats sampled from a
+    univariate standard t distribution for a given number of degrees of freedom.
+
+    """
+
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_T, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray result = dparray(size, dtype=result_type)
+
+    cdef fptr_dpnp_rng_standard_t_c_1out_t func = <fptr_dpnp_rng_standard_t_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), df, result.size)
 
     return result
 

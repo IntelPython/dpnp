@@ -116,6 +116,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_STANDARD_EXPONENTIAL
         DPNP_FN_RNG_STANDARD_GAMMA
         DPNP_FN_RNG_STANDARD_NORMAL
+        DPNP_FN_RNG_STANDARD_T
         DPNP_FN_RNG_UNIFORM
         DPNP_FN_RNG_WEIBULL
         DPNP_FN_SIGN
