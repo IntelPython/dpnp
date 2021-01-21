@@ -304,8 +304,8 @@ cpdef inline tuple _object_to_tuple(object obj):
     if cpython.PySequence_Check(obj):
         return tuple(obj)
 
-    if isinstance(obj, int):
-        return obj,
+    if dpnp.isscalar(obj):
+        return (obj, )
 
     raise ValueError("DPNP object_to_tuple(): 'obj' should be 'None', collections.abc.Sequence, or 'int'")
 
