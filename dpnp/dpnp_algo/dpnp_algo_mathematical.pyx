@@ -57,6 +57,7 @@ __all__ += [
     "dpnp_floor",
     "dpnp_floor_divide",
     "dpnp_fmod",
+    "dpnp_gradient",
     'dpnp_hypot',
     "dpnp_maximum",
     "dpnp_minimum",
