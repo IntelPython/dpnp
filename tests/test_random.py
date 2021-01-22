@@ -395,6 +395,28 @@ class TestDistributionsLaplace(TestDistribution):
         self.check_seed('laplace', {'loc': loc, 'scale': scale})
 
 
+class TestDistributionsLogistic(TestDistribution):
+
+    def test_moments(self):
+        loc = 2.56
+        scale = 0.8
+        expected_mean = loc
+        expected_var = (scale ** 2) * (numpy.pi ** 2) / 3
+        self.check_moments('logistic', expected_mean,
+                           expected_var, {'loc': loc, 'scale': scale})
+
+    def test_invalid_args(self):
+        loc = 3.0     # OK
+        scale = -1.0  # non-negative `scale` is expected
+        self.check_invalid_args('logistic',
+                                {'loc': loc, 'scale': scale})
+
+    def test_seed(self):
+        loc = 2.56
+        scale = 0.8
+        self.check_seed('logistic', {'loc': loc, 'scale': scale})
+
+
 class TestDistributionsLognormal(TestDistribution):
 
     def test_extreme_value(self):

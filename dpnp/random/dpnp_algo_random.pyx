@@ -53,6 +53,7 @@ __all__ = [
     "dpnp_hypergeometric",
     "dpnp_laplace",
     "dpnp_lognormal",
+    "dpnp_rng_logistic",
     "dpnp_multinomial",
     "dpnp_multivariate_normal",
     "dpnp_negative_binomial",
@@ -81,6 +82,7 @@ ctypedef void(*fptr_dpnp_rng_gaussian_c_1out_t)(void *, double, double, size_t) 
 ctypedef void(*fptr_dpnp_rng_gumbel_c_1out_t)(void *, double, double, size_t) except +
 ctypedef void(*fptr_dpnp_rng_hypergeometric_c_1out_t)(void *, int, int, int, size_t) except +
 ctypedef void(*fptr_dpnp_rng_laplace_c_1out_t)(void *, double, double, size_t) except +
+ctypedef void(*fptr_dpnp_rng_logistic_c_1out_t)(void *, double, double, size_t) except +
 ctypedef void(*fptr_dpnp_rng_lognormal_c_1out_t)(void *, double, double, size_t) except +
 ctypedef void(*fptr_dpnp_rng_multinomial_c_1out_t)(void * result, int, const double *, const size_t, size_t) except +
 ctypedef void(*fptr_dpnp_rng_multivariate_normal_c_1out_t)(void *,
@@ -394,6 +396,32 @@ cpdef dparray dpnp_laplace(double loc, double scale, size):
         func(result.get_data(), loc, scale, result.size)
 
     return result
+
+
+cpdef dparray dpnp_rng_logistic(double loc, double scale, size):
+    """
+    Returns an array populated with samples from logistic distribution.
+    `dpnp_rng_logistic` generates a matrix filled with random floats sampled from a
+    univariate logistic distribution.
+
+    """
+
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_LOGISTIC, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray result = dparray(size, dtype=result_type)
+
+    cdef fptr_dpnp_rng_logistic_c_1out_t func = < fptr_dpnp_rng_logistic_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), loc, scale, result.size)
+
+    return result
+
 
 
 cpdef dparray dpnp_lognormal(double mean, double stddev, size):

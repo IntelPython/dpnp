@@ -775,6 +775,22 @@ INP_DLLEXPORT void dpnp_rng_laplace_c(void* result, double loc, double scale, si
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (logistic distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ *
+ * @param [in]  loc    The position of the distribution peak.
+ *
+ * @param [in]  scale  The exponential decay.
+ *
+ * @param [out] result Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_rng_logistic_c(void* result, double loc, double scale, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of random number generator (lognormal distribution)
  *
  * @param [in]  size   Number of elements in `result` arrays.

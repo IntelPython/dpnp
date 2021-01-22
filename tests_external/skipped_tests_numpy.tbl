@@ -1474,6 +1474,7 @@ tests/test_random.py::TestRandomDist::test_gumbel_0
 tests/test_random.py::TestRandomDist::test_hypergeometric
 tests/test_random.py::TestRandomDist::test_laplace
 tests/test_random.py::TestRandomDist::test_laplace_0
+tests/test_random.py::TestRandomDist::test_logistic
 tests/test_random.py::TestRandomDist::test_lognormal
 tests/test_random.py::TestRandomDist::test_lognormal_0
 tests/test_random.py::TestRandomDist::test_multinomial
@@ -1565,6 +1566,7 @@ tests/test_randomstate.py::TestRandomDist::test_gumbel_0
 tests/test_randomstate.py::TestRandomDist::test_hypergeometric
 tests/test_randomstate.py::TestRandomDist::test_laplace
 tests/test_randomstate.py::TestRandomDist::test_laplace_0
+tests/test_randomstate.py::TestRandomDist::test_logistic
 tests/test_randomstate.py::TestRandomDist::test_lognormal
 tests/test_randomstate.py::TestRandomDist::test_lognormal_0
 tests/test_randomstate.py::TestRandomDist::test_multinomial

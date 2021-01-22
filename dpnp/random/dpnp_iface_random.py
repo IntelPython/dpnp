@@ -527,12 +527,33 @@ def logistic(loc=0.0, scale=1.0, size=None):
 
     For full documentation refer to :obj:`numpy.random.logistic`.
 
-    Notes
-    -----
-    The function uses `numpy.random.logistic` on the backend and will be
-    executed on fallback backend.
+    Limitations
+    -----------
+    Parameters ``loc`` and ``scale`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.logistic(loc, scale, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    >>> loc, scale = 0., 1.
+    >>> s = dpnp.random.logistic(loc, scale, 1000)
 
     """
+
+    if not use_origin_backend(loc):
+        # TODO:
+        # array_like of floats for `loc` and `scale`
+        if not dpnp.isscalar(loc):
+            pass
+        elif not dpnp.isscalar(scale):
+            pass
+        elif scale < 0:
+            pass
+        else:
+            if size == None or size == 1:
+                return dpnp_rng_logistic(loc, scale, size)[0]
+            else:
+                return dpnp_rng_logistic(loc, scale, size)
 
     return call_origin(numpy.random.logistic, loc, scale, size)
 
