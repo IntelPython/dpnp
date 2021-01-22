@@ -57,6 +57,7 @@ __all__ = [
     "dpnp_multivariate_normal",
     "dpnp_negative_binomial",
     "dpnp_normal",
+    "dpnp_pareto",
     "dpnp_poisson",
     "dpnp_randn",
     "dpnp_random",
@@ -92,6 +93,7 @@ ctypedef void(*fptr_dpnp_rng_multivariate_normal_c_1out_t)(void *,
                                                            size_t) except +
 ctypedef void(*fptr_dpnp_rng_negative_binomial_c_1out_t)(void *, double, double, size_t) except +
 ctypedef void(*fptr_dpnp_rng_normal_c_1out_t)(void *, double, double, size_t) except +
+ctypedef void(*fptr_dpnp_rng_pareto_c_1out_t)(void *, double, size_t) except +
 ctypedef void(*fptr_dpnp_rng_poisson_c_1out_t)(void *, double, size_t) except +
 ctypedef void(*fptr_dpnp_rng_rayleigh_c_1out_t)(void *, double, size_t) except +
 ctypedef void(*fptr_dpnp_rng_standard_cauchy_c_1out_t)(void *, size_t) except +
@@ -591,6 +593,32 @@ cpdef dparray dpnp_normal(double loc, double scale, size):
         func = <fptr_dpnp_rng_normal_c_1out_t > kernel_data.ptr
         # call FPTR function
         func(result.get_data(), loc, scale, result.size)
+
+    return result
+
+
+cpdef dparray dpnp_pareto(double alpha, size):
+    """
+    Returns an array populated with samples from Pareto distribution.
+    `dpnp_pareto` generates a matrix filled with random floats sampled from a
+    univariate Pareto distribution of `alpha`.
+
+    """
+
+    dtype = numpy.float64
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_PARETO, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray result = dparray(size, dtype=dtype)
+
+    cdef fptr_dpnp_rng_pareto_c_1out_t func = <fptr_dpnp_rng_pareto_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), alpha, result.size)
 
     return result
 

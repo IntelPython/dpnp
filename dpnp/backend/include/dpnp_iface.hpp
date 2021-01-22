@@ -857,6 +857,20 @@ INP_DLLEXPORT void dpnp_rng_normal_c(void* result, _DataType mean, _DataType std
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (Pareto distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ *
+ * @param [in]  alpha  Shape of the distribution, alpha.
+ *
+ * @param [out] result Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_rng_pareto_c(void* result, double alpha, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of random number generator (poisson distribution)
  *
  * @param [in]  size   Number of elements in `result` arrays.
