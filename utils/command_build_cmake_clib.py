@@ -112,7 +112,12 @@ class custom_build_cmake_clib(build_clib.build_clib):
             "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON"
         ]
 
+        # didn't find how to add it inside cmake, that is why this is here
+        cpu_count = len(os.sched_getaffinity(0))
+        # possible that jobs count must be +-1 against CPUs count
+        jobs = "-j" + str(cpu_count)
+
         self.spawn(["cmake"] + cmake_args + [backend_directory])
         if not self.dry_run:
-            self.spawn(["cmake", "--build", abs_build_temp_path])
+            self.spawn(["cmake", "--build", abs_build_temp_path, jobs])
             self.spawn(["cmake", "--install", abs_build_temp_path])
