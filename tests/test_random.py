@@ -557,6 +557,25 @@ class TestDistributionsNormal(TestDistribution):
         self.check_seed('normal', {'loc': loc, 'scale': scale})
 
 
+class TestDistributionsPareto(TestDistribution):
+
+    def test_moments(self):
+        a = 30.0
+        expected_mean = a / (a - 1)
+        expected_var = a / (((a - 1)**2) * (a - 2))
+        self.check_moments('pareto', expected_mean,
+                           expected_var, {'a': a})
+
+    def test_invalid_args(self):
+        size = 10
+        a = -1.0  # positive `a` is expected
+        self.check_invalid_args('pareto', {'a': a})
+
+    def test_seed(self):
+        a = 3.0  # a param for pareto distr
+        self.check_seed('pareto', {'a': a})
+
+
 class TestDistributionsPoisson(TestDistribution):
 
     def test_extreme_value(self):

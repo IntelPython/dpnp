@@ -809,12 +809,29 @@ def pareto(a, size=None):
 
     For full documentation refer to :obj:`numpy.random.pareto`.
 
-    Notes
-    -----
-    The function uses `numpy.random.pareto` on the backend and
-    will be executed on fallback backend.
+    Limitations
+    -----------
+    Parameter ``a`` is supported as a scalar.
+    Otherwise, :obj:`numpy.random.pareto(a, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> a = .5  # alpha
+    >>> s = dpnp.random.pareto(a, 1000)
 
     """
+
+    if not use_origin_backend(a):
+        # TODO:
+        # array_like of floats for `a`
+        if not dpnp.isscalar(a):
+            pass
+        elif a <= 0:
+            pass
+        else:
+            return dpnp_pareto(a, size)
 
     return call_origin(numpy.random.pareto, a, size)
 
