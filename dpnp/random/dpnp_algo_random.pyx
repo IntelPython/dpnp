@@ -730,7 +730,7 @@ cpdef dpnp_srand(seed):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_SRAND, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_SRAND, param1_type, param1_type)
 
     cdef fptr_dpnp_srand_c_1out_t func = < fptr_dpnp_srand_c_1out_t > kernel_data.ptr
     # call FPTR function

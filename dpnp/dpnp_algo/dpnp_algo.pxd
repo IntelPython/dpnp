@@ -112,6 +112,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_NORMAL
         DPNP_FN_RNG_POISSON
         DPNP_FN_RNG_RAYLEIGH
+        DPNP_FN_RNG_SRAND
         DPNP_FN_RNG_STANDARD_CAUCHY
         DPNP_FN_RNG_STANDARD_EXPONENTIAL
         DPNP_FN_RNG_STANDARD_GAMMA
@@ -124,7 +125,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_SORT
         DPNP_FN_SQRT
         DPNP_FN_SQUARE
-        DPNP_FN_SRAND
         DPNP_FN_STD
         DPNP_FN_SUBTRACT
         DPNP_FN_SUM
