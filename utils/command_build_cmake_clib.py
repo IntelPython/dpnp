@@ -113,7 +113,8 @@ class custom_build_cmake_clib(build_clib.build_clib):
         ]
 
         # didn't find how to add it inside cmake, that is why this is here
-        cpu_count = len(os.sched_getaffinity(0))
+        import multiprocessing
+        cpu_count = multiprocessing.cpu_count()
         # possible that jobs count must be +-1 against CPUs count
         jobs = "-j" + str(cpu_count)
 
