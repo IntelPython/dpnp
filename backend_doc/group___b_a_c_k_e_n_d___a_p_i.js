@@ -86,6 +86,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_rng_multivariate_normal_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga46bd112e6d1d71738ac204fb1a2c9cc3", null ],
     [ "dpnp_rng_negative_binomial_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga389360c8c1eeba1b69ae841eda245bff", null ],
     [ "dpnp_rng_normal_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga8767601be8854522bcd53eebfe161005", null ],
+    [ "dpnp_rng_pareto_c", "group___b_a_c_k_e_n_d___a_p_i.html#gab443d671618df25fbb99b382705e51d3", null ],
     [ "dpnp_rng_poisson_c", "group___b_a_c_k_e_n_d___a_p_i.html#gae5465cdfc5b56db6076c96138caa21a3", null ],
     [ "dpnp_rng_rayleigh_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga7b43154b9fe31216db2c3edb9153b2b8", null ],
     [ "dpnp_rng_standard_cauchy_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga03b1ca5560d7d26d51e1da6f71dfa1c6", null ],

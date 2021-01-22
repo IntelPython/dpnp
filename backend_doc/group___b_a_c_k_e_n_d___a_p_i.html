@@ -527,6 +527,10 @@ template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:ga8767601be8854522bcd53eebfe161005"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga8767601be8854522bcd53eebfe161005">dpnp_rng_normal_c</a> (void *result, _DataType mean, _DataType stddev, size_t size)</td></tr>
 <tr class="memdesc:ga8767601be8854522bcd53eebfe161005"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of random number generator (normal continious distribution)  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga8767601be8854522bcd53eebfe161005">More...</a><br /></td></tr>
 <tr class="separator:ga8767601be8854522bcd53eebfe161005"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab443d671618df25fbb99b382705e51d3"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
+<tr class="memitem:gab443d671618df25fbb99b382705e51d3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gab443d671618df25fbb99b382705e51d3">dpnp_rng_pareto_c</a> (void *result, double alpha, size_t size)</td></tr>
+<tr class="memdesc:gab443d671618df25fbb99b382705e51d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of random number generator (Pareto distribution)  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gab443d671618df25fbb99b382705e51d3">More...</a><br /></td></tr>
+<tr class="separator:gab443d671618df25fbb99b382705e51d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae5465cdfc5b56db6076c96138caa21a3"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:gae5465cdfc5b56db6076c96138caa21a3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gae5465cdfc5b56db6076c96138caa21a3">dpnp_rng_poisson_c</a> (void *result, double lambda, size_t size)</td></tr>
 <tr class="memdesc:gae5465cdfc5b56db6076c96138caa21a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of random number generator (poisson distribution)  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gae5465cdfc5b56db6076c96138caa21a3">More...</a><br /></td></tr>
@@ -4871,6 +4875,52 @@ template&lt;typename _DataType &gt; </div>
     <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in <code>result</code> arrays.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">mean</td><td>Mean value.</td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">stddev</td><td>Standard deviation.</td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gab443d671618df25fbb99b382705e51d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gab443d671618df25fbb99b382705e51d3">&#9670;&nbsp;</a></span>dpnp_rng_pareto_c()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename _DataType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void dpnp_rng_pareto_c </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>result</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>math library implementation of random number generator (Pareto distribution) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in <code>result</code> arrays.</td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">alpha</td><td>Shape of the distribution, alpha.</td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array. </td></tr>
   </table>
   </dd>
