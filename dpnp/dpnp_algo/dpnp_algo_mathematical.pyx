@@ -306,7 +306,7 @@ cpdef dparray dpnp_minimum(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_MINIMUM, x1, x2, x1.shape)
 
 
-cpdef tuple dpnp_modf(dparray x1):
+cpdef tuple dpnp_modf(dpnp_descriptor x1):
     """ Convert string type names (dparray.dtype) to C enum DPNPFuncType """
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
 

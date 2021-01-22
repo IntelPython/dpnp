@@ -927,11 +927,13 @@ def modf(x, **kwargs):
 
 
     """
+
+    x_desc = dpnp_descriptor(x)
     if not use_origin_backend(x) and not kwargs:
-        if not isinstance(x, dparray):
+        if not x_desc:
             pass
         else:
-            return dpnp_modf(x)
+            return dpnp_modf(x_desc)
 
     return call_origin(numpy.modf, x, **kwargs)
 
