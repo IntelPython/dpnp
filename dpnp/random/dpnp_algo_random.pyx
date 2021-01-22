@@ -100,6 +100,7 @@ ctypedef void(*fptr_dpnp_rng_standard_gamma_c_1out_t)(void *, double, size_t) ex
 ctypedef void(*fptr_dpnp_rng_standard_normal_c_1out_t)(void *, size_t) except +
 ctypedef void(*fptr_dpnp_rng_uniform_c_1out_t)(void *, long, long, size_t) except +
 ctypedef void(*fptr_dpnp_rng_weibull_c_1out_t)(void *, double, size_t) except +
+ctypedef void(*fptr_dpnp_srand_c_1out_t)(size_t) except +
 
 
 cpdef dparray dpnp_beta(double a, double b, size):
@@ -725,7 +726,15 @@ cpdef dpnp_srand(seed):
 
     """
 
-    dpnp_srand_c(seed)
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_SRAND, param1_type, param1_type)
+
+    cdef fptr_dpnp_srand_c_1out_t func = < fptr_dpnp_srand_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(seed)
 
 
 cpdef dparray dpnp_standard_cauchy(size):

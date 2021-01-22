@@ -124,6 +124,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_SORT
         DPNP_FN_SQRT
         DPNP_FN_SQUARE
+        DPNP_FN_SRAND
         DPNP_FN_STD
         DPNP_FN_SUBTRACT
         DPNP_FN_SUM

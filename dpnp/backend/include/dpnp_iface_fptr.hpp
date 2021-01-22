@@ -151,6 +151,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_SORT,                     /**< Used in numpy.sort() implementation  */
     DPNP_FN_SQRT,                     /**< Used in numpy.sqrt() implementation  */
     DPNP_FN_SQUARE,                   /**< Used in numpy.square() implementation  */
+    DPNP_FN_SRAND,                    /**< Used in numpy.random.seed() implementation  */
     DPNP_FN_STD,                      /**< Used in numpy.std() implementation  */
     DPNP_FN_SUBTRACT,                 /**< Used in numpy.subtract() implementation  */
     DPNP_FN_SUM,                      /**< Used in numpy.sum() implementation  */
