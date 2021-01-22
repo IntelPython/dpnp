@@ -329,7 +329,7 @@ def copysign(x1, x2, **kwargs):
     return call_origin(numpy.copysign, x1, x2, **kwargs)
 
 
-def cross(x1, x2, **kwargs):
+def cross(x1, x2, axisa=-1, axisb=-1, axisc=-1, axis=None):
     """
     Return the cross product of two (arrays of) vectors.
 
@@ -355,7 +355,7 @@ def cross(x1, x2, **kwargs):
 
     """
 
-    if not use_origin_backend(x1) and not kwargs:
+    if not use_origin_backend(x1):
         if not isinstance(x1, dparray):
             pass
         elif not isinstance(x2, dparray):
@@ -364,10 +364,18 @@ def cross(x1, x2, **kwargs):
             pass
         elif x1.shape != (3,) or x2.shape != (3,):
             pass
+        elif axisa != -1:
+            pass
+        elif axisb != -1:
+            pass
+        elif axisc != -1:
+            pass
+        elif axis is not None:
+            pass
         else:
             return dpnp_cross(x1, x2)
 
-    return call_origin(numpy.cross, x1, x2, **kwargs)
+    return call_origin(numpy.cross, x1, x2, axisa, axisb, axisc, axis)
 
 
 def cumprod(x1, **kwargs):
@@ -1001,16 +1009,24 @@ def multiply(x1, x2, **kwargs):
     is_x1_scalar = dpnp.isscalar(x1)
     is_x2_scalar = dpnp.isscalar(x2)
 
-    if (not use_origin_backend(x1) and (is_x1_dparray or is_x1_scalar)) and \
-            (not use_origin_backend(x2) and (is_x2_dparray or is_x2_scalar)) and \
-            not (is_x1_scalar and is_x2_scalar) and not kwargs:
-
-        if is_x1_scalar:
-            return dpnp_multiply(x2, x1)
+    if not use_origin_backend(x1):
+        if kwargs:
+            pass
+        elif not (is_x1_dparray or is_x1_scalar):
+            pass
+        elif not (is_x2_dparray or is_x2_scalar):
+            pass
+        elif is_x1_scalar and is_x2_scalar:
+            pass
+        elif (is_x1_dparray and is_x2_dparray) and (x1.size != x2.size):
+            pass
+        elif (is_x1_dparray and is_x2_dparray) and (x1.shape != x2.shape):
+            pass
         else:
-            if is_x1_dparray and is_x2_dparray:
-                if (x1.size == x2.size) and (x1.shape == x2.shape):
-                    return dpnp_multiply(x1, x2)
+            if is_x1_scalar:
+                return dpnp_multiply(x2, x1)
+            else:
+                 return dpnp_multiply(x1, x2)
 
     return call_origin(numpy.multiply, x1, x2, **kwargs)
 
@@ -1218,17 +1234,19 @@ def power(x1, x2, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-    is_x2_dparray = isinstance(x2, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
-        if (x1.size != x2.size):
-            checker_throw_value_error("power", "size", x1.size, x2.size)
-
-        if (x1.shape != x2.shape):
-            checker_throw_value_error("power", "shape", x1.shape, x2.shape)
-
-        return dpnp_power(x1, x2)
+    if not use_origin_backend(x1):
+        if kwargs:
+            pass
+        elif not isinstance(x1, dparray):
+            pass
+        elif not isinstance(x2, dparray) and not dpnp.isscalar(x2):
+            pass
+        elif isinstance(x2, dparray) and x1.size != x2.size:
+            pass
+        elif isinstance(x2, dparray) and x1.shape != x2.shape:
+            pass
+        else:
+            return dpnp_power(x1, x2)
 
     return call_origin(numpy.power, x1, x2, **kwargs)
 

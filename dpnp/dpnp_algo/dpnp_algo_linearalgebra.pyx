@@ -39,8 +39,13 @@ cimport numpy
 __all__ += [
     "dpnp_dot",
     "dpnp_inner",
+    "dpnp_kron",
     "dpnp_outer"
 ]
+
+
+# C function pointer to the C library template functions
+ctypedef void(*fptr_2in_1out_shapes_t)(void * , void * , void * , size_t * , size_t * , size_t * , size_t)
 
 
 cpdef dparray dpnp_dot(dparray in_array1, dparray in_array2):
@@ -144,6 +149,45 @@ cpdef dparray dpnp_inner(dparray array1, dparray array2):
         result[idx1] = 0
         for idx2 in range(array1.shape[-1]):
             result[idx1] += array1[array1_lin_index_base + idx2] * array2[array2_lin_index_base + idx2]
+
+    return result
+
+
+cpdef dparray dpnp_kron(dparray in_array1, dparray in_array2):
+    cdef size_t ndim = max(in_array1.ndim, in_array2.ndim)
+
+    cdef dparray_shape_type in_array1_shape
+    if in_array1.ndim < ndim:
+        for i in range(ndim - in_array1.ndim):
+            in_array1_shape.push_back(1)
+    for i in range(in_array1.ndim):
+        in_array1_shape.push_back(in_array1.shape[i])
+
+    cdef dparray_shape_type in_array2_shape
+    if in_array2.ndim < ndim:
+        for i in range(ndim - in_array2.ndim):
+            in_array2_shape.push_back(1)
+    for i in range(in_array2.ndim):
+        in_array2_shape.push_back(in_array2.shape[i])
+
+    cdef dparray_shape_type result_shape
+    for i in range(ndim):
+        result_shape.push_back(in_array1_shape[i] * in_array2_shape[i])
+
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(in_array1.dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(in_array2.dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_KRON, param1_type, param2_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray result = dparray(result_shape, dtype=result_type)
+
+    cdef fptr_2in_1out_shapes_t func = <fptr_2in_1out_shapes_t > kernel_data.ptr
+    # call FPTR function
+    func(in_array1.get_data(), in_array2.get_data(), result.get_data(), < size_t * > in_array1_shape.data(), < size_t * > in_array2_shape.data(), < size_t * > result_shape.data(), ndim)
 
     return result
 

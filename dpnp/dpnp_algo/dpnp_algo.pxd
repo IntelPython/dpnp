@@ -73,6 +73,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_HYPOT
         DPNP_FN_INV
         DPNP_FN_INVERT
+        DPNP_FN_KRON
         DPNP_FN_LEFT_SHIFT
         DPNP_FN_LOG
         DPNP_FN_LOG10
@@ -238,7 +239,7 @@ cpdef dparray dpnp_maximum(dparray array1, dparray array2)
 cpdef dparray dpnp_minimum(dparray array1, dparray array2)
 cpdef dparray dpnp_multiply(dparray array1, array2)
 cpdef dparray dpnp_negative(dparray array1)
-cpdef dparray dpnp_power(dparray array1, dparray array2)
+cpdef dparray dpnp_power(dparray array1, array2)
 cpdef dparray dpnp_remainder(dparray array1, dparray array2)
 cpdef dparray dpnp_sin(dparray array1)
 cpdef dparray dpnp_subtract(dparray array1, dparray array2)
