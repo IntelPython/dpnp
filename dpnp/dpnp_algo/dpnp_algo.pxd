@@ -111,6 +111,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_NEGATIVE_BINOMIAL
         DPNP_FN_RNG_NORMAL
         DPNP_FN_RNG_POISSON
+        DPNP_FN_RNG_POWER
         DPNP_FN_RNG_RAYLEIGH
         DPNP_FN_RNG_STANDARD_CAUCHY
         DPNP_FN_RNG_STANDARD_EXPONENTIAL
