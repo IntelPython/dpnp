@@ -59,6 +59,7 @@ message(STATUS "CMAKE_HOST_SYSTEM_NAME:          ${CMAKE_HOST_SYSTEM_NAME}")
 message(STATUS "DPNP_ONEAPI_ROOT:                ${DPNP_ONEAPI_ROOT}")
 message(STATUS "DPNP_STATIC_LIB_ENABLE:          ${DPNP_STATIC_LIB_ENABLE}")
 message(STATUS "DPNP_DEBUG_ENABLE:               ${DPNP_DEBUG_ENABLE}")
+message(STATUS "DPNP_BACKEND_TESTS:              ${DPNP_BACKEND_TESTS}")
 message(STATUS "DPNP_INSTALL_STRUCTURED:         ${DPNP_INSTALL_STRUCTURED}")
 message(STATUS "DPNP_SYCL_QUEUE_MGR_ENABLE:      ${DPNP_SYCL_QUEUE_MGR_ENABLE}")
 message(STATUS " |- DPNP_QUEUEMGR_INCLUDE_DIR:   ${DPNP_QUEUEMGR_INCLUDE_DIR}")
@@ -185,6 +186,13 @@ endif()
 
 target_include_directories(dpnp_backend_c PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(dpnp_backend_c PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+# -----------------------------------------------------------------------------------------------
+# Testing logic...
+# -----------------------------------------------------------------------------------------------
+if(DPNP_BACKEND_TESTS)
+  add_subdirectory(tests)
+endif()
 
 # -----------------------------------------------------------------------------------------------
 # Dependencies logic...

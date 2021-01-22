@@ -95,8 +95,12 @@ class custom_build_cmake_clib(build_clib.build_clib):
         config = "Debug" if self.debug else "Release"
 
         cmake_generator = str()
+        enable_tests = "OFF"
+
         if IS_WIN:
             cmake_generator = "-GNinja"
+        if IS_LIN:
+            enable_tests = "ON"
 
         cmake_args = [
             cmake_generator,
@@ -109,7 +113,8 @@ class custom_build_cmake_clib(build_clib.build_clib):
             "-DDPNP_SYCL_QUEUE_MGR_ENABLE:BOOL=" + _dpctrl_exists,
             "-DDPNP_QUEUEMGR_INCLUDE_DIR=" + _dpctrl_include_dir,
             "-DDPNP_QUEUEMGR_LIB_DIR=" + _dpctrl_library_dir,
-            "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON"
+            "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON",
+            "-DDPNP_BACKEND_TESTS:BOOL=" + enable_tests
         ]
 
         self.spawn(["cmake"] + cmake_args + [backend_directory])
