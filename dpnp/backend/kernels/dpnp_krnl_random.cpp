@@ -33,8 +33,9 @@
 #include "dpnp_utils.hpp"
 #include "queue_sycl.hpp"
 
-namespace mkl_rng = oneapi::mkl::rng;
 namespace mkl_blas = oneapi::mkl::blas;
+namespace mkl_rng = oneapi::mkl::rng;
+namespace mkl_vm = oneapi::mkl::vm;
 
 /**
  * Use get/set functions to access/modify this variable
@@ -461,15 +462,23 @@ void dpnp_rng_rayleigh_c(void* result, _DataType scale, size_t size)
         return;
     }
 
-    // set displacement a
-    const _DataType a = (_DataType(0.0));
+    cl::sycl::vector_class<cl::sycl::event> no_deps;
+
+    const _DataType a = 0.0;
+    const _DataType beta = 2.0;
 
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    mkl_rng::rayleigh<_DataType> distribution(a, scale);
-    // perform generation
+    mkl_rng::exponential<_DataType> distribution(a, beta);;
+
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
     event_out.wait();
+    event_out = mkl_vm::sqrt(DPNP_QUEUE, size, result1, result1, no_deps, mkl_vm::mode::ha);
+    event_out.wait();
+    // with MKL
+    // event_out = mkl_blas::axpy(DPNP_QUEUE, size, scale, result1, 1, result1, 1);
+    // event_out.wait();
+    for(size_t i = 0; i < size; i++) result1[i] *= scale;
 }
 
 template <typename _DataType>
