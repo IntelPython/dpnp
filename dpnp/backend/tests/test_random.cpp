@@ -1,4 +1,5 @@
 #include <dpnp_iface.hpp>
+#include <dpnp_iface_fptr.hpp>
 
 #include <vector>
   
@@ -83,6 +84,18 @@ TEST (TestBackendRandomUniform, test_seed) {
             EXPECT_NEAR (result1[i], result2[i], 0.004);
         }
     }
+}
+
+TEST (TestBackendRandomSrand, test_func_ptr) {
+
+    void * fptr = nullptr;
+    DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNPFuncName::DPNP_FN_RNG_SRAND,
+        DPNPFuncType::DPNP_FT_DOUBLE, DPNPFuncType::DPNP_FT_DOUBLE);
+
+    fptr = get_dpnp_function_ptr1(kernel_data.return_type, DPNPFuncName::DPNP_FN_RNG_SRAND,
+        DPNPFuncType::DPNP_FT_DOUBLE, DPNPFuncType::DPNP_FT_DOUBLE);
+
+    EXPECT_TRUE(fptr != nullptr);
 }
 
 int main(int argc, char **argv) {
