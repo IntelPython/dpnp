@@ -1493,6 +1493,7 @@ tests/test_random.py::TestRandomDist::test_random_integers_deprecated
 tests/test_random.py::TestRandomDist::test_random_integers_max_int
 tests/test_random.py::TestRandomDist::test_rayleigh
 tests/test_random.py::TestRandomDist::test_rayleigh_0
+tests/test_random.py::TestRandomDist::test_power
 tests/test_random.py::TestRandomDist::test_scalar_exception_propagation
 tests/test_random.py::TestRandomDist::test_shuffle
 tests/test_random.py::TestRandomDist::test_shuffle_masked
@@ -1588,6 +1589,7 @@ tests/test_randomstate.py::TestRandomDist::test_random_sample
 tests/test_randomstate.py::TestRandomDist::test_rand_singleton
 tests/test_randomstate.py::TestRandomDist::test_rayleigh
 tests/test_randomstate.py::TestRandomDist::test_rayleigh_0
+tests/test_randomstate.py::TestRandomDist::test_power
 tests/test_randomstate.py::TestRandomDist::test_scalar_exception_propagation
 tests/test_randomstate.py::TestRandomDist::test_shuffle
 tests/test_randomstate.py::TestRandomDist::test_shuffle_masked

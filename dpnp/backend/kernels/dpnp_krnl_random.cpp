@@ -478,6 +478,30 @@ void dpnp_rng_poisson_c(void* result, double lambda, size_t size)
 }
 
 template <typename _DataType>
+void dpnp_rng_power_c(void* result, double alpha, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+    cl::sycl::vector_class<cl::sycl::event> no_deps;
+
+    const _DataType d_zero = _DataType(0.0);
+    const _DataType d_one = _DataType(1.0);
+    _DataType neg_rec_alp = 1.0/alpha;
+
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    mkl_rng::uniform<_DataType> distribution(d_zero, d_one);
+    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+    event_out.wait();
+
+    event_out = mkl_vm::powx(DPNP_QUEUE, size, result1, neg_rec_alp,
+        result1, no_deps, mkl_vm::mode::ha);
+    event_out.wait();
+}
+
+template <typename _DataType>
 void dpnp_rng_rayleigh_c(void* result, _DataType scale, size_t size)
 {
     if (!size)
@@ -712,6 +736,8 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_RNG_PARETO][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_pareto_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_POISSON][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_poisson_c<int>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_POWER][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_power_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_RAYLEIGH][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_rayleigh_c<double>};
 

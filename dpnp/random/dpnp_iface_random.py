@@ -889,17 +889,34 @@ def poisson(lam=1.0, size=None):
 def power(a, size=None):
     """Power distribution.
 
-    Draws samples in [0, 1] from a power distribution with positive exponent
-    a - 1.
+    Draws samples in [0, 1] from a power distribution with positive
+    exponent a - 1.
 
     For full documentation refer to :obj:`numpy.random.power`.
 
-    Notes
-    -----
-    The function uses `numpy.random.power` on the backend and
-    will be executed on fallback backend.
+    Limitations
+    -----------
+    Parameter ``a`` is supported as a scalar.
+    Otherwise, :obj:`numpy.random.power(a, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> a = .5  # alpha
+    >>> s = dpnp.random.power(a, 1000)
 
     """
+
+    if not use_origin_backend(a):
+        # TODO:
+        # array_like of floats for `a`
+        if not dpnp.isscalar(a):
+            pass
+        elif a <= 0:
+            pass
+        else:
+            return dpnp_rng_power(a, size)
 
     return call_origin(numpy.random.power, a, size)
 

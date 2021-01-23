@@ -598,6 +598,26 @@ class TestDistributionsPoisson(TestDistribution):
         self.check_seed('poisson', {'lam': lam})
 
 
+class TestDistributionsPower(TestDistribution):
+
+    def test_moments(self):
+        a = 30.0
+        neg_a = -a
+        expected_mean = neg_a / (neg_a - 1)
+        expected_var = neg_a / (((neg_a - 1)**2) * (neg_a - 2))
+        self.check_moments('power', expected_mean,
+                           expected_var, {'a': a})
+
+    def test_invalid_args(self):
+        size = 10
+        a = -1.0  # positive `a` is expected
+        self.check_invalid_args('power', {'a': a})
+
+    def test_seed(self):
+        a = 3.0  # a param for pareto distr
+        self.check_seed('power', {'a': a})
+
+
 class TestDistributionsRayleigh(TestDistribution):
 
     def test_extreme_value(self):

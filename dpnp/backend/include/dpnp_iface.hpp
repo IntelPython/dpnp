@@ -885,6 +885,20 @@ INP_DLLEXPORT void dpnp_rng_poisson_c(void* result, double lambda, size_t size);
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (power distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ *
+ * @param [in]  alpha  Shape of the distribution, alpha.
+ *
+ * @param [out] result Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_rng_power_c(void* result, double alpha, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of random number generator (rayleigh distribution)
  *
  * @param [in]  size   Number of elements in `result` arrays.
