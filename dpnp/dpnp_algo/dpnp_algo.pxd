@@ -105,6 +105,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_GUMBEL
         DPNP_FN_RNG_HYPERGEOMETRIC
         DPNP_FN_RNG_LAPLACE
+        DPNP_FN_RNG_LOGISTIC
         DPNP_FN_RNG_LOGNORMAL
         DPNP_FN_RNG_MULTINOMIAL
         DPNP_FN_RNG_MULTIVARIATE_NORMAL

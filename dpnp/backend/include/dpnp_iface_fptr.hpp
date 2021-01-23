@@ -132,6 +132,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RNG_GUMBEL,               /**< Used in numpy.random.gumbel() implementation  */
     DPNP_FN_RNG_HYPERGEOMETRIC,       /**< Used in numpy.random.hypergeometric() implementation  */
     DPNP_FN_RNG_LAPLACE,              /**< Used in numpy.random.laplace() implementation  */
+    DPNP_FN_RNG_LOGISTIC,             /**< Used in numpy.random.logistic() implementation  */
     DPNP_FN_RNG_LOGNORMAL,            /**< Used in numpy.random.lognormal() implementation  */
     DPNP_FN_RNG_MULTINOMIAL,          /**< Used in numpy.random.multinomial() implementation  */
     DPNP_FN_RNG_MULTIVARIATE_NORMAL,  /**< Used in numpy.random.multivariate_normal() implementation  */
