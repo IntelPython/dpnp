@@ -671,6 +671,23 @@ class TestDistributionsStandardNormal(TestDistribution):
         self.check_seed('standard_normal', {})
 
 
+class TestDistributionsStandardT(TestDistribution):
+
+    def test_moments(self):
+        df = 300.0
+        expected_mean = 0.0
+        expected_var = df / (df - 2)
+        self.check_moments('standard_t', expected_mean,
+                           expected_var, {'df': df})
+
+    def test_invalid_args(self):
+        df = 0.0   # positive `df` is expected
+        self.check_invalid_args('standard_t', {'df': df})
+
+    def test_seed(self):
+        self.check_seed('standard_t', {'df': 10.0})
+
+
 class TestDistributionsUniform(TestDistribution):
 
     def test_extreme_value(self):

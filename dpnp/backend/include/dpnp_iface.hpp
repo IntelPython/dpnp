@@ -950,6 +950,20 @@ INP_DLLEXPORT void dpnp_rng_standard_normal_c(void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of random number generator (standard Student's t distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ *
+ * @param [in]  df     Degrees of freedom.
+ *
+ * @param [out] result Output array.
+ *
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_rng_standard_t_c(void* result, _DataType df, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of random number generator (uniform distribution)
  *
  * @param [in]  low    Left bound of array values.

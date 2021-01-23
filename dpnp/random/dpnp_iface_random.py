@@ -1358,20 +1358,38 @@ def standard_normal(size=None):
 
 
 def standard_t(df, size=None):
-    """Power distribution.
+    """Standard Student’s t distribution.
 
-    Draw samples from a standard Student’s t distribution with df degrees
-    of freedom.
+    Draw samples from a standard Student’s t distribution with
+    df degrees of freedom.
 
     For full documentation refer to :obj:`numpy.random.standard_t`.
 
-    Notes
-    -----
-    The function uses `numpy.random.standard_t` on the backend and
-    will be executed on fallback backend.
+    Limitations
+    -----------
+    Parameter ``df`` is supported as a scalar.
+    Otherwise, :obj:`numpy.random.standard_t(df, size)` samples
+    are drawn.
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> df = 2.
+    >>> s = dpnp.random.standard_t(df, 1000000)
 
     """
 
+    if not use_origin_backend(df) and dpnp_queue_is_cpu():
+        # TODO:
+        # array_like of floats for `df`
+        if not dpnp.isscalar(df):
+            pass
+        elif df <= 0:
+            pass
+        else:
+            return dpnp_standard_t(df, size)
+    print("here")
     return call_origin(numpy.random.standard_t, df, size)
 
 
