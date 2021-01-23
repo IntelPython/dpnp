@@ -228,7 +228,7 @@ cpdef dpnp_queue_initialize():
     # TODO:
     # choose seed number as is in numpy
     seed_from_time = time(NULL)
-    dpnp_srand_c(seed_from_time)
+    dpnp_rng_srand_c(seed_from_time)
 
 
 cpdef dpnp_queue_is_cpu():

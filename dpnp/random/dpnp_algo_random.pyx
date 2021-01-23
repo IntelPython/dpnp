@@ -43,35 +43,35 @@ cimport numpy
 
 
 __all__ = [
-    "dpnp_beta",
-    "dpnp_binomial",
-    "dpnp_chisquare",
-    "dpnp_exponential",
-    "dpnp_gamma",
-    "dpnp_geometric",
-    "dpnp_gumbel",
-    "dpnp_hypergeometric",
-    "dpnp_laplace",
-    "dpnp_lognormal",
+    "dpnp_rng_beta",
+    "dpnp_rng_binomial",
+    "dpnp_rng_chisquare",
+    "dpnp_rng_exponential",
+    "dpnp_rng_gamma",
+    "dpnp_rng_geometric",
+    "dpnp_rng_gumbel",
+    "dpnp_rng_hypergeometric",
+    "dpnp_rng_laplace",
+    "dpnp_rng_lognormal",
     "dpnp_rng_logistic",
-    "dpnp_multinomial",
-    "dpnp_multivariate_normal",
-    "dpnp_negative_binomial",
-    "dpnp_normal",
-    "dpnp_pareto",
-    "dpnp_poisson",
+    "dpnp_rng_multinomial",
+    "dpnp_rng_multivariate_normal",
+    "dpnp_rng_negative_binomial",
+    "dpnp_rng_normal",
+    "dpnp_rng_pareto",
+    "dpnp_rng_poisson",
     "dpnp_rng_power",
-    "dpnp_randn",
-    "dpnp_random",
-    "dpnp_rayleigh",
-    "dpnp_srand",
-    "dpnp_standard_cauchy",
-    "dpnp_standard_exponential",
-    "dpnp_standard_gamma",
-    "dpnp_standard_normal",
-    "dpnp_standard_t",
-    "dpnp_uniform",
-    "dpnp_weibull"
+    "dpnp_rng_randn",
+    "dpnp_rng_random",
+    "dpnp_rng_rayleigh",
+    "dpnp_rng_srand",
+    "dpnp_rng_standard_cauchy",
+    "dpnp_rng_standard_exponential",
+    "dpnp_rng_standard_gamma",
+    "dpnp_rng_standard_normal",
+    "dpnp_rng_standard_t",
+    "dpnp_rng_uniform",
+    "dpnp_rng_weibull"
 ]
 
 
@@ -101,6 +101,7 @@ ctypedef void(*fptr_dpnp_rng_pareto_c_1out_t)(void *, double, size_t) except +
 ctypedef void(*fptr_dpnp_rng_poisson_c_1out_t)(void *, double, size_t) except +
 ctypedef void(*fptr_dpnp_rng_power_c_1out_t)(void *, double, size_t) except +
 ctypedef void(*fptr_dpnp_rng_rayleigh_c_1out_t)(void *, double, size_t) except +
+ctypedef void(*fptr_dpnp_rng_srand_c_1out_t)(size_t) except +
 ctypedef void(*fptr_dpnp_rng_standard_cauchy_c_1out_t)(void *, size_t) except +
 ctypedef void(*fptr_dpnp_rng_standard_exponential_c_1out_t)(void *, size_t) except +
 ctypedef void(*fptr_dpnp_rng_standard_gamma_c_1out_t)(void *, double, size_t) except +
@@ -108,13 +109,12 @@ ctypedef void(*fptr_dpnp_rng_standard_normal_c_1out_t)(void *, size_t) except +
 ctypedef void(*fptr_dpnp_rng_standard_t_c_1out_t)(void *, double, size_t) except +
 ctypedef void(*fptr_dpnp_rng_uniform_c_1out_t)(void *, long, long, size_t) except +
 ctypedef void(*fptr_dpnp_rng_weibull_c_1out_t)(void *, double, size_t) except +
-ctypedef void(*fptr_dpnp_srand_c_1out_t)(size_t) except +
 
 
-cpdef dparray dpnp_beta(double a, double b, size):
+cpdef dparray dpnp_rng_beta(double a, double b, size):
     """
     Returns an array populated with samples from beta distribution.
-    `dpnp_beta` generates a matrix filled with random floats sampled from a
+    `dpnp_rng_beta` generates a matrix filled with random floats sampled from a
     univariate beta distribution.
 
     """
@@ -136,10 +136,10 @@ cpdef dparray dpnp_beta(double a, double b, size):
     return result
 
 
-cpdef dparray dpnp_binomial(int ntrial, double p, size):
+cpdef dparray dpnp_rng_binomial(int ntrial, double p, size):
     """
     Returns an array populated with samples from binomial distribution.
-    `dpnp_binomial` generates a matrix filled with random floats sampled from a
+    `dpnp_rng_binomial` generates a matrix filled with random floats sampled from a
     univariate binomial distribution for a given number of independent trials and
     success probability p of a single trial.
 
@@ -175,10 +175,10 @@ cpdef dparray dpnp_binomial(int ntrial, double p, size):
     return result
 
 
-cpdef dparray dpnp_chisquare(int df, size):
+cpdef dparray dpnp_rng_chisquare(int df, size):
     """
     Returns an array populated with samples from chi-square distribution.
-    `dpnp_chisquare` generates a matrix filled with random floats sampled from a
+    `dpnp_rng_chisquare` generates a matrix filled with random floats sampled from a
     univariate chi-square distribution for a given number of degrees of freedom.
 
     """
@@ -200,10 +200,10 @@ cpdef dparray dpnp_chisquare(int df, size):
     return result
 
 
-cpdef dparray dpnp_exponential(double beta, size):
+cpdef dparray dpnp_rng_exponential(double beta, size):
     """
     Returns an array populated with samples from exponential distribution.
-    `dpnp_exponential` generates a matrix filled with random floats sampled from a
+    `dpnp_rng_exponential` generates a matrix filled with random floats sampled from a
     univariate exponential distribution of `beta`.
 
     """
@@ -226,10 +226,10 @@ cpdef dparray dpnp_exponential(double beta, size):
     return result
 
 
-cpdef dparray dpnp_gamma(double shape, double scale, size):
+cpdef dparray dpnp_rng_gamma(double shape, double scale, size):
     """
     Returns an array populated with samples from gamma distribution.
-    `dpnp_gamma` generates a matrix filled with random floats sampled from a
+    `dpnp_rng_gamma` generates a matrix filled with random floats sampled from a
     univariate gamma distribution of `shape` and `scale`.
 
     """
@@ -261,10 +261,10 @@ cpdef dparray dpnp_gamma(double shape, double scale, size):
     return result
 
 
-cpdef dparray dpnp_geometric(float p, size):
+cpdef dparray dpnp_rng_geometric(float p, size):
     """
     Returns an array populated with samples from geometric distribution.
-    `dpnp_geometric` generates a matrix filled with random floats sampled from a
+    `dpnp_rng_geometric` generates a matrix filled with random floats sampled from a
     univariate geometric distribution for a success probability p of a single
     trial.
 
@@ -297,10 +297,10 @@ cpdef dparray dpnp_geometric(float p, size):
     return result
 
 
-cpdef dparray dpnp_gumbel(double loc, double scale, size):
+cpdef dparray dpnp_rng_gumbel(double loc, double scale, size):
     """
     Returns an array populated with samples from gumbel distribution.
-    `dpnp_gumbel` generates a matrix filled with random floats sampled from a
+    `dpnp_rng_gumbel` generates a matrix filled with random floats sampled from a
     univariate Gumbel distribution.
 
     """
@@ -332,10 +332,10 @@ cpdef dparray dpnp_gumbel(double loc, double scale, size):
     return result
 
 
-cpdef dparray dpnp_hypergeometric(int l, int s, int m, size):
+cpdef dparray dpnp_rng_hypergeometric(int l, int s, int m, size):
     """
     Returns an array populated with samples from hypergeometric distribution.
-    `dpnp_hypergeometric` generates a matrix filled with random floats sampled from a
+    `dpnp_rng_hypergeometric` generates a matrix filled with random floats sampled from a
     univariate hypergeometric distribution.
 
     """
@@ -370,10 +370,10 @@ cpdef dparray dpnp_hypergeometric(int l, int s, int m, size):
     return result
 
 
-cpdef dparray dpnp_laplace(double loc, double scale, size):
+cpdef dparray dpnp_rng_laplace(double loc, double scale, size):
     """
     Returns an array populated with samples from laplace distribution.
-    `dpnp_laplace` generates a matrix filled with random floats sampled from a
+    `dpnp_rng_laplace` generates a matrix filled with random floats sampled from a
     univariate laplace distribution.
 
     """
@@ -431,10 +431,10 @@ cpdef dparray dpnp_rng_logistic(double loc, double scale, size):
 
 
 
-cpdef dparray dpnp_lognormal(double mean, double stddev, size):
+cpdef dparray dpnp_rng_lognormal(double mean, double stddev, size):
     """
     Returns an array populated with samples from lognormal distribution.
-    `dpnp_lognormal` generates a matrix filled with random floats sampled from a
+    `dpnp_rng_lognormal` generates a matrix filled with random floats sampled from a
     univariate lognormal distribution.
 
     """
@@ -467,11 +467,11 @@ cpdef dparray dpnp_lognormal(double mean, double stddev, size):
     return result
 
 
-cpdef dparray dpnp_multinomial(int ntrial, p, size):
+cpdef dparray dpnp_rng_multinomial(int ntrial, p, size):
     """
     Returns an array populated with samples from multinomial distribution.
 
-    `dpnp_multinomial` generates a matrix filled with random floats sampled from a
+    `dpnp_rng_multinomial` generates a matrix filled with random floats sampled from a
     univariate multinomial distribution for a given number of independent trials and
     probabilities of each of the ``p`` different outcome.
 
@@ -508,10 +508,10 @@ cpdef dparray dpnp_multinomial(int ntrial, p, size):
     return result
 
 
-cpdef dparray dpnp_multivariate_normal(numpy.ndarray mean, numpy.ndarray cov, size):
+cpdef dparray dpnp_rng_multivariate_normal(numpy.ndarray mean, numpy.ndarray cov, size):
     """
     Returns an array populated with samples from multivariate normal distribution.
-    `multivariate_normal` generates a matrix filled with random floats sampled from a
+    `dpnp_rng_multivariate_normal` generates a matrix filled with random floats sampled from a
     multivariate normal distribution.
 
     """
@@ -554,7 +554,7 @@ cpdef dparray dpnp_multivariate_normal(numpy.ndarray mean, numpy.ndarray cov, si
     return result
 
 
-cpdef dparray dpnp_negative_binomial(double a, double p, size):
+cpdef dparray dpnp_rng_negative_binomial(double a, double p, size):
     """
     Returns an array populated with samples from negative binomial distribution.
 
@@ -595,10 +595,10 @@ cpdef dparray dpnp_negative_binomial(double a, double p, size):
     return result
 
 
-cpdef dparray dpnp_normal(double loc, double scale, size):
+cpdef dparray dpnp_rng_normal(double loc, double scale, size):
     """
     Returns an array populated with samples from normal distribution.
-    `dpnp_normal` generates a matrix filled with random floats sampled from a
+    `dpnp_rng_normal` generates a matrix filled with random floats sampled from a
     normal distribution.
 
     """
@@ -630,10 +630,10 @@ cpdef dparray dpnp_normal(double loc, double scale, size):
     return result
 
 
-cpdef dparray dpnp_pareto(double alpha, size):
+cpdef dparray dpnp_rng_pareto(double alpha, size):
     """
     Returns an array populated with samples from Pareto distribution.
-    `dpnp_pareto` generates a matrix filled with random floats sampled from a
+    `dpnp_rng_pareto` generates a matrix filled with random floats sampled from a
     univariate Pareto distribution of `alpha`.
 
     """
@@ -656,10 +656,10 @@ cpdef dparray dpnp_pareto(double alpha, size):
     return result
 
 
-cpdef dparray dpnp_poisson(double lam, size):
+cpdef dparray dpnp_rng_poisson(double lam, size):
     """
     Returns an array populated with samples from Poisson distribution.
-    `dpnp_poisson` generates a matrix filled with random floats sampled from a
+    `dpnp_rng_poisson` generates a matrix filled with random floats sampled from a
     univariate Poisson distribution for a given number of independent trials and
     success probability p of a single trial.
 
@@ -695,7 +695,7 @@ cpdef dparray dpnp_poisson(double lam, size):
 cpdef dparray dpnp_rng_power(double alpha, size):
     """
     Returns an array populated with samples from power distribution.
-    `dpnp_power` generates a matrix filled with random floats sampled from a
+    `dpnp_rng_power` generates a matrix filled with random floats sampled from a
     univariate power distribution of `alpha`.
     """
 
@@ -717,10 +717,10 @@ cpdef dparray dpnp_rng_power(double alpha, size):
     return result
 
 
-cpdef dparray dpnp_randn(dims):
+cpdef dparray dpnp_rng_randn(dims):
     """
     Returns an array populated with samples from standard normal distribution.
-    `dpnp_randn` generates a matrix filled with random floats sampled from a
+    `dpnp_rng_randn` generates a matrix filled with random floats sampled from a
     univariate normal (Gaussian) distribution of mean 0 and variance 1.
 
     """
@@ -744,7 +744,7 @@ cpdef dparray dpnp_randn(dims):
     return result
 
 
-cpdef dparray dpnp_random(dims):
+cpdef dparray dpnp_rng_random(dims):
     """
     Create an array of the given shape and populate it
     with random samples from a uniform distribution over [0, 1).
@@ -770,7 +770,7 @@ cpdef dparray dpnp_random(dims):
     return result
 
 
-cpdef dparray dpnp_rayleigh(double scale, size):
+cpdef dparray dpnp_rng_rayleigh(double scale, size):
     """
     Returns an array populated with samples from Rayleigh distribution.
     `dpnp_rayleigh` generates a matrix filled with random floats sampled from a
@@ -805,7 +805,7 @@ cpdef dparray dpnp_rayleigh(double scale, size):
     return result
 
 
-cpdef dpnp_srand(seed):
+cpdef dpnp_rng_srand(seed):
     """
     Initialize basic random number generator.
 
@@ -817,12 +817,12 @@ cpdef dpnp_srand(seed):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_SRAND, param1_type, param1_type)
 
-    cdef fptr_dpnp_srand_c_1out_t func = < fptr_dpnp_srand_c_1out_t > kernel_data.ptr
+    cdef fptr_dpnp_rng_srand_c_1out_t func = < fptr_dpnp_rng_srand_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(seed)
 
 
-cpdef dparray dpnp_standard_cauchy(size):
+cpdef dparray dpnp_rng_standard_cauchy(size):
     """
     Returns an array populated with samples from standard cauchy distribution.
     `dpnp_standard_cauchy` generates a matrix filled with random floats sampled from a
@@ -847,7 +847,7 @@ cpdef dparray dpnp_standard_cauchy(size):
     return result
 
 
-cpdef dparray dpnp_standard_exponential(size):
+cpdef dparray dpnp_rng_standard_exponential(size):
     """
     Returns an array populated with samples from standard exponential distribution.
     `dpnp_standard_exponential` generates a matrix filled with random floats sampled from a
@@ -874,7 +874,7 @@ cpdef dparray dpnp_standard_exponential(size):
     return result
 
 
-cpdef dparray dpnp_standard_gamma(double shape, size):
+cpdef dparray dpnp_rng_standard_gamma(double shape, size):
     """
     Returns an array populated with samples from standard gamma distribution.
     `dpnp_standard_gamma` generates a matrix filled with random floats sampled from a
@@ -909,7 +909,7 @@ cpdef dparray dpnp_standard_gamma(double shape, size):
     return result
 
 
-cpdef dparray dpnp_standard_normal(size):
+cpdef dparray dpnp_rng_standard_normal(size):
     """
     Returns an array populated with samples from standard normal(Gaussian) distribution.
     `dpnp_standard_normal` generates a matrix filled with random floats sampled from a
@@ -933,7 +933,7 @@ cpdef dparray dpnp_standard_normal(size):
 
     return result
 
-cpdef dparray dpnp_standard_t(double df, size):
+cpdef dparray dpnp_rng_standard_t(double df, size):
     """
     Returns an array populated with samples from standard t distribution.
     `dpnp_standard_t` generates a matrix filled with random floats sampled from a
@@ -958,7 +958,7 @@ cpdef dparray dpnp_standard_t(double df, size):
     return result
 
 
-cpdef dparray dpnp_uniform(long low, long high, size, dtype):
+cpdef dparray dpnp_rng_uniform(long low, long high, size, dtype):
     """
     Returns an array populated with samples from standard uniform distribution.
     Generates a matrix filled with random numbers sampled from a
@@ -993,7 +993,7 @@ cpdef dparray dpnp_uniform(long low, long high, size, dtype):
     return result
 
 
-cpdef dparray dpnp_weibull(double a, size):
+cpdef dparray dpnp_rng_weibull(double a, size):
     """
     Returns an array populated with samples from weibull distribution.
     `dpnp_weibull` generates a matrix filled with random floats sampled from a
