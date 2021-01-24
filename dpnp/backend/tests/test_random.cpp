@@ -19,10 +19,10 @@ TEST (TestBackendRandomBeta, test_seed) {
         double* result1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
         double* result2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
 
-        dpnp_srand_c(seed);
+        dpnp_rng_srand_c(seed);
         dpnp_rng_beta_c<double>(result1, a, b, size);
 
-        dpnp_srand_c(seed);
+        dpnp_rng_srand_c(seed);
         dpnp_rng_beta_c<double>(result2, a, b, size);
 
         for (size_t i = 0; i < size; ++i)
@@ -46,10 +46,10 @@ TEST (TestBackendRandomNormal, test_seed) {
         double* result1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
         double* result2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
 
-        dpnp_srand_c(seed);
+        dpnp_rng_srand_c(seed);
         dpnp_rng_normal_c<double>(result1, loc, scale, size);
 
-        dpnp_srand_c(seed);
+        dpnp_rng_srand_c(seed);
         dpnp_rng_normal_c<double>(result2, loc, scale, size);
 
         for (size_t i = 0; i < size; ++i)
@@ -73,10 +73,10 @@ TEST (TestBackendRandomUniform, test_seed) {
         double* result1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
         double* result2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
 
-        dpnp_srand_c(seed);
+        dpnp_rng_srand_c(seed);
         dpnp_rng_uniform_c<double>(result1, low, high, size);
 
-        dpnp_srand_c(seed);
+        dpnp_rng_srand_c(seed);
         dpnp_rng_uniform_c<double>(result2, low, high, size);
 
         for (size_t i = 0; i < size; ++i)

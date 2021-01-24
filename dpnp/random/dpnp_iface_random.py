@@ -138,7 +138,7 @@ def beta(a, b, size=None):
         elif b <= 0:
             pass
         else:
-            return dpnp_beta(a, b, size)
+            return dpnp_rng_beta(a, b, size)
 
     return call_origin(numpy.random.beta, a, b, size)
 
@@ -184,7 +184,7 @@ def binomial(n, p, size=None):
         elif n < 0:
             pass
         else:
-            return dpnp_binomial(int(n), p, size)
+            return dpnp_rng_binomial(int(n), p, size)
 
     return call_origin(numpy.random.binomial, n, p, size)
 
@@ -236,7 +236,7 @@ def chisquare(df, size=None):
         else:
             # TODO:
             # float to int, safe
-            return dpnp_chisquare(int(df), size)
+            return dpnp_rng_chisquare(int(df), size)
 
     return call_origin(numpy.random.chisquare, df, size)
 
@@ -303,7 +303,7 @@ def exponential(scale=1.0, size=None):
         elif scale < 0:
             pass
         else:
-            return dpnp_exponential(scale, size)
+            return dpnp_rng_exponential(scale, size)
 
     return call_origin(numpy.random.exponential, scale, size)
 
@@ -358,7 +358,7 @@ def gamma(shape, scale=1.0, size=None):
         elif shape < 0:
             pass
         else:
-            return dpnp_gamma(shape, scale, size)
+            return dpnp_rng_gamma(shape, scale, size)
 
     return call_origin(numpy.random.gamma, shape, scale, size)
 
@@ -392,7 +392,7 @@ def geometric(p, size=None):
         elif p > 1 or p <= 0:
             pass
         else:
-            return dpnp_geometric(p, size)
+            return dpnp_rng_geometric(p, size)
 
     return call_origin(numpy.random.geometric, p, size)
 
@@ -428,7 +428,7 @@ def gumbel(loc=0.0, scale=1.0, size=None):
         elif scale < 0:
             pass
         else:
-            return dpnp_gumbel(loc, scale, size)
+            return dpnp_rng_gumbel(loc, scale, size)
 
     return call_origin(numpy.random.gumbel, loc, scale, size)
 
@@ -479,7 +479,7 @@ def hypergeometric(ngood, nbad, nsample, size=None):
             m = int(ngood)
             l = int(ngood) + int(nbad)
             s = int(nsample)
-            return dpnp_hypergeometric(l, s, m, size)
+            return dpnp_rng_hypergeometric(l, s, m, size)
 
     return call_origin(numpy.random.hypergeometric, ngood, nbad, nsample, size)
 
@@ -515,7 +515,7 @@ def laplace(loc=0.0, scale=1.0, size=None):
         elif scale < 0:
             pass
         else:
-            return dpnp_laplace(loc, scale, size)
+            return dpnp_rng_laplace(loc, scale, size)
 
     return call_origin(numpy.random.laplace, loc, scale, size)
 
@@ -590,7 +590,7 @@ def lognormal(mean=0.0, sigma=1.0, size=None):
         elif sigma < 0:
             pass
         else:
-            return dpnp_lognormal(mean, sigma, size)
+            return dpnp_rng_lognormal(mean, sigma, size)
 
     return call_origin(numpy.random.lognormal, mean, sigma, size)
 
@@ -655,7 +655,7 @@ def multinomial(n, pvals, size=None):
                 except:
                     shape = tuple(size) + (d,)
 
-            return dpnp_multinomial(int(n), pvals, shape)
+            return dpnp_rng_multinomial(int(n), pvals, shape)
 
     return call_origin(numpy.random.multinomial, n, pvals, size)
 
@@ -701,7 +701,7 @@ def multivariate_normal(mean, cov, size=None, check_valid='warn', tol=1e-8):
         else:
             final_shape = list(shape[:])
             final_shape.append(mean_.shape[0])
-            return dpnp_multivariate_normal(mean_, cov_, final_shape)
+            return dpnp_rng_multivariate_normal(mean_, cov_, final_shape)
 
     return call_origin(numpy.random.multivariate_normal, mean, cov, size, check_valid, tol)
 
@@ -748,7 +748,7 @@ def negative_binomial(n, p, size=None):
         elif n <= 0:
             pass
         else:
-            return dpnp_negative_binomial(n, p, size)
+            return dpnp_rng_negative_binomial(n, p, size)
 
     return call_origin(numpy.random.negative_binomial, n, p, size)
 
@@ -784,7 +784,7 @@ def normal(loc=0.0, scale=1.0, size=None):
         elif scale < 0:
             pass
         else:
-            return dpnp_normal(loc, scale, size)
+            return dpnp_rng_normal(loc, scale, size)
 
     return call_origin(numpy.random.normal, loc, scale, size)
 
@@ -852,7 +852,7 @@ def pareto(a, size=None):
         elif a <= 0:
             pass
         else:
-            return dpnp_pareto(a, size)
+            return dpnp_rng_pareto(a, size)
 
     return call_origin(numpy.random.pareto, a, size)
 
@@ -902,7 +902,7 @@ def poisson(lam=1.0, size=None):
         elif lam < 0:
             pass
         else:
-            return dpnp_poisson(lam, size)
+            return dpnp_rng_poisson(lam, size)
 
     return call_origin(numpy.random.poisson, lam, size)
 
@@ -969,7 +969,7 @@ def rand(d0, *dn):
         if not _check_dims(dims):
             pass
         else:
-            return dpnp_random(dims)
+            return dpnp_rng_random(dims)
 
     return call_origin(numpy.random.rand, d0, *dn)
 
@@ -1024,7 +1024,7 @@ def randint(low, high=None, size=None, dtype=int):
         else:
             low = int(low)
             high = int(high)
-            return dpnp_uniform(low, high, size, _dtype)
+            return dpnp_rng_uniform(low, high, size, _dtype)
 
     return call_origin(numpy.random.randint, low, high, size, dtype)
 
@@ -1060,7 +1060,7 @@ def randn(d0, *dn):
         if not _check_dims(dims):
             pass
         else:
-            return dpnp_randn(dims)
+            return dpnp_rng_randn(dims)
 
     return call_origin(numpy.random.randn, d0, *dn)
 
@@ -1087,7 +1087,7 @@ def random(size):
     """
 
     if not use_origin_backend(size):
-        return dpnp_random(size)
+        return dpnp_rng_random(size)
 
     return call_origin(numpy.random.random, size)
 
@@ -1147,7 +1147,7 @@ def random_sample(size):
     """
 
     if not use_origin_backend(size):
-        return dpnp_random(size)
+        return dpnp_rng_random(size)
 
     return call_origin(numpy.random.random_sample, size)
 
@@ -1174,7 +1174,7 @@ def ranf(size):
     """
 
     if not use_origin_backend(size):
-        return dpnp_random(size)
+        return dpnp_rng_random(size)
 
     return call_origin(numpy.random.ranf, size)
 
@@ -1208,7 +1208,7 @@ def rayleigh(scale=1.0, size=None):
         elif scale < 0:
             pass
         else:
-            return dpnp_rayleigh(scale, size)
+            return dpnp_rng_rayleigh(scale, size)
 
     return call_origin(numpy.random.rayleigh, scale, size)
 
@@ -1235,7 +1235,7 @@ def sample(size):
     """
 
     if not use_origin_backend(size):
-        return dpnp_random(size)
+        return dpnp_rng_random(size)
 
     return call_origin(numpy.random.sample, size)
 
@@ -1278,7 +1278,7 @@ def seed(seed=None):
         elif seed < 0:
             pass
         else:
-            dpnp_srand(seed)
+            dpnp_rng_srand(seed)
 
     return call_origin(numpy.random.seed, seed)
 
@@ -1306,7 +1306,7 @@ def standard_cauchy(size=None):
     """
 
     if not use_origin_backend(size):
-        return dpnp_standard_cauchy(size)
+        return dpnp_rng_standard_cauchy(size)
 
     return call_origin(numpy.random.standard_cauchy, size)
 
@@ -1331,7 +1331,7 @@ def standard_exponential(size=None):
     """
 
     if not use_origin_backend(size):
-        return dpnp_standard_exponential(size)
+        return dpnp_rng_standard_exponential(size)
 
     return call_origin(numpy.random.standard_exponential, size)
 
@@ -1366,7 +1366,7 @@ def standard_gamma(shape, size=None):
         elif shape < 0:
             pass
         else:
-            return dpnp_standard_gamma(shape, size)
+            return dpnp_rng_standard_gamma(shape, size)
 
     return call_origin(numpy.random.standard_gamma, shape, size)
 
@@ -1390,7 +1390,7 @@ def standard_normal(size=None):
     """
 
     if not use_origin_backend(size):
-        return dpnp_standard_normal(size)
+        return dpnp_rng_standard_normal(size)
 
     return call_origin(numpy.random.standard_normal, size)
 
@@ -1426,7 +1426,7 @@ def standard_t(df, size=None):
         elif df <= 0:
             pass
         else:
-            return dpnp_standard_t(df, size)
+            return dpnp_rng_standard_t(df, size)
     print("here")
     return call_origin(numpy.random.standard_t, df, size)
 
@@ -1482,7 +1482,7 @@ def uniform(low=0.0, high=1.0, size=None):
         else:
             if low > high:
                 low, high = high, low
-            return dpnp_uniform(low, high, size, dtype=numpy.float64)
+            return dpnp_rng_uniform(low, high, size, dtype=numpy.float64)
 
     return call_origin(numpy.random.uniform, low, high, size)
 
@@ -1549,7 +1549,7 @@ def weibull(a, size=None):
         elif a < 0:
             pass
         else:
-            return dpnp_weibull(a, size)
+            return dpnp_rng_weibull(a, size)
 
     return call_origin(numpy.random.weibull, a, size)
 

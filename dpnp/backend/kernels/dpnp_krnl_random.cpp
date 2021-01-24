@@ -63,7 +63,7 @@ static VSLStreamStatePtr get_rng_stream()
     return rng_stream;
 }
 
-void dpnp_srand_c(size_t seed)
+void dpnp_rng_srand_c(size_t seed)
 {
     backend_sycl::backend_sycl_rng_engine_init(seed);
     set_rng_stream(seed);
@@ -786,7 +786,7 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_uniform_c<int>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_WEIBULL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_weibull_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_RNG_SRAND][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_srand_c};
+    fmap[DPNPFuncName::DPNP_FN_RNG_SRAND][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_srand_c};
 
     return;
 }
