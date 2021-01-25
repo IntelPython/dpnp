@@ -60,6 +60,7 @@ __all__ = [
     "place",
     "put",
     "putmask",
+    "select",
     "take",
     "tril_indices",
     "tril_indices_from",
@@ -369,6 +370,43 @@ def putmask(arr, mask, values):
             return dpnp_putmask(arr, mask, values)
 
     return call_origin(numpy.putmask, arr, mask, values)
+
+
+def select(condlist, choicelist, default=0):
+    """
+    Return an array drawn from elements in choicelist, depending on conditions.
+    For full documentation refer to :obj:`numpy.select`.
+
+    Limitations
+    -----------
+    Arrays of input lists are supported as :obj:`dpnp.ndarray`.
+    Parameter ``default`` are supported only with default values.
+    """
+    if not use_origin_backend():
+        if not isinstance(condlist, list):
+            pass
+        elif not isinstance(condlist[0], dparray):
+            pass
+        elif not isinstance(choicelist, list):
+            pass
+        elif not isinstance(choicelist[0], dparray):
+            pass
+        elif len(condlist) != len(choicelist):
+            pass
+        elif len(condlist) == len(choicelist):
+            val = True
+            size_ = condlist[0].size
+            for i in range(len(condlist)):
+                if condlist[i].size != size_ or choicelist[i].size != size_:
+                    val = False
+            if not val:
+                pass
+            else:
+                return dpnp_select(condlist, choicelist, default)
+        else:
+            return dpnp_select(condlist, choicelist, default)
+
+    return call_origin(numpy.select, condlist, choicelist, default)
 
 
 def take(input, indices, axis=None, out=None, mode='raise'):
