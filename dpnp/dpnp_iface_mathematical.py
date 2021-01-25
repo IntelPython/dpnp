@@ -983,7 +983,7 @@ def multiply(x1, x2, **kwargs):
             if is_x1_scalar:
                 return dpnp_multiply(x2, x1)
             else:
-                 return dpnp_multiply(x1, x2)
+                return dpnp_multiply(x1, x2)
 
     return call_origin(numpy.multiply, x1, x2, **kwargs)
 

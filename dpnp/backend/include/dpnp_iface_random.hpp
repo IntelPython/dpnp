@@ -310,7 +310,6 @@ INP_DLLEXPORT void dpnp_rng_power_c(void* result, double alpha, size_t size);
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_rng_rayleigh_c(void* result, _DataType scale, size_t size);
 
-
 /**
  * @ingroup BACKEND_RANDOM_API
  * @brief initializer for basic random number generator.
@@ -349,7 +348,6 @@ INP_DLLEXPORT void dpnp_rng_standard_exponential_c(void* result, size_t size);
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_rng_standard_gamma_c(void* result, _DataType shape, size_t size);
-
 
 /**
  * @ingroup BACKEND_RANDOM_API
