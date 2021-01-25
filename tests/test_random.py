@@ -753,6 +753,31 @@ class TestDistributionsUniform(TestDistribution):
         self.check_seed('uniform', {'low': low, 'high': high})
 
 
+class TestDistributionsWald(TestDistribution):
+
+    def test_moments(self):
+        mean = 3.56
+        scale = 2.8
+        expected_mean = mean
+        expected_var = (mean ** 3) / scale
+        self.check_moments('wald', expected_mean, expected_var,
+                           {'mean': mean, 'scale': scale})
+
+    def test_invalid_args(self):
+        size = 10
+        mean = -1.0   # positive `mean` is expected
+        scale = 1.0   # OK
+        self.check_invalid_args('wald', {'mean': mean, 'scale': scale})
+        mean = 1.0    # OK
+        scale = -1.0  # positive `scale` is expected
+        self.check_invalid_args('wald', {'mean': mean, 'scale': scale})
+
+    def test_seed(self):
+        mean = 3.56   # `mean` param for Wald distr
+        scale = 2.8   # `scale` param for Wald distr
+        self.check_seed('wald', {'mean': mean, 'scale': scale})
+
+
 class TestDistributionsWeibull(TestDistribution):
 
     def test_extreme_value(self):

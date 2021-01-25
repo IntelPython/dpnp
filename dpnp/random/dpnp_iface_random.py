@@ -1511,12 +1511,32 @@ def wald(mean, scale, size=None):
 
     For full documentation refer to :obj:`numpy.random.wald`.
 
-    Notes
-    -----
-    The function uses `numpy.random.wald` on the backend and
-    will be executed on fallback backend.
+    Limitations
+    -----------
+    Parameters ``mean`` and ``scale`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.wald(mean, scale, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    >>> loc, scale = 3., 2.
+    >>> s = dpnp.random.wald(loc, scale, 1000)
 
     """
+
+    if not use_origin_backend(mean):
+        # TODO:
+        # array_like of floats for `mean` and `scale`
+        if not dpnp.isscalar(mean):
+            pass
+        elif not dpnp.isscalar(scale):
+            pass
+        elif mean <= 0:
+            pass
+        elif scale <= 0:
+            pass
+        else:
+            return dpnp_rng_wald(mean, scale, size)
 
     return call_origin(numpy.random.wald, mean, scale, size)
 

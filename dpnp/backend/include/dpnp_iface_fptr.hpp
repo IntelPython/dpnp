@@ -149,6 +149,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RNG_STANDARD_NORMAL,      /**< Used in numpy.random.standard_normal() implementation  */
     DPNP_FN_RNG_STANDARD_T,           /**< Used in numpy.random.standard_t() implementation  */
     DPNP_FN_RNG_UNIFORM,              /**< Used in numpy.random.uniform() implementation  */
+    DPNP_FN_RNG_WALD,                 /**< Used in numpy.random.wald() implementation  */
     DPNP_FN_RNG_WEIBULL,              /**< Used in numpy.random.weibull() implementation  */
     DPNP_FN_SIGN,                     /**< Used in numpy.sign() implementation  */
     DPNP_FN_SIN,                      /**< Used in numpy.sin() implementation  */

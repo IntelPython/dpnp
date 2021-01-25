@@ -374,6 +374,18 @@ INP_DLLEXPORT void dpnp_rng_uniform_c(void* result, long low, long high, size_t 
 
 /**
  * @ingroup BACKEND_RANDOM_API
+ * @brief math library implementation of random number generator (Wald's distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ * @param [in]  mean   Mean value.
+ * @param [in]  scale  The scale of the distribution.
+ * @param [out] result Output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_rng_wald_c(void* result, const _DataType mean, const _DataType scale, size_t size);
+
+/**
+ * @ingroup BACKEND_RANDOM_API
  * @brief math library implementation of random number generator (weibull distribution)
  *
  * @param [in]  size   Number of elements in `result` arrays.
