@@ -52,6 +52,7 @@ option(DPNP_STATIC_LIB_ENABLE "Enable build DPNP static library" FALSE)
 option(DPNP_DEBUG_ENABLE "Enable output for DPNP_DEBUG statements" FALSE)
 option(DPNP_INSTALL_STRUCTURED "if FALSE, install package files into same directory" TRUE)
 option(DPNP_SYCL_QUEUE_MGR_ENABLE "Use external manager for SYCL queue" FALSE)
+option(DPNP_BACKEND_TESTS "Enable DPNP tests" FALSE)
 
 message(STATUS "CMAKE_VERSION:                   ${CMAKE_VERSION}")
 message(STATUS "CMAKE_GENERATOR:                 ${CMAKE_GENERATOR}")
