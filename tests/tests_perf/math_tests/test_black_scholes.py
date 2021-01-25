@@ -31,15 +31,15 @@ def gen_data(low, high, size):
 
 
 def black_scholes_put(lib, S, K, T, r, sigma):
-    d1 = (lib.log(S/K) + (r + sigma*sigma/2.)*T) / sigma*lib.sqrt(T)
+    d1 = (lib.log(S / K) + (r + sigma * sigma / 2.) * T) / sigma * lib.sqrt(T)
     d2 = d1 - sigma * lib.sqrt(T)
 
     cdf_d1 = (1 + lib.erf(d1 / lib.sqrt(2))) / 2
     cdf_d2 = (1 + lib.erf(d2 / lib.sqrt(2))) / 2
 
-    bs_call = S*cdf_d1 - K*lib.exp(-r*T)*cdf_d2
+    bs_call = S * cdf_d1 - K * lib.exp(-r * T) * cdf_d2
 
-    return K*lib.exp(-r*T) - S + bs_call
+    return K * lib.exp(-r * T) - S + bs_call
 
 
 class TestBlackScholes(DPNPTestPerfBase):
