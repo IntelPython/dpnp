@@ -1,7 +1,7 @@
 #include <dpnp_iface.hpp>
 #include <dpnp_iface_fptr.hpp>
-#include <math.h>
 
+#include <math.h>
 #include <vector>
   
 #include "gtest/gtest.h"
