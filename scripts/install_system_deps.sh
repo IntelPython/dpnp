@@ -26,7 +26,7 @@ python --version
 python3 --version
 
 echo ========================= install extra packages ==========================
-sudo apt-get install cmake valgrind
+sudo apt-get install cmake valgrind libgtest-dev
 
 #echo ========================= install/delete libstdc++-dev ===================
 #sudo apt remove -y gcc-7 g++-7 gcc-8 g++-8 gcc-10 g++-10
