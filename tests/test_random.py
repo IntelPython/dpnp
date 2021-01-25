@@ -225,6 +225,34 @@ class TestDistributionsExponential(TestDistribution):
         self.check_seed('exponential', {'scale': scale})
 
 
+class TestDistributionsF(TestDistribution):
+
+    def test_moments(self):
+        dfnum = 12.56
+        dfden = 13.0
+        # for dfden > 2
+        expected_mean = dfden / (dfden - 2)
+        # for dfden > 4
+        expected_var = 2 * (dfden ** 2) * (dfnum + dfden - 2) / \
+                       (dfnum * ((dfden - 2) ** 2) * ((dfden - 4)))
+        self.check_moments('f', expected_mean, expected_var,
+                           {'dfnum': dfnum, 'dfden': dfden})
+
+    def test_invalid_args(self):
+        size = 10
+        dfnum = -1.0   # positive `dfnum` is expected
+        dfden = 1.0    # OK
+        self.check_invalid_args('f', {'dfnum': dfnum, 'dfden': dfden})
+        dfnum = 1.0    # OK
+        dfden = -1.0   # positive `dfden` is expected
+        self.check_invalid_args('f', {'dfnum': dfnum, 'dfden': dfden})
+
+    def test_seed(self):
+        dfnum = 3.56   # `dfden` param for Wald distr
+        dfden = 2.8    # `dfden` param for Wald distr
+        self.check_seed('f', {'dfnum': dfnum, 'dfden': dfden})
+
+
 class TestDistributionsGamma(TestDistribution):
 
     def test_moments(self):

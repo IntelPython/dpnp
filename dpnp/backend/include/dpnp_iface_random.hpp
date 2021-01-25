@@ -100,6 +100,18 @@ INP_DLLEXPORT void dpnp_rng_exponential_c(void* result, _DataType beta, size_t s
 
 /**
  * @ingroup BACKEND_RANDOM_API
+ * @brief math library implementation of random number generator (F distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ * @param [in]  df_num  Degrees of freedom in numerator.
+ * @param [in]  df_den  Degrees of freedom in denominator.
+ * @param [out] result Output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_rng_f_c(void* result, _DataType df_num, _DataType df_den, size_t size);
+
+/**
+ * @ingroup BACKEND_RANDOM_API
  * @brief math library implementation of random number generator (gamma distribution)
  *
  * @param [in]  size   Number of elements in `result` arrays.

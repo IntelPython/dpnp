@@ -126,6 +126,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RNG_BINOMIAL,             /**< Used in numpy.random.binomial() implementation  */
     DPNP_FN_RNG_CHISQUARE,            /**< Used in numpy.random.chisquare() implementation  */
     DPNP_FN_RNG_EXPONENTIAL,          /**< Used in numpy.random.exponential() implementation  */
+    DPNP_FN_RNG_F,                    /**< Used in numpy.random.f() implementation  */
     DPNP_FN_RNG_GAMMA,                /**< Used in numpy.random.gamma() implementation  */
     DPNP_FN_RNG_GAUSSIAN,             /**< Used in numpy.random.randn() implementation  */
     DPNP_FN_RNG_GEOMETRIC,            /**< Used in numpy.random.geometric() implementation  */

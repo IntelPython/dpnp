@@ -32,6 +32,33 @@ TEST (TestBackendRandomBeta, test_seed) {
     }
 }
 
+TEST (TestBackendRandomF, test_seed) {
+    const size_t size = 256;
+    size_t seed = 10;
+    double dfnum = 10.4;
+    double dfden = 12.5;
+
+    auto QueueOptionsDevices = std::vector<QueueOptions>{ QueueOptions::CPU_SELECTOR,
+        QueueOptions::GPU_SELECTOR };
+
+    for (auto device_selector :  QueueOptionsDevices) {
+        dpnp_queue_initialize_c(device_selector);
+        double* result1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+        double* result2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+
+        dpnp_rng_srand_c(seed);
+        dpnp_rng_f_c<double>(result1, dfnum, dfden, size);
+
+        dpnp_rng_srand_c(seed);
+        dpnp_rng_f_c<double>(result2, dfnum, dfden, size);
+
+        for (size_t i = 0; i < size; ++i)
+        {
+            EXPECT_NEAR (result1[i], result2[i], 0.004);
+        }
+    }
+}
+
 TEST (TestBackendRandomNormal, test_seed) {
     const size_t size = 256;
     size_t seed = 10;

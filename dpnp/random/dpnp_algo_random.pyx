@@ -47,6 +47,7 @@ __all__ = [
     "dpnp_rng_binomial",
     "dpnp_rng_chisquare",
     "dpnp_rng_exponential",
+    "dpnp_rng_f",
     "dpnp_rng_gamma",
     "dpnp_rng_geometric",
     "dpnp_rng_gumbel",
@@ -79,6 +80,7 @@ ctypedef void(*fptr_dpnp_rng_beta_c_1out_t)(void *, double, double, size_t) exce
 ctypedef void(*fptr_dpnp_rng_binomial_c_1out_t)(void *, int, double, size_t) except +
 ctypedef void(*fptr_dpnp_rng_chi_square_c_1out_t)(void *, int, size_t) except +
 ctypedef void(*fptr_dpnp_rng_exponential_c_1out_t)(void *, double, size_t) except +
+ctypedef void(*fptr_dpnp_rng_f_c_1out_t)(void *, const double, const double, size_t) except +
 ctypedef void(*fptr_dpnp_rng_gamma_c_1out_t)(void *, double, double, size_t) except +
 ctypedef void(*fptr_dpnp_rng_geometric_c_1out_t)(void *, float, size_t) except +
 ctypedef void(*fptr_dpnp_rng_gaussian_c_1out_t)(void *, double, double, size_t) except +
@@ -222,6 +224,31 @@ cpdef dparray dpnp_rng_exponential(double beta, size):
     cdef fptr_dpnp_rng_exponential_c_1out_t func = <fptr_dpnp_rng_exponential_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), beta, result.size)
+
+    return result
+
+
+cpdef dparray dpnp_rng_f(double df_num, double df_den, size):
+    """
+    Returns an array populated with samples from F distribution.
+    `dpnp_rng_f` generates a matrix filled with random floats sampled from a
+    univariate F distribution.
+    """
+
+    dtype = numpy.float64
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_F, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray result = dparray(size, dtype=dtype)
+
+    cdef fptr_dpnp_rng_f_c_1out_t func = <fptr_dpnp_rng_f_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), df_num, df_den, result.size)
 
     return result
 

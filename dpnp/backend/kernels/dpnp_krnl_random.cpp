@@ -177,6 +177,72 @@ void dpnp_rng_exponential_c(void* result, _DataType beta, size_t size)
 }
 
 template <typename _DataType>
+void dpnp_rng_f_c(void* result, const _DataType df_num, const _DataType df_den, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+    cl::sycl::vector_class<cl::sycl::event> no_deps;
+
+    const _DataType d_zero = (_DataType(0.0));
+
+    _DataType shape = 0.5*df_num;
+    _DataType scale = 2.0/df_num;
+    _DataType *den = nullptr;
+
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    if (dpnp_queue_is_cpu_c())
+    {
+        mkl_rng::gamma<_DataType> gamma_distribution1(shape, d_zero, scale);
+        auto event_out = mkl_rng::generate(gamma_distribution1, DPNP_RNG_ENGINE, size, result1);
+        event_out.wait();
+
+        den = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+        if (den == nullptr)
+        {
+            throw std::runtime_error("DPNP RNG Error: dpnp_rng_f_c() failed.");
+        }
+        shape = 0.5*df_den;
+        scale = 2.0/df_den;
+        mkl_rng::gamma<_DataType> gamma_distribution2(shape, d_zero, scale);
+        event_out = mkl_rng::generate(gamma_distribution2, DPNP_RNG_ENGINE, size, den);
+        event_out.wait();
+
+        event_out = mkl_vm::div(DPNP_QUEUE, size, result1, den, result1, no_deps,
+            mkl_vm::mode::ha);
+        event_out.wait();
+
+        dpnp_memory_free_c(den);
+    }
+    else
+    {
+        int errcode = vdRngGamma(VSL_RNG_METHOD_GAMMA_GNORM_ACCURATE, get_rng_stream(),
+            size, result1, shape, d_zero, scale);
+        if (errcode != VSL_STATUS_OK)
+        {
+            throw std::runtime_error("DPNP RNG Error: dpnp_rng_f_c() failed.");
+        }
+        den = (_DataType *) mkl_malloc(size * sizeof(_DataType), 64);
+        if (den == nullptr)
+        {
+            throw std::runtime_error("DPNP RNG Error: dpnp_rng_f_c() failed.");
+        }
+        shape = 0.5*df_den;
+        scale = 2.0/df_den;
+        errcode = vdRngGamma(VSL_RNG_METHOD_GAMMA_GNORM_ACCURATE, get_rng_stream(),
+            size, den, shape, d_zero, scale);
+        if (errcode != VSL_STATUS_OK)
+        {
+            throw std::runtime_error("DPNP RNG Error: dpnp_rng_f_c() failed.");
+        }
+        vmdDiv(size, result1, den, result1, VML_HA);
+        mkl_free(den);
+    }
+}
+
+template <typename _DataType>
 void dpnp_rng_gamma_c(void* result, _DataType shape, _DataType scale, size_t size)
 {
     if (!size)
@@ -731,6 +797,8 @@ void func_map_init_random(func_map_t& fmap)
 
     fmap[DPNPFuncName::DPNP_FN_RNG_EXPONENTIAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_exponential_c<double>};
     fmap[DPNPFuncName::DPNP_FN_RNG_EXPONENTIAL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_exponential_c<float>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_F][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_f_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_GAMMA][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_gamma_c<double>};
 
