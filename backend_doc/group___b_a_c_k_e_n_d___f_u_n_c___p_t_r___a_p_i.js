@@ -75,6 +75,7 @@ var group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i =
       [ "DPNP_FN_RNG_BINOMIAL", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558aa07058cd0653319a5c14d660b0840c1d", null ],
       [ "DPNP_FN_RNG_CHISQUARE", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a6ba83001ce89ae9bea48277c027d0b64", null ],
       [ "DPNP_FN_RNG_EXPONENTIAL", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a6d9d980b8da13bdb0b5300fc4024cc90", null ],
+      [ "DPNP_FN_RNG_F", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a56d7153c972b0be7b98a638b3e2bc953", null ],
       [ "DPNP_FN_RNG_GAMMA", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ac988c55f9d110ee7ce575a59803dfe0d", null ],
       [ "DPNP_FN_RNG_GAUSSIAN", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a9ac4119c5429b52649c38e290305a3bc", null ],
       [ "DPNP_FN_RNG_GEOMETRIC", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a0ba43c2e5702dd405cd40d405fe3ad46", null ],

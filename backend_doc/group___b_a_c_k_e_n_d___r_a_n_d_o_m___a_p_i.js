@@ -4,6 +4,7 @@ var group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i =
     [ "dpnp_rng_binomial_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gab61645f48897e01ec06884375581d4af", null ],
     [ "dpnp_rng_chi_square_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga9358afaa86aa7982487b10cb9154a7f2", null ],
     [ "dpnp_rng_exponential_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga8b99130f38f38cda7fffee08d0d035a3", null ],
+    [ "dpnp_rng_f_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga97b1c5ecb1ad7b413f8976fa4a7be81a", null ],
     [ "dpnp_rng_gamma_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gaba1f8389148cbc1c8f3ab7c288755f16", null ],
     [ "dpnp_rng_gaussian_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga8b15e118f80684f0c83d2ce1b5bd134c", null ],
     [ "dpnp_rng_geometric_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga23a3229a8cffd97f26fada0b11b93399", null ],

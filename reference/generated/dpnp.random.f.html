@@ -195,9 +195,15 @@
 <dd><p>F distribution.</p>
 <p>Draw samples from an F distribution.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.f.html#numpy.random.f" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.f</span></code></a>.</p>
-<p class="rubric">Notes</p>
-<p>The function uses <cite>numpy.random.f</cite> on the backend and will be
-executed on fallback backend.</p>
+<p class="rubric">Limitations</p>
+<p>Parameters <code class="docutils literal notranslate"><span class="pre">dfnum</span></code> and <code class="docutils literal notranslate"><span class="pre">dfden</span></code> are supported as scalar.
+Otherwise, <code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.f(dfnum,</span> <span class="pre">dfden,</span> <span class="pre">size)</span></code> samples are drawn.
+Output array data type is <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.float64</span></code>.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dfnum</span><span class="p">,</span> <span class="n">dfden</span> <span class="o">=</span> <span class="mf">3.</span><span class="p">,</span> <span class="mf">2.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">dfnum</span><span class="p">,</span> <span class="n">dfden</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </div>

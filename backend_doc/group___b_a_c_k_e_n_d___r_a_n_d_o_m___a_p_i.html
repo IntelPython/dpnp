@@ -108,6 +108,10 @@ Functions</h2></td></tr>
 <tr class="memitem:ga8b99130f38f38cda7fffee08d0d035a3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga8b99130f38f38cda7fffee08d0d035a3">dpnp_rng_exponential_c</a> (void *result, _DataType beta, size_t size)</td></tr>
 <tr class="memdesc:ga8b99130f38f38cda7fffee08d0d035a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of random number generator (exponential distribution)  <a href="group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga8b99130f38f38cda7fffee08d0d035a3">More...</a><br /></td></tr>
 <tr class="separator:ga8b99130f38f38cda7fffee08d0d035a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga97b1c5ecb1ad7b413f8976fa4a7be81a"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
+<tr class="memitem:ga97b1c5ecb1ad7b413f8976fa4a7be81a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga97b1c5ecb1ad7b413f8976fa4a7be81a">dpnp_rng_f_c</a> (void *result, _DataType df_num, _DataType df_den, size_t size)</td></tr>
+<tr class="memdesc:ga97b1c5ecb1ad7b413f8976fa4a7be81a"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of random number generator (F distribution)  <a href="group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga97b1c5ecb1ad7b413f8976fa4a7be81a">More...</a><br /></td></tr>
+<tr class="separator:ga97b1c5ecb1ad7b413f8976fa4a7be81a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaba1f8389148cbc1c8f3ab7c288755f16"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:gaba1f8389148cbc1c8f3ab7c288755f16"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gaba1f8389148cbc1c8f3ab7c288755f16">dpnp_rng_gamma_c</a> (void *result, _DataType shape, _DataType scale, size_t size)</td></tr>
 <tr class="memdesc:gaba1f8389148cbc1c8f3ab7c288755f16"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of random number generator (gamma distribution)  <a href="group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gaba1f8389148cbc1c8f3ab7c288755f16">More...</a><br /></td></tr>
@@ -398,6 +402,59 @@ template&lt;typename _DataType &gt; </div>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in <code>result</code> arrays. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">beta</td><td>Beta, scalefactor. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga97b1c5ecb1ad7b413f8976fa4a7be81a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga97b1c5ecb1ad7b413f8976fa4a7be81a">&#9670;&nbsp;</a></span>dpnp_rng_f_c()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename _DataType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void dpnp_rng_f_c </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>result</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">_DataType&#160;</td>
+          <td class="paramname"><em>df_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">_DataType&#160;</td>
+          <td class="paramname"><em>df_den</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>math library implementation of random number generator (F distribution) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in <code>result</code> arrays. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">df_num</td><td>Degrees of freedom in numerator. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">df_den</td><td>Degrees of freedom in denominator. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array. </td></tr>
   </table>
   </dd>

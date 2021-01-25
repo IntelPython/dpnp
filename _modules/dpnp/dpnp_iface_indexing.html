@@ -211,6 +211,7 @@
     <span class="s2">&quot;place&quot;</span><span class="p">,</span>
     <span class="s2">&quot;put&quot;</span><span class="p">,</span>
     <span class="s2">&quot;putmask&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;select&quot;</span><span class="p">,</span>
     <span class="s2">&quot;take&quot;</span><span class="p">,</span>
     <span class="s2">&quot;tril_indices&quot;</span><span class="p">,</span>
     <span class="s2">&quot;tril_indices_from&quot;</span><span class="p">,</span>
@@ -520,6 +521,43 @@
             <span class="k">return</span> <span class="n">dpnp_putmask</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">putmask</span><span class="p">,</span> <span class="n">arr</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="n">condlist</span><span class="p">,</span> <span class="n">choicelist</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return an array drawn from elements in choicelist, depending on conditions.</span>
+<span class="sd">    For full documentation refer to :obj:`numpy.select`.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Arrays of input lists are supported as :obj:`dpnp.ndarray`.</span>
+<span class="sd">    Parameter ``default`` are supported only with default values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">condlist</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">condlist</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dparray</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">choicelist</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">choicelist</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dparray</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">condlist</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">choicelist</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">condlist</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">choicelist</span><span class="p">):</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">size_</span> <span class="o">=</span> <span class="n">condlist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">condlist</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">condlist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">size_</span> <span class="ow">or</span> <span class="n">choicelist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">size_</span><span class="p">:</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">val</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">dpnp_select</span><span class="p">(</span><span class="n">condlist</span><span class="p">,</span> <span class="n">choicelist</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_select</span><span class="p">(</span><span class="n">condlist</span><span class="p">,</span> <span class="n">choicelist</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">select</span><span class="p">,</span> <span class="n">condlist</span><span class="p">,</span> <span class="n">choicelist</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">take</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">):</span>
