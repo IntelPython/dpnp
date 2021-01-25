@@ -99,6 +99,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_BINOMIAL
         DPNP_FN_RNG_CHISQUARE
         DPNP_FN_RNG_EXPONENTIAL
+        DPNP_FN_RNG_F
         DPNP_FN_RNG_GAMMA
         DPNP_FN_RNG_GAUSSIAN
         DPNP_FN_RNG_GEOMETRIC
