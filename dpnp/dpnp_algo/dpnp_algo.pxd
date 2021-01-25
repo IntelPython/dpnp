@@ -105,17 +105,22 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_GUMBEL
         DPNP_FN_RNG_HYPERGEOMETRIC
         DPNP_FN_RNG_LAPLACE
+        DPNP_FN_RNG_LOGISTIC
         DPNP_FN_RNG_LOGNORMAL
         DPNP_FN_RNG_MULTINOMIAL
         DPNP_FN_RNG_MULTIVARIATE_NORMAL
         DPNP_FN_RNG_NEGATIVE_BINOMIAL
         DPNP_FN_RNG_NORMAL
+        DPNP_FN_RNG_PARETO
         DPNP_FN_RNG_POISSON
+        DPNP_FN_RNG_POWER
         DPNP_FN_RNG_RAYLEIGH
+        DPNP_FN_RNG_SRAND
         DPNP_FN_RNG_STANDARD_CAUCHY
         DPNP_FN_RNG_STANDARD_EXPONENTIAL
         DPNP_FN_RNG_STANDARD_GAMMA
         DPNP_FN_RNG_STANDARD_NORMAL
+        DPNP_FN_RNG_STANDARD_T
         DPNP_FN_RNG_UNIFORM
         DPNP_FN_RNG_WEIBULL
         DPNP_FN_SIGN
@@ -163,7 +168,7 @@ cdef extern from "dpnp_iface.hpp":
     char * dpnp_memory_alloc_c(size_t size_in_bytes)
     void dpnp_memory_free_c(void * ptr)
     void dpnp_memory_memcpy_c(void * dst, const void * src, size_t size_in_bytes)
-    void dpnp_srand_c(size_t seed)
+    void dpnp_rng_srand_c(size_t seed)
 
 
 # C function pointer to the C library template functions

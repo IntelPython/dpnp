@@ -33,8 +33,9 @@
 #include "dpnp_utils.hpp"
 #include "queue_sycl.hpp"
 
-namespace mkl_rng = oneapi::mkl::rng;
 namespace mkl_blas = oneapi::mkl::blas;
+namespace mkl_rng = oneapi::mkl::rng;
+namespace mkl_vm = oneapi::mkl::vm;
 
 /**
  * Use get/set functions to access/modify this variable
@@ -62,7 +63,7 @@ static VSLStreamStatePtr get_rng_stream()
     return rng_stream;
 }
 
-void dpnp_srand_c(size_t seed)
+void dpnp_rng_srand_c(size_t seed)
 {
     backend_sycl::backend_sycl_rng_engine_init(seed);
     set_rng_stream(seed);
@@ -300,6 +301,30 @@ void dpnp_rng_laplace_c(void* result, double loc, double scale, size_t size)
     event_out.wait();
 }
 
+/*   Logistic(loc, scale) ~ loc + scale * log(u/(1.0 - u)) */
+template <typename _DataType>
+void dpnp_rng_logistic_c(void* result, double loc, double scale, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+    cl::sycl::vector_class<cl::sycl::event> no_deps;
+
+    const _DataType d_zero = _DataType(0.0);
+    const _DataType d_one = _DataType(1.0);
+
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    mkl_rng::uniform<_DataType> distribution(d_zero, d_one);
+    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+    event_out.wait();
+
+    for(size_t i = 0; i < size; i++) result1[i] = log(result1[i]/(1.0 - result1[i]));
+
+    for(size_t i = 0; i < size; i++) result1[i] = loc + scale * result1[i];
+}
+
 template <typename _DataType>
 void dpnp_rng_lognormal_c(void* result, _DataType mean, _DataType stddev, size_t size)
 {
@@ -439,6 +464,29 @@ void dpnp_rng_normal_c(void* result, _DataType mean, _DataType stddev, size_t si
 }
 
 template <typename _DataType>
+void dpnp_rng_pareto_c(void* result, double alpha, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+    cl::sycl::vector_class<cl::sycl::event> no_deps;
+
+    const _DataType d_zero = _DataType(0.0);
+    const _DataType d_one = _DataType(1.0);
+    _DataType neg_rec_alp = -1.0/alpha;
+
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    mkl_rng::uniform<_DataType> distribution(d_zero, d_one);
+    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+    event_out.wait();
+
+    event_out = mkl_vm::powx(DPNP_QUEUE, size, result1, neg_rec_alp, result1, no_deps, mkl_vm::mode::ha);
+    event_out.wait();
+}
+
+template <typename _DataType>
 void dpnp_rng_poisson_c(void* result, double lambda, size_t size)
 {
     if (!size)
@@ -454,6 +502,30 @@ void dpnp_rng_poisson_c(void* result, double lambda, size_t size)
 }
 
 template <typename _DataType>
+void dpnp_rng_power_c(void* result, double alpha, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+    cl::sycl::vector_class<cl::sycl::event> no_deps;
+
+    const _DataType d_zero = _DataType(0.0);
+    const _DataType d_one = _DataType(1.0);
+    _DataType neg_rec_alp = 1.0/alpha;
+
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    mkl_rng::uniform<_DataType> distribution(d_zero, d_one);
+    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+    event_out.wait();
+
+    event_out = mkl_vm::powx(DPNP_QUEUE, size, result1, neg_rec_alp,
+        result1, no_deps, mkl_vm::mode::ha);
+    event_out.wait();
+}
+
+template <typename _DataType>
 void dpnp_rng_rayleigh_c(void* result, _DataType scale, size_t size)
 {
     if (!size)
@@ -461,15 +533,23 @@ void dpnp_rng_rayleigh_c(void* result, _DataType scale, size_t size)
         return;
     }
 
-    // set displacement a
-    const _DataType a = (_DataType(0.0));
+    cl::sycl::vector_class<cl::sycl::event> no_deps;
+
+    const _DataType a = 0.0;
+    const _DataType beta = 2.0;
 
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    mkl_rng::rayleigh<_DataType> distribution(a, scale);
-    // perform generation
+    mkl_rng::exponential<_DataType> distribution(a, beta);;
+
     auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
     event_out.wait();
+    event_out = mkl_vm::sqrt(DPNP_QUEUE, size, result1, result1, no_deps, mkl_vm::mode::ha);
+    event_out.wait();
+    // with MKL
+    // event_out = mkl_blas::axpy(DPNP_QUEUE, size, scale, result1, 1, result1, 1);
+    // event_out.wait();
+    for(size_t i = 0; i < size; i++) result1[i] *= scale;
 }
 
 template <typename _DataType>
@@ -530,6 +610,74 @@ void dpnp_rng_standard_normal_c(void* result, size_t size)
     const _DataType stddev = _DataType(1.0);
 
     dpnp_rng_normal_c(result, mean, stddev, size);
+}
+
+template <typename _DataType>
+void dpnp_rng_standard_t_c(void* result, _DataType df, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+    cl::sycl::vector_class<cl::sycl::event> no_deps;
+
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+    const _DataType d_zero = 0.0, d_one = 1.0;
+    _DataType shape = df/2;
+    _DataType *sn = nullptr;
+
+    if (dpnp_queue_is_cpu_c())
+    {
+        mkl_rng::gamma<_DataType> gamma_distribution(shape, d_zero, 1.0/shape);
+        auto event_out = mkl_rng::generate(gamma_distribution, DPNP_RNG_ENGINE,
+            size, result1);
+        event_out.wait();
+        event_out = mkl_vm::invsqrt(DPNP_QUEUE, size, result1, result1, no_deps,
+            mkl_vm::mode::ha);
+        event_out.wait();
+
+        sn = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+        if (sn == nullptr)
+        {
+            throw std::runtime_error("DPNP RNG Error: dpnp_rng_standard_t_c() failed.");
+        }
+
+        mkl_rng::gaussian<_DataType> gaussian_distribution(d_zero, d_one);
+        event_out = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, sn);
+        event_out.wait();
+
+        event_out = mkl_vm::mul(DPNP_QUEUE, size, result1, sn, result1, no_deps,
+            mkl_vm::mode::ha);
+        dpnp_memory_free_c(sn);
+        event_out.wait();
+    }
+    else
+    {
+        int errcode = vdRngGamma(VSL_RNG_METHOD_GAMMA_GNORM_ACCURATE, get_rng_stream(),
+            size, result1, shape, d_zero, 1.0/shape);
+
+        if (errcode != VSL_STATUS_OK)
+        {
+            throw std::runtime_error("DPNP RNG Error: dpnp_rng_standard_t_c() failed.");
+        }
+
+        vmdInvSqrt(size, result1, result1, VML_HA);
+
+        sn = (_DataType *) mkl_malloc(size * sizeof(_DataType), 64);
+        if (sn == nullptr)
+        {
+            throw std::runtime_error("DPNP RNG Error: dpnp_rng_standard_t_c() failed.");
+        }
+
+        errcode = vdRngGaussian(VSL_RNG_METHOD_GAUSSIAN_ICDF, get_rng_stream(), size, sn,
+            d_zero, d_one);
+        if (errcode != VSL_STATUS_OK)
+        {
+            throw std::runtime_error("DPNP RNG Error: dpnp_rng_standard_t_c() failed.");
+        }
+        vmdMul(size, result1, sn, result1, VML_HA);
+        mkl_free(sn);
+    }
 }
 
 template <typename _DataType>
@@ -597,6 +745,8 @@ void func_map_init_random(func_map_t& fmap)
 
     fmap[DPNPFuncName::DPNP_FN_RNG_LAPLACE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_laplace_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_LOGISTIC][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_logistic_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_LOGNORMAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_lognormal_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_MULTINOMIAL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_multinomial_c<int>};
@@ -609,7 +759,11 @@ void func_map_init_random(func_map_t& fmap)
 
     fmap[DPNPFuncName::DPNP_FN_RNG_NORMAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_normal_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_PARETO][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_pareto_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_POISSON][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_poisson_c<int>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_POWER][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_power_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_RAYLEIGH][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_rayleigh_c<double>};
 
@@ -624,12 +778,15 @@ void func_map_init_random(func_map_t& fmap)
 
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_NORMAL][eft_DBL][eft_DBL] = {eft_DBL,
                                                                          (void*)dpnp_rng_standard_normal_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_T][eft_DBL][eft_DBL] = {eft_DBL,
+                                                                         (void*)dpnp_rng_standard_t_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_uniform_c<double>};
     fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_uniform_c<float>};
     fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_uniform_c<int>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_WEIBULL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_weibull_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_SRAND][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_srand_c};
 
     return;
 }

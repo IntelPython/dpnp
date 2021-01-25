@@ -1,4 +1,5 @@
 #include <dpnp_iface.hpp>
+#include <dpnp_iface_fptr.hpp>
 
 #include <vector>
   
@@ -18,10 +19,10 @@ TEST (TestBackendRandomBeta, test_seed) {
         double* result1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
         double* result2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
 
-        dpnp_srand_c(seed);
+        dpnp_rng_srand_c(seed);
         dpnp_rng_beta_c<double>(result1, a, b, size);
 
-        dpnp_srand_c(seed);
+        dpnp_rng_srand_c(seed);
         dpnp_rng_beta_c<double>(result2, a, b, size);
 
         for (size_t i = 0; i < size; ++i)
@@ -45,10 +46,10 @@ TEST (TestBackendRandomNormal, test_seed) {
         double* result1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
         double* result2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
 
-        dpnp_srand_c(seed);
+        dpnp_rng_srand_c(seed);
         dpnp_rng_normal_c<double>(result1, loc, scale, size);
 
-        dpnp_srand_c(seed);
+        dpnp_rng_srand_c(seed);
         dpnp_rng_normal_c<double>(result2, loc, scale, size);
 
         for (size_t i = 0; i < size; ++i)
@@ -72,10 +73,10 @@ TEST (TestBackendRandomUniform, test_seed) {
         double* result1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
         double* result2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
 
-        dpnp_srand_c(seed);
+        dpnp_rng_srand_c(seed);
         dpnp_rng_uniform_c<double>(result1, low, high, size);
 
-        dpnp_srand_c(seed);
+        dpnp_rng_srand_c(seed);
         dpnp_rng_uniform_c<double>(result2, low, high, size);
 
         for (size_t i = 0; i < size; ++i)
@@ -83,6 +84,18 @@ TEST (TestBackendRandomUniform, test_seed) {
             EXPECT_NEAR (result1[i], result2[i], 0.004);
         }
     }
+}
+
+TEST (TestBackendRandomSrand, test_func_ptr) {
+
+    void * fptr = nullptr;
+    DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNPFuncName::DPNP_FN_RNG_SRAND,
+        DPNPFuncType::DPNP_FT_DOUBLE, DPNPFuncType::DPNP_FT_DOUBLE);
+
+    fptr = get_dpnp_function_ptr1(kernel_data.return_type, DPNPFuncName::DPNP_FN_RNG_SRAND,
+        DPNPFuncType::DPNP_FT_DOUBLE, DPNPFuncType::DPNP_FT_DOUBLE);
+
+    EXPECT_TRUE(fptr != nullptr);
 }
 
 int main(int argc, char **argv) {

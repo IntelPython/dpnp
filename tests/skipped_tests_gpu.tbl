@@ -156,7 +156,6 @@ tests/test_linalg.py::test_svd[(16,16)-float64]
 tests/test_linalg.py::test_svd[(16,16)-float32]
 tests/test_linalg.py::test_svd[(16,16)-int64]
 tests/test_linalg.py::test_svd[(16,16)-int32]
-tests/test_random.py::TestDistributionsRayleigh::test_moments
 tests/test_statistics.py::test_median[2-float32]
 tests/test_statistics.py::test_median[2-float64]
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_and
