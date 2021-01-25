@@ -285,12 +285,18 @@ def test_putmask3(arr, mask, vals):
 
 
 def test_select():
-    x = numpy.arange(10)
-    ix = dpnp.array(x)
-    condlist = [x < 3, x > 5]
-    icondlist = [ix < 3, ix > 5]
-    choicelist = [x, x ** 2]
-    ichoicelist = [ix, ix ** 2]
+    cond_val1 = numpy.array([True, True, True, False, False, False, False, False, False, False])
+    cond_val2 = numpy.array([False, False, False, False, False, True, True, True, True, True])
+    icond_val1 = dpnp.array(cond_val1)
+    icond_val2 = dpnp.array(cond_val2)
+    condlist = [cond_val1, cond_val2]
+    icondlist = [icond_val1, icond_val2]
+    choice_val1 = numpy.full(10, -2)
+    choice_val2 = numpy.full(10, -1)
+    ichoice_val1 = dpnp.array(choice_val1)
+    ichoice_val2 = dpnp.array(choice_val2)
+    choicelist = [choice_val1, choice_val2]
+    ichoicelist = [ichoice_val1, ichoice_val2]
     expected = numpy.select(condlist, choicelist)
     result = dpnp.select(icondlist, ichoicelist)
     numpy.testing.assert_array_equal(expected, result)

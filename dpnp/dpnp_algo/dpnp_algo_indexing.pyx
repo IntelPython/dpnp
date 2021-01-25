@@ -233,13 +233,19 @@ cpdef dpnp_putmask(dparray arr, dparray mask, dparray values):
             arr[i] = values[i % values_size]
 
 
-cpdef dparray dpnp_select(condlist, choicelist):
+cpdef dparray dpnp_select(condlist, choicelist, default):
     size_ = condlist[0].size
     res_array = dparray(size_, dtype=choicelist[0].dtype)
+    pass_val = {a: default for a in range(size_)}
     for i in range(len(condlist)):
         for j in range(size_):
             if (condlist[i])[j]:
                 res_array[j] = (choicelist[i])[j]
+                pass_val.pop(j)
+
+    for ind, val in pass_val.items():
+        res_array[ind] = val
+
     return res_array.reshape(condlist[0].shape)
 
 

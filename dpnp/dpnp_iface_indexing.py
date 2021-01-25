@@ -399,13 +399,12 @@ def select(condlist, choicelist, default=0):
             for i in range(len(condlist)):
                 if condlist[i].size != size_ or choicelist[i].size != size_:
                     val = False
-                    break
             if not val:
                 pass
-        elif default != 0:
-            pass
+            else:
+                return dpnp_select(condlist, choicelist, default)
         else:
-            return dpnp_select(condlist, choicelist)
+            return dpnp_select(condlist, choicelist, default)
 
     return call_origin(numpy.select, condlist, choicelist, default)
 
