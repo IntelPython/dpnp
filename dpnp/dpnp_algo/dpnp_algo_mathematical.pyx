@@ -57,6 +57,7 @@ __all__ += [
     "dpnp_floor",
     "dpnp_floor_divide",
     "dpnp_fmod",
+    "dpnp_gradient",
     'dpnp_hypot',
     "dpnp_maximum",
     "dpnp_minimum",
@@ -292,6 +293,27 @@ cpdef dparray dpnp_floor_divide(dparray x1, dparray x2):
 
 cpdef dparray dpnp_fmod(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_FMOD, x1, x2, x1.shape)
+
+
+cpdef dparray dpnp_gradient(dparray y1, int dx=1):
+
+    size = y1.size
+
+    cdef dparray result = dparray(size, dtype=dpnp.float64)
+   
+    cur = (y1[1] - y1[0]) / dx
+
+    result._setitem_scalar(0, cur)
+
+    cur = (y1[-1] - y1[-2]) / dx
+
+    result._setitem_scalar(size - 1, cur)
+  
+    for i in range(1, size - 1):
+        cur = (y1[i + 1] - y1[i - 1]) / (2 * dx)
+        result._setitem_scalar(i, cur)
+
+    return result
 
 
 cpdef dparray dpnp_hypot(dparray x1, dparray x2):
