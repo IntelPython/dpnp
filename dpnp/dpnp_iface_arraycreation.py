@@ -115,12 +115,12 @@ def arange(start, stop=None, step=1, dtype=None):
     [3, 5]
 
     """
-    if use_origin_backend():
+    if not use_origin_backend():
         if not isinstance(start, int):
             pass
-        if not isinstance(stop, int) or stop is not None:
+        elif not isinstance(stop, int) or stop is not None:
             pass
-        if not isinstance(step, int) or step is not None:
+        elif not isinstance(step, int) or step is not None:
             pass
         else:
             if dtype is None:
