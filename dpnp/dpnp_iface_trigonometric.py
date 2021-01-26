@@ -514,7 +514,7 @@ def exp(x1):
     [1.0, 2.718281828, 7.389056099]
 
     """
-    if use_origin_backend(x1):
+    if not use_origin_backend(x1):
         if not isinstance(x1, dparray):
             pass
         else:
@@ -662,7 +662,7 @@ def log(x1):
     [0.0, 1.0, 2.0, -inf]
 
     """
-    if use_origin_backend(x1):
+    if not use_origin_backend(x1):
         if not isinstance(x1, dparray):
             pass
         else:
