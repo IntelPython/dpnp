@@ -26,12 +26,12 @@ def math_erf(x):
 numpy.erf = math_erf
 
 
-def gen_data(low, high, size):
-    return numpy.random.uniform(low, high, size)
+def gen_data(lib, low, high, size):
+    return lib.random.uniform(low, high, size)
 
 
 def black_scholes_put(lib, S, K, T, r, sigma):
-    d1 = (lib.log(S / K) + (r + sigma * sigma / 2.) * T) / sigma * lib.sqrt(T)
+    d1 = (lib.log(S / K) + (r + sigma * sigma / 2.) * T) / (sigma * lib.sqrt(T))
     d2 = d1 - sigma * lib.sqrt(T)
 
     cdf_d1 = (1 + lib.erf(d1 / lib.sqrt(2))) / 2
@@ -48,9 +48,9 @@ class TestBlackScholes(DPNPTestPerfBase):
     @pytest.mark.parametrize("size", [1024, 2048, 4096, 8192])
     def test_bs_put(self, lib, dtype, size):
         numpy.random.seed(SEED)
-        S = gen_data(SL, SH, size)
-        K = gen_data(KL, KH, size)
-        T = gen_data(TL, TH, size)
+        S = gen_data(lib, SL, SH, size)
+        K = gen_data(lib, KL, KH, size)
+        T = gen_data(lib, TL, TH, size)
 
         self.dpnp_benchmark("bs_put", lib, dtype, size,
                             lib, S, K, T, RISK_FREE, VOLATILITY,
