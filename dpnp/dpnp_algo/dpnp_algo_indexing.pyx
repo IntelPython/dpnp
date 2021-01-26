@@ -39,6 +39,7 @@ from dpnp.dpnp_iface_counting import count_nonzero
 
 
 __all__ += [
+    "dpnp_choose",
     "dpnp_diag_indices",
     "dpnp_diagonal",
     "dpnp_fill_diagonal",
@@ -54,6 +55,13 @@ __all__ += [
     "dpnp_triu_indices",
     "dpnp_triu_indices_from"
 ]
+
+
+cpdef dparray dpnp_choose(input, choices):
+    res_array = dparray(len(input), dtype=choices[0].dtype)
+    for i in range(len(input)):
+        res_array[i] = (choices[input[i]])[i]
+    return res_array
 
 
 cpdef tuple dpnp_diag_indices(n, ndim):
