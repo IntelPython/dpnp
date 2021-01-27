@@ -217,7 +217,6 @@ void dpnp_eigvals_c(const void* array_in, void* result1, size_t size)
     dpnp_memory_free_c(result_val_kern);
 }
 
-
 template <typename _DataType>
 class dpnp_initval_c_kernel;
 
@@ -356,8 +355,7 @@ void func_map_init_linalg(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_initval_c<float>};
     fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_initval_c<double>};
     fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_initval_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_C128][eft_C128] = {
-        eft_C128, (void*)dpnp_initval_c<std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_C128][eft_C128] = {eft_C128, (void*)dpnp_initval_c<std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_matmul_c<int>};
     fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_matmul_c<long>};

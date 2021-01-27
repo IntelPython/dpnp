@@ -98,7 +98,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_FLOOR_DIVIDE,             /**< Used in numpy.floor_divide() implementation  */
     DPNP_FN_FMOD,                     /**< Used in numpy.fmod() implementation  */
     DPNP_FN_HYPOT,                    /**< Used in numpy.hypot() implementation  */
-    DPNP_FN_INITVAL,                  /**< Used in numpy ones, ones_like, zeros, zeros_like, full, full_like implementation  */
+    DPNP_FN_INITVAL,                  /**< Used in numpy ones, ones_like, zeros, zeros_like, full, full_like impl  */
     DPNP_FN_INV,                      /**< Used in numpy.linalg.inv() implementation  */
     DPNP_FN_INVERT,                   /**< Used in numpy.invert() implementation  */
     DPNP_FN_KRON,                     /**< Used in numpy.kron() implementation  */
