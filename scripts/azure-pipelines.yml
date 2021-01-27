@@ -216,7 +216,7 @@ jobs:
       call "%ONEAPI_ROOT%\dpl\latest\env\vars.bat"
       call "%ONEAPI_ROOT%\tbb\latest\env\vars.bat"
       echo =================== conda build DPNP ===========================
-      conda build conda-recipe -c intel
+      call conda build conda-recipe -c intel
       mkdir dist
       echo ========== it doesn't work yet =========================
     displayName: build_conda
