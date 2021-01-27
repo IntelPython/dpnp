@@ -158,6 +158,22 @@ INP_DLLEXPORT void dpnp_dot_c(void* array1, void* array2, void* result1, size_t 
 
 /**
  * @ingroup BACKEND_API
+ * @brief Custom implementation of dot function
+ *
+ * @param [in]  array1  Input array.
+ *
+ * @param [in]  array2  Input array.
+ *
+ * @param [out] result1 Output array.
+ *
+ * @param [in]  size    Number of elements in input arrays.
+ *
+ */
+template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
+INP_DLLEXPORT void dpnp_cross_c(void* array1_in, void* array2_in, void* result1, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief Sum of array elements
  *
  * @param [in]  array  Input array.
