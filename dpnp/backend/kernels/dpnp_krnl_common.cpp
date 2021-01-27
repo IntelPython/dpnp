@@ -35,82 +35,6 @@
 namespace mkl_blas = oneapi::mkl::blas;
 namespace mkl_lapack = oneapi::mkl::lapack;
 
-template <typename _KernelNameSpecialization>
-class dpnp_matmul_c_kernel;
-
-template <typename _DataType>
-void dpnp_matmul_c(void* array1_in, void* array2_in, void* result1, size_t size_m, size_t size_n, size_t size_k)
-{
-    cl::sycl::event event;
-    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
-    _DataType* array_2 = reinterpret_cast<_DataType*>(array2_in);
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
-
-    if (!size_m || !size_n || !size_k)
-    {
-        return;
-    }
-
-    if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
-    {
-        // using std::max for these ldx variables is required by math library
-        const std::int64_t lda = std::max<size_t>(1UL, size_k); // First dimensions of array_1
-        const std::int64_t ldb = std::max<size_t>(1UL, size_n); // First dimensions of array_2
-        const std::int64_t ldc = std::max<size_t>(1UL, size_n); // Fast dimensions of result
-
-        event = mkl_blas::gemm(DPNP_QUEUE,
-                               oneapi::mkl::transpose::nontrans,
-                               oneapi::mkl::transpose::nontrans,
-                               size_n,
-                               size_m,
-                               size_k,
-                               _DataType(1),
-                               array_2,
-                               ldb,
-                               array_1,
-                               lda,
-                               _DataType(0),
-                               result,
-                               ldc);
-    }
-    else
-    {
-        // input1: M x K
-        // input2: K x N
-        // result: M x N
-        const size_t dim_m = size_m; // shape1.front(); // First dimensions of array1
-        const size_t dim_n = size_n; // shape2.back();  // Last dimensions of array2
-        const size_t dim_k = size_k; // shape1.back(); // First dimensions of array2
-
-        cl::sycl::range<2> gws(dim_m, dim_n); // dimensions are: "i" and "j"
-
-        auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
-            size_t i = global_id[0]; //for (size_t i = 0; i < size; ++i)
-            {
-                size_t j = global_id[1]; //for (size_t j = 0; j < size; ++j)
-                {
-                    _DataType acc = _DataType(0);
-                    for (size_t k = 0; k < dim_k; ++k)
-                    {
-                        const size_t index_1 = i * dim_k + k;
-                        const size_t index_2 = k * dim_n + j;
-                        acc += array_1[index_1] * array_2[index_2];
-                    }
-                    const size_t index_result = i * dim_n + j;
-                    result[index_result] = acc;
-                }
-            }
-        };
-
-        auto kernel_func = [&](cl::sycl::handler& cgh) {
-            cgh.parallel_for<class dpnp_matmul_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
-        };
-
-        event = DPNP_QUEUE.submit(kernel_func);
-    }
-    event.wait();
-}
-
 template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2, typename _KernelNameSpecialization3>
 class dpnp_dot_c_kernel;
 
@@ -293,6 +217,112 @@ void dpnp_eigvals_c(const void* array_in, void* result1, size_t size)
     dpnp_memory_free_c(result_val_kern);
 }
 
+
+template <typename _DataType>
+class dpnp_initval_c_kernel;
+
+template <typename _DataType>
+void dpnp_initval_c(void* result1, void* value, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
+    _DataType val = *(reinterpret_cast<_DataType*>(value));
+
+    cl::sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        const size_t idx = global_id[0];
+        result[idx] = val;
+    };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_initval_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+    };
+
+    cl::sycl::event event = DPNP_QUEUE.submit(kernel_func);
+
+    event.wait();
+}
+
+template <typename _KernelNameSpecialization>
+class dpnp_matmul_c_kernel;
+
+template <typename _DataType>
+void dpnp_matmul_c(void* array1_in, void* array2_in, void* result1, size_t size_m, size_t size_n, size_t size_k)
+{
+    cl::sycl::event event;
+    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
+    _DataType* array_2 = reinterpret_cast<_DataType*>(array2_in);
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    if (!size_m || !size_n || !size_k)
+    {
+        return;
+    }
+
+    if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
+    {
+        // using std::max for these ldx variables is required by math library
+        const std::int64_t lda = std::max<size_t>(1UL, size_k); // First dimensions of array_1
+        const std::int64_t ldb = std::max<size_t>(1UL, size_n); // First dimensions of array_2
+        const std::int64_t ldc = std::max<size_t>(1UL, size_n); // Fast dimensions of result
+
+        event = mkl_blas::gemm(DPNP_QUEUE,
+                               oneapi::mkl::transpose::nontrans,
+                               oneapi::mkl::transpose::nontrans,
+                               size_n,
+                               size_m,
+                               size_k,
+                               _DataType(1),
+                               array_2,
+                               ldb,
+                               array_1,
+                               lda,
+                               _DataType(0),
+                               result,
+                               ldc);
+    }
+    else
+    {
+        // input1: M x K
+        // input2: K x N
+        // result: M x N
+        const size_t dim_m = size_m; // shape1.front(); // First dimensions of array1
+        const size_t dim_n = size_n; // shape2.back();  // Last dimensions of array2
+        const size_t dim_k = size_k; // shape1.back(); // First dimensions of array2
+
+        cl::sycl::range<2> gws(dim_m, dim_n); // dimensions are: "i" and "j"
+
+        auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
+            size_t i = global_id[0]; //for (size_t i = 0; i < size; ++i)
+            {
+                size_t j = global_id[1]; //for (size_t j = 0; j < size; ++j)
+                {
+                    _DataType acc = _DataType(0);
+                    for (size_t k = 0; k < dim_k; ++k)
+                    {
+                        const size_t index_1 = i * dim_k + k;
+                        const size_t index_2 = k * dim_n + j;
+                        acc += array_1[index_1] * array_2[index_2];
+                    }
+                    const size_t index_result = i * dim_n + j;
+                    result[index_result] = acc;
+                }
+            }
+        };
+
+        auto kernel_func = [&](cl::sycl::handler& cgh) {
+            cgh.parallel_for<class dpnp_matmul_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+        };
+
+        event = DPNP_QUEUE.submit(kernel_func);
+    }
+    event.wait();
+}
+
 void func_map_init_linalg(func_map_t& fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_dot_c<int, int, int>};
@@ -320,6 +350,14 @@ void func_map_init_linalg(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_EIGVALS][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_eigvals_c<long, double>};
     fmap[DPNPFuncName::DPNP_FN_EIGVALS][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_eigvals_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_EIGVALS][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_eigvals_c<double, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_initval_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_initval_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_initval_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_initval_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_initval_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_C128][eft_C128] = {
+        eft_C128, (void*)dpnp_initval_c<std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_matmul_c<int>};
     fmap[DPNPFuncName::DPNP_FN_MATMUL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_matmul_c<long>};

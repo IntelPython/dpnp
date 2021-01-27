@@ -68,6 +68,8 @@ include "dpnp_algo_trigonometric.pyx"
 
 
 ctypedef void(*fptr_dpnp_arange_t)(size_t, size_t, void * , size_t)
+ctypedef void(*fptr_dpnp_initval_t)(void * , void * , size_t)
+
 
 cpdef dparray dpnp_arange(start, stop, step, dtype):
 
@@ -131,10 +133,19 @@ cpdef dparray dpnp_astype(dparray array1, dtype_target):
 
 
 cpdef dparray dpnp_init_val(shape, dtype, value):
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_INITVAL, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     cdef dparray result = dparray(shape, dtype=dtype)
 
-    for i in range(result.size):
-        result[i] = value
+    # TODO: find better way to pass single value with type conversion
+    cdef dparray val_arr = dparray((1, ), dtype=dtype)
+    val_arr[0] = value
+
+    cdef fptr_dpnp_initval_t func = <fptr_dpnp_initval_t > kernel_data.ptr
+    func(result.get_data(), val_arr.get_data(), result.size)
 
     return result
 
