@@ -200,6 +200,37 @@ def test_norm3(array, ord, axis):
 
 
 @pytest.mark.parametrize("type",
+                         [numpy.float64],#, numpy.float32, numpy.int64, numpy.int32, numpy.complex128],
+                         ids=['float64'])#, 'float32', 'int64', 'int32', 'complex128'])
+@pytest.mark.parametrize("shape",
+                         [(2, 2), (16, 16)],#, (3, 4), (5, 3), (16, 16)],
+                         ids=['(2,2)', '(3, 3)'])#, '(3,4)', '(5,3)', '(16,16)'])
+def test_qr(type, shape):
+    a = numpy.arange(shape[0] * shape[1], dtype=type).reshape(shape)
+    ia = inp.array(a)
+
+    # np_q, np_r = numpy.linalg.qr(a)
+    np_q, np_r = numpy.linalg.qr(a, "complete")
+    dpnp_q, dpnp_r = inp.linalg.qr(ia)
+
+    assert (dpnp_q.dtype == np_q.dtype)
+    assert (dpnp_r.dtype == np_r.dtype)
+    assert (dpnp_q.shape == np_q.shape)
+    assert (dpnp_r.shape == np_r.shape)
+
+    if type == numpy.float32:
+        tol = 1e-03
+    else:
+        tol = 1e-12
+
+    # # check decomposition
+    # numpy.testing.assert_allclose(ia, numpy.dot(dpnp_q, dpnp_r), rtol=tol, atol=tol)
+
+    numpy.testing.assert_allclose(dpnp_q, np_q, rtol=tol, atol=tol)
+    #numpy.testing.assert_allclose(dpnp_r, np_r, rtol=tol, atol=tol)
+
+
+@pytest.mark.parametrize("type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.complex128],
                          ids=['float64', 'float32', 'int64', 'int32', 'complex128'])
 @pytest.mark.parametrize("shape",

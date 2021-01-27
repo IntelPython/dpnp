@@ -59,6 +59,7 @@ __all__ = [
     "matrix_rank",
     "multi_dot",
     "norm",
+    "qr",
     "svd",
 ]
 
@@ -395,6 +396,25 @@ def norm(input, ord=None, axis=None, keepdims=False):
         return result
 
     return call_origin(numpy.linalg.norm, input, ord, axis, keepdims)
+
+
+def qr(a, mode='reduced'):
+    """
+    Singular Value Decomposition.
+
+    For full documentation refer to :obj:`numpy.linalg.qr`.
+
+    """
+
+    if not use_origin_backend(a):
+        if not isinstance(a, dparray):
+            pass
+        # elif not mode == 'reduced':
+            # pass
+        else:
+            return dpnp_qr(a, mode)
+
+    return call_origin(numpy.linalg.qr, a, mode)
 
 
 def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
