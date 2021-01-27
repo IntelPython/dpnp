@@ -199,7 +199,7 @@ jobs:
     displayName: Add conda to PATH
 
   - script: |
-      conda create -y -n env python=%PYTHON_VERSION% conda-build
+      conda create -y -n env python=%PYTHON_VERSION% conda-build=3.18
     displayName: conda create with Python $(python.version)
 
   - script: |
