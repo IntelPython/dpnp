@@ -98,8 +98,9 @@ enum class DPNPFuncName : size_t
     DPNP_FN_FLOOR_DIVIDE,             /**< Used in numpy.floor_divide() implementation  */
     DPNP_FN_FMOD,                     /**< Used in numpy.fmod() implementation  */
     DPNP_FN_HYPOT,                    /**< Used in numpy.hypot() implementation  */
-    DPNP_FN_INVERT,                   /**< Used in numpy.invert() implementation  */
     DPNP_FN_INV,                      /**< Used in numpy.linalg.inv() implementation  */
+    DPNP_FN_INVERT,                   /**< Used in numpy.invert() implementation  */
+    DPNP_FN_KRON,                     /**< Used in numpy.kron() implementation  */
     DPNP_FN_LEFT_SHIFT,               /**< Used in numpy.left_shift() implementation  */
     DPNP_FN_LOG,                      /**< Used in numpy.log() implementation  */
     DPNP_FN_LOG10,                    /**< Used in numpy.log10() implementation  */
@@ -125,23 +126,29 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RNG_BINOMIAL,             /**< Used in numpy.random.binomial() implementation  */
     DPNP_FN_RNG_CHISQUARE,            /**< Used in numpy.random.chisquare() implementation  */
     DPNP_FN_RNG_EXPONENTIAL,          /**< Used in numpy.random.exponential() implementation  */
+    DPNP_FN_RNG_F,                    /**< Used in numpy.random.f() implementation  */
     DPNP_FN_RNG_GAMMA,                /**< Used in numpy.random.gamma() implementation  */
     DPNP_FN_RNG_GAUSSIAN,             /**< Used in numpy.random.randn() implementation  */
     DPNP_FN_RNG_GEOMETRIC,            /**< Used in numpy.random.geometric() implementation  */
     DPNP_FN_RNG_GUMBEL,               /**< Used in numpy.random.gumbel() implementation  */
     DPNP_FN_RNG_HYPERGEOMETRIC,       /**< Used in numpy.random.hypergeometric() implementation  */
     DPNP_FN_RNG_LAPLACE,              /**< Used in numpy.random.laplace() implementation  */
+    DPNP_FN_RNG_LOGISTIC,             /**< Used in numpy.random.logistic() implementation  */
     DPNP_FN_RNG_LOGNORMAL,            /**< Used in numpy.random.lognormal() implementation  */
     DPNP_FN_RNG_MULTINOMIAL,          /**< Used in numpy.random.multinomial() implementation  */
     DPNP_FN_RNG_MULTIVARIATE_NORMAL,  /**< Used in numpy.random.multivariate_normal() implementation  */
     DPNP_FN_RNG_NEGATIVE_BINOMIAL,    /**< Used in numpy.random.negative_binomial() implementation  */
     DPNP_FN_RNG_NORMAL,               /**< Used in numpy.random.normal() implementation  */
+    DPNP_FN_RNG_PARETO,               /**< Used in numpy.random.pareto() implementation  */
     DPNP_FN_RNG_POISSON,              /**< Used in numpy.random.poisson() implementation  */
+    DPNP_FN_RNG_POWER,                /**< Used in numpy.random.power() implementation  */
     DPNP_FN_RNG_RAYLEIGH,             /**< Used in numpy.random.rayleigh() implementation  */
+    DPNP_FN_RNG_SRAND,                /**< Used in numpy.random.seed() implementation  */
     DPNP_FN_RNG_STANDARD_CAUCHY,      /**< Used in numpy.random.standard_cauchy() implementation  */
     DPNP_FN_RNG_STANDARD_EXPONENTIAL, /**< Used in numpy.random.standard_exponential() implementation  */
     DPNP_FN_RNG_STANDARD_GAMMA,       /**< Used in numpy.random.standard_gamma() implementation  */
     DPNP_FN_RNG_STANDARD_NORMAL,      /**< Used in numpy.random.standard_normal() implementation  */
+    DPNP_FN_RNG_STANDARD_T,           /**< Used in numpy.random.standard_t() implementation  */
     DPNP_FN_RNG_UNIFORM,              /**< Used in numpy.random.uniform() implementation  */
     DPNP_FN_RNG_WEIBULL,              /**< Used in numpy.random.weibull() implementation  */
     DPNP_FN_SIGN,                     /**< Used in numpy.sign() implementation  */

@@ -98,6 +98,10 @@ cpdef dparray dpnp_array(obj, dtype=None):
     cdef elem_dtype
     cdef dparray_shape_type obj_shape
 
+    # convert scalar to tuple
+    if dpnp.isscalar(obj):
+        obj = (obj, )
+
     if not cpython.PySequence_Check(obj):
         raise TypeError(f"DPNP array(): Unsupported non-sequence obj={type(obj)}")
 
@@ -224,7 +228,7 @@ cpdef dpnp_queue_initialize():
     # TODO:
     # choose seed number as is in numpy
     seed_from_time = time(NULL)
-    dpnp_srand_c(seed_from_time)
+    dpnp_rng_srand_c(seed_from_time)
 
 
 cpdef dpnp_queue_is_cpu():

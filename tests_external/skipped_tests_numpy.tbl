@@ -1466,6 +1466,7 @@ tests/test_random.py::TestRandomDist::test_dirichlet_bad_alpha
 tests/test_random.py::TestRandomDist::test_dirichlet_size
 tests/test_random.py::TestRandomDist::test_exponential
 tests/test_random.py::TestRandomDist::test_exponential_0
+tests/test_random.py::TestRandomDist::test_f
 tests/test_random.py::TestRandomDist::test_gamma
 tests/test_random.py::TestRandomDist::test_gamma_0
 tests/test_random.py::TestRandomDist::test_geometric
@@ -1474,6 +1475,7 @@ tests/test_random.py::TestRandomDist::test_gumbel_0
 tests/test_random.py::TestRandomDist::test_hypergeometric
 tests/test_random.py::TestRandomDist::test_laplace
 tests/test_random.py::TestRandomDist::test_laplace_0
+tests/test_random.py::TestRandomDist::test_logistic
 tests/test_random.py::TestRandomDist::test_lognormal
 tests/test_random.py::TestRandomDist::test_lognormal_0
 tests/test_random.py::TestRandomDist::test_multinomial
@@ -1493,6 +1495,7 @@ tests/test_random.py::TestRandomDist::test_random_integers_deprecated
 tests/test_random.py::TestRandomDist::test_random_integers_max_int
 tests/test_random.py::TestRandomDist::test_rayleigh
 tests/test_random.py::TestRandomDist::test_rayleigh_0
+tests/test_random.py::TestRandomDist::test_power
 tests/test_random.py::TestRandomDist::test_scalar_exception_propagation
 tests/test_random.py::TestRandomDist::test_shuffle
 tests/test_random.py::TestRandomDist::test_shuffle_masked
@@ -1501,6 +1504,7 @@ tests/test_random.py::TestRandomDist::test_standard_exponential
 tests/test_random.py::TestRandomDist::test_standard_gamma
 tests/test_random.py::TestRandomDist::test_standard_gamma_0
 tests/test_random.py::TestRandomDist::test_standard_normal
+tests/test_random.py::TestRandomDist::test_standard_t
 tests/test_random.py::TestRandomDist::test_uniform
 tests/test_random.py::TestRandomDist::test_uniform_range_bounds
 tests/test_random.py::TestRandomDist::test_weibull
@@ -1556,6 +1560,7 @@ tests/test_randomstate.py::TestRandomDist::test_dirichlet
 tests/test_randomstate.py::TestRandomDist::test_dirichlet_size
 tests/test_randomstate.py::TestRandomDist::test_exponential
 tests/test_randomstate.py::TestRandomDist::test_exponential_0
+tests/test_randomstate.py::TestRandomDist::test_f
 tests/test_randomstate.py::TestRandomDist::test_gamma
 tests/test_randomstate.py::TestRandomDist::test_gamma_0
 tests/test_randomstate.py::TestRandomDist::test_geometric
@@ -1565,6 +1570,7 @@ tests/test_randomstate.py::TestRandomDist::test_gumbel_0
 tests/test_randomstate.py::TestRandomDist::test_hypergeometric
 tests/test_randomstate.py::TestRandomDist::test_laplace
 tests/test_randomstate.py::TestRandomDist::test_laplace_0
+tests/test_randomstate.py::TestRandomDist::test_logistic
 tests/test_randomstate.py::TestRandomDist::test_lognormal
 tests/test_randomstate.py::TestRandomDist::test_lognormal_0
 tests/test_randomstate.py::TestRandomDist::test_multinomial
@@ -1587,6 +1593,7 @@ tests/test_randomstate.py::TestRandomDist::test_random_sample
 tests/test_randomstate.py::TestRandomDist::test_rand_singleton
 tests/test_randomstate.py::TestRandomDist::test_rayleigh
 tests/test_randomstate.py::TestRandomDist::test_rayleigh_0
+tests/test_randomstate.py::TestRandomDist::test_power
 tests/test_randomstate.py::TestRandomDist::test_scalar_exception_propagation
 tests/test_randomstate.py::TestRandomDist::test_shuffle
 tests/test_randomstate.py::TestRandomDist::test_shuffle_masked
@@ -1595,6 +1602,7 @@ tests/test_randomstate.py::TestRandomDist::test_standard_exponential
 tests/test_randomstate.py::TestRandomDist::test_standard_gamma
 tests/test_randomstate.py::TestRandomDist::test_standard_gamma_0
 tests/test_randomstate.py::TestRandomDist::test_standard_normal
+tests/test_randomstate.py::TestRandomDist::test_standard_t
 tests/test_randomstate.py::TestRandomDist::test_tomaxint
 tests/test_randomstate.py::TestRandomDist::test_uniform
 tests/test_randomstate.py::TestRandomDist::test_uniform_range_bounds

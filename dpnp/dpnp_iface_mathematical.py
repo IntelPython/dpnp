@@ -69,6 +69,7 @@ __all__ = [
     "fmax",
     "fmin",
     "fmod",
+    "gradient",
     "maximum",
     "minimum",
     "mod",
@@ -795,6 +796,48 @@ def fmod(x1, x2, **kwargs):
     return call_origin(numpy.fmod, x1, x2, **kwargs)
 
 
+def gradient(y1, *varargs, **kwargs):
+    """
+    Return the gradient of an array.
+
+    For full documentation refer to :obj:`numpy.gradient`.
+
+    Limitations
+    -----------
+        Parameter ``y1`` is supported as :obj:`dpnp.ndarray`.
+        Argument ``varargs[0]`` is supported as `int`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+   
+    Example
+    -------
+    >>> import dpnp as np
+    >>> y = np.array([1, 2, 4, 7, 11, 16], dtype=float)
+    >>> result = np.gradient(y)
+    >>> [x for x in result]
+    [1.0, 1.5, 2.5, 3.5, 4.5, 5.0]
+    >>> result = np.gradient(y, 2)
+    >>> [x for x in result]
+    [0.5, 0.75, 1.25, 1.75, 2.25, 2.5]
+
+    """
+    if not use_origin_backend(y1) and not kwargs:
+        if not isinstance(y1, dparray):
+            pass
+        elif len(varargs) > 1:
+            pass
+        elif len(varargs) == 1 and not isinstance(varargs[0], int):
+            pass
+        else:
+            if len(varargs) == 0:
+                return dpnp_gradient(y1)
+
+            return dpnp_gradient(y1, varargs[0])
+
+    return call_origin(numpy.gradient, y1, *varargs, **kwargs)
+
+
 def maximum(x1, x2, **kwargs):
     """
     Element-wise maximum of array elements.
@@ -966,16 +1009,24 @@ def multiply(x1, x2, **kwargs):
     is_x1_scalar = dpnp.isscalar(x1)
     is_x2_scalar = dpnp.isscalar(x2)
 
-    if (not use_origin_backend(x1) and (is_x1_dparray or is_x1_scalar)) and \
-            (not use_origin_backend(x2) and (is_x2_dparray or is_x2_scalar)) and \
-            not (is_x1_scalar and is_x2_scalar) and not kwargs:
-
-        if is_x1_scalar:
-            return dpnp_multiply(x2, x1)
+    if not use_origin_backend(x1):
+        if kwargs:
+            pass
+        elif not (is_x1_dparray or is_x1_scalar):
+            pass
+        elif not (is_x2_dparray or is_x2_scalar):
+            pass
+        elif is_x1_scalar and is_x2_scalar:
+            pass
+        elif (is_x1_dparray and is_x2_dparray) and (x1.size != x2.size):
+            pass
+        elif (is_x1_dparray and is_x2_dparray) and (x1.shape != x2.shape):
+            pass
         else:
-            if is_x1_dparray and is_x2_dparray:
-                if (x1.size == x2.size) and (x1.shape == x2.shape):
-                    return dpnp_multiply(x1, x2)
+            if is_x1_scalar:
+                return dpnp_multiply(x2, x1)
+            else:
+                return dpnp_multiply(x1, x2)
 
     return call_origin(numpy.multiply, x1, x2, **kwargs)
 
@@ -1183,17 +1234,19 @@ def power(x1, x2, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-    is_x2_dparray = isinstance(x2, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
-        if (x1.size != x2.size):
-            checker_throw_value_error("power", "size", x1.size, x2.size)
-
-        if (x1.shape != x2.shape):
-            checker_throw_value_error("power", "shape", x1.shape, x2.shape)
-
-        return dpnp_power(x1, x2)
+    if not use_origin_backend(x1):
+        if kwargs:
+            pass
+        elif not isinstance(x1, dparray):
+            pass
+        elif not isinstance(x2, dparray) and not dpnp.isscalar(x2):
+            pass
+        elif isinstance(x2, dparray) and x1.size != x2.size:
+            pass
+        elif isinstance(x2, dparray) and x1.shape != x2.shape:
+            pass
+        else:
+            return dpnp_power(x1, x2)
 
     return call_origin(numpy.power, x1, x2, **kwargs)
 

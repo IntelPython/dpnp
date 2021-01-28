@@ -39,6 +39,7 @@ from dpnp.dpnp_iface_counting import count_nonzero
 
 
 __all__ += [
+    "dpnp_choose",
     "dpnp_diag_indices",
     "dpnp_diagonal",
     "dpnp_fill_diagonal",
@@ -47,12 +48,20 @@ __all__ += [
     "dpnp_place",
     "dpnp_put",
     "dpnp_putmask",
+    "dpnp_select",
     "dpnp_take",
     "dpnp_tril_indices",
     "dpnp_tril_indices_from",
     "dpnp_triu_indices",
     "dpnp_triu_indices_from"
 ]
+
+
+cpdef dparray dpnp_choose(input, choices):
+    res_array = dparray(len(input), dtype=choices[0].dtype)
+    for i in range(len(input)):
+        res_array[i] = (choices[input[i]])[i]
+    return res_array
 
 
 cpdef tuple dpnp_diag_indices(n, ndim):
@@ -230,6 +239,22 @@ cpdef dpnp_putmask(dparray arr, dparray mask, dparray values):
     for i in range(arr.size):
         if mask[i]:
             arr[i] = values[i % values_size]
+
+
+cpdef dparray dpnp_select(condlist, choicelist, default):
+    size_ = condlist[0].size
+    res_array = dparray(size_, dtype=choicelist[0].dtype)
+    pass_val = {a: default for a in range(size_)}
+    for i in range(len(condlist)):
+        for j in range(size_):
+            if (condlist[i])[j]:
+                res_array[j] = (choicelist[i])[j]
+                pass_val.pop(j)
+
+    for ind, val in pass_val.items():
+        res_array[ind] = val
+
+    return res_array.reshape(condlist[0].shape)
 
 
 cpdef dparray dpnp_take(dparray input, dparray indices):

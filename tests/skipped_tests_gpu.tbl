@@ -156,7 +156,6 @@ tests/test_linalg.py::test_svd[(16,16)-float64]
 tests/test_linalg.py::test_svd[(16,16)-float32]
 tests/test_linalg.py::test_svd[(16,16)-int64]
 tests/test_linalg.py::test_svd[(16,16)-int32]
-tests/test_random.py::TestDistributionsRayleigh::test_moments
 tests/test_statistics.py::test_median[2-float32]
 tests/test_statistics.py::test_median[2-float64]
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_and
@@ -736,14 +735,6 @@ tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_by_scalar
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_index_range_overflow
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_no_axis
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose_broadcast
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose_broadcast2
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose_broadcast_fail
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose_clip
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose_wrap
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_raise
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_unknown_clip
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_1D_choicelist
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_choicelist_condlist_broadcast
@@ -753,7 +744,6 @@ tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_length_error
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_odd_shaped_broadcastable
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_odd_shaped_non_broadcastable
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_type_error_choicelist
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_type_error_condlist
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmask::test_putmask_non_equal_shape_raises
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPlaceRaises_param_0_{shape=(7,)}::test_place_empty_value_error
@@ -1034,13 +1024,11 @@ tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matri
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_dot_vec2
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_multidim_vdot
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_inner
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_kron
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_outer
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_vdot
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_tensordot_zero_dim
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_dot_with_out_f_contiguous
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_multidim_vdot
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_zerodim_kron
 tests/third_party/cupy/linalg_tests/test_product.py::TestProductZeroLength_param_0_{params=((0, 0), 2)}::test_tensordot_zero_length
 tests/third_party/cupy/linalg_tests/test_product.py::TestProductZeroLength_param_1_{params=((0, 0), (1, 0))}::test_tensordot_zero_length
 tests/third_party/cupy/linalg_tests/test_product.py::TestProductZeroLength_param_2_{params=((0, 0, 0), 2)}::test_tensordot_zero_length

@@ -225,6 +225,33 @@ class TestDistributionsExponential(TestDistribution):
         self.check_seed('exponential', {'scale': scale})
 
 
+class TestDistributionsF(TestDistribution):
+
+    def test_moments(self):
+        dfnum = 12.56
+        dfden = 13.0
+        # for dfden > 2
+        expected_mean = dfden / (dfden - 2)
+        # for dfden > 4
+        expected_var = 2 * (dfden ** 2) * (dfnum + dfden - 2) / (dfnum * ((dfden - 2) ** 2) * ((dfden - 4)))
+        self.check_moments('f', expected_mean, expected_var,
+                           {'dfnum': dfnum, 'dfden': dfden})
+
+    def test_invalid_args(self):
+        size = 10
+        dfnum = -1.0   # positive `dfnum` is expected
+        dfden = 1.0    # OK
+        self.check_invalid_args('f', {'dfnum': dfnum, 'dfden': dfden})
+        dfnum = 1.0    # OK
+        dfden = -1.0   # positive `dfden` is expected
+        self.check_invalid_args('f', {'dfnum': dfnum, 'dfden': dfden})
+
+    def test_seed(self):
+        dfnum = 3.56   # `dfden` param for Wald distr
+        dfden = 2.8    # `dfden` param for Wald distr
+        self.check_seed('f', {'dfnum': dfnum, 'dfden': dfden})
+
+
 class TestDistributionsGamma(TestDistribution):
 
     def test_moments(self):
@@ -395,6 +422,28 @@ class TestDistributionsLaplace(TestDistribution):
         self.check_seed('laplace', {'loc': loc, 'scale': scale})
 
 
+class TestDistributionsLogistic(TestDistribution):
+
+    def test_moments(self):
+        loc = 2.56
+        scale = 0.8
+        expected_mean = loc
+        expected_var = (scale ** 2) * (numpy.pi ** 2) / 3
+        self.check_moments('logistic', expected_mean,
+                           expected_var, {'loc': loc, 'scale': scale})
+
+    def test_invalid_args(self):
+        loc = 3.0     # OK
+        scale = -1.0  # non-negative `scale` is expected
+        self.check_invalid_args('logistic',
+                                {'loc': loc, 'scale': scale})
+
+    def test_seed(self):
+        loc = 2.56
+        scale = 0.8
+        self.check_seed('logistic', {'loc': loc, 'scale': scale})
+
+
 class TestDistributionsLognormal(TestDistribution):
 
     def test_extreme_value(self):
@@ -557,6 +606,25 @@ class TestDistributionsNormal(TestDistribution):
         self.check_seed('normal', {'loc': loc, 'scale': scale})
 
 
+class TestDistributionsPareto(TestDistribution):
+
+    def test_moments(self):
+        a = 30.0
+        expected_mean = a / (a - 1)
+        expected_var = a / (((a - 1)**2) * (a - 2))
+        self.check_moments('pareto', expected_mean,
+                           expected_var, {'a': a})
+
+    def test_invalid_args(self):
+        size = 10
+        a = -1.0  # positive `a` is expected
+        self.check_invalid_args('pareto', {'a': a})
+
+    def test_seed(self):
+        a = 3.0  # a param for pareto distr
+        self.check_seed('pareto', {'a': a})
+
+
 class TestDistributionsPoisson(TestDistribution):
 
     def test_extreme_value(self):
@@ -577,6 +645,26 @@ class TestDistributionsPoisson(TestDistribution):
     def test_seed(self):
         lam = 0.8
         self.check_seed('poisson', {'lam': lam})
+
+
+class TestDistributionsPower(TestDistribution):
+
+    def test_moments(self):
+        a = 30.0
+        neg_a = -a
+        expected_mean = neg_a / (neg_a - 1)
+        expected_var = neg_a / (((neg_a - 1)**2) * (neg_a - 2))
+        self.check_moments('power', expected_mean,
+                           expected_var, {'a': a})
+
+    def test_invalid_args(self):
+        size = 10
+        a = -1.0  # positive `a` is expected
+        self.check_invalid_args('power', {'a': a})
+
+    def test_seed(self):
+        a = 3.0  # a param for pareto distr
+        self.check_seed('power', {'a': a})
 
 
 class TestDistributionsRayleigh(TestDistribution):
@@ -650,6 +738,23 @@ class TestDistributionsStandardNormal(TestDistribution):
 
     def test_seed(self):
         self.check_seed('standard_normal', {})
+
+
+class TestDistributionsStandardT(TestDistribution):
+
+    def test_moments(self):
+        df = 300.0
+        expected_mean = 0.0
+        expected_var = df / (df - 2)
+        self.check_moments('standard_t', expected_mean,
+                           expected_var, {'df': df})
+
+    def test_invalid_args(self):
+        df = 0.0   # positive `df` is expected
+        self.check_invalid_args('standard_t', {'df': df})
+
+    def test_seed(self):
+        self.check_seed('standard_t', {'df': 10.0})
 
 
 class TestDistributionsUniform(TestDistribution):

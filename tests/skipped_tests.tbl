@@ -139,7 +139,6 @@ tests/test_linalg.py::test_norm3[(1, 2)-3-[[[1, 2], [3, 4]], [[5, 6], [7, 8]]]]
 tests/test_linalg.py::test_norm3[(1, 2)-3-[[[1, 0], [3, 0]], [[5, 0], [7, 0]]]]
 tests/test_linalg.py::test_svd[(3,4)-complex128]
 tests/test_linalg.py::test_svd[(5,3)-complex128]
-tests/test_random.py::TestDistributionsRayleigh::test_moments
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_and
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_or
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_xor
@@ -583,14 +582,6 @@ tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_by_scalar
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_index_range_overflow
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_no_axis
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose_broadcast
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose_broadcast2
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose_broadcast_fail
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose_clip
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose_wrap
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_raise
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_unknown_clip
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_1D_choicelist
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_choicelist_condlist_broadcast
@@ -600,7 +591,6 @@ tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_length_error
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_odd_shaped_broadcastable
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_odd_shaped_non_broadcastable
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_type_error_choicelist
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_type_error_condlist
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmask::test_putmask_non_equal_shape_raises
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_0_{n_vals=0, shape=(7,)}::test_place
@@ -835,13 +825,11 @@ tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matri
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_dot_vec2
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_multidim_vdot
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_inner
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_kron
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_outer
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_vdot
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_tensordot_zero_dim
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_dot_with_out_f_contiguous
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_multidim_vdot
-tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_zerodim_kron
 tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_array_scalar
 tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_finite
 tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_infinite

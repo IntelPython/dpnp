@@ -255,4 +255,5 @@ jobs:
       ./scripts/install_system_deps.sh  # no intel python
       ./scripts/install_python_deps.sh  # numpy, conda-build and etc.
       echo ========================= build DPNP package ===============================
+      export DPNP_BACKEND_TESTS_ENABLE=1
       ./0.build.sh
