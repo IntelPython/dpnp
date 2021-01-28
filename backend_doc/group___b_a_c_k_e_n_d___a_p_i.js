@@ -29,6 +29,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_cos_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga7383b77007f41e7e96858088bf46d046", null ],
     [ "dpnp_cosh_c", "group___b_a_c_k_e_n_d___a_p_i.html#gaa2c797216624b21d93ac230b23193dc8", null ],
     [ "dpnp_cov_c", "group___b_a_c_k_e_n_d___a_p_i.html#gaf82f3014fe540247177bfe7b95da7330", null ],
+    [ "dpnp_cross_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga79704b8d1fc70b40496d6078006d6015", null ],
     [ "dpnp_degrees_c", "group___b_a_c_k_e_n_d___a_p_i.html#gad0b499cc7d5d6d40bec16b3543f815b4", null ],
     [ "dpnp_det_c", "group___b_a_c_k_e_n_d___a_p_i.html#gacae5a64647bf0415e3aacad5544d0753", null ],
     [ "dpnp_divide_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga819a4d7d2711c2ae91e599bd35650272", null ],
