@@ -131,22 +131,17 @@ class dpnp_cross_c_kernel;
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
 void dpnp_cross_c(void* array1_in, void* array2_in, void* result1, size_t size)
 {
-
     _DataType_input1* array1 = reinterpret_cast<_DataType_input1*>(array1_in);
     _DataType_input2* array2 = reinterpret_cast<_DataType_input2*>(array2_in);
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
 
-    _DataType_output cur_res = array1[1] * array2[2] - array1[2] * array2[1];
-    result[0] = cur_res;
+    result[0] = array1[1] * array2[2] - array1[2] * array2[1];
 
-    cur_res = array1[2] * array2[0] - array1[0] * array2[2];
-    result[1] = cur_res;
+    result[1] = array1[2] * array2[0] - array1[0] * array2[2];
 
-    cur_res = array1[0] * array2[1] - array1[1] * array2[0];
-    result[2] = cur_res;
+    result[2] = array1[0] * array2[1] - array1[1] * array2[0];
 
     return;
-
 }
 
 template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2>
