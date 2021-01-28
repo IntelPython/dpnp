@@ -35,13 +35,13 @@ namespace mkl_blas = oneapi::mkl::blas::row_major;
 namespace mkl_lapack = oneapi::mkl::lapack;
 
 
-template <typename _DataType, typename _ResultType>
+template <typename _DataType>
 void dpnp_cholesky_c(void* array1_in, void* result1, size_t size)
 {
     cl::sycl::event event;
 
     _DataType* in_array = reinterpret_cast<_DataType*>(array1_in);
-    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
 
     for (size_t it = 0; it < size * size; ++it)
     {
@@ -52,10 +52,10 @@ void dpnp_cholesky_c(void* array1_in, void* result1, size_t size)
 
     const std::int64_t lda = std::max<size_t>(1UL, n);
 
-    const std::int64_t scratchpad_size = mkl_lapack::potrf_scratchpad_size<_ResultType>(
+    const std::int64_t scratchpad_size = mkl_lapack::potrf_scratchpad_size<_DataType>(
         DPNP_QUEUE, oneapi::mkl::uplo::upper, n, lda);
 
-    _ResultType* scratchpad = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(_ResultType)));
+    _DataType* scratchpad = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(_DataType)));
 
     event = mkl_lapack::potrf(DPNP_QUEUE,
                               oneapi::mkl::uplo::upper,
@@ -440,8 +440,8 @@ void dpnp_svd_c(void* array1_in, void* result1, void* result2, void* result3, si
 
 void func_map_init_linalg_func(func_map_t& fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_cholesky_c<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_cholesky_c<double, double>};
+    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_cholesky_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_cholesky_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_DET][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_det_c<int>};
     fmap[DPNPFuncName::DPNP_FN_DET][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_det_c<long>};
