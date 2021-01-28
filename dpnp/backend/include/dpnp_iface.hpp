@@ -407,6 +407,19 @@ INP_DLLEXPORT void dpnp_std_c(
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of take function
+ *
+ * @param [in]  array   Input array with data.
+ * @param [in]  array   Input array with indices.
+ * @param [out] result  Output array with indeces.
+ * @param [in]  size    Number of elements in the input array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_take_c(
+    void* array, void* indices, void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of var function
  *
  * @param [in]  array   Input array with data.

@@ -162,6 +162,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_SUBTRACT,                 /**< Used in numpy.subtract() implementation  */
     DPNP_FN_SUM,                      /**< Used in numpy.sum() implementation  */
     DPNP_FN_SVD,                      /**< Used in numpy.linalg.svd() implementation  */
+    DPNP_FN_TAKE,                     /**< Used in numpy.take() implementation  */
     DPNP_FN_TAN,                      /**< Used in numpy.tan() implementation  */
     DPNP_FN_TANH,                     /**< Used in numpy.tanh() implementation  */
     DPNP_FN_TRANSPOSE,                /**< Used in numpy.transpose() implementation  */
