@@ -51,6 +51,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_CEIL
         DPNP_FN_CHOLESKY
         DPNP_FN_CONJIGUATE
+        DPNP_FN_COPY
         DPNP_FN_COPYSIGN
         DPNP_FN_CORRELATE
         DPNP_FN_COS
