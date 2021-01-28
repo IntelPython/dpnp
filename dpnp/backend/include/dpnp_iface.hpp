@@ -161,11 +161,8 @@ INP_DLLEXPORT void dpnp_dot_c(void* array1, void* array2, void* result1, size_t 
  * @brief Custom implementation of cross function
  *
  * @param [in]  array1_in  First input array.
- *
  * @param [in]  array2_in  Second input array.
- *
  * @param [out] result1 Output array.
- *
  * @param [in]  size    Number of elements in input arrays.
  *
  */
