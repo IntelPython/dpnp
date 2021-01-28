@@ -62,7 +62,7 @@
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_beta_c(void* result, _DataType a, _DataType b, size_t size);
+INP_DLLEXPORT void dpnp_rng_beta_c(void* result, const _DataType a, const _DataType b, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -74,7 +74,7 @@ INP_DLLEXPORT void dpnp_rng_beta_c(void* result, _DataType a, _DataType b, size_
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_binomial_c(void* result, int ntrial, double p, size_t size);
+INP_DLLEXPORT void dpnp_rng_binomial_c(void* result, const int ntrial, const double p, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -85,7 +85,7 @@ INP_DLLEXPORT void dpnp_rng_binomial_c(void* result, int ntrial, double p, size_
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_chi_square_c(void* result, int df, size_t size);
+INP_DLLEXPORT void dpnp_rng_chisquare_c(void* result, const int df, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -96,7 +96,7 @@ INP_DLLEXPORT void dpnp_rng_chi_square_c(void* result, int df, size_t size);
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_exponential_c(void* result, _DataType beta, size_t size);
+INP_DLLEXPORT void dpnp_rng_exponential_c(void* result, const _DataType beta, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -108,7 +108,7 @@ INP_DLLEXPORT void dpnp_rng_exponential_c(void* result, _DataType beta, size_t s
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_f_c(void* result, _DataType df_num, _DataType df_den, size_t size);
+INP_DLLEXPORT void dpnp_rng_f_c(void* result, const _DataType df_num, const _DataType df_den, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -120,7 +120,7 @@ INP_DLLEXPORT void dpnp_rng_f_c(void* result, _DataType df_num, _DataType df_den
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_gamma_c(void* result, _DataType shape, _DataType scale, size_t size);
+INP_DLLEXPORT void dpnp_rng_gamma_c(void* result, const _DataType shape, const _DataType scale, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -132,7 +132,30 @@ INP_DLLEXPORT void dpnp_rng_gamma_c(void* result, _DataType shape, _DataType sca
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_gaussian_c(void* result, _DataType mean, _DataType stddev, size_t size);
+INP_DLLEXPORT void dpnp_rng_gaussian_c(void* result, const _DataType mean, const _DataType stddev, const size_t size);
+
+/**
+ * @ingroup BACKEND_RANDOM_API
+ * @brief math library implementation of random number generator (Geometric distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ * @param [in]  p      The probability of success of an individual trial.
+ * @param [out] result Output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_rng_geometric_c(void* result, const float p, const size_t size);
+
+/**
+ * @ingroup BACKEND_RANDOM_API
+ * @brief math library implementation of random number generator (Gumbel distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ * @param [in]  loc    The location of the mode of the distribution.
+ * @param [in]  scale  The scale parameter of the distribution. Default is 1.
+ * @param [out] result Output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_rng_gumbel_c(void* result, const double loc, const double scale, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -145,30 +168,7 @@ INP_DLLEXPORT void dpnp_rng_gaussian_c(void* result, _DataType mean, _DataType s
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_hypergeometric_c(void* result, int l, int s, int m, size_t size);
-
-/**
- * @ingroup BACKEND_RANDOM_API
- * @brief math library implementation of random number generator (geometric distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- * @param [in]  p      Success probability p of a trial.
- * @param [out] result Output array.
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_geometric_c(void* result, float p, size_t size);
-
-/**
- * @ingroup BACKEND_RANDOM_API
- * @brief math library implementation of random number generator (gumbel distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- * @param [in]  loc    The location of the mode of the distribution.
- * @param [in]  scale  The scale parameter of the distribution.
- * @param [out] result Output array.
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_gumbel_c(void* result, double loc, double scale, size_t size);
+INP_DLLEXPORT void dpnp_rng_hypergeometric_c(void* result, const int l, const int s, const int m, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -180,7 +180,7 @@ INP_DLLEXPORT void dpnp_rng_gumbel_c(void* result, double loc, double scale, siz
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_laplace_c(void* result, double loc, double scale, size_t size);
+INP_DLLEXPORT void dpnp_rng_laplace_c(void* result, const double loc, const double scale, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -192,7 +192,7 @@ INP_DLLEXPORT void dpnp_rng_laplace_c(void* result, double loc, double scale, si
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_logistic_c(void* result, double loc, double scale, size_t size);
+INP_DLLEXPORT void dpnp_rng_logistic_c(void* result, const double loc, double const scale, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -204,7 +204,8 @@ INP_DLLEXPORT void dpnp_rng_logistic_c(void* result, double loc, double scale, s
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_lognormal_c(void* result, _DataType mean, _DataType stddev, size_t size);
+INP_DLLEXPORT void dpnp_rng_lognormal_c(void* result, const _DataType mean, const _DataType stddev,
+    const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -217,8 +218,8 @@ INP_DLLEXPORT void dpnp_rng_lognormal_c(void* result, _DataType mean, _DataType 
  * @param [out] result        Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void
-    dpnp_rng_multinomial_c(void* result, int ntrial, const double* p_vector, const size_t p_vector_size, size_t size);
+INP_DLLEXPORT void dpnp_rng_multinomial_c(void* result, const int ntrial, const double* p_vector,
+    const size_t p_vector_size, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -239,7 +240,7 @@ INP_DLLEXPORT void dpnp_rng_multivariate_normal_c(void* result,
                                                   const size_t mean_vector_size,
                                                   const double* cov_vector,
                                                   const size_t cov_vector_size,
-                                                  size_t size);
+                                                  const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -252,7 +253,7 @@ INP_DLLEXPORT void dpnp_rng_multivariate_normal_c(void* result,
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_negative_binomial_c(void* result, double a, double p, size_t size);
+INP_DLLEXPORT void dpnp_rng_negative_binomial_c(void* result, const double a, const double p, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -264,7 +265,7 @@ INP_DLLEXPORT void dpnp_rng_negative_binomial_c(void* result, double a, double p
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_normal_c(void* result, _DataType mean, _DataType stddev, size_t size);
+INP_DLLEXPORT void dpnp_rng_normal_c(void* result, const _DataType mean, const _DataType stddev, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -275,7 +276,7 @@ INP_DLLEXPORT void dpnp_rng_normal_c(void* result, _DataType mean, _DataType std
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_pareto_c(void* result, double alpha, size_t size);
+INP_DLLEXPORT void dpnp_rng_pareto_c(void* result, const double alpha, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -286,7 +287,7 @@ INP_DLLEXPORT void dpnp_rng_pareto_c(void* result, double alpha, size_t size);
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_poisson_c(void* result, double lambda, size_t size);
+INP_DLLEXPORT void dpnp_rng_poisson_c(void* result, const double lambda, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -297,7 +298,7 @@ INP_DLLEXPORT void dpnp_rng_poisson_c(void* result, double lambda, size_t size);
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_power_c(void* result, double alpha, size_t size);
+INP_DLLEXPORT void dpnp_rng_power_c(void* result, const double alpha, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -308,7 +309,7 @@ INP_DLLEXPORT void dpnp_rng_power_c(void* result, double alpha, size_t size);
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_rayleigh_c(void* result, _DataType scale, size_t size);
+INP_DLLEXPORT void dpnp_rng_rayleigh_c(void* result, const _DataType scale, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -326,7 +327,7 @@ INP_DLLEXPORT void dpnp_rng_srand_c(size_t seed = 1);
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_standard_cauchy_c(void* result, size_t size);
+INP_DLLEXPORT void dpnp_rng_standard_cauchy_c(void* result, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -336,7 +337,7 @@ INP_DLLEXPORT void dpnp_rng_standard_cauchy_c(void* result, size_t size);
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_standard_exponential_c(void* result, size_t size);
+INP_DLLEXPORT void dpnp_rng_standard_exponential_c(void* result, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -347,7 +348,7 @@ INP_DLLEXPORT void dpnp_rng_standard_exponential_c(void* result, size_t size);
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_standard_gamma_c(void* result, _DataType shape, size_t size);
+INP_DLLEXPORT void dpnp_rng_standard_gamma_c(void* result, const _DataType shape, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -357,7 +358,7 @@ INP_DLLEXPORT void dpnp_rng_standard_gamma_c(void* result, _DataType shape, size
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_standard_normal_c(void* result, size_t size);
+INP_DLLEXPORT void dpnp_rng_standard_normal_c(void* result, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -368,7 +369,7 @@ INP_DLLEXPORT void dpnp_rng_standard_normal_c(void* result, size_t size);
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_standard_t_c(void* result, _DataType df, size_t size);
+INP_DLLEXPORT void dpnp_rng_standard_t_c(void* result, const _DataType df, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -380,7 +381,7 @@ INP_DLLEXPORT void dpnp_rng_standard_t_c(void* result, _DataType df, size_t size
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_uniform_c(void* result, long low, long high, size_t size);
+INP_DLLEXPORT void dpnp_rng_uniform_c(void* result, const long low, const long high, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -391,6 +392,6 @@ INP_DLLEXPORT void dpnp_rng_uniform_c(void* result, long low, long high, size_t 
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_weibull_c(void* result, double alpha, size_t size);
+INP_DLLEXPORT void dpnp_rng_weibull_c(void* result, const double alpha, const size_t size);
 
 #endif // BACKEND_IFACE_RANDOM_H
