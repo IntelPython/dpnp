@@ -815,12 +815,23 @@ def noncentral_chisquare(df, nonc, size=None):
 
     For full documentation refer to :obj:`numpy.random.noncentral_chisquare`.
 
-    Notes
-    -----
-    The function uses `numpy.random.noncentral_chisquare` on the backend and
-    will be executed on fallback backend.
+    TODO
 
     """
+
+    if not use_origin_backend(df):
+        # TODO:
+        # array_like of floats for `mean` and `scale`
+        if not dpnp.isscalar(df):
+            pass
+        elif not dpnp.isscalar(nonc):
+            pass
+        elif df <= 0:
+            pass
+        elif nonc < 0:
+            pass
+        else:
+            return dpnp_rng_noncentral_chisquare(df, nonc, size)
 
     return call_origin(numpy.random.noncentral_chisquare, df, nonc, size)
 

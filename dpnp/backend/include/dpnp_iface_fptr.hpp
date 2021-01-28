@@ -144,6 +144,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RNG_MULTINOMIAL,          /**< Used in numpy.random.multinomial() implementation  */
     DPNP_FN_RNG_MULTIVARIATE_NORMAL,  /**< Used in numpy.random.multivariate_normal() implementation  */
     DPNP_FN_RNG_NEGATIVE_BINOMIAL,    /**< Used in numpy.random.negative_binomial() implementation  */
+    DPNP_FN_RNG_NONCENTRAL_CHISQUARE, /**< Used in numpy.random.noncentral_chisquare() implementation  */
     DPNP_FN_RNG_NORMAL,               /**< Used in numpy.random.normal() implementation  */
     DPNP_FN_RNG_PARETO,               /**< Used in numpy.random.pareto() implementation  */
     DPNP_FN_RNG_POISSON,              /**< Used in numpy.random.poisson() implementation  */

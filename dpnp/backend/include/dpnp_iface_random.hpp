@@ -256,6 +256,19 @@ INP_DLLEXPORT void dpnp_rng_negative_binomial_c(void* result, const double a, co
 
 /**
  * @ingroup BACKEND_RANDOM_API
+ * @brief math library implementation of random number generator (noncentral chisquare distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ * @param [in]  df     Degrees of freedom.
+ * @param [in]  nonc   Non-centrality param.
+ * @param [out] result Output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void
+    dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _DataType nonc, const size_t size);
+
+/**
+ * @ingroup BACKEND_RANDOM_API
  * @brief math library implementation of random number generator (normal continious distribution)
  *
  * @param [in]  size   Number of elements in `result` arrays.
