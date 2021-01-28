@@ -81,6 +81,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_std_c", "group___b_a_c_k_e_n_d___a_p_i.html#gabd0a713a1fd8be04e1cb6be2a06c578b", null ],
     [ "dpnp_subtract_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga9d7b31d733a552498098f1bba1e37ad3", null ],
     [ "dpnp_sum_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga1f9b5eea67856e31475fabc96224d5cd", null ],
+    [ "dpnp_take_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga3781a0309c5e123ceafa2a40cdcbc83f", null ],
     [ "dpnp_tan_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga312e6d54042adcf5f3142b602c111bd3", null ],
     [ "dpnp_tanh_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga2de426275f6882f5a355e72aeb76c59d", null ],
     [ "dpnp_trunc_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga5650891f669fd10b7f15b6fbd3833400", null ],
