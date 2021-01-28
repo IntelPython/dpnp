@@ -10,7 +10,7 @@ cd dpctl
 
 set "ONEAPI_ROOT=C:\Program Files (x86)\Intel\oneAPI\"
 echo +++++++++++++++++++++++++ Build DPCTL +++++++++++++++++++++++++++
-call conda build --croot=C:/tmp conda-recipe --no-test -c "%ONEAPI_ROOT%\conda_channel"
+call conda build --croot=C:/tmp conda-recipe --no-test -c "%ONEAPI_ROOT%\conda_channel" --output-folder dist
 
 echo +++++++++++++++++++++++++ install DPCTL +++++++++++++++++++++++++++
 call conda install -y dpctl --strict-channel-priority -c local -c intel
