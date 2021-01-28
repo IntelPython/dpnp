@@ -36,32 +36,32 @@ namespace mkl_lapack = oneapi::mkl::lapack;
 
 
 template <typename _DataType>
-void dpnp_cholesky_c(void* array1_in, void* result1, size_t size, size_t size_)
+void dpnp_cholesky_c(void* array1_in, void* result1, size_t size, size_t last_shape_elem)
 {
     cl::sycl::event event;
 
     _DataType* in_array = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    size_t iters = size / (size_ * size_);
+    size_t iters = size / (last_shape_elem * last_shape_elem);
 
     for (size_t k = 0; k < iters; ++k)
     {
-        _DataType matrix[size_ * size_];
-        _DataType result_[size_ * size_];
+        _DataType matrix[last_shape_elem * last_shape_elem];
+        _DataType result_[last_shape_elem * last_shape_elem];
 
-        for (size_t t = 0; t < size_ * size_; ++t)
+        for (size_t t = 0; t < last_shape_elem * last_shape_elem; ++t)
         {
-            matrix[t] = in_array[k * (size_ * size_) + t];
+            matrix[t] = in_array[k * (last_shape_elem * last_shape_elem) + t];
 
         }
 
-        for (size_t it = 0; it < size_ * size_; ++it)
+        for (size_t it = 0; it < last_shape_elem * last_shape_elem; ++it)
         {
             result_[it] = matrix[it];
         }
 
-        const std::int64_t n = size_;
+        const std::int64_t n = last_shape_elem;
 
         const std::int64_t lda = std::max<size_t>(1UL, n);
 
@@ -80,10 +80,10 @@ void dpnp_cholesky_c(void* array1_in, void* result1, size_t size, size_t size_)
 
         event.wait();
 
-        for (size_t i = 0; i < size_; i++)
+        for (size_t i = 0; i < last_shape_elem; i++)
         {
             bool arg = false;
-            for (size_t j = 0; j < size_; j++)
+            for (size_t j = 0; j < last_shape_elem; j++)
             {
                 if (i == j - 1)
                 {
@@ -91,16 +91,16 @@ void dpnp_cholesky_c(void* array1_in, void* result1, size_t size, size_t size_)
                 }
                 if (arg)
                 {
-                    result_[i * size_ + j] = 0;
+                    result_[i * last_shape_elem + j] = 0;
                 }
             }
         }
 
         dpnp_memory_free_c(scratchpad);
 
-        for (size_t t = 0; t < size_ * size_; ++t)
+        for (size_t t = 0; t < last_shape_elem * last_shape_elem; ++t)
         {
-            result[k * (size_ * size_) + t] = result_[t];
+            result[k * (last_shape_elem * last_shape_elem) + t] = result_[t];
 
         }
 
