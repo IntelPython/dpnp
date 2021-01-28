@@ -5,7 +5,7 @@ rem git tag 0.5.0rc2
 echo +++++++++++++++++++++++++ Python version +++++++++++++++++++++++++++
 call python --version
 
-conda unistall -y dpctl
+conda uninstall -y dpctl
 
 echo +++++++++++++++++++++++++ Downlowd DPCTL +++++++++++++++++++++++++++
 call git clone https://github.com/IntelPython/dpctl.git 
