@@ -518,7 +518,7 @@ def exp(x1):
         if not isinstance(x1, dparray):
             pass
         else:
-            dpnp_exp(x1)
+            return dpnp_exp(x1)
 
     return call_origin(numpy.exp, x1)
 
@@ -666,7 +666,7 @@ def log(x1):
         if not isinstance(x1, dparray):
             pass
         else:
-            dpnp_log(x1)
+            return dpnp_log(x1)
 
     return call_origin(numpy.log, x1)
 
