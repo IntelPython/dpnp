@@ -57,7 +57,7 @@ __all__ += [
 ]
 
 
-ctypedef void(*custom_linalg_2in_1out_func_ptr_t)(void *, void * , void * , size_t)
+ctypedef void(*custom_indexing_2in_1out_func_ptr_t)(void *, void * , void * , size_t)
 
 
 cpdef dparray dpnp_choose(input, choices):
@@ -270,7 +270,7 @@ cpdef dparray dpnp_take(dparray input, dparray indices):
     result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     cdef dparray result = dparray(indices_size, dtype=result_type)
 
-    cdef custom_linalg_2in_1out_func_ptr_t func = <custom_linalg_2in_1out_func_ptr_t > kernel_data.ptr
+    cdef custom_indexing_2in_1out_func_ptr_t func = <custom_indexing_2in_1out_func_ptr_t > kernel_data.ptr
 
     func(input.get_data(), indices.get_data(), result.get_data(), indices_size)
 
