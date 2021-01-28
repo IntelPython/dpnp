@@ -262,11 +262,11 @@ INP_DLLEXPORT void dpnp_sort_c(void* array, void* result, size_t size);
  *
  * @param [out] result  Output array.
  *
- * @param [in]  shape   Shape of input array.
+ * @param [in]  size    Number of elements in input arrays.
  *
  */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_cholesky_c(void* array1_in, void* result1, size_t* shape);
+template <typename _DataType, typename _ResultType>
+INP_DLLEXPORT void dpnp_cholesky_c(void* array1_in, void* result1, size_t size);
 
 /**
  * @ingroup BACKEND_API

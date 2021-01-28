@@ -34,47 +34,56 @@
 namespace mkl_blas = oneapi::mkl::blas::row_major;
 namespace mkl_lapack = oneapi::mkl::lapack;
 
-template <typename _DataType>
-class dpnp_cholesky_c_kernel;
 
-template <typename _DataType>
-void dpnp_cholesky_c(void* array1_in, void* result1, size_t* shape)
+template <typename _DataType, typename _ResultType>
+void dpnp_cholesky_c(void* array1_in, void* result1, size_t size)
 {
-    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
-    _DataType* l_result = reinterpret_cast<_DataType*>(result1);
+    cl::sycl::event event;
 
-    size_t n = shape[0];
+    _DataType* in_array = reinterpret_cast<_DataType*>(array1_in);
+    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
 
-    l_result[0] = sqrt(array_1[0]);
-
-    for (size_t j = 1; j < n; j++)
+    for (size_t it = 0; it < size * size; ++it)
     {
-        l_result[j * n] = array_1[j * n] / l_result[0];
+        result[it] = in_array[it];
     }
 
-    for (size_t i = 1; i < n; i++)
-    {
-        _DataType sum_val = 0;
-        for (size_t p = 0; p < i - 1; p++)
-        {
-            sum_val += l_result[i * n + p - 1] * l_result[i * n + p - 1];
-        }
-        l_result[i * n + i - 1] = sqrt(array_1[i * n + i - 1] - sum_val);
-    }
+    const std::int64_t n = size;
 
-    for (size_t i = 1; i < n - 1; i++)
+    const std::int64_t lda = std::max<size_t>(1UL, n);
+
+    const std::int64_t scratchpad_size = mkl_lapack::potrf_scratchpad_size<_ResultType>(
+        DPNP_QUEUE, oneapi::mkl::uplo::upper, n, lda);
+
+    _ResultType* scratchpad = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(_ResultType)));
+
+    event = mkl_lapack::potrf(DPNP_QUEUE,
+                              oneapi::mkl::uplo::upper,
+                              n,
+                              result,
+                              lda,
+                              scratchpad,
+                              scratchpad_size);
+
+    event.wait();
+
+    for (size_t i = 0; i < size; i++)
     {
-        for (size_t j = i; j < n; j++)
+        bool arg = false;
+        for (size_t j = 0; j < size; j++)
         {
-            _DataType sum_val = 0;
-            for (size_t p = 0; p < i - 1; p++)
+            if (i == j - 1)
             {
-                sum_val += l_result[i * n + p - 1] * l_result[j * n + p - 1];
+                arg = true;
             }
-            l_result[j * n + i - 1] = (1 / l_result[i * n + i - 1]) * (array_1[j * n + i - 1] - sum_val);
+            if (arg)
+            {
+                result[i * size + j] = 0;
+            }
         }
     }
-    return;
+
+    dpnp_memory_free_c(scratchpad);
 }
 
 template <typename _DataType>
@@ -364,10 +373,8 @@ void dpnp_svd_c(void* array1_in, void* result1, void* result2, void* result3, si
 
 void func_map_init_linalg_func(func_map_t& fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_cholesky_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_cholesky_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_cholesky_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_cholesky_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_cholesky_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_cholesky_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_DET][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_det_c<int>};
     fmap[DPNPFuncName::DPNP_FN_DET][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_det_c<long>};
