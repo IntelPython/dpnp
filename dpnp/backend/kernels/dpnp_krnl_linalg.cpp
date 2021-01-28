@@ -36,54 +36,76 @@ namespace mkl_lapack = oneapi::mkl::lapack;
 
 
 template <typename _DataType>
-void dpnp_cholesky_c(void* array1_in, void* result1, size_t size)
+void dpnp_cholesky_c(void* array1_in, void* result1, size_t size, size_t size_)
 {
     cl::sycl::event event;
 
     _DataType* in_array = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    for (size_t it = 0; it < size * size; ++it)
+    size_t iters = size / (size_ * size_);
+
+    for (size_t k = 0; k < iters; ++k)
     {
-        result[it] = in_array[it];
-    }
+        _DataType matrix[size_ * size_];
+        _DataType result_[size_ * size_];
 
-    const std::int64_t n = size;
-
-    const std::int64_t lda = std::max<size_t>(1UL, n);
-
-    const std::int64_t scratchpad_size = mkl_lapack::potrf_scratchpad_size<_DataType>(
-        DPNP_QUEUE, oneapi::mkl::uplo::upper, n, lda);
-
-    _DataType* scratchpad = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(_DataType)));
-
-    event = mkl_lapack::potrf(DPNP_QUEUE,
-                              oneapi::mkl::uplo::upper,
-                              n,
-                              result,
-                              lda,
-                              scratchpad,
-                              scratchpad_size);
-
-    event.wait();
-
-    for (size_t i = 0; i < size; i++)
-    {
-        bool arg = false;
-        for (size_t j = 0; j < size; j++)
+        for (size_t t = 0; t < size_ * size_; ++t)
         {
-            if (i == j - 1)
+            matrix[t] = in_array[k * (size_ * size_) + t];
+
+        }
+
+        for (size_t it = 0; it < size_ * size_; ++it)
+        {
+            result_[it] = matrix[it];
+        }
+
+        const std::int64_t n = size_;
+
+        const std::int64_t lda = std::max<size_t>(1UL, n);
+
+        const std::int64_t scratchpad_size = mkl_lapack::potrf_scratchpad_size<_DataType>(
+            DPNP_QUEUE, oneapi::mkl::uplo::upper, n, lda);
+
+        _DataType* scratchpad = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(_DataType)));
+
+        event = mkl_lapack::potrf(DPNP_QUEUE,
+                                  oneapi::mkl::uplo::upper,
+                                  n,
+                                  result_,
+                                  lda,
+                                  scratchpad,
+                                  scratchpad_size);
+
+        event.wait();
+
+        for (size_t i = 0; i < size_; i++)
+        {
+            bool arg = false;
+            for (size_t j = 0; j < size_; j++)
             {
-                arg = true;
-            }
-            if (arg)
-            {
-                result[i * size + j] = 0;
+                if (i == j - 1)
+                {
+                    arg = true;
+                }
+                if (arg)
+                {
+                    result_[i * size_ + j] = 0;
+                }
             }
         }
+
+        dpnp_memory_free_c(scratchpad);
+
+        for (size_t t = 0; t < size_ * size_; ++t)
+        {
+            result[k * (size_ * size_) + t] = result_[t];
+
+        }
+
     }
 
-    dpnp_memory_free_c(scratchpad);
 }
 
 template <typename _DataType>

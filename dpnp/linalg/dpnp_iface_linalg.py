@@ -95,9 +95,7 @@ def cholesky(input):
         elif input.ndim < 3:
             pass
         else:
-            result = dpnp_cholesky(input)
-
-        return result
+            return dpnp_cholesky(input)
 
     return call_origin(numpy.linalg.cholesky, input)
 

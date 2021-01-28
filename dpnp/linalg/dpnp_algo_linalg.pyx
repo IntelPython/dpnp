@@ -57,6 +57,7 @@ __all__ = [
 ctypedef void(*custom_linalg_1in_1out_func_ptr_t)(void *, void * , size_t * , size_t)
 ctypedef void(*custom_linalg_1in_1out_func_ptr_t_)(void * , void * , size_t * )
 ctypedef void(*custom_linalg_1in_1out_with_size_func_ptr_t_)(void *, void * , size_t)
+ctypedef void(*custom_linalg_1in_1out_with_2size_func_ptr_t_)(void *, void * , size_t, size_t)
 ctypedef void(*custom_linalg_1in_3out_shape_t)(void *, void * , void * , void * , size_t , size_t )
 
 
@@ -75,18 +76,9 @@ cpdef dparray dpnp_cholesky(dparray input):
     result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     cdef dparray result = dparray(input_.shape, dtype=result_type)
 
-    cdef custom_linalg_1in_1out_with_size_func_ptr_t_ func = <custom_linalg_1in_1out_with_size_func_ptr_t_ > kernel_data.ptr
+    cdef custom_linalg_1in_1out_with_2size_func_ptr_t_ func = <custom_linalg_1in_1out_with_2size_func_ptr_t_ > kernel_data.ptr
 
-    for i in range(int(input.size/(size_ * size_))):
-        result_ = dparray((size_, size_), dtype=result_type)
-        _input_ = dparray((size_, size_), dtype=result_type)
-        for j in range(int(size_ * size_)):
-            _input_[j] = input_[i * (size_ * size_) + j]
-
-        func(_input_.get_data(), result_.get_data(), size_)
-
-        for j in range(int(size_ * size_)):
-            result[i * (size_ * size_) + j] = result_[j]
+    func(input_.get_data(), result.get_data(), input.size, size_)
 
     return result
 

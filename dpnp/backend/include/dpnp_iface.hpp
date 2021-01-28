@@ -230,9 +230,10 @@ INP_DLLEXPORT void dpnp_sort_c(void* array, void* result, size_t size);
  * @param [in]  array   Input array with data.
  * @param [out] result  Output array.
  * @param [in]  size    Number of elements in input arrays.
+ * @param [in]  size_   Number of elements in each parts input arrays.
  */
-template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void dpnp_cholesky_c(void* array1_in, void* result1, size_t size);
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_cholesky_c(void* array1_in, void* result1, size_t size, size_t size_);
 
 /**
  * @ingroup BACKEND_API
