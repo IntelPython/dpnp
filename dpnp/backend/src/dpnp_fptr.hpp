@@ -68,6 +68,7 @@ const DPNPFuncType eft_C128 = DPNPFuncType::DPNP_FT_CMPLX128;
 void func_map_init_bitwise(func_map_t& fmap);
 void func_map_init_elemwise(func_map_t& fmap);
 void func_map_init_fft_func(func_map_t& fmap);
+void func_map_init_indexing_func(func_map_t& fmap);
 void func_map_init_linalg(func_map_t& fmap);
 void func_map_init_linalg_func(func_map_t& fmap);
 void func_map_init_manipulation(func_map_t& fmap);

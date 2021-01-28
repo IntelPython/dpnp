@@ -57,6 +57,9 @@ __all__ += [
 ]
 
 
+ctypedef void(*custom_linalg_2in_1out_func_ptr_t)(void *, void * , void * , size_t)
+
+
 cpdef dparray dpnp_choose(input, choices):
     res_array = dparray(len(input), dtype=choices[0].dtype)
     for i in range(len(input)):
@@ -259,12 +262,19 @@ cpdef dparray dpnp_select(condlist, choicelist, default):
 
 cpdef dparray dpnp_take(dparray input, dparray indices):
     indices_size = indices.size
-    res_array = dparray(indices_size, dtype=input.dtype)
-    for i in range(indices_size):
-        ind = indices[i]
-        res_array[i] = input[ind]
-    result = res_array.reshape(indices.shape)
-    return result
+
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TAKE, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray(indices_size, dtype=result_type)
+
+    cdef custom_linalg_2in_1out_func_ptr_t func = <custom_linalg_2in_1out_func_ptr_t > kernel_data.ptr
+
+    func(input.get_data(), indices.get_data(), result.get_data(), indices_size)
+
+    return result.reshape(indices.shape)
 
 
 cpdef tuple dpnp_tril_indices(n, k=0, m=None):
