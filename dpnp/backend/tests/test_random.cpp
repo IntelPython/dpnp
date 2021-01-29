@@ -201,6 +201,33 @@ TEST(TestBackendRandomUniform, test_statistics) {
     }
 }
 
+TEST(TestBackendRandomZipf, test_seed)
+{
+    const size_t size = 256;
+    size_t seed = 10;
+    double a = 10.4;
+
+    auto QueueOptionsDevices = std::vector<QueueOptions>{QueueOptions::CPU_SELECTOR, QueueOptions::GPU_SELECTOR};
+
+    for (auto device_selector : QueueOptionsDevices)
+    {
+        dpnp_queue_initialize_c(device_selector);
+        double* result1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+        double* result2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+
+        dpnp_rng_srand_c(seed);
+        dpnp_rng_zipf_c<double>(result1, a, size);
+
+        dpnp_rng_srand_c(seed);
+        dpnp_rng_zipf_c<double>(result2, a, size);
+
+        for (size_t i = 0; i < size; ++i)
+        {
+            EXPECT_NEAR(result1[i], result2[i], 0.004);
+        }
+    }
+}
+
 TEST(TestBackendRandomSrand, test_func_ptr) {
 
     void* fptr = nullptr;

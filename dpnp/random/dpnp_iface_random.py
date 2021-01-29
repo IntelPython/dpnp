@@ -1580,11 +1580,27 @@ def zipf(a, size=None):
 
     For full documentation refer to :obj:`numpy.random.zipf`.
 
-    Notes
-    -----
-    The function uses `numpy.random.zipf` on the backend and
-    will be executed on fallback backend.
+    Limitations
+    -----------
+    Parameter ``a`` is supported as a scalar.
+    Otherwise, :obj:`numpy.zipf.weibull(a, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    >>> a = 2. # parameter
+    >>> s = np.random.zipf(a, 1000)
 
     """
+
+    if not use_origin_backend(a):
+        # TODO:
+        # array_like of floats for `a` param
+        if not dpnp.isscalar(a):
+            pass
+        elif a <= 1:
+            pass
+        else:
+            return dpnp_rng_zipf(a, size)
 
     return call_origin(numpy.random.zipf, a, size)

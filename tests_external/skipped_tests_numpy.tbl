@@ -1509,6 +1509,9 @@ tests/test_random.py::TestRandomDist::test_uniform
 tests/test_random.py::TestRandomDist::test_uniform_range_bounds
 tests/test_random.py::TestRandomDist::test_weibull
 tests/test_random.py::TestRandomDist::test_weibull_0
+tests/test_random.py::TestRandomDist::test_zipf
+tests/test_random.py::TestRandomDist::test_zipf_0
+tests/test_random.py::TestBroadcast::test_zipf
 tests/test_random.py::TestSeed::test_array
 tests/test_random.py::TestSeed::test_invalid_array
 tests/test_random.py::TestSeed::test_invalid_array_shape
@@ -1608,6 +1611,10 @@ tests/test_randomstate.py::TestRandomDist::test_uniform
 tests/test_randomstate.py::TestRandomDist::test_uniform_range_bounds
 tests/test_randomstate.py::TestRandomDist::test_weibull
 tests/test_randomstate.py::TestRandomDist::test_weibull_0
+tests/test_randomstate.py::TestRandomDist::test_zipf
+tests/test_randomstate.py::TestRandomDist::test_zipf_0
+tests/test_randomstate.py::TestBroadcast::test_zipf
+tests/test_randomstate.py::test_integer_dtype[zipf]
 tests/test_randomstate.py::TestSeed::test_array
 tests/test_randomstate.py::TestSeed::test_cannot_seed
 tests/test_randomstate.py::TestSeed::test_invalid_array
