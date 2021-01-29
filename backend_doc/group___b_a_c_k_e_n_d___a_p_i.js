@@ -38,6 +38,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_eigvals_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga846b56f4a4c89c24d1b6f9ee5a6ca1a4", null ],
     [ "dpnp_elemwise_absolute_c", "group___b_a_c_k_e_n_d___a_p_i.html#gab3ed560f1a8a171281e86ea1c0c619ce", null ],
     [ "dpnp_elemwise_transpose_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga058819136a38345be92b95467090a84b", null ],
+    [ "dpnp_erf_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga211e7d202a770a6e634e88fb14e225e2", null ],
     [ "dpnp_exp2_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga6c157cc4305f594d872b82e8fede8c74", null ],
     [ "dpnp_exp_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga5635e77eba00f78f20d00bf6b5c217d9", null ],
     [ "dpnp_expm1_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga5ecc8eb53942342e819e2a357a15ac19", null ],
