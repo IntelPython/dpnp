@@ -83,6 +83,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_COS,                      /**< Used in numpy.cos() implementation  */
     DPNP_FN_COSH,                     /**< Used in numpy.cosh() implementation  */
     DPNP_FN_COV,                      /**< Used in numpy.cov() implementation  */
+    DPNP_FN_CROSS,                    /**< Used in numpy.cross() implementation  */
     DPNP_FN_DEGREES,                  /**< Used in numpy.degrees() implementation  */
     DPNP_FN_DET,                      /**< Used in numpy.linalg.det() implementation  */
     DPNP_FN_DIVIDE,                   /**< Used in numpy.divide() implementation  */
@@ -161,6 +162,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_SUBTRACT,                 /**< Used in numpy.subtract() implementation  */
     DPNP_FN_SUM,                      /**< Used in numpy.sum() implementation  */
     DPNP_FN_SVD,                      /**< Used in numpy.linalg.svd() implementation  */
+    DPNP_FN_TAKE,                     /**< Used in numpy.take() implementation  */
     DPNP_FN_TAN,                      /**< Used in numpy.tan() implementation  */
     DPNP_FN_TANH,                     /**< Used in numpy.tanh() implementation  */
     DPNP_FN_TRANSPOSE,                /**< Used in numpy.transpose() implementation  */

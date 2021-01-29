@@ -158,6 +158,19 @@ INP_DLLEXPORT void dpnp_dot_c(void* array1, void* array2, void* result1, size_t 
 
 /**
  * @ingroup BACKEND_API
+ * @brief Custom implementation of cross function
+ *
+ * @param [in]  array1_in  First input array.
+ * @param [in]  array2_in  Second input array.
+ * @param [out] result1 Output array.
+ * @param [in]  size    Number of elements in input arrays.
+ *
+ */
+template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
+INP_DLLEXPORT void dpnp_cross_c(void* array1_in, void* array2_in, void* result1, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief Sum of array elements
  *
  * @param [in]  array  Input array.
@@ -392,6 +405,19 @@ INP_DLLEXPORT void dpnp_argmin_c(void* array, void* result, size_t size);
 template <typename _DataType, typename _ResultType>
 INP_DLLEXPORT void dpnp_std_c(
     void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of take function
+ *
+ * @param [in]  array   Input array with data.
+ * @param [in]  array   Input array with indices.
+ * @param [out] result  Output array with indeces.
+ * @param [in]  size    Number of elements in the input array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_take_c(
+    void* array, void* indices, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
