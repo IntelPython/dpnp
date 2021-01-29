@@ -556,6 +556,9 @@ tests/test_pocketfft.py::TestFFT1D::test_axes[fftn]
 tests/test_pocketfft.py::TestFFT1D::test_axes[ifftn]
 tests/test_pocketfft.py::TestFFT1D::test_axes[rfftn]
 tests/test_pocketfft.py::TestFFT1D::test_all_1d_norm_preserving
+tests/test_pocketfft.py::TestFFTThreadSafe::test_fft
+tests/test_pocketfft.py::TestFFTThreadSafe::test_ifft
+tests/test_pocketfft.py::TestFFTThreadSafe::test_rfft
 tests/test_randomstate_regression.py::TestRegression::test_logseries_convergence
 tests/test_regression.py::TestRegression::test_0d_string_scalar
 tests/test_regression.py::TestRegression::test_add_identity
