@@ -227,13 +227,13 @@ INP_DLLEXPORT void dpnp_sort_c(void* array, void* result, size_t size);
  * @ingroup BACKEND_API
  * @brief math library implementation of cholesky function
  *
- * @param [in]  array             Input array with data.
- * @param [out] result            Output array.
- * @param [in]  size              Number of elements in input arrays.
- * @param [in]  last_shape_elem   Last element of shape arrays.
+ * @param [in]  array       Input array with data.
+ * @param [out] result      Output array.
+ * @param [in]  size        Number of elements in input arrays.
+ * @param [in]  data_size   Last element of shape arrays.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_cholesky_c(void* array1_in, void* result1, size_t size, size_t last_shape_elem);
+INP_DLLEXPORT void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const size_t data_size);
 
 /**
  * @ingroup BACKEND_API
