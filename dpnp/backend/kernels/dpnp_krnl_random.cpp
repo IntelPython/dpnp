@@ -635,7 +635,26 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
         }
         else
         {
-            // TODO
+            // TODO rename
+            _DataType *uvec = nullptr;
+            /* noncentral_chisquare(1, nonc) ~ sqrt(nonc)*(-1)^[U<0.5] + Z */
+            mkl_rng::gaussian<_DataType> gaussian_distribution(d_zero, d_one);
+            event_out = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, uvec);
+            event_out.wait();
+
+            loc = sqrt(nonc);
+            uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+            if (uvec == nullptr)
+            {
+                throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
+            }
+            mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
+            event_out = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, uvec);
+            event_out.wait();
+
+            for(i=0; i<size; i++) result1[i] += (uvec[i] < 0.5) ? -loc : loc;
+
+            dpnp_memory_free_c(uvec);
         }
     }
     else
@@ -651,7 +670,6 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             /* res has chi^2 with (df - 1) */
             errcode = vdRngGamma(VSL_RNG_METHOD_GAMMA_GNORM_ACCURATE, get_rng_stream(), size, result1, shape,
                 d_zero, d_two);
-
             // TODO
             // refactor this check, smth like: void status_assert(errcode, VSL_STATUS_OK, func_name)
             // or just redesign and return int status:
