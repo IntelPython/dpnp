@@ -89,6 +89,7 @@ class dpnp_cross_c_kernel;
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
 void dpnp_cross_c(void* array1_in, void* array2_in, void* result1, size_t size)
 {
+    (void)size; // avoid warning unused variable
     _DataType_input1* array1 = reinterpret_cast<_DataType_input1*>(array1_in);
     _DataType_input2* array2 = reinterpret_cast<_DataType_input2*>(array2_in);
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
