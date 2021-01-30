@@ -17,6 +17,7 @@ def test_erf():
 
     numpy.testing.assert_array_equal(result, expected)
 
+
 def test_erf_fallback():
     a = numpy.linspace(2.0, 3.0, num=10)
 

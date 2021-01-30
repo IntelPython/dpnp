@@ -407,11 +407,8 @@ void dpnp_rng_lognormal_c(void* result, const _DataType mean, const _DataType st
 }
 
 template <typename _DataType>
-void dpnp_rng_multinomial_c(void* result,
-                            const int ntrial,
-                            const double* p_vector,
-                            const size_t p_vector_size,
-                            const size_t size)
+void dpnp_rng_multinomial_c(
+    void* result, const int ntrial, const double* p_vector, const size_t p_vector_size, const size_t size)
 {
     if (!size)
     {
