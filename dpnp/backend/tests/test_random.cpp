@@ -43,7 +43,8 @@ bool check_statistics(_DataType* r, double tM, double tD, double tQ, size_t size
     /***** Sample moments *****/
     sum = 0.0;
     sum2 = 0.0;
-    for (size_t i = 0; i < size; i++) {
+    for (size_t i = 0; i < size; i++)
+    {
         sum += (double)r[i];
         sum2 += (double)r[i] * (double)r[i];
     }
@@ -175,7 +176,8 @@ TEST(TestBackendRandomUniform, test_seed)
     }
 }
 
-TEST(TestBackendRandomUniform, test_statistics) {
+TEST(TestBackendRandomUniform, test_statistics)
+{
     const size_t size = 256;
     size_t seed = 10;
     long a = 1;
@@ -187,10 +189,10 @@ TEST(TestBackendRandomUniform, test_statistics) {
     double tD = ((b - a) * (b - a)) / 12.0;
     double tQ = ((b - a) * (b - a) * (b - a) * (b - a)) / 80.0;
 
-    auto QueueOptionsDevices = std::vector<QueueOptions>{ QueueOptions::CPU_SELECTOR,
-        QueueOptions::GPU_SELECTOR };
+    auto QueueOptionsDevices = std::vector<QueueOptions>{QueueOptions::CPU_SELECTOR, QueueOptions::GPU_SELECTOR};
 
-    for (auto device_selector : QueueOptionsDevices) {
+    for (auto device_selector : QueueOptionsDevices)
+    {
         dpnp_queue_initialize_c(device_selector);
         double* result = (double*)dpnp_memory_alloc_c(size * sizeof(double));
         dpnp_rng_srand_c(seed);
@@ -201,8 +203,8 @@ TEST(TestBackendRandomUniform, test_statistics) {
     }
 }
 
-TEST(TestBackendRandomSrand, test_func_ptr) {
-
+TEST(TestBackendRandomSrand, test_func_ptr)
+{
     void* fptr = nullptr;
     DPNPFuncData kernel_data = get_dpnp_function_ptr(
         DPNPFuncName::DPNP_FN_RNG_SRAND, DPNPFuncType::DPNP_FT_DOUBLE, DPNPFuncType::DPNP_FT_DOUBLE);

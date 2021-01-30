@@ -204,8 +204,7 @@ INP_DLLEXPORT void dpnp_rng_logistic_c(void* result, const double loc, double co
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_lognormal_c(void* result, const _DataType mean, const _DataType stddev,
-    const size_t size);
+INP_DLLEXPORT void dpnp_rng_lognormal_c(void* result, const _DataType mean, const _DataType stddev, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -218,8 +217,8 @@ INP_DLLEXPORT void dpnp_rng_lognormal_c(void* result, const _DataType mean, cons
  * @param [out] result        Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_multinomial_c(void* result, const int ntrial, const double* p_vector,
-    const size_t p_vector_size, const size_t size);
+INP_DLLEXPORT void dpnp_rng_multinomial_c(
+    void* result, const int ntrial, const double* p_vector, const size_t p_vector_size, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
