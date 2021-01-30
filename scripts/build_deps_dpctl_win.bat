@@ -31,6 +31,7 @@ call conda install -y %DPCTL_DIST%/win-64/%DPCTL_PACKAGE_NAME%
 cd ..
 echo +++++++++++++++++++++++++ cleanup DPCTL sources +++++++++++++++++++++++++++
 del /F/Q/S dpctl
+rmdir /Q/S dpctl
 
 dir /s/b "%ONEAPI_ROOT%\libDPCTLSyclInterface.so"
 
