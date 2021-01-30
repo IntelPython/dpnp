@@ -214,7 +214,7 @@ jobs:
       echo =================== conda build DPNP ===========================
       call conda list
       call python --version
-      call conda build conda-recipe -c intel
+      call conda build conda-recipe -c local -c intel
       mkdir dist
       echo ========== it doesn't work yet =========================
     displayName: build_conda
