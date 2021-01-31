@@ -175,14 +175,14 @@
 <dt id="dpnp.dparray.dparray">
 <em class="property">class </em><code class="sig-prename descclassname">dpnp.dparray.</code><code class="sig-name descname">dparray</code><a class="headerlink" href="#dpnp.dparray.dparray" title="Permalink to this definition">¶</a></dt>
 <dd><p>Multi-dimensional array using USM interface for an Intel GPU device.</p>
-<p>This class implements a subset of methods of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>.
+<p>This class implements a subset of methods of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>.
 The difference is that this class allocates the array content useing
 USM interface on the current GPU device.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>shape</strong> (<em>tuple of ints</em>) – Length of axes.</p></li>
-<li><p><strong>dtype</strong> – Data type. It must be an argument of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a>.</p></li>
+<li><p><strong>dtype</strong> – Data type. It must be an argument of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.21.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.dtype</span></code></a>.</p></li>
 <li><p><strong>memptr</strong> (<em>char *</em>) – Pointer to the array content head.</p></li>
 <li><p><strong>strides</strong> (<em>tuple of ints</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – Strides of data in memory.</p></li>
 <li><p><strong>order</strong> (<em>{'C'</em><em>, </em><em>'F'}</em>) – Row-major (C-style) or column-major (Fortran-style) order.</p></li>
@@ -192,7 +192,7 @@ USM interface on the current GPU device.</p>
 <dd class="field-even"><ul class="simple">
 <li><p><strong>base</strong> (<a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a><em> or </em><em>dpnp.dparray</em>) – Base array from which this array is created as a view.</p></li>
 <li><p><strong>data</strong> (<em>char *</em>) – Pointer to the array content head.</p></li>
-<li><p><a class="reference internal" href="#dpnp.dparray.dparray.dtype" title="dpnp.dparray.dparray.dtype"><strong>dtype</strong></a> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.19)"><em>numpy.dtype</em></a>) – <p>Dtype object of elements type.</p>
+<li><p><a class="reference internal" href="#dpnp.dparray.dparray.dtype" title="dpnp.dparray.dparray.dtype"><strong>dtype</strong></a> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v1.21.dev0)"><em>numpy.dtype</em></a>) – <p>Dtype object of elements type.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html">Data type objects (dtype)</a></p>
@@ -202,7 +202,7 @@ USM interface on the current GPU device.</p>
 <p>This is equivalent to product over the shape tuple.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.size.html#numpy.ndarray.size" title="(in NumPy v1.19)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">numpy.ndarray.size</span></code></a></p>
+<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.size.html#numpy.ndarray.size" title="(in NumPy v1.21.dev0)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">numpy.ndarray.size</span></code></a></p>
 </div>
 </p></li>
 </ul>
@@ -230,7 +230,7 @@ x.__setitem__(key, value) &lt;==&gt; x[key] = value</p>
 Equivalent to shape[0] and also equal to size only for one-dimensional arrays.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.__len__.html#numpy.ndarray.__len__" title="(in NumPy v1.19)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">numpy.ndarray.__len__</span></code></a></p>
+<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.__len__.html#numpy.ndarray.__len__" title="(in NumPy v1.21.dev0)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">numpy.ndarray.__len__</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -253,7 +253,7 @@ Equivalent to shape[0] and also equal to size only for one-dimensional arrays.</
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.all.html#numpy.all" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.all</span></code></a></dt><dd><p>equivalent function</p>
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.all.html#numpy.all" title="(in NumPy v1.21.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.all</span></code></a></dt><dd><p>equivalent function</p>
 </dd>
 </dl>
 </div>
@@ -267,7 +267,7 @@ Equivalent to shape[0] and also equal to size only for one-dimensional arrays.</
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.any.html#numpy.any" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.any</span></code></a></dt><dd><p>equivalent function</p>
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.any.html#numpy.any" title="(in NumPy v1.21.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.any</span></code></a></dt><dd><p>equivalent function</p>
 </dd>
 </dl>
 </div>
@@ -369,7 +369,7 @@ In other words, <code class="docutils literal notranslate"><span class="pre">a[i
 </dd>
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.lexsort</span></code></dt><dd><p>Indirect stable sort with multiple keys.</p>
 </dd>
-<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.sort.html#numpy.ndarray.sort" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.sort</span></code></a></dt><dd><p>Inplace sort.</p>
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.sort.html#numpy.ndarray.sort" title="(in NumPy v1.21.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.sort</span></code></a></dt><dd><p>Inplace sort.</p>
 </dd>
 </dl>
 </div>
@@ -403,7 +403,7 @@ Otherwise, it returns a (possibly casted) copy of the array.</p>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.astype.html#numpy.ndarray.astype" title="(in NumPy v1.19)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.astype()</span></code></a></p>
+<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.astype.html#numpy.ndarray.astype" title="(in NumPy v1.21.dev0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.astype()</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -417,14 +417,14 @@ Otherwise, it returns a (possibly casted) copy of the array.</p>
 <dt id="dpnp.dparray.dparray.conj">
 <code class="sig-name descname">conj</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.conj" title="Permalink to this definition">¶</a></dt>
 <dd><p>Complex-conjugate all elements.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.conj.html#numpy.ndarray.conj" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.conj</span></code></a>.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.conj.html#numpy.ndarray.conj" title="(in NumPy v1.21.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.conj</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.conjugate">
 <code class="sig-name descname">conjugate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.conjugate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the complex conjugate, element-wise.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.conjugate.html#numpy.ndarray.conjugate" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.conjugate</span></code></a>.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.conjugate.html#numpy.ndarray.conjugate" title="(in NumPy v1.21.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.conjugate</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -483,7 +483,7 @@ Otherwise, it returns a (possibly casted) copy of the array.</p>
 <dt id="dpnp.dparray.dparray.item">
 <code class="sig-name descname">item</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.item" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copy an element of an array to a standard Python scalar and return it.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.item.html#numpy.ndarray.item" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.item</span></code></a>.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.item.html#numpy.ndarray.item" title="(in NumPy v1.21.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.item</span></code></a>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
@@ -556,7 +556,7 @@ For example, <code class="docutils literal notranslate"><span class="pre">a.resh
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="dpnp.repeat.html#dpnp.repeat" title="dpnp.repeat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.repeat</span></code></a> for full documentation,
-<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.repeat.html#numpy.ndarray.repeat" title="(in NumPy v1.19)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.repeat()</span></code></a></p>
+<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.repeat.html#numpy.ndarray.repeat" title="(in NumPy v1.21.dev0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.repeat()</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -566,7 +566,7 @@ For example, <code class="docutils literal notranslate"><span class="pre">a.resh
 <dd><p>Change the shape of the array.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.reshape.html#numpy.ndarray.reshape" title="(in NumPy v1.19)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.reshape()</span></code></a></p>
+<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.reshape.html#numpy.ndarray.reshape" title="(in NumPy v1.21.dev0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.reshape()</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -606,7 +606,7 @@ include all of the fields.</p></li>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.sort.html#numpy.ndarray.sort" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.sort</span></code></a></dt><dd><p>Method to sort an array in-place.</p>
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.sort.html#numpy.ndarray.sort" title="(in NumPy v1.21.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.sort</span></code></a></dt><dd><p>Method to sort an array in-place.</p>
 </dd>
 <dt><a class="reference internal" href="dpnp.argsort.html#dpnp.argsort" title="dpnp.argsort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.argsort</span></code></a></dt><dd><p>Indirect sort.</p>
 </dd>
@@ -655,7 +655,7 @@ include all of the fields.</p></li>
 <dt id="dpnp.dparray.dparray.tobytes">
 <code class="sig-name descname">tobytes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.tobytes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct Python bytes containing the raw data bytes in the array.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.tobytes.html#numpy.ndarray.tobytes" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.tobytes</span></code></a>.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.tobytes.html#numpy.ndarray.tobytes" title="(in NumPy v1.21.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.tobytes</span></code></a>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;&lt;u2&#39;</span><span class="p">)</span>
@@ -669,14 +669,14 @@ include all of the fields.</p></li>
 <dt id="dpnp.dparray.dparray.tofile">
 <code class="sig-name descname">tofile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.tofile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write array to a file as text or binary (default).</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.tofile.html#numpy.ndarray.tofile" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.tofile</span></code></a>.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.tofile.html#numpy.ndarray.tofile" title="(in NumPy v1.21.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.tofile</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.tolist">
 <code class="sig-name descname">tolist</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.tolist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the array as an <code class="docutils literal notranslate"><span class="pre">a.ndim</span></code>-levels deep nested list of Python scalars.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.tolist.html#numpy.ndarray.tolist" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.tolist</span></code></a>.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.tolist.html#numpy.ndarray.tolist" title="(in NumPy v1.21.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.tolist</span></code></a>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="go">For a 1D array, ``a.tolist()`` is almost the same as ``list(a)``,</span>
@@ -721,7 +721,7 @@ include all of the fields.</p></li>
 <code class="sig-name descname">tostring</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.tostring" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct Python bytes containing the raw data bytes in the array.</p>
 <p>This function is a compatibility alias for tobytes. Despite its name it returns bytes not strings.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.tostring.html#numpy.ndarray.tostring" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.tostring</span></code></a>.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.tostring.html#numpy.ndarray.tostring" title="(in NumPy v1.21.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.tostring</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -731,7 +731,7 @@ include all of the fields.</p></li>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="dpnp.transpose.html#dpnp.transpose" title="dpnp.transpose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.transpose</span></code></a> for full documentation,
-<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.reshape.html#numpy.ndarray.reshape" title="(in NumPy v1.19)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.reshape()</span></code></a></p>
+<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.reshape.html#numpy.ndarray.reshape" title="(in NumPy v1.21.dev0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.reshape()</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -745,9 +745,9 @@ finite will be masked.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.var.html#numpy.ndarray.var" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.var</span></code></a></dt><dd><p>corresponding function for ndarrays</p>
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.var.html#numpy.ndarray.var" title="(in NumPy v1.21.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.var</span></code></a></dt><dd><p>corresponding function for ndarrays</p>
 </dd>
-<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.var.html#numpy.var" title="(in NumPy v1.19)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.var</span></code></a></dt><dd><p>Equivalent function</p>
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.var.html#numpy.var" title="(in NumPy v1.21.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.var</span></code></a></dt><dd><p>Equivalent function</p>
 </dd>
 </dl>
 </div>
@@ -811,7 +811,7 @@ finite will be masked.</p>
 All of these are read-only. Accessing by indexes is also supported.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.flags.html#numpy.ndarray.flags" title="(in NumPy v1.19)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">numpy.ndarray.flags</span></code></a></p>
+<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.flags.html#numpy.ndarray.flags" title="(in NumPy v1.21.dev0)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">numpy.ndarray.flags</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -827,7 +827,7 @@ All of these are read-only. Accessing by indexes is also supported.</p>
 <dd><p>Size of each element in bytes.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.itemsize.html#numpy.ndarray.itemsize" title="(in NumPy v1.19)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">numpy.ndarray.itemsize</span></code></a></p>
+<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.itemsize.html#numpy.ndarray.itemsize" title="(in NumPy v1.21.dev0)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">numpy.ndarray.itemsize</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -838,7 +838,7 @@ All of these are read-only. Accessing by indexes is also supported.</p>
 <p>It does not count strides or alignment of elements.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.nbytes.html#numpy.ndarray.nbytes" title="(in NumPy v1.19)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">numpy.ndarray.nbytes</span></code></a></p>
+<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.nbytes.html#numpy.ndarray.nbytes" title="(in NumPy v1.21.dev0)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">numpy.ndarray.nbytes</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -849,7 +849,7 @@ All of these are read-only. Accessing by indexes is also supported.</p>
 <p><code class="docutils literal notranslate"><span class="pre">a.ndim</span></code> is equivalent to <code class="docutils literal notranslate"><span class="pre">len(a.shape)</span></code>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.ndim.html#numpy.ndarray.ndim" title="(in NumPy v1.19)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">numpy.ndarray.ndim</span></code></a></p>
+<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.ndim.html#numpy.ndarray.ndim" title="(in NumPy v1.21.dev0)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">numpy.ndarray.ndim</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -867,7 +867,7 @@ cannot be reshaped without copy, it raises an exception.</p>
 <dd><p>Number of elements in the array.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.size.html#numpy.ndarray.size" title="(in NumPy v1.19)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">numpy.ndarray.size</span></code></a></p>
+<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.size.html#numpy.ndarray.size" title="(in NumPy v1.21.dev0)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">numpy.ndarray.size</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -877,7 +877,7 @@ cannot be reshaped without copy, it raises an exception.</p>
 <dd><p>Strides of axes in bytes.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.strides.html#numpy.ndarray.strides" title="(in NumPy v1.19)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">numpy.ndarray.strides</span></code></a></p>
+<p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.strides.html#numpy.ndarray.strides" title="(in NumPy v1.21.dev0)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">numpy.ndarray.strides</span></code></a></p>
 </div>
 </dd></dl>
 
