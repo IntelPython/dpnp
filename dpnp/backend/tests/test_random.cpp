@@ -26,10 +26,72 @@
 #include <dpnp_iface.hpp>
 #include <dpnp_iface_fptr.hpp>
 
+#include <iostream>
+
 #include <math.h>
 #include <vector>
 
 #include "gtest/gtest.h"
+
+// TODO add namespace
+class DPNPTestEnvironment : public testing::Environment {
+public:
+    DPNPTestEnvironment(QueueOptions selection) {
+        this->selection = selection;
+    }
+    void SetUp() override {
+        // TODO update print
+        std::cout << "starting new env" << std::endl << std::endl;
+        dpnp_queue_initialize_c(selection);
+    }
+    void TearDown() override {}
+private:
+    QueueOptions selection;
+};
+
+int RunAllTests(DPNPTestEnvironment* env) {
+    // testing::internal::GetUnitTestImpl()->ClearAdHocTestResult();
+    // It returns 0 if all tests are successful, or 1 otherwise.
+    return RUN_ALL_TESTS();
+}
+
+// TODO
+// * data management will be redesigned: allocation as chars (and casting on teste suits)
+// * this class will be generlized
+class RandomTestCase : public ::testing::Test {
+public:
+    static void SetUpTestCase() {
+        _get_device_mem();
+    }
+
+    static void TearDownTestCase() {
+        dpnp_memory_free_c(result1);
+        result1 = result2 = nullptr;
+    }
+
+    void SetUp() override {
+        for (size_t i = 0; i < size; ++i) {
+            result1[i] = 1; result2[i] = 0;
+        }
+    }
+
+    void TearDown() override {}
+
+private:
+    static void _get_device_mem() {
+        result1 = (double*)dpnp_memory_alloc_c(size * 2 * sizeof(double));
+        result2 = result1 + size;
+    }
+
+protected:
+    static size_t size;
+    static double* result1;
+    static double* result2;
+};
+
+double* RandomTestCase::result1 = nullptr;
+double* RandomTestCase::result2 = nullptr;
+size_t RandomTestCase::size = 10;
 
 template <typename _DataType>
 bool check_statistics(_DataType* r, double tM, double tD, double tQ, size_t size)
@@ -63,115 +125,71 @@ bool check_statistics(_DataType* r, double tM, double tD, double tQ, size_t size
         return true;
 }
 
-TEST(TestBackendRandomBeta, test_seed)
-{
-    const size_t size = 256;
-    size_t seed = 10;
-    double a = 0.4;
-    double b = 0.5;
+TEST_F(RandomTestCase, rng_beta_test_seed) {
+    const size_t seed = 10;
+    const double a = 0.4;
+    const double b = 0.5;
 
-    auto QueueOptionsDevices = std::vector<QueueOptions>{QueueOptions::CPU_SELECTOR, QueueOptions::GPU_SELECTOR};
+    dpnp_rng_srand_c(seed);
+    dpnp_rng_beta_c<double>(result1, a, b, size);
 
-    for (auto device_selector : QueueOptionsDevices)
+    dpnp_rng_srand_c(seed);
+    dpnp_rng_beta_c<double>(result2, a, b, size);
+
+    for (size_t i = 0; i < size; ++i)
     {
-        dpnp_queue_initialize_c(device_selector);
-        double* result1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-        double* result2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-
-        dpnp_rng_srand_c(seed);
-        dpnp_rng_beta_c<double>(result1, a, b, size);
-
-        dpnp_rng_srand_c(seed);
-        dpnp_rng_beta_c<double>(result2, a, b, size);
-
-        for (size_t i = 0; i < size; ++i)
-        {
-            EXPECT_NEAR(result1[i], result2[i], 0.004);
-        }
+        EXPECT_NEAR(result1[i], result2[i], 0.004);
     }
 }
 
-TEST(TestBackendRandomF, test_seed)
-{
-    const size_t size = 256;
-    size_t seed = 10;
-    double dfnum = 10.4;
-    double dfden = 12.5;
+TEST_F(RandomTestCase, rng_f_test_seed) {
+    const size_t seed = 10;
+    const double dfnum = 10.4;
+    const double dfden = 12.5;
 
-    auto QueueOptionsDevices = std::vector<QueueOptions>{QueueOptions::CPU_SELECTOR, QueueOptions::GPU_SELECTOR};
+    dpnp_rng_srand_c(seed);
+    dpnp_rng_f_c<double>(result1, dfnum, dfden, size);
 
-    for (auto device_selector : QueueOptionsDevices)
+    dpnp_rng_srand_c(seed);
+    dpnp_rng_f_c<double>(result2, dfnum, dfden, size);
+
+    for (size_t i = 0; i < size; ++i)
     {
-        dpnp_queue_initialize_c(device_selector);
-        double* result1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-        double* result2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-
-        dpnp_rng_srand_c(seed);
-        dpnp_rng_f_c<double>(result1, dfnum, dfden, size);
-
-        dpnp_rng_srand_c(seed);
-        dpnp_rng_f_c<double>(result2, dfnum, dfden, size);
-
-        for (size_t i = 0; i < size; ++i)
-        {
-            EXPECT_NEAR(result1[i], result2[i], 0.004);
-        }
+        EXPECT_NEAR(result1[i], result2[i], 0.004);
     }
 }
 
-TEST(TestBackendRandomNormal, test_seed)
-{
-    const size_t size = 256;
-    size_t seed = 10;
-    double loc = 2.56;
-    double scale = 0.8;
+TEST_F(RandomTestCase, rng_normal_test_seed) {
+    const size_t seed = 10;
+    const double loc = 2.56;
+    const double scale = 0.8;
 
-    auto QueueOptionsDevices = std::vector<QueueOptions>{QueueOptions::CPU_SELECTOR, QueueOptions::GPU_SELECTOR};
+    dpnp_rng_srand_c(seed);
+    dpnp_rng_normal_c<double>(result1, loc, scale, size);
 
-    for (auto device_selector : QueueOptionsDevices)
+    dpnp_rng_srand_c(seed);
+    dpnp_rng_normal_c<double>(result2, loc, scale, size);
+
+    for (size_t i = 0; i < size; ++i)
     {
-        dpnp_queue_initialize_c(device_selector);
-        double* result1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-        double* result2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-
-        dpnp_rng_srand_c(seed);
-        dpnp_rng_normal_c<double>(result1, loc, scale, size);
-
-        dpnp_rng_srand_c(seed);
-        dpnp_rng_normal_c<double>(result2, loc, scale, size);
-
-        for (size_t i = 0; i < size; ++i)
-        {
-            EXPECT_NEAR(result1[i], result2[i], 0.004);
-        }
+        EXPECT_NEAR(result1[i], result2[i], 0.004);
     }
 }
 
-TEST(TestBackendRandomUniform, test_seed)
-{
-    const size_t size = 256;
-    size_t seed = 10;
-    long low = 1;
-    long high = 120;
+TEST_F(RandomTestCase, rng_uniform_test_seed) {
+    const size_t seed = 10;
+    const long low = 1;
+    const long high = 120;
 
-    auto QueueOptionsDevices = std::vector<QueueOptions>{QueueOptions::CPU_SELECTOR, QueueOptions::GPU_SELECTOR};
+    dpnp_rng_srand_c(seed);
+    dpnp_rng_uniform_c<double>(result1, low, high, size);
 
-    for (auto device_selector : QueueOptionsDevices)
+    dpnp_rng_srand_c(seed);
+    dpnp_rng_uniform_c<double>(result2, low, high, size);
+
+    for (size_t i = 0; i < size; ++i)
     {
-        dpnp_queue_initialize_c(device_selector);
-        double* result1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-        double* result2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-
-        dpnp_rng_srand_c(seed);
-        dpnp_rng_uniform_c<double>(result1, low, high, size);
-
-        dpnp_rng_srand_c(seed);
-        dpnp_rng_uniform_c<double>(result2, low, high, size);
-
-        for (size_t i = 0; i < size; ++i)
-        {
-            EXPECT_NEAR(result1[i], result2[i], 0.004);
-        }
+        EXPECT_NEAR(result1[i], result2[i], 0.004);
     }
 }
 
@@ -187,20 +205,16 @@ TEST(TestBackendRandomUniform, test_statistics) {
     double tD = ((b - a) * (b - a)) / 12.0;
     double tQ = ((b - a) * (b - a) * (b - a) * (b - a)) / 80.0;
 
-    auto QueueOptionsDevices = std::vector<QueueOptions>{ QueueOptions::CPU_SELECTOR,
-        QueueOptions::GPU_SELECTOR };
-
-    for (auto device_selector : QueueOptionsDevices) {
-        dpnp_queue_initialize_c(device_selector);
-        double* result = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-        dpnp_rng_srand_c(seed);
-        dpnp_rng_uniform_c<double>(result, a, b, size);
-        check_statistics_res = check_statistics<double>(result, tM, tD, tQ, size);
-
-        ASSERT_TRUE(check_statistics_res);
-    }
+    double* result = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+    dpnp_rng_srand_c(seed);
+    dpnp_rng_uniform_c<double>(result, a, b, size);
+    check_statistics_res = check_statistics<double>(result, tM, tD, tQ, size);
+    ASSERT_TRUE(check_statistics_res);
+    dpnp_memory_free_c(result);
 }
 
+// TODO:
+// Generalization for all DPNPFuncName
 TEST(TestBackendRandomSrand, test_func_ptr) {
 
     void* fptr = nullptr;
@@ -208,15 +222,28 @@ TEST(TestBackendRandomSrand, test_func_ptr) {
         DPNPFuncName::DPNP_FN_RNG_SRAND, DPNPFuncType::DPNP_FT_DOUBLE, DPNPFuncType::DPNP_FT_DOUBLE);
 
     fptr = get_dpnp_function_ptr1(kernel_data.return_type,
-                                  DPNPFuncName::DPNP_FN_RNG_SRAND,
-                                  DPNPFuncType::DPNP_FT_DOUBLE,
-                                  DPNPFuncType::DPNP_FT_DOUBLE);
+        DPNPFuncName::DPNP_FN_RNG_SRAND,
+        DPNPFuncType::DPNP_FT_DOUBLE,
+        DPNPFuncType::DPNP_FT_DOUBLE);
 
     EXPECT_TRUE(fptr != nullptr);
 }
 
 int main(int argc, char** argv)
 {
+    int run_status = 0;
     ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+    auto QueueOptionsDevices = std::vector<QueueOptions>{ QueueOptions::CPU_SELECTOR, QueueOptions::GPU_SELECTOR };
+    std::vector<int> status(4, 100);
+    for (auto device_selector : QueueOptionsDevices)
+    {
+        int status;
+        // TODO adding disabled tests for each envs (GPU/CPU queue)
+        // currently all tests are OK for both devices
+        DPNPTestEnvironment* const env = new DPNPTestEnvironment(device_selector);
+        testing::AddGlobalTestEnvironment(env);
+        status = RunAllTests(env);
+        if (status != 0) run_status = status;
+    }
+    return run_status;
 }
