@@ -34,7 +34,6 @@
 namespace mkl_blas = oneapi::mkl::blas::row_major;
 namespace mkl_lapack = oneapi::mkl::lapack;
 
-
 template <typename _DataType>
 void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const size_t data_size)
 {
@@ -53,7 +52,6 @@ void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const si
         for (size_t t = 0; t < data_size * data_size; ++t)
         {
             matrix[t] = in_array[k * (data_size * data_size) + t];
-
         }
 
         for (size_t it = 0; it < data_size * data_size; ++it)
@@ -65,18 +63,12 @@ void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const si
 
         const std::int64_t lda = std::max<size_t>(1UL, n);
 
-        const std::int64_t scratchpad_size = mkl_lapack::potrf_scratchpad_size<_DataType>(
-            DPNP_QUEUE, oneapi::mkl::uplo::upper, n, lda);
+        const std::int64_t scratchpad_size =
+            mkl_lapack::potrf_scratchpad_size<_DataType>(DPNP_QUEUE, oneapi::mkl::uplo::upper, n, lda);
 
         _DataType* scratchpad = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(_DataType)));
 
-        event = mkl_lapack::potrf(DPNP_QUEUE,
-                                  oneapi::mkl::uplo::upper,
-                                  n,
-                                  result_,
-                                  lda,
-                                  scratchpad,
-                                  scratchpad_size);
+        event = mkl_lapack::potrf(DPNP_QUEUE, oneapi::mkl::uplo::upper, n, result_, lda, scratchpad, scratchpad_size);
 
         event.wait();
 
@@ -101,11 +93,8 @@ void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const si
         for (size_t t = 0; t < data_size * data_size; ++t)
         {
             result[k * (data_size * data_size) + t] = result_[t];
-
         }
-
     }
-
 }
 
 template <typename _DataType>
