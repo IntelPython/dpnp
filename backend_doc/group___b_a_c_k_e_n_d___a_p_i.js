@@ -21,7 +21,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_bitwise_xor_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga3debb972289017e124255cf8af35fc8a", null ],
     [ "dpnp_cbrt_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga1c46a27841ac0c609fb6d83743921d4a", null ],
     [ "dpnp_ceil_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga195a1ff42f4243c2cc4315447694f89e", null ],
-    [ "dpnp_cholesky_c", "group___b_a_c_k_e_n_d___a_p_i.html#gae6e3bac04efae6118fb1693c93d88dd3", null ],
+    [ "dpnp_cholesky_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga50ca891db6a5ed22872f1379b6257336", null ],
     [ "dpnp_conjugate_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga5171957071778a1384c1592cf3968234", null ],
     [ "dpnp_copy_c", "group___b_a_c_k_e_n_d___a_p_i.html#gac7b853ef3509cb2369f7f8a8cadb7fe5", null ],
     [ "dpnp_copysign_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga39edd898cb8d14b81142e150b4c5c1bd", null ],

@@ -399,10 +399,10 @@ Functions</h2></td></tr>
 <tr class="memitem:ga432d73a771f6b64f5e2a47325c044858"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga432d73a771f6b64f5e2a47325c044858">dpnp_sort_c</a> (void *array, void *result, size_t size)</td></tr>
 <tr class="memdesc:ga432d73a771f6b64f5e2a47325c044858"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of sort function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga432d73a771f6b64f5e2a47325c044858">More...</a><br /></td></tr>
 <tr class="separator:ga432d73a771f6b64f5e2a47325c044858"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae6e3bac04efae6118fb1693c93d88dd3"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
-<tr class="memitem:gae6e3bac04efae6118fb1693c93d88dd3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gae6e3bac04efae6118fb1693c93d88dd3">dpnp_cholesky_c</a> (void *array1_in, void *result1, size_t *shape)</td></tr>
-<tr class="memdesc:gae6e3bac04efae6118fb1693c93d88dd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of cholesky function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gae6e3bac04efae6118fb1693c93d88dd3">More...</a><br /></td></tr>
-<tr class="separator:gae6e3bac04efae6118fb1693c93d88dd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga50ca891db6a5ed22872f1379b6257336"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
+<tr class="memitem:ga50ca891db6a5ed22872f1379b6257336"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga50ca891db6a5ed22872f1379b6257336">dpnp_cholesky_c</a> (void *array1_in, void *result1, const size_t size, const size_t data_size)</td></tr>
+<tr class="memdesc:ga50ca891db6a5ed22872f1379b6257336"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of cholesky function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga50ca891db6a5ed22872f1379b6257336">More...</a><br /></td></tr>
+<tr class="separator:ga50ca891db6a5ed22872f1379b6257336"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9b6e2531e5d23aa6fd1901cba9040127"><td class="memTemplParams" colspan="2">template&lt;typename _DataType_input1 , typename _DataType_input2 , typename _DataType_output &gt; </td></tr>
 <tr class="memitem:ga9b6e2531e5d23aa6fd1901cba9040127"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga9b6e2531e5d23aa6fd1901cba9040127">dpnp_correlate_c</a> (void *array1_in, void *array2_in, void *result, size_t size)</td></tr>
 <tr class="memdesc:ga9b6e2531e5d23aa6fd1901cba9040127"><td class="mdescLeft">&#160;</td><td class="mdescRight">correlate function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga9b6e2531e5d23aa6fd1901cba9040127">More...</a><br /></td></tr>
@@ -1418,8 +1418,8 @@ template&lt;typename _DataType_input , typename _DataType_output &gt; </div>
 
 </div>
 </div>
-<a id="gae6e3bac04efae6118fb1693c93d88dd3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gae6e3bac04efae6118fb1693c93d88dd3">&#9670;&nbsp;</a></span>dpnp_cholesky_c()</h2>
+<a id="ga50ca891db6a5ed22872f1379b6257336"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga50ca891db6a5ed22872f1379b6257336">&#9670;&nbsp;</a></span>dpnp_cholesky_c()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1441,8 +1441,14 @@ template&lt;typename _DataType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">size_t *&#160;</td>
-          <td class="paramname"><em>shape</em>&#160;</td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>data_size</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1457,7 +1463,8 @@ template&lt;typename _DataType &gt; </div>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">array</td><td>Input array with data. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">shape</td><td>Shape of input array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in input arrays. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">data_size</td><td>Last element of shape arrays. </td></tr>
   </table>
   </dd>
 </dl>
