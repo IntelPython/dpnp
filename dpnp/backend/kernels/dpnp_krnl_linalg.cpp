@@ -34,47 +34,78 @@
 namespace mkl_blas = oneapi::mkl::blas::row_major;
 namespace mkl_lapack = oneapi::mkl::lapack;
 
-template <typename _DataType>
-class dpnp_cholesky_c_kernel;
 
 template <typename _DataType>
-void dpnp_cholesky_c(void* array1_in, void* result1, size_t* shape)
+void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const size_t data_size)
 {
-    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
-    _DataType* l_result = reinterpret_cast<_DataType*>(result1);
+    cl::sycl::event event;
 
-    size_t n = shape[0];
+    _DataType* in_array = reinterpret_cast<_DataType*>(array1_in);
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    l_result[0] = sqrt(array_1[0]);
+    size_t iters = size / (data_size * data_size);
 
-    for (size_t j = 1; j < n; j++)
+    for (size_t k = 0; k < iters; ++k)
     {
-        l_result[j * n] = array_1[j * n] / l_result[0];
-    }
+        _DataType matrix[data_size * data_size];
+        _DataType result_[data_size * data_size];
 
-    for (size_t i = 1; i < n; i++)
-    {
-        _DataType sum_val = 0;
-        for (size_t p = 0; p < i - 1; p++)
+        for (size_t t = 0; t < data_size * data_size; ++t)
         {
-            sum_val += l_result[i * n + p - 1] * l_result[i * n + p - 1];
+            matrix[t] = in_array[k * (data_size * data_size) + t];
+
         }
-        l_result[i * n + i - 1] = sqrt(array_1[i * n + i - 1] - sum_val);
-    }
 
-    for (size_t i = 1; i < n - 1; i++)
-    {
-        for (size_t j = i; j < n; j++)
+        for (size_t it = 0; it < data_size * data_size; ++it)
         {
-            _DataType sum_val = 0;
-            for (size_t p = 0; p < i - 1; p++)
+            result_[it] = matrix[it];
+        }
+
+        const std::int64_t n = data_size;
+
+        const std::int64_t lda = std::max<size_t>(1UL, n);
+
+        const std::int64_t scratchpad_size = mkl_lapack::potrf_scratchpad_size<_DataType>(
+            DPNP_QUEUE, oneapi::mkl::uplo::upper, n, lda);
+
+        _DataType* scratchpad = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(_DataType)));
+
+        event = mkl_lapack::potrf(DPNP_QUEUE,
+                                  oneapi::mkl::uplo::upper,
+                                  n,
+                                  result_,
+                                  lda,
+                                  scratchpad,
+                                  scratchpad_size);
+
+        event.wait();
+
+        for (size_t i = 0; i < data_size; i++)
+        {
+            bool arg = false;
+            for (size_t j = 0; j < data_size; j++)
             {
-                sum_val += l_result[i * n + p - 1] * l_result[j * n + p - 1];
+                if (i == j - 1)
+                {
+                    arg = true;
+                }
+                if (arg)
+                {
+                    result_[i * data_size + j] = 0;
+                }
             }
-            l_result[j * n + i - 1] = (1 / l_result[i * n + i - 1]) * (array_1[j * n + i - 1] - sum_val);
         }
+
+        dpnp_memory_free_c(scratchpad);
+
+        for (size_t t = 0; t < data_size * data_size; ++t)
+        {
+            result[k * (data_size * data_size) + t] = result_[t];
+
+        }
+
     }
-    return;
+
 }
 
 template <typename _DataType>
@@ -431,8 +462,6 @@ void dpnp_svd_c(void* array1_in, void* result1, void* result2, void* result3, si
 
 void func_map_init_linalg_func(func_map_t& fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_cholesky_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_cholesky_c<long>};
     fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_cholesky_c<float>};
     fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_cholesky_c<double>};
 
