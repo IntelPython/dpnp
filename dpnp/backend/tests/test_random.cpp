@@ -34,6 +34,7 @@
 #include "gtest/gtest.h"
 
 // TODO add namespace
+// will added for test_commons
 class DPNPTestEnvironment : public testing::Environment {
 public:
     DPNPTestEnvironment(QueueOptions selection) {
@@ -231,19 +232,23 @@ TEST(TestBackendRandomSrand, test_func_ptr) {
 
 int main(int argc, char** argv)
 {
-    int run_status = 0;
     ::testing::InitGoogleTest(&argc, argv);
-    auto QueueOptionsDevices = std::vector<QueueOptions>{ QueueOptions::CPU_SELECTOR, QueueOptions::GPU_SELECTOR };
-    std::vector<int> status(4, 100);
-    for (auto device_selector : QueueOptionsDevices)
-    {
-        int status;
-        // TODO adding disabled tests for each envs (GPU/CPU queue)
-        // currently all tests are OK for both devices
-        DPNPTestEnvironment* const env = new DPNPTestEnvironment(device_selector);
-        testing::AddGlobalTestEnvironment(env);
-        status = RunAllTests(env);
-        if (status != 0) run_status = status;
-    }
-    return run_status;
+
+    // currently using global queue
+    //int run_status = 0;
+    // auto QueueOptionsDevices = std::vector<QueueOptions>{ QueueOptions::CPU_SELECTOR, QueueOptions::GPU_SELECTOR };
+    // for (auto device_selector : QueueOptionsDevices)
+    // {
+    //     int status;
+    //     // TODO adding disabled tests for each envs (GPU/CPU queue)
+    //     // currently all tests are OK for both devices
+    //     DPNPTestEnvironment* const env = new DPNPTestEnvironment(device_selector);
+    //     testing::AddGlobalTestEnvironment(env);
+    //     status = RunAllTests(env);
+    //     if (status != 0) run_status = status;
+    // }
+    // return run_status;
+
+    // It returns 0 if all tests are successful, or 1 otherwise.
+    return RUN_ALL_TESTS();
 }
