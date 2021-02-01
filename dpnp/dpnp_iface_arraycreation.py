@@ -612,15 +612,16 @@ def full(shape, fill_value, dtype=None, order='C'):
 
     """
 
-    if (not use_origin_backend()):
-        if order not in ('C', 'c', None):
-            checker_throw_value_error("full", "order", order, 'C')
+    if not use_origin_backend():
+        if order != 'C':
+            pass
+        else:
+            if dtype is None:
+                dtype = numpy.array(fill_value).dtype.type
 
-        _dtype = dtype if dtype is not None else type(fill_value)
+            return dpnp_full(shape, fill_value, dtype)
 
-        return dpnp_init_val(shape, _dtype, fill_value)
-
-    return numpy.full(shape, fill_value, dtype, order)
+    return call_origin(numpy.full, shape, fill_value, dtype, order)
 
 
 # numpy.full_like(a, fill_value, dtype=None, order='K', subok=True, shape=None)
