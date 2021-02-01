@@ -219,6 +219,11 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
     {                                                                                                                  \
         cl::sycl::event event;                                                                                         \
                                                                                                                        \
+        if (!size)                                                                                                     \
+        {                                                                                                              \
+            return;                                                                                                    \
+        }                                                                                                              \
+                                                                                                                       \
         _DataType* array1 = reinterpret_cast<_DataType*>(array1_in);                                                   \
         _DataType* result = reinterpret_cast<_DataType*>(result1);                                                     \
                                                                                                                        \
