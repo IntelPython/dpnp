@@ -57,12 +57,14 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_COS
         DPNP_FN_COSH
         DPNP_FN_COV
+        DPNP_FN_CROSS
         DPNP_FN_DEGREES
         DPNP_FN_DET
         DPNP_FN_DIVIDE
         DPNP_FN_DOT
         DPNP_FN_EIG
         DPNP_FN_EIGVALS
+        DPNP_FN_ERF
         DPNP_FN_EXP
         DPNP_FN_EXP2
         DPNP_FN_EXPM1
@@ -135,6 +137,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_SUBTRACT
         DPNP_FN_SUM
         DPNP_FN_SVD
+        DPNP_FN_TAKE
         DPNP_FN_TAN
         DPNP_FN_TANH
         DPNP_FN_TRANSPOSE

@@ -235,7 +235,7 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
             cgh.parallel_for<class __name__##_kernel<_DataType>>(gws, kernel_parallel_for_func);                       \
         };                                                                                                             \
                                                                                                                        \
-        if constexpr (std::is_same<_DataType, double>::value)                                                          \
+        if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)                 \
         {                                                                                                              \
             event = __operation2__;                                                                                    \
         }                                                                                                              \
@@ -302,6 +302,11 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_COPY][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_copy_c<float>};
     fmap[DPNPFuncName::DPNP_FN_COPY][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_copy_c<double>};
     fmap[DPNPFuncName::DPNP_FN_COPY][eft_C128][eft_C128] = {eft_C128, (void*)dpnp_copy_c<std::complex<double>>};
+
+    fmap[DPNPFuncName::DPNP_FN_ERF][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_erf_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_ERF][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_erf_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_ERF][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_erf_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_ERF][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_erf_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RECIP][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_recip_c<int>};
     fmap[DPNPFuncName::DPNP_FN_RECIP][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_recip_c<long>};
