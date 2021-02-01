@@ -62,8 +62,8 @@ def test_nancumprod(array):
     a = numpy.array(array)
     ia = inp.array(a)
 
-    result = inp.nancumsum(ia)
-    expected = numpy.nancumsum(a)
+    result = inp.nancumprod(ia)
+    expected = numpy.nancumprod(a)
     numpy.testing.assert_array_equal(expected, result)
 
 
