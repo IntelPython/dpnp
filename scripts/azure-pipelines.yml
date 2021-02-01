@@ -310,5 +310,18 @@ jobs:
       ./scripts/install_system_deps.sh  # no intel python
       ./scripts/install_python_deps.sh  # numpy, conda-build and etc.
       echo ========================= build DPNP package ===============================
+      ./0.build.sh
+
+# DPNP backend clib tests building and running
+- job: test_dpnp_backend_clib_lin
+  displayName: test_dpnp_backend_clib_lin
+  pool:
+    vmImage: 'ubuntu-20.04'
+  steps:
+  - bash: |
+      . ./scripts/install_cmake_lin.sh
+      ./scripts/install_system_deps.sh  # no intel python
+      ./scripts/install_python_deps.sh  # numpy, conda-build and etc.
+      echo ========================= build DPNP package ===============================
       export DPNP_BACKEND_TESTS_ENABLE=1
       ./0.build.sh
