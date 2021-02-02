@@ -86,13 +86,16 @@ def cholesky(input):
         Upper or lower-triangular Cholesky factor of `input`.  Returns a
         matrix object if `input` is a matrix object.
     """
-    is_input_dparray = isinstance(input, dparray)
 
-    if not use_origin_backend(input) and is_input_dparray and input.ndim == 2 and \
-            input.shape[0] == input.shape[1] and input.shape[0] > 0:
-        result = dpnp_cholesky(input)
-
-        return result
+    if not use_origin_backend(input):
+        if not isinstance(input, dparray):
+            pass
+        elif input.shape[-1] != input.shape[-2]:
+            pass
+        elif input.ndim < 3:
+            pass
+        else:
+            return dpnp_cholesky(input)
 
     return call_origin(numpy.linalg.cholesky, input)
 

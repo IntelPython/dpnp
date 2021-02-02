@@ -31,7 +31,6 @@
 #include "dpnp_utils.hpp"
 #include "queue_sycl.hpp"
 
-
 template <typename _DataType>
 class dpnp_take_c_kernel;
 
@@ -50,7 +49,6 @@ void dpnp_take_c(void* array1_in, void* indices1, void* result1, size_t size)
 
     return;
 }
-
 
 void func_map_init_indexing_func(func_map_t& fmap)
 {
