@@ -264,8 +264,8 @@ INP_DLLEXPORT void dpnp_rng_negative_binomial_c(void* result, const double a, co
  * @param [out] result Output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df,
-	const _DataType nonc, size_t size);
+INP_DLLEXPORT void
+    dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _DataType nonc, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API

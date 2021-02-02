@@ -513,7 +513,7 @@ void dpnp_rng_negative_binomial_c(void* result, const double a, const double p, 
 }
 
 template <typename _DataType>
-void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _DataType nonc, size_t size)
+void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _DataType nonc, const size_t size)
 {
     if (!size)
     {
@@ -574,7 +574,7 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             // pvec = (int*)mkl_malloc(size * sizeof(int), 64);
             lambda = 0.5 * nonc;
 
-            mkl_rng::poisson<int>poisson_distribution(lambda);
+            mkl_rng::poisson<int> poisson_distribution(lambda);
             event_out = mkl_rng::generate(poisson_distribution, DPNP_RNG_ENGINE, size, pvec);
             event_out.wait();
 
@@ -589,7 +589,8 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
                 {
                     throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
                 }
-                for (i = 0; i < size; i++) idx[i] = i;
+                for (i = 0; i < size; i++)
+                    idx[i] = i;
 
                 std::sort(idx, idx + size, [pvec](size_t i1, size_t i2) { return pvec[i1] < pvec[i2]; });
                 /* idx now contains original indexes of ordered Poisson outputs */
@@ -600,12 +601,15 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
                 {
                     throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
                 }
-                for (i = 0; i < size; ) {
+                for (i = 0; i < size;)
+                {
                     size_t k, j;
                     int cv = pvec[idx[i]];
 
                     // TODO vectorize
-                    for (j = i + 1; (j < size) && (pvec[idx[j]] == cv); j++) {}
+                    for (j = i + 1; (j < size) && (pvec[idx[j]] == cv); j++)
+                    {
+                    }
                     // assert(j > i);
                     if (j <= i)
                     {
@@ -616,7 +620,8 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
                     event_out.wait();
 
                     // TODO vectorize
-                    for (k = i; k < j; k++) result1[idx[k]] = tmp[k - i];
+                    for (k = i; k < j; k++)
+                        result1[idx[k]] = tmp[k - i];
 
                     i = j;
                 }
@@ -626,7 +631,8 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             }
             else
             {
-                for (i = 0; i < size; i++) {
+                for (i = 0; i < size; i++)
+                {
                     mkl_rng::gamma<_DataType> gamma_distribution(shape + pvec[i], d_zero, d_two);
                     event_out = mkl_rng::generate(gamma_distribution, DPNP_RNG_ENGINE, 1, result1 + 1);
                     event_out.wait();
@@ -637,7 +643,7 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
         else
         {
             // TODO rename
-            _DataType *uvec = nullptr;
+            _DataType* uvec = nullptr;
             /* noncentral_chisquare(1, nonc) ~ sqrt(nonc)*(-1)^[U<0.5] + Z */
             mkl_rng::gaussian<_DataType> gaussian_distribution(d_zero, d_one);
             event_out = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, uvec);
@@ -653,7 +659,8 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             event_out = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, uvec);
             event_out.wait();
 
-            for(i=0; i<size; i++) result1[i] += (uvec[i] < 0.5) ? -loc : loc;
+            for (i = 0; i < size; i++)
+                result1[i] += (uvec[i] < 0.5) ? -loc : loc;
 
             dpnp_memory_free_c(uvec);
         }
@@ -664,13 +671,14 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
         int errcode;
         size_t i;
 
-        if (df > 1) {
+        if (df > 1)
+        {
             double* nvec = nullptr;
 
             shape = 0.5 * (df - 1.0);
             /* res has chi^2 with (df - 1) */
-            errcode = vdRngGamma(VSL_RNG_METHOD_GAMMA_GNORM_ACCURATE, get_rng_stream(), size, result1, shape,
-                d_zero, d_two);
+            errcode =
+                vdRngGamma(VSL_RNG_METHOD_GAMMA_GNORM_ACCURATE, get_rng_stream(), size, result1, shape, d_zero, d_two);
             // TODO
             // refactor this check, smth like: void status_assert(errcode, VSL_STATUS_OK, func_name)
             // or just redesign and return int status:
@@ -699,7 +707,8 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
 
             mkl_free(nvec);
         }
-        else if (df < 1) {
+        else if (df < 1)
+        {
             /* noncentral_chisquare(df, nonc) ~ G( df/2 + Poisson(nonc/2), 2) */
             double lambda;
             int* pvec = nullptr;
@@ -718,7 +727,8 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
 
             shape = 0.5 * df;
 
-            if (0.125 * size > sqrt(lambda)) {
+            if (0.125 * size > sqrt(lambda))
+            {
                 size_t* idx = nullptr;
                 double* tmp = nullptr;
 
@@ -728,7 +738,8 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
                     throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
                 }
 
-                for (i = 0; i < size; i++) idx[i] = i;
+                for (i = 0; i < size; i++)
+                    idx[i] = i;
 
                 std::sort(idx, idx + size, [pvec](size_t i1, size_t i2) { return pvec[i1] < pvec[i2]; });
                 /* idx now contains original indexes of ordered Poisson outputs */
@@ -739,34 +750,45 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
                 {
                     throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
                 }
-                for (i = 0; i < size; ) {
+                for (i = 0; i < size;)
+                {
                     size_t k, j;
                     int cv = pvec[idx[i]];
 
-                    for (j = i + 1; (j < size) && (pvec[idx[j]] == cv); j++) {}
+                    for (j = i + 1; (j < size) && (pvec[idx[j]] == cv); j++)
+                    {
+                    }
                     // assert(j > i);
                     if (j <= i)
                     {
                         throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
                     }
-                    errcode = vdRngGamma(VSL_RNG_METHOD_GAMMA_GNORM_ACCURATE, get_rng_stream(), j - i, tmp,
-                        shape + cv, d_zero, d_two);
+                    errcode = vdRngGamma(
+                        VSL_RNG_METHOD_GAMMA_GNORM_ACCURATE, get_rng_stream(), j - i, tmp, shape + cv, d_zero, d_two);
                     if (errcode != VSL_STATUS_OK)
                     {
                         throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
                     }
 
-                    for (k = i; k < j; k++) result1[idx[k]] = tmp[k - i];
+                    for (k = i; k < j; k++)
+                        result1[idx[k]] = tmp[k - i];
 
                     i = j;
                 }
                 mkl_free(tmp);
                 mkl_free(idx);
             }
-            else {
-                for (i = 0; i < size; i++) {
-                    errcode = vdRngGamma(VSL_RNG_METHOD_GAMMA_GNORM_ACCURATE, get_rng_stream(), 1,
-                        result1 + i, shape + pvec[i], d_zero, d_two);
+            else
+            {
+                for (i = 0; i < size; i++)
+                {
+                    errcode = vdRngGamma(VSL_RNG_METHOD_GAMMA_GNORM_ACCURATE,
+                                         get_rng_stream(),
+                                         1,
+                                         result1 + i,
+                                         shape + pvec[i],
+                                         d_zero,
+                                         d_two);
                     if (errcode != VSL_STATUS_OK)
                     {
                         throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
@@ -775,7 +797,8 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             }
             mkl_free(pvec);
         }
-        else {
+        else
+        {
             float* fuvec = nullptr;
 
             /* noncentral_chisquare(1, nonc) ~ sqrt(nonc)*(-1)^[U<0.5] + Z */
@@ -791,13 +814,14 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             {
                 throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
             }
-            errcode = vsRngUniform(VSL_RNG_METHOD_UNIFORM_STD, get_rng_stream(), size, fuvec, (const float)d_zero,
-                (const float)d_one);
+            errcode = vsRngUniform(
+                VSL_RNG_METHOD_UNIFORM_STD, get_rng_stream(), size, fuvec, (const float)d_zero, (const float)d_one);
             if (errcode != VSL_STATUS_OK)
             {
                 throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
             }
-            for (i = 0; i < size; i++) result1[i] += (fuvec[i] < 0.5) ? -loc : loc;
+            for (i = 0; i < size; i++)
+                result1[i] += (fuvec[i] < 0.5) ? -loc : loc;
 
             mkl_free(fuvec);
         }
