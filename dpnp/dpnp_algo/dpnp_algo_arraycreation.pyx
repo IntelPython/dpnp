@@ -86,22 +86,22 @@ cpdef dparray dpnp_diag(v, k):
 
 
 cpdef dparray dpnp_full(result_shape, value_in, result_dtype):
-    """ Convert string type names (dparray.dtype) to C enum DPNPFuncType """
+    # Convert string type names (dparray.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType dtype_in = dpnp_dtype_to_DPNPFuncType(result_dtype)
 
-    """ get the FPTR data structure """
+    # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FULL, dtype_in, DPNP_FT_NONE)
 
     result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-    """ Create single-element input array with type given by FPTR data """
+    # Create single-element input array with type given by FPTR data
     cdef dparray_shape_type shape_in = (1,)
     cdef dparray array_in = dparray(shape_in, dtype=result_type)
     array_in[0] = value_in
-    """ Create result array with type given by FPTR data """
+    # Create result array with type given by FPTR data
     cdef dparray result = dparray(result_shape, dtype=result_type)
 
     cdef fptr_1in_1out_t func = <fptr_1in_1out_t > kernel_data.ptr
-    """ Call FPTR function """
+    # Call FPTR function
     func(array_in.get_data(), result.get_data(), result.size)
 
     return result
