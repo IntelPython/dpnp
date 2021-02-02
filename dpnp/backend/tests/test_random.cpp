@@ -35,22 +35,29 @@
 
 // TODO add namespace
 // will added for test_commons
-class DPNPTestEnvironment : public testing::Environment {
+class DPNPTestEnvironment : public testing::Environment
+{
 public:
-    DPNPTestEnvironment(QueueOptions selection) {
+    DPNPTestEnvironment(QueueOptions selection)
+    {
         this->selection = selection;
     }
-    void SetUp() override {
+    void SetUp() override
+    {
         // TODO update print
         std::cout << "starting new env" << std::endl << std::endl;
         dpnp_queue_initialize_c(selection);
     }
-    void TearDown() override {}
+    void TearDown() override
+    {
+    }
+
 private:
     QueueOptions selection;
 };
 
-int RunAllTests(DPNPTestEnvironment* env) {
+int RunAllTests(DPNPTestEnvironment* env)
+{
     // testing::internal::GetUnitTestImpl()->ClearAdHocTestResult();
     // It returns 0 if all tests are successful, or 1 otherwise.
     return RUN_ALL_TESTS();
@@ -59,27 +66,36 @@ int RunAllTests(DPNPTestEnvironment* env) {
 // TODO
 // * data management will be redesigned: allocation as chars (and casting on teste suits)
 // * this class will be generlized
-class RandomTestCase : public ::testing::Test {
+class RandomTestCase : public ::testing::Test
+{
 public:
-    static void SetUpTestCase() {
+    static void SetUpTestCase()
+    {
         _get_device_mem();
     }
 
-    static void TearDownTestCase() {
+    static void TearDownTestCase()
+    {
         dpnp_memory_free_c(result1);
         result1 = result2 = nullptr;
     }
 
-    void SetUp() override {
-        for (size_t i = 0; i < size; ++i) {
-            result1[i] = 1; result2[i] = 0;
+    void SetUp() override
+    {
+        for (size_t i = 0; i < size; ++i)
+        {
+            result1[i] = 1;
+            result2[i] = 0;
         }
     }
 
-    void TearDown() override {}
+    void TearDown() override
+    {
+    }
 
 private:
-    static void _get_device_mem() {
+    static void _get_device_mem()
+    {
         result1 = (double*)dpnp_memory_alloc_c(size * 2 * sizeof(double));
         result2 = result1 + size;
     }
@@ -106,7 +122,8 @@ bool check_statistics(_DataType* r, double tM, double tD, double tQ, size_t size
     /***** Sample moments *****/
     sum = 0.0;
     sum2 = 0.0;
-    for (size_t i = 0; i < size; i++) {
+    for (size_t i = 0; i < size; i++)
+    {
         sum += (double)r[i];
         sum2 += (double)r[i] * (double)r[i];
     }
@@ -126,7 +143,8 @@ bool check_statistics(_DataType* r, double tM, double tD, double tQ, size_t size
         return true;
 }
 
-TEST_F(RandomTestCase, rng_beta_test_seed) {
+TEST_F(RandomTestCase, rng_beta_test_seed)
+{
     const size_t seed = 10;
     const double a = 0.4;
     const double b = 0.5;
@@ -143,7 +161,8 @@ TEST_F(RandomTestCase, rng_beta_test_seed) {
     }
 }
 
-TEST_F(RandomTestCase, rng_f_test_seed) {
+TEST_F(RandomTestCase, rng_f_test_seed)
+{
     const size_t seed = 10;
     const double dfnum = 10.4;
     const double dfden = 12.5;
@@ -160,7 +179,8 @@ TEST_F(RandomTestCase, rng_f_test_seed) {
     }
 }
 
-TEST_F(RandomTestCase, rng_normal_test_seed) {
+TEST_F(RandomTestCase, rng_normal_test_seed)
+{
     const size_t seed = 10;
     const double loc = 2.56;
     const double scale = 0.8;
@@ -177,7 +197,8 @@ TEST_F(RandomTestCase, rng_normal_test_seed) {
     }
 }
 
-TEST_F(RandomTestCase, rng_uniform_test_seed) {
+TEST_F(RandomTestCase, rng_uniform_test_seed)
+{
     const size_t seed = 10;
     const long low = 1;
     const long high = 120;
@@ -194,7 +215,8 @@ TEST_F(RandomTestCase, rng_uniform_test_seed) {
     }
 }
 
-TEST(TestBackendRandomUniform, test_statistics) {
+TEST(TestBackendRandomUniform, test_statistics)
+{
     const size_t size = 256;
     size_t seed = 10;
     long a = 1;
@@ -216,16 +238,16 @@ TEST(TestBackendRandomUniform, test_statistics) {
 
 // TODO:
 // Generalization for all DPNPFuncName
-TEST(TestBackendRandomSrand, test_func_ptr) {
-
+TEST(TestBackendRandomSrand, test_func_ptr)
+{
     void* fptr = nullptr;
     DPNPFuncData kernel_data = get_dpnp_function_ptr(
         DPNPFuncName::DPNP_FN_RNG_SRAND, DPNPFuncType::DPNP_FT_DOUBLE, DPNPFuncType::DPNP_FT_DOUBLE);
 
     fptr = get_dpnp_function_ptr1(kernel_data.return_type,
-        DPNPFuncName::DPNP_FN_RNG_SRAND,
-        DPNPFuncType::DPNP_FT_DOUBLE,
-        DPNPFuncType::DPNP_FT_DOUBLE);
+                                  DPNPFuncName::DPNP_FN_RNG_SRAND,
+                                  DPNPFuncType::DPNP_FT_DOUBLE,
+                                  DPNPFuncType::DPNP_FT_DOUBLE);
 
     EXPECT_TRUE(fptr != nullptr);
 }
