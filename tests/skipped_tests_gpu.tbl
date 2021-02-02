@@ -1,3 +1,54 @@
+// cov/correlate issue https://github.com/IntelPython/dpnp/issues/565
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCov::test_cov
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_0_{mode='valid', shape1=(5,), shape2=(5,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_1_{mode='valid', shape1=(5,), shape2=(6,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_2_{mode='valid', shape1=(5,), shape2=(20,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_3_{mode='valid', shape1=(5,), shape2=(21,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_4_{mode='valid', shape1=(6,), shape2=(5,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_5_{mode='valid', shape1=(6,), shape2=(6,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_6_{mode='valid', shape1=(6,), shape2=(20,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_7_{mode='valid', shape1=(6,), shape2=(21,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_8_{mode='valid', shape1=(20,), shape2=(5,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_9_{mode='valid', shape1=(20,), shape2=(6,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_10_{mode='valid', shape1=(20,), shape2=(20,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_11_{mode='valid', shape1=(20,), shape2=(21,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_12_{mode='valid', shape1=(21,), shape2=(5,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_13_{mode='valid', shape1=(21,), shape2=(6,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_14_{mode='valid', shape1=(21,), shape2=(20,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_15_{mode='valid', shape1=(21,), shape2=(21,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_16_{mode='same', shape1=(5,), shape2=(5,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_17_{mode='same', shape1=(5,), shape2=(6,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_18_{mode='same', shape1=(5,), shape2=(20,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_19_{mode='same', shape1=(5,), shape2=(21,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_20_{mode='same', shape1=(6,), shape2=(5,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_21_{mode='same', shape1=(6,), shape2=(6,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_22_{mode='same', shape1=(6,), shape2=(20,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_23_{mode='same', shape1=(6,), shape2=(21,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_24_{mode='same', shape1=(20,), shape2=(5,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_25_{mode='same', shape1=(20,), shape2=(6,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_26_{mode='same', shape1=(20,), shape2=(20,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_27_{mode='same', shape1=(20,), shape2=(21,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_28_{mode='same', shape1=(21,), shape2=(5,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_29_{mode='same', shape1=(21,), shape2=(6,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_30_{mode='same', shape1=(21,), shape2=(20,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_31_{mode='same', shape1=(21,), shape2=(21,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_32_{mode='full', shape1=(5,), shape2=(5,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_33_{mode='full', shape1=(5,), shape2=(6,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_34_{mode='full', shape1=(5,), shape2=(20,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_35_{mode='full', shape1=(5,), shape2=(21,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_36_{mode='full', shape1=(6,), shape2=(5,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_37_{mode='full', shape1=(6,), shape2=(6,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_38_{mode='full', shape1=(6,), shape2=(20,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_39_{mode='full', shape1=(6,), shape2=(21,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_40_{mode='full', shape1=(20,), shape2=(5,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_41_{mode='full', shape1=(20,), shape2=(6,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_42_{mode='full', shape1=(20,), shape2=(20,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_43_{mode='full', shape1=(20,), shape2=(21,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_44_{mode='full', shape1=(21,), shape2=(5,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_45_{mode='full', shape1=(21,), shape2=(6,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_46_{mode='full', shape1=(21,), shape2=(20,)}::test_correlate
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_47_{mode='full', shape1=(21,), shape2=(21,)}::test_correlate
+//--------------------------------------------------------------
 // dot issue https://github.com/IntelPython/dpnp/issues/563
 tests/test_dot.py::test_dot_ones[float64]
 tests/test_dot.py::test_dot_ones[float32]
