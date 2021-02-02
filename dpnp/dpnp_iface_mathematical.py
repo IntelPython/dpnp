@@ -809,7 +809,7 @@ def gradient(y1, *varargs, **kwargs):
         Keyword arguments ``kwargs`` are currently unsupported.
         Otherwise the functions will be executed sequentially on CPU.
         Input array data types are limited by supported DPNP :ref:`Data types`.
-   
+
     Example
     -------
     >>> import dpnp as np

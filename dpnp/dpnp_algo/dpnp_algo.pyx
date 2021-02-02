@@ -63,6 +63,7 @@ include "dpnp_algo_manipulation.pyx"
 include "dpnp_algo_mathematical.pyx"
 include "dpnp_algo_searching.pyx"
 include "dpnp_algo_sorting.pyx"
+include "dpnp_algo_special.pyx"
 include "dpnp_algo_statistics.pyx"
 include "dpnp_algo_trigonometric.pyx"
 
