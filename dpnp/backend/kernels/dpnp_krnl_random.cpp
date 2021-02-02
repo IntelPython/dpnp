@@ -299,7 +299,7 @@ void dpnp_rng_geometric_c(void* result, const float p, const size_t size)
 }
 
 template <typename _KernelNameSpecialization>
-class _dpnp_blas_scal_c_kernel;
+class dpnp_blas_scal_c_kernel;
 
 template <typename _DataType>
 void dpnp_rng_gumbel_c(void* result, const double loc, const double scale, const size_t size)
@@ -331,12 +331,10 @@ void dpnp_rng_gumbel_c(void* result, const double loc, const double scale, const
         cl::sycl::range<1> gws(size);
         auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
             size_t i = global_id[0];
-            {
-                result1[i] *= alpha;
-            }
+            result1[i] *= alpha;
         };
         auto kernel_func = [&](cl::sycl::handler& cgh) {
-            cgh.parallel_for<class _dpnp_blas_scal_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+            cgh.parallel_for<class dpnp_blas_scal_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
         };
         event = DPNP_QUEUE.submit(kernel_func);
     }
