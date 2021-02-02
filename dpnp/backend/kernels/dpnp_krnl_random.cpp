@@ -795,7 +795,7 @@ void dpnp_rng_zipf_c(void* result, const _DataType a, const size_t size)
 
     size_t i, n_accepted, batch_size;
     _DataType T, U, V, am1, b;
-    _DataType* Uvec = nullptr, * Vvec = nullptr;
+    _DataType *Uvec = nullptr, *Vvec = nullptr;
     long X;
     const _DataType d_zero = 0.0;
     const _DataType d_one = 1.0;
@@ -816,7 +816,8 @@ void dpnp_rng_zipf_c(void* result, const _DataType a, const size_t size)
     }
     // TODO
     // kernel for acceptance
-    for (n_accepted = 0; n_accepted < size; ) {
+    for (n_accepted = 0; n_accepted < size;)
+    {
         batch_size = size - n_accepted;
 
         mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
@@ -824,8 +825,10 @@ void dpnp_rng_zipf_c(void* result, const _DataType a, const size_t size)
         event_out.wait();
         event_out = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, batch_size, Vvec);
         event_out.wait();
-        for (i = 0; i < batch_size; i++) {
-            U = d_one - Uvec[i]; V = Vvec[i];
+        for (i = 0; i < batch_size; i++)
+        {
+            U = d_one - Uvec[i];
+            V = Vvec[i];
             X = (long)floor(pow(U, (-1.0) / am1));
             /* The real result may be above what can be represented in a signed
              * long. It will get casted to -sys.maxint-1. Since this is
@@ -834,7 +837,8 @@ void dpnp_rng_zipf_c(void* result, const _DataType a, const size_t size)
              * distribution truncated to sys.maxint.
              */
             T = pow(d_one + d_one / X, am1);
-            if ((X > 0) && ((V * X) * (T - d_one) / (b - d_one) <= T / b)) {
+            if ((X > 0) && ((V * X) * (T - d_one) / (b - d_one) <= T / b))
+            {
                 result1[n_accepted++] = X;
             }
         }
