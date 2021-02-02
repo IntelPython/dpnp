@@ -1,3 +1,28 @@
+// eig/eigvals/svd issue https://github.com/IntelPython/dpnp/issues/567
+tests/test_linalg.py::test_eig_arange[2-float64]
+tests/test_linalg.py::test_eig_arange[2-float32]
+tests/test_linalg.py::test_eig_arange[2-int64]
+tests/test_linalg.py::test_eig_arange[2-int32]
+tests/test_linalg.py::test_eig_arange[4-float64]
+tests/test_linalg.py::test_eig_arange[4-float32]
+tests/test_linalg.py::test_eig_arange[4-int64]
+tests/test_linalg.py::test_eig_arange[4-int32]
+tests/test_linalg.py::test_eig_arange[8-float64]
+tests/test_linalg.py::test_eig_arange[8-float32]
+tests/test_linalg.py::test_eig_arange[8-int64]
+tests/test_linalg.py::test_eig_arange[8-int32]
+tests/test_linalg.py::test_eig_arange[16-float64]
+tests/test_linalg.py::test_eig_arange[16-float32]
+tests/test_linalg.py::test_eig_arange[16-int64]
+tests/test_linalg.py::test_eig_arange[16-int32]
+tests/test_linalg.py::test_eigvals
+tests/test_linalg.py::test_svd[(2,2)-float64]
+tests/test_linalg.py::test_svd[(2,2)-float32]
+tests/test_linalg.py::test_svd[(2,2)-int64]
+tests/test_linalg.py::test_svd[(2,2)-int32]
+tests/test_linalg.py::test_svd[(2,2)-complex128]
+tests/test_linalg.py::test_svd[(16,16)-complex128]
+//----------------------------------------------------------------------
 // cov/correlate issue https://github.com/IntelPython/dpnp/issues/565
 tests/third_party/cupy/statistics_tests/test_correlation.py::TestCov::test_cov
 tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_0_{mode='valid', shape1=(5,), shape2=(5,)}::test_correlate
