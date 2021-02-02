@@ -77,42 +77,46 @@ __all__ = [
 ]
 
 
-ctypedef void(*fptr_dpnp_rng_beta_c_1out_t)(void * , double, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_binomial_c_1out_t)(void * , int, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_chi_square_c_1out_t)(void * , int, size_t) except +
-ctypedef void(*fptr_dpnp_rng_exponential_c_1out_t)(void * , double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_f_c_1out_t)(void * , const double, const double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_gamma_c_1out_t)(void * , double, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_geometric_c_1out_t)(void * , float, size_t) except +
-ctypedef void(*fptr_dpnp_rng_gaussian_c_1out_t)(void * , double, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_gumbel_c_1out_t)(void * , double, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_hypergeometric_c_1out_t)(void * , int, int, int, size_t) except +
-ctypedef void(*fptr_dpnp_rng_laplace_c_1out_t)(void * , double, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_logistic_c_1out_t)(void * , double, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_lognormal_c_1out_t)(void * , double, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_multinomial_c_1out_t)(void * result, int, const double * , const size_t, size_t) except +
+ctypedef void(*fptr_dpnp_rng_beta_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_binomial_c_1out_t)(void * , const int, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_chisquare_c_1out_t)(void * , const int, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_exponential_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_f_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_gamma_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_geometric_c_1out_t)(void * , const float, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_gaussian_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_gumbel_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_hypergeometric_c_1out_t)(void * , const int, const int, const int, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_laplace_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_logistic_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_lognormal_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_multinomial_c_1out_t)(void * result,
+                                                   const int,
+                                                   const double * ,
+                                                   const size_t,
+                                                   const size_t) except +
 ctypedef void(*fptr_dpnp_rng_multivariate_normal_c_1out_t)(void * ,
                                                            const int,
                                                            const double * ,
                                                            const size_t,
                                                            const double * ,
                                                            const size_t,
-                                                           size_t) except +
-ctypedef void(*fptr_dpnp_rng_negative_binomial_c_1out_t)(void * , double, double, size_t) except +
+                                                           const size_t) except +
+ctypedef void(*fptr_dpnp_rng_negative_binomial_c_1out_t)(void * , const double, const double, const size_t) except +
 ctypedef void(*fptr_dpnp_rng_noncentral_chisquare_c_1out_t)(void * , const double, const double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_normal_c_1out_t)(void * , double, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_pareto_c_1out_t)(void * , double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_poisson_c_1out_t)(void * , double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_power_c_1out_t)(void * , double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_rayleigh_c_1out_t)(void * , double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_srand_c_1out_t)(size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_cauchy_c_1out_t)(void * , size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_exponential_c_1out_t)(void * , size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_gamma_c_1out_t)(void * , double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_normal_c_1out_t)(void * , size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_t_c_1out_t)(void * , double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_uniform_c_1out_t)(void * , long, long, size_t) except +
-ctypedef void(*fptr_dpnp_rng_weibull_c_1out_t)(void * , double, size_t) except +
+ctypedef void(*fptr_dpnp_rng_normal_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_pareto_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_poisson_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_power_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_rayleigh_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_srand_c_1out_t)(const size_t) except +
+ctypedef void(*fptr_dpnp_rng_standard_cauchy_c_1out_t)(void * , const size_t) except +
+ctypedef void(*fptr_dpnp_rng_standard_exponential_c_1out_t)(void * , const size_t) except +
+ctypedef void(*fptr_dpnp_rng_standard_gamma_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_standard_normal_c_1out_t)(void * , const size_t) except +
+ctypedef void(*fptr_dpnp_rng_standard_t_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_uniform_c_1out_t)(void * , const long, const long, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_weibull_c_1out_t)(void * , const double, const size_t) except +
 
 
 cpdef dparray dpnp_rng_beta(double a, double b, size):
@@ -197,7 +201,7 @@ cpdef dparray dpnp_rng_chisquare(int df, size):
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(size, dtype=result_type)
 
-    cdef fptr_dpnp_rng_chi_square_c_1out_t func = <fptr_dpnp_rng_chi_square_c_1out_t > kernel_data.ptr
+    cdef fptr_dpnp_rng_chisquare_c_1out_t func = <fptr_dpnp_rng_chisquare_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), df, result.size)
 

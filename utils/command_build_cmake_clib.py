@@ -73,6 +73,11 @@ except ImportError:
     """
     pass
 
+"""
+Detect enabling DPNP backend tests
+"""
+_dpnp_backend_tests_enable = os.environ.get('DPNP_BACKEND_TESTS_ENABLE', None)
+
 
 """
 CmakeList.txt based build_clib
@@ -99,7 +104,7 @@ class custom_build_cmake_clib(build_clib.build_clib):
 
         if IS_WIN:
             cmake_generator = "-GNinja"
-        if IS_LIN:
+        if _dpnp_backend_tests_enable is not None:
             enable_tests = "ON"
 
         cmake_args = [
