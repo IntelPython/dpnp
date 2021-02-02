@@ -26,7 +26,7 @@ if [ -n "${TBBROOT}" ]; then
 fi
 
 $PYTHON setup.py build_clib
-$PYTHON setup.py build_ext install
+$PYTHON setup.py build_ext install --single-version-externally-managed --record=record.txt
 
 # Build wheel package
 if [ "$CONDA_PY" == "36" ]; then
