@@ -1,4 +1,5 @@
 #!/bin/bash
+set -ex
 
 # if ONEAPI_ROOT is specified (use all from it)
 if [ -n "${ONEAPI_ROOT}" ]; then
