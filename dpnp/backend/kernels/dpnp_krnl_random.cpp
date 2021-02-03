@@ -512,6 +512,9 @@ void dpnp_rng_negative_binomial_c(void* result, const double a, const double p, 
     }
 }
 
+template <typename _KernelNameSpecialization>
+class dpnp_rng_noncentral_chisquare_df_1_c_kernel;
+
 template <typename _DataType>
 void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _DataType nonc, const size_t size)
 {
@@ -642,27 +645,23 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
         }
         else
         {
-            // TODO rename
-            _DataType* uvec = nullptr;
-            /* noncentral_chisquare(1, nonc) ~ sqrt(nonc)*(-1)^[U<0.5] + Z */
+            /* noncentral_chisquare(1, nonc) ~ (Z + sqrt(nonc))**2 for df == 1 */
             mkl_rng::gaussian<_DataType> gaussian_distribution(d_zero, d_one);
-            event_out = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, uvec);
+            event_out = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, result1);
             event_out.wait();
 
             loc = sqrt(nonc);
-            uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
-            if (uvec == nullptr)
-            {
-                throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
-            }
-            mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
-            event_out = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, uvec);
+            cl::sycl::range<1> gws(size);
+            auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+                size_t i = global_id[0];
+                result1[i] = (result1[i] + loc) * (result1[i] + loc);
+            };
+            auto kernel_func = [&](cl::sycl::handler& cgh) {
+                cgh.parallel_for<class dpnp_rng_noncentral_chisquare_df_1_c_kernel<_DataType>>(
+                    gws, kernel_parallel_for_func);
+            };
+            event_out = DPNP_QUEUE.submit(kernel_func);
             event_out.wait();
-
-            for (i = 0; i < size; i++)
-                result1[i] += (uvec[i] < 0.5) ? -loc : loc;
-
-            dpnp_memory_free_c(uvec);
         }
     }
     else
@@ -799,31 +798,15 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
         }
         else
         {
-            float* fuvec = nullptr;
-
-            /* noncentral_chisquare(1, nonc) ~ sqrt(nonc)*(-1)^[U<0.5] + Z */
+            /* noncentral_chisquare(1, nonc) ~ (Z + sqrt(nonc))**2 for df == 1 */
             errcode = vdRngGaussian(VSL_RNG_METHOD_GAUSSIAN_ICDF, get_rng_stream(), size, result1, d_zero, d_one);
             if (errcode != VSL_STATUS_OK)
             {
                 throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
             }
             loc = sqrt(nonc);
-
-            fuvec = (float*)mkl_malloc(size * sizeof(float), 64);
-            if (fuvec == nullptr)
-            {
-                throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
-            }
-            errcode = vsRngUniform(
-                VSL_RNG_METHOD_UNIFORM_STD, get_rng_stream(), size, fuvec, (const float)d_zero, (const float)d_one);
-            if (errcode != VSL_STATUS_OK)
-            {
-                throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
-            }
             for (i = 0; i < size; i++)
-                result1[i] += (fuvec[i] < 0.5) ? -loc : loc;
-
-            mkl_free(fuvec);
+                result1[i] = (result1[i] + loc) * (result1[i] + loc);
         }
     }
 }
