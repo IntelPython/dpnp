@@ -25,7 +25,7 @@ if [ -n "${TBBROOT}" ]; then
     . ${TBBROOT}/env/vars.sh
 fi
 
-$PYTHON setup.py build_clib
+$PYTHON setup.py build_clib --single-version-externally-managed --record=record.txt
 $PYTHON setup.py build_ext install --single-version-externally-managed --record=record.txt
 
 # Build wheel package
