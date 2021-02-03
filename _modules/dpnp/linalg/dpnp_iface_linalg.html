@@ -611,13 +611,13 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
             <span class="k">pass</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">pass</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">full_matrices</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">full_matrices</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">pass</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">compute_uv</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">compute_uv</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">pass</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">hermitian</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">hermitian</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dpnp_svd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">full_matrices</span><span class="p">,</span> <span class="n">compute_uv</span><span class="p">,</span> <span class="n">hermitian</span><span class="p">)</span>
