@@ -255,17 +255,17 @@ Internal functions
 """
 cpdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype):
 
-    if dtype == numpy.float64:
+    if dtype in [numpy.float64, 'float64']:
         return DPNP_FT_DOUBLE
-    elif dtype == numpy.float32:
+    elif dtype in [numpy.float32,  'float32']:
         return DPNP_FT_FLOAT
-    elif dtype == numpy.int64:
+    elif dtype in [numpy.int64, 'int64', 'int', int]:
         return DPNP_FT_LONG
-    elif dtype == numpy.int32:
+    elif dtype in [numpy.int32, 'int32']:
         return DPNP_FT_INT
-    elif dtype == numpy.complex128:
+    elif dtype in [numpy.complex128, 'complex128']:
         return DPNP_FT_CMPLX128
-    elif dtype == numpy.bool or dtype == numpy.bool_:
+    elif dtype in [numpy.bool, numpy.bool_, 'bool']:
         return DPNP_FT_BOOL
     else:
         checker_throw_type_error("dpnp_dtype_to_DPNPFuncType", dtype)
