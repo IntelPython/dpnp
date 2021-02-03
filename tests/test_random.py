@@ -605,6 +605,40 @@ class TestDistributionsNormal(TestDistribution):
         scale = 0.8
         self.check_seed('normal', {'loc': loc, 'scale': scale})
 
+# TODO add parametrize `df`
+# @pytest.mark.parametrize("df", [5.0, 1.0, 0.5], ids=['5.0', '1.0', '0.5'])
+class TestDistributionsNoncentralChisquare(TestDistribution):
+
+    def test_moments(self):
+        df = 5.0  # df > 1.0 and df < 1.0 OK, df = 1.0 not OK
+        nonc = 20.
+        expected_mean = df + nonc
+        expected_var = 2 * (df + 2 * nonc)
+        size = 10**6
+        seed = 28041995
+        dpnp.random.seed(seed)
+        res = numpy.asarray(dpnp.random.noncentral_chisquare(df, nonc, size=size))
+        var = numpy.var(res)
+        mean = numpy.mean(res)
+        assert math.isclose(var, expected_var, abs_tol=0.6)
+        assert math.isclose(mean, expected_mean, abs_tol=0.6)
+
+    def test_invalid_args(self):
+        df = 5.0     # OK
+        nonc = -1.0  # non-negative `nonc` is expected
+        self.check_invalid_args('noncentral_chisquare', {'df': df, 'nonc': nonc})
+        df = -1.0    # positive `df` is expected
+        nonc = 1.0   # OK
+        self.check_invalid_args('noncentral_chisquare', {'df': df, 'nonc': nonc})
+
+    def test_seed(self):
+        df = 5.0
+        nonc = 1.8
+        self.check_seed('noncentral_chisquare', {'df': df, 'nonc': nonc})
+        df = 0.5
+        nonc = 1.8
+        self.check_seed('noncentral_chisquare', {'df': df, 'nonc': nonc})
+
 
 class TestDistributionsPareto(TestDistribution):
 
