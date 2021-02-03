@@ -46,21 +46,18 @@ double* black_scholes_put(double* S, double* K, double* T, double* sigmas, doubl
     dpnp_divide_c<double, double, double>(S, K, d1, size);         // S/K
     dpnp_log_c<double, double>(d1, d1, size);               // np.log(S/K)
 
-    double* r_sigma_sigma_2_t = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_multiply_c<double, double, double>(r_sigma_sigma_2, T, r_sigma_sigma_2_t, size);  // r_sigma_sigma_2*T
-    dpnp_add_c<double, double, double>(d1, r_sigma_sigma_2_t, d1, size);     // np.log(S/K) + r_sigma_sigma_2*T
-    dpnp_memory_free_c(r_sigma_sigma_2_t);
+    double* temp = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+    dpnp_multiply_c<double, double, double>(r_sigma_sigma_2, T, temp, size);  // r_sigma_sigma_2*T
+    dpnp_add_c<double, double, double>(d1, temp, d1, size);     // np.log(S/K) + r_sigma_sigma_2*T
 
-    double* sigmas_sqrtt = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_sqrt_c<double, double>(T, sigmas_sqrtt, size);                                        // np.sqrt(T)
-    dpnp_multiply_c<double, double, double>(sigmas, sigmas_sqrtt, sigmas_sqrtt, size);  // sigmas*np.sqrt(T)
+    dpnp_sqrt_c<double, double>(T, temp, size);                                        // np.sqrt(T)
+    dpnp_multiply_c<double, double, double>(sigmas, temp, temp, size);  // sigmas*np.sqrt(T)
 
     // (np.log(S/K) + r_sigma_sigma_2*T) / (sigmas*np.sqrt(T))
-    dpnp_divide_c<double, double, double>(d1, sigmas_sqrtt, d1, size);
+    dpnp_divide_c<double, double, double>(d1, temp, d1, size);
 
     double* d2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_subtract_c<double, double, double>(d1, sigmas_sqrtt, d2, size);  // d1 - sigmas * np.sqrt(T)
-    dpnp_memory_free_c(sigmas_sqrtt);
+    dpnp_subtract_c<double, double, double>(d1, temp, d2, size);  // d1 - sigmas * np.sqrt(T)
 
     double* cdf_d1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
     dpnp_divide_c<double, double, double>(d1, sqrt2, cdf_d1, size);                 // d1 / sqrt2
@@ -80,18 +77,17 @@ double* black_scholes_put(double* S, double* K, double* T, double* sigmas, doubl
     dpnp_multiply_c<double, double, double>(S, cdf_d1, bs_call, size);  // S*cdf_d1
     dpnp_memory_free_c(cdf_d1);
 
-    double* k_expnrst_cdf_d2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_multiply_c<double, double, double>(nrs, T, k_expnrst_cdf_d2, size);                        // nrs*T
-    dpnp_exp_c<double, double>(k_expnrst_cdf_d2, k_expnrst_cdf_d2, size);                    // np.exp(nrs*T)
-    dpnp_multiply_c<double, double, double>(K, k_expnrst_cdf_d2, k_expnrst_cdf_d2, size);  // K*np.exp(nrs*T)
+    dpnp_multiply_c<double, double, double>(nrs, T, temp, size);            // nrs*T
+    dpnp_exp_c<double, double>(temp, temp, size);                    // np.exp(nrs*T)
+    dpnp_multiply_c<double, double, double>(K, temp, temp, size);  // K*np.exp(nrs*T)
 
     // K*np.exp(nrs*T)*cdf_d2
-    dpnp_multiply_c<double, double, double>(k_expnrst_cdf_d2, cdf_d2, k_expnrst_cdf_d2, size);
+    dpnp_multiply_c<double, double, double>(temp, cdf_d2, temp, size);
     dpnp_memory_free_c(cdf_d2);
 
     // S*cdf_d1 - K*np.exp(nrs*T)*cdf_d2
-    dpnp_subtract_c<double, double, double>(bs_call, k_expnrst_cdf_d2, bs_call, size);
-    dpnp_memory_free_c(k_expnrst_cdf_d2);
+    dpnp_subtract_c<double, double, double>(bs_call, temp, bs_call, size);
+    dpnp_memory_free_c(temp);
 
     double* bs_put = (double*)dpnp_memory_alloc_c(size * sizeof(double));
     dpnp_multiply_c<double, double, double>(nrs, T, bs_put, size);               // nrs*T
