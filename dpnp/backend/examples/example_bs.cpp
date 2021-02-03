@@ -24,7 +24,7 @@
 //*****************************************************************************
 
 /**
- * Example 3.
+ * Example BS.
  *
  * This example shows simple usage of the DPNP C++ Backend library
  * to calculate black scholes algo
@@ -46,18 +46,18 @@ double* black_scholes_put(double* S, double* K, double* T, double* sigmas, doubl
     dpnp_divide_c<double, double, double>(S, K, d1, size);         // S/K
     dpnp_log_c<double, double>(d1, d1, size);               // np.log(S/K)
 
-    double* temp = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_multiply_c<double, double, double>(r_sigma_sigma_2, T, temp, size);  // r_sigma_sigma_2*T
-    dpnp_add_c<double, double, double>(d1, temp, d1, size);     // np.log(S/K) + r_sigma_sigma_2*T
+    double* bs_put = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+    dpnp_multiply_c<double, double, double>(r_sigma_sigma_2, T, bs_put, size);  // r_sigma_sigma_2*T
+    dpnp_add_c<double, double, double>(d1, bs_put, d1, size);     // np.log(S/K) + r_sigma_sigma_2*T
 
-    dpnp_sqrt_c<double, double>(T, temp, size);                                        // np.sqrt(T)
-    dpnp_multiply_c<double, double, double>(sigmas, temp, temp, size);  // sigmas*np.sqrt(T)
+    dpnp_sqrt_c<double, double>(T, bs_put, size);                                  // np.sqrt(T)
+    dpnp_multiply_c<double, double, double>(sigmas, bs_put, bs_put, size);  // sigmas*np.sqrt(T)
 
     // (np.log(S/K) + r_sigma_sigma_2*T) / (sigmas*np.sqrt(T))
-    dpnp_divide_c<double, double, double>(d1, temp, d1, size);
+    dpnp_divide_c<double, double, double>(d1, bs_put, d1, size);
 
     double* d2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_subtract_c<double, double, double>(d1, temp, d2, size);  // d1 - sigmas * np.sqrt(T)
+    dpnp_subtract_c<double, double, double>(d1, bs_put, d2, size);  // d1 - sigmas * np.sqrt(T)
 
     double* cdf_d1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
     dpnp_divide_c<double, double, double>(d1, sqrt2, cdf_d1, size);                 // d1 / sqrt2
@@ -77,19 +77,17 @@ double* black_scholes_put(double* S, double* K, double* T, double* sigmas, doubl
     dpnp_multiply_c<double, double, double>(S, cdf_d1, bs_call, size);  // S*cdf_d1
     dpnp_memory_free_c(cdf_d1);
 
-    dpnp_multiply_c<double, double, double>(nrs, T, temp, size);            // nrs*T
-    dpnp_exp_c<double, double>(temp, temp, size);                    // np.exp(nrs*T)
-    dpnp_multiply_c<double, double, double>(K, temp, temp, size);  // K*np.exp(nrs*T)
+    dpnp_multiply_c<double, double, double>(nrs, T, bs_put, size);            // nrs*T
+    dpnp_exp_c<double, double>(bs_put, bs_put, size);                    // np.exp(nrs*T)
+    dpnp_multiply_c<double, double, double>(K, bs_put, bs_put, size);  // K*np.exp(nrs*T)
 
     // K*np.exp(nrs*T)*cdf_d2
-    dpnp_multiply_c<double, double, double>(temp, cdf_d2, temp, size);
+    dpnp_multiply_c<double, double, double>(bs_put, cdf_d2, bs_put, size);
     dpnp_memory_free_c(cdf_d2);
 
     // S*cdf_d1 - K*np.exp(nrs*T)*cdf_d2
-    dpnp_subtract_c<double, double, double>(bs_call, temp, bs_call, size);
-    dpnp_memory_free_c(temp);
+    dpnp_subtract_c<double, double, double>(bs_call, bs_put, bs_call, size);
 
-    double* bs_put = (double*)dpnp_memory_alloc_c(size * sizeof(double));
     dpnp_multiply_c<double, double, double>(nrs, T, bs_put, size);               // nrs*T
     dpnp_exp_c<double, double>(bs_put, bs_put, size);                     // np.exp(nrs*T)
     dpnp_multiply_c<double, double, double>(K, bs_put, bs_put, size);   // K*np.exp(nrs*T)
