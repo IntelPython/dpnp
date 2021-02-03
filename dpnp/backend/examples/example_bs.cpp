@@ -57,7 +57,9 @@ double* black_scholes_put(double* S, double* K, double* T, double* sigmas, doubl
     dpnp_divide_c<double, double, double>(d1, bs_put, d1, size);
 
     double* d2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_subtract_c<double, double, double>(d1, bs_put, d2, size);  // d1 - sigmas * np.sqrt(T)
+    dpnp_sqrt_c<double, double>(T, bs_put, size);                                  // np.sqrt(T)
+    dpnp_multiply_c<double, double, double>(sigmas, bs_put, bs_put, size);  // sigmas*np.sqrt(T)
+    dpnp_subtract_c<double, double, double>(d1, bs_put, d2, size);     // d1 - sigmas*np.sqrt(T)
 
     double* cdf_d1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
     dpnp_divide_c<double, double, double>(d1, sqrt2, cdf_d1, size);                 // d1 / sqrt2
