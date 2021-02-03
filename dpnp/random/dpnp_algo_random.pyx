@@ -47,6 +47,7 @@ __all__ = [
     "dpnp_rng_binomial",
     "dpnp_rng_chisquare",
     "dpnp_rng_exponential",
+    "dpnp_rng_f",
     "dpnp_rng_gamma",
     "dpnp_rng_geometric",
     "dpnp_rng_gumbel",
@@ -76,41 +77,46 @@ __all__ = [
 ]
 
 
-ctypedef void(*fptr_dpnp_rng_beta_c_1out_t)(void *, double, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_binomial_c_1out_t)(void *, int, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_chi_square_c_1out_t)(void *, int, size_t) except +
-ctypedef void(*fptr_dpnp_rng_exponential_c_1out_t)(void *, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_gamma_c_1out_t)(void *, double, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_geometric_c_1out_t)(void *, float, size_t) except +
-ctypedef void(*fptr_dpnp_rng_gaussian_c_1out_t)(void *, double, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_gumbel_c_1out_t)(void *, double, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_hypergeometric_c_1out_t)(void *, int, int, int, size_t) except +
-ctypedef void(*fptr_dpnp_rng_laplace_c_1out_t)(void *, double, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_logistic_c_1out_t)(void *, double, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_lognormal_c_1out_t)(void *, double, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_multinomial_c_1out_t)(void * result, int, const double *, const size_t, size_t) except +
-ctypedef void(*fptr_dpnp_rng_multivariate_normal_c_1out_t)(void *,
+ctypedef void(*fptr_dpnp_rng_beta_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_binomial_c_1out_t)(void * , const int, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_chisquare_c_1out_t)(void * , const int, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_exponential_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_f_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_gamma_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_geometric_c_1out_t)(void * , const float, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_gaussian_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_gumbel_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_hypergeometric_c_1out_t)(void * , const int, const int, const int, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_laplace_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_logistic_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_lognormal_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_multinomial_c_1out_t)(void * result,
+                                                   const int,
+                                                   const double * ,
+                                                   const size_t,
+                                                   const size_t) except +
+ctypedef void(*fptr_dpnp_rng_multivariate_normal_c_1out_t)(void * ,
                                                            const int,
-                                                           const double *,
+                                                           const double * ,
                                                            const size_t,
-                                                           const double *,
+                                                           const double * ,
                                                            const size_t,
-                                                           size_t) except +
-ctypedef void(*fptr_dpnp_rng_negative_binomial_c_1out_t)(void *, double, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_normal_c_1out_t)(void *, double, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_pareto_c_1out_t)(void *, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_poisson_c_1out_t)(void *, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_power_c_1out_t)(void *, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_rayleigh_c_1out_t)(void *, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_srand_c_1out_t)(size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_cauchy_c_1out_t)(void *, size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_exponential_c_1out_t)(void *, size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_gamma_c_1out_t)(void *, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_normal_c_1out_t)(void *, size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_t_c_1out_t)(void *, double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_uniform_c_1out_t)(void *, long, long, size_t) except +
-ctypedef void(*fptr_dpnp_rng_wald_c_1out_t)(void *, const double, const double, size_t) except +
-ctypedef void(*fptr_dpnp_rng_weibull_c_1out_t)(void *, double, size_t) except +
+                                                           const size_t) except +
+ctypedef void(*fptr_dpnp_rng_negative_binomial_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_normal_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_pareto_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_poisson_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_power_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_rayleigh_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_srand_c_1out_t)(const size_t) except +
+ctypedef void(*fptr_dpnp_rng_standard_cauchy_c_1out_t)(void * , const size_t) except +
+ctypedef void(*fptr_dpnp_rng_standard_exponential_c_1out_t)(void * , const size_t) except +
+ctypedef void(*fptr_dpnp_rng_standard_gamma_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_standard_normal_c_1out_t)(void * , const size_t) except +
+ctypedef void(*fptr_dpnp_rng_standard_t_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_uniform_c_1out_t)(void * , const long, const long, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_wald_c_1out_t)(void *, const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_weibull_c_1out_t)(void * , const double, const size_t) except +
 
 
 cpdef dparray dpnp_rng_beta(double a, double b, size):
@@ -127,7 +133,7 @@ cpdef dparray dpnp_rng_beta(double a, double b, size):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_BETA, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(size, dtype=result_type)
 
@@ -166,7 +172,7 @@ cpdef dparray dpnp_rng_binomial(int ntrial, double p, size):
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_BINOMIAL, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
@@ -191,11 +197,11 @@ cpdef dparray dpnp_rng_chisquare(int df, size):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_CHISQUARE, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(size, dtype=result_type)
 
-    cdef fptr_dpnp_rng_chi_square_c_1out_t func = <fptr_dpnp_rng_chi_square_c_1out_t > kernel_data.ptr
+    cdef fptr_dpnp_rng_chisquare_c_1out_t func = <fptr_dpnp_rng_chisquare_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), df, result.size)
 
@@ -217,13 +223,38 @@ cpdef dparray dpnp_rng_exponential(double beta, size):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_EXPONENTIAL, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(size, dtype=dtype)
 
     cdef fptr_dpnp_rng_exponential_c_1out_t func = <fptr_dpnp_rng_exponential_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), beta, result.size)
+
+    return result
+
+
+cpdef dparray dpnp_rng_f(double df_num, double df_den, size):
+    """
+    Returns an array populated with samples from F distribution.
+    `dpnp_rng_f` generates a matrix filled with random floats sampled from a
+    univariate F distribution.
+    """
+
+    dtype = numpy.float64
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_F, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray result = dparray(size, dtype=dtype)
+
+    cdef fptr_dpnp_rng_f_c_1out_t func = <fptr_dpnp_rng_f_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), df_num, df_den, result.size)
 
     return result
 
@@ -252,7 +283,7 @@ cpdef dparray dpnp_rng_gamma(double shape, double scale, size):
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GAMMA, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
@@ -288,7 +319,7 @@ cpdef dparray dpnp_rng_geometric(float p, size):
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GEOMETRIC, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
@@ -323,7 +354,7 @@ cpdef dparray dpnp_rng_gumbel(double loc, double scale, size):
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GUMBEL, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
@@ -361,7 +392,7 @@ cpdef dparray dpnp_rng_hypergeometric(int l, int s, int m, size):
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_HYPERGEOMETRIC, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
@@ -396,7 +427,7 @@ cpdef dparray dpnp_rng_laplace(double loc, double scale, size):
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_LAPLACE, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
@@ -421,7 +452,7 @@ cpdef dparray dpnp_rng_logistic(double loc, double scale, size):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_LOGISTIC, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(size, dtype=result_type)
 
@@ -430,7 +461,6 @@ cpdef dparray dpnp_rng_logistic(double loc, double scale, size):
     func(result.get_data(), loc, scale, result.size)
 
     return result
-
 
 
 cpdef dparray dpnp_rng_lognormal(double mean, double stddev, size):
@@ -458,7 +488,7 @@ cpdef dparray dpnp_rng_lognormal(double mean, double stddev, size):
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_LOGNORMAL, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
@@ -499,7 +529,7 @@ cpdef dparray dpnp_rng_multinomial(int ntrial, p, size):
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_MULTINOMIAL, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
@@ -543,7 +573,7 @@ cpdef dparray dpnp_rng_multivariate_normal(numpy.ndarray mean, numpy.ndarray cov
     # get the FPTR data structure
     kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_MULTIVARIATE_NORMAL, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
     result = dparray(size, dtype=result_type)
 
@@ -586,7 +616,7 @@ cpdef dparray dpnp_rng_negative_binomial(double a, double p, size):
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_NEGATIVE_BINOMIAL, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
@@ -621,7 +651,7 @@ cpdef dparray dpnp_rng_normal(double loc, double scale, size):
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_NORMAL, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
@@ -647,7 +677,7 @@ cpdef dparray dpnp_rng_pareto(double alpha, size):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_PARETO, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(size, dtype=dtype)
 
@@ -683,7 +713,7 @@ cpdef dparray dpnp_rng_poisson(double lam, size):
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_POISSON, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
@@ -708,7 +738,7 @@ cpdef dparray dpnp_rng_power(double alpha, size):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_POWER, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(size, dtype=dtype)
 
@@ -735,7 +765,7 @@ cpdef dparray dpnp_rng_randn(dims):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GAUSSIAN, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(dims, dtype=result_type)
 
@@ -761,7 +791,7 @@ cpdef dparray dpnp_rng_random(dims):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_UNIFORM, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(dims, dtype=result_type)
 
@@ -796,7 +826,7 @@ cpdef dparray dpnp_rng_rayleigh(double scale, size):
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_RAYLEIGH, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
@@ -838,7 +868,7 @@ cpdef dparray dpnp_rng_standard_cauchy(size):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_CAUCHY, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(size, dtype=result_type)
 
@@ -865,7 +895,7 @@ cpdef dparray dpnp_rng_standard_exponential(size):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_EXPONENTIAL, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(size, dtype=result_type)
 
@@ -900,7 +930,7 @@ cpdef dparray dpnp_rng_standard_gamma(double shape, size):
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_GAMMA, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
@@ -925,7 +955,7 @@ cpdef dparray dpnp_rng_standard_normal(size):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_NORMAL, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(size, dtype=result_type)
 
@@ -949,7 +979,7 @@ cpdef dparray dpnp_rng_standard_t(double df, size):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_T, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(size, dtype=result_type)
 
@@ -984,7 +1014,7 @@ cpdef dparray dpnp_rng_uniform(long low, long high, size, dtype):
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_UNIFORM, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 
@@ -1045,7 +1075,7 @@ cpdef dparray dpnp_rng_weibull(double a, size):
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_WEIBULL, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
         # ceate result array with type given by FPTR data
         result = dparray(size, dtype=result_type)
 

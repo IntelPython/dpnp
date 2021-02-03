@@ -27,8 +27,8 @@
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-# set(DPNP_VERSION 0.4.0)
-# set(DPNP_API_VERSION 0.4)
+# set(DPNP_VERSION 0.5.0)
+# set(DPNP_API_VERSION 0.5)
 
 # set directory where the custom finders live
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
@@ -52,17 +52,21 @@ option(DPNP_STATIC_LIB_ENABLE "Enable build DPNP static library" FALSE)
 option(DPNP_DEBUG_ENABLE "Enable output for DPNP_DEBUG statements" FALSE)
 option(DPNP_INSTALL_STRUCTURED "if FALSE, install package files into same directory" TRUE)
 option(DPNP_SYCL_QUEUE_MGR_ENABLE "Use external manager for SYCL queue" FALSE)
+option(DPNP_BACKEND_TESTS "Enable DPNP tests" FALSE)
 
 message(STATUS "CMAKE_VERSION:                   ${CMAKE_VERSION}")
 message(STATUS "CMAKE_GENERATOR:                 ${CMAKE_GENERATOR}")
 message(STATUS "CMAKE_HOST_SYSTEM_NAME:          ${CMAKE_HOST_SYSTEM_NAME}")
+message(STATUS "========== User controlled variables list ==========")
 message(STATUS "DPNP_ONEAPI_ROOT:                ${DPNP_ONEAPI_ROOT}")
 message(STATUS "DPNP_STATIC_LIB_ENABLE:          ${DPNP_STATIC_LIB_ENABLE}")
 message(STATUS "DPNP_DEBUG_ENABLE:               ${DPNP_DEBUG_ENABLE}")
+message(STATUS "DPNP_BACKEND_TESTS:              ${DPNP_BACKEND_TESTS}")
 message(STATUS "DPNP_INSTALL_STRUCTURED:         ${DPNP_INSTALL_STRUCTURED}")
 message(STATUS "DPNP_SYCL_QUEUE_MGR_ENABLE:      ${DPNP_SYCL_QUEUE_MGR_ENABLE}")
 message(STATUS " |- DPNP_QUEUEMGR_INCLUDE_DIR:   ${DPNP_QUEUEMGR_INCLUDE_DIR}")
 message(STATUS " |- DPNP_QUEUEMGR_LIB_DIR:       ${DPNP_QUEUEMGR_LIB_DIR}")
+message(STATUS "======= End of user controlled variables list ======")
 
 # -----------------------------------------------------------------------------------------------
 # Compiler-specific logic...
@@ -164,6 +168,7 @@ set(DPNP_SRC
     kernels/dpnp_krnl_common.cpp
     kernels/dpnp_krnl_elemwise.cpp
     kernels/dpnp_krnl_fft.cpp
+    kernels/dpnp_krnl_indexing.cpp
     kernels/dpnp_krnl_linalg.cpp
     kernels/dpnp_krnl_manipulation.cpp
     kernels/dpnp_krnl_mathematical.cpp
@@ -185,6 +190,13 @@ endif()
 
 target_include_directories(dpnp_backend_c PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(dpnp_backend_c PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+# -----------------------------------------------------------------------------------------------
+# Testing logic...
+# -----------------------------------------------------------------------------------------------
+if(DPNP_BACKEND_TESTS)
+  add_subdirectory(tests)
+endif()
 
 # -----------------------------------------------------------------------------------------------
 # Dependencies logic...

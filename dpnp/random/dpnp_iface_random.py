@@ -315,12 +315,31 @@ def f(dfnum, dfden, size=None):
 
     For full documentation refer to :obj:`numpy.random.f`.
 
-    Notes
-    -----
-    The function uses `numpy.random.f` on the backend and will be
-    executed on fallback backend.
+    Limitations
+    -----------
+    Parameters ``dfnum`` and ``dfden`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.f(dfnum, dfden, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
+    Examples
+    --------
+    >>> dfnum, dfden = 3., 2.
+    >>> s = dpnp.random.f(dfnum, dfden, size)
 
     """
+
+    if not use_origin_backend(dfnum):
+        # TODO:
+        # array_like of floats for `dfnum` and `dfden`
+        if not dpnp.isscalar(dfnum):
+            pass
+        elif not dpnp.isscalar(dfden):
+            pass
+        elif dfnum <= 0:
+            pass
+        elif dfden <= 0:
+            pass
+        else:
+            return dpnp_rng_f(dfnum, dfden, size)
 
     return call_origin(numpy.random.f, dfnum, dfden, size)
 

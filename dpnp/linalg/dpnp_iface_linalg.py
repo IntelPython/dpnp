@@ -86,13 +86,16 @@ def cholesky(input):
         Upper or lower-triangular Cholesky factor of `input`.  Returns a
         matrix object if `input` is a matrix object.
     """
-    is_input_dparray = isinstance(input, dparray)
 
-    if not use_origin_backend(input) and is_input_dparray and input.ndim == 2 and \
-            input.shape[0] == input.shape[1] and input.shape[0] > 0:
-        result = dpnp_cholesky(input)
-
-        return result
+    if not use_origin_backend(input):
+        if not isinstance(input, dparray):
+            pass
+        elif input.shape[-1] != input.shape[-2]:
+            pass
+        elif input.ndim < 3:
+            pass
+        else:
+            return dpnp_cholesky(input)
 
     return call_origin(numpy.linalg.cholesky, input)
 
@@ -457,13 +460,13 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     if not use_origin_backend(a):
         if not isinstance(a, dparray):
             pass
-        if not a.ndim == 2:
+        elif not a.ndim == 2:
             pass
-        if not full_matrices == True:
+        elif not full_matrices == True:
             pass
-        if not compute_uv == True:
+        elif not compute_uv == True:
             pass
-        if not hermitian == False:
+        elif not hermitian == False:
             pass
         else:
             return dpnp_svd(a, full_matrices, compute_uv, hermitian)

@@ -1,5 +1,4 @@
 # cython: language_level=3
-# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2020, Intel Corporation
@@ -26,65 +25,21 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""
-Interface of the function from Python Math library
+"""Module Backend (Special part)
 
-Notes
------
-This module is a face or public interface file for the library
-it contains:
- - Interface functions
- - documentation for the functions
- - The functions parameters check
+This module contains interface functions between C backend layer
+and the rest of the library
 
 """
 
-import math
 
-from dpnp.dpnp_algo import *
-from dpnp.dparray import dparray
-from dpnp.dpnp_utils import *
+from dpnp.dpnp_utils cimport *
 
 
-__all__ = [
-    "erf"
+__all__ += [
+    'dpnp_erf',
 ]
 
 
-def erf(in_array1):
-    """
-    Returns the error function of complex argument.
-
-    For full documentation refer to :obj:`scipy.special.erf`.
-
-    Limitations
-    -----------
-    Parameter ``in_array1`` is supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    .. seealso:: :obj:`math.erf`
-
-    Examples
-    --------
-
-    >>> import dpnp as np
-    >>> x = np.linspace(2.0, 3.0, num=5)
-    >>> [i for i in x]
-    [2.0, 2.25, 2.5, 2.75, 3.0]
-    >>> out = np.erf(x)
-    >>> [i for i in out]
-    [0.99532227, 0.99853728, 0.99959305, 0.99989938, 0.99997791]
-
-    """
-    if not use_origin_backend(in_array1):
-        if not isinstance(in_array1, dparray):
-            pass
-        else:
-            return dpnp_erf(in_array1)
-
-    result = dparray(in_array1.shape, dtype=in_array1.dtype)
-    for i in range(result.size):
-        result[i] = math.erf(in_array1[i])
-
-    return result
+cpdef dparray dpnp_erf(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_ERF, x1, x1.shape)

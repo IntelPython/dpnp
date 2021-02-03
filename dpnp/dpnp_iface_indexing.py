@@ -51,6 +51,7 @@ import dpnp
 
 
 __all__ = [
+    "choose",
     "diag_indices",
     "diag_indices_from",
     "diagonal",
@@ -60,12 +61,66 @@ __all__ = [
     "place",
     "put",
     "putmask",
+    "select",
     "take",
     "tril_indices",
     "tril_indices_from",
     "triu_indices",
     "triu_indices_from"
 ]
+
+
+def choose(input, choices, out=None, mode='raise'):
+    """
+    Construct an array from an index array and a set of arrays to choose from.
+
+    For full documentation refer to :obj:`numpy.choose`.
+
+    See also
+    --------
+    :obj:`take_along_axis` : Preferable if choices is an array.
+    """
+    if not use_origin_backend(input):
+        if not isinstance(input, list) and not isinstance(input, dparray):
+            pass
+        elif not isinstance(choices, list):
+            pass
+        elif out is not None:
+            pass
+        elif mode != 'raise':
+            pass
+        elif isinstance(choices, list):
+            val = True
+            for i in range(len(choices)):
+                if not isinstance(choices[i], dparray):
+                    val = False
+                    break
+            if not val:
+                pass
+            else:
+                val = True
+                len_ = len(input)
+                size_ = choices[0].size
+                for i in range(len(choices)):
+                    if choices[i].size != size_ or choices[i].size != len_:
+                        val = False
+                        break
+                if not val:
+                    pass
+                else:
+                    val = True
+                    for i in range(len_):
+                        if input[i] >= size_:
+                            val = False
+                            break
+                    if not val:
+                        pass
+                    else:
+                        return dpnp_choose(input, choices)
+        else:
+            return dpnp_choose(input, choices)
+
+    return call_origin(numpy.choose, input, choices, out, mode)
 
 
 def diag_indices(n, ndim=2):
@@ -369,6 +424,43 @@ def putmask(arr, mask, values):
             return dpnp_putmask(arr, mask, values)
 
     return call_origin(numpy.putmask, arr, mask, values)
+
+
+def select(condlist, choicelist, default=0):
+    """
+    Return an array drawn from elements in choicelist, depending on conditions.
+    For full documentation refer to :obj:`numpy.select`.
+
+    Limitations
+    -----------
+    Arrays of input lists are supported as :obj:`dpnp.ndarray`.
+    Parameter ``default`` are supported only with default values.
+    """
+    if not use_origin_backend():
+        if not isinstance(condlist, list):
+            pass
+        elif not isinstance(condlist[0], dparray):
+            pass
+        elif not isinstance(choicelist, list):
+            pass
+        elif not isinstance(choicelist[0], dparray):
+            pass
+        elif len(condlist) != len(choicelist):
+            pass
+        elif len(condlist) == len(choicelist):
+            val = True
+            size_ = condlist[0].size
+            for i in range(len(condlist)):
+                if condlist[i].size != size_ or choicelist[i].size != size_:
+                    val = False
+            if not val:
+                pass
+            else:
+                return dpnp_select(condlist, choicelist, default)
+        else:
+            return dpnp_select(condlist, choicelist, default)
+
+    return call_origin(numpy.select, condlist, choicelist, default)
 
 
 def take(input, indices, axis=None, out=None, mode='raise'):

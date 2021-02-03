@@ -1466,6 +1466,7 @@ tests/test_random.py::TestRandomDist::test_dirichlet_bad_alpha
 tests/test_random.py::TestRandomDist::test_dirichlet_size
 tests/test_random.py::TestRandomDist::test_exponential
 tests/test_random.py::TestRandomDist::test_exponential_0
+tests/test_random.py::TestRandomDist::test_f
 tests/test_random.py::TestRandomDist::test_gamma
 tests/test_random.py::TestRandomDist::test_gamma_0
 tests/test_random.py::TestRandomDist::test_geometric
@@ -1559,6 +1560,7 @@ tests/test_randomstate.py::TestRandomDist::test_dirichlet
 tests/test_randomstate.py::TestRandomDist::test_dirichlet_size
 tests/test_randomstate.py::TestRandomDist::test_exponential
 tests/test_randomstate.py::TestRandomDist::test_exponential_0
+tests/test_randomstate.py::TestRandomDist::test_f
 tests/test_randomstate.py::TestRandomDist::test_gamma
 tests/test_randomstate.py::TestRandomDist::test_gamma_0
 tests/test_randomstate.py::TestRandomDist::test_geometric

@@ -57,6 +57,7 @@ __all__ += [
     "dpnp_floor",
     "dpnp_floor_divide",
     "dpnp_fmod",
+    "dpnp_gradient",
     'dpnp_hypot',
     "dpnp_maximum",
     "dpnp_minimum",
@@ -135,29 +136,7 @@ cpdef dparray dpnp_copysign(dparray x1, dparray x2):
 
 
 cpdef dparray dpnp_cross(dparray x1, dparray x2):
-
-    types_map = {
-        (dpnp.int32, dpnp.int32): dpnp.int32,
-        (dpnp.int32, dpnp.int64): dpnp.int64,
-        (dpnp.int64, dpnp.int32): dpnp.int64,
-        (dpnp.int64, dpnp.int64): dpnp.int64,
-        (dpnp.float32, dpnp.float32): dpnp.float32,
-    }
-
-    res_type = types_map.get((x1.dtype.type, x2.dtype.type), dpnp.float64)
-
-    cdef dparray result = dparray(3, dtype=res_type)
-
-    cur_res = x1[1] * x2[2] - x1[2] * x2[1]
-    result._setitem_scalar(0, cur_res)
-
-    cur_res = x1[2] * x2[0] - x1[0] * x2[2]
-    result._setitem_scalar(1, cur_res)
-
-    cur_res = x1[0] * x2[1] - x1[1] * x2[0]
-    result._setitem_scalar(2, cur_res)
-
-    return result
+    return call_fptr_2in_1out(DPNP_FN_CROSS, x1, x2, x1.shape)
 
 
 cpdef dparray dpnp_cumprod(dparray x1, bint usenan=False):
@@ -292,6 +271,27 @@ cpdef dparray dpnp_floor_divide(dparray x1, dparray x2):
 
 cpdef dparray dpnp_fmod(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_FMOD, x1, x2, x1.shape)
+
+
+cpdef dparray dpnp_gradient(dparray y1, int dx=1):
+
+    size = y1.size
+
+    cdef dparray result = dparray(size, dtype=dpnp.float64)
+
+    cur = (y1[1] - y1[0]) / dx
+
+    result._setitem_scalar(0, cur)
+
+    cur = (y1[-1] - y1[-2]) / dx
+
+    result._setitem_scalar(size - 1, cur)
+
+    for i in range(1, size - 1):
+        cur = (y1[i + 1] - y1[i - 1]) / (2 * dx)
+        result._setitem_scalar(i, cur)
+
+    return result
 
 
 cpdef dparray dpnp_hypot(dparray x1, dparray x2):

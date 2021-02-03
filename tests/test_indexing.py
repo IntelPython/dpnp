@@ -5,6 +5,19 @@ import dpnp
 import numpy
 
 
+def test_choose():
+    a = numpy.r_[:4]
+    ia = dpnp.array(a)
+    b = numpy.r_[-4:0]
+    ib = dpnp.array(b)
+    c = numpy.r_[100:500:100]
+    ic = dpnp.array(c)
+
+    expected = numpy.choose([0, 0, 0, 0], [a, b, c])
+    result = dpnp.choose([0, 0, 0, 0], [ia, ib, ic])
+    numpy.testing.assert_array_equal(expected, result)
+
+
 @pytest.mark.parametrize("offset",
                          [0, 1],
                          ids=['0', '1'])
@@ -282,6 +295,24 @@ def test_putmask3(arr, mask, vals):
     numpy.putmask(a, m, v)
     dpnp.putmask(ia, im, iv)
     numpy.testing.assert_array_equal(a, ia)
+
+
+def test_select():
+    cond_val1 = numpy.array([True, True, True, False, False, False, False, False, False, False])
+    cond_val2 = numpy.array([False, False, False, False, False, True, True, True, True, True])
+    icond_val1 = dpnp.array(cond_val1)
+    icond_val2 = dpnp.array(cond_val2)
+    condlist = [cond_val1, cond_val2]
+    icondlist = [icond_val1, icond_val2]
+    choice_val1 = numpy.full(10, -2)
+    choice_val2 = numpy.full(10, -1)
+    ichoice_val1 = dpnp.array(choice_val1)
+    ichoice_val2 = dpnp.array(choice_val2)
+    choicelist = [choice_val1, choice_val2]
+    ichoicelist = [ichoice_val1, ichoice_val2]
+    expected = numpy.select(condlist, choicelist)
+    result = dpnp.select(icondlist, ichoicelist)
+    numpy.testing.assert_array_equal(expected, result)
 
 
 @pytest.mark.parametrize("indices",
