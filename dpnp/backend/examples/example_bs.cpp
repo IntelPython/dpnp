@@ -115,7 +115,6 @@ int main(int, char**)
     double* S = (double*)dpnp_memory_alloc_c(SIZE * sizeof(double));
     double* K = (double*)dpnp_memory_alloc_c(SIZE * sizeof(double));
     double* T = (double*)dpnp_memory_alloc_c(SIZE * sizeof(double));
-    double* result = (double*)dpnp_memory_alloc_c(SIZE * sizeof(double));
 
     dpnp_rng_srand_c(SEED);
     dpnp_rng_uniform_c<double>(S, SL, SH, SIZE);  // np.random.uniform(SL, SH, SIZE)
@@ -183,7 +182,6 @@ int main(int, char**)
     dpnp_memory_free_c(r_sigma_sigma_2);
     dpnp_memory_free_c(sigmas);
 
-    dpnp_memory_free_c(result);
     dpnp_memory_free_c(T);
     dpnp_memory_free_c(K);
     dpnp_memory_free_c(S);
