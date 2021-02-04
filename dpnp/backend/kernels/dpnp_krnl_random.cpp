@@ -742,6 +742,76 @@ void dpnp_rng_standard_t_c(void* result, const _DataType df, const size_t size)
     }
 }
 
+template <typename _KernelNameSpecialization>
+class dpnp_rng_triangular_ration_acceptance_c_kernel;
+
+template <typename _DataType>
+void dpnp_rng_triangular_c(
+    void* result, const _DataType x_min, const _DataType x_mode, const _DataType x_max, const size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+    const _DataType d_zero = (_DataType(0));
+    const _DataType d_one = (_DataType(1));
+
+    _DataType ratio, lpr, rpr;
+
+    mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
+    auto event_out = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, result1);
+    event_out.wait();
+
+    {
+        _DataType wtot, wl, wr;
+
+        wtot = x_max - x_min;
+        wl = x_mode - x_min;
+        wr = x_max - x_mode;
+
+        ratio = wl / wtot;
+        lpr = wl * wtot;
+        rpr = wr * wtot;
+    }
+
+    if (!(0 <= ratio && ratio <= 1))
+    {
+        throw std::runtime_error("DPNP RNG Error: dpnp_rng_triangular_c() failed.");
+    }
+
+    cl::sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        size_t i = global_id[0];
+        if (ratio <= 0)
+        {
+            result1[i] = x_max - cl::sycl::sqrt(result1[i] * rpr);
+        }
+        else if (ratio >= 1)
+        {
+            result1[i] = x_min + cl::sycl::sqrt(result1[i] * lpr);
+        }
+        else
+        {
+            _DataType ui = result1[i];
+            if (ui > ratio)
+            {
+                result1[i] = x_max - cl::sycl::sqrt((1.0 - ui) * rpr);
+            }
+            else
+            {
+                result1[i] = x_min + cl::sycl::sqrt(ui * lpr);
+            }
+        }
+    };
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_rng_triangular_ration_acceptance_c_kernel<_DataType>>(gws,
+                                                                                          kernel_parallel_for_func);
+    };
+    event_out = DPNP_QUEUE.submit(kernel_func);
+    event_out.wait();
+}
+
 template <typename _DataType>
 void dpnp_rng_uniform_c(void* result, const long low, const long high, const size_t size)
 {
@@ -845,6 +915,8 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_NORMAL][eft_DBL][eft_DBL] = {eft_DBL,
                                                                          (void*)dpnp_rng_standard_normal_c<double>};
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_T][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_standard_t_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_TRIANGULAR][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_triangular_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_uniform_c<double>};
     fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_uniform_c<float>};
