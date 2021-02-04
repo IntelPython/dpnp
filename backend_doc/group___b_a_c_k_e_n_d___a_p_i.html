@@ -375,6 +375,14 @@ Functions</h2></td></tr>
 <tr class="memitem:ga79704b8d1fc70b40496d6078006d6015"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga79704b8d1fc70b40496d6078006d6015">dpnp_cross_c</a> (void *array1_in, void *array2_in, void *result1, size_t size)</td></tr>
 <tr class="memdesc:ga79704b8d1fc70b40496d6078006d6015"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom implementation of cross function.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga79704b8d1fc70b40496d6078006d6015">More...</a><br /></td></tr>
 <tr class="separator:ga79704b8d1fc70b40496d6078006d6015"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6df83fe800de77134be371840ce0f34c"><td class="memTemplParams" colspan="2">template&lt;typename _DataType_input , typename _DataType_output &gt; </td></tr>
+<tr class="memitem:ga6df83fe800de77134be371840ce0f34c"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga6df83fe800de77134be371840ce0f34c">dpnp_cumprod_c</a> (void *array1_in, void *result1, size_t size)</td></tr>
+<tr class="memdesc:ga6df83fe800de77134be371840ce0f34c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom implementation of cumprod function.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga6df83fe800de77134be371840ce0f34c">More...</a><br /></td></tr>
+<tr class="separator:ga6df83fe800de77134be371840ce0f34c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga14a74b989436ea9a7e5613aa70ab1696"><td class="memTemplParams" colspan="2">template&lt;typename _DataType_input , typename _DataType_output &gt; </td></tr>
+<tr class="memitem:ga14a74b989436ea9a7e5613aa70ab1696"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga14a74b989436ea9a7e5613aa70ab1696">dpnp_cumsum_c</a> (void *array1_in, void *result1, size_t size)</td></tr>
+<tr class="memdesc:ga14a74b989436ea9a7e5613aa70ab1696"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom implementation of cumsum function.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga14a74b989436ea9a7e5613aa70ab1696">More...</a><br /></td></tr>
+<tr class="separator:ga14a74b989436ea9a7e5613aa70ab1696"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga1f9b5eea67856e31475fabc96224d5cd"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:ga1f9b5eea67856e31475fabc96224d5cd"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga1f9b5eea67856e31475fabc96224d5cd">dpnp_sum_c</a> (void *array, void *result, size_t size)</td></tr>
 <tr class="memdesc:ga1f9b5eea67856e31475fabc96224d5cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sum of array elements.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga1f9b5eea67856e31475fabc96224d5cd">More...</a><br /></td></tr>
@@ -1889,6 +1897,98 @@ template&lt;typename _DataType_input1 , typename _DataType_input2 , typename _Da
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">array1_in</td><td>First input array. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">array2_in</td><td>Second input array. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result1</td><td>Output array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in input arrays. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga6df83fe800de77134be371840ce0f34c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga6df83fe800de77134be371840ce0f34c">&#9670;&nbsp;</a></span>dpnp_cumprod_c()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename _DataType_input , typename _DataType_output &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void dpnp_cumprod_c </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>array1_in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>result1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Custom implementation of cumprod function. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">array1_in</td><td>Input array. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result1</td><td>Output array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in input arrays. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga14a74b989436ea9a7e5613aa70ab1696"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga14a74b989436ea9a7e5613aa70ab1696">&#9670;&nbsp;</a></span>dpnp_cumsum_c()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename _DataType_input , typename _DataType_output &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void dpnp_cumsum_c </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>array1_in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>result1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Custom implementation of cumsum function. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">array1_in</td><td>Input array. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">result1</td><td>Output array. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in input arrays. </td></tr>
   </table>
