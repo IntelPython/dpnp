@@ -350,7 +350,7 @@ def copy(a, order='C', subok=False):
     """
 
     if not use_origin_backend(a):
-        return array(a, order=order, subok=subok)
+        return dpnp_copy(a, order, subok)
 
     return call_origin(numpy.copy, a, order, subok)
 
