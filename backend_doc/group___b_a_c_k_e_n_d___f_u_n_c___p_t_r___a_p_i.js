@@ -49,6 +49,7 @@ var group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i =
       [ "DPNP_FN_FLOOR_DIVIDE", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ad43ddf3f3625ab7f18dcedfc59c80363", null ],
       [ "DPNP_FN_FMOD", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a4510c4b3be52538c147ec53ca6ba5ad3", null ],
       [ "DPNP_FN_HYPOT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558aaccb1aaadc26a588af11fff35e397119", null ],
+      [ "DPNP_FN_INITVAL", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558aa3e8a4061dcef64562a635d8a9870611", null ],
       [ "DPNP_FN_INV", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a84c0aa1484d9f9034977112055c70918", null ],
       [ "DPNP_FN_INVERT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a67500bc4e39eaf00dc16ae3d24d85bcf", null ],
       [ "DPNP_FN_KRON", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a0383b3b43eb9971be2ae4443c0f57954", null ],
@@ -126,6 +127,7 @@ var group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i =
       [ "DPNP_FT_LONG", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15a8160fd9c1c7bd64515ffa60b8140f208", null ],
       [ "DPNP_FT_FLOAT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15aea1ca4f8f623afaaf6072b0b6eb56c76", null ],
       [ "DPNP_FT_DOUBLE", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15ac84f19e1412dd40492153e4cb0e27739", null ],
-      [ "DPNP_FT_CMPLX128", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15a599b693823273a797188b9beb8018052", null ]
+      [ "DPNP_FT_CMPLX128", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15a599b693823273a797188b9beb8018052", null ],
+      [ "DPNP_FT_BOOL", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15a1d41c2373d33a46bb47a6791a876c103", null ]
     ] ]
 ];
