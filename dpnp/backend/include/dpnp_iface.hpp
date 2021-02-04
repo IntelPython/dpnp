@@ -513,14 +513,16 @@ INP_DLLEXPORT void dpnp_remainder_c(void* array1_in, void* array2_in, void* resu
  * @param [in]  input_shape  Input shape.
  * @param [in]  result_shape Output shape.
  * @param [in]  permute_axes Order of axis by it's id as it should be presented in output.
+ * @param [in]  ndim         Number of elements in shapes and axes.
  * @param [out] result1      Output array.
  * @param [in]  size         Number of elements in input arrays.
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_elemwise_transpose_c(void* array1_in,
-                                             const std::vector<long>& input_shape,
-                                             const std::vector<long>& result_shape,
-                                             const std::vector<long>& permute_axes,
+                                             const size_t* input_shape,
+                                             const size_t* result_shape,
+                                             const size_t* permute_axes,
+                                             size_t ndim,
                                              void* result1,
                                              size_t size);
 

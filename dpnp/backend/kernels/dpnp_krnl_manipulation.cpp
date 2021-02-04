@@ -38,9 +38,10 @@ class dpnp_elemwise_transpose_c_kernel;
 
 template <typename _DataType>
 void dpnp_elemwise_transpose_c(void* array1_in,
-                               const std::vector<long>& input_shape,
-                               const std::vector<long>& result_shape,
-                               const std::vector<long>& permute_axes,
+                               const size_t* input_shape,
+                               const size_t* result_shape,
+                               const size_t* permute_axes,
+                               size_t ndim,
                                void* result1,
                                size_t size)
 {
@@ -53,13 +54,12 @@ void dpnp_elemwise_transpose_c(void* array1_in,
     _DataType* array1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    const size_t input_shape_size = input_shape.size();
-    size_t* input_offset_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(input_shape_size * sizeof(long)));
-    size_t* result_offset_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(input_shape_size * sizeof(long)));
+    size_t* input_offset_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(long)));
+    size_t* result_offset_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(long)));
 
     size_t dim_prod_input = 1;
     size_t dim_prod_result = 1;
-    for (long i = input_shape_size - 1; i >= 0; --i)
+    for (long i = ndim - 1; i >= 0; --i)
     {
         /*
         for example above, offset vectors will be
@@ -79,7 +79,7 @@ void dpnp_elemwise_transpose_c(void* array1_in,
 
         size_t output_index = 0;
         size_t reminder = idx;
-        for (size_t axis = 0; axis < input_shape_size; ++axis)
+        for (size_t axis = 0; axis < ndim; ++axis)
         {
             /* reconstruct [x][y][z] from given linear idx */
             size_t xyz_id = reminder / input_offset_shape[axis];

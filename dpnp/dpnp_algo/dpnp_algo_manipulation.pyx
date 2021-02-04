@@ -48,8 +48,8 @@ __all__ += [
 
 
 # C function pointer to the C library template functions
-ctypedef void(*fptr_custom_elemwise_transpose_1in_1out_t)(void * , dparray_shape_type & , dparray_shape_type & ,
-                                                          dparray_shape_type &, void * , size_t)
+ctypedef void(*fptr_custom_elemwise_transpose_1in_1out_t)(void * , size_t * , size_t * ,
+                                                          size_t * , size_t, void * , size_t)
 
 
 cpdef dparray dpnp_atleast_2d(dparray arr):
@@ -171,7 +171,7 @@ cpdef dparray dpnp_transpose(dparray array1, axes=None):
 
     cdef fptr_custom_elemwise_transpose_1in_1out_t func = <fptr_custom_elemwise_transpose_1in_1out_t > kernel_data.ptr
     # call FPTR function
-    func(array1.get_data(), input_shape, result_shape, permute_axes, result.get_data(), array1.size)
+    func(array1.get_data(), < size_t * > input_shape.data(), < size_t * > result_shape.data(), < size_t * > permute_axes.data(), input_shape_size, result.get_data(), array1.size)
 
     return result
 
