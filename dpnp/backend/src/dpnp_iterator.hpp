@@ -88,7 +88,6 @@ public:
             stride = shape_pitch[axis];
         }
 
-        // std::cout << "DPNP_USM_iterator::operator++(): dim_pitch=" << stride << std::endl;
         data += stride;
 
         return *this;
@@ -107,28 +106,37 @@ public:
         return (data == __rhs.data);
     };
 
-    inline bool operator!=(const DPNP_USM_iterator& __rhs)
+    inline bool operator!=(const DPNP_USM_iterator& __rhs) const
     {
         return (data != __rhs.data);
     };
 
-    inline bool operator<(const DPNP_USM_iterator& __rhs)
+    inline bool operator<(const DPNP_USM_iterator& __rhs) const
     {
         return (data < __rhs.data);
     };
 
     // TODO need more operators
 
-    inline difference_type operator-(const DPNP_USM_iterator& __rhs)
+    inline difference_type operator-(const DPNP_USM_iterator& __rhs) const
     {
         return data - __rhs.data;
+    }
+
+    /// Operator needs to print this container in human readable form in error reporting
+    friend std::ostream& operator<<(std::ostream& __out, const DPNP_USM_iterator& __it)
+    {
+        __out << "DPNP_USM_iterator(data:" << __it.data << ", shape_pitch=" << __it.shape_pitch
+              << ", axis_use=" << __it.axis_use << ", axis=" << __it.axis << ")";
+
+        return __out;
     }
 
 private:
     pointer data;
     std::vector<size_type> shape_pitch; // TODO needs to be replaced by sycl memory allocation
     size_type axis = 0;                 // TODO it should be a vector to support "axes" parameters
-    bool axis_use = false;              //TODO it looks like it should be eliminated
+    bool axis_use = false;              // TODO it looks like it should be eliminated
 };
 
 /**
@@ -160,8 +168,6 @@ public:
             get_shape_offsets_inkernel<size_type>(__shape.data(), __shape.size(), shape_pitch.data());
             size = std::accumulate(__shape.begin(), __shape.end(), size_type(1), std::multiplies<size_type>());
         }
-        //        std::cout << "DPNPC_id::input shape: " << shape << "\n shape_pitch: " << shape_pitch << "\n size: " << size
-        //                  << std::endl;
     }
 
     DPNPC_id() = delete;
@@ -173,9 +179,9 @@ public:
         {
             axis = __axis;
             axis_use = true;
-            // std::cout << "DPNPC_id::set_axis: " << __axis << std::endl;
         }
         // TODO exception if wrong axis? need common function for throwing exceptions
+        // TODO need conversion from negative axis to positive one
     }
 
     /// this function is designed for SYCL environment execution
@@ -189,14 +195,13 @@ public:
     {
         // TODO it is better to get begin() iterator as a parameter
 
-        // std::cout << "DPNPC_id::end(): " << dim_size * dim_pitch << std::endl;
         return iterator(data + get_input_begin_offset(output_global_id) + get_input_end_length());
     }
 
     /// this function is designed for SYCL environment execution
     inline reference operator[](size_type __n) const
     {
-        return *(data + __n);
+        return *(data + __n); // TODO take care about shape and axis
     }
 
 private:
@@ -207,12 +212,6 @@ private:
         {
             return 0;
         }
-
-        //        std::cout << "DPNPC_id::get_begin():\n"
-        //                  << "\t output_global_id=" << output_global_id
-        //                  << "\t axis_use=" << axis_use
-        //                  << "\t axis=" << axis
-        //                  << std::endl;
 
         std::vector<size_type> output_shape = shape;
         output_shape.erase(output_shape.begin() + axis);
@@ -229,13 +228,6 @@ private:
         input_xyz.insert(input_xyz.begin() + axis, 0); // put begin point of the axis
 
         size_type input_global_id = get_id_by_xyz_inkernel(input_xyz.data(), input_xyz.size(), shape_pitch.data());
-
-        //        std::cout << "\t output_shape=" << output_shape
-        //                  << " output_strides=" << output_strides
-        //                  << " output_xyz=" << output_xyz
-        //                  << " input_xyz=" << input_xyz
-        //                  << " input_global_id=" << input_global_id
-        //                  << std::endl;
 
         return input_global_id;
     }
