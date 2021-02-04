@@ -616,7 +616,7 @@ def full(shape, fill_value, dtype=None, order='C'):
         if order not in ('C', 'c', None):
             checker_throw_value_error("full", "order", order, 'C')
 
-        _dtype = dtype if dtype is not None else type(fill_value)
+        _dtype = dtype if dtype is not None else dpnp.dtype(type(fill_value))
 
         return dpnp_init_val(shape, _dtype, fill_value)
 
@@ -981,7 +981,9 @@ def ones(shape, dtype=None, order='C'):
         if order not in ('C', 'c', None):
             checker_throw_value_error("ones", "order", order, 'C')
 
-        return dpnp_init_val(shape, dtype, 1)
+        _dtype = dtype if dtype is not None else dpnp.float64
+
+        return dpnp_init_val(shape, _dtype, 1)
 
     return numpy.ones(shape, dtype=dtype, order=order)
 
@@ -1148,7 +1150,9 @@ def zeros(shape, dtype=None, order='C'):
         if order not in ('C', 'c', None):
             checker_throw_value_error("zeros", "order", order, 'C')
 
-        return dpnp_init_val(shape, dtype, 0)
+        _dtype = dtype if dtype is not None else dpnp.float64
+
+        return dpnp_init_val(shape, _dtype, 0)
 
     return numpy.zeros(shape, dtype=dtype, order=order)
 
