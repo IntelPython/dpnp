@@ -171,7 +171,8 @@ cpdef dparray dpnp_transpose(dparray array1, axes=None):
 
     cdef fptr_custom_elemwise_transpose_1in_1out_t func = <fptr_custom_elemwise_transpose_1in_1out_t > kernel_data.ptr
     # call FPTR function
-    func(array1.get_data(), < size_t * > input_shape.data(), < size_t * > result_shape.data(), < size_t * > permute_axes.data(), input_shape_size, result.get_data(), array1.size)
+    func(array1.get_data(), < size_t * > input_shape.data(), < size_t * > result_shape.data(),
+         < size_t * > permute_axes.data(), input_shape_size, result.get_data(), array1.size)
 
     return result
 

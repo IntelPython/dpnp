@@ -55,22 +55,15 @@ void dpnp_elemwise_transpose_c(void* array1_in,
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
     size_t* input_offset_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(long)));
+    get_shape_offsets_inkernel(input_shape, ndim, input_offset_shape);
+
+    size_t* temp_result_offset_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(long)));
+    get_shape_offsets_inkernel(result_shape, ndim, temp_result_offset_shape);
+
     size_t* result_offset_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(long)));
-
-    size_t dim_prod_input = 1;
-    size_t dim_prod_result = 1;
-    for (long i = ndim - 1; i >= 0; --i)
+    for (size_t axis = 0; axis < ndim; ++axis)
     {
-        /*
-        for example above, offset vectors will be
-          input_offset_shape=[12, 4, 1]
-          result_offset_shape=[1, 2, 6]
-        */
-        input_offset_shape[i] = dim_prod_input;
-        result_offset_shape[permute_axes[i]] = dim_prod_result;
-
-        dim_prod_input *= input_shape[i];
-        dim_prod_result *= result_shape[i];
+        result_offset_shape[permute_axes[axis]] = temp_result_offset_shape[axis];
     }
 
     cl::sycl::range<1> gws(size);
