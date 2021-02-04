@@ -29,32 +29,25 @@
 
 // TODO add namespace
 // will added for test_commons
-class DPNPTestEnvironment : public testing::Environment
+class DPNPCTestEnvironment : public testing::Environment
 {
 public:
-    DPNPTestEnvironment(QueueOptions selection)
-    {
-        this->selection = selection;
-    }
     void SetUp() override
     {
         // TODO update print
         std::cout << "starting new env" << std::endl << std::endl;
-        dpnp_queue_initialize_c(selection);
     }
     void TearDown() override
     {
     }
-
-private:
-    QueueOptions selection;
 };
 
-int RunAllTests(DPNPTestEnvironment* env)
+int RunAllTests(DPNPCTestEnvironment* env)
 {
     // testing::internal::GetUnitTestImpl()->ClearAdHocTestResult();
-    // It returns 0 if all tests are successful, or 1 otherwise.
     (void)env;
+
+    // It returns 0 if all tests are successful, or 1 otherwise.
     return RUN_ALL_TESTS();
 }
 
@@ -63,19 +56,6 @@ int main(int argc, char** argv)
     ::testing::InitGoogleTest(&argc, argv);
 
     // currently using global queue
-    //int run_status = 0;
-    // auto QueueOptionsDevices = std::vector<QueueOptions>{ QueueOptions::CPU_SELECTOR, QueueOptions::GPU_SELECTOR };
-    // for (auto device_selector : QueueOptionsDevices)
-    // {
-    //     int status;
-    //     // TODO adding disabled tests for each envs (GPU/CPU queue)
-    //     // currently all tests are OK for both devices
-    //     DPNPTestEnvironment* const env = new DPNPTestEnvironment(device_selector);
-    //     testing::AddGlobalTestEnvironment(env);
-    //     status = RunAllTests(env);
-    //     if (status != 0) run_status = status;
-    // }
-    // return run_status;
 
     // It returns 0 if all tests are successful, or 1 otherwise.
     return RUN_ALL_TESTS();
