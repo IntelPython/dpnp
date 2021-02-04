@@ -286,6 +286,17 @@ INP_DLLEXPORT void dpnp_det_c(void* array1_in, void* result1, size_t* shape, siz
 
 /**
  * @ingroup BACKEND_API
+ * @brief implementation of creating filled with value array function
+ *
+ * @param [out] result  Output array.
+ * @param [in]  value   Value in array.
+ * @param [in]  size    Number of elements in array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_initval_c(void* result1, void* value, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of inv function
  *
  * @param [in]  array   Input array with data.
