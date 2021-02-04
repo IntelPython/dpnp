@@ -825,16 +825,13 @@ void dpnp_rng_zipf_c(void* result, const _DataType a, const size_t size)
     am1 = a - d_one;
     b = pow(2.0, am1);
 
-    Uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+    Uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * 2 * sizeof(_DataType)));
     if (Uvec == nullptr)
     {
         throw std::runtime_error("DPNP RNG Error: dpnp_rng_zipf_c() failed.");
     }
-    Vvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
-    if (Vvec == nullptr)
-    {
-        throw std::runtime_error("DPNP RNG Error: dpnp_rng_zipf_c() failed.");
-    }
+    Vvec = Uvec + size;
+
     // TODO
     // kernel for acceptance
     for (n_accepted = 0; n_accepted < size;)
@@ -865,7 +862,6 @@ void dpnp_rng_zipf_c(void* result, const _DataType a, const size_t size)
         }
     }
 
-    dpnp_memory_free_c(Vvec);
     dpnp_memory_free_c(Uvec);
 }
 
