@@ -69,6 +69,7 @@ class dummy_multiarray_tests(dummymodule):
     run_byteorder_converter = dummy_func
     run_casting_converter = dummy_func
     run_clipmode_converter = dummy_func
+    run_intp_converter = dummy_func
     run_order_converter = dummy_func
     run_searchside_converter = dummy_func
     run_selectkind_converter = dummy_func
@@ -108,6 +109,9 @@ def redefine_strides(f):
 def replace_arg_value(f, arg_pos, in_values, out_value):
     """Replace value of positional argument of specified function"""
     def wrapper(*args, **kwargs):
+        if len(args) <= arg_pos:
+            return f(*args, **kwargs)
+
         args = list(args)
         arg_value = args[arg_pos]
         for in_value in in_values:
@@ -169,11 +173,14 @@ dpnp.array(object, dtype='m8')       -> dpnp.array(object, dtype=None)
 dpnp.array(object, dtype=dpnp.uint8) -> dpnp.array(object, dtype=None)
 dpnp.array(object, dtype='i4,i4')    -> dpnp.array(object, dtype=None)
 dpnp.array(object, dtype=object)     -> dpnp.array(object, dtype=None)
+dpnp.array(object, dtype=rational)   -> dpnp.array(object, dtype=None)
+dpnp.array(object, 'i,i')            -> dpnp.array(object, None)
 
 dpnp.full(shape, -2**64+1) -> dpnp.full(shape, 0)
 dpnp.full(shape, fill_value, dtype=object) -> dpnp.full(shape, fill_value, dtype=None)
 
 a = dpnp.ones(shape) -> a.strides = numpy.ones(shape).strides
+dpnp.ones(shape, dtype='i,i') -> dpnp.ones(shape, dtype=None)
 
 dpnp.zeros(shape, dtype='m8') -> dpnp.zeros(shape, dtype=None)
 dpnp.zeros(shape, dtype=dpnp.dtype(dict(
@@ -200,11 +207,14 @@ array_input_replace_map = [
 for in_value, out_value in array_input_replace_map:
     dpnp.array = replace_arg_value(dpnp.array, 0, [in_value], out_value)
 
-dpnp.array = replace_kwarg_value(dpnp.array, 'dtype', ['m8', dpnp.uint8, 'i4,i4', object], None)
+rational = numpy.core._rational_tests.rational
+dpnp.array = replace_kwarg_value(dpnp.array, 'dtype', ['m8', dpnp.uint8, 'i4,i4', object, rational], None)
+dpnp.array = replace_arg_value(dpnp.array, 1, ['i,i'], None)
 
 dpnp.full = replace_arg_value(dpnp.full, 1, [-2**64 + 1], 0)
 dpnp.full = replace_kwarg_value(dpnp.full, 'dtype', [object], None)
 dpnp.ones = redefine_strides(dpnp.ones)
+dpnp.ones = replace_kwarg_value(dpnp.ones, 'dtype', ['i,i'], None)
 dpnp.zeros = replace_kwarg_value(dpnp.zeros, 'dtype', [
     'm8', dpnp.dtype(dict(
         formats=['<i4', '<i4'],
@@ -257,8 +267,8 @@ dpnp.ufunc = types.FunctionType
 
 # setting some numpy attrubutes to dpnp
 NUMPY_ONLY_ATTRS = [
-    '_NoValue', 'errstate', 'finfo', 'iinfo', 'inf', 'intp', 'longdouble',
-    'NZERO', 'pi', 'testing', 'typecodes',
+    'BUFSIZE', '_NoValue', 'errstate', 'finfo', 'iinfo', 'inf', 'intp',
+    'longdouble', 'NZERO', 'pi', 'testing', 'typecodes',
 ]
 for attr in NUMPY_ONLY_ATTRS:
     setattr(dpnp, attr, getattr(numpy, attr))
