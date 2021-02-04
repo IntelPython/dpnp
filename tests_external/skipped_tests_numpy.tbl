@@ -539,6 +539,7 @@ tests/test_dtype.py::TestString::test_empty_string_to_object
 tests/test_dtype.py::TestString::test_void_subclass_fields
 tests/test_dtype.py::TestString::test_void_subclass_sized
 tests/test_dtype.py::TestString::test_void_subclass_unsized
+tests/test_dtype.py::TestStructuredDtypeSparseFields::test_sparse_field_assignment
 tests/test_dtype.py::TestStructuredDtypeSparseFields::test_sparse_field_assignment_fancy
 tests/test_dtype.py::TestStructuredObjectRefcounting::test_structured_object_create_delete[wrapper-0-<structured subarray 1>]
 tests/test_dtype.py::TestStructuredObjectRefcounting::test_structured_object_create_delete[wrapper-0-<structured subarray 2>]

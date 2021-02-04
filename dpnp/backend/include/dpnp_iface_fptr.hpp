@@ -100,6 +100,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_FLOOR_DIVIDE,             /**< Used in numpy.floor_divide() implementation  */
     DPNP_FN_FMOD,                     /**< Used in numpy.fmod() implementation  */
     DPNP_FN_HYPOT,                    /**< Used in numpy.hypot() implementation  */
+    DPNP_FN_INITVAL,                  /**< Used in numpy ones, ones_like, zeros, zeros_like, full, full_like impl  */
     DPNP_FN_INV,                      /**< Used in numpy.linalg.inv() implementation  */
     DPNP_FN_INVERT,                   /**< Used in numpy.invert() implementation  */
     DPNP_FN_KRON,                     /**< Used in numpy.kron() implementation  */
@@ -182,12 +183,13 @@ enum class DPNPFuncName : size_t
  */
 enum class DPNPFuncType : size_t
 {
-    DPNP_FT_NONE,    /**< Very first element of the enumeration */
-    DPNP_FT_INT,     /**< analog of numpy.int32 or int */
-    DPNP_FT_LONG,    /**< analog of numpy.int64 or long */
-    DPNP_FT_FLOAT,   /**< analog of numpy.float32 or float */
-    DPNP_FT_DOUBLE,  /**< analog of numpy.float32 or double */
-    DPNP_FT_CMPLX128 /**< analog of numpy.complex128 or std::complex<double> */
+    DPNP_FT_NONE,     /**< Very first element of the enumeration */
+    DPNP_FT_INT,      /**< analog of numpy.int32 or int */
+    DPNP_FT_LONG,     /**< analog of numpy.int64 or long */
+    DPNP_FT_FLOAT,    /**< analog of numpy.float32 or float */
+    DPNP_FT_DOUBLE,   /**< analog of numpy.float32 or double */
+    DPNP_FT_CMPLX128, /**< analog of numpy.complex128 or std::complex<double> */
+    DPNP_FT_BOOL      /**< analog of numpy.bool or numpy.bool_ or bool */
 };
 
 /**
