@@ -98,6 +98,7 @@ public:
     {
         DPNP_USM_iterator tmp = *this;
         ++(*this); // call prefix increment
+
         return tmp;
     }
 
@@ -120,7 +121,16 @@ public:
 
     inline difference_type operator-(const DPNP_USM_iterator& __rhs) const
     {
-        return data - __rhs.data;
+        size_type stride = 1;
+        if (axis_use)
+        {
+            stride = shape_pitch[axis];
+        }
+
+        difference_type linear_diff = data - __rhs.data;
+        difference_type elements_in_stride = stride; // potential issue with unsigned conversion to signed
+
+        return linear_diff / elements_in_stride;
     }
 
     /// Operator needs to print this container in human readable form in error reporting
@@ -195,7 +205,8 @@ public:
     {
         // TODO it is better to get begin() iterator as a parameter
 
-        return iterator(data + get_input_begin_offset(output_global_id) + get_input_end_length());
+        return iterator(
+            data + get_input_begin_offset(output_global_id) + get_input_end_length(), axis_use, axis, shape_pitch);
     }
 
     /// this function is designed for SYCL environment execution
