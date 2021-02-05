@@ -323,8 +323,7 @@ jobs:
       . ./scripts/install_cmake_lin.sh
       ./scripts/install_system_deps.sh  # no intel python
       echo ========================= build DPNP package ===============================
-      export DPNP_BACKEND_TESTS_ENABLE=1
-      . ./0.env.sh
+      . /opt/intel/oneapi/setvars.sh
       THEDIR=$(pwd)
       cmake  -S$THEDIR/dpnp/backend -B$THEDIR/build/ -DCMAKE_BUILD_TYPE=Release \
               -DDPNP_INSTALL_PREFIX=$THEDIR/dpnp -DDPNP_INSTALL_STRUCTURED=OFF \
