@@ -93,8 +93,9 @@ void dpnp_elemwise_transpose_c(void* array1_in,
 
     event.wait();
 
-    free(input_offset_shape, DPNP_QUEUE);
-    free(result_offset_shape, DPNP_QUEUE);
+    dpnp_memory_free_c(input_offset_shape);
+    dpnp_memory_free_c(temp_result_offset_shape);
+    dpnp_memory_free_c(result_offset_shape);
 }
 
 void func_map_init_manipulation(func_map_t& fmap)
