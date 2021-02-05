@@ -63,6 +63,8 @@ __all__ += [
     "dpnp_minimum",
     "dpnp_modf",
     "dpnp_multiply",
+    "dpnp_nancumprod",
+    "dpnp_nancumsum",
     "dpnp_nanprod",
     "dpnp_nansum",
     "dpnp_negative",
@@ -139,54 +141,28 @@ cpdef dparray dpnp_cross(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_CROSS, x1, x2, x1.shape)
 
 
-cpdef dparray dpnp_cumprod(dparray x1, bint usenan=False):
+cpdef dparray dpnp_cumprod(dparray x1):
+    #instead of x1.shape, (x1.size, ) is passed to the function
+    # due to the following:
+    # >>> import numpy
+    # >>> a = numpy.array([[1, 2], [2, 3]])
+    # >>> res = numpy.cumprod(a)
+    # >>> res.shape
+    # (4,)
 
-    types_map = {
-        dpnp.int32: dpnp.int64,
-        dpnp.int64: dpnp.int64,
-        dpnp.float32: dpnp.float32,
-        dpnp.float64: dpnp.float64
-    }
-
-    res_type = types_map[x1.dtype.type]
-
-    cdef dparray result = dparray(x1.size, dtype=res_type)
-
-    cur_res = 1
-
-    for i in range(result.size):
-
-        if not usenan or not dpnp.isnan(x1[i]):
-            cur_res *= x1[i]
-
-        result._setitem_scalar(i, cur_res)
-
-    return result
+    return call_fptr_1in_1out(DPNP_FN_CUMPROD, x1, (x1.size,))
 
 
-cpdef dparray dpnp_cumsum(dparray x1, bint usenan=False):
+cpdef dparray dpnp_cumsum(dparray x1):
+    #instead of x1.shape, (x1.size, ) is passed to the function
+    # due to the following:
+    # >>> import numpy
+    # >>> a = numpy.array([[1, 2], [2, 3]])
+    # >>> res = numpy.cumsum(a)
+    # >>> res.shape
+    # (4,)
 
-    types_map = {
-        dpnp.int32: dpnp.int64,
-        dpnp.int64: dpnp.int64,
-        dpnp.float32: dpnp.float32,
-        dpnp.float64: dpnp.float64
-    }
-
-    res_type = types_map[x1.dtype.type]
-
-    cdef dparray result = dparray(x1.size, dtype=res_type)
-
-    cur_res = 0
-
-    for i in range(result.size):
-
-        if not usenan or not dpnp.isnan(x1[i]):
-            cur_res += x1[i]
-
-        result._setitem_scalar(i, cur_res)
-
-    return result
+    return call_fptr_1in_1out(DPNP_FN_CUMSUM, x1, (x1.size,))
 
 
 cpdef dparray dpnp_diff(dparray input, int n):
@@ -342,6 +318,28 @@ cpdef dparray dpnp_multiply(dparray x1, x2):
         return result.reshape(x1.shape)
     else:
         return call_fptr_2in_1out(DPNP_FN_MULTIPLY, x1, x2, x1.shape)
+
+
+cpdef dparray dpnp_nancumprod(dparray x1):
+
+    cur_x1 = dpnp.copy(x1)
+
+    for i in range(cur_x1.size):
+        if dpnp.isnan(cur_x1[i]):
+            cur_x1._setitem_scalar(i, 1)
+
+    return dpnp_cumprod(cur_x1)
+
+
+cpdef dparray dpnp_nancumsum(dparray x1):
+
+    cur_x1 = dpnp.copy(x1)
+
+    for i in range(cur_x1.size):
+        if dpnp.isnan(cur_x1[i]):
+            cur_x1._setitem_scalar(i, 0)
+
+    return dpnp_cumsum(cur_x1)
 
 
 cpdef dpnp_nanprod(dparray x1):

@@ -68,27 +68,8 @@ class dpnp_full_c_kernel;
 
 template <typename _DataType>
 void dpnp_full_c(void* array_in, void* result, const size_t size)
-{
-    cl::sycl::event event;
-    _DataType* array = reinterpret_cast<_DataType*>(array_in);
-    _DataType input_elem = array[0];
-    _DataType* res = reinterpret_cast<_DataType*>(result);
-
-    cl::sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
-        size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/
-        {
-            res[i] = input_elem;
-        }
-    };
-
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
-        cgh.parallel_for<class dpnp_full_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
-    };
-
-    event = DPNP_QUEUE.submit(kernel_func);
-
-    event.wait();
+{    
+    dpnp_initval_c<_DataType>(result, array_in, size);
 }
 
 void func_map_init_arraycreation(func_map_t& fmap)

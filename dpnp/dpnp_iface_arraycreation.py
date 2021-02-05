@@ -350,7 +350,7 @@ def copy(a, order='C', subok=False):
     """
 
     if not use_origin_backend(a):
-        return array(a, order=order, subok=subok)
+        return dpnp_copy(a, order, subok)
 
     return call_origin(numpy.copy, a, order, subok)
 
@@ -611,9 +611,8 @@ def full(shape, fill_value, dtype=None, order='C'):
     [10, 10, 10, 10]
 
     """
-
     if not use_origin_backend():
-        if order != 'C':
+        if order not in ('C', 'c', None):
             pass
         else:
             if dtype is None:
@@ -982,7 +981,9 @@ def ones(shape, dtype=None, order='C'):
         if order not in ('C', 'c', None):
             checker_throw_value_error("ones", "order", order, 'C')
 
-        return dpnp_init_val(shape, dtype, 1)
+        _dtype = dtype if dtype is not None else dpnp.float64
+
+        return dpnp_init_val(shape, _dtype, 1)
 
     return numpy.ones(shape, dtype=dtype, order=order)
 
@@ -1149,7 +1150,9 @@ def zeros(shape, dtype=None, order='C'):
         if order not in ('C', 'c', None):
             checker_throw_value_error("zeros", "order", order, 'C')
 
-        return dpnp_init_val(shape, dtype, 0)
+        _dtype = dtype if dtype is not None else dpnp.float64
+
+        return dpnp_init_val(shape, _dtype, 0)
 
     return numpy.zeros(shape, dtype=dtype, order=order)
 

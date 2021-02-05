@@ -182,6 +182,30 @@ INP_DLLEXPORT void dpnp_cross_c(void* array1_in, void* array2_in, void* result1,
 
 /**
  * @ingroup BACKEND_API
+ * @brief Custom implementation of cumprod function
+ *
+ * @param [in]  array1_in  Input array.
+ * @param [out] result1    Output array.
+ * @param [in]  size       Number of elements in input arrays.
+ *
+ */
+template <typename _DataType_input, typename _DataType_output>
+INP_DLLEXPORT void dpnp_cumprod_c(void* array1_in, void* result1, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief Custom implementation of cumsum function
+ *
+ * @param [in]  array1_in  Input array.
+ * @param [out] result1    Output array.
+ * @param [in]  size       Number of elements in input arrays.
+ *
+ */
+template <typename _DataType_input, typename _DataType_output>
+INP_DLLEXPORT void dpnp_cumsum_c(void* array1_in, void* result1, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief Sum of array elements
  *
  * @param [in]  array  Input array.
@@ -294,6 +318,17 @@ INP_DLLEXPORT void dpnp_cov_c(void* array1_in, void* result1, size_t nrows, size
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief implementation of creating filled with value array function
+ *
+ * @param [out] result  Output array.
+ * @param [in]  value   Value in array.
+ * @param [in]  size    Number of elements in array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_initval_c(void* result1, void* value, size_t size);
 
 /**
  * @ingroup BACKEND_API

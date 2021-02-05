@@ -41,6 +41,7 @@ from dpnp.dpnp_algo cimport *
 
 
 __all__ += [
+    "dpnp_copy",
     "dpnp_diag",
     "dpnp_full",
     "dpnp_geomspace",
@@ -51,6 +52,10 @@ __all__ += [
     "dpnp_tril",
     "dpnp_triu",
 ]
+
+
+cpdef dparray dpnp_copy(dparray x1, order, subok):
+    return call_fptr_1in_1out(DPNP_FN_COPY, x1, x1.shape)
 
 
 cpdef dparray dpnp_diag(v, k):
