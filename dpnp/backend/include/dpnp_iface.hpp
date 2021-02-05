@@ -120,6 +120,17 @@ INP_DLLEXPORT void dpnp_arange_c(size_t start, size_t step, void* result1, size_
 
 /**
  * @ingroup BACKEND_API
+ * @brief Implementation of full function
+ *
+ * @param [in]  array_in  Input one-element array.
+ * @param [out] result    Output array.
+ * @param [in]  size      Number of elements in the output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_full_c(void* array_in, void* result, const size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief Matrix multiplication.
  *
  * Matrix multiplication procedure. Works with 2-D matrices

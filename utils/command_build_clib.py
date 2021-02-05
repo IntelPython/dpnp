@@ -161,6 +161,7 @@ dpnp_backend_c_description = [
     ["dpnp_backend_c",
         {
             "sources": [
+                "dpnp/backend/kernels/dpnp_krnl_arraycreation.cpp",
                 "dpnp/backend/kernels/dpnp_krnl_bitwise.cpp",
                 "dpnp/backend/kernels/dpnp_krnl_common.cpp",
                 "dpnp/backend/kernels/dpnp_krnl_elemwise.cpp",
