@@ -43,7 +43,7 @@ vector<_DataType> get_input_data(const vector<dpnpc_index_t>& shape)
     const dpnpc_index_t size = accumulate(shape.begin(), shape.end(), dpnpc_index_t(1), multiplies<dpnpc_index_t>());
 
     vector<_DataType> input_data(size);
-    iota(input_data.begin(), input_data.end(), 0);
+    iota(input_data.begin(), input_data.end(), 1); // let's start from 1 to avoid cleaned memory comparison
 
     return input_data;
 }
@@ -79,29 +79,29 @@ TEST(TestUtilsIterator, take_value)
 {
     using test_it = dpnpc_it_t;
 
-    // expected data 0, 1
+    // expected data 1, 2
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({2});
     DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2});
 
     test_it begin = result_obj.begin();
-    EXPECT_EQ(*begin, 0);
-
-    ++begin;
     EXPECT_EQ(*begin, 1);
 
-    EXPECT_EQ(result_obj[1], 1);
+    ++begin;
+    EXPECT_EQ(*begin, 2);
+
+    EXPECT_EQ(result_obj[1], 2);
 }
 
 TEST(TestUtilsIterator, take_value_loop)
 {
-    // expected data 0, 1, 2 ,3
+    // expected data 1, 2 ,3, 4
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({4});
     DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {4});
 
     dpnpc_it_t begin = result_obj.begin();
     for (size_t i = 0; i < input_data.size(); ++i, ++begin)
     {
-        EXPECT_EQ(result_obj[i], i);
+        EXPECT_EQ(result_obj[i], i + 1);
     }
 }
 
@@ -109,25 +109,10 @@ TEST(TestUtilsIterator, take_value_axis_0_0)
 {
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({4});
     DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 2});
-    result_obj.set_axis(0); // expected data {{0, 2}, {1 ,3}} with shape {2, 2}
+    result_obj.set_axis(0); // expected data {{1, 3}, {2 ,4}} with shape {2, 2}
 
     dpnpc_it_t begin = result_obj.begin();
     dpnpc_it_t end = result_obj.end();
-    EXPECT_NE(begin, end);
-    EXPECT_EQ(*begin, 0);
-
-    ++begin;
-    EXPECT_EQ(*begin, 2);
-}
-
-TEST(TestUtilsIterator, take_value_axis_0_1)
-{
-    vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({4});
-    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 2});
-    result_obj.set_axis(0); // expected data {{0, 2}, {1 ,3}} with shape {2, 2}
-
-    dpnpc_it_t begin = result_obj.begin(1);
-    dpnpc_it_t end = result_obj.end(1);
     EXPECT_NE(begin, end);
     EXPECT_EQ(*begin, 1);
 
@@ -135,20 +120,35 @@ TEST(TestUtilsIterator, take_value_axis_0_1)
     EXPECT_EQ(*begin, 3);
 }
 
+TEST(TestUtilsIterator, take_value_axis_0_1)
+{
+    vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({4});
+    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 2});
+    result_obj.set_axis(0); // expected data {{1, 3}, {2 ,4}} with shape {2, 2}
+
+    dpnpc_it_t begin = result_obj.begin(1);
+    dpnpc_it_t end = result_obj.end(1);
+    EXPECT_NE(begin, end);
+    EXPECT_EQ(*begin, 2);
+
+    ++begin;
+    EXPECT_EQ(*begin, 4);
+}
+
 TEST(TestUtilsIterator, take_value_axis_1)
 {
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({4});
     DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 2});
-    result_obj.set_axis(1); // expected data {{0, 1}, {2 ,3}}
+    result_obj.set_axis(1); // expected data {{1, 2}, {3 ,4}}
 
     dpnpc_it_t begin = result_obj.begin();
     dpnpc_it_t end = result_obj.end();
     EXPECT_NE(begin, end);
-    EXPECT_EQ(*begin, 0);
-    EXPECT_EQ(*end, 2); // linear data space
+    EXPECT_EQ(*begin, 1);
+    EXPECT_EQ(*end, 3); // linear data space
 
     ++begin;
-    EXPECT_EQ(*begin, 1);
+    EXPECT_EQ(*begin, 2);
 }
 
 TEST(TestUtilsIterator, iterator_loop)
@@ -159,7 +159,7 @@ TEST(TestUtilsIterator, iterator_loop)
 
     dpnpc_value_t input_data[size];
     DPNPC_id<dpnpc_value_t> result(input_data, {size});
-    iota(result.begin(), result.end(), 0);
+    iota(result.begin(), result.end(), 1);
 
     vector<dpnpc_value_t>::iterator it_expected = expected.begin();
     dpnpc_it_t it_result = result.begin();
@@ -324,22 +324,42 @@ TEST_P(IteratorReduction, sycl_reduce_axis)
     }
 }
 
+/**
+ * Expected values produced by following script:
+ *
+ * import numpy as np
+ *
+ * shape = [2, 3, 4]
+ * size = 24
+ * axis=1
+ * input = np.arange(1, size + 1).reshape(shape)
+ * print(f"axis={axis}")
+ * print(f"input.dtype={input.dtype}")
+ * print(f"input shape={input.shape}")
+ * print(f"input:\n{input}\n")
+ *
+ * result = np.sum(input, axis=axis)
+ * print(f"result.dtype={result.dtype}")
+ * print(f"result shape={result.shape}")
+ *
+ * print(f"result={np.array2string(result.reshape(result.size), separator=',')}\n", sep=",")
+ */
 INSTANTIATE_TEST_SUITE_P(
     TestUtilsIterator,
     IteratorReduction,
-    testing::Values(IteratorParameters{{2, 3, 4}, 0, {12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34}},
-                    IteratorParameters{{2, 3, 4}, 1, {12, 15, 18, 21, 48, 51, 54, 57}},
-                    IteratorParameters{{2, 3, 4}, 2, {6, 22, 38, 54, 70, 86}},
-                    IteratorParameters{{1, 1, 1}, 0, {0}}, // it doesn't work
-                    IteratorParameters{{1, 1, 1}, 1, {0}},
-                    IteratorParameters{{1, 1, 1}, 2, {0}},
-                    IteratorParameters{{2, 3, 4, 2}, 0, {24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46,
-                                                         48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70}},
+    testing::Values(IteratorParameters{{2, 3, 4}, 0, {14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36}},
+                    IteratorParameters{{2, 3, 4}, 1, {15, 18, 21, 24, 51, 54, 57, 60}},
+                    IteratorParameters{{2, 3, 4}, 2, {10, 26, 42, 58, 74, 90}},
+                    IteratorParameters{{1, 1, 1}, 0, {1}},
+                    IteratorParameters{{1, 1, 1}, 1, {1}},
+                    IteratorParameters{{1, 1, 1}, 2, {1}},
+                    IteratorParameters{{2, 3, 4, 2}, 0, {26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48,
+                                                         50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72}},
                     IteratorParameters{
-                        {2, 3, 4, 2}, 1, {24, 27, 30, 33, 36, 39, 42, 45, 96, 99, 102, 105, 108, 111, 114, 117}},
-                    IteratorParameters{{2, 3, 4, 2}, 2, {12, 16, 44, 48, 76, 80, 108, 112, 140, 144, 172, 176}},
-                    IteratorParameters{{2, 3, 4, 2}, 3, {1,  5,  9,  13, 17, 21, 25, 29, 33, 37, 41, 45,
-                                                         49, 53, 57, 61, 65, 69, 73, 77, 81, 85, 89, 93}},
-                    IteratorParameters{{3, 4}, 0, {12, 15, 18, 21}},
-                    IteratorParameters{{3, 4}, 1, {6, 22, 38}},
-                    IteratorParameters{{1}, 0, {0}}) /*TODO ,  testing::PrintToStringParamName() */);
+                        {2, 3, 4, 2}, 1, {27, 30, 33, 36, 39, 42, 45, 48, 99, 102, 105, 108, 111, 114, 117, 120}},
+                    IteratorParameters{{2, 3, 4, 2}, 2, {16, 20, 48, 52, 80, 84, 112, 116, 144, 148, 176, 180}},
+                    IteratorParameters{{2, 3, 4, 2}, 3, {3,  7,  11, 15, 19, 23, 27, 31, 35, 39, 43, 47,
+                                                         51, 55, 59, 63, 67, 71, 75, 79, 83, 87, 91, 95}},
+                    IteratorParameters{{3, 4}, 0, {15, 18, 21, 24}},
+                    IteratorParameters{{3, 4}, 1, {10, 26, 42}},
+                    IteratorParameters{{1}, 0, {1}}) /*TODO ,  testing::PrintToStringParamName() */);
