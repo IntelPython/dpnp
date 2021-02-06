@@ -42,7 +42,7 @@ vector<_DataType> get_input_data(const vector<dpnpc_index_t>& shape)
 {
     const dpnpc_index_t size = accumulate(shape.begin(), shape.end(), dpnpc_index_t(1), multiplies<dpnpc_index_t>());
 
-    vector<_DataType> input_data(size, 42);
+    vector<_DataType> input_data(size);
     iota(input_data.begin(), input_data.end(), 0);
 
     return input_data;
@@ -260,7 +260,7 @@ TEST_P(IteratorReduction, loop_reduce_axis)
 
 TEST_P(IteratorReduction, pstl_reduce_axis)
 {
-    using data_type = size_t;
+    using data_type = double;
 
     const IteratorParameters& param = GetParam();
     const dpnpc_index_t result_size = param.result.size();
@@ -269,7 +269,9 @@ TEST_P(IteratorReduction, pstl_reduce_axis)
     DPNPC_id<data_type> input(input_data.data(), param.input_shape);
     input.set_axis(param.axis);
 
-    vector<dpnpc_value_t> result(result_size, 42);
+    EXPECT_EQ(input.get_output_size(), result_size);
+
+    vector<data_type> result(result_size, 42);
     for (dpnpc_index_t output_id = 0; output_id < result_size; ++output_id)
     {
         auto policy = oneapi::dpl::execution::make_device_policy<class test_pstl_reduce_axis_kernel>(DPNP_QUEUE);
@@ -281,13 +283,54 @@ TEST_P(IteratorReduction, pstl_reduce_axis)
     }
 }
 
+TEST_P(IteratorReduction, sycl_reduce_axis)
+{
+    using data_type = double;
+
+    const IteratorParameters& param = GetParam();
+    const dpnpc_index_t result_size = param.result.size();
+    vector<data_type> result(result_size, 42);
+    data_type* result_ptr = result.data();
+
+    vector<data_type> input_data = get_input_data<data_type>(param.input_shape);
+    DPNPC_id<data_type> input(input_data.data(), param.input_shape);
+    input.set_axis(param.axis);
+
+    EXPECT_EQ(input.get_output_size(), result_size);
+
+    cl::sycl::range<1> gws(result_size);
+    const DPNPC_id<data_type>* input_it = &input;
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        const size_t idx = global_id[0];
+
+        data_type accumulator = 0;
+        for (DPNPC_id<data_type>::iterator data_it = input_it->begin(idx); data_it != input_it->end(idx); ++data_it)
+        {
+            accumulator += *data_it;
+        }
+        result_ptr[idx] = accumulator;
+    };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class test_sycl_reduce_axis_kernel>(gws, kernel_parallel_for_func);
+    };
+
+    cl::sycl::event event = DPNP_QUEUE.submit(kernel_func);
+    event.wait();
+
+    for (dpnpc_index_t i = 0; i < result_size; ++i)
+    {
+        EXPECT_EQ(result.at(i), param.result.at(i));
+    }
+}
+
 INSTANTIATE_TEST_SUITE_P(
     TestUtilsIterator,
     IteratorReduction,
     testing::Values(IteratorParameters{{2, 3, 4}, 0, {12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34}},
                     IteratorParameters{{2, 3, 4}, 1, {12, 15, 18, 21, 48, 51, 54, 57}},
                     IteratorParameters{{2, 3, 4}, 2, {6, 22, 38, 54, 70, 86}},
-                    IteratorParameters{{1, 1, 1}, 0, {0}},
+                    IteratorParameters{{1, 1, 1}, 0, {0}}, // it doesn't work
                     IteratorParameters{{1, 1, 1}, 1, {0}},
                     IteratorParameters{{1, 1, 1}, 2, {0}},
                     IteratorParameters{{2, 3, 4, 2}, 0, {24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46,
