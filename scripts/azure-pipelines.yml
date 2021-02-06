@@ -326,12 +326,9 @@ jobs:
       . /opt/intel/oneapi/setvars.sh
       THEDIR=$(pwd)
       cmake  -S$THEDIR/dpnp/backend -B$THEDIR/build/ -DCMAKE_BUILD_TYPE=Release \
-              -DDPNP_INSTALL_PREFIX=$THEDIR/dpnp -DDPNP_INSTALL_STRUCTURED=OFF \
-              -DDPNP_SYCL_QUEUE_MGR_ENABLE:BOOL=OFF \
-              -DDPNP_QUEUEMGR_INCLUDE_DIR=No_sycl_queue_mgr_include_dir \
-              -DDPNP_QUEUEMGR_LIB_DIR=No_sycl_queue_mgr_library_dir \
-              -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DDPNP_BACKEND_TESTS:BOOL=ON \
-              $THEDIR/dpnp/backend
+             -DDPNP_INSTALL_PREFIX=$THEDIR/dpnp -DDPNP_INSTALL_STRUCTURED=OFF \
+             -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DDPNP_BACKEND_TESTS:BOOL=ON \
+             $THEDIR/dpnp/backend
       cmake --build $THEDIR/build
       cmake --install $THEDIR/build
       echo ======================= run DPNP backend tests =============================
