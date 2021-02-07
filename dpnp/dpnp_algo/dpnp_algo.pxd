@@ -51,12 +51,15 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_CEIL
         DPNP_FN_CHOLESKY
         DPNP_FN_CONJIGUATE
+        DPNP_FN_COPY
         DPNP_FN_COPYSIGN
         DPNP_FN_CORRELATE
         DPNP_FN_COS
         DPNP_FN_COSH
         DPNP_FN_COV
         DPNP_FN_CROSS
+        DPNP_FN_CUMPROD
+        DPNP_FN_CUMSUM
         DPNP_FN_DEGREES
         DPNP_FN_DET
         DPNP_FN_DIVIDE
@@ -72,6 +75,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FLOOR
         DPNP_FN_FLOOR_DIVIDE
         DPNP_FN_FMOD
+        DPNP_FN_FULL
         DPNP_FN_HYPOT
         DPNP_FN_INITVAL
         DPNP_FN_INV
@@ -125,6 +129,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_STANDARD_GAMMA
         DPNP_FN_RNG_STANDARD_NORMAL
         DPNP_FN_RNG_STANDARD_T
+        DPNP_FN_RNG_TRIANGULAR
         DPNP_FN_RNG_UNIFORM
         DPNP_FN_RNG_WEIBULL
         DPNP_FN_SIGN
