@@ -527,16 +527,20 @@ cpdef dparray dpnp_sum(dparray input, axis=None):
     return dpnp_result_array
 
 
-cpdef dpnp_trapz(dparray y1, dparray x1, int dx):
+cpdef dpnp_trapz(dparray y1, dparray x1, dx):
 
-    diff_len = y1.size - 1
+    diff_len = y1.size - y1.ndim
 
     cdef dparray diff = dparray(diff_len, dtype=y1.dtype)
 
     if x1.size == 0:
         diff = dpnp.full(diff_len, dx)
     else:
-        diff = dpnp.ediff1d(x1)
+        for i in range(y1.ndim):
+            pos = i * y1.shape[-1]
+            for j in range(0, y1.shape[-1] - 1):
+                cur_diff = x1[pos + j + 1] - x1[pos + j]
+                diff._setitem_scalar(pos + j, cur_diff)
 
     size_ = y1.shape[-1]
 
