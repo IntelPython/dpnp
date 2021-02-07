@@ -193,10 +193,7 @@ cdef class dparray:
 
         """
 
-        for i in range(self.size):
-            print(self[i], end=' ')
-
-        return "<__str__ TODO>"
+        return str(numpy.asarray(self))
 
     # The definition order of attributes and methods are borrowed from the
     # order of documentation at the following NumPy document.
@@ -853,6 +850,18 @@ cdef class dparray:
         """
 
         return min(self, axis)
+
+    """
+    -------------------------------------------------------------------------
+    Indexing
+    -------------------------------------------------------------------------
+    """
+
+    def choose(input, choices, out=None, mode='raise'):
+        """
+        Construct an array from an index array and a set of arrays to choose from.
+        """
+        return choose(input, choices, out, mode)
 
     """
     -------------------------------------------------------------------------

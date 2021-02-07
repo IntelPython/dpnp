@@ -39,6 +39,7 @@ from dpnp.dpnp_iface_counting import count_nonzero
 
 
 __all__ += [
+    "dpnp_choose",
     "dpnp_diag_indices",
     "dpnp_diagonal",
     "dpnp_fill_diagonal",
@@ -47,12 +48,23 @@ __all__ += [
     "dpnp_place",
     "dpnp_put",
     "dpnp_putmask",
+    "dpnp_select",
     "dpnp_take",
     "dpnp_tril_indices",
     "dpnp_tril_indices_from",
     "dpnp_triu_indices",
     "dpnp_triu_indices_from"
 ]
+
+
+ctypedef void(*custom_indexing_2in_1out_func_ptr_t)(void *, void * , void * , size_t)
+
+
+cpdef dparray dpnp_choose(input, choices):
+    res_array = dparray(len(input), dtype=choices[0].dtype)
+    for i in range(len(input)):
+        res_array[i] = (choices[input[i]])[i]
+    return res_array
 
 
 cpdef tuple dpnp_diag_indices(n, ndim):
@@ -232,14 +244,37 @@ cpdef dpnp_putmask(dparray arr, dparray mask, dparray values):
             arr[i] = values[i % values_size]
 
 
+cpdef dparray dpnp_select(condlist, choicelist, default):
+    size_ = condlist[0].size
+    res_array = dparray(size_, dtype=choicelist[0].dtype)
+    pass_val = {a: default for a in range(size_)}
+    for i in range(len(condlist)):
+        for j in range(size_):
+            if (condlist[i])[j]:
+                res_array[j] = (choicelist[i])[j]
+                pass_val.pop(j)
+
+    for ind, val in pass_val.items():
+        res_array[ind] = val
+
+    return res_array.reshape(condlist[0].shape)
+
+
 cpdef dparray dpnp_take(dparray input, dparray indices):
     indices_size = indices.size
-    res_array = dparray(indices_size, dtype=input.dtype)
-    for i in range(indices_size):
-        ind = indices[i]
-        res_array[i] = input[ind]
-    result = res_array.reshape(indices.shape)
-    return result
+
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TAKE, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray(indices_size, dtype=result_type)
+
+    cdef custom_indexing_2in_1out_func_ptr_t func = <custom_indexing_2in_1out_func_ptr_t > kernel_data.ptr
+
+    func(input.get_data(), indices.get_data(), result.get_data(), indices_size)
+
+    return result.reshape(indices.shape)
 
 
 cpdef tuple dpnp_tril_indices(n, k=0, m=None):

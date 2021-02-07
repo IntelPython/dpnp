@@ -24,50 +24,38 @@
 //*****************************************************************************
 
 #include <iostream>
+#include <list>
 
 #include <dpnp_iface.hpp>
+#include "dpnp_fptr.hpp"
+#include "dpnp_utils.hpp"
+#include "queue_sycl.hpp"
 
-void print_dpnp_array(double* arr, size_t size)
+template <typename _DataType>
+class dpnp_take_c_kernel;
+
+template <typename _DataType>
+void dpnp_take_c(void* array1_in, void* indices1, void* result1, size_t size)
 {
-    std::cout << std::endl;
-    for (size_t i = 0; i < size; ++i)
+    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
+    size_t* indices = reinterpret_cast<size_t*>(indices1);
+
+    for (size_t i = 0; i < size; i++)
     {
-        std::cout << arr[i] << ", ";
+        size_t ind = indices[i];
+        result[i] = array_1[ind];
     }
-    std::cout << std::endl;
+
+    return;
 }
 
-int main(int, char**)
+void func_map_init_indexing_func(func_map_t& fmap)
 {
-    const size_t size = 256;
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_take_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_take_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_take_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_take_c<double>};
 
-    dpnp_queue_initialize_c(QueueOptions::CPU_SELECTOR);
-
-    double* result = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-
-    size_t seed = 10;
-    long low = 1;
-    long high = 120;
-
-    std::cout << "Uniform distr. params:\nlow is " << low << ", high is " << high << std::endl;
-
-    std::cout << "Results, when seed is the same (10) for all random number generations:";
-    for (size_t i = 0; i < 4; ++i)
-    {
-        dpnp_rng_srand_c(seed);
-        dpnp_rng_uniform_c<double>(result, low, high, size);
-        print_dpnp_array(result, 10);
-    }
-
-    std::cout << std::endl << "Results, when seed is random:";
-    dpnp_rng_srand_c();
-    for (size_t i = 0; i < 4; ++i)
-    {
-        dpnp_rng_uniform_c<double>(result, low, high, size);
-        print_dpnp_array(result, 10);
-    }
-
-    dpnp_memory_free_c(result);
-
-    return 0;
+    return;
 }
