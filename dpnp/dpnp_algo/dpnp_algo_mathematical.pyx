@@ -527,25 +527,30 @@ cpdef dparray dpnp_sum(dparray input, axis=None):
     return dpnp_result_array
 
 
-cpdef dpnp_trapz(dparray y, dparray x, int dx):
+cpdef dpnp_trapz(dparray y1, dparray x1, int dx):
 
-    len = y.size
+    diff_len = y1.size - 1
 
-    cdef dparray diff = dparray(len - 1, dtype=y.dtype)
+    cdef dparray diff = dparray(diff_len, dtype=y1.dtype)
 
-    if x.size == 0:
-        diff = dpnp.full(len - 1, dx)
+    if x1.size == 0:
+        diff = dpnp.full(diff_len, dx)
     else:
-        diff = dpnp.ediff1d(x)
+        diff = dpnp.ediff1d(x1)
 
-    square = diff[0] * y[0] + diff[len - 2] * y[len - 1]
+    size_ = y1.shape[-1]
 
-    for i in range(1, len - 1):
-        square += y[i] * (diff[i - 1] + diff[i])
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(y1.dtype)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRAPZ, param1_type, param1_type)
 
-    square *= 0.5
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
 
-    return square
+    cdef dparray result = dparray((y1.ndim,), dtype=result_type)
+
+    cdef ftpr_custom_trapz_2in_1out_with_2size_t func = <ftpr_custom_trapz_2in_1out_with_2size_t > kernel_data.ptr
+    func(y1.get_data(), x1.get_data(), result.get_data(), y1.ndim, size_)
+
+    return result
 
 
 cpdef dparray dpnp_trunc(dparray x1):

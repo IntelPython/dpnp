@@ -159,7 +159,7 @@ class TestTrapz:
                                          [2, 4, 6, 8]])
     @pytest.mark.parametrize("x_array", [[1, 2, 3, 4],
                                          [2, 4, 6, 8]])
-    def test_trapz_without_params(self, y_array, x_array):
+    def test_trapz_with_x_params(self, y_array, x_array):
         y = numpy.array(y_array)
         iy = inp.array(y)
 
@@ -174,7 +174,7 @@ class TestTrapz:
                                          [1., 2.5, 6., 7., ],
                                          [2, 4, 6, 8]])
     @pytest.mark.parametrize("dx", [1, 2, 3, 4])
-    def test_trapz_without_params(self, y_array, dx):
+    def test_trapz_with_dx_params(self, y_array, dx):
         y = numpy.array(y_array)
         iy = inp.array(y)
 

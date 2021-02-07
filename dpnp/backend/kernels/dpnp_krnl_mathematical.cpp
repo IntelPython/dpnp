@@ -277,6 +277,29 @@ void dpnp_remainder_c(void* array1_in, void* array2_in, void* result1, size_t si
     event.wait();
 }
 
+template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2, typename _KernelNameSpecialization3>
+class dpnp_trapz_c_kernel;
+
+template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
+void dpnp_trapz_c(void* array1_in, void* array2_in, void* result1, size_t ndim, size_t size)
+{
+    _DataType_input1* array1 = reinterpret_cast<_DataType_input1*>(array1_in);
+    _DataType_input2* array2 = reinterpret_cast<_DataType_input2*>(array2_in);
+    _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
+
+    for (size_t i = 0; i < ndim; ++i) {
+        size_t pos = i * size;
+        double square = array2[pos] * array1[pos] + array2[pos + size - 2] * array1[pos + size - 1];
+        for (size_t j = 1; j < size - 1; ++j) {
+            square += array1[pos + j] * (array2[pos + j - 1] + array2[pos + j]);
+        }
+        square *= 0.5;
+        result[i] = square;
+    }
+
+    return;
+}
+
 void func_map_init_mathematical(func_map_t& fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_ABSOLUTE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_elemwise_absolute_c<int>};
@@ -363,6 +386,11 @@ void func_map_init_mathematical(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_remainder_c<double, float, double>};
     fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_DBL][eft_DBL] = {eft_DBL,
                                                                (void*)dpnp_remainder_c<double, double, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_cumprod_c<int, double>};
+    fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_cumprod_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_FLT][eft_FLT] = {eft_DBL, (void*)dpnp_cumprod_c<float, double>};
+    fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_cumprod_c<double, double>};
 
     return;
 }

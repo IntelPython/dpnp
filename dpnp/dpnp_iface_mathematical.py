@@ -1491,9 +1491,13 @@ def trapz(y, x=None, dx=1.0, **kwargs):
             if x is None:
                 x = dpnp.empty(0, dtype=y.dtype)
 
-            return dpnp_trapz(y, x=x, dx=dx)
+            result = dpnp_trapz(y, x, dx)
 
-    return call_origin(numpy.trapz, y, x=x, dx=dx, **kwargs)
+            if result.size == 1:
+                return result[0]
+            return result
+
+    return call_origin(numpy.trapz, y1, x=x, dx=dx, **kwargs)
 
 
 def true_divide(*args, **kwargs):
