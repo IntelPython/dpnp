@@ -757,6 +757,35 @@ class TestDistributionsStandardT(TestDistribution):
         self.check_seed('standard_t', {'df': 10.0})
 
 
+class TestDistributionsTriangular(TestDistribution):
+
+    def test_moments(self):
+        left = 1.0
+        mode = 2.0
+        right = 3.0
+        expected_mean = (left + mode + right) / 3
+        expected_var = (left ** 2 + mode ** 2 + right ** 2 - left * mode -left * right -mode * right) / 18
+        self.check_moments('triangular', expected_mean,
+                           expected_var, {'left': left, 'mode': mode, 'right': right})
+
+    def test_invalid_args(self):
+        left = 2.0   # `left` is expected <= `mode`
+        mode = 1.0   # `mode` is expected > `left`
+        right = 3.0  # OK
+        self.check_invalid_args('triangular', {'left': left, 'mode': mode, 'right': right})
+
+        left = 1.0   # OK
+        mode = 3.0   # `mode` is expected <= `right`
+        right = 2.0  # `right` is expected > `mode`
+        self.check_invalid_args('triangular', {'left': left, 'mode': mode, 'right': right})
+
+    def test_seed(self):
+        left = 1.0
+        mode = 2.0
+        right = 3.0
+        self.check_seed('triangular', {'left': left, 'mode': mode, 'right': right})
+
+
 class TestDistributionsUniform(TestDistribution):
 
     def test_extreme_value(self):

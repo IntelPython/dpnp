@@ -38,9 +38,10 @@ class dpnp_elemwise_transpose_c_kernel;
 
 template <typename _DataType>
 void dpnp_elemwise_transpose_c(void* array1_in,
-                               const std::vector<long>& input_shape,
-                               const std::vector<long>& result_shape,
-                               const std::vector<long>& permute_axes,
+                               const size_t* input_shape,
+                               const size_t* result_shape,
+                               const size_t* permute_axes,
+                               size_t ndim,
                                void* result1,
                                size_t size)
 {
@@ -53,24 +54,16 @@ void dpnp_elemwise_transpose_c(void* array1_in,
     _DataType* array1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    const size_t input_shape_size = input_shape.size();
-    size_t* input_offset_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(input_shape_size * sizeof(long)));
-    size_t* result_offset_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(input_shape_size * sizeof(long)));
+    size_t* input_offset_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(long)));
+    get_shape_offsets_inkernel(input_shape, ndim, input_offset_shape);
 
-    size_t dim_prod_input = 1;
-    size_t dim_prod_result = 1;
-    for (long i = input_shape_size - 1; i >= 0; --i)
+    size_t* temp_result_offset_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(long)));
+    get_shape_offsets_inkernel(result_shape, ndim, temp_result_offset_shape);
+
+    size_t* result_offset_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(long)));
+    for (size_t axis = 0; axis < ndim; ++axis)
     {
-        /*
-        for example above, offset vectors will be
-          input_offset_shape=[12, 4, 1]
-          result_offset_shape=[1, 2, 6]
-        */
-        input_offset_shape[i] = dim_prod_input;
-        result_offset_shape[permute_axes[i]] = dim_prod_result;
-
-        dim_prod_input *= input_shape[i];
-        dim_prod_result *= result_shape[i];
+        result_offset_shape[permute_axes[axis]] = temp_result_offset_shape[axis];
     }
 
     cl::sycl::range<1> gws(size);
@@ -79,7 +72,7 @@ void dpnp_elemwise_transpose_c(void* array1_in,
 
         size_t output_index = 0;
         size_t reminder = idx;
-        for (size_t axis = 0; axis < input_shape_size; ++axis)
+        for (size_t axis = 0; axis < ndim; ++axis)
         {
             /* reconstruct [x][y][z] from given linear idx */
             size_t xyz_id = reminder / input_offset_shape[axis];
@@ -100,8 +93,9 @@ void dpnp_elemwise_transpose_c(void* array1_in,
 
     event.wait();
 
-    free(input_offset_shape, DPNP_QUEUE);
-    free(result_offset_shape, DPNP_QUEUE);
+    dpnp_memory_free_c(input_offset_shape);
+    dpnp_memory_free_c(temp_result_offset_shape);
+    dpnp_memory_free_c(result_offset_shape);
 }
 
 void func_map_init_manipulation(func_map_t& fmap)

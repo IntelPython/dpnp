@@ -372,6 +372,20 @@ INP_DLLEXPORT void dpnp_rng_standard_t_c(void* result, const _DataType df, const
 
 /**
  * @ingroup BACKEND_RANDOM_API
+ * @brief math library implementation of random number generator (Triangular distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ * @param [in]  x_min  Lower limit.
+ * @param [in]  x_mode The value where the peak of the distribution occurs.
+ * @param [in]  x_max  Upper limit.
+ * @param [out] result Output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_rng_triangular_c(
+    void* result, const _DataType x_min, const _DataType x_mode, const _DataType x_max, const size_t size);
+
+/**
+ * @ingroup BACKEND_RANDOM_API
  * @brief math library implementation of random number generator (uniform distribution)
  *
  * @param [in]  low    Left bound of array values.
