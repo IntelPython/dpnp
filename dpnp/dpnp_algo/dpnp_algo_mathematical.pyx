@@ -529,16 +529,21 @@ cpdef dparray dpnp_sum(dparray input, axis=None):
 
 cpdef dpnp_trapz(dparray y1, dparray x1, dx):
 
-    diff_len = y1.size - y1.ndim
+    if y1.ndim == 1:
+        nrow = 1
+    else:
+        nrow = y1.shape[0]
+
+    diff_len = y1.size - nrow
 
     cdef dparray diff = dparray(diff_len, dtype=y1.dtype)
 
     if x1.size == 0:
         diff = dpnp.full(diff_len, dx)
     else:
-        for i in range(y1.ndim):
+        for i in range(nrow):
             pos = i * y1.shape[-1]
-            for j in range(0, y1.shape[-1] - 1):
+            for j in range(y1.shape[-1] - 1):
                 cur_diff = x1[pos + j + 1] - x1[pos + j]
                 diff._setitem_scalar(pos + j, cur_diff)
 
@@ -549,13 +554,12 @@ cpdef dpnp_trapz(dparray y1, dparray x1, dx):
 
     result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
 
-    cdef dparray result = dparray((y1.ndim,), dtype=result_type)
+    cdef dparray result = dparray((nrow,), dtype=result_type)
 
     cdef ftpr_custom_trapz_2in_1out_with_2size_t func = <ftpr_custom_trapz_2in_1out_with_2size_t > kernel_data.ptr
-    func(y1.get_data(), x1.get_data(), result.get_data(), y1.ndim, size_)
+    func(y1.get_data(), diff.get_data(), result.get_data(), nrow, size_)
 
     return result
-
 
 cpdef dparray dpnp_trunc(dparray x1):
     return call_fptr_1in_1out(DPNP_FN_TRUNC, x1, x1.shape)

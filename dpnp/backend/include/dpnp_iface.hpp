@@ -579,11 +579,11 @@ INP_DLLEXPORT void dpnp_elemwise_transpose_c(void* array1_in,
  * @param [in]  array1_in  First input array.
  * @param [in]  array2_in  Second input array.
  * @param [out] result1    Output array.
- * @param [in]  ndim       Number of elements in one dim in input arrays.
- * @param [in]  size       Number of elements in output arrays.
+ * @param [in]  nrow       Number of row in input arrays.
+ * @param [in]  row_len    Number of elements in output arrays.
  *
  */
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
-INP_DLLEXPORT void dpnp_trapz_c(void* array1_in, void* array2_in, void* result1, size_t ndim, size_t size);
+INP_DLLEXPORT void dpnp_trapz_c(void* array1_in, void* array2_in, void* result1, size_t nrow, size_t row_len);
 
 #endif // BACKEND_IFACE_H

@@ -277,18 +277,21 @@ void dpnp_remainder_c(void* array1_in, void* array2_in, void* result1, size_t si
     event.wait();
 }
 
+template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2, typename _KernelNameSpecialization3>
+class dpnp_trapz_c_kernel;
+
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
-void dpnp_trapz_c(void* array1_in, void* array2_in, void* result1, size_t size_dim, size_t size)
+void dpnp_trapz_c(void* array1_in, void* array2_in, void* result1, size_t nrow, size_t row_len)
 {
     _DataType_input1* array1 = reinterpret_cast<_DataType_input1*>(array1_in);
     _DataType_input2* array2 = reinterpret_cast<_DataType_input2*>(array2_in);
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
 
-    for (size_t i = 0; i < size_dim; ++i) {
-        size_t pos1 = i * size;
-        size_t pos2 = i * (size - 1);
-        double square = array2[pos2] * array1[pos1] + array2[pos2 + size - 2] * array1[pos1 + size - 1];
-        for (size_t j = 1; j < size - 1; ++j) {
+    for (size_t i = 0; i < nrow; ++i) {
+        size_t pos1 = i * row_len;
+        size_t pos2 = i * (row_len - 1);
+        double square = array2[pos2] * array1[pos1] + array2[pos2 + row_len - 2] * array1[pos1 + row_len - 1];
+        for (size_t j = 1; j < row_len - 1; ++j) {
             square += array1[pos1 + j] * (array2[pos2 + j - 1] + array2[pos2 + j]);
         }
         square *= 0.5;
