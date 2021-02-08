@@ -75,6 +75,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FLOOR
         DPNP_FN_FLOOR_DIVIDE
         DPNP_FN_FMOD
+        DPNP_FN_FULL
         DPNP_FN_HYPOT
         DPNP_FN_INITVAL
         DPNP_FN_INV

@@ -120,6 +120,17 @@ INP_DLLEXPORT void dpnp_arange_c(size_t start, size_t step, void* result1, size_
 
 /**
  * @ingroup BACKEND_API
+ * @brief Implementation of full function
+ *
+ * @param [in]  array_in  Input one-element array.
+ * @param [out] result    Output array.
+ * @param [in]  size      Number of elements in the output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_full_c(void* array_in, void* result, const size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief Matrix multiplication.
  *
  * Matrix multiplication procedure. Works with 2-D matrices
@@ -548,14 +559,16 @@ INP_DLLEXPORT void dpnp_remainder_c(void* array1_in, void* array2_in, void* resu
  * @param [in]  input_shape  Input shape.
  * @param [in]  result_shape Output shape.
  * @param [in]  permute_axes Order of axis by it's id as it should be presented in output.
+ * @param [in]  ndim         Number of elements in shapes and axes.
  * @param [out] result1      Output array.
  * @param [in]  size         Number of elements in input arrays.
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_elemwise_transpose_c(void* array1_in,
-                                             const std::vector<long>& input_shape,
-                                             const std::vector<long>& result_shape,
-                                             const std::vector<long>& permute_axes,
+                                             const size_t* input_shape,
+                                             const size_t* result_shape,
+                                             const size_t* permute_axes,
+                                             size_t ndim,
                                              void* result1,
                                              size_t size);
 
