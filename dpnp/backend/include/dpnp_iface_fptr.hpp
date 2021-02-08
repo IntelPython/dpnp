@@ -151,6 +151,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RNG_POWER,                /**< Used in numpy.random.power() implementation  */
     DPNP_FN_RNG_RAYLEIGH,             /**< Used in numpy.random.rayleigh() implementation  */
     DPNP_FN_RNG_SRAND,                /**< Used in numpy.random.seed() implementation  */
+    DPNP_FN_RNG_SHUFFLE,              /**< Used in numpy.random.shuffle() implementation  */
     DPNP_FN_RNG_STANDARD_CAUCHY,      /**< Used in numpy.random.standard_cauchy() implementation  */
     DPNP_FN_RNG_STANDARD_EXPONENTIAL, /**< Used in numpy.random.standard_exponential() implementation  */
     DPNP_FN_RNG_STANDARD_GAMMA,       /**< Used in numpy.random.standard_gamma() implementation  */

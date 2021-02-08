@@ -23,6 +23,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <cmath>
 #include <mkl_vsl.h>
 #include <stdexcept>
 #include <vector>
@@ -639,6 +640,84 @@ void dpnp_rng_rayleigh_c(void* result, const _DataType scale, const size_t size)
     }
 }
 
+// TODO
+// separate distribuition and random sample funcs to different src files
+template <typename _DataType>
+void dpnp_rng_shuffle_c(void* result, const size_t itemsize, const size_t ndim, const size_t high_dim_size, const size_t size)
+{
+    if (!(size) || !(high_dim_size > 1))
+    {
+        return;
+    }
+
+    char* result1 = reinterpret_cast<char*>(result);
+
+    double* Uvec = nullptr;
+
+    size_t uvec_size = high_dim_size - 1;
+    // TODO
+    // nullptr check will be removed after dpnp_memory_alloc_c update
+    Uvec = reinterpret_cast<double*>(dpnp_memory_alloc_c(uvec_size * sizeof(double)));
+    if (Uvec == nullptr)
+    {
+        throw std::runtime_error("DPNP RNG Error: dpnp_rng_shuffle_c() failed.");
+    }
+    mkl_rng::uniform<double> uniform_distribution(0.0, 1.0);
+    auto uniform_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, uvec_size, Uvec);
+    uniform_event.wait();
+
+    if (ndim == 1)
+    {
+        // TODO
+        // kernel
+        char * buf = nullptr;
+        buf = reinterpret_cast<char*>(dpnp_memory_alloc_c(itemsize * sizeof(char)));
+        // TODO
+        // nullptr check will be removed after dpnp_memory_alloc_c update
+        if (buf == nullptr)
+        {
+            throw std::runtime_error("DPNP RNG Error: dpnp_rng_shuffle_c() failed.");
+        }
+        for (size_t i = uvec_size; i > 0; i--)
+        {
+            size_t j = (size_t)(floor((i + 1) * Uvec[i - 1]));
+            memcpy(buf, result1 + j * itemsize, itemsize);
+            memcpy(result1 + j * itemsize, result1 + i * itemsize, itemsize);
+            memcpy(result1 + i * itemsize, buf, itemsize);
+        }
+
+        dpnp_memory_free_c(buf);
+    }
+    else
+    {
+        // TODO
+        // kernel
+        char * buf = nullptr;
+        size_t step_size = (size / high_dim_size) * itemsize; // size in bytes for x[i] element
+        buf = reinterpret_cast<char*>(dpnp_memory_alloc_c(step_size * sizeof(char)));
+        // TODO
+        // nullptr check will be removed after dpnp_memory_alloc_c update
+        if (buf == nullptr)
+        {
+            throw std::runtime_error("DPNP RNG Error: dpnp_rng_shuffle_c() failed.");
+        }
+        for (size_t i = uvec_size; i > 0; i--)
+        {
+            size_t j = (size_t)(floor((i + 1) * Uvec[i - 1]));
+            if (j < i)
+            {
+                memcpy(buf, result1 + j * step_size, step_size);
+                memcpy(result1 + j * step_size, result1 + i * step_size, step_size);
+                memcpy(result1 + i * step_size, buf, step_size);
+            }
+        }
+
+        dpnp_memory_free_c(buf);
+    }
+
+    dpnp_memory_free_c(Uvec);
+}
+
 template <typename _DataType>
 void dpnp_rng_standard_cauchy_c(void* result, const size_t size)
 {
@@ -921,6 +1000,11 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_RNG_POWER][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_power_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_RAYLEIGH][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_rayleigh_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_SHUFFLE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_shuffle_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_SHUFFLE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_shuffle_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_SHUFFLE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_shuffle_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_SHUFFLE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_rng_shuffle_c<long>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_SRAND][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_srand_c};
 
