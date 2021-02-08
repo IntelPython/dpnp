@@ -458,11 +458,11 @@ INP_DLLEXPORT void dpnp_std_c(
  * @brief math library implementation of take function
  *
  * @param [in]  array   Input array with data.
- * @param [in]  array   Input array with indices.
- * @param [out] result  Output array with indeces.
+ * @param [in]  indices Input array with indices.
+ * @param [out] result  Output array.
  * @param [in]  size    Number of elements in the input array.
  */
-template <typename _DataType>
+template <typename _DataType, typename _IndecesType>
 INP_DLLEXPORT void dpnp_take_c(void* array, void* indices, void* result, size_t size);
 
 /**
