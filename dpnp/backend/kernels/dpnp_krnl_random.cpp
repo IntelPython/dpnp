@@ -23,6 +23,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <cassert>
 #include <mkl_vsl.h>
 #include <stdexcept>
 #include <vector>
@@ -853,7 +854,6 @@ void dpnp_rng_uniform_c(void* result, const long low, const long high, const siz
     event_out.wait();
 }
 
-// TODO use from onemkl
 #ifndef M_PI
 /*  128-bits worth of pi */
 #define M_PI 3.141592653589793238462643383279502884197
@@ -868,16 +868,13 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
     }
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    cl::sycl::event event_out;
-
-    size_t i, n, diff_size;
     _DataType r_over_two_kappa, recip_two_kappa;
     _DataType s_minus_one, hpt, r_over_two_kappa_minus_one, rho_minus_one;
-    _DataType *Uvec = nullptr;
-    _DataType *Vvec = nullptr;
+    _DataType* Uvec = nullptr;
+    _DataType* Vvec = nullptr;
     const _DataType d_zero = 0.0, d_one = 1.0;
 
-    // assert(kappa > 1.0);
+    assert(kappa > 1.0);
 
     recip_two_kappa = 1 / (2 * kappa);
 
@@ -886,7 +883,7 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
     r_over_two_kappa_minus_one = recip_two_kappa * (1 + recip_two_kappa / (1 + hpt));
     r_over_two_kappa = 1 + r_over_two_kappa_minus_one;
     rho_minus_one = r_over_two_kappa_minus_one - sqrt(2 * r_over_two_kappa * recip_two_kappa);
-    s_minus_one = rho_minus_one*(0.5 * rho_minus_one/(1 + rho_minus_one));
+    s_minus_one = rho_minus_one * (0.5 * rho_minus_one / (1 + rho_minus_one));
 
     Uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
     if (Uvec == nullptr)
@@ -899,11 +896,11 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
         throw std::runtime_error("DPNP RNG Error: dpnp_rng_vonmises_c() failed.");
     }
 
-    for(n = 0; n < size; )
+    for (size_t n = 0; n < size;)
     {
-        diff_size = size - n;
-        mkl_rng::uniform<_DataType> uniform_distribution_u(d_zero, 0.5*M_PI);
-        event_out = mkl_rng::generate(uniform_distribution_u, DPNP_RNG_ENGINE, diff_size, Uvec);
+        size_t diff_size = size - n;
+        mkl_rng::uniform<_DataType> uniform_distribution_u(d_zero, 0.5 * M_PI);
+        auto event_out = mkl_rng::generate(uniform_distribution_u, DPNP_RNG_ENGINE, diff_size, Uvec);
         event_out.wait();
         // TODO
         // use deps case
@@ -913,23 +910,27 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
 
         // TODO
         // kernel
-        for(i = 0; i < diff_size; i++ ) {
+        for (size_t i = 0; i < diff_size; i++)
+        {
             _DataType sn, cn, sn2, cn2;
             _DataType neg_W_minus_one, V, Y;
 
-            sn = sin(Uvec[i]);  cn = cos(Uvec[i]); V = Vvec[i];
-            sn2 = sn*sn;  cn2 = cn*cn;
+            sn = sin(Uvec[i]);
+            cn = cos(Uvec[i]);
+            V = Vvec[i];
+            sn2 = sn * sn;
+            cn2 = cn * cn;
 
-            neg_W_minus_one = s_minus_one * sn2 / (0.5*s_minus_one + cn2);
+            neg_W_minus_one = s_minus_one * sn2 / (0.5 * s_minus_one + cn2);
             Y = kappa * (s_minus_one + neg_W_minus_one);
 
-            if ((Y*(2 - Y) >= V) || (log(Y/V) + 1 >= Y)) {
+            if ((Y * (2 - Y) >= V) || (log(Y / V) + 1 >= Y))
+            {
                 Y = neg_W_minus_one * (2 - neg_W_minus_one);
                 if (Y < 0)
                     Y = 0.0;
-                else
-                    if (Y > 1.0)
-                        Y = 1.0;
+                else if (Y > 1.0)
+                    Y = 1.0;
 
                 result1[n++] = asin(sqrt(Y));
             }
@@ -939,17 +940,18 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
     dpnp_memory_free_c(Uvec);
 
     mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
-    event_out = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
+    auto event_out = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
     event_out.wait();
 
     // TODO
     // kernel
-    for(i = 0; i < size; i++) {
+    for (size_t i = 0; i < size; i++)
+    {
         _DataType mod, resi;
 
         resi = (Vvec[i] < 0.5) ? mu - result1[i] : mu + result1[i];
         mod = fabs(resi);
-        mod = (fmod(mod + M_PI, 2*M_PI) - M_PI);
+        mod = (fmod(mod + M_PI, 2 * M_PI) - M_PI);
         result1[i] = (resi < 0) ? -mod : mod;
     }
 
@@ -966,23 +968,20 @@ void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _Da
     }
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    cl::sycl::event event_out;
-    size_t i, n, diff_size;
-
-    _DataType rho_over_kappa, rho, r, s_kappa, Z, W, Y, V;
-    _DataType *Uvec = nullptr;
-    _DataType *Vvec = nullptr;
+    _DataType rho_over_kappa, rho, r, s_kappa;
+    _DataType* Uvec = nullptr;
+    _DataType* Vvec = nullptr;
 
     const _DataType d_zero = 0.0, d_one = 1.0;
 
-    // assert(0. < kappa <= 1.0);
+    assert(0. < kappa <= 1.0);
 
-    r = 1 + sqrt(1 + 4*kappa*kappa);
-    rho_over_kappa = (2) / (r + sqrt(2*r));
+    r = 1 + sqrt(1 + 4 * kappa * kappa);
+    rho_over_kappa = (2) / (r + sqrt(2 * r));
     rho = rho_over_kappa * kappa;
 
     /* s times kappa */
-    s_kappa = (1 + rho*rho)/(2*rho_over_kappa);
+    s_kappa = (1 + rho * rho) / (2 * rho_over_kappa);
 
     Uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
     if (Uvec == nullptr)
@@ -995,11 +994,11 @@ void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _Da
         throw std::runtime_error("DPNP RNG Error: dpnp_rng_vonmises_c() failed.");
     }
 
-    for(n = 0; n < size; )
+    for (size_t n = 0; n < size;)
     {
-        diff_size = size - n;
+        size_t diff_size = size - n;
         mkl_rng::uniform<_DataType> uniform_distribution_u(d_zero, M_PI);
-        event_out = mkl_rng::generate(uniform_distribution_u, DPNP_RNG_ENGINE, diff_size, Uvec);
+        auto event_out = mkl_rng::generate(uniform_distribution_u, DPNP_RNG_ENGINE, diff_size, Uvec);
         event_out.wait();
         // TODO
         // use deps case
@@ -1009,12 +1008,15 @@ void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _Da
 
         // TODO
         // kernel
-        for(i = 0; i < diff_size; i++ ) {
+        for (size_t i = 0; i < diff_size; i++)
+        {
+            _DataType Z, W, Y, V;
             Z = cos(Uvec[i]);
             V = Vvec[i];
             W = (kappa + s_kappa * Z) / (s_kappa + kappa * Z);
             Y = s_kappa - kappa * W;
-            if ((Y*(2 - Y) >= V) || (log(Y/V) + 1 >= Y)) {
+            if ((Y * (2 - Y) >= V) || (log(Y / V) + 1 >= Y))
+            {
                 result1[n++] = acos(W);
             }
         }
@@ -1023,17 +1025,18 @@ void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _Da
     dpnp_memory_free_c(Uvec);
 
     mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
-    event_out = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
+    auto event_out = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
     event_out.wait();
 
     // TODO
     // kernel
-    for(i = 0; i < size; i++) {
+    for (size_t i = 0; i < size; i++)
+    {
         double mod, resi;
 
         resi = (Vvec[i] < 0.5) ? mu - result1[i] : mu + result1[i];
         mod = fabs(resi);
-        mod = (fmod(mod + M_PI, 2*M_PI) - M_PI);
+        mod = (fmod(mod + M_PI, 2 * M_PI) - M_PI);
         result1[i] = (resi < 0) ? -mod : mod;
     }
 
@@ -1041,10 +1044,16 @@ void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _Da
     return;
 }
 
+/* Vonmisses uses the rejection algorithm compared against the wrapped
+   Cauchy distribution suggested by Best and Fisher and documented in
+   Chapter 9 of Luc's Non-Uniform Random Variate Generation.
+   http://cg.scs.carleton.ca/~luc/rnbookindex.html
+   (but corrected to match the algorithm in R and Python)
+*/
 template <typename _DataType>
 void dpnp_rng_vonmises_c(void* result, const _DataType mu, const _DataType kappa, const size_t size)
 {
-    if(kappa > 1.0)
+    if (kappa > 1.0)
         dpnp_rng_vonmises_large_kappa_c<_DataType>(result, mu, kappa, size);
     else
         dpnp_rng_vonmises_small_kappa_c<_DataType>(result, mu, kappa, size);
