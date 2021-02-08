@@ -196,11 +196,7 @@ setup(name="dpnp",
       platforms=["Linux", "Windows"],
       test_suite="pytest",
       python_requires=">=3.6",
-      install_requires=[
-          'dpctl',
-          'dpcpp_cpp_rt',
-          'mkl'
-          ],
+      install_requires=["numpy>=1.15"],
       setup_requires=["numpy>=1.15"],
       tests_require=["numpy>=1.15"],
       ext_modules=dpnp_cython_mods,

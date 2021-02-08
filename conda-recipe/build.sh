@@ -1,5 +1,4 @@
 #!/bin/bash
-set -ex
 
 # if ONEAPI_ROOT is specified (use all from it)
 if [ -n "${ONEAPI_ROOT}" ]; then
@@ -26,8 +25,8 @@ if [ -n "${TBBROOT}" ]; then
     . ${TBBROOT}/env/vars.sh
 fi
 
-$PYTHON setup.py build_clib --single-version-externally-managed --record=record.txt
-$PYTHON setup.py build_ext install --single-version-externally-managed --record=record.txt
+$PYTHON setup.py build_clib
+$PYTHON setup.py build_ext install
 
 # Build wheel package
 if [ "$CONDA_PY" == "36" ]; then

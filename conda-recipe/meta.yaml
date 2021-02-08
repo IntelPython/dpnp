@@ -13,8 +13,6 @@ requirements:
       - cmake
       - dpctl >=0.5.0a0
       - mkl-devel >=2021.1.1
-      - intel-openmp
-      - tbb
       - wheel
     build:
       - {{ compiler('cxx') }}
