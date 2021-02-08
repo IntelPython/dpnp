@@ -95,6 +95,7 @@ $(document).ready(function(){initNavTree('group___b_a_c_k_e_n_d___a_p_i.html',''
 Enumerations</h2></td></tr>
 <tr class="memitem:gaae520250ac00985feaadcbd984c30ab1"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaae520250ac00985feaadcbd984c30ab1">QueueOptions</a> : uint32_t { <a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ggaae520250ac00985feaadcbd984c30ab1acc7580c6d50ad116c1c0deb3f7adf468">CPU_SELECTOR</a>
 , <a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ggaae520250ac00985feaadcbd984c30ab1a332c42fe262bf0855ca1de84d27049b1">GPU_SELECTOR</a>
+, <a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ggaae520250ac00985feaadcbd984c30ab1a8625883de23e4800c0b865aef6e284ae">AUTO_SELECTOR</a>
  }</td></tr>
 <tr class="memdesc:gaae520250ac00985feaadcbd984c30ab1"><td class="mdescLeft">&#160;</td><td class="mdescRight">SYCL queue initialization selector.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gaae520250ac00985feaadcbd984c30ab1">More...</a><br /></td></tr>
 <tr class="separator:gaae520250ac00985feaadcbd984c30ab1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -346,9 +347,9 @@ Functions</h2></td></tr>
 <tr class="memdesc:ga9d7b31d733a552498098f1bba1e37ad3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per element operation function dpnp_subtract_c <br  />
   <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga9d7b31d733a552498098f1bba1e37ad3">More...</a><br /></td></tr>
 <tr class="separator:ga9d7b31d733a552498098f1bba1e37ad3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga494658bf33fdbd91a13f38a002dd3e08"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga494658bf33fdbd91a13f38a002dd3e08">dpnp_queue_initialize_c</a> (<a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaae520250ac00985feaadcbd984c30ab1">QueueOptions</a> selector)</td></tr>
-<tr class="memdesc:ga494658bf33fdbd91a13f38a002dd3e08"><td class="mdescLeft">&#160;</td><td class="mdescRight">SYCL queue initialization.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga494658bf33fdbd91a13f38a002dd3e08">More...</a><br /></td></tr>
-<tr class="separator:ga494658bf33fdbd91a13f38a002dd3e08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0368d7cc2e2eb7a3f8c4184b6aca3547"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga0368d7cc2e2eb7a3f8c4184b6aca3547">dpnp_queue_initialize_c</a> (<a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaae520250ac00985feaadcbd984c30ab1">QueueOptions</a> selector=<a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ggaae520250ac00985feaadcbd984c30ab1a8625883de23e4800c0b865aef6e284ae">QueueOptions::AUTO_SELECTOR</a>)</td></tr>
+<tr class="memdesc:ga0368d7cc2e2eb7a3f8c4184b6aca3547"><td class="mdescLeft">&#160;</td><td class="mdescRight">SYCL queue initialization.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga0368d7cc2e2eb7a3f8c4184b6aca3547">More...</a><br /></td></tr>
+<tr class="separator:ga0368d7cc2e2eb7a3f8c4184b6aca3547"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2df766b3642aa4e94c8cef7927d6022d"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga2df766b3642aa4e94c8cef7927d6022d">dpnp_queue_is_cpu_c</a> ()</td></tr>
 <tr class="memdesc:ga2df766b3642aa4e94c8cef7927d6022d"><td class="mdescLeft">&#160;</td><td class="mdescRight">SYCL queue device status.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga2df766b3642aa4e94c8cef7927d6022d">More...</a><br /></td></tr>
 <tr class="separator:ga2df766b3642aa4e94c8cef7927d6022d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -526,11 +527,13 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>SYCL queue initialization selector. </p>
-<p>The structure defines the parameters that are used for the library initialization by <a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga494658bf33fdbd91a13f38a002dd3e08">dpnp_queue_initialize</a>. </p>
+<p>The structure defines the parameters that are used for the library initialization by <a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga0368d7cc2e2eb7a3f8c4184b6aca3547">dpnp_queue_initialize</a>. </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggaae520250ac00985feaadcbd984c30ab1acc7580c6d50ad116c1c0deb3f7adf468"></a>CPU_SELECTOR&#160;</td><td class="fielddoc"><p>CPU side execution mode </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ggaae520250ac00985feaadcbd984c30ab1a332c42fe262bf0855ca1de84d27049b1"></a>GPU_SELECTOR&#160;</td><td class="fielddoc"><p>Intel GPU side execution mode </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaae520250ac00985feaadcbd984c30ab1a8625883de23e4800c0b865aef6e284ae"></a>AUTO_SELECTOR&#160;</td><td class="fielddoc"><p>Automatic selection based on environment variable with CPU_SELECTOR default </p>
 </td></tr>
 </table>
 
@@ -3770,7 +3773,7 @@ template&lt;typename _DataType , typename _ResultType &gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>A pointer to newly created memory on <a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga494658bf33fdbd91a13f38a002dd3e08">initialized SYCL device</a>. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to newly created memory on <a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga0368d7cc2e2eb7a3f8c4184b6aca3547">initialized SYCL device</a>. </dd></dl>
 
 </div>
 </div>
@@ -4117,8 +4120,8 @@ template&lt;typename _DataType &gt; </div>
 
 </div>
 </div>
-<a id="ga494658bf33fdbd91a13f38a002dd3e08"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga494658bf33fdbd91a13f38a002dd3e08">&#9670;&nbsp;</a></span>dpnp_queue_initialize_c()</h2>
+<a id="ga0368d7cc2e2eb7a3f8c4184b6aca3547"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga0368d7cc2e2eb7a3f8c4184b6aca3547">&#9670;&nbsp;</a></span>dpnp_queue_initialize_c()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -4127,7 +4130,7 @@ template&lt;typename _DataType &gt; </div>
           <td class="memname">void dpnp_queue_initialize_c </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaae520250ac00985feaadcbd984c30ab1">QueueOptions</a>&#160;</td>
-          <td class="paramname"><em>selector</em></td><td>)</td>
+          <td class="paramname"><em>selector</em> = <code><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ggaae520250ac00985feaadcbd984c30ab1a8625883de23e4800c0b865aef6e284ae">QueueOptions::AUTO_SELECTOR</a></code></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -4137,7 +4140,7 @@ template&lt;typename _DataType &gt; </div>
 <p>Global SYCL queue initialization.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">selector</td><td>Select type <a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaae520250ac00985feaadcbd984c30ab1">QueueOptions</a> of the SYCL queue. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">selector</td><td>Select type <a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaae520250ac00985feaadcbd984c30ab1">QueueOptions</a> of the SYCL queue. Default AUTO_SELECTOR </td></tr>
   </table>
   </dd>
 </dl>
