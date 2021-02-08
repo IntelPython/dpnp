@@ -1497,7 +1497,7 @@ def trapz(y, x=None, dx=1.0, **kwargs):
                 return result[0]
             return result
 
-    return call_origin(numpy.trapz, y1, x=x, dx=dx, **kwargs)
+    return call_origin(numpy.trapz, y, x=x, dx=dx, **kwargs)
 
 
 def true_divide(*args, **kwargs):

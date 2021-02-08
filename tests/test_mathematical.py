@@ -143,9 +143,10 @@ class TestEdiff1d:
 
 class TestTrapz:
 
-    @pytest.mark.parametrize("array", [[1, 2, 4, 5],
+    @pytest.mark.parametrize("array", [[[1, 2, 3], [4, 5, 6]],
                                        [1., 2.5, 6., 7., 3.],
-                                       [2, 4, 6, 8]])
+                                       [2, 4, 6, 8],
+                                       []])
     def test_trapz_without_params(self, array):
         a = numpy.array(array)
         ia = inp.array(a)
