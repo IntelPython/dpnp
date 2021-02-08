@@ -110,6 +110,9 @@
    .. automethod:: sum
 
 
+   .. automethod:: take
+
+
    .. automethod:: tobytes
 
 

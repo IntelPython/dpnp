@@ -467,10 +467,10 @@ Functions</h2></td></tr>
 <tr class="memitem:gabd0a713a1fd8be04e1cb6be2a06c578b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gabd0a713a1fd8be04e1cb6be2a06c578b">dpnp_std_c</a> (void *array, void *result, const size_t *shape, size_t ndim, const size_t *axis, size_t naxis, size_t ddof)</td></tr>
 <tr class="memdesc:gabd0a713a1fd8be04e1cb6be2a06c578b"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of std function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gabd0a713a1fd8be04e1cb6be2a06c578b">More...</a><br /></td></tr>
 <tr class="separator:gabd0a713a1fd8be04e1cb6be2a06c578b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga3781a0309c5e123ceafa2a40cdcbc83f"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
-<tr class="memitem:ga3781a0309c5e123ceafa2a40cdcbc83f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga3781a0309c5e123ceafa2a40cdcbc83f">dpnp_take_c</a> (void *array, void *indices, void *result, size_t size)</td></tr>
-<tr class="memdesc:ga3781a0309c5e123ceafa2a40cdcbc83f"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of take function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga3781a0309c5e123ceafa2a40cdcbc83f">More...</a><br /></td></tr>
-<tr class="separator:ga3781a0309c5e123ceafa2a40cdcbc83f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga886bc6959d54b598e3abf87026ee1abe"><td class="memTemplParams" colspan="2">template&lt;typename _DataType , typename _IndecesType &gt; </td></tr>
+<tr class="memitem:ga886bc6959d54b598e3abf87026ee1abe"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga886bc6959d54b598e3abf87026ee1abe">dpnp_take_c</a> (void *array, void *indices, void *result, size_t size)</td></tr>
+<tr class="memdesc:ga886bc6959d54b598e3abf87026ee1abe"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of take function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga886bc6959d54b598e3abf87026ee1abe">More...</a><br /></td></tr>
+<tr class="separator:ga886bc6959d54b598e3abf87026ee1abe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga5257f5a6d794e55c56e4e2fd7ea33a46"><td class="memTemplParams" colspan="2">template&lt;typename _DataType , typename _ResultType &gt; </td></tr>
 <tr class="memitem:ga5257f5a6d794e55c56e4e2fd7ea33a46"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga5257f5a6d794e55c56e4e2fd7ea33a46">dpnp_var_c</a> (void *array, void *result, const size_t *shape, size_t ndim, const size_t *axis, size_t naxis, size_t ddof)</td></tr>
 <tr class="memdesc:ga5257f5a6d794e55c56e4e2fd7ea33a46"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of var function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga5257f5a6d794e55c56e4e2fd7ea33a46">More...</a><br /></td></tr>
@@ -4858,13 +4858,13 @@ template&lt;typename _DataType &gt; </div>
 
 </div>
 </div>
-<a id="ga3781a0309c5e123ceafa2a40cdcbc83f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga3781a0309c5e123ceafa2a40cdcbc83f">&#9670;&nbsp;</a></span>dpnp_take_c()</h2>
+<a id="ga886bc6959d54b598e3abf87026ee1abe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga886bc6959d54b598e3abf87026ee1abe">&#9670;&nbsp;</a></span>dpnp_take_c()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename _DataType &gt; </div>
+template&lt;typename _DataType , typename _IndecesType &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">void dpnp_take_c </td>
@@ -4902,8 +4902,8 @@ template&lt;typename _DataType &gt; </div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">array</td><td>Input array with data. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">array</td><td>Input array with indices. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array with indeces. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">indices</td><td>Input array with indices. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in the input array. </td></tr>
   </table>
   </dd>
