@@ -553,6 +553,17 @@ INP_DLLEXPORT void dpnp_remainder_c(void* array1_in, void* array2_in, void* resu
 
 /**
  * @ingroup BACKEND_API
+ * @brief copyto function.
+ *
+ * @param [in]  dst          Destination array.
+ * @param [in]  src          Source array.
+ * @param [in]  size         Number of elements in destination arrays.
+ */
+template <typename _DataType_dst, typename _DataType_src>
+INP_DLLEXPORT void dpnp_copyto_c(void* dst, void* src, const size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief transpose function. Permute axes of the input to the output with elements permutation.
  *
  * @param [in]  array1_in    Input array.

@@ -84,10 +84,18 @@ cpdef dparray dpnp_atleast_3d(dparray arr):
 
 
 cpdef dpnp_copyto(dparray dst, dparray src, where=True):
-    cdef long size_src = src.size
+    # Convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType dst_type = dpnp_dtype_to_DPNPFuncType(dst.dtype)
+    cdef DPNPFuncType src_type = dpnp_dtype_to_DPNPFuncType(src.dtype)
 
-    for i in range(size_src):
-        dst[i] = src[i]
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_COPYTO, dst_type, src_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+
+    cdef fptr_1in_1out_t func = <fptr_1in_1out_t > kernel_data.ptr
+    # Call FPTR function
+    func(dst.get_data(), src.get_data(), dst.size)
 
 
 cpdef dparray dpnp_expand_dims(dparray in_array, axis):

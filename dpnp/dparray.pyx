@@ -436,9 +436,22 @@ cdef class dparray:
 
         """
         if isinstance(key, slice):
-            start = 0 if (key.start is None) else key.start
-            stop = self.size if (key.stop is None) else key.stop
-            step = 1 if (key.step is None) else key.step
+            start = 0 if key.start is None else key.start
+            stop = self.size if key.stop is None else key.stop
+            step = 1 if key.step is None else key.step
+
+            if not isinstance(value, dparray):
+                pass
+            elif start != 0:
+                pass
+            elif stop != self.size:
+                pass
+            elif step != 1:
+                pass
+            else:
+                copyto(self, value)
+                return
+
             for i in range(start, stop, step):
                 self._setitem_scalar(i, value[i])
         else:
