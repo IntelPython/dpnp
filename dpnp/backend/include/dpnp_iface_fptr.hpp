@@ -78,12 +78,15 @@ enum class DPNPFuncName : size_t
     DPNP_FN_CEIL,                     /**< Used in numpy.ceil() implementation  */
     DPNP_FN_CHOLESKY,                 /**< Used in numpy.linalg.cholesky() implementation  */
     DPNP_FN_CONJIGUATE,               /**< Used in numpy.conjugate() implementation  */
+    DPNP_FN_COPY,                     /**< Used in numpy.copy() implementation  */
     DPNP_FN_COPYSIGN,                 /**< Used in numpy.copysign() implementation  */
     DPNP_FN_CORRELATE,                /**< Used in numpy.correlate() implementation  */
     DPNP_FN_COS,                      /**< Used in numpy.cos() implementation  */
     DPNP_FN_COSH,                     /**< Used in numpy.cosh() implementation  */
     DPNP_FN_COV,                      /**< Used in numpy.cov() implementation  */
     DPNP_FN_CROSS,                    /**< Used in numpy.cross() implementation  */
+    DPNP_FN_CUMPROD,                  /**< Used in numpy.cumprod() implementation  */
+    DPNP_FN_CUMSUM,                   /**< Used in numpy.cumsum() implementation  */
     DPNP_FN_DEGREES,                  /**< Used in numpy.degrees() implementation  */
     DPNP_FN_DET,                      /**< Used in numpy.linalg.det() implementation  */
     DPNP_FN_DIAGONAL,                 /**< Used in numpy.diagonal() implementation  */
@@ -91,6 +94,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_DOT,                      /**< Used in numpy.dot() implementation  */
     DPNP_FN_EIG,                      /**< Used in numpy.linalg.eig() implementation  */
     DPNP_FN_EIGVALS,                  /**< Used in numpy.linalg.eigvals() implementation  */
+    DPNP_FN_ERF,                      /**< Used in scipy.special.erf implementation  */
     DPNP_FN_EXP,                      /**< Used in numpy.exp() implementation  */
     DPNP_FN_EXP2,                     /**< Used in numpy.exp2() implementation  */
     DPNP_FN_EXPM1,                    /**< Used in numpy.expm1() implementation  */
@@ -99,7 +103,9 @@ enum class DPNPFuncName : size_t
     DPNP_FN_FLOOR,                    /**< Used in numpy.floor() implementation  */
     DPNP_FN_FLOOR_DIVIDE,             /**< Used in numpy.floor_divide() implementation  */
     DPNP_FN_FMOD,                     /**< Used in numpy.fmod() implementation  */
+    DPNP_FN_FULL,                     /**< Used in numpy.full() implementation  */
     DPNP_FN_HYPOT,                    /**< Used in numpy.hypot() implementation  */
+    DPNP_FN_INITVAL,                  /**< Used in numpy ones, ones_like, zeros, zeros_like, full, full_like impl  */
     DPNP_FN_INV,                      /**< Used in numpy.linalg.inv() implementation  */
     DPNP_FN_INVERT,                   /**< Used in numpy.invert() implementation  */
     DPNP_FN_KRON,                     /**< Used in numpy.kron() implementation  */
@@ -151,6 +157,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RNG_STANDARD_GAMMA,       /**< Used in numpy.random.standard_gamma() implementation  */
     DPNP_FN_RNG_STANDARD_NORMAL,      /**< Used in numpy.random.standard_normal() implementation  */
     DPNP_FN_RNG_STANDARD_T,           /**< Used in numpy.random.standard_t() implementation  */
+    DPNP_FN_RNG_TRIANGULAR,           /**< Used in numpy.random.triangular() implementation  */
     DPNP_FN_RNG_UNIFORM,              /**< Used in numpy.random.uniform() implementation  */
     DPNP_FN_RNG_WEIBULL,              /**< Used in numpy.random.weibull() implementation  */
     DPNP_FN_SIGN,                     /**< Used in numpy.sign() implementation  */
@@ -181,12 +188,13 @@ enum class DPNPFuncName : size_t
  */
 enum class DPNPFuncType : size_t
 {
-    DPNP_FT_NONE,    /**< Very first element of the enumeration */
-    DPNP_FT_INT,     /**< analog of numpy.int32 or int */
-    DPNP_FT_LONG,    /**< analog of numpy.int64 or long */
-    DPNP_FT_FLOAT,   /**< analog of numpy.float32 or float */
-    DPNP_FT_DOUBLE,  /**< analog of numpy.float32 or double */
-    DPNP_FT_CMPLX128 /**< analog of numpy.complex128 or std::complex<double> */
+    DPNP_FT_NONE,     /**< Very first element of the enumeration */
+    DPNP_FT_INT,      /**< analog of numpy.int32 or int */
+    DPNP_FT_LONG,     /**< analog of numpy.int64 or long */
+    DPNP_FT_FLOAT,    /**< analog of numpy.float32 or float */
+    DPNP_FT_DOUBLE,   /**< analog of numpy.float32 or double */
+    DPNP_FT_CMPLX128, /**< analog of numpy.complex128 or std::complex<double> */
+    DPNP_FT_BOOL      /**< analog of numpy.bool or numpy.bool_ or bool */
 };
 
 /**

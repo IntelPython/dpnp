@@ -70,7 +70,7 @@ void dpnp_rng_srand_c(size_t seed)
 }
 
 template <typename _DataType>
-void dpnp_rng_beta_c(void* result, _DataType a, _DataType b, size_t size)
+INP_DLLEXPORT void dpnp_rng_beta_c(void* result, const _DataType a, const _DataType b, const size_t size)
 {
     if (!size)
     {
@@ -104,7 +104,7 @@ void dpnp_rng_beta_c(void* result, _DataType a, _DataType b, size_t size)
 }
 
 template <typename _DataType>
-void dpnp_rng_binomial_c(void* result, int ntrial, double p, size_t size)
+void dpnp_rng_binomial_c(void* result, const int ntrial, const double p, const size_t size)
 {
     if (!size)
     {
@@ -130,7 +130,7 @@ void dpnp_rng_binomial_c(void* result, int ntrial, double p, size_t size)
 }
 
 template <typename _DataType>
-void dpnp_rng_chi_square_c(void* result, int df, size_t size)
+void dpnp_rng_chisquare_c(void* result, const int df, const size_t size)
 {
     if (!size)
     {
@@ -150,13 +150,13 @@ void dpnp_rng_chi_square_c(void* result, int df, size_t size)
         int errcode = vdRngChiSquare(VSL_RNG_METHOD_CHISQUARE_CHI2GAMMA, get_rng_stream(), size, result1, df);
         if (errcode != VSL_STATUS_OK)
         {
-            throw std::runtime_error("DPNP RNG Error: dpnp_rng_chi_square_c() failed.");
+            throw std::runtime_error("DPNP RNG Error: dpnp_rng_chisquare_c() failed.");
         }
     }
 }
 
 template <typename _DataType>
-void dpnp_rng_exponential_c(void* result, _DataType beta, size_t size)
+void dpnp_rng_exponential_c(void* result, const _DataType beta, const size_t size)
 {
     if (!size)
     {
@@ -175,7 +175,7 @@ void dpnp_rng_exponential_c(void* result, _DataType beta, size_t size)
 }
 
 template <typename _DataType>
-void dpnp_rng_f_c(void* result, const _DataType df_num, const _DataType df_den, size_t size)
+void dpnp_rng_f_c(void* result, const _DataType df_num, const _DataType df_den, const size_t size)
 {
     if (!size)
     {
@@ -239,7 +239,7 @@ void dpnp_rng_f_c(void* result, const _DataType df_num, const _DataType df_den, 
 }
 
 template <typename _DataType>
-void dpnp_rng_gamma_c(void* result, _DataType shape, _DataType scale, size_t size)
+void dpnp_rng_gamma_c(void* result, const _DataType shape, const _DataType scale, const size_t size)
 {
     if (!size)
     {
@@ -269,7 +269,7 @@ void dpnp_rng_gamma_c(void* result, _DataType shape, _DataType scale, size_t siz
 }
 
 template <typename _DataType>
-void dpnp_rng_gaussian_c(void* result, _DataType mean, _DataType stddev, size_t size)
+void dpnp_rng_gaussian_c(void* result, const _DataType mean, const _DataType stddev, const size_t size)
 {
     if (!size)
     {
@@ -284,7 +284,7 @@ void dpnp_rng_gaussian_c(void* result, _DataType mean, _DataType stddev, size_t 
 }
 
 template <typename _DataType>
-void dpnp_rng_geometric_c(void* result, float p, size_t size)
+void dpnp_rng_geometric_c(void* result, const float p, const size_t size)
 {
     if (!size)
     {
@@ -298,8 +298,11 @@ void dpnp_rng_geometric_c(void* result, float p, size_t size)
     event_out.wait();
 }
 
+template <typename _KernelNameSpecialization>
+class dpnp_blas_scal_c_kernel;
+
 template <typename _DataType>
-void dpnp_rng_gumbel_c(void* result, double loc, double scale, size_t size)
+void dpnp_rng_gumbel_c(void* result, const double loc, const double scale, const size_t size)
 {
     cl::sycl::event event;
     if (!size)
@@ -308,20 +311,38 @@ void dpnp_rng_gumbel_c(void* result, double loc, double scale, size_t size)
     }
 
     const _DataType alpha = (_DataType(-1.0));
-    const _DataType stride = (_DataType(1.0));
+    std::int64_t incx = 1;
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
-    loc = loc * (double(-1.0));
+    double negloc = loc * (double(-1.0));
 
-    mkl_rng::gumbel<_DataType> distribution(loc, scale);
-    // perform generation
+    mkl_rng::gumbel<_DataType> distribution(negloc, scale);
     event = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
     event.wait();
-    event = mkl_blas::scal(DPNP_QUEUE, size, alpha, result1, stride);
+
+    // OK for CPU and segfault for GPU device
+    // event = mkl_blas::scal(DPNP_QUEUE, size, alpha, result1, incx);
+    if (dpnp_queue_is_cpu_c())
+    {
+        event = mkl_blas::scal(DPNP_QUEUE, size, alpha, result1, incx);
+    }
+    else
+    {
+        // for (size_t i = 0; i < size; i++) result1[i] *= alpha;
+        cl::sycl::range<1> gws(size);
+        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+            size_t i = global_id[0];
+            result1[i] *= alpha;
+        };
+        auto kernel_func = [&](cl::sycl::handler& cgh) {
+            cgh.parallel_for<class dpnp_blas_scal_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+        };
+        event = DPNP_QUEUE.submit(kernel_func);
+    }
     event.wait();
 }
 
 template <typename _DataType>
-void dpnp_rng_hypergeometric_c(void* result, int l, int s, int m, size_t size)
+void dpnp_rng_hypergeometric_c(void* result, const int l, const int s, const int m, const size_t size)
 {
     if (!size)
     {
@@ -347,7 +368,7 @@ void dpnp_rng_hypergeometric_c(void* result, int l, int s, int m, size_t size)
 }
 
 template <typename _DataType>
-void dpnp_rng_laplace_c(void* result, double loc, double scale, size_t size)
+void dpnp_rng_laplace_c(void* result, const double loc, const double scale, const size_t size)
 {
     if (!size)
     {
@@ -363,7 +384,7 @@ void dpnp_rng_laplace_c(void* result, double loc, double scale, size_t size)
 
 /*   Logistic(loc, scale) ~ loc + scale * log(u/(1.0 - u)) */
 template <typename _DataType>
-void dpnp_rng_logistic_c(void* result, double loc, double scale, size_t size)
+void dpnp_rng_logistic_c(void* result, const double loc, const double scale, const size_t size)
 {
     if (!size)
     {
@@ -388,7 +409,7 @@ void dpnp_rng_logistic_c(void* result, double loc, double scale, size_t size)
 }
 
 template <typename _DataType>
-void dpnp_rng_lognormal_c(void* result, _DataType mean, _DataType stddev, size_t size)
+void dpnp_rng_lognormal_c(void* result, const _DataType mean, const _DataType stddev, const size_t size)
 {
     if (!size)
     {
@@ -407,7 +428,8 @@ void dpnp_rng_lognormal_c(void* result, _DataType mean, _DataType stddev, size_t
 }
 
 template <typename _DataType>
-void dpnp_rng_multinomial_c(void* result, int ntrial, const double* p_vector, const size_t p_vector_size, size_t size)
+void dpnp_rng_multinomial_c(
+    void* result, const int ntrial, const double* p_vector, const size_t p_vector_size, const size_t size)
 {
     if (!size)
     {
@@ -446,7 +468,7 @@ void dpnp_rng_multivariate_normal_c(void* result,
                                     const size_t mean_vector_size,
                                     const double* cov_vector,
                                     const size_t cov_vector_size,
-                                    size_t size)
+                                    const size_t size)
 {
     if (!size)
     {
@@ -486,7 +508,7 @@ void dpnp_rng_multivariate_normal_c(void* result,
 }
 
 template <typename _DataType>
-void dpnp_rng_negative_binomial_c(void* result, double a, double p, size_t size)
+void dpnp_rng_negative_binomial_c(void* result, const double a, const double p, const size_t size)
 {
     if (!size)
     {
@@ -512,7 +534,7 @@ void dpnp_rng_negative_binomial_c(void* result, double a, double p, size_t size)
 }
 
 template <typename _DataType>
-void dpnp_rng_normal_c(void* result, _DataType mean, _DataType stddev, size_t size)
+void dpnp_rng_normal_c(void* result, const _DataType mean, const _DataType stddev, const size_t size)
 {
     if (!size)
     {
@@ -527,7 +549,7 @@ void dpnp_rng_normal_c(void* result, _DataType mean, _DataType stddev, size_t si
 }
 
 template <typename _DataType>
-void dpnp_rng_pareto_c(void* result, double alpha, size_t size)
+void dpnp_rng_pareto_c(void* result, const double alpha, const size_t size)
 {
     if (!size)
     {
@@ -550,7 +572,7 @@ void dpnp_rng_pareto_c(void* result, double alpha, size_t size)
 }
 
 template <typename _DataType>
-void dpnp_rng_poisson_c(void* result, double lambda, size_t size)
+void dpnp_rng_poisson_c(void* result, const double lambda, const size_t size)
 {
     if (!size)
     {
@@ -565,7 +587,7 @@ void dpnp_rng_poisson_c(void* result, double lambda, size_t size)
 }
 
 template <typename _DataType>
-void dpnp_rng_power_c(void* result, double alpha, size_t size)
+void dpnp_rng_power_c(void* result, const double alpha, const size_t size)
 {
     if (!size)
     {
@@ -588,7 +610,7 @@ void dpnp_rng_power_c(void* result, double alpha, size_t size)
 }
 
 template <typename _DataType>
-void dpnp_rng_rayleigh_c(void* result, _DataType scale, size_t size)
+void dpnp_rng_rayleigh_c(void* result, const _DataType scale, const size_t size)
 {
     if (!size)
     {
@@ -618,7 +640,7 @@ void dpnp_rng_rayleigh_c(void* result, _DataType scale, size_t size)
 }
 
 template <typename _DataType>
-void dpnp_rng_standard_cauchy_c(void* result, size_t size)
+void dpnp_rng_standard_cauchy_c(void* result, const size_t size)
 {
     if (!size)
     {
@@ -637,7 +659,7 @@ void dpnp_rng_standard_cauchy_c(void* result, size_t size)
 }
 
 template <typename _DataType>
-void dpnp_rng_standard_exponential_c(void* result, size_t size)
+void dpnp_rng_standard_exponential_c(void* result, const size_t size)
 {
     if (!size)
     {
@@ -651,7 +673,7 @@ void dpnp_rng_standard_exponential_c(void* result, size_t size)
 }
 
 template <typename _DataType>
-void dpnp_rng_standard_gamma_c(void* result, _DataType shape, size_t size)
+void dpnp_rng_standard_gamma_c(void* result, const _DataType shape, const size_t size)
 {
     if (!size)
     {
@@ -678,7 +700,7 @@ void dpnp_rng_standard_normal_c(void* result, size_t size)
 }
 
 template <typename _DataType>
-void dpnp_rng_standard_t_c(void* result, _DataType df, size_t size)
+void dpnp_rng_standard_t_c(void* result, const _DataType df, const size_t size)
 {
     if (!size)
     {
@@ -741,8 +763,78 @@ void dpnp_rng_standard_t_c(void* result, _DataType df, size_t size)
     }
 }
 
+template <typename _KernelNameSpecialization>
+class dpnp_rng_triangular_ration_acceptance_c_kernel;
+
 template <typename _DataType>
-void dpnp_rng_uniform_c(void* result, long low, long high, size_t size)
+void dpnp_rng_triangular_c(
+    void* result, const _DataType x_min, const _DataType x_mode, const _DataType x_max, const size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+    const _DataType d_zero = (_DataType(0));
+    const _DataType d_one = (_DataType(1));
+
+    _DataType ratio, lpr, rpr;
+
+    mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
+    auto event_uniform = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, result1);
+
+    {
+        _DataType wtot, wl, wr;
+
+        wtot = x_max - x_min;
+        wl = x_mode - x_min;
+        wr = x_max - x_mode;
+
+        ratio = wl / wtot;
+        lpr = wl * wtot;
+        rpr = wr * wtot;
+    }
+
+    if (!(0 <= ratio && ratio <= 1))
+    {
+        throw std::runtime_error("DPNP RNG Error: dpnp_rng_triangular_c() failed.");
+    }
+
+    cl::sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        size_t i = global_id[0];
+        if (ratio <= 0)
+        {
+            result1[i] = x_max - cl::sycl::sqrt(result1[i] * rpr);
+        }
+        else if (ratio >= 1)
+        {
+            result1[i] = x_min + cl::sycl::sqrt(result1[i] * lpr);
+        }
+        else
+        {
+            _DataType ui = result1[i];
+            if (ui > ratio)
+            {
+                result1[i] = x_max - cl::sycl::sqrt((1.0 - ui) * rpr);
+            }
+            else
+            {
+                result1[i] = x_min + cl::sycl::sqrt(ui * lpr);
+            }
+        }
+    };
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.depends_on({event_uniform});
+        cgh.parallel_for<class dpnp_rng_triangular_ration_acceptance_c_kernel<_DataType>>(gws,
+                                                                                          kernel_parallel_for_func);
+    };
+    auto event_ration_acceptance = DPNP_QUEUE.submit(kernel_func);
+    event_ration_acceptance.wait();
+}
+
+template <typename _DataType>
+void dpnp_rng_uniform_c(void* result, const long low, const long high, const size_t size)
 {
     if (!size)
     {
@@ -762,7 +854,7 @@ void dpnp_rng_uniform_c(void* result, long low, long high, size_t size)
 }
 
 template <typename _DataType>
-void dpnp_rng_weibull_c(void* result, double alpha, size_t size)
+void dpnp_rng_weibull_c(void* result, const double alpha, const size_t size)
 {
     if (!size)
     {
@@ -788,7 +880,7 @@ void func_map_init_random(func_map_t& fmap)
 
     fmap[DPNPFuncName::DPNP_FN_RNG_BINOMIAL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_binomial_c<int>};
 
-    fmap[DPNPFuncName::DPNP_FN_RNG_CHISQUARE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_chi_square_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_CHISQUARE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_chisquare_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_EXPONENTIAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_exponential_c<double>};
     fmap[DPNPFuncName::DPNP_FN_RNG_EXPONENTIAL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_exponential_c<float>};
@@ -830,6 +922,8 @@ void func_map_init_random(func_map_t& fmap)
 
     fmap[DPNPFuncName::DPNP_FN_RNG_RAYLEIGH][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_rayleigh_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_SRAND][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_srand_c};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_CAUCHY][eft_DBL][eft_DBL] = {eft_DBL,
                                                                          (void*)dpnp_rng_standard_cauchy_c<double>};
 
@@ -843,12 +937,13 @@ void func_map_init_random(func_map_t& fmap)
                                                                          (void*)dpnp_rng_standard_normal_c<double>};
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_T][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_standard_t_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_TRIANGULAR][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_triangular_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_uniform_c<double>};
     fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_uniform_c<float>};
     fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_uniform_c<int>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_WEIBULL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_weibull_c<double>};
-    fmap[DPNPFuncName::DPNP_FN_RNG_SRAND][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_srand_c};
 
     return;
 }

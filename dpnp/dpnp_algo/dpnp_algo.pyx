@@ -63,11 +63,14 @@ include "dpnp_algo_manipulation.pyx"
 include "dpnp_algo_mathematical.pyx"
 include "dpnp_algo_searching.pyx"
 include "dpnp_algo_sorting.pyx"
+include "dpnp_algo_special.pyx"
 include "dpnp_algo_statistics.pyx"
 include "dpnp_algo_trigonometric.pyx"
 
 
 ctypedef void(*fptr_dpnp_arange_t)(size_t, size_t, void * , size_t)
+ctypedef void(*fptr_dpnp_initval_t)(void * , void * , size_t)
+
 
 cpdef dparray dpnp_arange(start, stop, step, dtype):
 
@@ -131,10 +134,19 @@ cpdef dparray dpnp_astype(dparray array1, dtype_target):
 
 
 cpdef dparray dpnp_init_val(shape, dtype, value):
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_INITVAL, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     cdef dparray result = dparray(shape, dtype=dtype)
 
-    for i in range(result.size):
-        result[i] = value
+    # TODO: find better way to pass single value with type conversion
+    cdef dparray val_arr = dparray((1, ), dtype=dtype)
+    val_arr[0] = value
+
+    cdef fptr_dpnp_initval_t func = <fptr_dpnp_initval_t > kernel_data.ptr
+    func(result.get_data(), val_arr.get_data(), result.size)
 
     return result
 
@@ -243,16 +255,18 @@ Internal functions
 """
 cpdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype):
 
-    if dtype == numpy.float64:
+    if dtype in [numpy.float64, 'float64']:
         return DPNP_FT_DOUBLE
-    elif dtype == numpy.float32:
+    elif dtype in [numpy.float32,  'float32']:
         return DPNP_FT_FLOAT
-    elif dtype == numpy.int64:
+    elif dtype in [numpy.int64, 'int64', 'int', int]:
         return DPNP_FT_LONG
-    elif dtype == numpy.int32:
+    elif dtype in [numpy.int32, 'int32']:
         return DPNP_FT_INT
-    elif dtype == numpy.complex128:
+    elif dtype in [numpy.complex128, 'complex128']:
         return DPNP_FT_CMPLX128
+    elif dtype in [numpy.bool, numpy.bool_, 'bool']:
+        return DPNP_FT_BOOL
     else:
         checker_throw_type_error("dpnp_dtype_to_DPNPFuncType", dtype)
 
@@ -271,6 +285,8 @@ cpdef dpnp_DPNPFuncType_to_dtype(size_t type):
         return numpy.int32
     elif type == <size_t > DPNP_FT_CMPLX128:
         return numpy.complex128
+    elif type == <size_t > DPNP_FT_BOOL:
+        return numpy.bool
     else:
         checker_throw_type_error("dpnp_DPNPFuncType_to_dtype", type)
 

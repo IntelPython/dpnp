@@ -29,7 +29,6 @@
 
 #include <dpnp_iface.hpp>
 #include "dpnp_fptr.hpp"
-#include "dpnp_utils.hpp"
 #include "queue_sycl.hpp"
 
 using namespace std;
@@ -147,25 +146,32 @@ void dpnp_diagonal_c(void* array1_in, void* result1, const size_t offset, size_t
 }
 
 
-template <typename _DataType>
+template <typename _DataType, typename _IndecesType>
 class dpnp_take_c_kernel;
 
-template <typename _DataType>
+template <typename _DataType, typename _IndecesType>
 void dpnp_take_c(void* array1_in, void* indices1, void* result1, size_t size)
 {
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
-    size_t* indices = reinterpret_cast<size_t*>(indices1);
+    _IndecesType* indices = reinterpret_cast<_IndecesType*>(indices1);
 
-    for (size_t i = 0; i < size; i++)
-    {
-        size_t ind = indices[i];
-        result[i] = array_1[ind];
-    }
+    cl::sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        const size_t idx = global_id[0];
+        result[idx] = array_1[indices[idx]];
+    };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_take_c_kernel<_DataType, _IndecesType>>(gws, kernel_parallel_for_func);
+    };
+
+    cl::sycl::event event = DPNP_QUEUE.submit(kernel_func);
+
+    event.wait();
 
     return;
 }
-
 
 void func_map_init_indexing_func(func_map_t& fmap)
 {
@@ -174,10 +180,12 @@ void func_map_init_indexing_func(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_diagonal_c<float>};
     fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_diagonal_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_take_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_take_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_take_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_take_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_BOOL][eft_BOOL] = {eft_BOOL, (void*)dpnp_take_c<bool, long>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_take_c<int, long>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_take_c<long, long>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_take_c<float, long>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_take_c<double, long>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_C128][eft_C128] = {eft_C128, (void*)dpnp_take_c<std::complex<double>, long>};
 
     return;
 }

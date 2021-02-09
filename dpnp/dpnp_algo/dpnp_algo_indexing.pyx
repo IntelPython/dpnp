@@ -222,20 +222,18 @@ cpdef dparray dpnp_select(condlist, choicelist, default):
 
 
 cpdef dparray dpnp_take(dparray input, dparray indices):
-    indices_size = indices.size
-
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TAKE, param1_type, param1_type)
 
     result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-    cdef dparray result = dparray(indices_size, dtype=result_type)
+    cdef dparray result = dparray(indices.shape, dtype=result_type)
 
     cdef custom_indexing_2in_1out_func_ptr_t func = <custom_indexing_2in_1out_func_ptr_t > kernel_data.ptr
 
-    func(input.get_data(), indices.get_data(), result.get_data(), indices_size)
+    func(input.get_data(), indices.get_data(), result.get_data(), indices.size)
 
-    return result.reshape(indices.shape)
+    return result
 
 
 cpdef tuple dpnp_tril_indices(n, k=0, m=None):
