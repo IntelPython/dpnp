@@ -80,6 +80,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_CONJIGUATE,               /**< Used in numpy.conjugate() implementation  */
     DPNP_FN_COPY,                     /**< Used in numpy.copy() implementation  */
     DPNP_FN_COPYSIGN,                 /**< Used in numpy.copysign() implementation  */
+    DPNP_FN_COPYTO,                   /**< Used in numpy.copyto() implementation  */
     DPNP_FN_CORRELATE,                /**< Used in numpy.correlate() implementation  */
     DPNP_FN_COS,                      /**< Used in numpy.cos() implementation  */
     DPNP_FN_COSH,                     /**< Used in numpy.cosh() implementation  */
