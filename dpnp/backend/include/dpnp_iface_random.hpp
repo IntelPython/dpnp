@@ -407,4 +407,15 @@ INP_DLLEXPORT void dpnp_rng_uniform_c(void* result, const long low, const long h
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_rng_weibull_c(void* result, const double alpha, const size_t size);
 
+/**
+ * @ingroup BACKEND_RANDOM_API
+ * @brief math library implementation of random number generator (Zipf distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ * @param [in]  a      Distribution parameter.
+ * @param [out] result Output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_rng_zipf_c(void* result, const _DataType a, const size_t size);
+
 #endif // BACKEND_IFACE_RANDOM_H

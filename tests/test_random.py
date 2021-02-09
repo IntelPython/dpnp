@@ -823,3 +823,14 @@ class TestDistributionsWeibull(TestDistribution):
     def test_seed(self):
         a = 2.56
         self.check_seed('weibull', {'a': a})
+
+
+class TestDistributionsZipf(TestDistribution):
+
+    def test_invalid_args(self):
+        a = 1.0  # parameter `a` is expected greater than 1.
+        self.check_invalid_args('zipf', {'a': a})
+
+    def test_seed(self):
+        a = 2.56
+        self.check_seed('zipf', {'a': a})

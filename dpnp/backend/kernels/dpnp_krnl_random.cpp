@@ -874,6 +874,67 @@ void dpnp_rng_weibull_c(void* result, const double alpha, const size_t size)
     event_out.wait();
 }
 
+template <typename _DataType>
+void dpnp_rng_zipf_c(void* result, const _DataType a, const size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+
+    cl::sycl::event event_out;
+
+    size_t i, n_accepted, batch_size;
+    _DataType T, U, V, am1, b;
+    _DataType *Uvec = nullptr, *Vvec = nullptr;
+    long X;
+    const _DataType d_zero = 0.0;
+    const _DataType d_one = 1.0;
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    am1 = a - d_one;
+    b = pow(2.0, am1);
+
+    Uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * 2 * sizeof(_DataType)));
+    if (Uvec == nullptr)
+    {
+        throw std::runtime_error("DPNP RNG Error: dpnp_rng_zipf_c() failed.");
+    }
+    Vvec = Uvec + size;
+
+    // TODO
+    // kernel for acceptance
+    for (n_accepted = 0; n_accepted < size;)
+    {
+        batch_size = size - n_accepted;
+
+        mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
+        event_out = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, batch_size, Uvec);
+        event_out.wait();
+        event_out = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, batch_size, Vvec);
+        event_out.wait();
+        for (i = 0; i < batch_size; i++)
+        {
+            U = d_one - Uvec[i];
+            V = Vvec[i];
+            X = (long)floor(pow(U, (-1.0) / am1));
+            /* The real result may be above what can be represented in a signed
+             * long. It will get casted to -sys.maxint-1. Since this is
+             * a straightforward rejection algorithm, we can just reject this value
+             * in the rejection condition below. This function then models a Zipf
+             * distribution truncated to sys.maxint.
+             */
+            T = pow(d_one + d_one / X, am1);
+            if ((X > 0) && ((V * X) * (T - d_one) / (b - d_one) <= T / b))
+            {
+                result1[n_accepted++] = X;
+            }
+        }
+    }
+
+    dpnp_memory_free_c(Uvec);
+}
+
 void func_map_init_random(func_map_t& fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_RNG_BETA][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_beta_c<double>};
@@ -944,6 +1005,8 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_uniform_c<int>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_WEIBULL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_weibull_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_ZIPF][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_zipf_c<double>};
 
     return;
 }
