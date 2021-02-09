@@ -44,5 +44,5 @@ enable_testing()
 include_directories(${GTEST_INCLUDE_DIR})
 link_directories(${GTEST_LIB_DIR})
 
-add_executable(dpnpc_tests test_random.cpp)
+add_executable(dpnpc_tests test_main.cpp test_random.cpp)
 target_link_libraries(dpnpc_tests GTest::GTest GTest::Main pthread dpnp_backend_c)
