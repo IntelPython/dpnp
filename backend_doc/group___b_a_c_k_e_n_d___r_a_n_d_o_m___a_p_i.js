@@ -16,6 +16,7 @@ var group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i =
     [ "dpnp_rng_multinomial_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga6629642151d4f0a25f2c4ff9ebcfde48", null ],
     [ "dpnp_rng_multivariate_normal_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga88a9d4f51bd69ca46f0ae6f1f12064fe", null ],
     [ "dpnp_rng_negative_binomial_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gaa376cfcb661edb941d07e22aba78e75c", null ],
+    [ "dpnp_rng_noncentral_chisquare_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga6e3d64929a18be371ebf2d5cc797a09e", null ],
     [ "dpnp_rng_normal_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga7d0e26c7209c3be87f3c4c633a27abfe", null ],
     [ "dpnp_rng_pareto_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gaad804c3b70adb9f8a50d39032ed29cba", null ],
     [ "dpnp_rng_poisson_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gaebce4a94806eae0977898296972105a0", null ],
@@ -29,5 +30,6 @@ var group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i =
     [ "dpnp_rng_standard_t_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga0cafc9cd474f14abbfb40c659f2047c2", null ],
     [ "dpnp_rng_triangular_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga1443570cf95f2862175f7764c2962711", null ],
     [ "dpnp_rng_uniform_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga66ca0e8e25c172adb2c5ba1d4d109b99", null ],
-    [ "dpnp_rng_weibull_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gafe029126127cf1e5f10981be800dd714", null ]
+    [ "dpnp_rng_weibull_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gafe029126127cf1e5f10981be800dd714", null ],
+    [ "dpnp_rng_zipf_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gab68d1ef52711505ad1342f5f90d9860e", null ]
 ];

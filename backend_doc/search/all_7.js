@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['queueoptions_269',['QueueOptions',['../group___b_a_c_k_e_n_d___a_p_i.html#gaae520250ac00985feaadcbd984c30ab1',1,'dpnp_iface.hpp']]]
+  ['ptr_281',['ptr',['../struct_d_p_n_p_func_data.html#af40fd22f5954384788121f817fb02f0d',1,'DPNPFuncData']]]
 ];
