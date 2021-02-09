@@ -1274,7 +1274,7 @@ def shuffle(x):
     """
 
     if not use_origin_backend(seed):
-        if not isinstance(x, dparray)
+        if not isinstance(x, dparray):
             pass
         else:
             return dpnp_rng_shuffle(x)

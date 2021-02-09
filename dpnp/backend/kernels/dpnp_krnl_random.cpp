@@ -640,10 +640,9 @@ void dpnp_rng_rayleigh_c(void* result, const _DataType scale, const size_t size)
     }
 }
 
-// TODO
-// separate distribuition and random sample funcs to different src files
 template <typename _DataType>
-void dpnp_rng_shuffle_c(void* result, const size_t itemsize, const size_t ndim, const size_t high_dim_size, const size_t size)
+void dpnp_rng_shuffle_c(
+    void* result, const size_t itemsize, const size_t ndim, const size_t high_dim_size, const size_t size)
 {
     if (!(size) || !(high_dim_size > 1))
     {
@@ -668,9 +667,12 @@ void dpnp_rng_shuffle_c(void* result, const size_t itemsize, const size_t ndim, 
 
     if (ndim == 1)
     {
+        // Fast, statically typed path: shuffle the underlying buffer.
+        // Only for non-empty, 1d objects of class ndarray (subclasses such
+        // as MaskedArrays may not support this approach).
         // TODO
         // kernel
-        char * buf = nullptr;
+        char* buf = nullptr;
         buf = reinterpret_cast<char*>(dpnp_memory_alloc_c(itemsize * sizeof(char)));
         // TODO
         // nullptr check will be removed after dpnp_memory_alloc_c update
@@ -690,9 +692,10 @@ void dpnp_rng_shuffle_c(void* result, const size_t itemsize, const size_t ndim, 
     }
     else
     {
+        // Multidimensional ndarrays require a bounce buffer.
         // TODO
         // kernel
-        char * buf = nullptr;
+        char* buf = nullptr;
         size_t step_size = (size / high_dim_size) * itemsize; // size in bytes for x[i] element
         buf = reinterpret_cast<char*>(dpnp_memory_alloc_c(step_size * sizeof(char)));
         // TODO

@@ -321,7 +321,8 @@ INP_DLLEXPORT void dpnp_rng_rayleigh_c(void* result, const _DataType scale, cons
  * @param [out] result        Input/output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_shuffle_c(void* result, const size_t itemsize, const size_t ndim, const size_t high_dim_size, const size_t size);
+INP_DLLEXPORT void dpnp_rng_shuffle_c(
+    void* result, const size_t itemsize, const size_t ndim, const size_t high_dim_size, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API

@@ -3,7 +3,7 @@ import unittest
 
 import dpnp.random
 import numpy
-from numpy.testing import assert_allclose
+from numpy.testing import (assert_allclose, assert_array_equal)
 import math
 
 
@@ -823,3 +823,31 @@ class TestDistributionsWeibull(TestDistribution):
     def test_seed(self):
         a = 2.56
         self.check_seed('weibull', {'a': a})
+
+
+class TestPermutationsTestShuffle:
+
+    @pytest.mark.parametrize("dtype", [dpnp.float32, dpnp.float64, dpnp.int32, dpnp.int64],
+                                       ids=['float32', 'float64', 'int32', 'int64'])
+    def test_shuffle(self, dtype):
+        seed = 28041990
+        input_x_int64 = dpnp.asarray([1, 2, 3, 4, 5, 6, 7, 8, 9, 0], dtype=dpnp.int64)
+        input_x = dpnp.asarray([1, 2, 3, 4, 5, 6, 7, 8, 9, 0], dtype=dtype)
+        dpnp.random.seed(seed)
+        desired_x = dpnp.random.shuffle(input_x_int64).astype(dtype)
+        dpnp.random.seed(seed)
+        actual_x = dpnp.random.shuffle(input_x)
+        assert_array_equal(actual_x, desired_x)
+
+    @pytest.mark.parametrize("dtype", [dpnp.float32, dpnp.float64, dpnp.int32, dpnp.int64],
+                                       ids=['float32', 'float64', 'int32', 'int64'])
+    def test_no_miss_numpbers(self, dtype):
+        seed = 28041990
+        input_x = dpnp.asarray([5, 4, 0, 7, 6, 1, 8, 3, 2, 9], dtype=dtype)
+        desired_x = dpnp.sort(input_x)
+        dpnp.random.seed(seed)
+        output_x = dpnp.random.shuffle(input_x)
+        actual_x = dpnp.sort(output_x)
+        assert_array_equal(actual_x, desired_x)
+
+    # TODO more tests
