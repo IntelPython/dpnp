@@ -815,12 +815,23 @@ def noncentral_chisquare(df, nonc, size=None):
 
     For full documentation refer to :obj:`numpy.random.noncentral_chisquare`.
 
-    Notes
-    -----
-    The function uses `numpy.random.noncentral_chisquare` on the backend and
-    will be executed on fallback backend.
+    TODO
 
     """
+
+    if not use_origin_backend(df):
+        # TODO:
+        # array_like of floats for `mean` and `scale`
+        if not dpnp.isscalar(df):
+            pass
+        elif not dpnp.isscalar(nonc):
+            pass
+        elif df <= 0:
+            pass
+        elif nonc < 0:
+            pass
+        else:
+            return dpnp_rng_noncentral_chisquare(df, nonc, size)
 
     return call_origin(numpy.random.noncentral_chisquare, df, nonc, size)
 
@@ -1627,11 +1638,27 @@ def zipf(a, size=None):
 
     For full documentation refer to :obj:`numpy.random.zipf`.
 
-    Notes
-    -----
-    The function uses `numpy.random.zipf` on the backend and
-    will be executed on fallback backend.
+    Limitations
+    -----------
+    Parameter ``a`` is supported as a scalar.
+    Otherwise, :obj:`numpy.zipf.weibull(a, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    >>> a = 2. # parameter
+    >>> s = np.random.zipf(a, 1000)
 
     """
+
+    if not use_origin_backend(a):
+        # TODO:
+        # array_like of floats for `a` param
+        if not dpnp.isscalar(a):
+            pass
+        elif a <= 1:
+            pass
+        else:
+            return dpnp_rng_zipf(a, size)
 
     return call_origin(numpy.random.zipf, a, size)
