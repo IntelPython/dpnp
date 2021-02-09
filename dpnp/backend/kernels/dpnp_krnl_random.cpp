@@ -863,8 +863,7 @@ void dpnp_rng_triangular_c(
     _DataType ratio, lpr, rpr;
 
     mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
-    auto event_out = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
+    auto event_uniform = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, result1);
 
     {
         _DataType wtot, wl, wr;
@@ -908,11 +907,12 @@ void dpnp_rng_triangular_c(
         }
     };
     auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.depends_on({event_uniform});
         cgh.parallel_for<class dpnp_rng_triangular_ration_acceptance_c_kernel<_DataType>>(gws,
                                                                                           kernel_parallel_for_func);
     };
-    event_out = DPNP_QUEUE.submit(kernel_func);
-    event_out.wait();
+    auto event_ration_acceptance = DPNP_QUEUE.submit(kernel_func);
+    event_ration_acceptance.wait();
 }
 
 template <typename _DataType>
