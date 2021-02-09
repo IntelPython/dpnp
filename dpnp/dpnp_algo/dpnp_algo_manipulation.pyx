@@ -91,8 +91,6 @@ cpdef dpnp_copyto(dparray dst, dparray src, where=True):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_COPYTO, dst_type, src_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-
     cdef fptr_1in_1out_t func = <fptr_1in_1out_t > kernel_data.ptr
     # Call FPTR function
     func(dst.get_data(), src.get_data(), dst.size)
