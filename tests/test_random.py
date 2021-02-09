@@ -803,7 +803,7 @@ class TestDistributionsTriangular(TestDistribution):
         mode = 2.0
         right = 3.0
         expected_mean = (left + mode + right) / 3
-        expected_var = (left ** 2 + mode ** 2 + right ** 2 - left * mode -left * right -mode * right) / 18
+        expected_var = (left ** 2 + mode ** 2 + right ** 2 - left * mode - left * right - mode * right) / 18
         self.check_moments('triangular', expected_mean,
                            expected_var, {'left': left, 'mode': mode, 'right': right})
 

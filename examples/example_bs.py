@@ -57,15 +57,15 @@ VOLATILITY = 0.2
 
 
 def black_scholes_put(S, K, T, sigmas, r_sigma_sigma_2, nrs, sqrt2, ones, twos):
-    d1 = (np.log(S/K) + r_sigma_sigma_2*T) / (sigmas*np.sqrt(T))
+    d1 = (np.log(S / K) + r_sigma_sigma_2 * T) / (sigmas * np.sqrt(T))
     d2 = d1 - sigmas * np.sqrt(T)
 
     cdf_d1 = (ones + np.erf(d1 / sqrt2)) / twos
     cdf_d2 = (ones + np.erf(d2 / sqrt2)) / twos
 
-    bs_call = S*cdf_d1 - K*np.exp(nrs*T)*cdf_d2
+    bs_call = S * cdf_d1 - K * np.exp(nrs * T) * cdf_d2
 
-    return K*np.exp(nrs*T) - S + bs_call
+    return K * np.exp(nrs * T) - S + bs_call
 
 
 np.random.seed(SEED)
@@ -76,7 +76,7 @@ T = np.random.uniform(TL, TH, SIZE)
 r, sigma = RISK_FREE, VOLATILITY
 
 sigmas = np.full(SHAPE, sigma, dtype=DTYPE)
-r_sigma_sigma_2 = np.full(SHAPE, r + sigma*sigma/2., dtype=DTYPE)
+r_sigma_sigma_2 = np.full(SHAPE, r + sigma * sigma / 2., dtype=DTYPE)
 nrs = np.full(SHAPE, -r, dtype=DTYPE)
 
 sqrt2 = np.full(SHAPE, np.sqrt(2), dtype=DTYPE)
