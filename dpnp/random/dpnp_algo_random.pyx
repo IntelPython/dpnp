@@ -58,6 +58,7 @@ __all__ = [
     "dpnp_rng_multinomial",
     "dpnp_rng_multivariate_normal",
     "dpnp_rng_negative_binomial",
+    "dpnp_rng_noncentral_chisquare",
     "dpnp_rng_normal",
     "dpnp_rng_pareto",
     "dpnp_rng_poisson",
@@ -104,6 +105,7 @@ ctypedef void(*fptr_dpnp_rng_multivariate_normal_c_1out_t)(void * ,
                                                            const size_t,
                                                            const size_t) except +
 ctypedef void(*fptr_dpnp_rng_negative_binomial_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_noncentral_chisquare_c_1out_t)(void * , const double, const double, const size_t) except +
 ctypedef void(*fptr_dpnp_rng_normal_c_1out_t)(void * , const double, const double, const size_t) except +
 ctypedef void(*fptr_dpnp_rng_pareto_c_1out_t)(void * , const double, const size_t) except +
 ctypedef void(*fptr_dpnp_rng_poisson_c_1out_t)(void * , const double, const size_t) except +
@@ -629,6 +631,31 @@ cpdef dparray dpnp_rng_negative_binomial(double a, double p, size):
         func = <fptr_dpnp_rng_negative_binomial_c_1out_t > kernel_data.ptr
         # call FPTR function
         func(result.get_data(), a, p, result.size)
+
+    return result
+
+
+cpdef dparray dpnp_rng_noncentral_chisquare(double df, double nonc, size):
+    """
+    Returns an array populated with samples from noncentral chisquare distribution.
+    `dpnp_rng_noncentral_chisquare` generates a matrix filled with random floats sampled from a
+    univariate noncentral chisquare distribution.
+
+    """
+
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_NONCENTRAL_CHISQUARE, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray result = dparray(size, dtype=result_type)
+
+    cdef fptr_dpnp_rng_noncentral_chisquare_c_1out_t func = < fptr_dpnp_rng_noncentral_chisquare_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), df, nonc, result.size)
 
     return result
 

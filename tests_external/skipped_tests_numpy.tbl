@@ -1482,6 +1482,7 @@ tests/test_random.py::TestRandomDist::test_lognormal_0
 tests/test_random.py::TestRandomDist::test_multinomial
 tests/test_random.py::TestRandomDist::test_multivariate_normal
 tests/test_random.py::TestRandomDist::test_negative_binomial
+tests/test_random.py::TestRandomDist::test_noncentral_chisquare
 tests/test_random.py::TestRandomDist::test_normal
 tests/test_random.py::TestRandomDist::test_normal_0
 tests/test_random.py::TestRandomDist::test_pareto
@@ -1582,6 +1583,7 @@ tests/test_randomstate.py::TestRandomDist::test_multinomial
 tests/test_randomstate.py::TestRandomDist::test_multivariate_normal
 tests/test_randomstate.py::TestRandomDist::test_negative_binomial
 tests/test_randomstate.py::TestRandomDist::test_negative_binomial_exceptions
+tests/test_randomstate.py::TestRandomDist::test_noncentral_chisquare
 tests/test_randomstate.py::TestRandomDist::test_normal
 tests/test_randomstate.py::TestRandomDist::test_normal_0
 tests/test_randomstate.py::TestRandomDist::test_pareto
