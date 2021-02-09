@@ -68,7 +68,8 @@
 enum class QueueOptions : uint32_t
 {
     CPU_SELECTOR, /**< CPU side execution mode */
-    GPU_SELECTOR  /**< Intel GPU side execution mode */
+    GPU_SELECTOR, /**< Intel GPU side execution mode */
+    AUTO_SELECTOR /**< Automatic selection based on environment variable with @ref CPU_SELECTOR default */
 };
 
 /**
@@ -77,9 +78,9 @@ enum class QueueOptions : uint32_t
  *
  * Global SYCL queue initialization.
  *
- * @param [in]  selector       Select type @ref QueueOptions of the SYCL queue.
+ * @param [in]  selector       Select type @ref QueueOptions of the SYCL queue. Default @ref AUTO_SELECTOR
  */
-INP_DLLEXPORT void dpnp_queue_initialize_c(QueueOptions selector);
+INP_DLLEXPORT void dpnp_queue_initialize_c(QueueOptions selector = QueueOptions::AUTO_SELECTOR);
 
 /**
  * @ingroup BACKEND_API
@@ -457,11 +458,11 @@ INP_DLLEXPORT void dpnp_std_c(
  * @brief math library implementation of take function
  *
  * @param [in]  array   Input array with data.
- * @param [in]  array   Input array with indices.
- * @param [out] result  Output array with indeces.
+ * @param [in]  indices Input array with indices.
+ * @param [out] result  Output array.
  * @param [in]  size    Number of elements in the input array.
  */
-template <typename _DataType>
+template <typename _DataType, typename _IndecesType>
 INP_DLLEXPORT void dpnp_take_c(void* array, void* indices, void* result, size_t size);
 
 /**
