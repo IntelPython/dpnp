@@ -25,11 +25,126 @@
 
 #include <iostream>
 #include <list>
+#include <vector>
 
 #include <dpnp_iface.hpp>
 #include "dpnp_fptr.hpp"
 #include "dpnp_utils.hpp"
 #include "queue_sycl.hpp"
+
+using namespace std;
+
+
+template <typename _DataType>
+class dpnp_diagonal_c_kernel;
+
+template <typename _DataType>
+void dpnp_diagonal_c(void* array1_in, void* result1, const size_t offset, size_t* shape, size_t* res_shape, const size_t res_ndim)
+{
+    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    size_t res_size = 1;
+    for (size_t i = 0; i < res_ndim; ++i)
+    {
+        res_size *= res_shape[i];
+    }
+
+    if (res_ndim <= 1)
+    {
+        for (size_t i = 0; i < res_shape[res_ndim - 1]; ++i)
+        {
+            result[i] = array_1[i * shape[res_ndim] + i + offset];
+        }
+    }
+    else
+    {
+        std::map<size_t, std::vector<size_t>> xyz;
+        for (size_t i = 0; i < res_shape[0]; i++)
+        {
+            xyz[i] = {i};
+        }
+
+        size_t index = 1;
+        while (index < res_ndim - 1)
+        {
+            size_t shape_element = res_shape[index];
+            std::map<size_t, std::vector<size_t>> new_shape_array;
+            size_t ind = 0;
+            for (size_t i = 0; i < shape_element; i++)
+            {
+                for (size_t j = 0; j < xyz.size(); j++)
+                {
+                    std::vector<size_t> new_shape;
+                    std::vector<size_t> list_ind = xyz[j];
+                    for (size_t k = 0; k < list_ind.size(); k++)
+                    {
+                        new_shape.push_back(list_ind.at(k));
+                    }
+                    new_shape.push_back(i);
+                    new_shape_array[ind] = new_shape;
+                    ind += 1;
+                }
+            }
+            size_t len_new_shape_array = new_shape_array.size() * (index + 1);
+
+            for (size_t k = 0; k < len_new_shape_array; k++)
+            {
+                xyz[k] = new_shape_array[k];
+            }
+            index += 1;
+        }
+
+        for (size_t i = 0; i < res_shape[res_ndim - 1]; i++)
+        {
+            for (size_t j = 0; j < xyz.size(); j++)
+            {
+                std::vector<size_t> ind_list = xyz[j];
+                if (ind_list.size() == 0)
+                {
+                    continue;
+                }
+                else
+                {
+                    size_t ind_input_size = ind_list.size() + 2;
+                    size_t ind_input_[ind_input_size];
+                    ind_input_[0] = i;
+                    ind_input_[1] = i + offset;
+                    size_t ind_output_size = ind_list.size() + 1;
+                    size_t ind_output_[ind_output_size];
+                    for (size_t k = 0; k < ind_list.size(); k++)
+                    {
+                        ind_input_[k + 2] = ind_list.at(k);
+                        ind_output_[k] = ind_list.at(k);
+                    }
+                    ind_output_[ind_list.size()] = i;
+
+                    size_t ind_output = 0;
+                    size_t n = 1;
+                    for (size_t k = 0; k < ind_output_size; k++)
+                    {
+                        size_t ind = ind_output_size - 1 - k;
+                        ind_output += n * ind_output_[ind];
+                        n *= res_shape[ind];
+                    }
+
+                    size_t ind_input = 0;
+                    size_t m = 1;
+                    for (size_t k = 0; k < ind_input_size; k++)
+                    {
+                        size_t ind = ind_input_size - 1 - k;
+                        ind_input += m * ind_input_[ind];
+                        m *= shape[ind];
+                    }
+
+                    result[ind_output] = array_1[ind_input];
+                }
+            }
+        }
+    }
+
+    return;
+}
 
 
 template <typename _DataType>
@@ -54,6 +169,11 @@ void dpnp_take_c(void* array1_in, void* indices1, void* result1, size_t size)
 
 void func_map_init_indexing_func(func_map_t& fmap)
 {
+    fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_diagonal_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_diagonal_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_diagonal_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_diagonal_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_TAKE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_take_c<int>};
     fmap[DPNPFuncName::DPNP_FN_TAKE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_take_c<long>};
     fmap[DPNPFuncName::DPNP_FN_TAKE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_take_c<float>};
