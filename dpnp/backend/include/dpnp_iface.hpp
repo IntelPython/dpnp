@@ -557,7 +557,7 @@ INP_DLLEXPORT void dpnp_remainder_c(void* array1_in, void* array2_in, void* resu
  *
  * @param [in]  dst          Destination array.
  * @param [in]  src          Source array.
- * @param [in]  size         Number of elements in destination arrays.
+ * @param [in]  size         Number of elements in destination array.
  */
 template <typename _DataType_dst, typename _DataType_src>
 INP_DLLEXPORT void dpnp_copyto_c(void* dst, void* src, const size_t size);
