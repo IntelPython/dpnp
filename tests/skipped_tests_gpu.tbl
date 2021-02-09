@@ -908,7 +908,6 @@ tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diago
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal_negative4
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal_negative5
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_external_diagonal
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_external_take_by_scalar
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_extract
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_extract_empty_1dim
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_extract_no_bool
@@ -917,10 +916,7 @@ tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_extra
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_extract_size_mismatch2
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_along_axis
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_along_axis_none_axis
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_by_array
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_by_scalar
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_index_range_overflow
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_take_no_axis
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_1D_choicelist
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_choicelist_condlist_broadcast
