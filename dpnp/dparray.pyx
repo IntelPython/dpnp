@@ -863,6 +863,13 @@ cdef class dparray:
         """
         return choose(input, choices, out, mode)
 
+    def take(self, indices, axis=None, out=None, mode='raise'):
+        """
+        Take elements from an array.
+        For full documentation refer to :obj:`numpy.take`.
+        """
+        return take(self, indices, axis, out, mode)
+
     """
     -------------------------------------------------------------------------
     Sorting
