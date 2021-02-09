@@ -530,7 +530,9 @@ cpdef dparray dpnp_sum(dparray input, axis=None):
 
 cpdef dparray dpnp_trapz(dparray y1, dparray x1, dx):
 
-    if y1.size == 0:
+    if y1.size <= 1:
+        if y1.dtype == dpnp.float32:
+            return dpnp.array([0], dtype=dpnp.float32)
         return dpnp.array([0], dtype=dpnp.float64)
 
     if y1.ndim == 1:
@@ -540,7 +542,12 @@ cpdef dparray dpnp_trapz(dparray y1, dparray x1, dx):
 
     diff_len = y1.size - nrow
 
-    cdef dparray diff = dparray(diff_len, dtype=y1.dtype)
+    if x1.size == 0:
+        diff_type = y1.dtype
+    else:
+        diff_type = x1.dtype
+
+    cdef dparray diff = dparray(diff_len, dtype=diff_type)
 
     if x1.size == 0:
         diff = dpnp.full(diff_len, dx)

@@ -398,7 +398,7 @@ void func_map_init_mathematical(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_trapz_c<long, double, double>};
     fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_FLT][eft_INT] = {eft_DBL, (void*)dpnp_trapz_c<float, int, double>};
     fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_FLT][eft_LNG] = {eft_DBL, (void*)dpnp_trapz_c<float, long, double>};
-    fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_FLT][eft_FLT] = {eft_DBL, (void*)dpnp_trapz_c<float, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_trapz_c<float, float, float>};
     fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_FLT][eft_DBL] = {eft_DBL, (void*)dpnp_trapz_c<float, double, double>};
     fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_trapz_c<double, int, double>};
     fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_trapz_c<double, long, double>};
