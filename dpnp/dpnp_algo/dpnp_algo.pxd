@@ -53,6 +53,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_CONJIGUATE
         DPNP_FN_COPY
         DPNP_FN_COPYSIGN
+        DPNP_FN_COPYTO
         DPNP_FN_CORRELATE
         DPNP_FN_COS
         DPNP_FN_COSH
@@ -118,6 +119,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_MULTINOMIAL
         DPNP_FN_RNG_MULTIVARIATE_NORMAL
         DPNP_FN_RNG_NEGATIVE_BINOMIAL
+        DPNP_FN_RNG_NONCENTRAL_CHISQUARE
         DPNP_FN_RNG_NORMAL
         DPNP_FN_RNG_PARETO
         DPNP_FN_RNG_POISSON
@@ -133,6 +135,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_TRIANGULAR
         DPNP_FN_RNG_UNIFORM
         DPNP_FN_RNG_WEIBULL
+        DPNP_FN_RNG_ZIPF
         DPNP_FN_SIGN
         DPNP_FN_SIN
         DPNP_FN_SINH

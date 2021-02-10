@@ -56,7 +56,7 @@ void dpnp_take_c(void* array1_in, void* indices1, void* result1, size_t size)
 
 void func_map_init_indexing_func(func_map_t& fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_BOOL][eft_BOOL] = {eft_BOOL, (void*)dpnp_take_c<bool, long>};
+    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_take_c<bool, long>};
     fmap[DPNPFuncName::DPNP_FN_TAKE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_take_c<int, long>};
     fmap[DPNPFuncName::DPNP_FN_TAKE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_take_c<long, long>};
     fmap[DPNPFuncName::DPNP_FN_TAKE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_take_c<float, long>};

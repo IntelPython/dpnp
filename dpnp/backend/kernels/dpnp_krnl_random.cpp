@@ -535,6 +535,292 @@ void dpnp_rng_negative_binomial_c(void* result, const double a, const double p, 
 }
 
 template <typename _DataType>
+void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _DataType nonc, const size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    const _DataType d_zero = _DataType(0.0);
+    const _DataType d_one = _DataType(1.0);
+    const _DataType d_two = _DataType(2.0);
+
+    if (dpnp_queue_is_cpu_c())
+    {
+        _DataType shape, loc;
+        size_t i;
+        cl::sycl::event event_out;
+        cl::sycl::vector_class<cl::sycl::event> no_deps;
+
+        if (df > 1)
+        {
+            _DataType* nvec = nullptr;
+
+            shape = 0.5 * (df - 1.0);
+            /* res has chi^2 with (df - 1) */
+            mkl_rng::gamma<_DataType> gamma_distribution(shape, d_zero, d_two);
+            event_out = mkl_rng::generate(gamma_distribution, DPNP_RNG_ENGINE, size, result1);
+            event_out.wait();
+
+            nvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+            if (nvec == nullptr)
+            {
+                throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
+            }
+
+            loc = sqrt(nonc);
+
+            mkl_rng::gaussian<_DataType> gaussian_distribution(loc, d_one);
+            event_out = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, nvec);
+            event_out.wait();
+
+            /* squaring could result in an overflow */
+            event_out = mkl_vm::sqr(DPNP_QUEUE, size, nvec, nvec, no_deps, mkl_vm::mode::ha);
+            event_out.wait();
+            event_out = mkl_vm::add(DPNP_QUEUE, size, result1, nvec, result1, no_deps, mkl_vm::mode::ha);
+            dpnp_memory_free_c(nvec);
+            event_out.wait();
+        }
+        else if (df < 1)
+        {
+            /* noncentral_chisquare(df, nonc) ~ G( df/2 + Poisson(nonc/2), 2) */
+            double lambda;
+            int* pvec = nullptr;
+            pvec = reinterpret_cast<int*>(dpnp_memory_alloc_c(size * sizeof(int)));
+            if (pvec == nullptr)
+            {
+                throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
+            }
+            // pvec = (int*)mkl_malloc(size * sizeof(int), 64);
+            lambda = 0.5 * nonc;
+
+            mkl_rng::poisson<int> poisson_distribution(lambda);
+            event_out = mkl_rng::generate(poisson_distribution, DPNP_RNG_ENGINE, size, pvec);
+            event_out.wait();
+
+            shape = 0.5 * df;
+
+            if (0.125 * size > sqrt(lambda))
+            {
+                size_t* idx = nullptr;
+                _DataType* tmp = nullptr;
+                idx = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(size * sizeof(size_t)));
+                if (idx == nullptr)
+                {
+                    throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
+                }
+                for (i = 0; i < size; i++)
+                    idx[i] = i;
+
+                std::sort(idx, idx + size, [pvec](size_t i1, size_t i2) { return pvec[i1] < pvec[i2]; });
+                /* idx now contains original indexes of ordered Poisson outputs */
+
+                /* allocate workspace to store samples of gamma, enough to hold entire output */
+                tmp = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+                if (tmp == nullptr)
+                {
+                    throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
+                }
+                for (i = 0; i < size;)
+                {
+                    size_t k, j;
+                    int cv = pvec[idx[i]];
+
+                    // TODO vectorize
+                    for (j = i + 1; (j < size) && (pvec[idx[j]] == cv); j++)
+                    {
+                    }
+                    // assert(j > i);
+                    if (j <= i)
+                    {
+                        throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
+                    }
+                    mkl_rng::gamma<_DataType> gamma_distribution(shape + cv, d_zero, d_two);
+                    event_out = mkl_rng::generate(gamma_distribution, DPNP_RNG_ENGINE, j - i, tmp);
+                    event_out.wait();
+
+                    // TODO vectorize
+                    for (k = i; k < j; k++)
+                        result1[idx[k]] = tmp[k - i];
+
+                    i = j;
+                }
+
+                dpnp_memory_free_c(tmp);
+                dpnp_memory_free_c(idx);
+            }
+            else
+            {
+                for (i = 0; i < size; i++)
+                {
+                    mkl_rng::gamma<_DataType> gamma_distribution(shape + pvec[i], d_zero, d_two);
+                    event_out = mkl_rng::generate(gamma_distribution, DPNP_RNG_ENGINE, 1, result1 + 1);
+                    event_out.wait();
+                }
+            }
+            dpnp_memory_free_c(pvec);
+        }
+        else
+        {
+            /* noncentral_chisquare(1, nonc) ~ (Z + sqrt(nonc))**2 for df == 1 */
+            loc = sqrt(nonc);
+            mkl_rng::gaussian<_DataType> gaussian_distribution(loc, d_one);
+            event_out = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, result1);
+            event_out.wait();
+            event_out = mkl_vm::sqr(DPNP_QUEUE, size, result1, result1, no_deps, mkl_vm::mode::ha);
+            event_out.wait();
+        }
+    }
+    else
+    {
+        double shape, loc;
+        int errcode;
+        size_t i;
+
+        if (df > 1)
+        {
+            double* nvec = nullptr;
+
+            shape = 0.5 * (df - 1.0);
+            /* res has chi^2 with (df - 1) */
+            errcode =
+                vdRngGamma(VSL_RNG_METHOD_GAMMA_GNORM_ACCURATE, get_rng_stream(), size, result1, shape, d_zero, d_two);
+            // TODO
+            // refactor this check, smth like: void status_assert(errcode, VSL_STATUS_OK, func_name)
+            // or just redesign and return int status:
+            // void dpnp_rng_*_c(..., int& status);
+            // or
+            // int dpnp_rng_*_c(...);
+            if (errcode != VSL_STATUS_OK)
+            {
+                throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
+            }
+
+            nvec = (double*)mkl_malloc(size * sizeof(double), 64);
+            if (nvec == nullptr)
+            {
+                throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
+            }
+            loc = sqrt(nonc);
+            errcode = vdRngGaussian(VSL_RNG_METHOD_GAUSSIAN_ICDF, get_rng_stream(), size, nvec, loc, d_one);
+            if (errcode != VSL_STATUS_OK)
+            {
+                throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
+            }
+            /* squaring could result in an overflow */
+            vmdSqr(size, nvec, nvec, VML_HA);
+            vmdAdd(size, result1, nvec, result1, VML_HA);
+
+            mkl_free(nvec);
+        }
+        else if (df < 1)
+        {
+            /* noncentral_chisquare(df, nonc) ~ G( df/2 + Poisson(nonc/2), 2) */
+            double lambda;
+            int* pvec = nullptr;
+            pvec = (int*)mkl_malloc(size * sizeof(int), 64);
+            if (pvec == nullptr)
+            {
+                throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
+            }
+
+            lambda = 0.5 * nonc;
+            errcode = viRngPoisson(VSL_RNG_METHOD_POISSON_PTPE, get_rng_stream(), size, pvec, lambda);
+            if (errcode != VSL_STATUS_OK)
+            {
+                throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
+            }
+
+            shape = 0.5 * df;
+
+            if (0.125 * size > sqrt(lambda))
+            {
+                size_t* idx = nullptr;
+                double* tmp = nullptr;
+
+                idx = (size_t*)mkl_malloc(size * sizeof(size_t), 64);
+                if (idx == nullptr)
+                {
+                    throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
+                }
+
+                for (i = 0; i < size; i++)
+                    idx[i] = i;
+
+                std::sort(idx, idx + size, [pvec](size_t i1, size_t i2) { return pvec[i1] < pvec[i2]; });
+                /* idx now contains original indexes of ordered Poisson outputs */
+
+                /* allocate workspace to store samples of gamma, enough to hold entire output */
+                tmp = (double*)mkl_malloc(size * sizeof(double), 64);
+                if (tmp == nullptr)
+                {
+                    throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
+                }
+                for (i = 0; i < size;)
+                {
+                    size_t k, j;
+                    int cv = pvec[idx[i]];
+
+                    for (j = i + 1; (j < size) && (pvec[idx[j]] == cv); j++)
+                    {
+                    }
+                    // assert(j > i);
+                    if (j <= i)
+                    {
+                        throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
+                    }
+                    errcode = vdRngGamma(
+                        VSL_RNG_METHOD_GAMMA_GNORM_ACCURATE, get_rng_stream(), j - i, tmp, shape + cv, d_zero, d_two);
+                    if (errcode != VSL_STATUS_OK)
+                    {
+                        throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
+                    }
+
+                    for (k = i; k < j; k++)
+                        result1[idx[k]] = tmp[k - i];
+
+                    i = j;
+                }
+                mkl_free(tmp);
+                mkl_free(idx);
+            }
+            else
+            {
+                for (i = 0; i < size; i++)
+                {
+                    errcode = vdRngGamma(VSL_RNG_METHOD_GAMMA_GNORM_ACCURATE,
+                                         get_rng_stream(),
+                                         1,
+                                         result1 + i,
+                                         shape + pvec[i],
+                                         d_zero,
+                                         d_two);
+                    if (errcode != VSL_STATUS_OK)
+                    {
+                        throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
+                    }
+                }
+            }
+            mkl_free(pvec);
+        }
+        else
+        {
+            /* noncentral_chisquare(1, nonc) ~ (Z + sqrt(nonc))**2 for df == 1 */
+            loc = sqrt(nonc);
+            errcode = vdRngGaussian(VSL_RNG_METHOD_GAUSSIAN_ICDF, get_rng_stream(), size, result1, loc, d_one);
+            if (errcode != VSL_STATUS_OK)
+            {
+                throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
+            }
+            /* squaring could result in an overflow */
+            vmdSqr(size, result1, result1, VML_HA);
+        }
+    }
+}
+
+template <typename _DataType>
 void dpnp_rng_normal_c(void* result, const _DataType mean, const _DataType stddev, const size_t size)
 {
     if (!size)
@@ -956,6 +1242,67 @@ void dpnp_rng_weibull_c(void* result, const double alpha, const size_t size)
     event_out.wait();
 }
 
+template <typename _DataType>
+void dpnp_rng_zipf_c(void* result, const _DataType a, const size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+
+    cl::sycl::event event_out;
+
+    size_t i, n_accepted, batch_size;
+    _DataType T, U, V, am1, b;
+    _DataType *Uvec = nullptr, *Vvec = nullptr;
+    long X;
+    const _DataType d_zero = 0.0;
+    const _DataType d_one = 1.0;
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    am1 = a - d_one;
+    b = pow(2.0, am1);
+
+    Uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * 2 * sizeof(_DataType)));
+    if (Uvec == nullptr)
+    {
+        throw std::runtime_error("DPNP RNG Error: dpnp_rng_zipf_c() failed.");
+    }
+    Vvec = Uvec + size;
+
+    // TODO
+    // kernel for acceptance
+    for (n_accepted = 0; n_accepted < size;)
+    {
+        batch_size = size - n_accepted;
+
+        mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
+        event_out = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, batch_size, Uvec);
+        event_out.wait();
+        event_out = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, batch_size, Vvec);
+        event_out.wait();
+        for (i = 0; i < batch_size; i++)
+        {
+            U = d_one - Uvec[i];
+            V = Vvec[i];
+            X = (long)floor(pow(U, (-1.0) / am1));
+            /* The real result may be above what can be represented in a signed
+             * long. It will get casted to -sys.maxint-1. Since this is
+             * a straightforward rejection algorithm, we can just reject this value
+             * in the rejection condition below. This function then models a Zipf
+             * distribution truncated to sys.maxint.
+             */
+            T = pow(d_one + d_one / X, am1);
+            if ((X > 0) && ((V * X) * (T - d_one) / (b - d_one) <= T / b))
+            {
+                result1[n_accepted++] = X;
+            }
+        }
+    }
+
+    dpnp_memory_free_c(Uvec);
+}
+
 void func_map_init_random(func_map_t& fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_RNG_BETA][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_beta_c<double>};
@@ -994,6 +1341,9 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_RNG_NEGATIVE_BINOMIAL][eft_INT][eft_INT] = {eft_INT,
                                                                            (void*)dpnp_rng_negative_binomial_c<int>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_NONCENTRAL_CHISQUARE][eft_DBL][eft_DBL] = {
+        eft_DBL, (void*)dpnp_rng_noncentral_chisquare_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_NORMAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_normal_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_PARETO][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_pareto_c<double>};
@@ -1031,6 +1381,8 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_uniform_c<int>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_WEIBULL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_weibull_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_ZIPF][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_zipf_c<double>};
 
     return;
 }
