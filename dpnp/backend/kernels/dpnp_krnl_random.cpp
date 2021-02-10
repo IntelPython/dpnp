@@ -1153,21 +1153,29 @@ void dpnp_rng_wald_c(void* result, const _DataType mean, const _DataType scale, 
 
     const _DataType d_zero = _DataType(0.0);
     const _DataType d_one = _DataType(1.0);
-    _DataType gsc = 0.5*sqrt(mean / scale);
+    _DataType gsc = sqrt(0.5 * mean / scale);
 
     mkl_rng::gaussian<_DataType> gaussian_distribution(d_zero, gsc);
 
     auto event_out = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, result1);
     event_out.wait();
 
+    // TODO
+    // change no_deps
+
+    /* Y = mean/(2 scale) * Z^2 */
     event_out = mkl_vm::sqr(DPNP_QUEUE, size, result1, result1, no_deps, mkl_vm::mode::ha);
     event_out.wait();
 
-    for(size_t i = 0; i < size; i++) {
-        if(result1[i] <= 1.0) {
-            result1[i] = 1.0 + result1[i] - sqrt( result1[i] * (result1[i] + 2.0) );
-        } else {
-            result1[i] = 1.0 - 2.0/(1.0 + sqrt( 1 + 2.0/result1[i] ));
+    for (size_t i = 0; i < size; i++)
+    {
+        if (result1[i] <= 2.0)
+        {
+            result1[i] = 1.0 + result1[i] + sqrt(result1[i] * (result1[i] + 2.0));
+        }
+        else
+        {
+            result1[i] = 1.0 + result1[i] * (1.0 + sqrt(1.0 + 2.0 / result1[i]));
         }
     }
 
@@ -1181,11 +1189,12 @@ void dpnp_rng_wald_c(void* result, const _DataType mean, const _DataType scale, 
     event_out = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, uvec);
     event_out.wait();
 
-    for(size_t i = 0; i < size; i++) {
-        if (uvec[i]*(1.0 + result1[i]) <= 1.0)
-            result1[i] = mean * result1[i];
-        else
+    for (size_t i = 0; i < size; i++)
+    {
+        if (uvec[i] * (1.0 + result1[i]) <= result1[i])
             result1[i] = mean / result1[i];
+        else
+            result1[i] = mean * result1[i];
     }
     dpnp_memory_free_c(uvec);
 }

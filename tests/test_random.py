@@ -17,8 +17,7 @@ class TestDistribution(unittest.TestCase):
         assert len(numpy.unique(res)) == 1
         assert numpy.unique(res)[0] == val
 
-    def check_moments(self, dist_name, expected_mean, expected_var, params):
-        size = 10**5
+    def check_moments(self, dist_name, expected_mean, expected_var, params, size = 10**5):
         seed = 28041995
         dpnp.random.seed(seed)
         res = numpy.asarray(getattr(dpnp.random, dist_name)(size=size, **params))
@@ -851,12 +850,13 @@ class TestDistributionsUniform(TestDistribution):
 class TestDistributionsWald(TestDistribution):
 
     def test_moments(self):
+        size = 5*10**6
         mean = 3.56
         scale = 2.8
         expected_mean = mean
         expected_var = (mean ** 3) / scale
         self.check_moments('wald', expected_mean, expected_var,
-                           {'mean': mean, 'scale': scale})
+                           {'mean': mean, 'scale': scale}, size = size)
 
     def test_invalid_args(self):
         size = 10
