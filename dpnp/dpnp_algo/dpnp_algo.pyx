@@ -257,7 +257,7 @@ cpdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype):
 
     if dtype in [numpy.float64, 'float64']:
         return DPNP_FT_DOUBLE
-    elif dtype in [numpy.float32,  'float32']:
+    elif dtype in [numpy.float32,  'float32', 'f4']:
         return DPNP_FT_FLOAT
     elif dtype in [numpy.int64, 'int64', 'int', int]:
         return DPNP_FT_LONG
@@ -265,7 +265,7 @@ cpdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype):
         return DPNP_FT_INT
     elif dtype in [numpy.complex128, 'complex128']:
         return DPNP_FT_CMPLX128
-    elif dtype in [numpy.bool, numpy.bool_, 'bool']:
+    elif dtype in [numpy.bool, numpy.bool_, 'bool', '?']:
         return DPNP_FT_BOOL
     else:
         checker_throw_type_error("dpnp_dtype_to_DPNPFuncType", dtype)

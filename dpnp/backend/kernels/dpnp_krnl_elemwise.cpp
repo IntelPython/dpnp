@@ -263,7 +263,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_CONJIGUATE][eft_C128][eft_C128] = {eft_C128,
                                                                   (void*)dpnp_conjugate_c<std::complex<double>>};
 
-    fmap[DPNPFuncName::DPNP_FN_COPY][eft_BOOL][eft_BOOL] = {eft_BOOL, (void*)dpnp_copy_c<bool>};
+    fmap[DPNPFuncName::DPNP_FN_COPY][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_copy_c<bool>};
     fmap[DPNPFuncName::DPNP_FN_COPY][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_copy_c<int>};
     fmap[DPNPFuncName::DPNP_FN_COPY][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_copy_c<long>};
     fmap[DPNPFuncName::DPNP_FN_COPY][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_copy_c<float>};
