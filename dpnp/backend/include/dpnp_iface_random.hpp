@@ -256,6 +256,19 @@ INP_DLLEXPORT void dpnp_rng_negative_binomial_c(void* result, const double a, co
 
 /**
  * @ingroup BACKEND_RANDOM_API
+ * @brief math library implementation of random number generator (noncentral chisquare distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ * @param [in]  df     Degrees of freedom.
+ * @param [in]  nonc   Non-centrality param.
+ * @param [out] result Output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void
+    dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _DataType nonc, const size_t size);
+
+/**
+ * @ingroup BACKEND_RANDOM_API
  * @brief math library implementation of random number generator (normal continious distribution)
  *
  * @param [in]  size   Number of elements in `result` arrays.
@@ -372,6 +385,20 @@ INP_DLLEXPORT void dpnp_rng_standard_t_c(void* result, const _DataType df, const
 
 /**
  * @ingroup BACKEND_RANDOM_API
+ * @brief math library implementation of random number generator (Triangular distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ * @param [in]  x_min  Lower limit.
+ * @param [in]  x_mode The value where the peak of the distribution occurs.
+ * @param [in]  x_max  Upper limit.
+ * @param [out] result Output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_rng_triangular_c(
+    void* result, const _DataType x_min, const _DataType x_mode, const _DataType x_max, const size_t size);
+
+/**
+ * @ingroup BACKEND_RANDOM_API
  * @brief math library implementation of random number generator (uniform distribution)
  *
  * @param [in]  low    Left bound of array values.
@@ -392,5 +419,16 @@ INP_DLLEXPORT void dpnp_rng_uniform_c(void* result, const long low, const long h
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_rng_weibull_c(void* result, const double alpha, const size_t size);
+
+/**
+ * @ingroup BACKEND_RANDOM_API
+ * @brief math library implementation of random number generator (Zipf distribution)
+ *
+ * @param [in]  size   Number of elements in `result` arrays.
+ * @param [in]  a      Distribution parameter.
+ * @param [out] result Output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_rng_zipf_c(void* result, const _DataType a, const size_t size);
 
 #endif // BACKEND_IFACE_RANDOM_H

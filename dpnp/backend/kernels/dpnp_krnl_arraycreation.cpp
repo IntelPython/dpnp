@@ -23,45 +23,66 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include <dpnp_iface.hpp>
+#include <iostream>
+
 #include "dpnp_fptr.hpp"
+#include "dpnp_iface.hpp"
 #include "queue_sycl.hpp"
 
-template <typename _DataType, typename _IndecesType>
-class dpnp_take_c_kernel;
+template <typename _KernelNameSpecialization>
+class dpnp_arange_c_kernel;
 
-template <typename _DataType, typename _IndecesType>
-void dpnp_take_c(void* array1_in, void* indices1, void* result1, size_t size)
+template <typename _DataType>
+void dpnp_arange_c(size_t start, size_t step, void* result1, size_t size)
 {
-    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
+    // parameter `size` used instead `stop` to avoid dependency on array length calculation algorithm
+    // TODO: floating point (and negatives) types from `start` and `step`
+
+    if (!size)
+    {
+        return;
+    }
+
+    cl::sycl::event event;
+
     _DataType* result = reinterpret_cast<_DataType*>(result1);
-    _IndecesType* indices = reinterpret_cast<_IndecesType*>(indices1);
 
     cl::sycl::range<1> gws(size);
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
-        const size_t idx = global_id[0];
-        result[idx] = array_1[indices[idx]];
+        size_t i = global_id[0];
+
+        result[i] = start + i * step;
     };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
-        cgh.parallel_for<class dpnp_take_c_kernel<_DataType, _IndecesType>>(gws, kernel_parallel_for_func);
+        cgh.parallel_for<class dpnp_arange_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
 
-    cl::sycl::event event = DPNP_QUEUE.submit(kernel_func);
+    event = DPNP_QUEUE.submit(kernel_func);
 
     event.wait();
-
-    return;
 }
 
-void func_map_init_indexing_func(func_map_t& fmap)
+template <typename _KernelNameSpecialization>
+class dpnp_full_c_kernel;
+
+template <typename _DataType>
+void dpnp_full_c(void* array_in, void* result, const size_t size)
+{    
+    dpnp_initval_c<_DataType>(result, array_in, size);
+}
+
+void func_map_init_arraycreation(func_map_t& fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_take_c<bool, long>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_take_c<int, long>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_take_c<long, long>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_take_c<float, long>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_take_c<double, long>};
-    fmap[DPNPFuncName::DPNP_FN_TAKE][eft_C128][eft_C128] = {eft_C128, (void*)dpnp_take_c<std::complex<double>, long>};
+    fmap[DPNPFuncName::DPNP_FN_ARANGE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_arange_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_ARANGE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_arange_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_ARANGE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_arange_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_ARANGE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_arange_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_FULL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_full_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_FULL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_full_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_FULL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_full_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_FULL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_full_c<double>};
 
     return;
 }
