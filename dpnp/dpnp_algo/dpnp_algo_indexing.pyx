@@ -58,7 +58,7 @@ __all__ += [
 
 
 ctypedef void(*custom_indexing_2in_1out_func_ptr_t)(void *, void * , void * , size_t)
-ctypedef void(*custom_indexing_2in_1out_func_ptr_t_)(void * , void * , size_t, size_t * , size_t * , size_t)
+ctypedef void(*custom_indexing_2in_1out_func_ptr_t_)(void * , void * , const size_t, size_t * , size_t * , const size_t)
 
 
 cpdef dparray dpnp_choose(input, choices):

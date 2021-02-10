@@ -31,8 +31,6 @@
 #include "dpnp_fptr.hpp"
 #include "queue_sycl.hpp"
 
-using namespace std;
-
 
 template <typename _DataType>
 class dpnp_diagonal_c_kernel;
@@ -144,7 +142,6 @@ void dpnp_diagonal_c(void* array1_in, void* result1, const size_t offset, size_t
 
     return;
 }
-
 
 template <typename _DataType, typename _IndecesType>
 class dpnp_take_c_kernel;
