@@ -539,6 +539,7 @@ tests/test_dtype.py::TestString::test_empty_string_to_object
 tests/test_dtype.py::TestString::test_void_subclass_fields
 tests/test_dtype.py::TestString::test_void_subclass_sized
 tests/test_dtype.py::TestString::test_void_subclass_unsized
+tests/test_dtype.py::TestStructuredDtypeSparseFields::test_sparse_field_assignment
 tests/test_dtype.py::TestStructuredDtypeSparseFields::test_sparse_field_assignment_fancy
 tests/test_dtype.py::TestStructuredObjectRefcounting::test_structured_object_create_delete[wrapper-0-<structured subarray 1>]
 tests/test_dtype.py::TestStructuredObjectRefcounting::test_structured_object_create_delete[wrapper-0-<structured subarray 2>]
@@ -1481,6 +1482,7 @@ tests/test_random.py::TestRandomDist::test_lognormal_0
 tests/test_random.py::TestRandomDist::test_multinomial
 tests/test_random.py::TestRandomDist::test_multivariate_normal
 tests/test_random.py::TestRandomDist::test_negative_binomial
+tests/test_random.py::TestRandomDist::test_noncentral_chisquare
 tests/test_random.py::TestRandomDist::test_normal
 tests/test_random.py::TestRandomDist::test_normal_0
 tests/test_random.py::TestRandomDist::test_pareto
@@ -1505,10 +1507,14 @@ tests/test_random.py::TestRandomDist::test_standard_gamma
 tests/test_random.py::TestRandomDist::test_standard_gamma_0
 tests/test_random.py::TestRandomDist::test_standard_normal
 tests/test_random.py::TestRandomDist::test_standard_t
+tests/test_random.py::TestRandomDist::test_triangular
 tests/test_random.py::TestRandomDist::test_uniform
 tests/test_random.py::TestRandomDist::test_uniform_range_bounds
 tests/test_random.py::TestRandomDist::test_weibull
 tests/test_random.py::TestRandomDist::test_weibull_0
+tests/test_random.py::TestRandomDist::test_zipf
+tests/test_random.py::TestRandomDist::test_zipf_0
+tests/test_random.py::TestBroadcast::test_zipf
 tests/test_random.py::TestSeed::test_array
 tests/test_random.py::TestSeed::test_invalid_array
 tests/test_random.py::TestSeed::test_invalid_array_shape
@@ -1577,6 +1583,7 @@ tests/test_randomstate.py::TestRandomDist::test_multinomial
 tests/test_randomstate.py::TestRandomDist::test_multivariate_normal
 tests/test_randomstate.py::TestRandomDist::test_negative_binomial
 tests/test_randomstate.py::TestRandomDist::test_negative_binomial_exceptions
+tests/test_randomstate.py::TestRandomDist::test_noncentral_chisquare
 tests/test_randomstate.py::TestRandomDist::test_normal
 tests/test_randomstate.py::TestRandomDist::test_normal_0
 tests/test_randomstate.py::TestRandomDist::test_pareto
@@ -1604,10 +1611,15 @@ tests/test_randomstate.py::TestRandomDist::test_standard_gamma_0
 tests/test_randomstate.py::TestRandomDist::test_standard_normal
 tests/test_randomstate.py::TestRandomDist::test_standard_t
 tests/test_randomstate.py::TestRandomDist::test_tomaxint
+tests/test_randomstate.py::TestRandomDist::test_triangular
 tests/test_randomstate.py::TestRandomDist::test_uniform
 tests/test_randomstate.py::TestRandomDist::test_uniform_range_bounds
 tests/test_randomstate.py::TestRandomDist::test_weibull
 tests/test_randomstate.py::TestRandomDist::test_weibull_0
+tests/test_randomstate.py::TestRandomDist::test_zipf
+tests/test_randomstate.py::TestRandomDist::test_zipf_0
+tests/test_randomstate.py::TestBroadcast::test_zipf
+tests/test_randomstate.py::test_integer_dtype[zipf]
 tests/test_randomstate.py::TestSeed::test_array
 tests/test_randomstate.py::TestSeed::test_cannot_seed
 tests/test_randomstate.py::TestSeed::test_invalid_array
