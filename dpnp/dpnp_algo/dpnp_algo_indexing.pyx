@@ -58,6 +58,7 @@ __all__ += [
 
 
 ctypedef void(*custom_indexing_2in_1out_func_ptr_t)(void *, void * , void * , size_t)
+ctypedef void(*custom_indexing_2in_1out_func_ptr_t_)(void * , void * , const size_t, size_t * , size_t * , const size_t)
 
 
 cpdef dparray dpnp_choose(input, choices):
@@ -93,58 +94,18 @@ cpdef dparray dpnp_diagonal(dparray input, offset=0):
     else:
         res_shape[-1] = n + offset
 
-    res_size = 1
-    for i in range(len(res_shape)):
-        res_size *= res_shape[i]
+    res_ndim = len(res_shape)
 
-    xyz = {}
-    if input.ndim > 2:
-        for i in range(res_shape[0]):
-            xyz[i] = [i]
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
-        index = 1
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DIAGONAL, param1_type, param1_type)
 
-        while index < len(res_shape) - 1:
-            shape_element = res_shape[index]
-            new_shape_array = {}
-            ind = 0
-            for i in range(shape_element):
-                for j in range(len(xyz)):
-                    new_shape = []
-                    list_ind = xyz[j]
-                    for k in range(len(list_ind)):
-                        new_shape.append(list_ind[k])
-                    new_shape.append(i)
-                    new_shape_array[ind] = new_shape
-                    ind += 1
-            for k in range(len(new_shape_array)):
-                if k < len(xyz):
-                    del xyz[k]
-                list_ind = new_shape_array[k]
-                xyz[k] = list_ind
-            index += 1
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray(res_shape, dtype=result_type)
 
-    result = dparray(res_shape, dtype=input.dtype)
-    for i in range(res_shape[-1]):
-        if len(xyz) != 0:
-            for j in range(len(xyz)):
-                ind_input_ = [i, i + offset]
-                ind_output_ = []
-                ind_list = xyz[j]
-                for k in range(len(ind_list)):
-                    ind_input_.append(ind_list[k])
-                    ind_output_.append(ind_list[k])
-                ind_output_.append(ind_input_[0])
-                ind_input = tuple(ind_input_)
-                ind_output = tuple(ind_output_)
-                result[ind_output] = input[ind_input]
-        else:
-            ind_input_ = [i, i + offset]
-            ind_output_ = []
-            ind_output_.append(ind_input_[0])
-            ind_input = tuple(ind_input_)
-            ind_output = tuple(ind_output_)
-            result[ind_output] = input[ind_input]
+    cdef custom_indexing_2in_1out_func_ptr_t_ func = <custom_indexing_2in_1out_func_ptr_t_ > kernel_data.ptr
+
+    func(input.get_data(), result.get_data(), offset, < size_t * > input._dparray_shape.data(), < size_t * > result._dparray_shape.data(), res_ndim)
 
     return result
 
