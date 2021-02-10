@@ -36,6 +36,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_cumsum_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga14a74b989436ea9a7e5613aa70ab1696", null ],
     [ "dpnp_degrees_c", "group___b_a_c_k_e_n_d___a_p_i.html#gad0b499cc7d5d6d40bec16b3543f815b4", null ],
     [ "dpnp_det_c", "group___b_a_c_k_e_n_d___a_p_i.html#gacae5a64647bf0415e3aacad5544d0753", null ],
+    [ "dpnp_diagonal_c", "group___b_a_c_k_e_n_d___a_p_i.html#gae18d304a8fdc0f0839f4864e5cff1890", null ],
     [ "dpnp_divide_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga819a4d7d2711c2ae91e599bd35650272", null ],
     [ "dpnp_dot_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga89a850d9796827daa9b3d7b77ddc8ec6", null ],
     [ "dpnp_eig_c", "group___b_a_c_k_e_n_d___a_p_i.html#gac34d83d772ef9b059ff7f09151709304", null ],

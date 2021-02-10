@@ -211,6 +211,10 @@ Functions</h2></td></tr>
 <tr class="memitem:ga66ca0e8e25c172adb2c5ba1d4d109b99"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga66ca0e8e25c172adb2c5ba1d4d109b99">dpnp_rng_uniform_c</a> (void *result, const long low, const long high, const size_t size)</td></tr>
 <tr class="memdesc:ga66ca0e8e25c172adb2c5ba1d4d109b99"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of random number generator (uniform distribution)  <a href="group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga66ca0e8e25c172adb2c5ba1d4d109b99">More...</a><br /></td></tr>
 <tr class="separator:ga66ca0e8e25c172adb2c5ba1d4d109b99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga03fe999029e022b3986f7517076172b6"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
+<tr class="memitem:ga03fe999029e022b3986f7517076172b6"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga03fe999029e022b3986f7517076172b6">dpnp_rng_vonmises_c</a> (void *result, const _DataType mu, const _DataType kappa, const size_t size)</td></tr>
+<tr class="memdesc:ga03fe999029e022b3986f7517076172b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of random number generator (Vonmises distribution)  <a href="group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga03fe999029e022b3986f7517076172b6">More...</a><br /></td></tr>
+<tr class="separator:ga03fe999029e022b3986f7517076172b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gafe029126127cf1e5f10981be800dd714"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:gafe029126127cf1e5f10981be800dd714"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gafe029126127cf1e5f10981be800dd714">dpnp_rng_weibull_c</a> (void *result, const double alpha, const size_t size)</td></tr>
 <tr class="memdesc:gafe029126127cf1e5f10981be800dd714"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of random number generator (weibull distribution)  <a href="group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gafe029126127cf1e5f10981be800dd714">More...</a><br /></td></tr>
@@ -1715,6 +1719,59 @@ template&lt;typename _DataType &gt; </div>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">low</td><td>Left bound of array values. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">high</td><td>Right bound of array values. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in <code>result</code> array. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga03fe999029e022b3986f7517076172b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga03fe999029e022b3986f7517076172b6">&#9670;&nbsp;</a></span>dpnp_rng_vonmises_c()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename _DataType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void dpnp_rng_vonmises_c </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>result</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const _DataType&#160;</td>
+          <td class="paramname"><em>mu</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const _DataType&#160;</td>
+          <td class="paramname"><em>kappa</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>math library implementation of random number generator (Vonmises distribution) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">mu</td><td>Mode of the distribution. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">kappa</td><td>Dispersion of the distribution. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in <code>result</code> array. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array. </td></tr>
   </table>
