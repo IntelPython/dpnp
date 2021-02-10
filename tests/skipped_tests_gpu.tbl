@@ -24,6 +24,14 @@ tests/test_linalg.py::test_svd[(2,2)-int32]
 tests/test_linalg.py::test_svd[(2,2)-complex128]
 tests/test_linalg.py::test_svd[(16,16)-complex128]
 //----------------------------------------------------------------------
+// dparray currently do not support given approaches.
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[ lambda x: dpnp.asarray(x).astype(dpnp.int8)]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[ lambda x: dpnp.asarray(x).astype(dpnp.complex64)]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[ lambda x: dpnp.asarray(x).astype(object)]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[ lambda x: dpnp.vstack([x, x]).T]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[ lambda x: (dpnp.asarray([(i, i) for i in x], [("a", int), ("b", int)]).view(dpnp.recarray))]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[ lambda x: dpnp.asarray([(i, i) for i in x], [("a", object), ("b", dpnp.int32)])]]
+//----------------------------------------------------------------------
 // cov/correlate issue https://github.com/IntelPython/dpnp/issues/565
 tests/third_party/cupy/statistics_tests/test_correlation.py::TestCov::test_cov
 tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_0_{mode='valid', shape1=(5,), shape2=(5,)}::test_correlate
