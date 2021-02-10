@@ -74,6 +74,7 @@ __all__ = [
     "dpnp_rng_standard_t",
     "dpnp_rng_triangular",
     "dpnp_rng_uniform",
+    "dpnp_rng_vonmises",
     "dpnp_rng_weibull",
     "dpnp_rng_zipf"
 ]
@@ -123,6 +124,7 @@ ctypedef void(*fptr_dpnp_rng_triangular_c_1out_t)(void * ,
                                                   const double,
                                                   const size_t) except +
 ctypedef void(*fptr_dpnp_rng_uniform_c_1out_t)(void * , const long, const long, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_vonmises_c_1out_t)(void * , const double, const double, const size_t) except +
 ctypedef void(*fptr_dpnp_rng_weibull_c_1out_t)(void * , const double, const size_t) except +
 ctypedef void(*fptr_dpnp_rng_zipf_c_1out_t)(void * , const double, const size_t) except +
 
@@ -1080,6 +1082,31 @@ cpdef dparray dpnp_rng_uniform(long low, long high, size, dtype):
         func = <fptr_dpnp_rng_uniform_c_1out_t > kernel_data.ptr
         # call FPTR function
         func(result.get_data(), low, high, result.size)
+
+    return result
+
+
+cpdef dparray dpnp_rng_vonmises(double mu, double kappa, size):
+    """
+    Returns an array populated with samples from Vonmises distribution.
+    `dpnp_rng_vonmises` generates a matrix filled with random floats sampled from a
+    univariate Vonmises distribution.
+
+    """
+
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_VONMISES, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray result = dparray(size, dtype=result_type)
+
+    cdef fptr_dpnp_rng_vonmises_c_1out_t func = <fptr_dpnp_rng_vonmises_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), mu, kappa, result.size)
 
     return result
 
