@@ -34,9 +34,30 @@
 #include "queue_sycl.hpp"
 
 template <typename _DataType_dst, typename _DataType_src>
-void dpnp_copyto_c(void* dst, void* src, const size_t size)
+class dpnp_copyto_c_kernel;
+
+template <typename _DataType_dst, typename _DataType_src>
+void dpnp_copyto_c(void* destination, void* source, const size_t size)
 {
-    dpnp_copy_c<_DataType_dst>(src, dst, size);
+    cl::sycl::event event;
+
+    _DataType_dst* dst = reinterpret_cast<_DataType_dst*>(destination);
+    _DataType_src* src = reinterpret_cast<_DataType_src*>(source);
+
+    cl::sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/
+        {
+            dst[i] = src[i];
+        }
+    };
+ 
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_copyto_c_kernel<_DataType_dst, _DataType_src>>(gws, kernel_parallel_for_func);
+    }; 
+
+    event = DPNP_QUEUE.submit(kernel_func);
+    event.wait();
 }
 
 template <typename _KernelNameSpecialization>
@@ -107,22 +128,24 @@ void dpnp_elemwise_transpose_c(void* array1_in,
 void func_map_init_manipulation(func_map_t& fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_copyto_c<bool, bool>};
+    fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_INT][eft_BLN] = {eft_INT, (void*)dpnp_copyto_c<int, bool>};
     fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_copyto_c<int, int>};
     fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_INT][eft_LNG] = {eft_INT, (void*)dpnp_copyto_c<int, long>};
-    fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_INT][eft_FLT] = {eft_INT, (void*)dpnp_copyto_c<int, float>};
-    fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_INT][eft_DBL] = {eft_INT, (void*)dpnp_copyto_c<int, double>};
+    fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_LNG][eft_BLN] = {eft_LNG, (void*)dpnp_copyto_c<long, bool>};
     fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_LNG][eft_INT] = {eft_LNG, (void*)dpnp_copyto_c<long, int>};
     fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_copyto_c<long, long>};
-    fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_LNG][eft_FLT] = {eft_LNG, (void*)dpnp_copyto_c<long, float>};
-    fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_LNG][eft_DBL] = {eft_LNG, (void*)dpnp_copyto_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_FLT][eft_BLN] = {eft_FLT, (void*)dpnp_copyto_c<float, bool>};
     fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_FLT][eft_INT] = {eft_FLT, (void*)dpnp_copyto_c<float, int>};
     fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_FLT][eft_LNG] = {eft_FLT, (void*)dpnp_copyto_c<float, long>};
     fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_copyto_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_FLT][eft_DBL] = {eft_FLT, (void*)dpnp_copyto_c<float, double>};
+    fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_DBL][eft_BLN] = {eft_DBL, (void*)dpnp_copyto_c<double, bool>};
     fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_copyto_c<double, int>};
     fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_copyto_c<double, long>};
     fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_copyto_c<double, float>};
     fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_copyto_c<double, double>};
+    fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_C128][eft_C128] = {eft_C128, (void*)dpnp_copyto_c<std::complex<double>,
+                                                                                             std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_elemwise_transpose_c<int>};
     fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_elemwise_transpose_c<long>};

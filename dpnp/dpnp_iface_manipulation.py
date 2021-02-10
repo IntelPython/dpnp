@@ -199,10 +199,6 @@ def copyto(dst, src, casting='same_kind', where=True):
             pass
         elif dst.shape != src.shape:
             pass
-        elif dst.dtype == dpnp.bool and src.dtype != dpnp.bool:
-            pass
-        elif src.dtype == dpnp.bool and dst.dtype != dpnp.bool:
-            pass
         else:
             return dpnp_copyto(dst, src, where=where)
 
