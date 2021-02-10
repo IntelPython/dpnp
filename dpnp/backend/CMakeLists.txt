@@ -27,7 +27,7 @@
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-# set(DPNP_VERSION 0.5.0)
+# set(DPNP_VERSION 0.5.1)
 # set(DPNP_API_VERSION 0.5)
 
 # set directory where the custom finders live
@@ -57,6 +57,7 @@ option(DPNP_BACKEND_TESTS "Enable DPNP tests" FALSE)
 message(STATUS "CMAKE_VERSION:                   ${CMAKE_VERSION}")
 message(STATUS "CMAKE_GENERATOR:                 ${CMAKE_GENERATOR}")
 message(STATUS "CMAKE_HOST_SYSTEM_NAME:          ${CMAKE_HOST_SYSTEM_NAME}")
+message(STATUS "========== User controlled variables list ==========")
 message(STATUS "DPNP_ONEAPI_ROOT:                ${DPNP_ONEAPI_ROOT}")
 message(STATUS "DPNP_STATIC_LIB_ENABLE:          ${DPNP_STATIC_LIB_ENABLE}")
 message(STATUS "DPNP_DEBUG_ENABLE:               ${DPNP_DEBUG_ENABLE}")
@@ -65,6 +66,7 @@ message(STATUS "DPNP_INSTALL_STRUCTURED:         ${DPNP_INSTALL_STRUCTURED}")
 message(STATUS "DPNP_SYCL_QUEUE_MGR_ENABLE:      ${DPNP_SYCL_QUEUE_MGR_ENABLE}")
 message(STATUS " |- DPNP_QUEUEMGR_INCLUDE_DIR:   ${DPNP_QUEUEMGR_INCLUDE_DIR}")
 message(STATUS " |- DPNP_QUEUEMGR_LIB_DIR:       ${DPNP_QUEUEMGR_LIB_DIR}")
+message(STATUS "======= End of user controlled variables list ======")
 
 # -----------------------------------------------------------------------------------------------
 # Compiler-specific logic...
@@ -162,6 +164,7 @@ project(dpnp_project
 # Building logic...
 # -----------------------------------------------------------------------------------------------
 set(DPNP_SRC
+    kernels/dpnp_krnl_arraycreation.cpp
     kernels/dpnp_krnl_bitwise.cpp
     kernels/dpnp_krnl_common.cpp
     kernels/dpnp_krnl_elemwise.cpp

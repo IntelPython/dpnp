@@ -71,6 +71,7 @@ __all__ = [
     "dpnp_rng_standard_gamma",
     "dpnp_rng_standard_normal",
     "dpnp_rng_standard_t",
+    "dpnp_rng_triangular",
     "dpnp_rng_uniform",
     "dpnp_rng_weibull"
 ]
@@ -113,6 +114,11 @@ ctypedef void(*fptr_dpnp_rng_standard_exponential_c_1out_t)(void * , const size_
 ctypedef void(*fptr_dpnp_rng_standard_gamma_c_1out_t)(void * , const double, const size_t) except +
 ctypedef void(*fptr_dpnp_rng_standard_normal_c_1out_t)(void * , const size_t) except +
 ctypedef void(*fptr_dpnp_rng_standard_t_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_triangular_c_1out_t)(void * ,
+                                                  const double,
+                                                  const double,
+                                                  const double,
+                                                  const size_t) except +
 ctypedef void(*fptr_dpnp_rng_uniform_c_1out_t)(void * , const long, const long, const size_t) except +
 ctypedef void(*fptr_dpnp_rng_weibull_c_1out_t)(void * , const double, const size_t) except +
 
@@ -984,6 +990,32 @@ cpdef dparray dpnp_rng_standard_t(double df, size):
     cdef fptr_dpnp_rng_standard_t_c_1out_t func = <fptr_dpnp_rng_standard_t_c_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), df, result.size)
+
+    return result
+
+
+cpdef dparray dpnp_rng_triangular(double left, double mode, double right, size):
+    """
+    Returns an array populated with samples from triangular distribution.
+    `dpnp_rng_triangular` generates a matrix filled with random floats sampled from a
+    univariate triangular distribution.
+
+    """
+
+    dtype = numpy.float64
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_TRIANGULAR, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray result = dparray(size, dtype=dtype)
+
+    cdef fptr_dpnp_rng_triangular_c_1out_t func = <fptr_dpnp_rng_triangular_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), left, mode, right, result.size)
 
     return result
 

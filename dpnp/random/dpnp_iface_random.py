@@ -1446,7 +1446,6 @@ def standard_t(df, size=None):
             pass
         else:
             return dpnp_rng_standard_t(df, size)
-    print("here")
     return call_origin(numpy.random.standard_t, df, size)
 
 
@@ -1458,12 +1457,38 @@ def triangular(left, mode, right, size=None):
 
     For full documentation refer to :obj:`numpy.random.triangular`.
 
-    Notes
-    -----
-    The function uses `numpy.random.triangular` on the backend and
-    will be executed on fallback backend.
+    Limitations
+    -----------
+    Parameter ``left``, ``mode`` and ``right`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.triangular(left, mode, right, size)`
+    samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> df = 2.
+    >>> s = dpnp.random.triangular(-3, 0, 8, 1000000)
 
     """
+
+    if not use_origin_backend(left):
+        # TODO:
+        # array_like of floats for `left`, `mode`, `right`.
+        if not dpnp.isscalar(left):
+            pass
+        elif not dpnp.isscalar(mode):
+            pass
+        elif not dpnp.isscalar(right):
+            pass
+        elif left > mode:
+            pass
+        elif mode > right:
+            pass
+        elif left == right:
+            pass
+        else:
+            return dpnp_rng_triangular(left, mode, right, size)
 
     return call_origin(numpy.random.triangular, left, mode, right, size)
 
