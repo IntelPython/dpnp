@@ -68,7 +68,7 @@ class dpnp_full_c_kernel;
 
 template <typename _DataType>
 void dpnp_full_c(void* array_in, void* result, const size_t size)
-{    
+{
     dpnp_initval_c<_DataType>(result, array_in, size);
 }
 
