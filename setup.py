@@ -73,9 +73,6 @@ Set project auxilary data like readme and licence files
 with open('README.md') as f:
     __readme_file__ = f.read()
 
-with open('LICENSE.txt') as f:
-    __license_file__ = f.read()
-
 CLASSIFIERS = """\
 Development Status :: 0 - Alpha
 Intended Audience :: Science/Research
@@ -189,7 +186,7 @@ setup(name="dpnp",
       maintainer_email="scripting@intel.com",
       url="https://intelpython.github.io/dpnp/",
       download_url="https://github.com/IntelPython/dpnp",
-      license=__license_file__,
+      license='BSD',
       classifiers=[_f for _f in CLASSIFIERS.split('\n') if _f],
       keywords="sycl numpy python3 intel mkl oneapi gpu dpcpp pstl",
       platforms=["Linux", "Windows"],
