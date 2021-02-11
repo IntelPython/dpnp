@@ -412,18 +412,13 @@ void dpnp_qr_c(void* array1_in, void* result1, void* result2, void* result3, siz
 
     const std::int64_t lda = size_m;
 
-    const std::int64_t geqrf_scratchpad_size = mkl_lapack::geqrf_scratchpad_size<_ComputeDT>(DPNP_QUEUE, size_m, size_n, lda);
+    const std::int64_t geqrf_scratchpad_size =
+        mkl_lapack::geqrf_scratchpad_size<_ComputeDT>(DPNP_QUEUE, size_m, size_n, lda);
 
-    _ComputeDT* geqrf_scratchpad = reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(geqrf_scratchpad_size * sizeof(_ComputeDT)));
+    _ComputeDT* geqrf_scratchpad =
+        reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(geqrf_scratchpad_size * sizeof(_ComputeDT)));
 
-    event = mkl_lapack::geqrf(DPNP_QUEUE,
-                              size_m,
-                              size_n,
-                              in_a,
-                              lda,
-                              tau,
-                              geqrf_scratchpad,
-                              geqrf_scratchpad_size);
+    event = mkl_lapack::geqrf(DPNP_QUEUE, size_m, size_n, in_a, lda, tau, geqrf_scratchpad, geqrf_scratchpad_size);
 
     event.wait();
     dpnp_memory_free_c(geqrf_scratchpad);
@@ -440,25 +435,20 @@ void dpnp_qr_c(void* array1_in, void* result1, void* result2, void* result3, siz
             else
             {
                 res_r[i * size_n + j] = _ComputeDT(0);
-            }    
+            }
         }
     }
 
     // Q
     const size_t nrefl = std::min<size_t>(size_m, size_n);
-    const std::int64_t orgqr_scratchpad_size = mkl_lapack::orgqr_scratchpad_size<_ComputeDT>(DPNP_QUEUE, size_m, size_m, nrefl, lda);
+    const std::int64_t orgqr_scratchpad_size =
+        mkl_lapack::orgqr_scratchpad_size<_ComputeDT>(DPNP_QUEUE, size_m, size_m, nrefl, lda);
 
-    _ComputeDT* orgqr_scratchpad = reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(orgqr_scratchpad_size * sizeof(_ComputeDT)));
+    _ComputeDT* orgqr_scratchpad =
+        reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(orgqr_scratchpad_size * sizeof(_ComputeDT)));
 
-    event = mkl_lapack::orgqr(DPNP_QUEUE,
-                              size_m,
-                              size_m,
-                              nrefl,
-                              in_a,
-                              lda,
-                              tau,
-                              orgqr_scratchpad,
-                              orgqr_scratchpad_size);
+    event =
+        mkl_lapack::orgqr(DPNP_QUEUE, size_m, size_m, nrefl, in_a, lda, tau, orgqr_scratchpad, orgqr_scratchpad_size);
 
     event.wait();
     dpnp_memory_free_c(orgqr_scratchpad);
@@ -591,7 +581,7 @@ void func_map_init_linalg_func(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_QR][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_qr_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_QR][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_qr_c<double, double>};
     // fmap[DPNPFuncName::DPNP_FN_QR][eft_C128][eft_C128] = {
-        // eft_C128, (void*)dpnp_qr_c<std::complex<double>, std::complex<double>>};
+    // eft_C128, (void*)dpnp_qr_c<std::complex<double>, std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_SVD][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_svd_c<int, double, double>};
     fmap[DPNPFuncName::DPNP_FN_SVD][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_svd_c<long, double, double>};
