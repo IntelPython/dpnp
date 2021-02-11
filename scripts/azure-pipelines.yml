@@ -105,6 +105,7 @@ jobs:
     displayName: 'Use Python $(python.version)'
   - bash: |
       . ./scripts/set_ci_env.sh
+      pip3 install numpy==1.19
       echo ========================= build DPNP ===============================
       ./0.build.sh
       echo ========================= run tests ===============================
@@ -166,6 +167,61 @@ jobs:
   - publish: dist
     artifact: 'package_$(Agent.JobName)_$(Agent.OS)'
     displayName: bdist_wheel_local_win_package
+
+- job: build_conda_dpnp_dpctl_win
+  displayName: build_conda_dpnp_dpctl_win
+  timeoutInMinutes: 120
+  pool:
+    vmImage: 'windows-2019' # 'vs2017-win2016'
+  strategy:
+    matrix:
+      Python37:
+        python.version: '3.7'
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '$(python.version)'
+      addToPath: true
+    displayName: 'Use Python $(python.version)'
+
+  - script: set PYTHONUNBUFFERED=1
+    displayName: make output unbuffered
+
+  - script: |
+      call scripts\install_system_deps_win.bat
+    displayName: Install Intel ONE API
+    timeoutInMinutes: 60
+
+  - powershell: Write-Host "##vso[task.prependpath]$env:CONDA\Scripts"
+    displayName: Add conda to PATH
+
+  - script: |
+      conda create -y -n env python=%PYTHON_VERSION% conda-build=3.18
+    displayName: conda create with Python $(python.version)
+
+  - script: |
+      call activate env
+      call scripts\build_deps_dpctl_win.bat
+    displayName: Build DPCtl
+
+  - script: |
+      call activate env
+      call scripts\install_cmake_win.bat
+      echo ========================= Intel OneAPI setvars ===============================
+      set "ONEAPI_ROOT=C:\Program Files (x86)\Intel\oneAPI\"
+      call "%ONEAPI_ROOT%\compiler\latest\env\vars.bat"
+      call "%ONEAPI_ROOT%\dpl\latest\env\vars.bat"
+      call "%ONEAPI_ROOT%\tbb\latest\env\vars.bat"
+      echo =================== conda build DPNP ===========================
+      call conda list
+      call python --version
+      call conda build conda-recipe -c local -c intel
+      mkdir dist
+      echo ========== it doesn't work yet =========================
+    displayName: build_conda
+  - publish: dist
+    artifact: 'build_conda_dpnp_dpctl_$(Agent.JobName)_$(Agent.OS)'
+    displayName: build_conda_dpnp_dpctl_win_package
 
 # test python ./setup.py bdist_wheel command with dpctl
 - job: wheel_dpnp_dpctl_lin
@@ -255,4 +311,5 @@ jobs:
       ./scripts/install_system_deps.sh  # no intel python
       ./scripts/install_python_deps.sh  # numpy, conda-build and etc.
       echo ========================= build DPNP package ===============================
+      export DPNP_BACKEND_TESTS_ENABLE=1
       ./0.build.sh

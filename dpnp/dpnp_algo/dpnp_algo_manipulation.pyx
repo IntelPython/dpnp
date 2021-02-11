@@ -48,8 +48,8 @@ __all__ += [
 
 
 # C function pointer to the C library template functions
-ctypedef void(*fptr_custom_elemwise_transpose_1in_1out_t)(void * , dparray_shape_type & , dparray_shape_type & ,
-                                                          dparray_shape_type &, void * , size_t)
+ctypedef void(*fptr_custom_elemwise_transpose_1in_1out_t)(void * , size_t * , size_t * ,
+                                                          size_t * , size_t, void * , size_t)
 
 
 cpdef dparray dpnp_atleast_2d(dparray arr):
@@ -84,10 +84,16 @@ cpdef dparray dpnp_atleast_3d(dparray arr):
 
 
 cpdef dpnp_copyto(dparray dst, dparray src, where=True):
-    cdef long size_src = src.size
+    # Convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType dst_type = dpnp_dtype_to_DPNPFuncType(dst.dtype)
+    cdef DPNPFuncType src_type = dpnp_dtype_to_DPNPFuncType(src.dtype)
 
-    for i in range(size_src):
-        dst[i] = src[i]
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_COPYTO, dst_type, src_type)
+
+    cdef fptr_1in_1out_t func = <fptr_1in_1out_t > kernel_data.ptr
+    # Call FPTR function
+    func(dst.get_data(), src.get_data(), dst.size)
 
 
 cpdef dparray dpnp_expand_dims(dparray in_array, axis):
@@ -171,7 +177,8 @@ cpdef dparray dpnp_transpose(dparray array1, axes=None):
 
     cdef fptr_custom_elemwise_transpose_1in_1out_t func = <fptr_custom_elemwise_transpose_1in_1out_t > kernel_data.ptr
     # call FPTR function
-    func(array1.get_data(), input_shape, result_shape, permute_axes, result.get_data(), array1.size)
+    func(array1.get_data(), < size_t * > input_shape.data(), < size_t * > result_shape.data(),
+         < size_t * > permute_axes.data(), input_shape_size, result.get_data(), array1.size)
 
     return result
 

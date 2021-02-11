@@ -22,8 +22,15 @@ def vvsort(val, vec, size):
             vec[k, imax] = temp
 
 
-def test_cholesky():
-    a = numpy.array([[[1, -2], [2, 5]]])
+@pytest.mark.parametrize("array",
+                         [[[[1, -2], [2, 5]]],
+                          [[[1., -2.], [2., 5.]]],
+                          [[[1., -2.], [2., 5.]], [[1., -2.], [2., 5.]]]],
+                         ids=['[[[1, -2], [2, 5]]]',
+                              '[[[1., -2.], [2., 5.]]]',
+                              '[[[1., -2.], [2., 5.]], [[1., -2.], [2., 5.]]]'])
+def test_cholesky(array):
+    a = numpy.array(array)
     ia = inp.array(a)
     result = inp.linalg.cholesky(ia)
     expected = numpy.linalg.cholesky(a)

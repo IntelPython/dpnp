@@ -514,11 +514,11 @@ def exp(x1):
     [1.0, 2.718281828, 7.389056099]
 
     """
-    if use_origin_backend(x1):
+    if not use_origin_backend(x1):
         if not isinstance(x1, dparray):
             pass
         else:
-            dpnp_exp(x1)
+            return dpnp_exp(x1)
 
     return call_origin(numpy.exp, x1)
 
@@ -662,11 +662,11 @@ def log(x1):
     [0.0, 1.0, 2.0, -inf]
 
     """
-    if use_origin_backend(x1):
+    if not use_origin_backend(x1):
         if not isinstance(x1, dparray):
             pass
         else:
-            dpnp_log(x1)
+            return dpnp_log(x1)
 
     return call_origin(numpy.log, x1)
 
