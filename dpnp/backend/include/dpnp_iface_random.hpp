@@ -411,6 +411,18 @@ INP_DLLEXPORT void dpnp_rng_uniform_c(void* result, const long low, const long h
 
 /**
  * @ingroup BACKEND_RANDOM_API
+ * @brief math library implementation of random number generator (Vonmises distribution)
+ *
+ * @param [in]  mu     Mode of the distribution.
+ * @param [in]  kappa  Dispersion of the distribution.
+ * @param [in]  size   Number of elements in `result` array.
+ * @param [out] result Output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_rng_vonmises_c(void* result, const _DataType mu, const _DataType kappa, const size_t size);
+
+/**
+ * @ingroup BACKEND_RANDOM_API
  * @brief math library implementation of random number generator (Wald's distribution)
  *
  * @param [in]  size   Number of elements in `result` arrays.

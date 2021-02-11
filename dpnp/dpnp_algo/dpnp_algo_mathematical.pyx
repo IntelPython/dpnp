@@ -142,7 +142,7 @@ cpdef dparray dpnp_cross(dparray x1, dparray x2):
 
 
 cpdef dparray dpnp_cumprod(dparray x1):
-    #instead of x1.shape, (x1.size, ) is passed to the function
+    # instead of x1.shape, (x1.size, ) is passed to the function
     # due to the following:
     # >>> import numpy
     # >>> a = numpy.array([[1, 2], [2, 3]])
@@ -154,7 +154,7 @@ cpdef dparray dpnp_cumprod(dparray x1):
 
 
 cpdef dparray dpnp_cumsum(dparray x1):
-    #instead of x1.shape, (x1.size, ) is passed to the function
+    # instead of x1.shape, (x1.size, ) is passed to the function
     # due to the following:
     # >>> import numpy
     # >>> a = numpy.array([[1, 2], [2, 3]])
