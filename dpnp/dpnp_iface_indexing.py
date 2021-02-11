@@ -62,6 +62,7 @@ __all__ = [
     "putmask",
     "select",
     "take",
+    "take_along_axis",
     "tril_indices",
     "tril_indices_from",
     "triu_indices",
@@ -441,6 +442,45 @@ def take(input, indices, axis=None, out=None, mode='raise'):
             return dpnp_take(input, indices)
 
     return call_origin(numpy.take, input, indices, axis, out, mode)
+
+
+def take_along_axis(arr, indices, axis):
+    """
+    Take values from the input array by matching 1d index and data slices.
+    For full documentation refer to :obj:`numpy.take_along_axis`.
+
+    See Also
+    --------
+    :obj:`dpnp.take` : Take along an axis, using the same indices for every 1d slice.
+    :obj:`put_along_axis` : Put values into the destination array by matching 1d index and data slices.
+    """
+
+    if not use_origin_backend(arr):
+        if not isinstance(arr, dparray):
+            pass
+        elif not isinstance(indices, dparray):
+            pass
+        elif arr.ndim != indices.ndim:
+            pass
+        elif not isinstance(axis, int):
+            pass
+        elif axis >= arr.ndim:
+            pass
+        elif arr.ndim == indices.ndim:
+            val_list = []
+            for i in list(indices.shape)[:-1]:
+                if i == 1:
+                    val_list.append(True)
+                else:
+                    val_list.append(False)
+            if not all(val_list):
+                pass
+            else:
+                return dpnp_take_along_axis(arr, indices, axis)
+        else:
+            return dpnp_take_along_axis(arr, indices, axis)
+
+    return call_origin(numpy.take_along_axis, arr, indices, axis)
 
 
 def tril_indices(n, k=0, m=None):
