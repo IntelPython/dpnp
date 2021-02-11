@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.linalg.cholesky &mdash; dpnp 0.5.1 documentation</title>
+  <title>dpnp.linalg.qr &mdash; dpnp 0.5.1 documentation</title>
   
 
   
@@ -34,8 +34,8 @@
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.linalg.qr" href="dpnp.linalg.qr.html" />
-    <link rel="prev" title="dpnp.kron" href="dpnp.kron.html" /> 
+    <link rel="next" title="dpnp.linalg.svd" href="dpnp.linalg.svd.html" />
+    <link rel="prev" title="dpnp.linalg.cholesky" href="dpnp.linalg.cholesky.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -170,13 +170,13 @@
         
           <li><a href="../linalg.html">Linear Algebra</a> &raquo;</li>
         
-      <li>dpnp.linalg.cholesky</li>
+      <li>dpnp.linalg.qr</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.linalg.cholesky.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.linalg.qr.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -189,32 +189,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-linalg-cholesky">
-<h1>dpnp.linalg.cholesky<a class="headerlink" href="#dpnp-linalg-cholesky" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-linalg-qr">
+<h1>dpnp.linalg.qr<a class="headerlink" href="#dpnp-linalg-qr" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.linalg.cholesky">
-<code class="sig-prename descclassname">dpnp.linalg.</code><code class="sig-name descname">cholesky</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#cholesky"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.linalg.cholesky" title="Permalink to this definition">¶</a></dt>
-<dd><p>Cholesky decomposition.
-Return the Cholesky decomposition, <cite>L * L.H</cite>, of the square matrix <cite>input</cite>,
-where <cite>L</cite> is lower-triangular and .H is the conjugate transpose operator
-(which is the ordinary transpose if <cite>input</cite> is real-valued).  <cite>input</cite> must be
-Hermitian (symmetric if real-valued) and positive-definite. No
-checking is performed to verify whether <cite>a</cite> is Hermitian or not.
-In addition, only the lower-triangular and diagonal elements of <cite>input</cite>
-are used. Only <cite>L</cite> is actually returned.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>input</strong> (<em>(</em><em>..</em><em>, </em><em>M</em><em>, </em><em>M</em><em>) </em><em>array_like</em>) – Hermitian (symmetric if all elements are real), positive-definite
-input matrix.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>L</strong> – Upper or lower-triangular Cholesky factor of <cite>input</cite>.  Returns a
-matrix object if <cite>input</cite> is a matrix object.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(.., M, M) array_like</p>
-</dd>
-</dl>
+<dt id="dpnp.linalg.qr">
+<code class="sig-prename descclassname">dpnp.linalg.</code><code class="sig-name descname">qr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'complete'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#qr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dpnp.linalg.qr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the qr factorization of a matrix.</p>
+<p>Factor the matrix <cite>a</cite> as <em>qr</em>, where <cite>q</cite> is orthonormal and <cite>r</cite> is
+upper-triangular.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.qr.html#numpy.linalg.qr" title="(in NumPy v1.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.qr</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Input array is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Parameter mode=’complete’ is supported.</p>
 </dd></dl>
 
 </div>
@@ -227,10 +213,10 @@ matrix object if <cite>input</cite> is a matrix object.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.linalg.qr.html" class="btn btn-neutral float-right" title="dpnp.linalg.qr" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.linalg.svd.html" class="btn btn-neutral float-right" title="dpnp.linalg.svd" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.kron.html" class="btn btn-neutral float-left" title="dpnp.kron" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.linalg.cholesky.html" class="btn btn-neutral float-left" title="dpnp.linalg.cholesky" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
