@@ -35,7 +35,7 @@
 
 template <typename _DataType_dst, typename _DataType_src>
 void dpnp_copyto_c(void* dst, void* src, const size_t size)
-{    
+{
     dpnp_copy_c<_DataType_dst>(src, dst, size);
 }
 

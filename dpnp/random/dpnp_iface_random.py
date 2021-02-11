@@ -1556,12 +1556,34 @@ def vonmises(mu, kappa, size=None):
 
     For full documentation refer to :obj:`numpy.random.vonmises`.
 
-    Notes
-    -----
-    The function uses `numpy.random.vonmises` on the backend and
-    will be executed on fallback backend.
+    Limitations
+    -----------
+    Parameter ``mu`` and ``kappa`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.vonmises(mu, kappa, size)`
+    samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> mu, kappa = 0.0, 4.0 # mean and dispersion
+    >>> s = dpnp.random.vonmises(mu, kappa, 1000)
 
     """
+
+    if not use_origin_backend(mu):
+        # TODO:
+        # array_like of floats for `mu`, `kappa`.
+        if not dpnp.isscalar(mu):
+            pass
+        elif not dpnp.isscalar(kappa):
+            pass
+        elif dpnp.isnan(kappa):
+            return dpnp.nan
+        elif kappa < 0:
+            pass
+        else:
+            return dpnp_rng_vonmises(mu, kappa, size)
 
     return call_origin(numpy.random.vonmises, mu, kappa, size)
 

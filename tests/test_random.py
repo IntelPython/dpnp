@@ -803,7 +803,7 @@ class TestDistributionsTriangular(TestDistribution):
         mode = 2.0
         right = 3.0
         expected_mean = (left + mode + right) / 3
-        expected_var = (left ** 2 + mode ** 2 + right ** 2 - left * mode -left * right -mode * right) / 18
+        expected_var = (left ** 2 + mode ** 2 + right ** 2 - left * mode - left * right - mode * right) / 18
         self.check_moments('triangular', expected_mean,
                            expected_var, {'left': left, 'mode': mode, 'right': right})
 
@@ -846,6 +846,42 @@ class TestDistributionsUniform(TestDistribution):
         low = 1.0
         high = 2.0
         self.check_seed('uniform', {'low': low, 'high': high})
+
+
+class TestDistributionsVonmises:
+
+    @pytest.mark.parametrize("kappa", [5.0, 0.5], ids=['large_kappa', 'small_kappa'])
+    def test_moments(self, kappa):
+        size = 10**6
+        mu = 2.
+
+        numpy_res = numpy.random.vonmises(mu, kappa, size=size)
+        expected_mean = numpy.mean(numpy_res)
+        expected_var = numpy.var(numpy_res)
+
+        res = numpy.asarray(dpnp.random.vonmises(mu, kappa, size=size))
+        var = numpy.var(res)
+        mean = numpy.mean(res)
+        assert math.isclose(var, expected_var, abs_tol=0.6)
+        assert math.isclose(mean, expected_mean, abs_tol=0.6)
+
+    def test_invalid_args(self):
+        size = 10
+        mu = 5.0      # OK
+        kappa = -1.0  # non-negative `kappa` is expected
+        with pytest.raises(ValueError):
+            dpnp.random.vonmises(mu, kappa, size=size)
+
+    @pytest.mark.parametrize("kappa", [5.0, 0.5], ids=['large_kappa', 'small_kappa'])
+    def test_seed(self, kappa):
+        seed = 28041990
+        size = 10
+        mu = 2.
+        dpnp.random.seed(seed)
+        a1 = numpy.asarray(dpnp.random.vonmises(mu, kappa, size=size))
+        dpnp.random.seed(seed)
+        a2 = numpy.asarray(dpnp.random.vonmises(mu, kappa, size=size))
+        assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
 class TestDistributionsWeibull(TestDistribution):
