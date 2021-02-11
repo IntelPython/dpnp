@@ -5,6 +5,19 @@ import dpnp
 import numpy
 
 
+def test_choose():
+    a = numpy.r_[:4]
+    ia = dpnp.array(a)
+    b = numpy.r_[-4:0]
+    ib = dpnp.array(b)
+    c = numpy.r_[100:500:100]
+    ic = dpnp.array(c)
+
+    expected = numpy.choose([0, 0, 0, 0], [a, b, c])
+    result = dpnp.choose([0, 0, 0, 0], [ia, ib, ic])
+    numpy.testing.assert_array_equal(expected, result)
+
+
 @pytest.mark.parametrize("offset",
                          [0, 1],
                          ids=['0', '1'])

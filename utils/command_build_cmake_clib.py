@@ -73,6 +73,11 @@ except ImportError:
     """
     pass
 
+"""
+Detect enabling DPNP backend tests
+"""
+_dpnp_backend_tests_enable = os.environ.get('DPNP_BACKEND_TESTS_ENABLE', None)
+
 
 """
 CmakeList.txt based build_clib
@@ -99,7 +104,7 @@ class custom_build_cmake_clib(build_clib.build_clib):
 
         if IS_WIN:
             cmake_generator = "-GNinja"
-        if IS_LIN:
+        if _dpnp_backend_tests_enable is not None:
             enable_tests = "ON"
 
         cmake_args = [
@@ -117,7 +122,13 @@ class custom_build_cmake_clib(build_clib.build_clib):
             "-DDPNP_BACKEND_TESTS:BOOL=" + enable_tests
         ]
 
+        # didn't find how to add it inside cmake, that is why this is here
+        import multiprocessing
+        cpu_count = multiprocessing.cpu_count()
+        # possible that jobs count must be +-1 against CPUs count
+        jobs = "-j" + str(cpu_count)
+
         self.spawn(["cmake"] + cmake_args + [backend_directory])
         if not self.dry_run:
-            self.spawn(["cmake", "--build", abs_build_temp_path])
+            self.spawn(["cmake", "--build", abs_build_temp_path, jobs])
             self.spawn(["cmake", "--install", abs_build_temp_path])

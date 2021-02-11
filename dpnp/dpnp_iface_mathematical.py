@@ -69,6 +69,7 @@ __all__ = [
     "fmax",
     "fmin",
     "fmod",
+    "gradient",
     "maximum",
     "minimum",
     "mod",
@@ -795,6 +796,48 @@ def fmod(x1, x2, **kwargs):
     return call_origin(numpy.fmod, x1, x2, **kwargs)
 
 
+def gradient(y1, *varargs, **kwargs):
+    """
+    Return the gradient of an array.
+
+    For full documentation refer to :obj:`numpy.gradient`.
+
+    Limitations
+    -----------
+        Parameter ``y1`` is supported as :obj:`dpnp.ndarray`.
+        Argument ``varargs[0]`` is supported as `int`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Example
+    -------
+    >>> import dpnp as np
+    >>> y = np.array([1, 2, 4, 7, 11, 16], dtype=float)
+    >>> result = np.gradient(y)
+    >>> [x for x in result]
+    [1.0, 1.5, 2.5, 3.5, 4.5, 5.0]
+    >>> result = np.gradient(y, 2)
+    >>> [x for x in result]
+    [0.5, 0.75, 1.25, 1.75, 2.25, 2.5]
+
+    """
+    if not use_origin_backend(y1) and not kwargs:
+        if not isinstance(y1, dparray):
+            pass
+        elif len(varargs) > 1:
+            pass
+        elif len(varargs) == 1 and not isinstance(varargs[0], int):
+            pass
+        else:
+            if len(varargs) == 0:
+                return dpnp_gradient(y1)
+
+            return dpnp_gradient(y1, varargs[0])
+
+    return call_origin(numpy.gradient, y1, *varargs, **kwargs)
+
+
 def maximum(x1, x2, **kwargs):
     """
     Element-wise maximum of array elements.
@@ -1022,7 +1065,7 @@ def nancumprod(x1, **kwargs):
         if not isinstance(x1, dparray):
             pass
         else:
-            return dpnp_cumprod(x1, usenan=True)
+            return dpnp_nancumprod(x1)
 
     return call_origin(numpy.nancumprod, x1, **kwargs)
 
@@ -1060,7 +1103,7 @@ def nancumsum(x1, **kwargs):
         if not isinstance(x1, dparray):
             pass
         else:
-            return dpnp_cumsum(x1, usenan=True)
+            return dpnp_nancumsum(x1)
 
     return call_origin(numpy.nancumsum, x1, **kwargs)
 

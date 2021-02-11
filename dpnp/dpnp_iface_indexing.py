@@ -51,6 +51,7 @@ import dpnp
 
 
 __all__ = [
+    "choose",
     "diag_indices",
     "diag_indices_from",
     "diagonal",
@@ -68,6 +69,59 @@ __all__ = [
     "triu_indices",
     "triu_indices_from"
 ]
+
+
+def choose(input, choices, out=None, mode='raise'):
+    """
+    Construct an array from an index array and a set of arrays to choose from.
+
+    For full documentation refer to :obj:`numpy.choose`.
+
+    See also
+    --------
+    :obj:`take_along_axis` : Preferable if choices is an array.
+    """
+    if not use_origin_backend(input):
+        if not isinstance(input, list) and not isinstance(input, dparray):
+            pass
+        elif not isinstance(choices, list):
+            pass
+        elif out is not None:
+            pass
+        elif mode != 'raise':
+            pass
+        elif isinstance(choices, list):
+            val = True
+            for i in range(len(choices)):
+                if not isinstance(choices[i], dparray):
+                    val = False
+                    break
+            if not val:
+                pass
+            else:
+                val = True
+                len_ = len(input)
+                size_ = choices[0].size
+                for i in range(len(choices)):
+                    if choices[i].size != size_ or choices[i].size != len_:
+                        val = False
+                        break
+                if not val:
+                    pass
+                else:
+                    val = True
+                    for i in range(len_):
+                        if input[i] >= size_:
+                            val = False
+                            break
+                    if not val:
+                        pass
+                    else:
+                        return dpnp_choose(input, choices)
+        else:
+            return dpnp_choose(input, choices)
+
+    return call_origin(numpy.choose, input, choices, out, mode)
 
 
 def diag_indices(n, ndim=2):

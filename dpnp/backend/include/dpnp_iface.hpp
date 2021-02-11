@@ -68,7 +68,8 @@
 enum class QueueOptions : uint32_t
 {
     CPU_SELECTOR, /**< CPU side execution mode */
-    GPU_SELECTOR  /**< Intel GPU side execution mode */
+    GPU_SELECTOR, /**< Intel GPU side execution mode */
+    AUTO_SELECTOR /**< Automatic selection based on environment variable with @ref CPU_SELECTOR default */
 };
 
 /**
@@ -77,9 +78,9 @@ enum class QueueOptions : uint32_t
  *
  * Global SYCL queue initialization.
  *
- * @param [in]  selector       Select type @ref QueueOptions of the SYCL queue.
+ * @param [in]  selector       Select type @ref QueueOptions of the SYCL queue. Default @ref AUTO_SELECTOR
  */
-INP_DLLEXPORT void dpnp_queue_initialize_c(QueueOptions selector);
+INP_DLLEXPORT void dpnp_queue_initialize_c(QueueOptions selector = QueueOptions::AUTO_SELECTOR);
 
 /**
  * @ingroup BACKEND_API
@@ -120,6 +121,17 @@ INP_DLLEXPORT void dpnp_arange_c(size_t start, size_t step, void* result1, size_
 
 /**
  * @ingroup BACKEND_API
+ * @brief Implementation of full function
+ *
+ * @param [in]  array_in  Input one-element array.
+ * @param [out] result    Output array.
+ * @param [in]  size      Number of elements in the output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_full_c(void* array_in, void* result, const size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief Matrix multiplication.
  *
  * Matrix multiplication procedure. Works with 2-D matrices
@@ -155,6 +167,43 @@ INP_DLLEXPORT void dpnp_elemwise_absolute_c(void* array1_in, void* result1, size
  */
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
 INP_DLLEXPORT void dpnp_dot_c(void* array1, void* array2, void* result1, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief Custom implementation of cross function
+ *
+ * @param [in]  array1_in  First input array.
+ * @param [in]  array2_in  Second input array.
+ * @param [out] result1 Output array.
+ * @param [in]  size    Number of elements in input arrays.
+ *
+ */
+template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
+INP_DLLEXPORT void dpnp_cross_c(void* array1_in, void* array2_in, void* result1, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief Custom implementation of cumprod function
+ *
+ * @param [in]  array1_in  Input array.
+ * @param [out] result1    Output array.
+ * @param [in]  size       Number of elements in input arrays.
+ *
+ */
+template <typename _DataType_input, typename _DataType_output>
+INP_DLLEXPORT void dpnp_cumprod_c(void* array1_in, void* result1, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief Custom implementation of cumsum function
+ *
+ * @param [in]  array1_in  Input array.
+ * @param [out] result1    Output array.
+ * @param [in]  size       Number of elements in input arrays.
+ *
+ */
+template <typename _DataType_input, typename _DataType_output>
+INP_DLLEXPORT void dpnp_cumsum_c(void* array1_in, void* result1, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -227,12 +276,13 @@ INP_DLLEXPORT void dpnp_sort_c(void* array, void* result, size_t size);
  * @ingroup BACKEND_API
  * @brief math library implementation of cholesky function
  *
- * @param [in]  array   Input array with data.
- * @param [out] result  Output array.
- * @param [in]  shape   Shape of input array.
+ * @param [in]  array       Input array with data.
+ * @param [out] result      Output array.
+ * @param [in]  size        Number of elements in input arrays.
+ * @param [in]  data_size   Last element of shape arrays.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_cholesky_c(void* array1_in, void* result1, size_t* shape);
+INP_DLLEXPORT void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const size_t data_size);
 
 /**
  * @ingroup BACKEND_API
@@ -269,6 +319,31 @@ INP_DLLEXPORT void dpnp_cov_c(void* array1_in, void* result1, size_t nrows, size
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of diagonal function
+ *
+ * @param [in]  array   Input array with data.
+ * @param [out] result  Output array.
+ * @param [in]  offset  Offset of the diagonal from the main diagonal.
+ * @param [in]  shape   Shape of input array.
+ * @param [in]  shape   Shape of output array.
+ * @param [in]  ndim    Number of elements in shape.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_diagonal_c(void* array1_in, void* result1, const size_t offset, size_t* shape, size_t* res_shape, const size_t res_ndim);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief implementation of creating filled with value array function
+ *
+ * @param [out] result  Output array.
+ * @param [in]  value   Value in array.
+ * @param [in]  size    Number of elements in array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_initval_c(void* result1, void* value, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -394,6 +469,18 @@ INP_DLLEXPORT void dpnp_std_c(
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of take function
+ *
+ * @param [in]  array   Input array with data.
+ * @param [in]  indices Input array with indices.
+ * @param [out] result  Output array.
+ * @param [in]  size    Number of elements in the input array.
+ */
+template <typename _DataType, typename _IndecesType>
+INP_DLLEXPORT void dpnp_take_c(void* array, void* indices, void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of var function
  *
  * @param [in]  array   Input array with data.
@@ -481,20 +568,33 @@ INP_DLLEXPORT void dpnp_remainder_c(void* array1_in, void* array2_in, void* resu
 
 /**
  * @ingroup BACKEND_API
+ * @brief copyto function.
+ *
+ * @param [in]  dst          Destination array.
+ * @param [in]  src          Source array.
+ * @param [in]  size         Number of elements in destination array.
+ */
+template <typename _DataType_dst, typename _DataType_src>
+INP_DLLEXPORT void dpnp_copyto_c(void* dst, void* src, const size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief transpose function. Permute axes of the input to the output with elements permutation.
  *
  * @param [in]  array1_in    Input array.
  * @param [in]  input_shape  Input shape.
  * @param [in]  result_shape Output shape.
  * @param [in]  permute_axes Order of axis by it's id as it should be presented in output.
+ * @param [in]  ndim         Number of elements in shapes and axes.
  * @param [out] result1      Output array.
  * @param [in]  size         Number of elements in input arrays.
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_elemwise_transpose_c(void* array1_in,
-                                             const std::vector<long>& input_shape,
-                                             const std::vector<long>& result_shape,
-                                             const std::vector<long>& permute_axes,
+                                             const size_t* input_shape,
+                                             const size_t* result_shape,
+                                             const size_t* permute_axes,
+                                             size_t ndim,
                                              void* result1,
                                              size_t size);
 

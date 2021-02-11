@@ -188,7 +188,6 @@ def copyto(dst, src, casting='same_kind', where=True):
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     """
-
     if not use_origin_backend(dst):
         if not isinstance(dst, dparray):
             pass
@@ -199,6 +198,10 @@ def copyto(dst, src, casting='same_kind', where=True):
         elif where is not True:
             pass
         elif dst.shape != src.shape:
+            pass
+        elif dst.dtype == dpnp.bool and src.dtype != dpnp.bool:
+            pass
+        elif src.dtype == dpnp.bool and dst.dtype != dpnp.bool:
             pass
         else:
             return dpnp_copyto(dst, src, where=where)
