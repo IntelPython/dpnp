@@ -398,19 +398,28 @@ def norm(input, ord=None, axis=None, keepdims=False):
     return call_origin(numpy.linalg.norm, input, ord, axis, keepdims)
 
 
-def qr(a, mode='reduced'):
+#linalg.qr(a, mode='reduced')
+def qr(a, mode='complete'):
     """
-    Singular Value Decomposition.
+    Compute the qr factorization of a matrix.
+
+    Factor the matrix `a` as *qr*, where `q` is orthonormal and `r` is
+    upper-triangular.
 
     For full documentation refer to :obj:`numpy.linalg.qr`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameter mode='complete' is supported.
 
     """
 
     if not use_origin_backend(a):
         if not isinstance(a, dparray):
             pass
-        # elif not mode == 'reduced':
-            # pass
+        elif not mode == 'complete':
+            pass
         else:
             return dpnp_qr(a, mode)
 
