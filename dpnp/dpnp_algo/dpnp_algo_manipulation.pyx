@@ -89,11 +89,11 @@ cpdef dpnp_copyto(dparray dst, dparray src, where=True):
     cdef DPNPFuncType src_type = dpnp_dtype_to_DPNPFuncType(src.dtype)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_COPYTO, dst_type, src_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_COPYTO, src_type, dst_type)
 
     cdef fptr_1in_1out_t func = <fptr_1in_1out_t > kernel_data.ptr
     # Call FPTR function
-    func(dst.get_data(), src.get_data(), dst.size)
+    func(src.get_data(), dst.get_data(), dst.size)
 
 
 cpdef dparray dpnp_expand_dims(dparray in_array, axis):
