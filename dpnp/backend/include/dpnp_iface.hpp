@@ -570,12 +570,12 @@ INP_DLLEXPORT void dpnp_remainder_c(void* array1_in, void* array2_in, void* resu
  * @ingroup BACKEND_API
  * @brief copyto function.
  *
- * @param [in]  dst          Destination array.
- * @param [in]  src          Source array.
+ * @param [in]  source       Source array.
+ * @param [in]  destination  Destination array.
  * @param [in]  size         Number of elements in destination array.
  */
 template <typename _DataType_dst, typename _DataType_src>
-INP_DLLEXPORT void dpnp_copyto_c(void* dst, void* src, const size_t size);
+INP_DLLEXPORT void dpnp_copyto_c(void* source, void* destination, const size_t size);
 
 /**
  * @ingroup BACKEND_API
