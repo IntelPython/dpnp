@@ -44,44 +44,59 @@ except ImportError:
     import dpnp as np
 
 
-SIZE = 2 ** 20
-SHAPE = (SIZE,)
+SIZE = 2 ** 8
 DTYPE = np.float64
 
 SEED = 7777777
+PL, PH = 10.0, 50.0
 SL, SH = 10.0, 50.0
-KL, KH = 10.0, 50.0
 TL, TH = 1.0, 2.0
 RISK_FREE = 0.1
 VOLATILITY = 0.2
 
 
-def black_scholes_put(S, K, T, sigmas, r_sigma_sigma_2, nrs, sqrt2, ones, twos):
-    d1 = (np.log(S / K) + r_sigma_sigma_2 * T) / (sigmas * np.sqrt(T))
-    d2 = d1 - sigmas * np.sqrt(T)
+def black_scholes(price, strike, t, mrs, vol_vol_twos, quarters, ones, halfs, call, put):
+    P = price
+    S = strike
+    T = t
 
-    cdf_d1 = (ones + np.erf(d1 / sqrt2)) / twos
-    cdf_d2 = (ones + np.erf(d2 / sqrt2)) / twos
+    a = np.log(P / S)
+    b = T * mrs
 
-    bs_call = S * cdf_d1 - K * np.exp(nrs * T) * cdf_d2
+    z = T * vol_vol_twos
+    c = quarters * z
+    y = ones/np.sqrt(z)
 
-    return K * np.exp(nrs * T) - S + bs_call
+    w1 = (a - b + c) * y
+    w2 = (a - b - c) * y
+
+    d1 = halfs + halfs * np.erf(w1)
+    d2 = halfs + halfs * np.erf(w2)
+
+    Se = np.exp(b) * S
+
+    r =  P * d1 - Se * d2
+    call[:] = r  # temporary `r` is necessary for faster `put` computation
+    put[:] = r - P + Se
 
 
 np.random.seed(SEED)
-S = np.random.uniform(SL, SH, SIZE)
-K = np.random.uniform(KL, KH, SIZE)
-T = np.random.uniform(TL, TH, SIZE)
+price = np.random.uniform(PL, PH, SIZE)
+strike = np.random.uniform(SL, SH, SIZE)
+t = np.random.uniform(TL, TH, SIZE)
 
-r, sigma = RISK_FREE, VOLATILITY
+call = np.full(SIZE, 0, dtype=DTYPE)
+put  = np.full(SIZE, -1, dtype=DTYPE)
 
-sigmas = np.full(SHAPE, sigma, dtype=DTYPE)
-r_sigma_sigma_2 = np.full(SHAPE, r + sigma * sigma / 2., dtype=DTYPE)
-nrs = np.full(SHAPE, -r, dtype=DTYPE)
+mrs = np.full(SIZE, -RISK_FREE, dtype=DTYPE)
 
-sqrt2 = np.full(SHAPE, np.sqrt(2), dtype=DTYPE)
-ones = np.full(SHAPE, 1, dtype=DTYPE)
-twos = np.full(SHAPE, 2, dtype=DTYPE)
+vol = VOLATILITY
+vol_vol_twos = np.full(SIZE, vol * vol * 2, dtype=DTYPE)
 
-bs_put = black_scholes_put(S, K, T, sigmas, r_sigma_sigma_2, nrs, sqrt2, ones, twos)
-print(bs_put[:10])
+quarters = np.full(SIZE, 0.25, dtype=DTYPE)
+ones = np.full(SIZE, 1, dtype=DTYPE)
+halfs = np.full(SIZE, 0.5, dtype=DTYPE)
+
+black_scholes(price, strike, t, mrs, vol_vol_twos, quarters, ones, halfs, call, put)
+print(call[:10])
+print(put[:10])
