@@ -127,6 +127,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_MULTIPLY,                 /**< Used in numpy.multiply() implementation  */
     DPNP_FN_POWER,                    /**< Used in numpy.power() implementation  */
     DPNP_FN_PROD,                     /**< Used in numpy.prod() implementation  */
+    DPNP_FN_QR,                       /**< Used in numpy.linalg.qr() implementation  */
     DPNP_FN_RADIANS,                  /**< Used in numpy.radians() implementation  */
     DPNP_FN_REMAINDER,                /**< Used in numpy.remainder() implementation  */
     DPNP_FN_RECIP,                    /**< Used in numpy.recip() implementation  */
@@ -162,6 +163,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RNG_TRIANGULAR,           /**< Used in numpy.random.triangular() implementation  */
     DPNP_FN_RNG_UNIFORM,              /**< Used in numpy.random.uniform() implementation  */
     DPNP_FN_RNG_VONMISES,             /**< Used in numpy.random.vonmises() implementation  */
+    DPNP_FN_RNG_WALD,                 /**< Used in numpy.random.wald() implementation  */
     DPNP_FN_RNG_WEIBULL,              /**< Used in numpy.random.weibull() implementation  */
     DPNP_FN_RNG_ZIPF,                 /**< Used in numpy.random.zipf() implementation  */
     DPNP_FN_SIGN,                     /**< Used in numpy.sign() implementation  */
