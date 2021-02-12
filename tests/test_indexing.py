@@ -346,6 +346,28 @@ def test_take(array, indices):
     numpy.testing.assert_array_equal(expected, result)
 
 
+def test_take_along_axis():
+    a = numpy.arange(16).reshape(4, 4)
+    ai = dpnp.array(a)
+    ind_r = numpy.array([[3, 0, 2, 1]])
+    ind_r_i = dpnp.array(ind_r)
+    for axis in range(2):
+        expected = numpy.take_along_axis(a, ind_r, axis)
+        result = dpnp.take_along_axis(ai, ind_r_i, axis)
+        numpy.testing.assert_array_equal(expected, result)
+
+
+def test_take_along_axis1():
+    a = numpy.arange(64).reshape(4, 4, 4)
+    ai = dpnp.array(a)
+    ind_r = numpy.array([[[3, 0, 2, 1]]])
+    ind_r_i = dpnp.array(ind_r)
+    for axis in range(3):
+        expected = numpy.take_along_axis(a, ind_r, axis)
+        result = dpnp.take_along_axis(ai, ind_r_i, axis)
+        numpy.testing.assert_array_equal(expected, result)
+
+
 @pytest.mark.parametrize("m",
                          [None, 0, 1, 2, 3, 4],
                          ids=['None', '0', '1', '2', '3', '4'])
