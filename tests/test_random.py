@@ -17,8 +17,7 @@ class TestDistribution(unittest.TestCase):
         assert len(numpy.unique(res)) == 1
         assert numpy.unique(res)[0] == val
 
-    def check_moments(self, dist_name, expected_mean, expected_var, params):
-        size = 10**5
+    def check_moments(self, dist_name, expected_mean, expected_var, params, size = 10**5):
         seed = 28041995
         dpnp.random.seed(seed)
         res = numpy.asarray(getattr(dpnp.random, dist_name)(size=size, **params))
@@ -882,6 +881,32 @@ class TestDistributionsVonmises:
         dpnp.random.seed(seed)
         a2 = numpy.asarray(dpnp.random.vonmises(mu, kappa, size=size))
         assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+class TestDistributionsWald(TestDistribution):
+
+    def test_moments(self):
+        size = 5*10**6
+        mean = 3.56
+        scale = 2.8
+        expected_mean = mean
+        expected_var = (mean ** 3) / scale
+        self.check_moments('wald', expected_mean, expected_var,
+                           {'mean': mean, 'scale': scale}, size = size)
+
+    def test_invalid_args(self):
+        size = 10
+        mean = -1.0   # positive `mean` is expected
+        scale = 1.0   # OK
+        self.check_invalid_args('wald', {'mean': mean, 'scale': scale})
+        mean = 1.0    # OK
+        scale = -1.0  # positive `scale` is expected
+        self.check_invalid_args('wald', {'mean': mean, 'scale': scale})
+
+    def test_seed(self):
+        mean = 3.56   # `mean` param for Wald distr
+        scale = 2.8   # `scale` param for Wald distr
+        self.check_seed('wald', {'mean': mean, 'scale': scale})
 
 
 class TestDistributionsWeibull(TestDistribution):

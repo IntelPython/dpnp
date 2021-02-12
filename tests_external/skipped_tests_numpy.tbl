@@ -1511,6 +1511,7 @@ tests/test_random.py::TestRandomDist::test_triangular
 tests/test_random.py::TestRandomDist::test_uniform
 tests/test_random.py::TestRandomDist::test_uniform_range_bounds
 tests/test_random.py::TestRandomDist::test_vonmises
+tests/test_random.py::TestRandomDist::test_wald
 tests/test_random.py::TestRandomDist::test_weibull
 tests/test_random.py::TestRandomDist::test_weibull_0
 tests/test_random.py::TestRandomDist::test_zipf
@@ -1617,6 +1618,7 @@ tests/test_randomstate.py::TestRandomDist::test_uniform
 tests/test_randomstate.py::TestRandomDist::test_uniform_range_bounds
 tests/test_randomstate.py::TestRandomDist::test_vonmises
 tests/test_randomstate.py::TestRandomDist::test_vonmises_small
+tests/test_randomstate.py::TestRandomDist::test_wald
 tests/test_randomstate.py::TestRandomDist::test_weibull
 tests/test_randomstate.py::TestRandomDist::test_weibull_0
 tests/test_randomstate.py::TestRandomDist::test_zipf
