@@ -112,6 +112,7 @@ var group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i =
       [ "DPNP_FN_RNG_TRIANGULAR", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ad2fb09fb4c0e41d29a76dffdf992c134", null ],
       [ "DPNP_FN_RNG_UNIFORM", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558aa43c5be689c64f6e058fee732c71d549", null ],
       [ "DPNP_FN_RNG_VONMISES", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a62eedd89940f85f26c37b97cc4f80bc6", null ],
+      [ "DPNP_FN_RNG_WALD", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a9b2be3e8c111f7d37813476b1bdb7e91", null ],
       [ "DPNP_FN_RNG_WEIBULL", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a390dd8fed5f213b251eb2c92af0211c6", null ],
       [ "DPNP_FN_RNG_ZIPF", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a59f893fd340c0937b52941bf138d5b19", null ],
       [ "DPNP_FN_SIGN", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a12ef46387104df46d7533d39d1902ae8", null ],

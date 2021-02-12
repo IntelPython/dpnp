@@ -31,6 +31,7 @@ var group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i =
     [ "dpnp_rng_triangular_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga1443570cf95f2862175f7764c2962711", null ],
     [ "dpnp_rng_uniform_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga66ca0e8e25c172adb2c5ba1d4d109b99", null ],
     [ "dpnp_rng_vonmises_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga03fe999029e022b3986f7517076172b6", null ],
+    [ "dpnp_rng_wald_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gafff12488f1d0410ac45b6946d3e5a6d4", null ],
     [ "dpnp_rng_weibull_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gafe029126127cf1e5f10981be800dd714", null ],
     [ "dpnp_rng_zipf_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gab68d1ef52711505ad1342f5f90d9860e", null ]
 ];
