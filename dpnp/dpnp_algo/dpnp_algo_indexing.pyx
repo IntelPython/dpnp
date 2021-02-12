@@ -51,6 +51,7 @@ __all__ += [
     "dpnp_putmask",
     "dpnp_select",
     "dpnp_take",
+    "dpnp_take_along_axis",
     "dpnp_tril_indices",
     "dpnp_tril_indices_from",
     "dpnp_triu_indices",
@@ -305,6 +306,90 @@ cpdef dparray dpnp_take(dparray input, dparray indices):
     func(input.get_data(), indices.get_data(), result.get_data(), indices.size)
 
     return result
+
+
+cpdef dparray dpnp_take_along_axis(dparray arr, dparray indices, int axis):
+    cdef long size_arr = arr.size
+    cdef dparray_shape_type shape_arr = arr.shape
+    cdef long size_indices = indices.size
+    res_type = arr.dtype
+
+    if axis != arr.ndim - 1:
+        res_shape_list = list(shape_arr)
+        res_shape_list[axis] = 1
+        res_shape = tuple(res_shape_list)
+
+        output_shape = dparray(len(shape_arr) - 1, dtype=numpy.int64)
+        ind = 0
+        for id, shape_axis in enumerate(shape_arr):
+            if id != axis:
+                output_shape[ind] = shape_axis
+                ind += 1
+
+        prod = 1
+        for i in range(len(output_shape)):
+            if output_shape[i] != 0:
+                prod *= output_shape[i]
+
+        result_array = [None] * prod
+        ind_array = [None] * prod
+        arr_shape_offsets = [None] * len(shape_arr)
+        acc = 1
+
+        for i in range(len(shape_arr)):
+            ind = len(shape_arr) - 1 - i
+            arr_shape_offsets[ind] = acc
+            acc *= shape_arr[ind]
+
+        output_shape_offsets = [None] * len(shape_arr)
+        acc = 1
+
+        for i in range(len(output_shape)):
+            ind = len(output_shape) - 1 - i
+            output_shape_offsets[ind] = acc
+            acc *= output_shape[ind]
+            result_offsets = arr_shape_offsets[:]  # need copy. not a reference
+        result_offsets[axis] = 0
+
+        for source_idx in range(size_arr):
+
+            # reconstruct x,y,z from linear source_idx
+            xyz = []
+            remainder = source_idx
+            for i in arr_shape_offsets:
+                quotient, remainder = divmod(remainder, i)
+                xyz.append(quotient)
+
+            # extract result axis
+            result_axis = []
+            for idx, offset in enumerate(xyz):
+                if idx != axis:
+                    result_axis.append(offset)
+
+            # Construct result offset
+            result_offset = 0
+            for i, result_axis_val in enumerate(result_axis):
+                result_offset += (output_shape_offsets[i] * result_axis_val)
+
+            arr_elem = arr.item(source_idx)
+            if ind_array[result_offset] is None:
+                ind_array[result_offset] = 0
+            else:
+                ind_array[result_offset] += 1
+
+            if ind_array[result_offset] % size_indices == indices[result_offset % size_indices]:
+                result_array[result_offset] = arr_elem
+
+        dpnp_array = dpnp.array(result_array, dtype=res_type)
+        dpnp_result_array = dpnp_array.reshape(res_shape)
+        return dpnp_result_array
+
+    else:
+        result_array = dparray(shape_arr, dtype=res_type)
+        for i in range(size_arr):
+            ind = size_indices * (i // size_indices) + indices[i % size_indices]
+            result_array[i] = arr[ind]
+        return result_array
 
 
 cpdef tuple dpnp_tril_indices(n, k=0, m=None):
