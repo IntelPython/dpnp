@@ -47,6 +47,7 @@ __all__ += [
     "dpnp_nonzero",
     "dpnp_place",
     "dpnp_put",
+    "dpnp_put_along_axis",
     "dpnp_putmask",
     "dpnp_select",
     "dpnp_take",
@@ -197,6 +198,76 @@ cpdef dpnp_put(input, ind, v):
             if i == ind:
                 input[i] = v
                 in_ind = 1
+
+
+cpdef dpnp_put_along_axis(dparray arr, dparray indices, values, axis):
+    cdef long size_arr = arr.size
+    cdef dparray_shape_type shape_arr = arr.shape
+    cdef long size_indices = indices.size
+
+    if axis != arr.ndim - 1:
+        output_shape = dparray(len(shape_arr) - 1, dtype=numpy.int64)
+        ind = 0
+        for id, shape_axis in enumerate(shape_arr):
+            if id != axis:
+                output_shape[ind] = shape_axis
+                ind += 1
+
+        prod = 1
+        for i in range(len(output_shape)):
+            if output_shape[i] != 0:
+                prod *= output_shape[i]
+
+        ind_array = [None] * prod
+        arr_shape_offsets = [None] * len(shape_arr)
+        acc = 1
+
+        for i in range(len(shape_arr)):
+            ind = len(shape_arr) - 1 - i
+            arr_shape_offsets[ind] = acc
+            acc *= shape_arr[ind]
+
+        output_shape_offsets = [None] * len(shape_arr)
+        acc = 1
+
+        for i in range(len(output_shape)):
+            ind = len(output_shape) - 1 - i
+            output_shape_offsets[ind] = acc
+            acc *= output_shape[ind]
+
+        for source_idx in range(size_arr):
+
+            # reconstruct x,y,z from linear source_idx
+            xyz = []
+            remainder = source_idx
+            for i in arr_shape_offsets:
+                quotient, remainder = divmod(remainder, i)
+                xyz.append(quotient)
+
+            # extract result axis
+            result_axis = []
+            for idx, offset in enumerate(xyz):
+                if idx != axis:
+                    result_axis.append(offset)
+
+            # Construct result offset
+            result_offset = 0
+            for i, result_axis_val in enumerate(result_axis):
+                result_offset += (output_shape_offsets[i] * result_axis_val)
+
+            arr_elem = arr.item(source_idx)
+            if ind_array[result_offset] is None:
+                ind_array[result_offset] = 0
+            else:
+                ind_array[result_offset] += 1
+
+            if ind_array[result_offset] % size_indices == indices[result_offset % size_indices]:
+                arr[source_idx] = values
+
+    else:
+        for i in range(size_arr):
+            ind = size_indices * (i // size_indices) + indices[i % size_indices]
+            arr[ind] = values
 
 
 cpdef dpnp_putmask(dparray arr, dparray mask, dparray values):
