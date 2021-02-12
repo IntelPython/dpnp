@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['set_5faxis_291',['set_axis',['../class_d_p_n_p_c__id.html#a8f4a509de5d3e6ca77aa9c39a5ba60a3',1,'DPNPC_id']]]
+  ['return_5ftype_291',['return_type',['../struct_d_p_n_p_func_data.html#a59c07232bc3830e89d5abe5447a24816',1,'DPNPFuncData']]]
 ];

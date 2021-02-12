@@ -5,6 +5,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
       [ "GPU_SELECTOR", "group___b_a_c_k_e_n_d___a_p_i.html#ggaae520250ac00985feaadcbd984c30ab1a332c42fe262bf0855ca1de84d27049b1", null ],
       [ "AUTO_SELECTOR", "group___b_a_c_k_e_n_d___a_p_i.html#ggaae520250ac00985feaadcbd984c30ab1a8625883de23e4800c0b865aef6e284ae", null ]
     ] ],
+    [ "__dpnp_copyto_c", "group___b_a_c_k_e_n_d___a_p_i.html#gadffce2a68272c18fd8cedf7801b65c7b", null ],
     [ "dpnp_acos_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga82638acf96407e401fb1554cb0a223fc", null ],
     [ "dpnp_acosh_c", "group___b_a_c_k_e_n_d___a_p_i.html#gaf1dfc57d1f0023703130641e617689bf", null ],
     [ "dpnp_add_c", "group___b_a_c_k_e_n_d___a_p_i.html#gafad9bf63b39a3ad9cfe5b5315f4cf794", null ],
@@ -26,7 +27,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_conjugate_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga5171957071778a1384c1592cf3968234", null ],
     [ "dpnp_copy_c", "group___b_a_c_k_e_n_d___a_p_i.html#gac7b853ef3509cb2369f7f8a8cadb7fe5", null ],
     [ "dpnp_copysign_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga39edd898cb8d14b81142e150b4c5c1bd", null ],
-    [ "dpnp_copyto_c", "group___b_a_c_k_e_n_d___a_p_i.html#gae066c24d4c506a2748f70675ea4f12b3", null ],
+    [ "dpnp_copyto_c", "group___b_a_c_k_e_n_d___a_p_i.html#gadb70319a55c4a77744ad485da22099e6", null ],
     [ "dpnp_correlate_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga9b6e2531e5d23aa6fd1901cba9040127", null ],
     [ "dpnp_cos_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga7383b77007f41e7e96858088bf46d046", null ],
     [ "dpnp_cosh_c", "group___b_a_c_k_e_n_d___a_p_i.html#gaa2c797216624b21d93ac230b23193dc8", null ],
