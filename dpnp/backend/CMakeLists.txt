@@ -54,6 +54,10 @@ option(DPNP_INSTALL_STRUCTURED "if FALSE, install package files into same direct
 option(DPNP_SYCL_QUEUE_MGR_ENABLE "Use external manager for SYCL queue" FALSE)
 option(DPNP_BACKEND_TESTS "Enable DPNP tests" FALSE)
 
+if(DEFINED ENV{DPNP_DEBUG})
+  set(DPNP_DEBUG_ENABLE $ENV{DPNP_DEBUG})
+endif()
+
 message(STATUS "CMAKE_VERSION:                   ${CMAKE_VERSION}")
 message(STATUS "CMAKE_GENERATOR:                 ${CMAKE_GENERATOR}")
 message(STATUS "CMAKE_HOST_SYSTEM_NAME:          ${CMAKE_HOST_SYSTEM_NAME}")
