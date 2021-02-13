@@ -192,6 +192,11 @@ Functions</h2></td></tr>
 <tr class="memdesc:gad0b499cc7d5d6d40bec16b3543f815b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per element operation function dpnp_degrees_c <br  />
   <a href="group___b_a_c_k_e_n_d___a_p_i.html#gad0b499cc7d5d6d40bec16b3543f815b4">More...</a><br /></td></tr>
 <tr class="separator:gad0b499cc7d5d6d40bec16b3543f815b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadf8b37522ccbe304eab0bb2a25a53703"><td class="memTemplParams" colspan="2">template&lt;typename _DataType_input , typename _DataType_output &gt; </td></tr>
+<tr class="memitem:gadf8b37522ccbe304eab0bb2a25a53703"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gadf8b37522ccbe304eab0bb2a25a53703">dpnp_ediff1d_c</a> (void *array1, void *result1, size_t size)</td></tr>
+<tr class="memdesc:gadf8b37522ccbe304eab0bb2a25a53703"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per element operation function dpnp_ediff1d_c <br  />
+  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gadf8b37522ccbe304eab0bb2a25a53703">More...</a><br /></td></tr>
+<tr class="separator:gadf8b37522ccbe304eab0bb2a25a53703"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6c157cc4305f594d872b82e8fede8c74"><td class="memTemplParams" colspan="2">template&lt;typename _DataType_input , typename _DataType_output &gt; </td></tr>
 <tr class="memitem:ga6c157cc4305f594d872b82e8fede8c74"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga6c157cc4305f594d872b82e8fede8c74">dpnp_exp2_c</a> (void *array1, void *result1, size_t size)</td></tr>
 <tr class="memdesc:ga6c157cc4305f594d872b82e8fede8c74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per element operation function dpnp_exp2_c <br  />
@@ -2391,6 +2396,57 @@ template&lt;typename _DataType_input1 , typename _DataType_input2 , typename _Da
     <tr><td class="paramdir">[in]</td><td class="paramname">array2</td><td>Input array. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">result1</td><td>Output array. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in input arrays. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gadf8b37522ccbe304eab0bb2a25a53703"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gadf8b37522ccbe304eab0bb2a25a53703">&#9670;&nbsp;</a></span>dpnp_ediff1d_c()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename _DataType_input , typename _DataType_output &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void dpnp_ediff1d_c </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>array1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>result1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Per element operation function dpnp_ediff1d_c <br  />
+ </p>
+<p>&lt;&gt; Function "dpnp_ediff1d_c" executes operator "array1[i + 1] - input_elem" over each element of the array <br  />
+ </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">array1</td><td>Input array. <br  />
+ </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result1</td><td>Output array. <br  />
+ </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in the input array. <br  />
+ </td></tr>
   </table>
   </dd>
 </dl>

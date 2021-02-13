@@ -42,6 +42,7 @@ var group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i =
       [ "DPNP_FN_DIAGONAL", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a0f2c28f3c9ecce4b9b54df32b9f1113f", null ],
       [ "DPNP_FN_DIVIDE", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a011747f4bb8e8fa90b1eccc3288a18cb", null ],
       [ "DPNP_FN_DOT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a5333d3eb859da5bba7770ae8194ca5d2", null ],
+      [ "DPNP_FN_EDIFF1D", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a22087fff882a91b3eea483db4557066d", null ],
       [ "DPNP_FN_EIG", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558af24b22e6b108ab6ea2546acee6d64c0e", null ],
       [ "DPNP_FN_EIGVALS", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a4b0f27d24f20b6272f2a447ddc8ecc17", null ],
       [ "DPNP_FN_ERF", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558aa8e5f8f3b90944e05d9c8e4183c23706", null ],

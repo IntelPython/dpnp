@@ -40,6 +40,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_diagonal_c", "group___b_a_c_k_e_n_d___a_p_i.html#gae18d304a8fdc0f0839f4864e5cff1890", null ],
     [ "dpnp_divide_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga819a4d7d2711c2ae91e599bd35650272", null ],
     [ "dpnp_dot_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga89a850d9796827daa9b3d7b77ddc8ec6", null ],
+    [ "dpnp_ediff1d_c", "group___b_a_c_k_e_n_d___a_p_i.html#gadf8b37522ccbe304eab0bb2a25a53703", null ],
     [ "dpnp_eig_c", "group___b_a_c_k_e_n_d___a_p_i.html#gac34d83d772ef9b059ff7f09151709304", null ],
     [ "dpnp_eigvals_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga846b56f4a4c89c24d1b6f9ee5a6ca1a4", null ],
     [ "dpnp_elemwise_absolute_c", "group___b_a_c_k_e_n_d___a_p_i.html#gab3ed560f1a8a171281e86ea1c0c619ce", null ],
