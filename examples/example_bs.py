@@ -65,7 +65,7 @@ def black_scholes(price, strike, t, mrs, vol_vol_twos, quarters, ones, halfs, ca
 
     z = T * vol_vol_twos
     c = quarters * z
-    y = ones/np.sqrt(z)
+    y = ones / np.sqrt(z)
 
     w1 = (a - b + c) * y
     w2 = (a - b - c) * y
@@ -75,7 +75,7 @@ def black_scholes(price, strike, t, mrs, vol_vol_twos, quarters, ones, halfs, ca
 
     Se = np.exp(b) * S
 
-    r =  P * d1 - Se * d2
+    r = P * d1 - Se * d2
     call[:] = r  # temporary `r` is necessary for faster `put` computation
     put[:] = r - P + Se
 
@@ -86,7 +86,7 @@ strike = np.random.uniform(SL, SH, SIZE)
 t = np.random.uniform(TL, TH, SIZE)
 
 call = np.full(SIZE, 0, dtype=DTYPE)
-put  = np.full(SIZE, -1, dtype=DTYPE)
+put = np.full(SIZE, -1, dtype=DTYPE)
 
 mrs = np.full(SIZE, -RISK_FREE, dtype=DTYPE)
 

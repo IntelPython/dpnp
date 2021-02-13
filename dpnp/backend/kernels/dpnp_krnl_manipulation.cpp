@@ -131,8 +131,8 @@ void func_map_init_manipulation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_copyto_c<double, long>};
     fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_copyto_c<double, float>};
     fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_copyto_c<double, double>};
-    fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_C128][eft_C128] = {eft_C128, (void*)dpnp_copyto_c<std::complex<double>,
-                                                                                             std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_C128][eft_C128] = {
+        eft_C128, (void*)dpnp_copyto_c<std::complex<double>, std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_elemwise_transpose_c<int>};
     fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_elemwise_transpose_c<long>};

@@ -32,8 +32,7 @@
 #include "queue_sycl.hpp"
 
 #define MACRO_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)                                                 \
-    template <typename _KernelNameSpecialization1,                                                                     \
-              typename _KernelNameSpecialization2>                                                                     \
+    template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2>                                \
     class __name__##_kernel;                                                                                           \
                                                                                                                        \
     template <typename _DataType_input, typename _DataType_output>                                                     \
@@ -54,8 +53,8 @@
         };                                                                                                             \
                                                                                                                        \
         auto kernel_func = [&](cl::sycl::handler& cgh) {                                                               \
-            cgh.parallel_for<class __name__##_kernel<_DataType_input, _DataType_output>>(                              \
-                gws, kernel_parallel_for_func);                                                                        \
+            cgh.parallel_for<class __name__##_kernel<_DataType_input, _DataType_output>>(gws,                          \
+                                                                                         kernel_parallel_for_func);    \
         };                                                                                                             \
                                                                                                                        \
         if constexpr (std::is_same<_DataType_input, double>::value || std::is_same<_DataType_input, float>::value)     \
@@ -139,8 +138,8 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_DBL][eft_LNG] = {eft_LNG, (void*)__dpnp_copyto_c<double, long>};
     fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_DBL][eft_FLT] = {eft_FLT, (void*)__dpnp_copyto_c<double, float>};
     fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_DBL][eft_DBL] = {eft_DBL, (void*)__dpnp_copyto_c<double, double>};
-    fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_C128][eft_C128] = {eft_C128, (void*)__dpnp_copyto_c<std::complex<double>,
-                                                                                               std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_COPYTO][eft_C128][eft_C128] = {
+        eft_C128, (void*)__dpnp_copyto_c<std::complex<double>, std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_COS][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_cos_c<int, double>};
     fmap[DPNPFuncName::DPNP_FN_COS][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_cos_c<long, double>};

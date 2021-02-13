@@ -56,68 +56,68 @@ void black_scholes(double* price,
     double* T = t;
 
     double* a = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_divide_c<double, double, double>(P, S, a, size);             // P / S
-    dpnp_log_c<double, double>(a, a, size);                    // np.log(P / S)
+    dpnp_divide_c<double, double, double>(P, S, a, size); // P / S
+    dpnp_log_c<double, double>(a, a, size);               // np.log(P / S)
 
     double* b = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_multiply_c<double, double, double>(T, mrs, b, size);         // T * mrs
+    dpnp_multiply_c<double, double, double>(T, mrs, b, size); // T * mrs
 
     double* z = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_multiply_c<double, double, double>(T, vol_vol_twos, z, size);  // T * vol_vol_twos
+    dpnp_multiply_c<double, double, double>(T, vol_vol_twos, z, size); // T * vol_vol_twos
 
     double* c = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_multiply_c<double, double, double>(quarters, z, c, size);    // quarters * z
+    dpnp_multiply_c<double, double, double>(quarters, z, c, size); // quarters * z
 
     double* y = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_sqrt_c<double, double>(z, y, size);                          // np.sqrt(z)
-    dpnp_divide_c<double, double, double>(ones, y, y, size);     // ones/np.sqrt(z)
+    dpnp_sqrt_c<double, double>(z, y, size);                 // np.sqrt(z)
+    dpnp_divide_c<double, double, double>(ones, y, y, size); // ones/np.sqrt(z)
 
     double* w1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_subtract_c<double, double, double>(a, b, w1, size);           // a - b
-    dpnp_add_c<double, double, double>(w1, c, w1, size);               // a - b + c
-    dpnp_multiply_c<double, double, double>(w1, y, w1, size);         // (a - b + c) * y
+    dpnp_subtract_c<double, double, double>(a, b, w1, size);  // a - b
+    dpnp_add_c<double, double, double>(w1, c, w1, size);      // a - b + c
+    dpnp_multiply_c<double, double, double>(w1, y, w1, size); // (a - b + c) * y
 
     double* w2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_subtract_c<double, double, double>(a, b, w2, size);           // a - b
-    dpnp_subtract_c<double, double, double>(w2, c, w2, size);          // a - b - c
-    dpnp_multiply_c<double, double, double>(w2, y, w2, size);         // (a - b - c) * y
+    dpnp_subtract_c<double, double, double>(a, b, w2, size);  // a - b
+    dpnp_subtract_c<double, double, double>(w2, c, w2, size); // a - b - c
+    dpnp_multiply_c<double, double, double>(w2, y, w2, size); // (a - b - c) * y
 
     dpnp_memory_free_c(y);
     dpnp_memory_free_c(c);
     dpnp_memory_free_c(a);
 
     double* d1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_erf_c<double>(w1, d1, size);                                         // np.erf(w1)
-    dpnp_multiply_c<double, double, double>(halfs, d1, d1, size);     // halfs * np.erf(w1)
-    dpnp_add_c<double, double, double>(halfs, d1, d1, size);  // halfs + halfs * np.erf(w1)
+    dpnp_erf_c<double>(w1, d1, size);                             // np.erf(w1)
+    dpnp_multiply_c<double, double, double>(halfs, d1, d1, size); // halfs * np.erf(w1)
+    dpnp_add_c<double, double, double>(halfs, d1, d1, size);      // halfs + halfs * np.erf(w1)
 
     dpnp_memory_free_c(w1);
 
     double* d2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_erf_c<double>(w2, d2, size);                                         // np.erf(w2)
-    dpnp_multiply_c<double, double, double>(halfs, d2, d2, size);     // halfs * np.erf(w2)
-    dpnp_add_c<double, double, double>(halfs, d2, d2, size);  // halfs + halfs * np.erf(w2)
+    dpnp_erf_c<double>(w2, d2, size);                             // np.erf(w2)
+    dpnp_multiply_c<double, double, double>(halfs, d2, d2, size); // halfs * np.erf(w2)
+    dpnp_add_c<double, double, double>(halfs, d2, d2, size);      // halfs + halfs * np.erf(w2)
 
     dpnp_memory_free_c(w2);
 
     double* Se = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_exp_c<double, double>(b, Se, size);                           // np.exp(b)
-    dpnp_multiply_c<double, double, double>(Se, S, Se, size);          // np.exp(b) * S
+    dpnp_exp_c<double, double>(b, Se, size);                  // np.exp(b)
+    dpnp_multiply_c<double, double, double>(Se, S, Se, size); // np.exp(b) * S
 
     dpnp_memory_free_c(b);
 
     double* r = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_multiply_c<double, double, double>(P, d1, d1, size);          // P * d1
-    dpnp_multiply_c<double, double, double>(Se, d2, d2, size);                  // Se * d2
-    dpnp_subtract_c<double, double, double>(d1, d2, r, size);          // P * d1 - Se * d2
+    dpnp_multiply_c<double, double, double>(P, d1, d1, size);  // P * d1
+    dpnp_multiply_c<double, double, double>(Se, d2, d2, size); // Se * d2
+    dpnp_subtract_c<double, double, double>(d1, d2, r, size);  // P * d1 - Se * d2
 
     dpnp_memory_free_c(d2);
     dpnp_memory_free_c(d1);
 
-    dpnp_copyto_c<double, double>(call, r, size);            // call[:] = r
-    dpnp_subtract_c<double, double, double>(r, P, r, size);           // r - P
-    dpnp_add_c<double, double, double>(r, Se, r, size);               // r - P + Se
-    dpnp_copyto_c<double, double>(put, r, size);             // put[:] = r - P + Se
+    dpnp_copyto_c<double, double>(call, r, size);           // call[:] = r
+    dpnp_subtract_c<double, double, double>(r, P, r, size); // r - P
+    dpnp_add_c<double, double, double>(r, Se, r, size);     // r - P + Se
+    dpnp_copyto_c<double, double>(put, r, size);            // put[:] = r - P + Se
 
     dpnp_memory_free_c(r);
     dpnp_memory_free_c(Se);
@@ -141,10 +141,10 @@ int main(int, char**)
     double* strike = (double*)dpnp_memory_alloc_c(SIZE * sizeof(double));
     double* t = (double*)dpnp_memory_alloc_c(SIZE * sizeof(double));
 
-    dpnp_rng_srand_c(SEED);                            // np.random.seed(SEED)
-    dpnp_rng_uniform_c<double>(price, PL, PH, SIZE);   // np.random.uniform(PL, PH, SIZE)
-    dpnp_rng_uniform_c<double>(strike, SL, SH, SIZE);  // np.random.uniform(SL, SH, SIZE)
-    dpnp_rng_uniform_c<double>(t, TL, TH, SIZE);       // np.random.uniform(TL, TH, SIZE)
+    dpnp_rng_srand_c(SEED);                           // np.random.seed(SEED)
+    dpnp_rng_uniform_c<double>(price, PL, PH, SIZE);  // np.random.uniform(PL, PH, SIZE)
+    dpnp_rng_uniform_c<double>(strike, SL, SH, SIZE); // np.random.uniform(SL, SH, SIZE)
+    dpnp_rng_uniform_c<double>(t, TL, TH, SIZE);      // np.random.uniform(TL, TH, SIZE)
 
     double* zero = (double*)dpnp_memory_alloc_c(1 * sizeof(double));
     zero[0] = 0.;
@@ -175,13 +175,13 @@ int main(int, char**)
     double* ones = (double*)dpnp_memory_alloc_c(SIZE * sizeof(double));
     double* halfs = (double*)dpnp_memory_alloc_c(SIZE * sizeof(double));
 
-    dpnp_full_c<double>(zero, call, SIZE);                 // np.full(SIZE, 0., dtype=DTYPE)
-    dpnp_full_c<double>(mone, put, SIZE);                  // np.full(SIZE, -1., dtype=DTYPE)
-    dpnp_full_c<double>(mr, mrs, SIZE);                    // np.full(SIZE, -RISK_FREE, dtype=DTYPE)
-    dpnp_full_c<double>(vol_vol_two, vol_vol_twos, SIZE);  // np.full(SIZE, VOLATILITY * VOLATILITY * 2., dtype=DTYPE)
-    dpnp_full_c<double>(quarter, quarters, SIZE);          // np.full(SIZE, 0.25, dtype=DTYPE)
-    dpnp_full_c<double>(one, ones, SIZE);                  // np.full(SIZE, 1., dtype=DTYPE)
-    dpnp_full_c<double>(half, halfs, SIZE);                // np.full(SIZE, 0.5, dtype=DTYPE)
+    dpnp_full_c<double>(zero, call, SIZE);                // np.full(SIZE, 0., dtype=DTYPE)
+    dpnp_full_c<double>(mone, put, SIZE);                 // np.full(SIZE, -1., dtype=DTYPE)
+    dpnp_full_c<double>(mr, mrs, SIZE);                   // np.full(SIZE, -RISK_FREE, dtype=DTYPE)
+    dpnp_full_c<double>(vol_vol_two, vol_vol_twos, SIZE); // np.full(SIZE, VOLATILITY * VOLATILITY * 2., dtype=DTYPE)
+    dpnp_full_c<double>(quarter, quarters, SIZE);         // np.full(SIZE, 0.25, dtype=DTYPE)
+    dpnp_full_c<double>(one, ones, SIZE);                 // np.full(SIZE, 1., dtype=DTYPE)
+    dpnp_full_c<double>(half, halfs, SIZE);               // np.full(SIZE, 0.5, dtype=DTYPE)
 
     dpnp_memory_free_c(half);
     dpnp_memory_free_c(one);
