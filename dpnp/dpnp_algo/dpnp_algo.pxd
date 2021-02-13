@@ -66,6 +66,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_DIAGONAL
         DPNP_FN_DIVIDE
         DPNP_FN_DOT
+        DPNP_FN_EDIFF1D
         DPNP_FN_EIG
         DPNP_FN_EIGVALS
         DPNP_FN_ERF
