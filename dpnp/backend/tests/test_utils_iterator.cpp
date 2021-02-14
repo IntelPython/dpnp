@@ -151,6 +151,40 @@ TEST(TestUtilsIterator, take_value_axis_1)
     EXPECT_EQ(*begin, 2);
 }
 
+TEST(TestUtilsIterator, output_size)
+{
+    // expected data 1, 2
+    vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({2, 3});
+    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 3});
+
+    const dpnpc_index_t output_size = result_obj.get_output_size();
+
+    EXPECT_EQ(output_size, 1);
+}
+
+TEST(TestUtilsIterator, output_size_empty)
+{
+    // expected data 1, 2
+    vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({});
+    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {});
+
+    const dpnpc_index_t output_size = result_obj.get_output_size();
+
+    EXPECT_EQ(output_size, 0);
+}
+
+TEST(TestUtilsIterator, output_size_axis)
+{
+    // expected data 1, 2
+    vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({2, 3, 4});
+    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 3, 4});
+    result_obj.set_axis(1);
+
+    const dpnpc_index_t output_size = result_obj.get_output_size();
+
+    EXPECT_EQ(output_size, 8);
+}
+
 TEST(TestUtilsIterator, iterator_loop)
 {
     const dpnpc_it_t::size_type size = 10;

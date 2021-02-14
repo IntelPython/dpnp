@@ -31,6 +31,7 @@
 #include <cassert>
 #include <iostream>
 #include <iterator>
+#include <numeric>
 #include <vector>
 
 #include <dpnp_utils.hpp>
@@ -179,6 +180,10 @@ public:
             get_shape_offsets_inkernel<size_type>(shape, shape_size, shape_strides);
 
             size = std::accumulate(__shape.begin(), __shape.end(), size_type(1), std::multiplies<size_type>());
+            if (size)
+            {
+                output_size = 1; // if input size is not zero it means we will have at least scalar as output
+            }
         }
     }
 
