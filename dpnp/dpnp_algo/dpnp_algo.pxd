@@ -172,13 +172,14 @@ cdef extern from "dpnp_iface_fptr.hpp":
         DPNPFuncType return_type
         void * ptr
 
-    DPNPFuncData get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type)
+    DPNPFuncData get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type) except +
 
 
 cdef extern from "dpnp_iface.hpp" namespace "QueueOptions":  # need this namespace for Enum import
     cdef enum QueueOptions "QueueOptions":
         CPU_SELECTOR
         GPU_SELECTOR
+        AUTO_SELECTOR
 
 cdef extern from "dpnp_iface.hpp":
     void dpnp_queue_initialize_c(QueueOptions selector)
