@@ -1,0 +1,102 @@
+# cython: language_level=3
+# -*- coding: utf-8 -*-
+# *****************************************************************************
+# Copyright (c) 2016-2020, Intel Corporation
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+# - Redistributions of source code must retain the above copyright notice,
+#   this list of conditions and the following disclaimer.
+# - Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+# THE POSSIBILITY OF SUCH DAMAGE.
+# *****************************************************************************
+
+"""Example BS.
+
+This example shows simple usage of the DPNP
+to calculate black scholes algorithm
+
+"""
+
+try:
+    import dpnp as np
+except ImportError:
+    import sys
+    import os
+
+    root_dir = os.path.join(os.path.dirname(__file__), os.pardir)
+    sys.path.append(root_dir)
+
+    import dpnp as np
+
+
+SIZE = 2 ** 8
+DTYPE = np.float64
+
+SEED = 7777777
+PL, PH = 10.0, 50.0
+SL, SH = 10.0, 50.0
+TL, TH = 1.0, 2.0
+RISK_FREE = 0.1
+VOLATILITY = 0.2
+
+
+def black_scholes(price, strike, t, mrs, vol_vol_twos, quarters, ones, halfs, call, put):
+    P = price
+    S = strike
+    T = t
+
+    a = np.log(P / S)
+    b = T * mrs
+
+    z = T * vol_vol_twos
+    c = quarters * z
+    y = ones / np.sqrt(z)
+
+    w1 = (a - b + c) * y
+    w2 = (a - b - c) * y
+
+    d1 = halfs + halfs * np.erf(w1)
+    d2 = halfs + halfs * np.erf(w2)
+
+    Se = np.exp(b) * S
+
+    r = P * d1 - Se * d2
+    call[:] = r  # temporary `r` is necessary for faster `put` computation
+    put[:] = r - P + Se
+
+
+np.random.seed(SEED)
+price = np.random.uniform(PL, PH, SIZE)
+strike = np.random.uniform(SL, SH, SIZE)
+t = np.random.uniform(TL, TH, SIZE)
+
+call = np.full(SIZE, 0, dtype=DTYPE)
+put = np.full(SIZE, -1, dtype=DTYPE)
+
+mrs = np.full(SIZE, -RISK_FREE, dtype=DTYPE)
+
+vol = VOLATILITY
+vol_vol_twos = np.full(SIZE, vol * vol * 2, dtype=DTYPE)
+
+quarters = np.full(SIZE, 0.25, dtype=DTYPE)
+ones = np.full(SIZE, 1, dtype=DTYPE)
+halfs = np.full(SIZE, 0.5, dtype=DTYPE)
+
+black_scholes(price, strike, t, mrs, vol_vol_twos, quarters, ones, halfs, call, put)
+print(call[:10])
+print(put[:10])

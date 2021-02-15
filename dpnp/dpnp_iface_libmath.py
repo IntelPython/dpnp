@@ -39,10 +39,11 @@ it contains:
 
 """
 
-
 import math
 
+from dpnp.dpnp_algo import *
 from dpnp.dparray import dparray
+from dpnp.dpnp_utils import *
 
 
 __all__ = [
@@ -76,12 +77,14 @@ def erf(in_array1):
     [0.99532227, 0.99853728, 0.99959305, 0.99989938, 0.99997791]
 
     """
+    if not use_origin_backend(in_array1):
+        if not isinstance(in_array1, dparray):
+            pass
+        else:
+            return dpnp_erf(in_array1)
 
-    if isinstance(in_array1, dparray):
-        result = dparray(in_array1.shape, dtype=in_array1.dtype)
-        for i in range(result.size):
-            result[i] = math.erf(in_array1[i])
+    result = dparray(in_array1.shape, dtype=in_array1.dtype)
+    for i in range(result.size):
+        result[i] = math.erf(in_array1[i])
 
-        return result
-
-    return math.erf(in_array1)
+    return result

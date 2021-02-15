@@ -138,7 +138,7 @@ def beta(a, b, size=None):
         elif b <= 0:
             pass
         else:
-            return dpnp_beta(a, b, size)
+            return dpnp_rng_beta(a, b, size)
 
     return call_origin(numpy.random.beta, a, b, size)
 
@@ -184,7 +184,7 @@ def binomial(n, p, size=None):
         elif n < 0:
             pass
         else:
-            return dpnp_binomial(int(n), p, size)
+            return dpnp_rng_binomial(int(n), p, size)
 
     return call_origin(numpy.random.binomial, n, p, size)
 
@@ -236,7 +236,7 @@ def chisquare(df, size=None):
         else:
             # TODO:
             # float to int, safe
-            return dpnp_chisquare(int(df), size)
+            return dpnp_rng_chisquare(int(df), size)
 
     return call_origin(numpy.random.chisquare, df, size)
 
@@ -303,7 +303,7 @@ def exponential(scale=1.0, size=None):
         elif scale < 0:
             pass
         else:
-            return dpnp_exponential(scale, size)
+            return dpnp_rng_exponential(scale, size)
 
     return call_origin(numpy.random.exponential, scale, size)
 
@@ -315,12 +315,31 @@ def f(dfnum, dfden, size=None):
 
     For full documentation refer to :obj:`numpy.random.f`.
 
-    Notes
-    -----
-    The function uses `numpy.random.f` on the backend and will be
-    executed on fallback backend.
+    Limitations
+    -----------
+    Parameters ``dfnum`` and ``dfden`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.f(dfnum, dfden, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
+    Examples
+    --------
+    >>> dfnum, dfden = 3., 2.
+    >>> s = dpnp.random.f(dfnum, dfden, size)
 
     """
+
+    if not use_origin_backend(dfnum):
+        # TODO:
+        # array_like of floats for `dfnum` and `dfden`
+        if not dpnp.isscalar(dfnum):
+            pass
+        elif not dpnp.isscalar(dfden):
+            pass
+        elif dfnum <= 0:
+            pass
+        elif dfden <= 0:
+            pass
+        else:
+            return dpnp_rng_f(dfnum, dfden, size)
 
     return call_origin(numpy.random.f, dfnum, dfden, size)
 
@@ -358,7 +377,7 @@ def gamma(shape, scale=1.0, size=None):
         elif shape < 0:
             pass
         else:
-            return dpnp_gamma(shape, scale, size)
+            return dpnp_rng_gamma(shape, scale, size)
 
     return call_origin(numpy.random.gamma, shape, scale, size)
 
@@ -392,7 +411,7 @@ def geometric(p, size=None):
         elif p > 1 or p <= 0:
             pass
         else:
-            return dpnp_geometric(p, size)
+            return dpnp_rng_geometric(p, size)
 
     return call_origin(numpy.random.geometric, p, size)
 
@@ -428,7 +447,7 @@ def gumbel(loc=0.0, scale=1.0, size=None):
         elif scale < 0:
             pass
         else:
-            return dpnp_gumbel(loc, scale, size)
+            return dpnp_rng_gumbel(loc, scale, size)
 
     return call_origin(numpy.random.gumbel, loc, scale, size)
 
@@ -479,7 +498,7 @@ def hypergeometric(ngood, nbad, nsample, size=None):
             m = int(ngood)
             l = int(ngood) + int(nbad)
             s = int(nsample)
-            return dpnp_hypergeometric(l, s, m, size)
+            return dpnp_rng_hypergeometric(l, s, m, size)
 
     return call_origin(numpy.random.hypergeometric, ngood, nbad, nsample, size)
 
@@ -515,7 +534,7 @@ def laplace(loc=0.0, scale=1.0, size=None):
         elif scale < 0:
             pass
         else:
-            return dpnp_laplace(loc, scale, size)
+            return dpnp_rng_laplace(loc, scale, size)
 
     return call_origin(numpy.random.laplace, loc, scale, size)
 
@@ -527,12 +546,33 @@ def logistic(loc=0.0, scale=1.0, size=None):
 
     For full documentation refer to :obj:`numpy.random.logistic`.
 
-    Notes
-    -----
-    The function uses `numpy.random.logistic` on the backend and will be
-    executed on fallback backend.
+    Limitations
+    -----------
+    Parameters ``loc`` and ``scale`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.logistic(loc, scale, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    >>> loc, scale = 0., 1.
+    >>> s = dpnp.random.logistic(loc, scale, 1000)
 
     """
+
+    if not use_origin_backend(loc):
+        # TODO:
+        # array_like of floats for `loc` and `scale`
+        if not dpnp.isscalar(loc):
+            pass
+        elif not dpnp.isscalar(scale):
+            pass
+        elif scale < 0:
+            pass
+        else:
+            if size == None or size == 1:
+                return dpnp_rng_logistic(loc, scale, size)[0]
+            else:
+                return dpnp_rng_logistic(loc, scale, size)
 
     return call_origin(numpy.random.logistic, loc, scale, size)
 
@@ -569,7 +609,7 @@ def lognormal(mean=0.0, sigma=1.0, size=None):
         elif sigma < 0:
             pass
         else:
-            return dpnp_lognormal(mean, sigma, size)
+            return dpnp_rng_lognormal(mean, sigma, size)
 
     return call_origin(numpy.random.lognormal, mean, sigma, size)
 
@@ -634,7 +674,7 @@ def multinomial(n, pvals, size=None):
                 except:
                     shape = tuple(size) + (d,)
 
-            return dpnp_multinomial(int(n), pvals, shape)
+            return dpnp_rng_multinomial(int(n), pvals, shape)
 
     return call_origin(numpy.random.multinomial, n, pvals, size)
 
@@ -680,7 +720,7 @@ def multivariate_normal(mean, cov, size=None, check_valid='warn', tol=1e-8):
         else:
             final_shape = list(shape[:])
             final_shape.append(mean_.shape[0])
-            return dpnp_multivariate_normal(mean_, cov_, final_shape)
+            return dpnp_rng_multivariate_normal(mean_, cov_, final_shape)
 
     return call_origin(numpy.random.multivariate_normal, mean, cov, size, check_valid, tol)
 
@@ -727,7 +767,7 @@ def negative_binomial(n, p, size=None):
         elif n <= 0:
             pass
         else:
-            return dpnp_negative_binomial(n, p, size)
+            return dpnp_rng_negative_binomial(n, p, size)
 
     return call_origin(numpy.random.negative_binomial, n, p, size)
 
@@ -763,7 +803,7 @@ def normal(loc=0.0, scale=1.0, size=None):
         elif scale < 0:
             pass
         else:
-            return dpnp_normal(loc, scale, size)
+            return dpnp_rng_normal(loc, scale, size)
 
     return call_origin(numpy.random.normal, loc, scale, size)
 
@@ -775,12 +815,23 @@ def noncentral_chisquare(df, nonc, size=None):
 
     For full documentation refer to :obj:`numpy.random.noncentral_chisquare`.
 
-    Notes
-    -----
-    The function uses `numpy.random.noncentral_chisquare` on the backend and
-    will be executed on fallback backend.
+    TODO
 
     """
+
+    if not use_origin_backend(df):
+        # TODO:
+        # array_like of floats for `mean` and `scale`
+        if not dpnp.isscalar(df):
+            pass
+        elif not dpnp.isscalar(nonc):
+            pass
+        elif df <= 0:
+            pass
+        elif nonc < 0:
+            pass
+        else:
+            return dpnp_rng_noncentral_chisquare(df, nonc, size)
 
     return call_origin(numpy.random.noncentral_chisquare, df, nonc, size)
 
@@ -809,12 +860,29 @@ def pareto(a, size=None):
 
     For full documentation refer to :obj:`numpy.random.pareto`.
 
-    Notes
-    -----
-    The function uses `numpy.random.pareto` on the backend and
-    will be executed on fallback backend.
+    Limitations
+    -----------
+    Parameter ``a`` is supported as a scalar.
+    Otherwise, :obj:`numpy.random.pareto(a, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> a = .5  # alpha
+    >>> s = dpnp.random.pareto(a, 1000)
 
     """
+
+    if not use_origin_backend(a):
+        # TODO:
+        # array_like of floats for `a`
+        if not dpnp.isscalar(a):
+            pass
+        elif a <= 0:
+            pass
+        else:
+            return dpnp_rng_pareto(a, size)
 
     return call_origin(numpy.random.pareto, a, size)
 
@@ -864,7 +932,7 @@ def poisson(lam=1.0, size=None):
         elif lam < 0:
             pass
         else:
-            return dpnp_poisson(lam, size)
+            return dpnp_rng_poisson(lam, size)
 
     return call_origin(numpy.random.poisson, lam, size)
 
@@ -872,17 +940,34 @@ def poisson(lam=1.0, size=None):
 def power(a, size=None):
     """Power distribution.
 
-    Draws samples in [0, 1] from a power distribution with positive exponent
-    a - 1.
+    Draws samples in [0, 1] from a power distribution with positive
+    exponent a - 1.
 
     For full documentation refer to :obj:`numpy.random.power`.
 
-    Notes
-    -----
-    The function uses `numpy.random.power` on the backend and
-    will be executed on fallback backend.
+    Limitations
+    -----------
+    Parameter ``a`` is supported as a scalar.
+    Otherwise, :obj:`numpy.random.power(a, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> a = .5  # alpha
+    >>> s = dpnp.random.power(a, 1000)
 
     """
+
+    if not use_origin_backend(a):
+        # TODO:
+        # array_like of floats for `a`
+        if not dpnp.isscalar(a):
+            pass
+        elif a <= 0:
+            pass
+        else:
+            return dpnp_rng_power(a, size)
 
     return call_origin(numpy.random.power, a, size)
 
@@ -914,7 +999,7 @@ def rand(d0, *dn):
         if not _check_dims(dims):
             pass
         else:
-            return dpnp_random(dims)
+            return dpnp_rng_random(dims)
 
     return call_origin(numpy.random.rand, d0, *dn)
 
@@ -969,7 +1054,7 @@ def randint(low, high=None, size=None, dtype=int):
         else:
             low = int(low)
             high = int(high)
-            return dpnp_uniform(low, high, size, _dtype)
+            return dpnp_rng_uniform(low, high, size, _dtype)
 
     return call_origin(numpy.random.randint, low, high, size, dtype)
 
@@ -1005,7 +1090,7 @@ def randn(d0, *dn):
         if not _check_dims(dims):
             pass
         else:
-            return dpnp_randn(dims)
+            return dpnp_rng_randn(dims)
 
     return call_origin(numpy.random.randn, d0, *dn)
 
@@ -1032,7 +1117,7 @@ def random(size):
     """
 
     if not use_origin_backend(size):
-        return dpnp_random(size)
+        return dpnp_rng_random(size)
 
     return call_origin(numpy.random.random, size)
 
@@ -1092,7 +1177,7 @@ def random_sample(size):
     """
 
     if not use_origin_backend(size):
-        return dpnp_random(size)
+        return dpnp_rng_random(size)
 
     return call_origin(numpy.random.random_sample, size)
 
@@ -1119,7 +1204,7 @@ def ranf(size):
     """
 
     if not use_origin_backend(size):
-        return dpnp_random(size)
+        return dpnp_rng_random(size)
 
     return call_origin(numpy.random.ranf, size)
 
@@ -1153,7 +1238,7 @@ def rayleigh(scale=1.0, size=None):
         elif scale < 0:
             pass
         else:
-            return dpnp_rayleigh(scale, size)
+            return dpnp_rng_rayleigh(scale, size)
 
     return call_origin(numpy.random.rayleigh, scale, size)
 
@@ -1180,7 +1265,7 @@ def sample(size):
     """
 
     if not use_origin_backend(size):
-        return dpnp_random(size)
+        return dpnp_rng_random(size)
 
     return call_origin(numpy.random.sample, size)
 
@@ -1223,7 +1308,7 @@ def seed(seed=None):
         elif seed < 0:
             pass
         else:
-            dpnp_srand(seed)
+            dpnp_rng_srand(seed)
 
     return call_origin(numpy.random.seed, seed)
 
@@ -1251,7 +1336,7 @@ def standard_cauchy(size=None):
     """
 
     if not use_origin_backend(size):
-        return dpnp_standard_cauchy(size)
+        return dpnp_rng_standard_cauchy(size)
 
     return call_origin(numpy.random.standard_cauchy, size)
 
@@ -1276,7 +1361,7 @@ def standard_exponential(size=None):
     """
 
     if not use_origin_backend(size):
-        return dpnp_standard_exponential(size)
+        return dpnp_rng_standard_exponential(size)
 
     return call_origin(numpy.random.standard_exponential, size)
 
@@ -1311,7 +1396,7 @@ def standard_gamma(shape, size=None):
         elif shape < 0:
             pass
         else:
-            return dpnp_standard_gamma(shape, size)
+            return dpnp_rng_standard_gamma(shape, size)
 
     return call_origin(numpy.random.standard_gamma, shape, size)
 
@@ -1335,26 +1420,43 @@ def standard_normal(size=None):
     """
 
     if not use_origin_backend(size):
-        return dpnp_standard_normal(size)
+        return dpnp_rng_standard_normal(size)
 
     return call_origin(numpy.random.standard_normal, size)
 
 
 def standard_t(df, size=None):
-    """Power distribution.
+    """Standard Student’s t distribution.
 
-    Draw samples from a standard Student’s t distribution with df degrees
-    of freedom.
+    Draw samples from a standard Student’s t distribution with
+    df degrees of freedom.
 
     For full documentation refer to :obj:`numpy.random.standard_t`.
 
-    Notes
-    -----
-    The function uses `numpy.random.standard_t` on the backend and
-    will be executed on fallback backend.
+    Limitations
+    -----------
+    Parameter ``df`` is supported as a scalar.
+    Otherwise, :obj:`numpy.random.standard_t(df, size)` samples
+    are drawn.
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> df = 2.
+    >>> s = dpnp.random.standard_t(df, 1000000)
 
     """
 
+    if not use_origin_backend(df) and dpnp_queue_is_cpu():
+        # TODO:
+        # array_like of floats for `df`
+        if not dpnp.isscalar(df):
+            pass
+        elif df <= 0:
+            pass
+        else:
+            return dpnp_rng_standard_t(df, size)
     return call_origin(numpy.random.standard_t, df, size)
 
 
@@ -1366,12 +1468,38 @@ def triangular(left, mode, right, size=None):
 
     For full documentation refer to :obj:`numpy.random.triangular`.
 
-    Notes
-    -----
-    The function uses `numpy.random.triangular` on the backend and
-    will be executed on fallback backend.
+    Limitations
+    -----------
+    Parameter ``left``, ``mode`` and ``right`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.triangular(left, mode, right, size)`
+    samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> df = 2.
+    >>> s = dpnp.random.triangular(-3, 0, 8, 1000000)
 
     """
+
+    if not use_origin_backend(left):
+        # TODO:
+        # array_like of floats for `left`, `mode`, `right`.
+        if not dpnp.isscalar(left):
+            pass
+        elif not dpnp.isscalar(mode):
+            pass
+        elif not dpnp.isscalar(right):
+            pass
+        elif left > mode:
+            pass
+        elif mode > right:
+            pass
+        elif left == right:
+            pass
+        else:
+            return dpnp_rng_triangular(left, mode, right, size)
 
     return call_origin(numpy.random.triangular, left, mode, right, size)
 
@@ -1409,7 +1537,7 @@ def uniform(low=0.0, high=1.0, size=None):
         else:
             if low > high:
                 low, high = high, low
-            return dpnp_uniform(low, high, size, dtype=numpy.float64)
+            return dpnp_rng_uniform(low, high, size, dtype=numpy.float64)
 
     return call_origin(numpy.random.uniform, low, high, size)
 
@@ -1421,12 +1549,34 @@ def vonmises(mu, kappa, size=None):
 
     For full documentation refer to :obj:`numpy.random.vonmises`.
 
-    Notes
-    -----
-    The function uses `numpy.random.vonmises` on the backend and
-    will be executed on fallback backend.
+    Limitations
+    -----------
+    Parameter ``mu`` and ``kappa`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.vonmises(mu, kappa, size)`
+    samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> mu, kappa = 0.0, 4.0 # mean and dispersion
+    >>> s = dpnp.random.vonmises(mu, kappa, 1000)
 
     """
+
+    if not use_origin_backend(mu):
+        # TODO:
+        # array_like of floats for `mu`, `kappa`.
+        if not dpnp.isscalar(mu):
+            pass
+        elif not dpnp.isscalar(kappa):
+            pass
+        elif dpnp.isnan(kappa):
+            return dpnp.nan
+        elif kappa < 0:
+            pass
+        else:
+            return dpnp_rng_vonmises(mu, kappa, size)
 
     return call_origin(numpy.random.vonmises, mu, kappa, size)
 
@@ -1438,12 +1588,32 @@ def wald(mean, scale, size=None):
 
     For full documentation refer to :obj:`numpy.random.wald`.
 
-    Notes
-    -----
-    The function uses `numpy.random.wald` on the backend and
-    will be executed on fallback backend.
+    Limitations
+    -----------
+    Parameters ``mean`` and ``scale`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.wald(mean, scale, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    >>> loc, scale = 3., 2.
+    >>> s = dpnp.random.wald(loc, scale, 1000)
 
     """
+
+    if not use_origin_backend(mean):
+        # TODO:
+        # array_like of floats for `mean` and `scale`
+        if not dpnp.isscalar(mean):
+            pass
+        elif not dpnp.isscalar(scale):
+            pass
+        elif mean <= 0:
+            pass
+        elif scale <= 0:
+            pass
+        else:
+            return dpnp_rng_wald(mean, scale, size)
 
     return call_origin(numpy.random.wald, mean, scale, size)
 
@@ -1476,7 +1646,7 @@ def weibull(a, size=None):
         elif a < 0:
             pass
         else:
-            return dpnp_weibull(a, size)
+            return dpnp_rng_weibull(a, size)
 
     return call_origin(numpy.random.weibull, a, size)
 
@@ -1488,11 +1658,27 @@ def zipf(a, size=None):
 
     For full documentation refer to :obj:`numpy.random.zipf`.
 
-    Notes
-    -----
-    The function uses `numpy.random.zipf` on the backend and
-    will be executed on fallback backend.
+    Limitations
+    -----------
+    Parameter ``a`` is supported as a scalar.
+    Otherwise, :obj:`numpy.zipf.weibull(a, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    >>> a = 2. # parameter
+    >>> s = np.random.zipf(a, 1000)
 
     """
+
+    if not use_origin_backend(a):
+        # TODO:
+        # array_like of floats for `a` param
+        if not dpnp.isscalar(a):
+            pass
+        elif a <= 1:
+            pass
+        else:
+            return dpnp_rng_zipf(a, size)
 
     return call_origin(numpy.random.zipf, a, size)

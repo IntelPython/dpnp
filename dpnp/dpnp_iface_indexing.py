@@ -40,6 +40,8 @@ it contains:
 """
 
 
+import collections
+
 import numpy
 
 from dpnp.dpnp_algo import *
@@ -49,16 +51,78 @@ import dpnp
 
 
 __all__ = [
+    "choose",
     "diag_indices",
     "diag_indices_from",
     "diagonal",
+    "fill_diagonal",
+    "indices",
     "nonzero",
+    "place",
     "put",
+    "put_along_axis",
+    "putmask",
+    "select",
+    "take",
+    "take_along_axis",
     "tril_indices",
     "tril_indices_from",
     "triu_indices",
     "triu_indices_from"
 ]
+
+
+def choose(input, choices, out=None, mode='raise'):
+    """
+    Construct an array from an index array and a set of arrays to choose from.
+
+    For full documentation refer to :obj:`numpy.choose`.
+
+    See also
+    --------
+    :obj:`take_along_axis` : Preferable if choices is an array.
+    """
+    if not use_origin_backend(input):
+        if not isinstance(input, list) and not isinstance(input, dparray):
+            pass
+        elif not isinstance(choices, list):
+            pass
+        elif out is not None:
+            pass
+        elif mode != 'raise':
+            pass
+        elif isinstance(choices, list):
+            val = True
+            for i in range(len(choices)):
+                if not isinstance(choices[i], dparray):
+                    val = False
+                    break
+            if not val:
+                pass
+            else:
+                val = True
+                len_ = len(input)
+                size_ = choices[0].size
+                for i in range(len(choices)):
+                    if choices[i].size != size_ or choices[i].size != len_:
+                        val = False
+                        break
+                if not val:
+                    pass
+                else:
+                    val = True
+                    for i in range(len_):
+                        if input[i] >= size_:
+                            val = False
+                            break
+                    if not val:
+                        pass
+                    else:
+                        return dpnp_choose(input, choices)
+        else:
+            return dpnp_choose(input, choices)
+
+    return call_origin(numpy.choose, input, choices, out, mode)
 
 
 def diag_indices(n, ndim=2):
@@ -185,6 +249,61 @@ def diagonal(input, offset=0, axis1=0, axis2=1):
     return call_origin(numpy.diagonal, input, offset, axis1, axis2)
 
 
+def fill_diagonal(input, val, wrap=False):
+    """
+    Fill the main diagonal of the given array of any dimensionality.
+
+    For full documentation refer to :obj:`numpy.fill_diagonal`.
+
+    Limitations
+    -----------
+    Parameter ``wrap`` is supported only with default values.
+
+    See Also
+    --------
+    :obj:`dpnp.diag_indices` : Return the indices to access the main diagonal of an array.
+    :obj:`dpnp.diag_indices_from` : Return the indices to access the main diagonal of an n-dimensional array.
+    """
+
+    if not use_origin_backend(input):
+        if not isinstance(input, dparray):
+            pass
+        elif not dpnp.isscalar(val):
+            pass
+        elif wrap:
+            pass
+        else:
+            return dpnp_fill_diagonal(input, val)
+
+    return call_origin(numpy.fill_diagonal, input, val, wrap)
+
+
+def indices(dimensions, dtype=int, sparse=False):
+    """
+    Return an array representing the indices of a grid.
+
+    For full documentation refer to :obj:`numpy.indices`.
+
+    Limitations
+    -----------
+    Parameters ``dtype`` and ``sparse`` are supported only with default values.
+    Parameter ``dimensions`` is supported with len <=2.
+    """
+
+    if not isinstance(dimensions, (tuple, list)):
+        pass
+    elif len(dimensions) > 2 or len(dimensions) == 0:
+        pass
+    elif dtype != int:
+        pass
+    elif sparse:
+        pass
+    else:
+        return dpnp_indices(dimensions)
+
+    return call_origin(numpy.indices, dimensions, dtype, sparse)
+
+
 def nonzero(a):
     """
     Return the indices of the elements that are non-zero.
@@ -236,6 +355,30 @@ def nonzero(a):
     return call_origin(numpy.nonzero, a)
 
 
+def place(arr, mask, vals):
+    """
+    Change elements of an array based on conditional and input values.
+    For full documentation refer to :obj:`numpy.place`.
+
+    Limitations
+    -----------
+    Input arrays ``arr`` and ``mask``  are supported as :obj:`dpnp.ndarray`.
+    Parameter ``vals`` is supported as 1-D sequence.
+    """
+
+    if not use_origin_backend(arr):
+        if not isinstance(arr, dparray):
+            pass
+        elif not isinstance(mask, dparray):
+            pass
+        elif not isinstance(vals, collections.Sequence):
+            pass
+        else:
+            return dpnp_place(arr, mask, vals)
+
+    return call_origin(numpy.place, arr, mask, vals)
+
+
 def put(input, ind, v, mode='raise'):
     """
     Replaces specified elements of an array with given values.
@@ -260,6 +403,179 @@ def put(input, ind, v, mode='raise'):
             return dpnp_put(input, ind, v)
 
     return call_origin(numpy.put, input, ind, v, mode)
+
+
+def put_along_axis(arr, indices, values, axis):
+    """
+    Put values into the destination array by matching 1d index and data slices.
+    For full documentation refer to :obj:`numpy.put_along_axis`.
+
+    See Also
+    --------
+    :obj:`take_along_axis` : Take values from the input array by matching 1d index and data slices.
+    """
+
+    if not use_origin_backend(arr):
+        if not isinstance(arr, dparray):
+            pass
+        elif not isinstance(indices, dparray):
+            pass
+        elif arr.ndim != indices.ndim:
+            pass
+        elif not isinstance(axis, int):
+            pass
+        elif axis >= arr.ndim:
+            pass
+        elif not isinstance(values, (dparray, tuple, list)) and not dpnp.isscalar(values):
+            pass
+        elif arr.ndim == indices.ndim:
+            val_list = []
+            for i in list(indices.shape)[:-1]:
+                if i == 1:
+                    val_list.append(True)
+                else:
+                    val_list.append(False)
+            if not all(val_list):
+                pass
+            else:
+                return dpnp_put_along_axis(arr, indices, values, axis)
+        else:
+            return dpnp_put_along_axis(arr, indices, values, axis)
+
+    return call_origin(numpy.put_along_axis, arr, indices, values, axis)
+
+
+def putmask(arr, mask, values):
+    """
+    Changes elements of an array based on conditional and input values.
+    For full documentation refer to :obj:`numpy.putmask`.
+
+    Limitations
+    -----------
+    Input arrays ``arr``, ``mask`` and ``values``  are supported as :obj:`dpnp.ndarray`.
+    """
+
+    if not use_origin_backend(arr):
+        if not isinstance(arr, dparray):
+            pass
+        elif not isinstance(mask, dparray):
+            pass
+        elif not isinstance(values, dparray):
+            pass
+        else:
+            return dpnp_putmask(arr, mask, values)
+
+    return call_origin(numpy.putmask, arr, mask, values)
+
+
+def select(condlist, choicelist, default=0):
+    """
+    Return an array drawn from elements in choicelist, depending on conditions.
+    For full documentation refer to :obj:`numpy.select`.
+
+    Limitations
+    -----------
+    Arrays of input lists are supported as :obj:`dpnp.ndarray`.
+    Parameter ``default`` are supported only with default values.
+    """
+    if not use_origin_backend():
+        if not isinstance(condlist, list):
+            pass
+        elif not isinstance(condlist[0], dparray):
+            pass
+        elif not isinstance(choicelist, list):
+            pass
+        elif not isinstance(choicelist[0], dparray):
+            pass
+        elif len(condlist) != len(choicelist):
+            pass
+        elif len(condlist) == len(choicelist):
+            val = True
+            size_ = condlist[0].size
+            for i in range(len(condlist)):
+                if condlist[i].size != size_ or choicelist[i].size != size_:
+                    val = False
+            if not val:
+                pass
+            else:
+                return dpnp_select(condlist, choicelist, default)
+        else:
+            return dpnp_select(condlist, choicelist, default)
+
+    return call_origin(numpy.select, condlist, choicelist, default)
+
+
+def take(input, indices, axis=None, out=None, mode='raise'):
+    """
+    Take elements from an array.
+    For full documentation refer to :obj:`numpy.take`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters ``axis``, ``out`` and ``mode`` are supported only with default values.
+    Parameter ``indices`` is supported as :obj:`dpnp.ndarray`.
+
+    See Also
+    --------
+    :obj:`dpnp.compress` : Take elements using a boolean mask.
+    :obj:`take_along_axis` : Take elements by matching the array and the index arrays.
+    """
+
+    if not use_origin_backend(input):
+        if not isinstance(input, dparray):
+            pass
+        elif not isinstance(indices, dparray):
+            pass
+        elif axis is not None:
+            pass
+        elif out is not None:
+            pass
+        elif mode != 'raise':
+            pass
+        else:
+            return dpnp_take(input, indices)
+
+    return call_origin(numpy.take, input, indices, axis, out, mode)
+
+
+def take_along_axis(arr, indices, axis):
+    """
+    Take values from the input array by matching 1d index and data slices.
+    For full documentation refer to :obj:`numpy.take_along_axis`.
+
+    See Also
+    --------
+    :obj:`dpnp.take` : Take along an axis, using the same indices for every 1d slice.
+    :obj:`put_along_axis` : Put values into the destination array by matching 1d index and data slices.
+    """
+
+    if not use_origin_backend(arr):
+        if not isinstance(arr, dparray):
+            pass
+        elif not isinstance(indices, dparray):
+            pass
+        elif arr.ndim != indices.ndim:
+            pass
+        elif not isinstance(axis, int):
+            pass
+        elif axis >= arr.ndim:
+            pass
+        elif arr.ndim == indices.ndim:
+            val_list = []
+            for i in list(indices.shape)[:-1]:
+                if i == 1:
+                    val_list.append(True)
+                else:
+                    val_list.append(False)
+            if not all(val_list):
+                pass
+            else:
+                return dpnp_take_along_axis(arr, indices, axis)
+        else:
+            return dpnp_take_along_axis(arr, indices, axis)
+
+    return call_origin(numpy.take_along_axis, arr, indices, axis)
 
 
 def tril_indices(n, k=0, m=None):

@@ -48,35 +48,40 @@ __all__ = [
     "dpnp_eigvals",
     "dpnp_inv",
     "dpnp_matrix_rank",
-    "dpnp_norm"
+    "dpnp_norm",
+    "dpnp_qr",
+    "dpnp_svd",
 ]
 
 
 # C function pointer to the C library template functions
 ctypedef void(*custom_linalg_1in_1out_func_ptr_t)(void *, void * , size_t * , size_t)
-
-
-# C function pointer to the C library template functions
 ctypedef void(*custom_linalg_1in_1out_func_ptr_t_)(void * , void * , size_t * )
-
-
-# C function pointer to the C library template functions
 ctypedef void(*custom_linalg_1in_1out_with_size_func_ptr_t_)(void *, void * , size_t)
+ctypedef void(*custom_linalg_1in_1out_with_2size_func_ptr_t_)(void *, void * , size_t, size_t)
+ctypedef void(*custom_linalg_1in_3out_shape_t)(void *, void * , void * , void * , size_t , size_t )
 
 
 cpdef dparray dpnp_cholesky(dparray input):
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
+    if input.dtype == dpnp.int32 or input.dtype == dpnp.int64:
+        input_ = input.astype(dpnp.float64)
+    else:
+        input_ = input
+
+    size_ = input_.shape[-1]
+
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input_.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_CHOLESKY, param1_type, param1_type)
 
     result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-    cdef dparray result = dparray(input.size, dtype=result_type)
+    cdef dparray result = dparray(input_.shape, dtype=result_type)
 
-    cdef custom_linalg_1in_1out_func_ptr_t_ func = <custom_linalg_1in_1out_func_ptr_t_ > kernel_data.ptr
+    cdef custom_linalg_1in_1out_with_2size_func_ptr_t_ func = <custom_linalg_1in_1out_with_2size_func_ptr_t_ > kernel_data.ptr
 
-    func(input.get_data(), result.get_data(), < size_t * > input._dparray_shape.data())
-    l_result = result.reshape(input.shape)
-    return l_result
+    func(input_.get_data(), result.get_data(), input.size, size_)
+
+    return result
 
 
 cpdef dparray dpnp_cond(dparray input, p):
@@ -167,50 +172,20 @@ cpdef dparray dpnp_eigvals(dparray input):
     return res_val
 
 
-cpdef dparray dpnp_inv(dparray input):
-    cpdef size_t n = input.shape[0]
+cpdef dparray dpnp_inv(dparray input_):
+    cdef dparray input = input_.astype(dpnp.float64)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
-    # TODO: replace with dpnp.eye(n) when it will be implemented
-    e_arr = dpnp.diag(dpnp.full((n,), 1, dtype=dpnp.float64))
-    a_arr = input.astype(dpnp.float64)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_INV, param1_type, param1_type)
 
-    for k in range(n):
-        if a_arr[k, k] == 0:
-            for i in range(k, n):
-                if a_arr[i, k] != 0:
-                    for j in range(n):
-                        c = a_arr[k, j]
-                        a_arr[k, j] = a_arr[i, j]
-                        a_arr[i, j] = c
-                        c_e = e_arr[k, j]
-                        e_arr[k, j] = e_arr[i, j]
-                        e_arr[i, j] = c_e
-                    break
+    cdef dparray result = dparray(input.size, dtype=dpnp.float64)
 
-        temp = a_arr[k, k]
+    cdef custom_linalg_1in_1out_func_ptr_t func = <custom_linalg_1in_1out_func_ptr_t > kernel_data.ptr
 
-        for j in range(n):
-            a_arr[k, j] = a_arr[k, j] / temp
-            e_arr[k, j] = e_arr[k, j] / temp
+    func(input.get_data(), result.get_data(), < size_t * > input._dparray_shape.data(), input.ndim)
 
-        for i in range(k + 1, n):
-            temp = a_arr[i, k]
-
-            for j in range(n):
-                a_arr[i, j] = a_arr[i, j] - a_arr[k, j] * temp
-                e_arr[i, j] = e_arr[i, j] - e_arr[k, j] * temp
-
-    for k in range(n - 1):
-        ind_k = n - 1 - k
-        for i in range(ind_k):
-            ind_i = ind_k - 1 - i
-
-            temp = a_arr[ind_i, ind_k]
-            for j in range(n):
-                a_arr[ind_i, j] = a_arr[ind_i, j] - a_arr[ind_k, j] * temp
-                e_arr[ind_i, j] = e_arr[ind_i, j] - e_arr[ind_k, j] * temp
-
-    return e_arr
+    dpnp_result = result.reshape(input.shape)
+    return dpnp_result
 
 
 cpdef dparray dpnp_matrix_rank(dparray input):
@@ -330,3 +305,52 @@ cpdef dparray dpnp_norm(dparray input, ord=None, axis=None):
         return ret
     else:
         raise ValueError("Improper number of dimensions to norm.")
+
+
+cpdef tuple dpnp_qr(dparray x1, mode):
+    cdef size_t size_m = x1.shape[0]
+    cdef size_t size_n = x1.shape[1]
+
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_QR, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+
+    cdef dparray res_q = dparray((size_m, size_m), dtype=result_type)
+    cdef dparray res_r = dparray((size_m, size_n), dtype=result_type)
+
+    size_tau = min(size_m, size_n)
+    cdef dparray tau = dparray((size_tau, ), dtype=result_type)
+
+    cdef custom_linalg_1in_3out_shape_t func = < custom_linalg_1in_3out_shape_t > kernel_data.ptr
+
+    func(x1.get_data(), res_q.get_data(), res_r.get_data(), tau.get_data(), size_m, size_n)
+
+    return (res_q, res_r)
+
+
+cpdef tuple dpnp_svd(dparray x1, full_matrices, compute_uv, hermitian):
+    cdef size_t size_m = x1.shape[0]
+    cdef size_t size_n = x1.shape[1]
+
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_SVD, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+
+    if x1.dtype == dpnp.float32:
+        type_s = dpnp.float32
+    else:
+        type_s = dpnp.float64
+
+    size_s = min(size_m, size_n)
+
+    cdef dparray res_u = dparray((size_m, size_m), dtype=result_type)
+    cdef dparray res_s = dparray((size_s, ), dtype=type_s)
+    cdef dparray res_vt = dparray((size_n, size_n), dtype=result_type)
+
+    cdef custom_linalg_1in_3out_shape_t func = < custom_linalg_1in_3out_shape_t > kernel_data.ptr
+
+    func(x1.get_data(), res_u.get_data(), res_s.get_data(), res_vt.get_data(), size_m, size_n)
+
+    return (res_u, res_s, res_vt)

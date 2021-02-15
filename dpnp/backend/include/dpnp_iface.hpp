@@ -43,6 +43,7 @@
 #include <vector>
 
 #include "dpnp_iface_fft.hpp"
+#include "dpnp_iface_random.hpp"
 
 #ifdef _WIN32
 #define INP_DLLEXPORT __declspec(dllexport)
@@ -67,7 +68,8 @@
 enum class QueueOptions : uint32_t
 {
     CPU_SELECTOR, /**< CPU side execution mode */
-    GPU_SELECTOR  /**< Intel GPU side execution mode */
+    GPU_SELECTOR, /**< Intel GPU side execution mode */
+    AUTO_SELECTOR /**< Automatic selection based on environment variable with @ref CPU_SELECTOR default */
 };
 
 /**
@@ -76,9 +78,9 @@ enum class QueueOptions : uint32_t
  *
  * Global SYCL queue initialization.
  *
- * @param [in]  selector       Select type @ref QueueOptions of the SYCL queue.
+ * @param [in]  selector       Select type @ref QueueOptions of the SYCL queue. Default @ref AUTO_SELECTOR
  */
-INP_DLLEXPORT void dpnp_queue_initialize_c(QueueOptions selector);
+INP_DLLEXPORT void dpnp_queue_initialize_c(QueueOptions selector = QueueOptions::AUTO_SELECTOR);
 
 /**
  * @ingroup BACKEND_API
@@ -110,16 +112,23 @@ void dpnp_memory_memcpy_c(void* dst, const void* src, size_t size_in_bytes);
  * Input array, step based, initialization procedure.
  *
  * @param [in]  start     Start of initialization sequence
- *
  * @param [in]  step      Step for initialization sequence
- *
  * @param [out] result1   Output array.
- *
  * @param [in]  size      Number of elements in input arrays.
- *
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_arange_c(size_t start, size_t step, void* result1, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief Implementation of full function
+ *
+ * @param [in]  array_in  Input one-element array.
+ * @param [out] result    Output array.
+ * @param [in]  size      Number of elements in the output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_full_c(void* array_in, void* result, const size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -128,13 +137,9 @@ INP_DLLEXPORT void dpnp_arange_c(size_t start, size_t step, void* result1, size_
  * Matrix multiplication procedure. Works with 2-D matrices
  *
  * @param [in]  array1    Input array.
- *
  * @param [in]  array2    Input array.
- *
  * @param [out] result1   Output array.
- *
  * @param [in]  size      Number of elements in input arrays.
- *
  */
 template <typename _DataType>
 INP_DLLEXPORT void
@@ -145,11 +150,8 @@ INP_DLLEXPORT void
  * @brief absolute function.
  *
  * @param [in]  array1_in    Input array.
- *
  * @param [out] result1      Output array.
- *
  * @param [in]  size         Number of elements in input arrays.
- *
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_elemwise_absolute_c(void* array1_in, void* result1, size_t size);
@@ -159,25 +161,56 @@ INP_DLLEXPORT void dpnp_elemwise_absolute_c(void* array1_in, void* result1, size
  * @brief Custom implementation of dot function
  *
  * @param [in]  array1  Input array.
- *
  * @param [in]  array2  Input array.
- *
  * @param [out] result1 Output array.
- *
  * @param [in]  size    Number of elements in input arrays.
- *
  */
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
 INP_DLLEXPORT void dpnp_dot_c(void* array1, void* array2, void* result1, size_t size);
 
 /**
  * @ingroup BACKEND_API
+ * @brief Custom implementation of cross function
+ *
+ * @param [in]  array1_in  First input array.
+ * @param [in]  array2_in  Second input array.
+ * @param [out] result1 Output array.
+ * @param [in]  size    Number of elements in input arrays.
+ *
+ */
+template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
+INP_DLLEXPORT void dpnp_cross_c(void* array1_in, void* array2_in, void* result1, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief Custom implementation of cumprod function
+ *
+ * @param [in]  array1_in  Input array.
+ * @param [out] result1    Output array.
+ * @param [in]  size       Number of elements in input arrays.
+ *
+ */
+template <typename _DataType_input, typename _DataType_output>
+INP_DLLEXPORT void dpnp_cumprod_c(void* array1_in, void* result1, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief Custom implementation of cumsum function
+ *
+ * @param [in]  array1_in  Input array.
+ * @param [out] result1    Output array.
+ * @param [in]  size       Number of elements in input arrays.
+ *
+ */
+template <typename _DataType_input, typename _DataType_output>
+INP_DLLEXPORT void dpnp_cumsum_c(void* array1_in, void* result1, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief Sum of array elements
  *
  * @param [in]  array  Input array.
- *
  * @param [in]  size    Number of input elements in `array`.
- *
  * @param [out] result Output array contains one element.
  */
 template <typename _DataType>
@@ -188,9 +221,7 @@ INP_DLLEXPORT void dpnp_sum_c(void* array, void* result, size_t size);
  * @brief Product of array elements
  *
  * @param [in]  array  Input array.
- *
  * @param [in]  size    Number of input elements in `array`.
- *
  * @param [out] result Output array contains one element.
  */
 template <typename _DataType>
@@ -201,13 +232,9 @@ INP_DLLEXPORT void dpnp_prod_c(void* array, void* result, size_t size);
  * @brief Compute the eigenvalues and right eigenvectors of a square array.
  *
  * @param [in]  array_in  Input array[size][size]
- *
  * @param [out] result1   The eigenvalues, each repeated according to its multiplicity
- *
  * @param [out] result2   The normalized (unit "length") eigenvectors
- *
  * @param [in]  size      One dimension of square [size][size] array
- *
  */
 template <typename _DataType, typename _ResultType>
 INP_DLLEXPORT void dpnp_eig_c(const void* array_in, void* result1, void* result2, size_t size);
@@ -217,11 +244,8 @@ INP_DLLEXPORT void dpnp_eig_c(const void* array_in, void* result1, void* result2
  * @brief Compute the eigenvalues of a square array.
  *
  * @param [in]  array_in  Input array[size][size]
- *
  * @param [out] result1   The eigenvalues, each repeated according to its multiplicity
- *
  * @param [in]  size      One dimension of square [size][size] array
- *
  */
 template <typename _DataType, typename _ResultType>
 INP_DLLEXPORT void dpnp_eigvals_c(const void* array_in, void* result1, size_t size);
@@ -231,11 +255,8 @@ INP_DLLEXPORT void dpnp_eigvals_c(const void* array_in, void* result1, size_t si
  * @brief math library implementation of argsort function
  *
  * @param [in]  array   Input array with data.
- *
  * @param [out] result  Output array with indeces.
- *
  * @param [in]  size    Number of elements in input arrays.
- *
  */
 template <typename _DataType, typename _idx_DataType>
 INP_DLLEXPORT void dpnp_argsort_c(void* array, void* result, size_t size);
@@ -245,11 +266,8 @@ INP_DLLEXPORT void dpnp_argsort_c(void* array, void* result, size_t size);
  * @brief math library implementation of sort function
  *
  * @param [in]  array   Input array with data.
- *
  * @param [out] result  Output array with indeces.
- *
  * @param [in]  size    Number of elements in input arrays.
- *
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_sort_c(void* array, void* result, size_t size);
@@ -258,28 +276,22 @@ INP_DLLEXPORT void dpnp_sort_c(void* array, void* result, size_t size);
  * @ingroup BACKEND_API
  * @brief math library implementation of cholesky function
  *
- * @param [in]  array   Input array with data.
- *
- * @param [out] result  Output array.
- *
- * @param [in]  shape   Shape of input array.
- *
+ * @param [in]  array       Input array with data.
+ * @param [out] result      Output array.
+ * @param [in]  size        Number of elements in input arrays.
+ * @param [in]  data_size   Last element of shape arrays.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_cholesky_c(void* array1_in, void* result1, size_t* shape);
+INP_DLLEXPORT void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const size_t data_size);
 
 /**
  * @ingroup BACKEND_API
  * @brief correlate function
  *
  * @param [in]  array1_in   Input array 1.
- *
  * @param [in]  array2_in   Input array 2.
- *
  * @param [out] result      Output array.
- *
  * @param [in]  size        Number of elements in input arrays.
- *
  */
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
 INP_DLLEXPORT void dpnp_correlate_c(void* array1_in, void* array2_in, void* result, size_t size);
@@ -289,13 +301,9 @@ INP_DLLEXPORT void dpnp_correlate_c(void* array1_in, void* array2_in, void* resu
  * @brief Custom implementation of cov function with math library and PSTL
  *
  * @param [in]  array       Input array.
- *
  * @param [out] result      Output array.
- *
  * @param [in]  nrows       Number of rows in input array.
- *
  * @param [in]  ncols       Number of columns in input array.
- *
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols);
@@ -305,29 +313,59 @@ INP_DLLEXPORT void dpnp_cov_c(void* array1_in, void* result1, size_t nrows, size
  * @brief math library implementation of det function
  *
  * @param [in]  array   Input array with data.
- *
  * @param [out] result  Output array.
- *
  * @param [in]  shape   Shape of input array.
- *
  * @param [in]  ndim    Number of elements in shape.
- *
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim);
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of diagonal function
+ *
+ * @param [in]  array   Input array with data.
+ * @param [out] result  Output array.
+ * @param [in]  offset  Offset of the diagonal from the main diagonal.
+ * @param [in]  shape   Shape of input array.
+ * @param [in]  shape   Shape of output array.
+ * @param [in]  ndim    Number of elements in shape.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_diagonal_c(
+    void* array1_in, void* result1, const size_t offset, size_t* shape, size_t* res_shape, const size_t res_ndim);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief implementation of creating filled with value array function
+ *
+ * @param [out] result  Output array.
+ * @param [in]  value   Value in array.
+ * @param [in]  size    Number of elements in array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_initval_c(void* result1, void* value, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of inv function
+ *
+ * @param [in]  array   Input array with data.
+ * @param [out] result  Output array.
+ * @param [in]  shape   Shape of input array.
+ * @param [in]  ndim    Number of elements in shape.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_inv_c(void* array1_in, void* result1, size_t* shape, size_t ndim);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of matrix_rank function
  *
  * @param [in]  array   Input array with data.
- *
  * @param [out] result  Output array.
- *
  * @param [in]  shape   Shape of input array.
- *
  * @param [in]  ndim    Number of elements in shape.
- *
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t ndim);
@@ -337,17 +375,11 @@ INP_DLLEXPORT void dpnp_matrix_rank_c(void* array1_in, void* result1, size_t* sh
  * @brief math library implementation of max function
  *
  * @param [in]  array   Input array with data.
- *
  * @param [out] result  Output array.
- *
  * @param [in]  shape   Shape of input array.
- *
  * @param [in]  ndim    Number of elements in shape.
- *
  * @param [in]  axis    Axis.
- *
  * @param [in]  naxis   Number of elements in axis.
- *
  */
 template <typename _DataType>
 INP_DLLEXPORT void
@@ -358,17 +390,11 @@ INP_DLLEXPORT void
  * @brief math library implementation of mean function
  *
  * @param [in]  array   Input array with data.
- *
  * @param [out] result  Output array.
- *
  * @param [in]  shape   Shape of input array.
- *
  * @param [in]  ndim    Number of elements in shape.
- *
  * @param [in]  axis    Axis.
- *
  * @param [in]  naxis   Number of elements in axis.
- *
  */
 template <typename _DataType, typename _ResultType>
 INP_DLLEXPORT void
@@ -379,17 +405,11 @@ INP_DLLEXPORT void
  * @brief math library implementation of median function
  *
  * @param [in]  array   Input array with data.
- *
  * @param [out] result  Output array.
- *
  * @param [in]  shape   Shape of input array.
- *
  * @param [in]  ndim    Number of elements in shape.
- *
  * @param [in]  axis    Axis.
- *
  * @param [in]  naxis   Number of elements in axis.
- *
  */
 template <typename _DataType, typename _ResultType>
 INP_DLLEXPORT void
@@ -400,17 +420,11 @@ INP_DLLEXPORT void
  * @brief math library implementation of min function
  *
  * @param [in]  array   Input array with data.
- *
  * @param [out] result  Output array.
- *
  * @param [in]  shape   Shape of input array.
- *
  * @param [in]  ndim    Number of elements in shape.
- *
  * @param [in]  axis    Axis.
- *
  * @param [in]  naxis   Number of elements in axis.
- *
  */
 template <typename _DataType>
 INP_DLLEXPORT void
@@ -421,11 +435,8 @@ INP_DLLEXPORT void
  * @brief math library implementation of argmax function
  *
  * @param [in]  array   Input array with data.
- *
  * @param [out] result  Output array with indeces.
- *
  * @param [in]  size    Number of elements in input array.
- *
  */
 template <typename _DataType, typename _idx_DataType>
 INP_DLLEXPORT void dpnp_argmax_c(void* array, void* result, size_t size);
@@ -435,11 +446,8 @@ INP_DLLEXPORT void dpnp_argmax_c(void* array, void* result, size_t size);
  * @brief math library implementation of argmin function
  *
  * @param [in]  array   Input array with data.
- *
  * @param [out] result  Output array with indeces.
- *
  * @param [in]  size    Number of elements in input array.
- *
  */
 template <typename _DataType, typename _idx_DataType>
 INP_DLLEXPORT void dpnp_argmin_c(void* array, void* result, size_t size);
@@ -449,19 +457,12 @@ INP_DLLEXPORT void dpnp_argmin_c(void* array, void* result, size_t size);
  * @brief math library implementation of std function
  *
  * @param [in]  array   Input array with data.
- *
  * @param [out] result  Output array with indeces.
- *
  * @param [in]  shape   Shape of input array.
- *
  * @param [in]  ndim    Number of elements in shape.
- *
  * @param [in]  axis    Axis.
- *
  * @param [in]  naxis   Number of elements in axis.
- *
  * @param [in]  ddof    Delta degrees of freedom.
- *
  */
 template <typename _DataType, typename _ResultType>
 INP_DLLEXPORT void dpnp_std_c(
@@ -469,22 +470,27 @@ INP_DLLEXPORT void dpnp_std_c(
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of take function
+ *
+ * @param [in]  array   Input array with data.
+ * @param [in]  indices Input array with indices.
+ * @param [out] result  Output array.
+ * @param [in]  size    Number of elements in the input array.
+ */
+template <typename _DataType, typename _IndecesType>
+INP_DLLEXPORT void dpnp_take_c(void* array, void* indices, void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of var function
  *
  * @param [in]  array   Input array with data.
- *
  * @param [out] result  Output array with indeces.
- *
  * @param [in]  shape   Shape of input array.
- *
  * @param [in]  ndim    Number of elements in shape.
- *
  * @param [in]  axis    Axis.
- *
  * @param [in]  naxis   Number of elements in axis.
- *
  * @param [in]  ddof    Delta degrees of freedom.
- *
  */
 template <typename _DataType, typename _ResultType>
 INP_DLLEXPORT void dpnp_var_c(
@@ -495,11 +501,8 @@ INP_DLLEXPORT void dpnp_var_c(
  * @brief Implementation of invert function
  *
  * @param [in]  array1_in  Input array.
- *
  * @param [out] result1    Output array.
- *
  * @param [in]  size       Number of elements in the input array.
- *
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
@@ -533,13 +536,9 @@ INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
  * @brief floor_divide function.
  *
  * @param [in]  array1_in    Input array 1.
- *
  * @param [in]  array2_in    Input array 2.
- *
  * @param [out] result1      Output array.
- *
  * @param [in]  size         Number of elements in input arrays.
- *
  */
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
 INP_DLLEXPORT void dpnp_floor_divide_c(void* array1_in, void* array2_in, void* result1, size_t size);
@@ -549,13 +548,9 @@ INP_DLLEXPORT void dpnp_floor_divide_c(void* array1_in, void* array2_in, void* r
  * @brief modf function.
  *
  * @param [in]  array1_in    Input array.
- *
  * @param [out] result1_out  Output array 1.
- *
  * @param [out] result2_out  Output array 2.
- *
  * @param [in]  size         Number of elements in input arrays.
- *
  */
 template <typename _DataType_input, typename _DataType_output>
 INP_DLLEXPORT void dpnp_modf_c(void* array1_in, void* result1_out, void* result2_out, size_t size);
@@ -565,395 +560,43 @@ INP_DLLEXPORT void dpnp_modf_c(void* array1_in, void* result1_out, void* result2
  * @brief remainder function.
  *
  * @param [in]  array1_in    Input array 1.
- *
  * @param [in]  array2_in    Input array 2.
- *
  * @param [out] result1      Output array.
- *
  * @param [in]  size         Number of elements in input arrays.
- *
  */
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
 INP_DLLEXPORT void dpnp_remainder_c(void* array1_in, void* array2_in, void* result1, size_t size);
 
 /**
  * @ingroup BACKEND_API
+ * @brief copyto function.
+ *
+ * @param [out] destination  Destination array.
+ * @param [in]  source       Source array.
+ * @param [in]  size         Number of elements in destination array.
+ */
+template <typename _DataType_dst, typename _DataType_src>
+INP_DLLEXPORT void dpnp_copyto_c(void* destination, void* source, const size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief transpose function. Permute axes of the input to the output with elements permutation.
  *
  * @param [in]  array1_in    Input array.
- *
  * @param [in]  input_shape  Input shape.
- *
  * @param [in]  result_shape Output shape.
- *
  * @param [in]  permute_axes Order of axis by it's id as it should be presented in output.
- *
+ * @param [in]  ndim         Number of elements in shapes and axes.
  * @param [out] result1      Output array.
- *
  * @param [in]  size         Number of elements in input arrays.
- *
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_elemwise_transpose_c(void* array1_in,
-                                             const std::vector<long>& input_shape,
-                                             const std::vector<long>& result_shape,
-                                             const std::vector<long>& permute_axes,
+                                             const size_t* input_shape,
+                                             const size_t* result_shape,
+                                             const size_t* permute_axes,
+                                             size_t ndim,
                                              void* result1,
                                              size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (beta distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- *
- * @param [in]  a      Alpha, shape param.
- *
- * @param [in]  b      Beta, scalefactor.
- *
- * @param [out] result Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_beta_c(void* result, _DataType a, _DataType b, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (binomial distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- *
- * @param [in]  ntrial Number of independent trials.
- *
- * @param [in]  p      Success probability p of a single trial.
- *
- * @param [out] result Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_binomial_c(void* result, int ntrial, double p, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (chi-square distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- *
- * @param [in]  df     Degrees of freedom.
- *
- * @param [out] result Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_chi_square_c(void* result, int df, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (exponential distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- *
- * @param [in]  beta   Beta, scalefactor.
- *
- * @param [out] result Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_exponential_c(void* result, _DataType beta, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (gamma distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- *
- * @param [in]  shape  The shape of the gamma distribution.
- *
- * @param [in]  scale  The scale of the gamma distribution.
- *
- * @param [out] result Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_gamma_c(void* result, _DataType shape, _DataType scale, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (gaussian continious distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- *
- * @param [in]  mean   Mean value.
- *
- * @param [in]  stddev Standard deviation.
- *
- * @param [out] result Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_gaussian_c(void* result, _DataType mean, _DataType stddev, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (hypergeometric distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- *
- * @param [in]  l      Lot size of l.
- *
- * @param [in]  s      Size of sampling without replacement.
- *
- * @param [in]  m      Number of marked elements m.
- *
- * @param [out] result Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_hypergeometric_c(void* result, int l, int s, int m, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (geometric distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- *
- * @param [in]  p      Success probability p of a trial.
- *
- * @param [out] result Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_geometric_c(void* result, float p, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (gumbel distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- *
- * @param [in]  loc    The location of the mode of the distribution.
- *
- * @param [in]  scale  The scale parameter of the distribution.
- *
- * @param [out] result Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_gumbel_c(void* result, double loc, double scale, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (laplace distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- *
- * @param [in]  loc    The position of the distribution peak.
- *
- * @param [in]  scale  The exponential decay.
- *
- * @param [out] result Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_laplace_c(void* result, double loc, double scale, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (lognormal distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- *
- * @param [in]  mean   Mean value.
- *
- * @param [in]  stddev Standard deviation.
- *
- * @param [out] result Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_lognormal_c(void* result, _DataType mean, _DataType stddev, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (multinomial distribution)
- *
- * @param [in]  size          Number of elements in `result` arrays.
- *
- * @param [in]  ntrial        Number of independent trials.
- *
- * @param [in]  p_vector      Probability vector of possible outcomes (k length).
- *
- * @param [in]  p_vector_size Length of `p_vector`.
- *
- * @param [out] result        Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void
-    dpnp_rng_multinomial_c(void* result, int ntrial, const double* p_vector, const size_t p_vector_size, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (multinomial distribution)
- * TODO
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_multivariate_normal_c(void* result,
-                                                  const int dimen,
-                                                  const double* mean_vector,
-                                                  const size_t mean_vector_size,
-                                                  const double* cov_vector,
-                                                  const size_t cov_vector_size,
-                                                  size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (negative binomial distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- *
- * @param [in]  a      The first distribution parameter a, > 0.
- *
- * @param [in]  p      The second distribution parameter p, >= 0 and <=1.
- *
- * @param [out] result Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_negative_binomial_c(void* result, double a, double p, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (normal continious distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- *
- * @param [in]  mean   Mean value.
- *
- * @param [in]  stddev Standard deviation.
- *
- * @param [out] result Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_normal_c(void* result, _DataType mean, _DataType stddev, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (poisson distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- *
- * @param [in]  lambda Distribution parameter lambda.
- *
- * @param [out] result Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_poisson_c(void* result, double lambda, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (rayleigh distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- *
- * @param [in]  scale  Distribution parameter, scalefactor.
- *
- * @param [out] result Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_rayleigh_c(void* result, _DataType scale, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (standard cauchy distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- *
- * @param [out] result Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_standard_cauchy_c(void* result, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (standard normal distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- *
- * @param [out] result Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_standard_normal_c(void* result, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (standard exponential distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- *
- * @param [out] result Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_standard_exponential_c(void* result, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (standard gamma distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- *
- * @param [in]  shape  Shape value.
- *
- * @param [out] result Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_standard_gamma_c(void* result, _DataType shape, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (uniform distribution)
- *
- * @param [in]  low    Left bound of array values.
- *
- * @param [in]  high   Right bound of array values.
- *
- * @param [in]  size   Number of elements in `result` array.
- *
- * @param [out] result Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_uniform_c(void* result, long low, long high, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of random number generator (weibull distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- *
- * @param [in]  alpha  Shape parameter of the distribution, alpha.
- *
- * @param [out] result Output array.
- *
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_weibull_c(void* result, double alpha, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief initializer for basic random number generator.
- *
- * @param [in]  seed    The seed value.
- *
- */
-INP_DLLEXPORT void dpnp_srand_c(size_t seed = 1);
 
 #endif // BACKEND_IFACE_H

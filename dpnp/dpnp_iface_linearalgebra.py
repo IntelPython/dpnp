@@ -194,21 +194,30 @@ def inner(x1, x2, **kwargs):
     return call_origin(numpy.inner, x1, x2, **kwargs)
 
 
-def kron(x1, x2, **kwargs):
+def kron(a, b):
     """
     Returns the kronecker product of two arrays.
 
     For full documentation refer to :obj:`numpy.kron`.
 
-    Limitations
-    -----------
-    Function is executed sequentially on CPU.
-
     .. seealso:: :obj:`dpnp.outer` returns the outer product of two arrays.
 
     """
 
-    return call_origin(numpy.kron, x1, x2, **kwargs)
+    if not use_origin_backend(a):
+        if dpnp.isscalar(a):
+            a = dpnp.array(a)
+        if dpnp.isscalar(b):
+            b = dpnp.array(b)
+
+        if not isinstance(a, dparray):
+            pass
+        elif not isinstance(b, dparray):
+            pass
+        else:
+            return dpnp_kron(a, b)
+
+    return call_origin(numpy.kron, a, b)
 
 
 def outer(x1, x2, **kwargs):

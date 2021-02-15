@@ -48,8 +48,8 @@ __all__ += [
 
 
 # C function pointer to the C library template functions
-ctypedef void(*fptr_custom_elemwise_transpose_1in_1out_t)(void * , dparray_shape_type & , dparray_shape_type & ,
-                                                          dparray_shape_type &, void * , size_t)
+ctypedef void(*fptr_custom_elemwise_transpose_1in_1out_t)(void * , size_t * , size_t * ,
+                                                          size_t * , size_t, void * , size_t)
 
 
 cpdef dparray dpnp_atleast_2d(dparray arr):
@@ -83,52 +83,17 @@ cpdef dparray dpnp_atleast_3d(dparray arr):
         return arr
 
 
-cpdef dparray dpnp_copyto(dparray dst, dparray src, where=True):
-    cdef dparray_shape_type shape_src = src.shape
-    cdef long size_src = src.size
-    output_shape = dparray(len(shape_src), dtype=numpy.int64)
-    for id, shape_ in enumerate(shape_src):
-        output_shape[id] = shape_
-    cdef long prod = 1
-    for i in range(len(output_shape)):
-        if output_shape[i] != 0:
-            prod *= output_shape[i]
-    result_array = [None] * prod
-    src_shape_offsets = [None] * len(shape_src)
-    acc = 1
-    for i in range(len(shape_src)):
-        ind = len(shape_src) - 1 - i
-        src_shape_offsets[ind] = acc
-        acc *= shape_src[ind]
-    output_shape_offsets = [None] * len(shape_src)
-    acc = 1
-    for i in range(len(output_shape)):
-        ind = len(output_shape) - 1 - i
-        output_shape_offsets[ind] = acc
-        acc *= output_shape[ind]
-        result_offsets = src_shape_offsets[:]  # need copy. not a reference
+cpdef dpnp_copyto(dparray dst, dparray src, where=True):
+    # Convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType dst_type = dpnp_dtype_to_DPNPFuncType(dst.dtype)
+    cdef DPNPFuncType src_type = dpnp_dtype_to_DPNPFuncType(src.dtype)
 
-    for source_idx in range(size_src):
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_COPYTO, dst_type, src_type)
 
-        # reconstruct x,y,z from linear source_idx
-        xyz = []
-        remainder = source_idx
-        for i in src_shape_offsets:
-            quotient, remainder = divmod(remainder, i)
-            xyz.append(quotient)
-
-        result_indexes = []
-        for idx, offset in enumerate(xyz):
-            result_indexes.append(offset)
-
-        result_offset = 0
-        for i, result_indexes_val in enumerate(result_indexes):
-            result_offset += (output_shape_offsets[i] * result_indexes_val)
-
-        src_elem = src.item(source_idx)
-        dst[source_idx] = src_elem
-
-    return dst
+    cdef fptr_1in_1out_t func = <fptr_1in_1out_t > kernel_data.ptr
+    # Call FPTR function
+    func(dst.get_data(), src.get_data(), dst.size)
 
 
 cpdef dparray dpnp_expand_dims(dparray in_array, axis):
@@ -212,7 +177,8 @@ cpdef dparray dpnp_transpose(dparray array1, axes=None):
 
     cdef fptr_custom_elemwise_transpose_1in_1out_t func = <fptr_custom_elemwise_transpose_1in_1out_t > kernel_data.ptr
     # call FPTR function
-    func(array1.get_data(), input_shape, result_shape, permute_axes, result.get_data(), array1.size)
+    func(array1.get_data(), < size_t * > input_shape.data(), < size_t * > result_shape.data(),
+         < size_t * > permute_axes.data(), input_shape_size, result.get_data(), array1.size)
 
     return result
 

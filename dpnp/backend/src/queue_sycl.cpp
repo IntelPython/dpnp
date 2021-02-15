@@ -35,6 +35,42 @@ cl::sycl::queue* backend_sycl::queue = nullptr;
 #endif
 mkl_rng::mt19937* backend_sycl::rng_engine = nullptr;
 
+static void show_available_sycl_devices()
+{
+    const std::vector<cl::sycl::device> devices = cl::sycl::device::get_devices();
+
+    std::cout << "Available SYCL devices:" << std::endl;
+    for (std::vector<cl::sycl::device>::const_iterator it = devices.cbegin(); it != devices.cend(); ++it)
+    {
+        std::cout
+            // not yet implemented error << " " << it->has(sycl::aspect::usm_shared_allocations)  << " "
+            << " - id=" << it->get_info<cl::sycl::info::device::vendor_id>()
+            << ", type=" << static_cast<pi_uint64>(it->get_info<cl::sycl::info::device::device_type>())
+            << ", gws=" << it->get_info<cl::sycl::info::device::max_work_group_size>()
+            << ", cu=" << it->get_info<cl::sycl::info::device::max_compute_units>()
+            << ", name=" << it->get_info<cl::sycl::info::device::name>() << std::endl;
+    }
+}
+
+static cl::sycl::device get_default_sycl_device()
+{
+    int dpnpc_queue_gpu = 0;
+    cl::sycl::device dev = cl::sycl::device(cl::sycl::cpu_selector());
+
+    const char* dpnpc_queue_gpu_var = getenv("DPNPC_QUEUE_GPU");
+    if (dpnpc_queue_gpu_var != NULL)
+    {
+        dpnpc_queue_gpu = atoi(dpnpc_queue_gpu_var);
+    }
+
+    if (dpnpc_queue_gpu)
+    {
+        dev = cl::sycl::device(cl::sycl::gpu_selector());
+    }
+
+    return dev;
+}
+
 /**
  * Function push the SYCL kernels to be linked (final stage of the compilation) for the current queue
  *
@@ -89,13 +125,21 @@ void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
 
     cl::sycl::device dev;
 
+#if not defined(NDEBUG)
+    show_available_sycl_devices();
+#endif
+
     if (QueueOptions::CPU_SELECTOR == selector)
     {
         dev = cl::sycl::device(cl::sycl::cpu_selector());
     }
-    else
+    else if (QueueOptions::GPU_SELECTOR == selector)
     {
         dev = cl::sycl::device(cl::sycl::gpu_selector());
+    }
+    else
+    {
+        dev = get_default_sycl_device();
     }
 
     queue = new cl::sycl::queue(dev, exception_handler);
@@ -150,9 +194,4 @@ void dpnp_queue_initialize_c(QueueOptions selector)
 size_t dpnp_queue_is_cpu_c()
 {
     return backend_sycl::backend_sycl_is_cpu();
-}
-
-void dpnp_srand_c(size_t seed)
-{
-    backend_sycl::backend_sycl_rng_engine_init(seed);
 }

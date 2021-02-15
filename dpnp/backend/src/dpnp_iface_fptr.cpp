@@ -134,9 +134,11 @@ static func_map_t func_map_init()
 {
     func_map_t fmap;
 
+    func_map_init_arraycreation(fmap);
     func_map_init_bitwise(fmap);
     func_map_init_elemwise(fmap);
     func_map_init_fft_func(fmap);
+    func_map_init_indexing_func(fmap);
     func_map_init_linalg(fmap);
     func_map_init_linalg_func(fmap);
     func_map_init_manipulation(fmap);
@@ -146,11 +148,6 @@ static func_map_t func_map_init()
     func_map_init_searching(fmap);
     func_map_init_sorting(fmap);
     func_map_init_statistics(fmap);
-
-    fmap[DPNPFuncName::DPNP_FN_ABSOLUTE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_elemwise_absolute_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_ABSOLUTE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_elemwise_absolute_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_ABSOLUTE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_elemwise_absolute_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_ABSOLUTE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_elemwise_absolute_c<double>};
 
     return fmap;
 };

@@ -39,15 +39,35 @@ from dpnp.dpnp_iface_counting import count_nonzero
 
 
 __all__ += [
+    "dpnp_choose",
     "dpnp_diag_indices",
     "dpnp_diagonal",
+    "dpnp_fill_diagonal",
+    "dpnp_indices",
     "dpnp_nonzero",
+    "dpnp_place",
     "dpnp_put",
+    "dpnp_put_along_axis",
+    "dpnp_putmask",
+    "dpnp_select",
+    "dpnp_take",
+    "dpnp_take_along_axis",
     "dpnp_tril_indices",
     "dpnp_tril_indices_from",
     "dpnp_triu_indices",
     "dpnp_triu_indices_from"
 ]
+
+
+ctypedef void(*custom_indexing_2in_1out_func_ptr_t)(void *, void * , void * , size_t)
+ctypedef void(*custom_indexing_2in_1out_func_ptr_t_)(void * , void * , const size_t, size_t * , size_t * , const size_t)
+
+
+cpdef dparray dpnp_choose(input, choices):
+    res_array = dparray(len(input), dtype=choices[0].dtype)
+    for i in range(len(input)):
+        res_array[i] = (choices[input[i]])[i]
+    return res_array
 
 
 cpdef tuple dpnp_diag_indices(n, ndim):
@@ -76,60 +96,61 @@ cpdef dparray dpnp_diagonal(dparray input, offset=0):
     else:
         res_shape[-1] = n + offset
 
-    res_size = 1
-    for i in range(len(res_shape)):
-        res_size *= res_shape[i]
+    res_ndim = len(res_shape)
 
-    xyz = {}
-    if input.ndim > 2:
-        for i in range(res_shape[0]):
-            xyz[i] = [i]
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
-        index = 1
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DIAGONAL, param1_type, param1_type)
 
-        while index < len(res_shape) - 1:
-            shape_element = res_shape[index]
-            new_shape_array = {}
-            ind = 0
-            for i in range(shape_element):
-                for j in range(len(xyz)):
-                    new_shape = []
-                    list_ind = xyz[j]
-                    for k in range(len(list_ind)):
-                        new_shape.append(list_ind[k])
-                    new_shape.append(i)
-                    new_shape_array[ind] = new_shape
-                    ind += 1
-            for k in range(len(new_shape_array)):
-                if k < len(xyz):
-                    del xyz[k]
-                list_ind = new_shape_array[k]
-                xyz[k] = list_ind
-            index += 1
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray(res_shape, dtype=result_type)
 
-    result = dparray(res_shape, dtype=input.dtype)
-    for i in range(res_shape[-1]):
-        if len(xyz) != 0:
-            for j in range(len(xyz)):
-                ind_input_ = [i, i + offset]
-                ind_output_ = []
-                ind_list = xyz[j]
-                for k in range(len(ind_list)):
-                    ind_input_.append(ind_list[k])
-                    ind_output_.append(ind_list[k])
-                ind_output_.append(ind_input_[0])
-                ind_input = tuple(ind_input_)
-                ind_output = tuple(ind_output_)
-                result[ind_output] = input[ind_input]
-        else:
-            ind_input_ = [i, i + offset]
-            ind_output_ = []
-            ind_output_.append(ind_input_[0])
-            ind_input = tuple(ind_input_)
-            ind_output = tuple(ind_output_)
-            result[ind_output] = input[ind_input]
+    cdef custom_indexing_2in_1out_func_ptr_t_ func = <custom_indexing_2in_1out_func_ptr_t_ > kernel_data.ptr
+
+    func(input.get_data(), result.get_data(), offset, < size_t * > input._dparray_shape.data(), < size_t * > result._dparray_shape.data(), res_ndim)
 
     return result
+
+
+cpdef dpnp_fill_diagonal(dparray input, val):
+    for i in range(min(input.shape)):
+        ind_list = [i] * input.ndim
+        ind = tuple(ind_list)
+        input[ind] = val
+
+
+cpdef dparray dpnp_indices(dimensions):
+    len_dimensions = len(dimensions)
+    res_shape = []
+    res_shape.append(len_dimensions)
+    for i in range(len_dimensions):
+        res_shape.append(dimensions[i])
+
+    result = []
+    if len_dimensions == 1:
+        res = []
+        for i in range(dimensions[0]):
+            res.append(i)
+        result.append(res)
+    else:
+        res1 = []
+        for i in range(dimensions[0]):
+            res = []
+            for j in range(dimensions[1]):
+                res.append(i)
+            res1.append(res)
+        result.append(res1)
+
+        res2 = []
+        for i in range(dimensions[0]):
+            res = []
+            for j in range(dimensions[1]):
+                res.append(j)
+            res2.append(res)
+        result.append(res2)
+
+    dpnp_result = dpnp.array(result)
+    return dpnp_result
 
 
 cpdef tuple dpnp_nonzero(dparray in_array1):
@@ -154,6 +175,15 @@ cpdef tuple dpnp_nonzero(dparray in_array1):
     return result
 
 
+cpdef dpnp_place(dparray arr, dparray mask, vals):
+    cpdef int counter = 0
+    cpdef int vals_len = len(vals)
+    for i in range(arr.size):
+        if mask[i]:
+            arr[i] = vals[counter % vals_len]
+            counter += 1
+
+
 cpdef dpnp_put(input, ind, v):
     ind_is_list = isinstance(ind, list)
     for i in range(input.size):
@@ -168,6 +198,198 @@ cpdef dpnp_put(input, ind, v):
             if i == ind:
                 input[i] = v
                 in_ind = 1
+
+
+cpdef dpnp_put_along_axis(dparray arr, dparray indices, values, axis):
+    cdef long size_arr = arr.size
+    cdef dparray_shape_type shape_arr = arr.shape
+    cdef long size_indices = indices.size
+
+    if axis != arr.ndim - 1:
+        output_shape = dparray(len(shape_arr) - 1, dtype=numpy.int64)
+        ind = 0
+        for id, shape_axis in enumerate(shape_arr):
+            if id != axis:
+                output_shape[ind] = shape_axis
+                ind += 1
+
+        prod = 1
+        for i in range(len(output_shape)):
+            if output_shape[i] != 0:
+                prod *= output_shape[i]
+
+        ind_array = [None] * prod
+        arr_shape_offsets = [None] * len(shape_arr)
+        acc = 1
+
+        for i in range(len(shape_arr)):
+            ind = len(shape_arr) - 1 - i
+            arr_shape_offsets[ind] = acc
+            acc *= shape_arr[ind]
+
+        output_shape_offsets = [None] * len(shape_arr)
+        acc = 1
+
+        for i in range(len(output_shape)):
+            ind = len(output_shape) - 1 - i
+            output_shape_offsets[ind] = acc
+            acc *= output_shape[ind]
+
+        for source_idx in range(size_arr):
+
+            # reconstruct x,y,z from linear source_idx
+            xyz = []
+            remainder = source_idx
+            for i in arr_shape_offsets:
+                quotient, remainder = divmod(remainder, i)
+                xyz.append(quotient)
+
+            # extract result axis
+            result_axis = []
+            for idx, offset in enumerate(xyz):
+                if idx != axis:
+                    result_axis.append(offset)
+
+            # Construct result offset
+            result_offset = 0
+            for i, result_axis_val in enumerate(result_axis):
+                result_offset += (output_shape_offsets[i] * result_axis_val)
+
+            arr_elem = arr.item(source_idx)
+            if ind_array[result_offset] is None:
+                ind_array[result_offset] = 0
+            else:
+                ind_array[result_offset] += 1
+
+            if ind_array[result_offset] % size_indices == indices[result_offset % size_indices]:
+                arr[source_idx] = values
+
+    else:
+        for i in range(size_arr):
+            ind = size_indices * (i // size_indices) + indices[i % size_indices]
+            arr[ind] = values
+
+
+cpdef dpnp_putmask(dparray arr, dparray mask, dparray values):
+    cpdef int values_size = values.size
+    for i in range(arr.size):
+        if mask[i]:
+            arr[i] = values[i % values_size]
+
+
+cpdef dparray dpnp_select(condlist, choicelist, default):
+    size_ = condlist[0].size
+    res_array = dparray(size_, dtype=choicelist[0].dtype)
+    pass_val = {a: default for a in range(size_)}
+    for i in range(len(condlist)):
+        for j in range(size_):
+            if (condlist[i])[j]:
+                res_array[j] = (choicelist[i])[j]
+                pass_val.pop(j)
+
+    for ind, val in pass_val.items():
+        res_array[ind] = val
+
+    return res_array.reshape(condlist[0].shape)
+
+
+cpdef dparray dpnp_take(dparray input, dparray indices):
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TAKE, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray(indices.shape, dtype=result_type)
+
+    cdef custom_indexing_2in_1out_func_ptr_t func = <custom_indexing_2in_1out_func_ptr_t > kernel_data.ptr
+
+    func(input.get_data(), indices.get_data(), result.get_data(), indices.size)
+
+    return result
+
+
+cpdef dparray dpnp_take_along_axis(dparray arr, dparray indices, int axis):
+    cdef long size_arr = arr.size
+    cdef dparray_shape_type shape_arr = arr.shape
+    cdef long size_indices = indices.size
+    res_type = arr.dtype
+
+    if axis != arr.ndim - 1:
+        res_shape_list = list(shape_arr)
+        res_shape_list[axis] = 1
+        res_shape = tuple(res_shape_list)
+
+        output_shape = dparray(len(shape_arr) - 1, dtype=numpy.int64)
+        ind = 0
+        for id, shape_axis in enumerate(shape_arr):
+            if id != axis:
+                output_shape[ind] = shape_axis
+                ind += 1
+
+        prod = 1
+        for i in range(len(output_shape)):
+            if output_shape[i] != 0:
+                prod *= output_shape[i]
+
+        result_array = [None] * prod
+        ind_array = [None] * prod
+        arr_shape_offsets = [None] * len(shape_arr)
+        acc = 1
+
+        for i in range(len(shape_arr)):
+            ind = len(shape_arr) - 1 - i
+            arr_shape_offsets[ind] = acc
+            acc *= shape_arr[ind]
+
+        output_shape_offsets = [None] * len(shape_arr)
+        acc = 1
+
+        for i in range(len(output_shape)):
+            ind = len(output_shape) - 1 - i
+            output_shape_offsets[ind] = acc
+            acc *= output_shape[ind]
+            result_offsets = arr_shape_offsets[:]  # need copy. not a reference
+        result_offsets[axis] = 0
+
+        for source_idx in range(size_arr):
+
+            # reconstruct x,y,z from linear source_idx
+            xyz = []
+            remainder = source_idx
+            for i in arr_shape_offsets:
+                quotient, remainder = divmod(remainder, i)
+                xyz.append(quotient)
+
+            # extract result axis
+            result_axis = []
+            for idx, offset in enumerate(xyz):
+                if idx != axis:
+                    result_axis.append(offset)
+
+            # Construct result offset
+            result_offset = 0
+            for i, result_axis_val in enumerate(result_axis):
+                result_offset += (output_shape_offsets[i] * result_axis_val)
+
+            arr_elem = arr.item(source_idx)
+            if ind_array[result_offset] is None:
+                ind_array[result_offset] = 0
+            else:
+                ind_array[result_offset] += 1
+
+            if ind_array[result_offset] % size_indices == indices[result_offset % size_indices]:
+                result_array[result_offset] = arr_elem
+
+        dpnp_array = dpnp.array(result_array, dtype=res_type)
+        dpnp_result_array = dpnp_array.reshape(res_shape)
+        return dpnp_result_array
+
+    else:
+        result_array = dparray(shape_arr, dtype=res_type)
+        for i in range(size_arr):
+            ind = size_indices * (i // size_indices) + indices[i % size_indices]
+            result_array[i] = arr[ind]
+        return result_array
 
 
 cpdef tuple dpnp_tril_indices(n, k=0, m=None):

@@ -57,6 +57,7 @@ __all__ = [
     "conj",
     "conjugate",
     "copysign",
+    "cross",
     "cumprod",
     "cumsum",
     "diff",
@@ -68,6 +69,7 @@ __all__ = [
     "fmax",
     "fmin",
     "fmod",
+    "gradient",
     "maximum",
     "minimum",
     "mod",
@@ -327,6 +329,55 @@ def copysign(x1, x2, **kwargs):
     return call_origin(numpy.copysign, x1, x2, **kwargs)
 
 
+def cross(x1, x2, axisa=-1, axisb=-1, axisc=-1, axis=None):
+    """
+    Return the cross product of two (arrays of) vectors.
+
+    For full documentation refer to :obj:`numpy.cross`.
+
+    Limitations
+    -----------
+        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Sizes of input arrays are limited by ``x1.size == 3 and x2.size == 3``.
+        Shapes of input arrays are limited by ``x1.shape == (3,) and x2.shape == (3,)``.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = [1, 2, 3]
+    >>> y = [4, 5, 6]
+    >>> result = np.cross(x, y)
+    >>> [x for x in result]
+    [-3,  6, -3]
+
+    """
+
+    if not use_origin_backend(x1):
+        if not isinstance(x1, dparray):
+            pass
+        elif not isinstance(x2, dparray):
+            pass
+        elif x1.size != 3 or x2.size != 3:
+            pass
+        elif x1.shape != (3,) or x2.shape != (3,):
+            pass
+        elif axisa != -1:
+            pass
+        elif axisb != -1:
+            pass
+        elif axisc != -1:
+            pass
+        elif axis is not None:
+            pass
+        else:
+            return dpnp_cross(x1, x2)
+
+    return call_origin(numpy.cross, x1, x2, axisa, axisb, axisc, axis)
+
+
 def cumprod(x1, **kwargs):
     """
     Return the cumulative product of elements along a given axis.
@@ -477,7 +528,8 @@ def ediff1d(x1, to_end=None, to_begin=None):
 
     Limitations
     -----------
-        Parameter ``x1``, ``to_begin``, ``to_end`` are supported as :obj:`dpnp.ndarray`.
+        Parameter ``x1``is supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``to_end`` and ``to_begin`` are currently supported only with default values `None`.
         Otherwise the function will be executed sequentially on CPU.
         Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -490,9 +542,6 @@ def ediff1d(x1, to_end=None, to_begin=None):
     >>> result = np.ediff1d(a)
     >>> [x for x in result]
     [1, 2, 3, -7]
-    >>> result = np.ediff1d(a, to_begin=np.array([-99, -88]), to_end=np.array([88, 99]))
-    >>> [x for x in result]
-    [-99, -88, 1, 2, 3, -7, 88, 99]
     >>> b = np.array([[1, 2, 4], [1, 6, 24]])
     >>> result = np.ediff1d(b)
     >>> [x for x in result]
@@ -500,22 +549,8 @@ def ediff1d(x1, to_end=None, to_begin=None):
 
     """
 
-    if not use_origin_backend(x1):
-
-        if not isinstance(x1, dparray):
-            pass
-        elif not isinstance(to_end, dparray) and to_end is not None:
-            pass
-        elif not isinstance(to_begin, dparray) and to_begin is not None:
-            pass
-        else:
-
-            if to_end is None:
-                to_end = dpnp.empty(0, dtype=x1.dtype)
-            if to_begin is None:
-                to_begin = dpnp.empty(0, dtype=x1.dtype)
-
-            return dpnp_ediff1d(x1, to_end=to_end, to_begin=to_begin)
+    if not use_origin_backend(x1) and isinstance(x1, dparray):
+        return dpnp_ediff1d(x1)
 
     return call_origin(numpy.ediff1d, x1, to_end=to_end, to_begin=to_begin)
 
@@ -745,6 +780,48 @@ def fmod(x1, x2, **kwargs):
     return call_origin(numpy.fmod, x1, x2, **kwargs)
 
 
+def gradient(y1, *varargs, **kwargs):
+    """
+    Return the gradient of an array.
+
+    For full documentation refer to :obj:`numpy.gradient`.
+
+    Limitations
+    -----------
+        Parameter ``y1`` is supported as :obj:`dpnp.ndarray`.
+        Argument ``varargs[0]`` is supported as `int`.
+        Keyword arguments ``kwargs`` are currently unsupported.
+        Otherwise the functions will be executed sequentially on CPU.
+        Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Example
+    -------
+    >>> import dpnp as np
+    >>> y = np.array([1, 2, 4, 7, 11, 16], dtype=float)
+    >>> result = np.gradient(y)
+    >>> [x for x in result]
+    [1.0, 1.5, 2.5, 3.5, 4.5, 5.0]
+    >>> result = np.gradient(y, 2)
+    >>> [x for x in result]
+    [0.5, 0.75, 1.25, 1.75, 2.25, 2.5]
+
+    """
+    if not use_origin_backend(y1) and not kwargs:
+        if not isinstance(y1, dparray):
+            pass
+        elif len(varargs) > 1:
+            pass
+        elif len(varargs) == 1 and not isinstance(varargs[0], int):
+            pass
+        else:
+            if len(varargs) == 0:
+                return dpnp_gradient(y1)
+
+            return dpnp_gradient(y1, varargs[0])
+
+    return call_origin(numpy.gradient, y1, *varargs, **kwargs)
+
+
 def maximum(x1, x2, **kwargs):
     """
     Element-wise maximum of array elements.
@@ -916,16 +993,24 @@ def multiply(x1, x2, **kwargs):
     is_x1_scalar = dpnp.isscalar(x1)
     is_x2_scalar = dpnp.isscalar(x2)
 
-    if (not use_origin_backend(x1) and (is_x1_dparray or is_x1_scalar)) and \
-            (not use_origin_backend(x2) and (is_x2_dparray or is_x2_scalar)) and \
-            not (is_x1_scalar and is_x2_scalar) and not kwargs:
-
-        if is_x1_scalar:
-            return dpnp_multiply(x2, x1)
+    if not use_origin_backend(x1):
+        if kwargs:
+            pass
+        elif not (is_x1_dparray or is_x1_scalar):
+            pass
+        elif not (is_x2_dparray or is_x2_scalar):
+            pass
+        elif is_x1_scalar and is_x2_scalar:
+            pass
+        elif (is_x1_dparray and is_x2_dparray) and (x1.size != x2.size):
+            pass
+        elif (is_x1_dparray and is_x2_dparray) and (x1.shape != x2.shape):
+            pass
         else:
-            if is_x1_dparray and is_x2_dparray:
-                if (x1.size == x2.size) and (x1.shape == x2.shape):
-                    return dpnp_multiply(x1, x2)
+            if is_x1_scalar:
+                return dpnp_multiply(x2, x1)
+            else:
+                return dpnp_multiply(x1, x2)
 
     return call_origin(numpy.multiply, x1, x2, **kwargs)
 
@@ -964,7 +1049,7 @@ def nancumprod(x1, **kwargs):
         if not isinstance(x1, dparray):
             pass
         else:
-            return dpnp_cumprod(x1, usenan=True)
+            return dpnp_nancumprod(x1)
 
     return call_origin(numpy.nancumprod, x1, **kwargs)
 
@@ -1002,7 +1087,7 @@ def nancumsum(x1, **kwargs):
         if not isinstance(x1, dparray):
             pass
         else:
-            return dpnp_cumsum(x1, usenan=True)
+            return dpnp_nancumsum(x1)
 
     return call_origin(numpy.nancumsum, x1, **kwargs)
 
@@ -1095,8 +1180,8 @@ def negative(x1, **kwargs):
 
     is_x1_dparray = isinstance(x1, dparray)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
-        return dpnp_negative(x1, x2)
+    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
+        return dpnp_negative(x1)
 
     return call_origin(numpy.negative, x1, **kwargs)
 
@@ -1133,17 +1218,19 @@ def power(x1, x2, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-    is_x2_dparray = isinstance(x2, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
-        if (x1.size != x2.size):
-            checker_throw_value_error("power", "size", x1.size, x2.size)
-
-        if (x1.shape != x2.shape):
-            checker_throw_value_error("power", "shape", x1.shape, x2.shape)
-
-        return dpnp_power(x1, x2)
+    if not use_origin_backend(x1):
+        if kwargs:
+            pass
+        elif not isinstance(x1, dparray):
+            pass
+        elif not isinstance(x2, dparray) and not dpnp.isscalar(x2):
+            pass
+        elif isinstance(x2, dparray) and x1.size != x2.size:
+            pass
+        elif isinstance(x2, dparray) and x1.shape != x2.shape:
+            pass
+        else:
+            return dpnp_power(x1, x2)
 
     return call_origin(numpy.power, x1, x2, **kwargs)
 

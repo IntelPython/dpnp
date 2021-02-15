@@ -66,13 +66,17 @@ try:
 
     _dpctrl_include_dir = str(os.path.abspath(dpctl.get_include()))
     _dpctrl_library_dir = str(os.path.abspath(os.path.join(dpctl.get_include(), "..")))
-    if IS_LIN:
-        _dpctrl_exists = "ON"
+    _dpctrl_exists = "ON"
 except ImportError:
     """
     Set local SYCL queue handler set by default in CmakeList.txt
     """
     pass
+
+"""
+Detect enabling DPNP backend tests
+"""
+_dpnp_backend_tests_enable = os.environ.get('DPNP_BACKEND_TESTS_ENABLE', None)
 
 
 """
@@ -96,8 +100,12 @@ class custom_build_cmake_clib(build_clib.build_clib):
         config = "Debug" if self.debug else "Release"
 
         cmake_generator = str()
+        enable_tests = "OFF"
+
         if IS_WIN:
             cmake_generator = "-GNinja"
+        if _dpnp_backend_tests_enable is not None:
+            enable_tests = "ON"
 
         cmake_args = [
             cmake_generator,
@@ -110,10 +118,17 @@ class custom_build_cmake_clib(build_clib.build_clib):
             "-DDPNP_SYCL_QUEUE_MGR_ENABLE:BOOL=" + _dpctrl_exists,
             "-DDPNP_QUEUEMGR_INCLUDE_DIR=" + _dpctrl_include_dir,
             "-DDPNP_QUEUEMGR_LIB_DIR=" + _dpctrl_library_dir,
-            "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON"
+            "-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON",
+            "-DDPNP_BACKEND_TESTS:BOOL=" + enable_tests
         ]
+
+        # didn't find how to add it inside cmake, that is why this is here
+        import multiprocessing
+        cpu_count = multiprocessing.cpu_count()
+        # possible that jobs count must be +-1 against CPUs count
+        jobs = "-j" + str(cpu_count)
 
         self.spawn(["cmake"] + cmake_args + [backend_directory])
         if not self.dry_run:
-            self.spawn(["cmake", "--build", abs_build_temp_path])
+            self.spawn(["cmake", "--build", abs_build_temp_path, jobs])
             self.spawn(["cmake", "--install", abs_build_temp_path])

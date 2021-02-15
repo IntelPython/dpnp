@@ -51,17 +51,25 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_CEIL
         DPNP_FN_CHOLESKY
         DPNP_FN_CONJIGUATE
+        DPNP_FN_COPY
         DPNP_FN_COPYSIGN
+        DPNP_FN_COPYTO
         DPNP_FN_CORRELATE
         DPNP_FN_COS
         DPNP_FN_COSH
         DPNP_FN_COV
+        DPNP_FN_CROSS
+        DPNP_FN_CUMPROD
+        DPNP_FN_CUMSUM
         DPNP_FN_DEGREES
         DPNP_FN_DET
+        DPNP_FN_DIAGONAL
         DPNP_FN_DIVIDE
         DPNP_FN_DOT
+        DPNP_FN_EDIFF1D
         DPNP_FN_EIG
         DPNP_FN_EIGVALS
+        DPNP_FN_ERF
         DPNP_FN_EXP
         DPNP_FN_EXP2
         DPNP_FN_EXPM1
@@ -70,8 +78,12 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FLOOR
         DPNP_FN_FLOOR_DIVIDE
         DPNP_FN_FMOD
+        DPNP_FN_FULL
         DPNP_FN_HYPOT
+        DPNP_FN_INITVAL
+        DPNP_FN_INV
         DPNP_FN_INVERT
+        DPNP_FN_KRON
         DPNP_FN_LEFT_SHIFT
         DPNP_FN_LOG
         DPNP_FN_LOG10
@@ -89,6 +101,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_MULTIPLY
         DPNP_FN_POWER
         DPNP_FN_PROD
+        DPNP_FN_QR
         DPNP_FN_RADIANS
         DPNP_FN_REMAINDER
         DPNP_FN_RECIP
@@ -97,25 +110,36 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_BINOMIAL
         DPNP_FN_RNG_CHISQUARE
         DPNP_FN_RNG_EXPONENTIAL
+        DPNP_FN_RNG_F
         DPNP_FN_RNG_GAMMA
         DPNP_FN_RNG_GAUSSIAN
         DPNP_FN_RNG_GEOMETRIC
         DPNP_FN_RNG_GUMBEL
         DPNP_FN_RNG_HYPERGEOMETRIC
         DPNP_FN_RNG_LAPLACE
+        DPNP_FN_RNG_LOGISTIC
         DPNP_FN_RNG_LOGNORMAL
         DPNP_FN_RNG_MULTINOMIAL
         DPNP_FN_RNG_MULTIVARIATE_NORMAL
         DPNP_FN_RNG_NEGATIVE_BINOMIAL
+        DPNP_FN_RNG_NONCENTRAL_CHISQUARE
         DPNP_FN_RNG_NORMAL
+        DPNP_FN_RNG_PARETO
         DPNP_FN_RNG_POISSON
+        DPNP_FN_RNG_POWER
         DPNP_FN_RNG_RAYLEIGH
+        DPNP_FN_RNG_SRAND
         DPNP_FN_RNG_STANDARD_CAUCHY
         DPNP_FN_RNG_STANDARD_EXPONENTIAL
         DPNP_FN_RNG_STANDARD_GAMMA
         DPNP_FN_RNG_STANDARD_NORMAL
+        DPNP_FN_RNG_STANDARD_T
+        DPNP_FN_RNG_TRIANGULAR
         DPNP_FN_RNG_UNIFORM
+        DPNP_FN_RNG_VONMISES
+        DPNP_FN_RNG_WALD
         DPNP_FN_RNG_WEIBULL
+        DPNP_FN_RNG_ZIPF
         DPNP_FN_SIGN
         DPNP_FN_SIN
         DPNP_FN_SINH
@@ -125,6 +149,8 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_STD
         DPNP_FN_SUBTRACT
         DPNP_FN_SUM
+        DPNP_FN_SVD
+        DPNP_FN_TAKE
         DPNP_FN_TAN
         DPNP_FN_TANH
         DPNP_FN_TRANSPOSE
@@ -139,28 +165,30 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncType":  # need this na
         DPNP_FT_FLOAT
         DPNP_FT_DOUBLE
         DPNP_FT_CMPLX128
+        DPNP_FT_BOOL
 
 cdef extern from "dpnp_iface_fptr.hpp":
     struct DPNPFuncData:
         DPNPFuncType return_type
         void * ptr
 
-    DPNPFuncData get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type)
+    DPNPFuncData get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type) except +
 
 
 cdef extern from "dpnp_iface.hpp" namespace "QueueOptions":  # need this namespace for Enum import
     cdef enum QueueOptions "QueueOptions":
         CPU_SELECTOR
         GPU_SELECTOR
+        AUTO_SELECTOR
 
 cdef extern from "dpnp_iface.hpp":
     void dpnp_queue_initialize_c(QueueOptions selector)
     size_t dpnp_queue_is_cpu_c()
 
-    char * dpnp_memory_alloc_c(size_t size_in_bytes)
+    char * dpnp_memory_alloc_c(size_t size_in_bytes) except +
     void dpnp_memory_free_c(void * ptr)
     void dpnp_memory_memcpy_c(void * dst, const void * src, size_t size_in_bytes)
-    void dpnp_srand_c(size_t seed)
+    void dpnp_rng_srand_c(size_t seed)
 
 
 # C function pointer to the C library template functions
@@ -197,11 +225,11 @@ cpdef dparray dpnp_right_shift(dparray array1, dparray array2)
 Logic functions
 """
 cpdef dparray dpnp_equal(dparray array1, input2)
-cpdef dparray dpnp_greater(dparray input1, dparray input2)
-cpdef dparray dpnp_greater_equal(dparray input1, dparray input2)
+cpdef dparray dpnp_greater(dparray input1, input2)
+cpdef dparray dpnp_greater_equal(dparray input1, input2)
 cpdef dparray dpnp_isclose(dparray input1, input2, double rtol=*, double atol=*, cpp_bool equal_nan=*)
-cpdef dparray dpnp_less(dparray input1, dparray input2)
-cpdef dparray dpnp_less_equal(dparray input1, dparray input2)
+cpdef dparray dpnp_less(dparray input1, input2)
+cpdef dparray dpnp_less_equal(dparray input1, input2)
 cpdef dparray dpnp_logical_and(dparray input1, dparray input2)
 cpdef dparray dpnp_logical_not(dparray input1)
 cpdef dparray dpnp_logical_or(dparray input1, dparray input2)
@@ -236,7 +264,7 @@ cpdef dparray dpnp_maximum(dparray array1, dparray array2)
 cpdef dparray dpnp_minimum(dparray array1, dparray array2)
 cpdef dparray dpnp_multiply(dparray array1, array2)
 cpdef dparray dpnp_negative(dparray array1)
-cpdef dparray dpnp_power(dparray array1, dparray array2)
+cpdef dparray dpnp_power(dparray array1, array2)
 cpdef dparray dpnp_remainder(dparray array1, dparray array2)
 cpdef dparray dpnp_sin(dparray array1)
 cpdef dparray dpnp_subtract(dparray array1, dparray array2)

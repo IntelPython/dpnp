@@ -47,6 +47,7 @@ __all__ += [
     "dpnp_ceil",
     "dpnp_conjugate",
     "dpnp_copysign",
+    "dpnp_cross",
     "dpnp_cumprod",
     "dpnp_cumsum",
     "dpnp_diff",
@@ -56,11 +57,14 @@ __all__ += [
     "dpnp_floor",
     "dpnp_floor_divide",
     "dpnp_fmod",
+    "dpnp_gradient",
     'dpnp_hypot',
     "dpnp_maximum",
     "dpnp_minimum",
     "dpnp_modf",
     "dpnp_multiply",
+    "dpnp_nancumprod",
+    "dpnp_nancumsum",
     "dpnp_nanprod",
     "dpnp_nansum",
     "dpnp_negative",
@@ -133,54 +137,32 @@ cpdef dparray dpnp_copysign(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_COPYSIGN, x1, x2, x1.shape)
 
 
-cpdef dparray dpnp_cumprod(dparray x1, bint usenan=False):
-
-    types_map = {
-        dpnp.int32: dpnp.int64,
-        dpnp.int64: dpnp.int64,
-        dpnp.float32: dpnp.float32,
-        dpnp.float64: dpnp.float64
-    }
-
-    res_type = types_map[x1.dtype.type]
-
-    cdef dparray result = dparray(x1.size, dtype=res_type)
-
-    cur_res = 1
-
-    for i in range(result.size):
-
-        if not usenan or not dpnp.isnan(x1[i]):
-            cur_res *= x1[i]
-
-        result._setitem_scalar(i, cur_res)
-
-    return result
+cpdef dparray dpnp_cross(dparray x1, dparray x2):
+    return call_fptr_2in_1out(DPNP_FN_CROSS, x1, x2, x1.shape)
 
 
-cpdef dparray dpnp_cumsum(dparray x1, bint usenan=False):
+cpdef dparray dpnp_cumprod(dparray x1):
+    # instead of x1.shape, (x1.size, ) is passed to the function
+    # due to the following:
+    # >>> import numpy
+    # >>> a = numpy.array([[1, 2], [2, 3]])
+    # >>> res = numpy.cumprod(a)
+    # >>> res.shape
+    # (4,)
 
-    types_map = {
-        dpnp.int32: dpnp.int64,
-        dpnp.int64: dpnp.int64,
-        dpnp.float32: dpnp.float32,
-        dpnp.float64: dpnp.float64
-    }
+    return call_fptr_1in_1out(DPNP_FN_CUMPROD, x1, (x1.size,))
 
-    res_type = types_map[x1.dtype.type]
 
-    cdef dparray result = dparray(x1.size, dtype=res_type)
+cpdef dparray dpnp_cumsum(dparray x1):
+    # instead of x1.shape, (x1.size, ) is passed to the function
+    # due to the following:
+    # >>> import numpy
+    # >>> a = numpy.array([[1, 2], [2, 3]])
+    # >>> res = numpy.cumsum(a)
+    # >>> res.shape
+    # (4,)
 
-    cur_res = 0
-
-    for i in range(result.size):
-
-        if not usenan or not dpnp.isnan(x1[i]):
-            cur_res += x1[i]
-
-        result._setitem_scalar(i, cur_res)
-
-    return result
+    return call_fptr_1in_1out(DPNP_FN_CUMSUM, x1, (x1.size,))
 
 
 cpdef dparray dpnp_diff(dparray input, int n):
@@ -214,41 +196,12 @@ cpdef dparray dpnp_divide(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_DIVIDE, x1, x2, x1.shape)
 
 
-cpdef dparray dpnp_ediff1d(dparray x1, dparray to_end, dparray to_begin):
+cpdef dparray dpnp_ediff1d(dparray x1):
 
-    types_map = {
-        dpnp.int32: dpnp.int64,
-        dpnp.int64: dpnp.int64,
-        dpnp.float32: dpnp.float32,
-        dpnp.float64: dpnp.float64
-    }
+    if x1.size <= 1:
+        return dpnp.empty(0, dtype=x1.dtype)
 
-    if x1.dtype.type in types_map:
-        res_type = types_map[x1.dtype.type]
-    else:
-        dpnp.dpnp_utils.checker_throw_type_error("ediff1d", x1.dtype)
-
-    res_size = x1.size - 1 + to_end.size + to_begin.size
-
-    cdef dparray result = dparray(res_size, dtype=res_type)
-
-    ind = 0
-
-    for i in range(ind, to_begin.size):
-        result._setitem_scalar(i, to_begin[i])
-
-    ind += to_begin.size
-
-    for i in range(ind, ind + x1.size - 1):
-        cur_res = x1[i - ind + 1] - x1[i - ind]
-        result._setitem_scalar(i, cur_res)
-
-    ind += x1.size - 1
-
-    for i in range(ind, ind + to_end.size):
-        result._setitem_scalar(i, to_end[i - ind])
-
-    return result
+    return call_fptr_1in_1out(DPNP_FN_EDIFF1D, x1, (x1.size -1,))
 
 
 cpdef dparray dpnp_fabs(dparray x1):
@@ -265,6 +218,27 @@ cpdef dparray dpnp_floor_divide(dparray x1, dparray x2):
 
 cpdef dparray dpnp_fmod(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_FMOD, x1, x2, x1.shape)
+
+
+cpdef dparray dpnp_gradient(dparray y1, int dx=1):
+
+    size = y1.size
+
+    cdef dparray result = dparray(size, dtype=dpnp.float64)
+
+    cur = (y1[1] - y1[0]) / dx
+
+    result._setitem_scalar(0, cur)
+
+    cur = (y1[-1] - y1[-2]) / dx
+
+    result._setitem_scalar(size - 1, cur)
+
+    for i in range(1, size - 1):
+        cur = (y1[i + 1] - y1[i - 1]) / (2 * dx)
+        result._setitem_scalar(i, cur)
+
+    return result
 
 
 cpdef dparray dpnp_hypot(dparray x1, dparray x2):
@@ -299,60 +273,44 @@ cpdef tuple dpnp_modf(dparray x1):
 
 
 cpdef dparray dpnp_multiply(dparray x1, x2):
-    x2_is_scalar = dpnp.isscalar(x2)
+    cdef dparray result
+    if dpnp.isscalar(x2):
+        x2_ = dpnp.array([x2])
 
-    x1_dtype_ = x1.dtype
-    x2_dtype_ = type(x2) if x2_is_scalar else x2.dtype
+        types_map = {
+            (dpnp.int32, dpnp.float64): dpnp.float64,
+            (dpnp.int64, dpnp.float64): dpnp.float64,
+        }
 
-    types_map = {float: dpnp.float64, int: dpnp.int64}
-    x1_dtype = types_map.get(x1_dtype_, x1_dtype_)
-    x2_dtype = types_map.get(x2_dtype_, x2_dtype_)
-
-    if x1_dtype == dpnp.float64:
-        if x2_dtype == dpnp.float64:
-            res_type = dpnp.float64
-        elif x2_dtype == dpnp.float32:
-            res_type = dpnp.float64
-        elif x2_dtype == dpnp.int64:
-            res_type = dpnp.float64
-        elif x2_dtype == dpnp.int32:
-            res_type = dpnp.float64
-    elif x1_dtype == dpnp.float32:
-        if x2_dtype == dpnp.float64:
-            res_type = dpnp.float32
-        elif x2_dtype == dpnp.float32:
-            res_type = dpnp.float32
-        elif x2_dtype == dpnp.int64:
-            res_type = dpnp.float32
-        elif x2_dtype == dpnp.int32:
-            res_type = dpnp.float32
-    elif x1_dtype == dpnp.int64:
-        if x2_dtype == dpnp.float64:
-            res_type = dpnp.float64
-        elif x2_dtype == dpnp.float32:
-            res_type = dpnp.float32
-        elif x2_dtype == dpnp.int64:
-            res_type = dpnp.int64
-        elif x2_dtype == dpnp.int32:
-            res_type = dpnp.int64
-    elif x1_dtype == dpnp.int32:
-        if x2_dtype == dpnp.float64:
-            res_type = dpnp.float64
-        elif x2_dtype == dpnp.float32:
-            res_type = dpnp.float32
-        elif x2_dtype == dpnp.int64:
-            res_type = dpnp.int32
-        elif x2_dtype == dpnp.int32:
-            res_type = dpnp.int32
-
-    cdef dparray result = dparray(x1.shape, dtype=res_type)
-
-    if x2_is_scalar:
-        for i in range(result.size):
+        res_type = types_map.get((x1.dtype.type, x2_.dtype.type), x1.dtype)
+        result = dparray(x1.shape, dtype=res_type)
+        for i in range(x1.size):
             result[i] = x1[i] * x2
-        return result
+        return result.reshape(x1.shape)
     else:
         return call_fptr_2in_1out(DPNP_FN_MULTIPLY, x1, x2, x1.shape)
+
+
+cpdef dparray dpnp_nancumprod(dparray x1):
+
+    cur_x1 = dpnp.copy(x1)
+
+    for i in range(cur_x1.size):
+        if dpnp.isnan(cur_x1[i]):
+            cur_x1._setitem_scalar(i, 1)
+
+    return dpnp_cumprod(cur_x1)
+
+
+cpdef dparray dpnp_nancumsum(dparray x1):
+
+    cur_x1 = dpnp.copy(x1)
+
+    for i in range(cur_x1.size):
+        if dpnp.isnan(cur_x1[i]):
+            cur_x1._setitem_scalar(i, 0)
+
+    return dpnp_cumsum(cur_x1)
 
 
 cpdef dpnp_nanprod(dparray x1):
@@ -395,8 +353,24 @@ cpdef dparray dpnp_negative(dparray array1):
     return result
 
 
-cpdef dparray dpnp_power(dparray x1, dparray x2):
-    return call_fptr_2in_1out(DPNP_FN_POWER, x1, x2, x1.shape)
+cpdef dparray dpnp_power(dparray x1, x2):
+    cdef dparray result
+    if dpnp.isscalar(x2):
+        x2_ = dpnp.array([x2])
+
+        types_map = {
+            (dpnp.int32, dpnp.float64): dpnp.float64,
+            (dpnp.int64, dpnp.float64): dpnp.float64,
+        }
+
+        res_type = types_map.get((x1.dtype.type, x2_.dtype.type), x1.dtype)
+
+        result = dparray(x1.shape, dtype=res_type)
+        for i in range(x1.size):
+            result[i] = x1[i] ** x2
+        return result
+    else:
+        return call_fptr_2in_1out(DPNP_FN_POWER, x1, x2, x1.shape)
 
 
 cpdef dpnp_prod(dparray x1):

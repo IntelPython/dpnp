@@ -58,7 +58,9 @@ __all__ = [
     "matrix_power",
     "matrix_rank",
     "multi_dot",
-    "norm"
+    "norm",
+    "qr",
+    "svd",
 ]
 
 
@@ -85,13 +87,16 @@ def cholesky(input):
         Upper or lower-triangular Cholesky factor of `input`.  Returns a
         matrix object if `input` is a matrix object.
     """
-    is_input_dparray = isinstance(input, dparray)
 
-    if not use_origin_backend(input) and is_input_dparray and input.ndim == 2 and \
-            input.shape[0] == input.shape[1] and input.shape[0] > 0:
-        result = dpnp_cholesky(input)
-
-        return result
+    if not use_origin_backend(input):
+        if not isinstance(input, dparray):
+            pass
+        elif input.shape[-1] != input.shape[-2]:
+            pass
+        elif input.ndim < 3:
+            pass
+        else:
+            return dpnp_cholesky(input)
 
     return call_origin(numpy.linalg.cholesky, input)
 
@@ -394,3 +399,105 @@ def norm(input, ord=None, axis=None, keepdims=False):
         return result
 
     return call_origin(numpy.linalg.norm, input, ord, axis, keepdims)
+
+
+#linalg.qr(a, mode='reduced')
+def qr(a, mode='complete'):
+    """
+    Compute the qr factorization of a matrix.
+
+    Factor the matrix `a` as *qr*, where `q` is orthonormal and `r` is
+    upper-triangular.
+
+    For full documentation refer to :obj:`numpy.linalg.qr`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameter mode='complete' is supported.
+
+    """
+
+    if not use_origin_backend(a):
+        if not isinstance(a, dparray):
+            pass
+        elif not mode == 'complete':
+            pass
+        else:
+            return dpnp_qr(a, mode)
+
+    return call_origin(numpy.linalg.qr, a, mode)
+
+
+def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
+    """
+    Singular Value Decomposition.
+
+    For full documentation refer to :obj:`numpy.linalg.svd`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.random.randn(9, 6) + 1j*np.random.randn(9, 6)
+    >>> b = np.random.randn(2, 7, 8, 3) + 1j*np.random.randn(2, 7, 8, 3)
+
+    Reconstruction based on full SVD, 2D case:
+
+    >>> u, s, vh = np.linalg.svd(a, full_matrices=True)
+    >>> u.shape, s.shape, vh.shape
+    ((9, 9), (6,), (6, 6))
+    >>> np.allclose(a, np.dot(u[:, :6] * s, vh))
+    True
+    >>> smat = np.zeros((9, 6), dtype=complex)
+    >>> smat[:6, :6] = np.diag(s)
+    >>> np.allclose(a, np.dot(u, np.dot(smat, vh)))
+    True
+
+    Reconstruction based on reduced SVD, 2D case:
+
+    >>> u, s, vh = np.linalg.svd(a, full_matrices=False)
+    >>> u.shape, s.shape, vh.shape
+    ((9, 6), (6,), (6, 6))
+    >>> np.allclose(a, np.dot(u * s, vh))
+    True
+    >>> smat = np.diag(s)
+    >>> np.allclose(a, np.dot(u, np.dot(smat, vh)))
+    True
+
+    Reconstruction based on full SVD, 4D case:
+
+    >>> u, s, vh = np.linalg.svd(b, full_matrices=True)
+    >>> u.shape, s.shape, vh.shape
+    ((2, 7, 8, 8), (2, 7, 3), (2, 7, 3, 3))
+    >>> np.allclose(b, np.matmul(u[..., :3] * s[..., None, :], vh))
+    True
+    >>> np.allclose(b, np.matmul(u[..., :3], s[..., None] * vh))
+    True
+
+    Reconstruction based on reduced SVD, 4D case:
+
+    >>> u, s, vh = np.linalg.svd(b, full_matrices=False)
+    >>> u.shape, s.shape, vh.shape
+    ((2, 7, 8, 3), (2, 7, 3), (2, 7, 3, 3))
+    >>> np.allclose(b, np.matmul(u * s[..., None, :], vh))
+    True
+    >>> np.allclose(b, np.matmul(u, s[..., None] * vh))
+    True
+
+    """
+
+    if not use_origin_backend(a):
+        if not isinstance(a, dparray):
+            pass
+        elif not a.ndim == 2:
+            pass
+        elif not full_matrices == True:
+            pass
+        elif not compute_uv == True:
+            pass
+        elif not hermitian == False:
+            pass
+        else:
+            return dpnp_svd(a, full_matrices, compute_uv, hermitian)
+
+    return call_origin(numpy.linalg.svd, a, full_matrices, compute_uv, hermitian)

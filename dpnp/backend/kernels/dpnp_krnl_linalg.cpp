@@ -32,52 +32,70 @@
 #include "queue_sycl.hpp"
 
 namespace mkl_blas = oneapi::mkl::blas::row_major;
+namespace mkl_lapack = oneapi::mkl::lapack;
 
 template <typename _DataType>
-class dpnp_cholesky_c_kernel;
-
-template <typename _DataType>
-void dpnp_cholesky_c(void* array1_in, void* result1, size_t* shape)
+void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const size_t data_size)
 {
-    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
-    _DataType* l_result = reinterpret_cast<_DataType*>(result1);
+    cl::sycl::event event;
 
-    size_t n = shape[0];
+    _DataType* in_array = reinterpret_cast<_DataType*>(array1_in);
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    l_result[0] = sqrt(array_1[0]);
+    size_t iters = size / (data_size * data_size);
 
-    for (size_t j = 1; j < n; j++)
+    for (size_t k = 0; k < iters; ++k)
     {
-        l_result[j * n] = array_1[j * n] / l_result[0];
-    }
+        _DataType matrix[data_size * data_size];
+        _DataType result_[data_size * data_size];
 
-    for (size_t i = 1; i < n; i++)
-    {
-        _DataType sum_val = 0;
-        for (size_t p = 0; p < i - 1; p++)
+        for (size_t t = 0; t < data_size * data_size; ++t)
         {
-            sum_val += l_result[i * n + p - 1] * l_result[i * n + p - 1];
+            matrix[t] = in_array[k * (data_size * data_size) + t];
         }
-        l_result[i * n + i - 1] = sqrt(array_1[i * n + i - 1] - sum_val);
-    }
 
-    for (size_t i = 1; i < n - 1; i++)
-    {
-        for (size_t j = i; j < n; j++)
+        for (size_t it = 0; it < data_size * data_size; ++it)
         {
-            _DataType sum_val = 0;
-            for (size_t p = 0; p < i - 1; p++)
+            result_[it] = matrix[it];
+        }
+
+        const std::int64_t n = data_size;
+
+        const std::int64_t lda = std::max<size_t>(1UL, n);
+
+        const std::int64_t scratchpad_size =
+            mkl_lapack::potrf_scratchpad_size<_DataType>(DPNP_QUEUE, oneapi::mkl::uplo::upper, n, lda);
+
+        _DataType* scratchpad = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(_DataType)));
+
+        event = mkl_lapack::potrf(DPNP_QUEUE, oneapi::mkl::uplo::upper, n, result_, lda, scratchpad, scratchpad_size);
+
+        event.wait();
+
+        for (size_t i = 0; i < data_size; i++)
+        {
+            bool arg = false;
+            for (size_t j = 0; j < data_size; j++)
             {
-                sum_val += l_result[i * n + p - 1] * l_result[j * n + p - 1];
+                if (i == j - 1)
+                {
+                    arg = true;
+                }
+                if (arg)
+                {
+                    result_[i * data_size + j] = 0;
+                }
             }
-            l_result[j * n + i - 1] = (1 / l_result[i * n + i - 1]) * (array_1[j * n + i - 1] - sum_val);
+        }
+
+        dpnp_memory_free_c(scratchpad);
+
+        for (size_t t = 0; t < data_size * data_size; ++t)
+        {
+            result[k * (data_size * data_size) + t] = result_[t];
         }
     }
-    return;
 }
-
-template <typename _DataType>
-class dpnp_det_c_kernel;
 
 template <typename _DataType>
 void dpnp_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
@@ -176,7 +194,167 @@ void dpnp_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
 }
 
 template <typename _DataType>
-class dpnp_matrix_rank_c_kernel;
+void dpnp_inv_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
+{
+    (void)ndim; // avoid warning unused variable
+    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    size_t n = shape[0];
+
+    _DataType a_arr[n][n];
+    _DataType e_arr[n][n];
+
+    for (size_t i = 0; i < n; ++i)
+    {
+        for (size_t j = 0; j < n; ++j)
+        {
+            a_arr[i][j] = array_1[i * n + j];
+            if (i == j)
+            {
+                e_arr[i][j] = 1;
+            }
+            else
+            {
+                e_arr[i][j] = 0;
+            }
+        }
+    }
+
+    for (size_t k = 0; k < n; ++k)
+    {
+        if (a_arr[k][k] == 0)
+        {
+            for (size_t i = k; i < n; ++i)
+            {
+                if (a_arr[i][k] != 0)
+                {
+                    for (size_t j = 0; j < n; ++j)
+                    {
+                        float c = a_arr[k][j];
+                        a_arr[k][j] = a_arr[i][j];
+                        a_arr[i][j] = c;
+                        float c_e = e_arr[k][j];
+                        e_arr[k][j] = e_arr[i][j];
+                        e_arr[i][j] = c_e;
+                    }
+                    break;
+                }
+            }
+        }
+
+        float temp = a_arr[k][k];
+
+        for (size_t j = 0; j < n; ++j)
+        {
+            a_arr[k][j] = a_arr[k][j] / temp;
+            e_arr[k][j] = e_arr[k][j] / temp;
+        }
+
+        for (size_t i = k + 1; i < n; ++i)
+        {
+            temp = a_arr[i][k];
+            for (size_t j = 0; j < n; j++)
+            {
+                a_arr[i][j] = a_arr[i][j] - a_arr[k][j] * temp;
+                e_arr[i][j] = e_arr[i][j] - e_arr[k][j] * temp;
+            }
+        }
+    }
+
+    for (size_t k = 0; k < n - 1; ++k)
+    {
+        size_t ind_k = n - 1 - k;
+        for (size_t i = 0; i < ind_k; ++i)
+        {
+            size_t ind_i = ind_k - 1 - i;
+
+            float temp = a_arr[ind_i][ind_k];
+            for (size_t j = 0; j < n; ++j)
+            {
+                a_arr[ind_i][j] = a_arr[ind_i][j] - a_arr[ind_k][j] * temp;
+                e_arr[ind_i][j] = e_arr[ind_i][j] - e_arr[ind_k][j] * temp;
+            }
+        }
+    }
+
+    for (size_t i = 0; i < n; ++i)
+    {
+        for (size_t j = 0; j < n; ++j)
+        {
+            result[i * n + j] = e_arr[i][j];
+        }
+    }
+
+    return;
+}
+
+template <typename _DataType1, typename _DataType2, typename _ResultType>
+class dpnp_kron_c_kernel;
+
+template <typename _DataType1, typename _DataType2, typename _ResultType>
+void dpnp_kron_c(void* array1_in,
+                 void* array2_in,
+                 void* result1,
+                 size_t* in1_shape,
+                 size_t* in2_shape,
+                 size_t* res_shape,
+                 size_t ndim)
+{
+    _DataType1* array1 = reinterpret_cast<_DataType1*>(array1_in);
+    _DataType2* array2 = reinterpret_cast<_DataType2*>(array2_in);
+    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
+
+    size_t size = 1;
+    for (size_t i = 0; i < ndim; ++i)
+    {
+        size *= res_shape[i];
+    }
+
+    size_t* _in1_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
+    size_t* _in2_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
+
+    dpnp_memory_memcpy_c(_in1_shape, in1_shape, ndim * sizeof(size_t));
+    dpnp_memory_memcpy_c(_in2_shape, in2_shape, ndim * sizeof(size_t));
+
+    size_t* in1_offsets = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
+    size_t* in2_offsets = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
+    size_t* res_offsets = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
+
+    get_shape_offsets_inkernel<size_t>(in1_shape, ndim, in1_offsets);
+    get_shape_offsets_inkernel<size_t>(in2_shape, ndim, in2_offsets);
+    get_shape_offsets_inkernel<size_t>(res_shape, ndim, res_offsets);
+
+    cl::sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        const size_t idx = global_id[0];
+
+        size_t idx1 = 0;
+        size_t idx2 = 0;
+        size_t reminder = idx;
+        for (size_t axis = 0; axis < ndim; ++axis)
+        {
+            const size_t res_axis = reminder / res_offsets[axis];
+            reminder = reminder - res_axis * res_offsets[axis];
+
+            const size_t in1_axis = res_axis / _in2_shape[axis];
+            const size_t in2_axis = res_axis - in1_axis * _in2_shape[axis];
+
+            idx1 += in1_axis * in1_offsets[axis];
+            idx2 += in2_axis * in2_offsets[axis];
+        }
+
+        result[idx] = array1[idx1] * array2[idx2];
+    };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_kron_c_kernel<_DataType1, _DataType2, _ResultType>>(gws, kernel_parallel_for_func);
+    };
+
+    cl::sycl::event event = DPNP_QUEUE.submit(kernel_func);
+
+    event.wait();
+}
 
 template <typename _DataType>
 void dpnp_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
@@ -210,10 +388,141 @@ void dpnp_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t nd
     return;
 }
 
+template <typename _InputDT, typename _ComputeDT>
+void dpnp_qr_c(void* array1_in, void* result1, void* result2, void* result3, size_t size_m, size_t size_n)
+{
+    cl::sycl::event event;
+
+    _InputDT* in_array = reinterpret_cast<_InputDT*>(array1_in);
+
+    // math lib func overrides input
+    _ComputeDT* in_a = reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(size_m * size_n * sizeof(_ComputeDT)));
+
+    for (size_t i = 0; i < size_m; ++i)
+    {
+        for (size_t j = 0; j < size_n; ++j)
+        {
+            in_a[j * size_m + i] = in_array[i * size_n + j];
+        }
+    }
+
+    _ComputeDT* res_q = reinterpret_cast<_ComputeDT*>(result1);
+    _ComputeDT* res_r = reinterpret_cast<_ComputeDT*>(result2);
+    _ComputeDT* tau = reinterpret_cast<_ComputeDT*>(result3);
+
+    const std::int64_t lda = size_m;
+
+    const std::int64_t geqrf_scratchpad_size =
+        mkl_lapack::geqrf_scratchpad_size<_ComputeDT>(DPNP_QUEUE, size_m, size_n, lda);
+
+    _ComputeDT* geqrf_scratchpad =
+        reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(geqrf_scratchpad_size * sizeof(_ComputeDT)));
+
+    event = mkl_lapack::geqrf(DPNP_QUEUE, size_m, size_n, in_a, lda, tau, geqrf_scratchpad, geqrf_scratchpad_size);
+
+    event.wait();
+    dpnp_memory_free_c(geqrf_scratchpad);
+
+    // R
+    for (size_t i = 0; i < size_m; ++i)
+    {
+        for (size_t j = 0; j < size_n; ++j)
+        {
+            if (j >= i)
+            {
+                res_r[i * size_n + j] = in_a[j * size_m + i];
+            }
+            else
+            {
+                res_r[i * size_n + j] = _ComputeDT(0);
+            }
+        }
+    }
+
+    // Q
+    const size_t nrefl = std::min<size_t>(size_m, size_n);
+    const std::int64_t orgqr_scratchpad_size =
+        mkl_lapack::orgqr_scratchpad_size<_ComputeDT>(DPNP_QUEUE, size_m, size_m, nrefl, lda);
+
+    _ComputeDT* orgqr_scratchpad =
+        reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(orgqr_scratchpad_size * sizeof(_ComputeDT)));
+
+    event =
+        mkl_lapack::orgqr(DPNP_QUEUE, size_m, size_m, nrefl, in_a, lda, tau, orgqr_scratchpad, orgqr_scratchpad_size);
+
+    event.wait();
+    dpnp_memory_free_c(orgqr_scratchpad);
+
+    for (size_t i = 0; i < size_m; ++i)
+    {
+        for (size_t j = 0; j < size_m; ++j)
+        {
+            if (j < nrefl)
+            {
+                res_q[i * size_m + j] = in_a[j * size_m + i];
+            }
+            else
+            {
+                res_q[i * size_m + j] = _ComputeDT(0);
+            }
+        }
+    }
+
+    dpnp_memory_free_c(in_a);
+}
+
+template <typename _InputDT, typename _ComputeDT, typename _SVDT>
+void dpnp_svd_c(void* array1_in, void* result1, void* result2, void* result3, size_t size_m, size_t size_n)
+{
+    cl::sycl::event event;
+
+    _InputDT* in_array = reinterpret_cast<_InputDT*>(array1_in);
+
+    // math lib gesvd func overrides input
+    _ComputeDT* in_a = reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(size_m * size_n * sizeof(_ComputeDT)));
+    for (size_t it = 0; it < size_m * size_n; ++it)
+    {
+        in_a[it] = in_array[it];
+    }
+
+    _ComputeDT* res_u = reinterpret_cast<_ComputeDT*>(result1);
+    _SVDT* res_s = reinterpret_cast<_SVDT*>(result2);
+    _ComputeDT* res_vt = reinterpret_cast<_ComputeDT*>(result3);
+
+    const std::int64_t m = size_m;
+    const std::int64_t n = size_n;
+
+    const std::int64_t lda = std::max<size_t>(1UL, n);
+    const std::int64_t ldu = std::max<size_t>(1UL, m);
+    const std::int64_t ldvt = std::max<size_t>(1UL, n);
+
+    const std::int64_t scratchpad_size = mkl_lapack::gesvd_scratchpad_size<_ComputeDT>(
+        DPNP_QUEUE, oneapi::mkl::jobsvd::vectors, oneapi::mkl::jobsvd::vectors, n, m, lda, ldvt, ldu);
+
+    _ComputeDT* scratchpad = reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(_ComputeDT)));
+
+    event = mkl_lapack::gesvd(DPNP_QUEUE,
+                              oneapi::mkl::jobsvd::vectors, // onemkl::job jobu,
+                              oneapi::mkl::jobsvd::vectors, // onemkl::job jobvt,
+                              n,
+                              m,
+                              in_a,
+                              lda,
+                              res_s,
+                              res_vt,
+                              ldvt,
+                              res_u,
+                              ldu,
+                              scratchpad,
+                              scratchpad_size);
+
+    event.wait();
+
+    dpnp_memory_free_c(scratchpad);
+}
+
 void func_map_init_linalg_func(func_map_t& fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_cholesky_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_cholesky_c<long>};
     fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_cholesky_c<float>};
     fmap[DPNPFuncName::DPNP_FN_CHOLESKY][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_cholesky_c<double>};
 
@@ -222,10 +531,64 @@ void func_map_init_linalg_func(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_DET][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_det_c<float>};
     fmap[DPNPFuncName::DPNP_FN_DET][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_det_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_INV][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_inv_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_INV][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_inv_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_INV][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_inv_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_INV][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_inv_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_kron_c<int, int, int>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_kron_c<int, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_INT][eft_FLT] = {eft_FLT, (void*)dpnp_kron_c<int, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_kron_c<int, double, double>};
+    // fmap[DPNPFuncName::DPNP_FN_KRON][eft_INT][eft_C128] = {
+    // eft_C128, (void*)dpnp_kron_c<int, std::complex<double>, std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_LNG][eft_INT] = {eft_LNG, (void*)dpnp_kron_c<long, int, long>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_kron_c<long, long, long>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_LNG][eft_FLT] = {eft_FLT, (void*)dpnp_kron_c<long, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_kron_c<long, double, double>};
+    // fmap[DPNPFuncName::DPNP_FN_KRON][eft_LNG][eft_C128] = {
+    // eft_C128, (void*)dpnp_kron_c<long, std::complex<double>, std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_FLT][eft_INT] = {eft_FLT, (void*)dpnp_kron_c<float, int, float>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_FLT][eft_LNG] = {eft_FLT, (void*)dpnp_kron_c<float, long, float>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_kron_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_FLT][eft_DBL] = {eft_DBL, (void*)dpnp_kron_c<float, double, double>};
+    // fmap[DPNPFuncName::DPNP_FN_KRON][eft_FLT][eft_C128] = {
+    // eft_C128, (void*)dpnp_kron_c<float, std::complex<double>, std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_kron_c<double, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_kron_c<double, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_kron_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_kron_c<double, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_DBL][eft_C128] = {
+        eft_C128, (void*)dpnp_kron_c<double, std::complex<double>, std::complex<double>>};
+    // fmap[DPNPFuncName::DPNP_FN_KRON][eft_C128][eft_INT] = {
+    // eft_C128, (void*)dpnp_kron_c<std::complex<double>, int, std::complex<double>>};
+    // fmap[DPNPFuncName::DPNP_FN_KRON][eft_C128][eft_LNG] = {
+    // eft_C128, (void*)dpnp_kron_c<std::complex<double>, long, std::complex<double>>};
+    // fmap[DPNPFuncName::DPNP_FN_KRON][eft_C128][eft_FLT] = {
+    // eft_C128, (void*)dpnp_kron_c<std::complex<double>, float, std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_C128][eft_DBL] = {
+        eft_C128, (void*)dpnp_kron_c<std::complex<double>, double, std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_KRON][eft_C128][eft_C128] = {
+        eft_C128, (void*)dpnp_kron_c<std::complex<double>, std::complex<double>, std::complex<double>>};
+
     fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_matrix_rank_c<int>};
     fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_matrix_rank_c<long>};
     fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_matrix_rank_c<float>};
     fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_matrix_rank_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_QR][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_qr_c<int, double>};
+    fmap[DPNPFuncName::DPNP_FN_QR][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_qr_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_QR][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_qr_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_QR][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_qr_c<double, double>};
+    // fmap[DPNPFuncName::DPNP_FN_QR][eft_C128][eft_C128] = {
+    // eft_C128, (void*)dpnp_qr_c<std::complex<double>, std::complex<double>>};
+
+    fmap[DPNPFuncName::DPNP_FN_SVD][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_svd_c<int, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_SVD][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_svd_c<long, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_SVD][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_svd_c<float, float, float>};
+    fmap[DPNPFuncName::DPNP_FN_SVD][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_svd_c<double, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_SVD][eft_C128][eft_C128] = {
+        eft_C128, (void*)dpnp_svd_c<std::complex<double>, std::complex<double>, double>};
 
     return;
 }

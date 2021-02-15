@@ -193,10 +193,7 @@ cdef class dparray:
 
         """
 
-        for i in range(self.size):
-            print(self[i], end=' ')
-
-        return "<__str__ TODO>"
+        return str(numpy.asarray(self))
 
     # The definition order of attributes and methods are borrowed from the
     # order of documentation at the following NumPy document.
@@ -439,9 +436,22 @@ cdef class dparray:
 
         """
         if isinstance(key, slice):
-            start = 0 if (key.start is None) else key.start
-            stop = self.size if (key.stop is None) else key.stop
-            step = 1 if (key.step is None) else key.step
+            start = 0 if key.start is None else key.start
+            stop = self.size if key.stop is None else key.stop
+            step = 1 if key.step is None else key.step
+
+            if not isinstance(value, dparray):
+                pass
+            elif start != 0:
+                pass
+            elif stop != self.size:
+                pass
+            elif step != 1:
+                pass
+            else:
+                copyto(self, value)
+                return
+
             for i in range(start, stop, step):
                 self._setitem_scalar(i, value[i])
         else:
@@ -853,6 +863,25 @@ cdef class dparray:
         """
 
         return min(self, axis)
+
+    """
+    -------------------------------------------------------------------------
+    Indexing
+    -------------------------------------------------------------------------
+    """
+
+    def choose(input, choices, out=None, mode='raise'):
+        """
+        Construct an array from an index array and a set of arrays to choose from.
+        """
+        return choose(input, choices, out, mode)
+
+    def take(self, indices, axis=None, out=None, mode='raise'):
+        """
+        Take elements from an array.
+        For full documentation refer to :obj:`numpy.take`.
+        """
+        return take(self, indices, axis, out, mode)
 
     """
     -------------------------------------------------------------------------

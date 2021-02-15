@@ -188,39 +188,29 @@ def copyto(dst, src, casting='same_kind', where=True):
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     """
+    if not use_origin_backend(dst):
+        if not isinstance(dst, dparray):
+            pass
+        elif not isinstance(src, dparray):
+            pass
+        elif casting != 'same_kind':
+            pass
+        elif (dst.dtype == dpnp.bool and  # due to 'same_kind' casting
+              src.dtype in [dpnp.int32, dpnp.int64, dpnp.float32, dpnp.float64, dpnp.complex128]):
+            pass
+        elif (dst.dtype in [dpnp.int32, dpnp.int64] and  # due to 'same_kind' casting
+              src.dtype in [dpnp.float32, dpnp.float64, dpnp.complex128]):
+            pass
+        elif dst.dtype in [dpnp.float32, dpnp.float64] and src.dtype == dpnp.complex128:  # due to 'same_kind' casting
+            pass
+        elif where is not True:
+            pass
+        elif dst.shape != src.shape:
+            pass
+        else:
+            return dpnp_copyto(dst, src, where=where)
 
-    is_input_dparray1 = isinstance(dst, dparray)
-    is_input_dparray2 = isinstance(src, dparray)
-
-    if not use_origin_backend(dst) and is_input_dparray1 and is_input_dparray2:
-        if casting != 'same_kind':
-            checker_throw_value_error("copyto", "casting", type(casting), 'same_kind')
-
-        if not isinstance(where, bool) and not isinstance(where, dparray):
-            checker_throw_type_error('copyto', type(where))
-
-        if where is not True:
-            checker_throw_value_error("copyto", "where", where, True)
-
-        if dst.shape != src.shape:
-            raise NotImplemented
-
-        result = dpnp_copyto(dst, src, where=where)
-
-        return result
-
-    input1 = dpnp.asnumpy(dst) if is_input_dparray1 else dst
-    input2 = dpnp.asnumpy(src) if is_input_dparray2 else src
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.copyto(dst, src, where=where)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return call_origin(numpy.copyto, dst, src, casting, where)
 
 
 def expand_dims(a, axis):

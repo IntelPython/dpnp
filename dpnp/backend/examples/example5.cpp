@@ -54,13 +54,13 @@ int main(int, char**)
     std::cout << "Results, when seed is the same (10) for all random number generations:";
     for (size_t i = 0; i < 4; ++i)
     {
-        dpnp_srand_c(seed);
+        dpnp_rng_srand_c(seed);
         dpnp_rng_uniform_c<double>(result, low, high, size);
         print_dpnp_array(result, 10);
     }
 
     std::cout << std::endl << "Results, when seed is random:";
-    dpnp_srand_c();
+    dpnp_rng_srand_c();
     for (size_t i = 0; i < 4; ++i)
     {
         dpnp_rng_uniform_c<double>(result, low, high, size);
