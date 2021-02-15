@@ -34,6 +34,14 @@ tests/test_linalg.py::test_norm2[(0, 1)--2-[[1, 2]]]
 tests/test_linalg.py::test_norm2[(0, 1)-2-[[1, 2]]]
 tests/test_linalg.py::test_norm2[(0, 1)--2-[[1, 2], [3, 4]]]
 tests/test_linalg.py::test_norm2[(0, 1)-2-[[1, 2], [3, 4]]]
+tests/test_linalg.py::test_norm2[(0, 1)-"fro"-[[1, 0]]]
+tests/test_linalg.py::test_norm2[(0, 1)-"fro"-[[1, 0], [3, 0]]]
+tests/test_linalg.py::test_norm2[(0, 1)-"fro"-[[1, 2]]]
+tests/test_linalg.py::test_norm2[(0, 1)-"fro"-[[1, 2], [3, 4]]]
+tests/test_linalg.py::test_norm2[(0, 1)-None-[[1, 0]]]
+tests/test_linalg.py::test_norm2[(0, 1)-None-[[1, 0], [3, 0]]]
+tests/test_linalg.py::test_norm2[(0, 1)-None-[[1, 2]]]
+tests/test_linalg.py::test_norm2[(0, 1)-None-[[1, 2], [3, 4]]]
 tests/test_linalg.py::test_norm2[(0, 1)-"nuc"-[[1, 0]]]
 tests/test_linalg.py::test_norm2[(0, 1)-"nuc"-[[1, 0], [3, 0]]]
 tests/test_linalg.py::test_norm2[(0, 1)-"nuc"-[[1, 2]]]
@@ -1105,22 +1113,7 @@ tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_prod_all
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_prod_axis
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_prod_dtype
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all2
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all_keepdims
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all_transposed2
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axes
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axes2
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axes3
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axes4
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axis
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axis2
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axis_huge
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axis_transposed
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axis_transposed2
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_dtype
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_keepdims_and_dtype
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_keepdims_multiple_axes
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_out
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_out_wrong_shape
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim_with_discont
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_2dim_with_axis
