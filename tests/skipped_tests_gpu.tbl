@@ -39,11 +39,11 @@ tests/test_linalg.py::test_svd[(2,2)-int64]
 tests/test_linalg.py::test_svd[(2,2)-int32]
 tests/test_linalg.py::test_svd[(2,2)-complex128]
 tests/test_linalg.py::test_svd[(16,16)-complex128]
-//----------------------------------------------------------------------
-// dparray currently do not support given approaches.
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[ lambda x: x]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[ lambda x: dpnp.asarray(x).astype(dpnp.int8)]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[ lambda x: dpnp.asarray(x).astype(dpnp.complex64)]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[ lambda x: dpnp.asarray(x).astype(object)]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[ lambda x: [(i, i) for i in x]]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[ lambda x: dpnp.vstack([x, x]).T]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[ lambda x: (dpnp.asarray([(i, i) for i in x], [("a", int), ("b", int)]).view(dpnp.recarray))]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[ lambda x: dpnp.asarray([(i, i) for i in x], [("a", object), ("b", dpnp.int32)])]]

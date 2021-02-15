@@ -941,13 +941,7 @@ void dpnp_rng_shuffle_c(
     double* Uvec = nullptr;
 
     size_t uvec_size = high_dim_size - 1;
-    // TODO
-    // nullptr check will be removed after dpnp_memory_alloc_c update
     Uvec = reinterpret_cast<double*>(dpnp_memory_alloc_c(uvec_size * sizeof(double)));
-    if (Uvec == nullptr)
-    {
-        throw std::runtime_error("DPNP RNG Error: dpnp_rng_shuffle_c() failed.");
-    }
     mkl_rng::uniform<double> uniform_distribution(0.0, 1.0);
     auto uniform_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, uvec_size, Uvec);
     uniform_event.wait();
@@ -961,12 +955,6 @@ void dpnp_rng_shuffle_c(
         // kernel
         char* buf = nullptr;
         buf = reinterpret_cast<char*>(dpnp_memory_alloc_c(itemsize * sizeof(char)));
-        // TODO
-        // nullptr check will be removed after dpnp_memory_alloc_c update
-        if (buf == nullptr)
-        {
-            throw std::runtime_error("DPNP RNG Error: dpnp_rng_shuffle_c() failed.");
-        }
         for (size_t i = uvec_size; i > 0; i--)
         {
             size_t j = (size_t)(floor((i + 1) * Uvec[i - 1]));
