@@ -43,16 +43,21 @@ char* dpnp_memory_alloc_c(size_t size_in_bytes)
     if (size_in_bytes > 0)
     {
         array = reinterpret_cast<char*>(malloc_shared(size_in_bytes, DPNP_QUEUE));
+        if (array == nullptr)
+        {
+            // TODO add information about number of allocated bytes
+            throw std::runtime_error("DPNP Error: dpnp_memory_alloc_c() out of memory.");
+        }
+
+#if not defined(NDEBUG)
+        for (size_t i = 0; i < size_in_bytes / sizeof(char); ++i)
+        {
+            array[i] = 0; // type dependant is better. set double(42.42) instead zero
+        }
+        // std::cout << ") -> ptr=" << (void*)array << std::endl;
+#endif
     }
 
-    // make this code under NDEBUG
-    //    double* tmp = (double*)array;
-    //    for (size_t i = 0; i < size_in_bytes / sizeof(double); ++i)
-    //    {
-    //        tmp[i] = 42.42;
-    //    }
-
-    //std::cout << ") -> ptr=" << (void*)array << std::endl;
     return array;
 }
 

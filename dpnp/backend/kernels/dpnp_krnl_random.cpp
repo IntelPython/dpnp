@@ -1416,6 +1416,74 @@ void dpnp_rng_vonmises_c(void* result, const _DataType mu, const _DataType kappa
     // TODO case when kappa < kappa < 1e-8 (very small)
 }
 
+template <typename _KernelNameSpecialization>
+class dpnp_rng_wald_acceptance_kernel1;
+
+template <typename _KernelNameSpecialization>
+class dpnp_rng_wald_acceptance_kernel2;
+
+template <typename _DataType>
+void dpnp_rng_wald_c(void* result, const _DataType mean, const _DataType scale, const size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+    _DataType* uvec = nullptr;
+
+    const _DataType d_zero = _DataType(0.0);
+    const _DataType d_one = _DataType(1.0);
+    _DataType gsc = sqrt(0.5 * mean / scale);
+
+    mkl_rng::gaussian<_DataType> gaussian_distribution(d_zero, gsc);
+
+    auto gaussian_dstr_event = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, result1);
+
+    /* Y = mean/(2 scale) * Z^2 */
+    auto sqr_event = mkl_vm::sqr(DPNP_QUEUE, size, result1, result1, {gaussian_dstr_event}, mkl_vm::mode::ha);
+
+    cl::sycl::range<1> gws(size);
+    auto acceptance_kernel1 = [=](cl::sycl::id<1> global_id) {
+        size_t i = global_id[0];
+        if (result1[i] <= 2.0)
+        {
+            result1[i] = 1.0 + result1[i] + cl::sycl::sqrt(result1[i] * (result1[i] + 2.0));
+        }
+        else
+        {
+            result1[i] = 1.0 + result1[i] * (1.0 + cl::sycl::sqrt(1.0 + 2.0 / result1[i]));
+        }
+    };
+    auto parallel_for_acceptance1 = [&](cl::sycl::handler& cgh) {
+        cgh.depends_on({sqr_event});
+        cgh.parallel_for<class dpnp_rng_wald_acceptance_kernel1<_DataType>>(gws, acceptance_kernel1);
+    };
+    auto event_ration_acceptance = DPNP_QUEUE.submit(parallel_for_acceptance1);
+
+    uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+
+    mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
+    auto uniform_distr_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, uvec);
+
+    auto acceptance_kernel2 = [=](cl::sycl::id<1> global_id) {
+        size_t i = global_id[0];
+        if (uvec[i] * (1.0 + result1[i]) <= result1[i])
+            result1[i] = mean / result1[i];
+        else
+            result1[i] = mean * result1[i];
+    };
+    auto parallel_for_acceptance2 = [&](cl::sycl::handler& cgh) {
+        cgh.depends_on({event_ration_acceptance, uniform_distr_event});
+        cgh.parallel_for<class dpnp_rng_wald_acceptance_kernel2<_DataType>>(gws, acceptance_kernel2);
+    };
+    auto event_out = DPNP_QUEUE.submit(parallel_for_acceptance2);
+    event_out.wait();
+
+    dpnp_memory_free_c(uvec);
+}
+
 template <typename _DataType>
 void dpnp_rng_weibull_c(void* result, const double alpha, const size_t size)
 {
@@ -1576,6 +1644,8 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_uniform_c<int>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_VONMISES][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_vonmises_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_WALD][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_wald_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_WEIBULL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_weibull_c<double>};
 

@@ -31,12 +31,12 @@
 #include "dpnp_fptr.hpp"
 #include "queue_sycl.hpp"
 
-
 template <typename _DataType>
 class dpnp_diagonal_c_kernel;
 
 template <typename _DataType>
-void dpnp_diagonal_c(void* array1_in, void* result1, const size_t offset, size_t* shape, size_t* res_shape, const size_t res_ndim)
+void dpnp_diagonal_c(
+    void* array1_in, void* result1, const size_t offset, size_t* shape, size_t* res_shape, const size_t res_ndim)
 {
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
