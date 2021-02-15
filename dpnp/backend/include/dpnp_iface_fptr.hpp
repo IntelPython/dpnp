@@ -93,6 +93,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_DIAGONAL,                 /**< Used in numpy.diagonal() implementation  */
     DPNP_FN_DIVIDE,                   /**< Used in numpy.divide() implementation  */
     DPNP_FN_DOT,                      /**< Used in numpy.dot() implementation  */
+    DPNP_FN_EDIFF1D,                  /**< Used in numpy.ediff1d() implementation  */
     DPNP_FN_EIG,                      /**< Used in numpy.linalg.eig() implementation  */
     DPNP_FN_EIGVALS,                  /**< Used in numpy.linalg.eigvals() implementation  */
     DPNP_FN_ERF,                      /**< Used in scipy.special.erf implementation  */

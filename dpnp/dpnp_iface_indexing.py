@@ -60,6 +60,7 @@ __all__ = [
     "nonzero",
     "place",
     "put",
+    "put_along_axis",
     "putmask",
     "select",
     "take",
@@ -402,6 +403,46 @@ def put(input, ind, v, mode='raise'):
             return dpnp_put(input, ind, v)
 
     return call_origin(numpy.put, input, ind, v, mode)
+
+
+def put_along_axis(arr, indices, values, axis):
+    """
+    Put values into the destination array by matching 1d index and data slices.
+    For full documentation refer to :obj:`numpy.put_along_axis`.
+
+    See Also
+    --------
+    :obj:`take_along_axis` : Take values from the input array by matching 1d index and data slices.
+    """
+
+    if not use_origin_backend(arr):
+        if not isinstance(arr, dparray):
+            pass
+        elif not isinstance(indices, dparray):
+            pass
+        elif arr.ndim != indices.ndim:
+            pass
+        elif not isinstance(axis, int):
+            pass
+        elif axis >= arr.ndim:
+            pass
+        elif not isinstance(values, (dparray, tuple, list)) and not dpnp.isscalar(values):
+            pass
+        elif arr.ndim == indices.ndim:
+            val_list = []
+            for i in list(indices.shape)[:-1]:
+                if i == 1:
+                    val_list.append(True)
+                else:
+                    val_list.append(False)
+            if not all(val_list):
+                pass
+            else:
+                return dpnp_put_along_axis(arr, indices, values, axis)
+        else:
+            return dpnp_put_along_axis(arr, indices, values, axis)
+
+    return call_origin(numpy.put_along_axis, arr, indices, values, axis)
 
 
 def putmask(arr, mask, values):
