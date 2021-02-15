@@ -55,9 +55,11 @@ void black_scholes(double* price,
     double* S = strike;
     double* T = t;
 
+    double* PdivS = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+    dpnp_divide_c<double, double, double>(P, S, PdivS, size);               // P / S
     double* a = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_divide_c<double, double, double>(P, S, a, size); // P / S
-    dpnp_log_c<double, double>(a, a, size);               // np.log(P / S)
+    dpnp_log_c<double, double>(PdivS, a, size);                      // np.log(P / S)
+    dpnp_memory_free_c(PdivS);
 
     double* b = (double*)dpnp_memory_alloc_c(size * sizeof(double));
     dpnp_multiply_c<double, double, double>(T, mrs, b, size); // T * mrs
@@ -68,59 +70,79 @@ void black_scholes(double* price,
     double* c = (double*)dpnp_memory_alloc_c(size * sizeof(double));
     dpnp_multiply_c<double, double, double>(quarters, z, c, size); // quarters * z
 
+    double* sqrt_z = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+    dpnp_sqrt_c<double, double>(z, sqrt_z, size);                    // np.sqrt(z)
+    dpnp_memory_free_c(z);
     double* y = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_sqrt_c<double, double>(z, y, size);                 // np.sqrt(z)
-    dpnp_divide_c<double, double, double>(ones, y, y, size); // ones/np.sqrt(z)
+    dpnp_divide_c<double, double, double>(ones, sqrt_z, y, size);    // ones/np.sqrt(z)
+    dpnp_memory_free_c(sqrt_z);
 
-    double* w1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_subtract_c<double, double, double>(a, b, w1, size);  // a - b
-    dpnp_add_c<double, double, double>(w1, c, w1, size);      // a - b + c
-    dpnp_multiply_c<double, double, double>(w1, y, w1, size); // (a - b + c) * y
-
-    double* w2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_subtract_c<double, double, double>(a, b, w2, size);  // a - b
-    dpnp_subtract_c<double, double, double>(w2, c, w2, size); // a - b - c
-    dpnp_multiply_c<double, double, double>(w2, y, w2, size); // (a - b - c) * y
-
-    dpnp_memory_free_c(y);
-    dpnp_memory_free_c(c);
+    double* a_sub_b = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+    dpnp_subtract_c<double, double, double>(a, b, a_sub_b, size);                // a - b
     dpnp_memory_free_c(a);
+    double* a_sub_b_add_c = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+    dpnp_add_c<double, double, double>(a_sub_b, c, a_sub_b_add_c, size);         // a - b + c
+    double* w1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+    dpnp_multiply_c<double, double, double>(a_sub_b_add_c, y, w1, size);         // (a - b + c) * y
+    dpnp_memory_free_c(a_sub_b_add_c);
 
-    double* d1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_erf_c<double>(w1, d1, size);                             // np.erf(w1)
-    dpnp_multiply_c<double, double, double>(halfs, d1, d1, size); // halfs * np.erf(w1)
-    dpnp_add_c<double, double, double>(halfs, d1, d1, size);      // halfs + halfs * np.erf(w1)
+    double* a_sub_b_sub_c = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+    dpnp_subtract_c<double, double, double>(a_sub_b, c, a_sub_b_sub_c, size);    // a - b - c
+    dpnp_memory_free_c(a_sub_b);
+    dpnp_memory_free_c(c);
+    double* w2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+    dpnp_multiply_c<double, double, double>(a_sub_b_sub_c, y, w2, size);         // (a - b - c) * y
+    dpnp_memory_free_c(a_sub_b_sub_c);
+    dpnp_memory_free_c(y);
 
+    double* erf_w1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+    dpnp_erf_c<double>(w1, erf_w1, size);                                           // np.erf(w1)
     dpnp_memory_free_c(w1);
+    double* halfs_mul_erf_w1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+    dpnp_multiply_c<double, double, double>(halfs, erf_w1, halfs_mul_erf_w1, size); // halfs * np.erf(w1)
+    dpnp_memory_free_c(erf_w1);
+    double* d1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+    dpnp_add_c<double, double, double>(halfs, halfs_mul_erf_w1, d1, size);          // halfs + halfs * np.erf(w1)
+    dpnp_memory_free_c(halfs_mul_erf_w1);
 
-    double* d2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_erf_c<double>(w2, d2, size);                             // np.erf(w2)
-    dpnp_multiply_c<double, double, double>(halfs, d2, d2, size); // halfs * np.erf(w2)
-    dpnp_add_c<double, double, double>(halfs, d2, d2, size);      // halfs + halfs * np.erf(w2)
-
+    double* erf_w2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+    dpnp_erf_c<double>(w2, erf_w2, size);                                           // np.erf(w2)
     dpnp_memory_free_c(w2);
+    double* halfs_mul_erf_w2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+    dpnp_multiply_c<double, double, double>(halfs, erf_w2, halfs_mul_erf_w2, size); // halfs * np.erf(w2)
+    dpnp_memory_free_c(erf_w2);
+    double* d2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+    dpnp_add_c<double, double, double>(halfs, halfs_mul_erf_w2, d2, size);          // halfs + halfs * np.erf(w2)
+    dpnp_memory_free_c(halfs_mul_erf_w2);
 
+    double* exp_b = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+    dpnp_exp_c<double, double>(b, exp_b, size);                          // np.exp(b)
     double* Se = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_exp_c<double, double>(b, Se, size);                  // np.exp(b)
-    dpnp_multiply_c<double, double, double>(Se, S, Se, size); // np.exp(b) * S
-
+    dpnp_multiply_c<double, double, double>(exp_b, S, Se, size);         // np.exp(b) * S
+    dpnp_memory_free_c(exp_b);
     dpnp_memory_free_c(b);
 
-    double* r = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    dpnp_multiply_c<double, double, double>(P, d1, d1, size);  // P * d1
-    dpnp_multiply_c<double, double, double>(Se, d2, d2, size); // Se * d2
-    dpnp_subtract_c<double, double, double>(d1, d2, r, size);  // P * d1 - Se * d2
-
-    dpnp_memory_free_c(d2);
+    double* Pmul_d1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+    dpnp_multiply_c<double, double, double>(P, d1, Pmul_d1, size);           // P * d1
     dpnp_memory_free_c(d1);
+    double* Se_mul_d2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+    dpnp_multiply_c<double, double, double>(Se, d2, Se_mul_d2, size);        // Se * d2
+    dpnp_memory_free_c(d2);
+    double* r = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+    dpnp_subtract_c<double, double, double>(Pmul_d1, Se_mul_d2, r, size);    // P * d1 - Se * d2
+    dpnp_memory_free_c(Se_mul_d2);
+    dpnp_memory_free_c(Pmul_d1);
 
-    dpnp_copyto_c<double, double>(call, r, size);           // call[:] = r
-    dpnp_subtract_c<double, double, double>(r, P, r, size); // r - P
-    dpnp_add_c<double, double, double>(r, Se, r, size);     // r - P + Se
-    dpnp_copyto_c<double, double>(put, r, size);            // put[:] = r - P + Se
-
+    dpnp_copyto_c<double, double>(call, r, size);                              // call[:] = r
+    double* r_subP = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+    dpnp_subtract_c<double, double, double>(r, P, r_subP, size);               // r - P
     dpnp_memory_free_c(r);
+    double* r_subPaddSe = (double*)dpnp_memory_alloc_c(size * sizeof(double));
+    dpnp_add_c<double, double, double>(r_subP, Se, r_subPaddSe, size);         // r - P + Se
+    dpnp_memory_free_c(r_subP);
     dpnp_memory_free_c(Se);
+    dpnp_copyto_c<double, double>(put, r_subPaddSe, size);                     // put[:] = r - P + Se
+    dpnp_memory_free_c(r_subPaddSe);
 }
 
 int main(int, char**)
