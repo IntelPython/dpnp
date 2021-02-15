@@ -61,6 +61,7 @@ __all__ += [
 
 ctypedef void(*custom_indexing_2in_1out_func_ptr_t)(void *, void * , void * , size_t)
 ctypedef void(*custom_indexing_2in_1out_func_ptr_t_)(void * , void * , const size_t, size_t * , size_t * , const size_t)
+ctypedef void(*custom_indexing_6in_func_ptr_t)(void * , void * , void * , const size_t, const size_t, const size_t)
 
 
 cpdef dparray dpnp_choose(input, choices):
@@ -184,20 +185,38 @@ cpdef dpnp_place(dparray arr, dparray mask, vals):
             counter += 1
 
 
-cpdef dpnp_put(input, ind, v):
+cpdef dpnp_put(dparray input, ind, v):
     ind_is_list = isinstance(ind, list)
-    for i in range(input.size):
-        if ind_is_list:
-            for j in range(len(ind)):
-                val = ind[j]
-                if i == val:
-                    input[i] = v[j]
-                    in_ind = 1
-                    break
-        else:
-            if i == ind:
-                input[i] = v
-                in_ind = 1
+
+    if dpnp.isscalar(ind):
+        ind_size = 1
+    else:
+        ind_size = len(ind)
+    ind_array = dparray(ind_size, dtype=dpnp.int64)
+    if dpnp.isscalar(ind):
+        ind_array[0] = ind
+    else:
+        for i in range(ind_size):
+            ind_array[i] = ind[i]
+
+    if dpnp.isscalar(v):
+        v_size = 1
+    else:
+        v_size = len(v)
+    v_array = dparray(v_size, dtype=input.dtype)
+    if dpnp.isscalar(v):
+        v_array[0] = v
+    else:
+        for i in range(v_size):
+            v_array[i] = v[i]
+
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PUT, param1_type, param1_type)
+
+    cdef custom_indexing_6in_func_ptr_t func = <custom_indexing_6in_func_ptr_t > kernel_data.ptr
+
+    func(input.get_data(), ind_array.get_data(), v_array.get_data(), input.size, ind_array.size, v_array.size)
 
 
 cpdef dpnp_put_along_axis(dparray arr, dparray indices, values, axis):

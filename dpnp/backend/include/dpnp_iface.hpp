@@ -229,6 +229,20 @@ INP_DLLEXPORT void dpnp_prod_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
+ * @brief Product of array elements
+ *
+ * @param [in]  array       Input array.
+ * @param [in]  ind         Target indices, interpreted as integers.
+ * @param [in]  v           Values to place in array at target indices.
+ * @param [in]  size        Number of input elements in `array`.
+ * @param [in]  size_ind    Number of input elements in `ind`.
+ * @param [in]  size_v      Number of input elements in `v`.
+ */
+template <typename _DataType, typename _IndecesType, typename _ValueType>
+INP_DLLEXPORT void dpnp_put_c(void* array, void* ind, void* v, const size_t size, const size_t size_ind, const size_t size_v);
+
+/**
+ * @ingroup BACKEND_API
  * @brief Compute the eigenvalues and right eigenvectors of a square array.
  *
  * @param [in]  array_in  Input array[size][size]
