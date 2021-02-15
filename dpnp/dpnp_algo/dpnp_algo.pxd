@@ -185,7 +185,7 @@ cdef extern from "dpnp_iface.hpp":
     void dpnp_queue_initialize_c(QueueOptions selector)
     size_t dpnp_queue_is_cpu_c()
 
-    char * dpnp_memory_alloc_c(size_t size_in_bytes)
+    char * dpnp_memory_alloc_c(size_t size_in_bytes) except +
     void dpnp_memory_free_c(void * ptr)
     void dpnp_memory_memcpy_c(void * dst, const void * src, size_t size_in_bytes)
     void dpnp_rng_srand_c(size_t seed)
