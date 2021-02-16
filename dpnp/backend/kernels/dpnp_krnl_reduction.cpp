@@ -90,7 +90,7 @@ void dpnp_sum_c(const void* input_in,
     }
 
     DPNPC_id<_DataType_input> input_it(input, input_shape_vec);
-    if (axes_ndim > 0)
+    if ((axes != nullptr) && (axes_ndim > 0))
     {
         input_it.set_axis(*axes);
     }
