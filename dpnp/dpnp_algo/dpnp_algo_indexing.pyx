@@ -62,6 +62,7 @@ __all__ += [
 ctypedef void(*custom_indexing_2in_1out_func_ptr_t)(void *, void * , void * , size_t)
 ctypedef void(*custom_indexing_2in_1out_func_ptr_t_)(void * , void * , const size_t, size_t * , size_t * , const size_t)
 ctypedef void(*custom_indexing_6in_func_ptr_t)(void * , void * , void * , const size_t, const size_t, const size_t)
+ctypedef void(*custom_indexing_3in_func_ptr_t)(void * , void * , void *, const size_t, const size_t)
 
 
 cpdef dparray dpnp_choose(input, choices):
@@ -177,12 +178,18 @@ cpdef tuple dpnp_nonzero(dparray in_array1):
 
 
 cpdef dpnp_place(dparray arr, dparray mask, vals):
-    cpdef int counter = 0
     cpdef int vals_len = len(vals)
-    for i in range(arr.size):
-        if mask[i]:
-            arr[i] = vals[counter % vals_len]
-            counter += 1
+    vals_arr = dparray(vals_len, dtype=arr.dtype)
+    for i in range(vals_len):
+        vals_arr[i] = vals[i]
+
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PLACE, param1_type, param1_type)
+
+    cdef custom_indexing_3in_func_ptr_t func = <custom_indexing_3in_func_ptr_t > kernel_data.ptr
+
+    func(arr.get_data(), mask.get_data(), vals_arr.get_data(), arr.size, vals_arr.size)
 
 
 cpdef dpnp_put(dparray input, ind, v):
