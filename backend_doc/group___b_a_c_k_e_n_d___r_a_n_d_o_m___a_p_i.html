@@ -180,6 +180,10 @@ Functions</h2></td></tr>
 <tr class="memitem:gafaace3b552aaa63232849b9e16f65137"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gafaace3b552aaa63232849b9e16f65137">dpnp_rng_rayleigh_c</a> (void *result, const _DataType scale, const size_t size)</td></tr>
 <tr class="memdesc:gafaace3b552aaa63232849b9e16f65137"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of random number generator (rayleigh distribution)  <a href="group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gafaace3b552aaa63232849b9e16f65137">More...</a><br /></td></tr>
 <tr class="separator:gafaace3b552aaa63232849b9e16f65137"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7f4db17126d8f1b16df8fff49c756405"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
+<tr class="memitem:ga7f4db17126d8f1b16df8fff49c756405"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga7f4db17126d8f1b16df8fff49c756405">dpnp_rng_shuffle_c</a> (void *result, const size_t itemsize, const size_t ndim, const size_t high_dim_size, const size_t size)</td></tr>
+<tr class="memdesc:ga7f4db17126d8f1b16df8fff49c756405"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of random in-place shuffle.  <a href="group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga7f4db17126d8f1b16df8fff49c756405">More...</a><br /></td></tr>
+<tr class="separator:ga7f4db17126d8f1b16df8fff49c756405"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae810e366b4ba4db2283f5f3a658f693f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gae810e366b4ba4db2283f5f3a658f693f">dpnp_rng_srand_c</a> (size_t seed=1)</td></tr>
 <tr class="memdesc:gae810e366b4ba4db2283f5f3a658f693f"><td class="mdescLeft">&#160;</td><td class="mdescRight">initializer for basic random number generator.  <a href="group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gae810e366b4ba4db2283f5f3a658f693f">More...</a><br /></td></tr>
 <tr class="separator:gae810e366b4ba4db2283f5f3a658f693f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1377,6 +1381,66 @@ template&lt;typename _DataType &gt; </div>
     <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in <code>result</code> arrays. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">scale</td><td>Distribution parameter, scalefactor. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga7f4db17126d8f1b16df8fff49c756405"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga7f4db17126d8f1b16df8fff49c756405">&#9670;&nbsp;</a></span>dpnp_rng_shuffle_c()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename _DataType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void dpnp_rng_shuffle_c </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>result</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>itemsize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>ndim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>high_dim_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>math library implementation of random in-place shuffle. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">itemsize</td><td>Length of <code>result</code> array element in bytes. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ndim</td><td>Number of array dimensions in <code>result</code> arrays. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">high_dim_size</td><td>Number of elements in <code>result</code> arrays higer dimension, or len(result). </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in <code>result</code> arrays. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Input/output array. </td></tr>
   </table>
   </dd>
 </dl>

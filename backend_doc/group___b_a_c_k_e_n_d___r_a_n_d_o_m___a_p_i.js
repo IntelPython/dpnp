@@ -22,6 +22,7 @@ var group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i =
     [ "dpnp_rng_poisson_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gaebce4a94806eae0977898296972105a0", null ],
     [ "dpnp_rng_power_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga4252ce9d70db5cfd323c357c9efa17d4", null ],
     [ "dpnp_rng_rayleigh_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gafaace3b552aaa63232849b9e16f65137", null ],
+    [ "dpnp_rng_shuffle_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga7f4db17126d8f1b16df8fff49c756405", null ],
     [ "dpnp_rng_srand_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gae810e366b4ba4db2283f5f3a658f693f", null ],
     [ "dpnp_rng_standard_cauchy_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gab960bd6d50538c51ef0507a3cd7b235d", null ],
     [ "dpnp_rng_standard_exponential_c", "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gac0abac6fe65554bdab7c8498126f9811", null ],

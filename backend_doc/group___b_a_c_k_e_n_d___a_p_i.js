@@ -50,6 +50,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_exp_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga5635e77eba00f78f20d00bf6b5c217d9", null ],
     [ "dpnp_expm1_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga5ecc8eb53942342e819e2a357a15ac19", null ],
     [ "dpnp_fabs_c", "group___b_a_c_k_e_n_d___a_p_i.html#gae189a473127125ebb678239f69a08aaa", null ],
+    [ "dpnp_fill_diagonal_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga5317e55de2a6398d091116e6c1a489da", null ],
     [ "dpnp_floor_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga1188618a247b67777c106b8f2c9f6eca", null ],
     [ "dpnp_floor_divide_c", "group___b_a_c_k_e_n_d___a_p_i.html#gab0d2d5c77f6cd94f91175cc8ae8d0c86", null ],
     [ "dpnp_fmod_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga6d93fb4fc903bef678bff61442007221", null ],
