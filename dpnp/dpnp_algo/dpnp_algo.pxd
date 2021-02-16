@@ -75,6 +75,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_EXPM1
         DPNP_FN_FABS
         DPNP_FN_FFT_FFT
+        DPNP_FN_FILL_DIAGONAL
         DPNP_FN_FLOOR
         DPNP_FN_FLOOR_DIVIDE
         DPNP_FN_FMOD
@@ -101,6 +102,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_MULTIPLY
         DPNP_FN_POWER
         DPNP_FN_PROD
+        DPNP_FN_PUT
         DPNP_FN_QR
         DPNP_FN_RADIANS
         DPNP_FN_REMAINDER
@@ -128,6 +130,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_POISSON
         DPNP_FN_RNG_POWER
         DPNP_FN_RNG_RAYLEIGH
+        DPNP_FN_RNG_SHUFFLE
         DPNP_FN_RNG_SRAND
         DPNP_FN_RNG_STANDARD_CAUCHY
         DPNP_FN_RNG_STANDARD_EXPONENTIAL

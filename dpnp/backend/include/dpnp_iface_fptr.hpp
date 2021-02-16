@@ -102,6 +102,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_EXPM1,                    /**< Used in numpy.expm1() implementation  */
     DPNP_FN_FABS,                     /**< Used in numpy.fabs() implementation  */
     DPNP_FN_FFT_FFT,                  /**< Used in numpy.fft.fft() implementation  */
+    DPNP_FN_FILL_DIAGONAL,            /**< Used in numpy.fill_diagonal() implementation  */
     DPNP_FN_FLOOR,                    /**< Used in numpy.floor() implementation  */
     DPNP_FN_FLOOR_DIVIDE,             /**< Used in numpy.floor_divide() implementation  */
     DPNP_FN_FMOD,                     /**< Used in numpy.fmod() implementation  */
@@ -128,6 +129,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_MULTIPLY,                 /**< Used in numpy.multiply() implementation  */
     DPNP_FN_POWER,                    /**< Used in numpy.power() implementation  */
     DPNP_FN_PROD,                     /**< Used in numpy.prod() implementation  */
+    DPNP_FN_PUT,                      /**< Used in numpy.put() implementation  */
     DPNP_FN_QR,                       /**< Used in numpy.linalg.qr() implementation  */
     DPNP_FN_RADIANS,                  /**< Used in numpy.radians() implementation  */
     DPNP_FN_REMAINDER,                /**< Used in numpy.remainder() implementation  */
@@ -156,6 +158,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RNG_POWER,                /**< Used in numpy.random.power() implementation  */
     DPNP_FN_RNG_RAYLEIGH,             /**< Used in numpy.random.rayleigh() implementation  */
     DPNP_FN_RNG_SRAND,                /**< Used in numpy.random.seed() implementation  */
+    DPNP_FN_RNG_SHUFFLE,              /**< Used in numpy.random.shuffle() implementation  */
     DPNP_FN_RNG_STANDARD_CAUCHY,      /**< Used in numpy.random.standard_cauchy() implementation  */
     DPNP_FN_RNG_STANDARD_EXPONENTIAL, /**< Used in numpy.random.standard_exponential() implementation  */
     DPNP_FN_RNG_STANDARD_GAMMA,       /**< Used in numpy.random.standard_gamma() implementation  */

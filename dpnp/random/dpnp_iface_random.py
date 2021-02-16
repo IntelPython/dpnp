@@ -1276,12 +1276,19 @@ def shuffle(x):
 
     For full documentation refer to :obj:`numpy.random.shuffle`.
 
-    Notes
-    -----
-    The function uses `numpy.random.shuffle` on the backend and will be
-    executed on fallback backend.
+    Limitations
+    -----------
+    Parameter ``x`` is supported as a ``dpnp.dparray``.
+    Otherwise, the function will use :obj:`numpy.random.shuffle` on the backend
+    and will be executed on fallback backend.
 
     """
+
+    if not use_origin_backend(seed):
+        if not isinstance(x, dparray):
+            pass
+        else:
+            return dpnp_rng_shuffle(x)
 
     return call_origin(numpy.random.shuffle, x)
 

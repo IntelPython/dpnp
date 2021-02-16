@@ -248,6 +248,20 @@ INP_DLLEXPORT void dpnp_prod_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
+ * @brief Product of array elements
+ *
+ * @param [in]  array       Input array.
+ * @param [in]  ind         Target indices, interpreted as integers.
+ * @param [in]  v           Values to place in array at target indices.
+ * @param [in]  size        Number of input elements in `array`.
+ * @param [in]  size_ind    Number of input elements in `ind`.
+ * @param [in]  size_v      Number of input elements in `v`.
+ */
+template <typename _DataType, typename _IndecesType, typename _ValueType>
+INP_DLLEXPORT void dpnp_put_c(void* array, void* ind, void* v, const size_t size, const size_t size_ind, const size_t size_v);
+
+/**
+ * @ingroup BACKEND_API
  * @brief Compute the eigenvalues and right eigenvectors of a square array.
  *
  * @param [in]  array_in  Input array[size][size]
@@ -549,6 +563,18 @@ INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
     INP_DLLEXPORT void __name__(void* array1, void* array2, void* result1, size_t size);
 
 #include <dpnp_gen_2arg_3type_tbl.hpp>
+
+/**
+ * @ingroup BACKEND_API
+ * @brief fill_diagonal function.
+ *
+ * @param [in]  array1_in    Input array.
+ * @param [in]  val          Value to write on the diagonal.
+ * @param [in]  shape        Input shape.
+ * @param [in]  ndim         Number of elements in shape.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_fill_diagonal_c(void* array1_in, void* val, size_t* shape, const size_t ndim);
 
 /**
  * @ingroup BACKEND_API
