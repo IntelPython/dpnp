@@ -52,9 +52,10 @@ __all__ = [
     "checker_throw_type_error",
     "checker_throw_value_error",
     "dp2nd_array",
-    "_get_linear_index",
+    "dpnp_descriptor",
     "get_axis_indeces",
     "get_axis_offsets",
+    "_get_linear_index",
     "nd2dp_array",
     "normalize_axis",
     "_object_to_tuple",
@@ -325,3 +326,68 @@ cpdef cpp_bool use_origin_backend(input1=None, size_t compute_size=0):
         return True
 
     return False
+
+
+cdef class dpnp_descriptor:
+    def __init__(self, obj):
+        self.descriptor = getattr(obj, "__array_interface__", None)
+        if self.descriptor is None:
+            return
+
+        if self.descriptor["version"] != 3:
+            return
+
+        # array size calculation
+        cdef Py_ssize_t shape_it = 0
+        self.dpnp_descriptor_data_size = 1
+        for shape_it in self.shape:
+            if shape_it < 0:
+                raise ValueError(f"{ERROR_PREFIX} dpnp_descriptor::__init__() invalid value {shape_it} in 'shape'")
+            self.dpnp_descriptor_data_size *= shape_it
+
+        # set scalar propery
+        self.dpnp_descriptor_is_scalar = False
+
+    @property
+    def shape(self):
+        if self.descriptor is None:
+            return None
+        return self.descriptor["shape"]
+
+    @property
+    def size(self):
+        if self.descriptor is None:
+            return None
+        return self.dpnp_descriptor_data_size
+
+    @property
+    def dtype(self):
+        if self.descriptor is None:
+            return None
+
+        type_str = self.descriptor["typestr"]
+        return dpnp.dtype(type_str)
+
+    @property
+    def is_scalar(self):
+        return self.dpnp_descriptor_is_scalar
+
+    @property
+    def data(self):
+        if self.descriptor is None:
+            return None
+
+        data_tupple = self.descriptor["data"]
+        return data_tupple[0]
+
+    cdef void * get_data(self):
+        cdef long val = self.data
+        return < void * > val
+
+    def __bool__(self):
+        if self.descriptor is None:
+            return False
+        return True
+
+    def __str__(self):
+        return str(self.descriptor)
