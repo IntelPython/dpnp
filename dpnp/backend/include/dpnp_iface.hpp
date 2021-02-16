@@ -226,7 +226,7 @@ INP_DLLEXPORT void dpnp_sum_c(void* array, void* result, size_t size);
  * @param [in]  arr_size    Number of input elements in `arr`.
  * @param [in]  vals_size   Number of input elements in `vals`.
  */
-template<typename _DataType, typename _MaskType>
+template<typename _DataType>
 INP_DLLEXPORT void dpnp_place_c(void* arr, void* mask, void* vals, const size_t arr_size, const size_t vals_size);
 
 /**

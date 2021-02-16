@@ -175,11 +175,11 @@ void dpnp_fill_diagonal_c(void* array1_in, void* val_in, size_t* shape, const si
     return;
 }
 
-template<typename _DataType, typename _MaskType>
+template<typename _DataType>
 void dpnp_place_c(void* arr_in, void* mask_in, void* vals_in, const size_t arr_size, const size_t vals_size)
 {
     _DataType* arr = reinterpret_cast<_DataType*>(arr_in);
-    _MaskType* mask = reinterpret_cast<_MaskType*>(mask_in);
+    bool* mask = reinterpret_cast<bool*>(mask_in);
     _DataType* vals = reinterpret_cast<_DataType*>(vals_in);
     size_t counter = 0;
 
@@ -254,10 +254,10 @@ void func_map_init_indexing_func(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_FILL_DIAGONAL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_fill_diagonal_c<float>};
     fmap[DPNPFuncName::DPNP_FN_FILL_DIAGONAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_fill_diagonal_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_PLACE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_place_c<int, bool>};
-    fmap[DPNPFuncName::DPNP_FN_PLACE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_place_c<long, bool>};
-    fmap[DPNPFuncName::DPNP_FN_PLACE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_place_c<float, bool>};
-    fmap[DPNPFuncName::DPNP_FN_PLACE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_place_c<double, bool>};
+    fmap[DPNPFuncName::DPNP_FN_PLACE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_place_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_PLACE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_place_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_PLACE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_place_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_PLACE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_place_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_PUT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_put_c<int, long, int>};
     fmap[DPNPFuncName::DPNP_FN_PUT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_put_c<long, long, long>};

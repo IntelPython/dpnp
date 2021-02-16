@@ -184,19 +184,14 @@ cpdef tuple dpnp_nonzero(dparray in_array1):
     return result
 
 
-cpdef dpnp_place(dparray arr, dparray mask, vals):
-    cpdef int vals_len = len(vals)
-    vals_arr = dparray(vals_len, dtype=arr.dtype)
-    for i in range(vals_len):
-        vals_arr[i] = vals[i]
-
+cpdef dpnp_place(dparray arr, dparray mask, dparray vals):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PLACE, param1_type, param1_type)
 
     cdef custom_indexing_3in_func_ptr_t func = <custom_indexing_3in_func_ptr_t > kernel_data.ptr
 
-    func(arr.get_data(), mask.get_data(), vals_arr.get_data(), arr.size, vals_arr.size)
+    func(arr.get_data(), mask.get_data(), vals.get_data(), arr.size, vals.size)
 
 
 cpdef dpnp_put(dparray input, ind, v):
