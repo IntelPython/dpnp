@@ -79,7 +79,16 @@ void dpnp_sum_c(const void* input_in,
         }
     }
 
-    const std::vector<size_t> input_shape_vec(input_shape, input_shape + input_shape_ndim);
+    std::vector<size_t> input_shape_vec;
+    if ((input_shape != nullptr) && (input_shape_ndim > 0))
+    {
+        input_shape_vec.assign(input_shape, input_shape + input_shape_ndim);
+    }
+    else
+    { // No shape provided. 1D array or scalar
+        input_shape_vec.assign({input_size});
+    }
+
     DPNPC_id<_DataType_input> input_it(input, input_shape_vec);
     if (axes_ndim > 0)
     {
