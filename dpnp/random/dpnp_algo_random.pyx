@@ -66,6 +66,7 @@ __all__ = [
     "dpnp_rng_randn",
     "dpnp_rng_random",
     "dpnp_rng_rayleigh",
+    "dpnp_rng_shuffle",
     "dpnp_rng_srand",
     "dpnp_rng_standard_cauchy",
     "dpnp_rng_standard_exponential",
@@ -113,6 +114,11 @@ ctypedef void(*fptr_dpnp_rng_pareto_c_1out_t)(void * , const double, const size_
 ctypedef void(*fptr_dpnp_rng_poisson_c_1out_t)(void * , const double, const size_t) except +
 ctypedef void(*fptr_dpnp_rng_power_c_1out_t)(void * , const double, const size_t) except +
 ctypedef void(*fptr_dpnp_rng_rayleigh_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_shuffle_c_1out_t)(void * ,
+                                               const size_t,
+                                               const size_t,
+                                               const size_t,
+                                               const size_t) except +
 ctypedef void(*fptr_dpnp_rng_srand_c_1out_t)(const size_t) except +
 ctypedef void(*fptr_dpnp_rng_standard_cauchy_c_1out_t)(void * , const size_t) except +
 ctypedef void(*fptr_dpnp_rng_standard_exponential_c_1out_t)(void * , const size_t) except +
@@ -872,6 +878,28 @@ cpdef dparray dpnp_rng_rayleigh(double scale, size):
         func(result.get_data(), scale, result.size)
 
     return result
+
+
+cpdef dparray dpnp_rng_shuffle(dparray x1):
+    """
+    Modify a sequence in-place by shuffling its contents.
+
+    """
+
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype.type)
+    cdef size_t itemsize = x1.dtype.itemsize
+    cdef size_t ndim = x1.ndim
+    cdef size_t high_dim_size = len(x1)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_SHUFFLE, param1_type, param1_type)
+
+    cdef fptr_dpnp_rng_shuffle_c_1out_t func = < fptr_dpnp_rng_shuffle_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(x1.get_data(), itemsize, ndim, high_dim_size, x1.size)
+
+    return x1
 
 
 cpdef dpnp_rng_srand(seed):
