@@ -685,6 +685,7 @@ tests/test_generator_mt19937.py::TestIntegers::test_scalar_array_equiv[True]
 tests/test_generator_mt19937.py::TestIntegers::test_zero_size[False]
 tests/test_generator_mt19937.py::TestIntegers::test_zero_size[True]
 tests/test_generator_mt19937.py::TestMultinomial::test_int_negative_interval
+tests/test_generator_mt19937.py::TestMultinomial::test_p_non_contiguous
 tests/test_generator_mt19937.py::TestMultinomial::test_size
 tests/test_generator_mt19937.py::TestMultivariateHypergeometric::test_typical_cases[150000-count-25]
 tests/test_generator_mt19937.py::TestMultivariateHypergeometric::test_typical_cases[150000-count-45]
@@ -1552,6 +1553,7 @@ tests/test_randomstate.py::test_integer_repeat[poisson]
 tests/test_randomstate.py::test_integer_repeat[zipf]
 tests/test_randomstate.py::TestMultinomial::test_int_negative_interval
 tests/test_randomstate.py::TestMultinomial::test_invalid_prob
+tests/test_randomstate.py::TestMultinomial::test_p_non_contiguous
 tests/test_randomstate.py::TestMultinomial::test_size
 tests/test_randomstate.py::TestRandint::test_bounds_checking
 tests/test_randomstate.py::TestRandint::test_full_range
