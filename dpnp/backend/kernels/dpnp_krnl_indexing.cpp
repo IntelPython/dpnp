@@ -143,6 +143,38 @@ void dpnp_diagonal_c(
     return;
 }
 
+template <typename _DataType>
+void dpnp_fill_diagonal_c(void* array1_in, void* val_in, size_t* shape, const size_t ndim)
+{
+    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
+    _DataType* val_arr = reinterpret_cast<_DataType*>(val_in);
+
+    size_t min_shape = shape[0];
+    for (size_t i = 0; i < ndim; ++i)
+    {
+        if (shape[i] < min_shape)
+        {
+            min_shape = shape[i];
+        }
+    }
+
+    _DataType val = val_arr[0];
+
+    for (size_t i = 0; i < min_shape; ++i)
+    {
+        size_t ind = 0;
+        size_t n = 1;
+        for (size_t k = 0; k < ndim; k++)
+        {
+            size_t ind_ = ndim - 1 - k;
+            ind += n * i;
+            n *= shape[ind_];
+        }
+        array_1[ind] = val;
+    }
+    return;
+}
+
 template <typename _DataType, typename _IndecesType, typename _ValueType>
 void dpnp_put_c(void* array1_in, void* ind_in, void* v_in, const size_t size, const size_t size_ind, const size_t size_v)
 {
@@ -197,6 +229,11 @@ void func_map_init_indexing_func(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_diagonal_c<long>};
     fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_diagonal_c<float>};
     fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_diagonal_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_FILL_DIAGONAL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_fill_diagonal_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_FILL_DIAGONAL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_fill_diagonal_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_FILL_DIAGONAL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_fill_diagonal_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_FILL_DIAGONAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_fill_diagonal_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_PUT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_put_c<int, long, int>};
     fmap[DPNPFuncName::DPNP_FN_PUT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_put_c<long, long, long>};

@@ -62,6 +62,7 @@ __all__ += [
 ctypedef void(*custom_indexing_2in_1out_func_ptr_t)(void *, void * , void * , size_t)
 ctypedef void(*custom_indexing_2in_1out_func_ptr_t_)(void * , void * , const size_t, size_t * , size_t * , const size_t)
 ctypedef void(*custom_indexing_6in_func_ptr_t)(void * , void * , void * , const size_t, const size_t, const size_t)
+ctypedef void(*custom_indexing_2in_func_ptr_t)(void * , void * , size_t * , const size_t)
 
 
 cpdef dparray dpnp_choose(input, choices):
@@ -114,10 +115,16 @@ cpdef dparray dpnp_diagonal(dparray input, offset=0):
 
 
 cpdef dpnp_fill_diagonal(dparray input, val):
-    for i in range(min(input.shape)):
-        ind_list = [i] * input.ndim
-        ind = tuple(ind_list)
-        input[ind] = val
+    val_arr = dparray(1, dtype=input.dtype)
+    val_arr[0] = val
+
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FILL_DIAGONAL, param1_type, param1_type)
+
+    cdef custom_indexing_2in_func_ptr_t func = <custom_indexing_2in_func_ptr_t > kernel_data.ptr
+
+    func(input.get_data(), val_arr.get_data(), < size_t * > input._dparray_shape.data(), input.ndim)
 
 
 cpdef dparray dpnp_indices(dimensions):
