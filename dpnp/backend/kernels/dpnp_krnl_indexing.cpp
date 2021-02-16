@@ -143,6 +143,38 @@ void dpnp_diagonal_c(
     return;
 }
 
+template <typename _DataType>
+void dpnp_fill_diagonal_c(void* array1_in, void* val_in, size_t* shape, const size_t ndim)
+{
+    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
+    _DataType* val_arr = reinterpret_cast<_DataType*>(val_in);
+
+    size_t min_shape = shape[0];
+    for (size_t i = 0; i < ndim; ++i)
+    {
+        if (shape[i] < min_shape)
+        {
+            min_shape = shape[i];
+        }
+    }
+
+    _DataType val = val_arr[0];
+
+    for (size_t i = 0; i < min_shape; ++i)
+    {
+        size_t ind = 0;
+        size_t n = 1;
+        for (size_t k = 0; k < ndim; k++)
+        {
+            size_t ind_ = ndim - 1 - k;
+            ind += n * i;
+            n *= shape[ind_];
+        }
+        array_1[ind] = val;
+    }
+    return;
+}
+
 template<typename _DataType, typename _MaskType>
 void dpnp_place_c(void* arr_in, void* mask_in, void* vals_in, const size_t arr_size, const size_t vals_size)
 {
@@ -216,6 +248,11 @@ void func_map_init_indexing_func(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_diagonal_c<long>};
     fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_diagonal_c<float>};
     fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_diagonal_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_FILL_DIAGONAL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_fill_diagonal_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_FILL_DIAGONAL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_fill_diagonal_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_FILL_DIAGONAL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_fill_diagonal_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_FILL_DIAGONAL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_fill_diagonal_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_PLACE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_place_c<int, bool>};
     fmap[DPNPFuncName::DPNP_FN_PLACE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_place_c<long, bool>};
