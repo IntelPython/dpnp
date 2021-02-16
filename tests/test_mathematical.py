@@ -135,30 +135,33 @@ class TestEdiff1d:
 
 
 class TestTrapz:
-
-    @pytest.mark.parametrize("array", [[[1, 2, 3], [4, 5, 6]],
-                                       [1., 2.5, 6., 7., 3.],
-                                       [2, 4, 6, 8],
+    @pytest.mark.parametrize("data_type",
+                             [numpy.float64, numpy.float32, numpy.int64, numpy.int32])
+    @pytest.mark.parametrize("array", [[1, 2, 3],
+                                       [[1, 2, 3], [4, 5, 6]],
+                                       [1, 4, 6, 9, 10, 12],
                                        [],
                                        [1]])
-    def test_trapz_without_params(self, array):
-        a = numpy.array(array)
+    def test_trapz_without_params(self, array, data_type):
+        a = numpy.array(array, dtype=data_type)
         ia = inp.array(a)
 
         result = inp.trapz(ia)
         expected = numpy.trapz(a)
         numpy.testing.assert_array_equal(expected, result)
 
+    @pytest.mark.parametrize("data_type_y",
+                             [numpy.float64, numpy.float32, numpy.int64, numpy.int32])
+    @pytest.mark.parametrize("data_type_x",
+                             [numpy.float64, numpy.float32, numpy.int64, numpy.int32])
     @pytest.mark.parametrize("y_array", [[1, 2, 4, 5],
-                                         [1., 2.5, 6., 7., ],
-                                         [2, 4, 6, 8]])
-    @pytest.mark.parametrize("x_array", [[1, 2, 3, 4],
-                                         [2, 4, 6, 8]])
-    def test_trapz_with_x_params(self, y_array, x_array):
-        y = numpy.array(y_array)
+                                         [1., 2.5, 6., 7., ]])
+    @pytest.mark.parametrize("x_array", [[2, 5, 6, 9]])
+    def test_trapz_with_x_params(self, y_array, x_array, data_type_y, data_type_x):
+        y = numpy.array(y_array, dtype=data_type_y)
         iy = inp.array(y)
 
-        x = numpy.array(x_array)
+        x = numpy.array(x_array, dtype=data_type_x)
         ix = inp.array(x)
 
         result = inp.trapz(iy, x=ix)
@@ -166,9 +169,8 @@ class TestTrapz:
         numpy.testing.assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("y_array", [[1, 2, 4, 5],
-                                         [1., 2.5, 6., 7., ],
-                                         [2, 4, 6, 8]])
-    @pytest.mark.parametrize("dx", [1, 2, 3, 4])
+                                         [1., 2.5, 6., 7., ]])
+    @pytest.mark.parametrize("dx", [2, 3, 4])
     def test_trapz_with_dx_params(self, y_array, dx):
         y = numpy.array(y_array)
         iy = inp.array(y)

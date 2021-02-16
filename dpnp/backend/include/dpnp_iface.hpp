@@ -629,14 +629,16 @@ INP_DLLEXPORT void dpnp_elemwise_transpose_c(void* array1_in,
  * @ingroup BACKEND_API
  * @brief Custom implementation of trapz function
  *
- * @param [in]  array1_in  First input array.
- * @param [in]  array2_in  Second input array.
- * @param [out] result1    Output array.
- * @param [in]  nrow       Number of row in input arrays.
- * @param [in]  row_len    Number of elements in output arrays.
+ * @param [in]  array1_in    First input array.
+ * @param [in]  array2_in    Second input array.
+ * @param [out] result1      Output array.
+ * @param [in]  dx           The spacing between sample points.
+ * @param [in]  array1_size  Number of elements in first input array.
+ * @param [in]  array2_size  Number of elements in second input arrays.
  *
  */
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
-INP_DLLEXPORT void dpnp_trapz_c(void* array1_in, void* array2_in, void* result1, size_t nrow, size_t row_len);
+INP_DLLEXPORT void dpnp_trapz_c(void* array1_in, void* array2_in, void* result1, 
+                                double dx, size_t array1_size, size_t array2_size);
 
 #endif // BACKEND_IFACE_H

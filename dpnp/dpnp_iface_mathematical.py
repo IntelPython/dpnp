@@ -1442,7 +1442,7 @@ def trapz(y, x=None, dx=1.0, **kwargs):
 
     Limitations
     -----------
-        Parameters ``y1`` and ``x1`` are supported as :obj:`dpnp.ndarray`.
+        Parameters ``y`` and ``x`` are supported as :obj:`dpnp.ndarray`.
         Keyword arguments ``kwargs`` are currently unsupported.
         Otherwise the functions will be executed sequentially on CPU.
         Input array data types are limited by supported DPNP :ref:`Data types`.
@@ -1471,15 +1471,13 @@ def trapz(y, x=None, dx=1.0, **kwargs):
             pass
         elif x is not None and y.shape != x.shape:
             pass
+        elif len(y.shape) > 1:
+            pass
         else:
             if x is None:
                 x = dpnp.empty(0, dtype=y.dtype)
 
-            result = dpnp_trapz(y, x, dx)
-
-            if result.size == 1:
-                return result[0]
-            return result
+            return dpnp_trapz(y, x, dx)
 
     return call_origin(numpy.trapz, y, x=x, dx=dx, **kwargs)
 

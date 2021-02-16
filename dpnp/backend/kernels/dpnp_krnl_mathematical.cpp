@@ -281,21 +281,34 @@ template <typename _KernelNameSpecialization1, typename _KernelNameSpecializatio
 class dpnp_trapz_c_kernel;
 
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
-void dpnp_trapz_c(void* array1_in, void* array2_in, void* result1, size_t nrow, size_t row_len)
+void dpnp_trapz_c(void* array1_in, void* array2_in, void* result1, double dx, size_t array1_size, size_t array2_size)
 {
     _DataType_input1* array1 = reinterpret_cast<_DataType_input1*>(array1_in);
     _DataType_input2* array2 = reinterpret_cast<_DataType_input2*>(array2_in);
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
 
-    for (size_t i = 0; i < nrow; ++i) {
-        size_t pos1 = i * row_len;
-        size_t pos2 = i * (row_len - 1);
-        double square = array2[pos2] * array1[pos1] + array2[pos2 + row_len - 2] * array1[pos1 + row_len - 1];
-        for (size_t j = 1; j < row_len - 1; ++j) {
-            square += array1[pos1 + j] * (array2[pos2 + j - 1] + array2[pos2 + j]);
+    if (array2_size < 2) {
+        _DataType_input1* sum = reinterpret_cast<_DataType_input1*>(dpnp_memory_alloc_c(1 * sizeof(_DataType_input1)));
+
+        dpnp_sum_c<_DataType_input1>(array1, sum, array1_size);
+
+        result[0] = sum[0];
+
+        dpnp_memory_free_c(sum);
+
+        result[0] -= (array1[0] + array1[array1_size - 1]) * 0.5;
+        result[0] *= dx;
+
+    } else {
+        result[0] += array1[0] * (array2[1] - array2[0]) +
+                     array1[array1_size - 1] * (array2[array2_size - 1] - array2[array2_size - 2]);
+
+        for (size_t i = 1; i < array1_size - 1; ++i) {
+            result[0] += array1[i] * (array2[i + 1] - array2[i - 1]);
         }
-        square *= 0.5;
-        result[i] = square;
+
+        result[0] *= 0.5;
+
     }
 
     return;

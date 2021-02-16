@@ -80,7 +80,7 @@ __all__ += [
 
 ctypedef void(*fptr_custom_elemwise_absolute_1in_1out_t)(void * , void * , size_t)
 ctypedef void(*fptr_1in_2out_t)(void * , void * , void * , size_t)
-ctypedef void(*ftpr_custom_trapz_2in_1out_with_2size_t)(void *, void *, void *, size_t, size_t)
+ctypedef void(*ftpr_custom_trapz_2in_1out_with_2size_t)(void *, void *, void *, double, size_t, size_t)
 
 
 cpdef dparray dpnp_absolute(dparray input):
@@ -499,50 +499,25 @@ cpdef dparray dpnp_sum(dparray input, axis=None):
     return dpnp_result_array
 
 
-cpdef dparray dpnp_trapz(dparray y1, dparray x1, dx):
+cpdef dpnp_trapz(dparray y1, dparray x1, double dx):
 
     if y1.size <= 1:
         if y1.dtype == dpnp.float32:
             return dpnp.array([0], dtype=dpnp.float32)
         return dpnp.array([0], dtype=dpnp.float64)
 
-    if y1.ndim == 1:
-        nrow = 1
-    else:
-        nrow = y1.shape[0]
-
-    diff_len = y1.size - nrow
-
-    if x1.size == 0:
-        diff_type = y1.dtype
-    else:
-        diff_type = x1.dtype
-
-    cdef dparray diff = dparray(diff_len, dtype=diff_type)
-
-    if x1.size == 0:
-        diff = dpnp.full(diff_len, dx)
-    else:
-        for i in range(nrow):
-            pos = i * y1.shape[-1]
-            for j in range(y1.shape[-1] - 1):
-                cur_diff = x1[pos + j + 1] - x1[pos + j]
-                diff._setitem_scalar(pos + j, cur_diff)
-
-    size_ = y1.shape[-1]
-
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(y1.dtype)
-    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(diff.dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRAPZ, param1_type, param2_type)
 
     result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
 
-    cdef dparray result = dparray((nrow,), dtype=result_type)
+    cdef dparray result = dparray((1,), dtype=result_type)
 
     cdef ftpr_custom_trapz_2in_1out_with_2size_t func = <ftpr_custom_trapz_2in_1out_with_2size_t > kernel_data.ptr
-    func(y1.get_data(), diff.get_data(), result.get_data(), nrow, size_)
+    func(y1.get_data(), x1.get_data(), result.get_data(), dx, y1.size, x1.size)
 
-    return result
+    return result[0]
 
 
 cpdef dparray dpnp_trunc(dparray x1):
