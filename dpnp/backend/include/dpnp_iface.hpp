@@ -547,6 +547,18 @@ INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
+ * @brief fill_diagonal function.
+ *
+ * @param [in]  array1_in    Input array.
+ * @param [in]  val          Value to write on the diagonal.
+ * @param [in]  shape        Input shape.
+ * @param [in]  ndim         Number of elements in shape.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_fill_diagonal_c(void* array1_in, void* val, size_t* shape, const size_t ndim);
+
+/**
+ * @ingroup BACKEND_API
  * @brief floor_divide function.
  *
  * @param [in]  array1_in    Input array 1.
