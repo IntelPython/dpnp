@@ -1419,7 +1419,7 @@ def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, where
     if not use_origin_backend(x1):
         if not isinstance(x1, dparray):
             pass
-        if out is not None and not isinstance(out, dparray):
+        elif out is not None and not isinstance(out, dparray):
             pass
         elif axis is not None and not dpnp.isscalar(axis):
             pass
