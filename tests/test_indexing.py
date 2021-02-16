@@ -217,6 +217,28 @@ def test_put3():
     numpy.testing.assert_array_equal(a, ia)
 
 
+def test_put_along_axis_val_int():
+    a = numpy.arange(16).reshape(4, 4)
+    ai = dpnp.array(a)
+    ind_r = numpy.array([[3, 0, 2, 1]])
+    ind_r_i = dpnp.array(ind_r)
+    for axis in range(2):
+        numpy.put_along_axis(a, ind_r, 777, axis)
+        dpnp.put_along_axis(ai, ind_r_i, 777, axis)
+        numpy.testing.assert_array_equal(a, ai)
+
+
+def test_put_along_axis1():
+    a = numpy.arange(64).reshape(4, 4, 4)
+    ai = dpnp.array(a)
+    ind_r = numpy.array([[[3, 0, 2, 1]]])
+    ind_r_i = dpnp.array(ind_r)
+    for axis in range(3):
+        numpy.put_along_axis(a, ind_r, 777, axis)
+        dpnp.put_along_axis(ai, ind_r_i, 777, axis)
+        numpy.testing.assert_array_equal(a, ai)
+
+
 @pytest.mark.parametrize("vals",
                          [[100, 200]],
                          ids=['[100, 200]'])
@@ -344,6 +366,28 @@ def test_take(array, indices):
     expected = numpy.take(a, ind)
     result = dpnp.take(ia, iind)
     numpy.testing.assert_array_equal(expected, result)
+
+
+def test_take_along_axis():
+    a = numpy.arange(16).reshape(4, 4)
+    ai = dpnp.array(a)
+    ind_r = numpy.array([[3, 0, 2, 1]])
+    ind_r_i = dpnp.array(ind_r)
+    for axis in range(2):
+        expected = numpy.take_along_axis(a, ind_r, axis)
+        result = dpnp.take_along_axis(ai, ind_r_i, axis)
+        numpy.testing.assert_array_equal(expected, result)
+
+
+def test_take_along_axis1():
+    a = numpy.arange(64).reshape(4, 4, 4)
+    ai = dpnp.array(a)
+    ind_r = numpy.array([[[3, 0, 2, 1]]])
+    ind_r_i = dpnp.array(ind_r)
+    for axis in range(3):
+        expected = numpy.take_along_axis(a, ind_r, axis)
+        result = dpnp.take_along_axis(ai, ind_r_i, axis)
+        numpy.testing.assert_array_equal(expected, result)
 
 
 @pytest.mark.parametrize("m",

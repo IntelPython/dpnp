@@ -143,7 +143,7 @@ cpdef dparray dpnp_cross(dparray x1, dparray x2):
 
 
 cpdef dparray dpnp_cumprod(dparray x1):
-    #instead of x1.shape, (x1.size, ) is passed to the function
+    # instead of x1.shape, (x1.size, ) is passed to the function
     # due to the following:
     # >>> import numpy
     # >>> a = numpy.array([[1, 2], [2, 3]])
@@ -155,7 +155,7 @@ cpdef dparray dpnp_cumprod(dparray x1):
 
 
 cpdef dparray dpnp_cumsum(dparray x1):
-    #instead of x1.shape, (x1.size, ) is passed to the function
+    # instead of x1.shape, (x1.size, ) is passed to the function
     # due to the following:
     # >>> import numpy
     # >>> a = numpy.array([[1, 2], [2, 3]])
@@ -197,41 +197,12 @@ cpdef dparray dpnp_divide(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_DIVIDE, x1, x2, x1.shape)
 
 
-cpdef dparray dpnp_ediff1d(dparray x1, dparray to_end, dparray to_begin):
+cpdef dparray dpnp_ediff1d(dparray x1):
 
-    types_map = {
-        dpnp.int32: dpnp.int64,
-        dpnp.int64: dpnp.int64,
-        dpnp.float32: dpnp.float32,
-        dpnp.float64: dpnp.float64
-    }
+    if x1.size <= 1:
+        return dpnp.empty(0, dtype=x1.dtype)
 
-    if x1.dtype.type in types_map:
-        res_type = types_map[x1.dtype.type]
-    else:
-        dpnp.dpnp_utils.checker_throw_type_error("ediff1d", x1.dtype)
-
-    res_size = x1.size - 1 + to_end.size + to_begin.size
-
-    cdef dparray result = dparray(res_size, dtype=res_type)
-
-    ind = 0
-
-    for i in range(ind, to_begin.size):
-        result._setitem_scalar(i, to_begin[i])
-
-    ind += to_begin.size
-
-    for i in range(ind, ind + x1.size - 1):
-        cur_res = x1[i - ind + 1] - x1[i - ind]
-        result._setitem_scalar(i, cur_res)
-
-    ind += x1.size - 1
-
-    for i in range(ind, ind + to_end.size):
-        result._setitem_scalar(i, to_end[i - ind])
-
-    return result
+    return call_fptr_1in_1out(DPNP_FN_EDIFF1D, x1, (x1.size -1,))
 
 
 cpdef dparray dpnp_fabs(dparray x1):

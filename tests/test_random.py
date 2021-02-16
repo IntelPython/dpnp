@@ -17,8 +17,7 @@ class TestDistribution(unittest.TestCase):
         assert len(numpy.unique(res)) == 1
         assert numpy.unique(res)[0] == val
 
-    def check_moments(self, dist_name, expected_mean, expected_var, params):
-        size = 10**5
+    def check_moments(self, dist_name, expected_mean, expected_var, params, size=10**5):
         seed = 28041995
         dpnp.random.seed(seed)
         res = numpy.asarray(getattr(dpnp.random, dist_name)(size=size, **params))
@@ -606,6 +605,45 @@ class TestDistributionsNormal(TestDistribution):
         self.check_seed('normal', {'loc': loc, 'scale': scale})
 
 
+class TestDistributionsNoncentralChisquare:
+
+    @pytest.mark.parametrize("df", [5.0, 1.0, 0.5], ids=['df_grt_1', 'df_eq_1', 'df_less_1'])
+    def test_moments(self, df):
+        nonc = 20.
+        expected_mean = df + nonc
+        expected_var = 2 * (df + 2 * nonc)
+        size = 10**6
+        seed = 28041995
+        dpnp.random.seed(seed)
+        res = numpy.asarray(dpnp.random.noncentral_chisquare(df, nonc, size=size))
+        var = numpy.var(res)
+        mean = numpy.mean(res)
+        assert math.isclose(var, expected_var, abs_tol=0.6)
+        assert math.isclose(mean, expected_mean, abs_tol=0.6)
+
+    def test_invalid_args(self):
+        size = 10
+        df = 5.0     # OK
+        nonc = -1.0  # non-negative `nonc` is expected
+        with pytest.raises(ValueError):
+            dpnp.random.noncentral_chisquare(df, nonc, size=size)
+        df = -1.0    # positive `df` is expected
+        nonc = 1.0   # OK
+        with pytest.raises(ValueError):
+            dpnp.random.noncentral_chisquare(df, nonc, size=size)
+
+    @pytest.mark.parametrize("df", [5.0, 1.0, 0.5], ids=['df_grt_1', 'df_eq_1', 'df_less_1'])
+    def test_seed(self, df):
+        seed = 28041990
+        size = 10
+        nonc = 1.8
+        dpnp.random.seed(seed)
+        a1 = numpy.asarray(dpnp.random.noncentral_chisquare(df, nonc, size=size))
+        dpnp.random.seed(seed)
+        a2 = numpy.asarray(dpnp.random.noncentral_chisquare(df, nonc, size=size))
+        assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
 class TestDistributionsPareto(TestDistribution):
 
     def test_moments(self):
@@ -764,7 +802,7 @@ class TestDistributionsTriangular(TestDistribution):
         mode = 2.0
         right = 3.0
         expected_mean = (left + mode + right) / 3
-        expected_var = (left ** 2 + mode ** 2 + right ** 2 - left * mode -left * right -mode * right) / 18
+        expected_var = (left ** 2 + mode ** 2 + right ** 2 - left * mode - left * right - mode * right) / 18
         self.check_moments('triangular', expected_mean,
                            expected_var, {'left': left, 'mode': mode, 'right': right})
 
@@ -809,6 +847,68 @@ class TestDistributionsUniform(TestDistribution):
         self.check_seed('uniform', {'low': low, 'high': high})
 
 
+class TestDistributionsVonmises:
+
+    @pytest.mark.parametrize("kappa", [5.0, 0.5], ids=['large_kappa', 'small_kappa'])
+    def test_moments(self, kappa):
+        size = 10**6
+        mu = 2.
+
+        numpy_res = numpy.random.vonmises(mu, kappa, size=size)
+        expected_mean = numpy.mean(numpy_res)
+        expected_var = numpy.var(numpy_res)
+
+        res = numpy.asarray(dpnp.random.vonmises(mu, kappa, size=size))
+        var = numpy.var(res)
+        mean = numpy.mean(res)
+        assert math.isclose(var, expected_var, abs_tol=0.6)
+        assert math.isclose(mean, expected_mean, abs_tol=0.6)
+
+    def test_invalid_args(self):
+        size = 10
+        mu = 5.0      # OK
+        kappa = -1.0  # non-negative `kappa` is expected
+        with pytest.raises(ValueError):
+            dpnp.random.vonmises(mu, kappa, size=size)
+
+    @pytest.mark.parametrize("kappa", [5.0, 0.5], ids=['large_kappa', 'small_kappa'])
+    def test_seed(self, kappa):
+        seed = 28041990
+        size = 10
+        mu = 2.
+        dpnp.random.seed(seed)
+        a1 = numpy.asarray(dpnp.random.vonmises(mu, kappa, size=size))
+        dpnp.random.seed(seed)
+        a2 = numpy.asarray(dpnp.random.vonmises(mu, kappa, size=size))
+        assert_allclose(a1, a2, rtol=1e-07, atol=0)
+
+
+class TestDistributionsWald(TestDistribution):
+
+    def test_moments(self):
+        size = 5 * 10**6
+        mean = 3.56
+        scale = 2.8
+        expected_mean = mean
+        expected_var = (mean ** 3) / scale
+        self.check_moments('wald', expected_mean, expected_var,
+                           {'mean': mean, 'scale': scale}, size=size)
+
+    def test_invalid_args(self):
+        size = 10
+        mean = -1.0   # positive `mean` is expected
+        scale = 1.0   # OK
+        self.check_invalid_args('wald', {'mean': mean, 'scale': scale})
+        mean = 1.0    # OK
+        scale = -1.0  # positive `scale` is expected
+        self.check_invalid_args('wald', {'mean': mean, 'scale': scale})
+
+    def test_seed(self):
+        mean = 3.56   # `mean` param for Wald distr
+        scale = 2.8   # `scale` param for Wald distr
+        self.check_seed('wald', {'mean': mean, 'scale': scale})
+
+
 class TestDistributionsWeibull(TestDistribution):
 
     def test_extreme_value(self):
@@ -823,3 +923,14 @@ class TestDistributionsWeibull(TestDistribution):
     def test_seed(self):
         a = 2.56
         self.check_seed('weibull', {'a': a})
+
+
+class TestDistributionsZipf(TestDistribution):
+
+    def test_invalid_args(self):
+        a = 1.0  # parameter `a` is expected greater than 1.
+        self.check_invalid_args('zipf', {'a': a})
+
+    def test_seed(self):
+        a = 2.56
+        self.check_seed('zipf', {'a': a})

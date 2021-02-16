@@ -27,7 +27,7 @@
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-# set(DPNP_VERSION 0.5.0)
+# set(DPNP_VERSION 0.5.1)
 # set(DPNP_API_VERSION 0.5)
 
 # set directory where the custom finders live
@@ -53,6 +53,10 @@ option(DPNP_DEBUG_ENABLE "Enable output for DPNP_DEBUG statements" FALSE)
 option(DPNP_INSTALL_STRUCTURED "if FALSE, install package files into same directory" TRUE)
 option(DPNP_SYCL_QUEUE_MGR_ENABLE "Use external manager for SYCL queue" FALSE)
 option(DPNP_BACKEND_TESTS "Enable DPNP tests" FALSE)
+
+if(DEFINED ENV{DPNP_DEBUG})
+  set(DPNP_DEBUG_ENABLE $ENV{DPNP_DEBUG})
+endif()
 
 message(STATUS "CMAKE_VERSION:                   ${CMAKE_VERSION}")
 message(STATUS "CMAKE_GENERATOR:                 ${CMAKE_GENERATOR}")

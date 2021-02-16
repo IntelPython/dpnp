@@ -528,7 +528,8 @@ def ediff1d(x1, to_end=None, to_begin=None):
 
     Limitations
     -----------
-        Parameter ``x1``, ``to_begin``, ``to_end`` are supported as :obj:`dpnp.ndarray`.
+        Parameter ``x1``is supported as :obj:`dpnp.ndarray`.
+        Keyword arguments ``to_end`` and ``to_begin`` are currently supported only with default values `None`.
         Otherwise the function will be executed sequentially on CPU.
         Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -541,9 +542,6 @@ def ediff1d(x1, to_end=None, to_begin=None):
     >>> result = np.ediff1d(a)
     >>> [x for x in result]
     [1, 2, 3, -7]
-    >>> result = np.ediff1d(a, to_begin=np.array([-99, -88]), to_end=np.array([88, 99]))
-    >>> [x for x in result]
-    [-99, -88, 1, 2, 3, -7, 88, 99]
     >>> b = np.array([[1, 2, 4], [1, 6, 24]])
     >>> result = np.ediff1d(b)
     >>> [x for x in result]
@@ -551,22 +549,8 @@ def ediff1d(x1, to_end=None, to_begin=None):
 
     """
 
-    if not use_origin_backend(x1):
-
-        if not isinstance(x1, dparray):
-            pass
-        elif not isinstance(to_end, dparray) and to_end is not None:
-            pass
-        elif not isinstance(to_begin, dparray) and to_begin is not None:
-            pass
-        else:
-
-            if to_end is None:
-                to_end = dpnp.empty(0, dtype=x1.dtype)
-            if to_begin is None:
-                to_begin = dpnp.empty(0, dtype=x1.dtype)
-
-            return dpnp_ediff1d(x1, to_end=to_end, to_begin=to_begin)
+    if not use_origin_backend(x1) and isinstance(x1, dparray):
+        return dpnp_ediff1d(x1)
 
     return call_origin(numpy.ediff1d, x1, to_end=to_end, to_begin=to_begin)
 

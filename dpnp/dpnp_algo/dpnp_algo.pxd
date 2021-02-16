@@ -53,6 +53,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_CONJIGUATE
         DPNP_FN_COPY
         DPNP_FN_COPYSIGN
+        DPNP_FN_COPYTO
         DPNP_FN_CORRELATE
         DPNP_FN_COS
         DPNP_FN_COSH
@@ -62,8 +63,10 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_CUMSUM
         DPNP_FN_DEGREES
         DPNP_FN_DET
+        DPNP_FN_DIAGONAL
         DPNP_FN_DIVIDE
         DPNP_FN_DOT
+        DPNP_FN_EDIFF1D
         DPNP_FN_EIG
         DPNP_FN_EIGVALS
         DPNP_FN_ERF
@@ -72,6 +75,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_EXPM1
         DPNP_FN_FABS
         DPNP_FN_FFT_FFT
+        DPNP_FN_FILL_DIAGONAL
         DPNP_FN_FLOOR
         DPNP_FN_FLOOR_DIVIDE
         DPNP_FN_FMOD
@@ -98,6 +102,8 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_MULTIPLY
         DPNP_FN_POWER
         DPNP_FN_PROD
+        DPNP_FN_PUT
+        DPNP_FN_QR
         DPNP_FN_RADIANS
         DPNP_FN_REMAINDER
         DPNP_FN_RECIP
@@ -118,6 +124,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_MULTINOMIAL
         DPNP_FN_RNG_MULTIVARIATE_NORMAL
         DPNP_FN_RNG_NEGATIVE_BINOMIAL
+        DPNP_FN_RNG_NONCENTRAL_CHISQUARE
         DPNP_FN_RNG_NORMAL
         DPNP_FN_RNG_PARETO
         DPNP_FN_RNG_POISSON
@@ -131,7 +138,10 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_STANDARD_T
         DPNP_FN_RNG_TRIANGULAR
         DPNP_FN_RNG_UNIFORM
+        DPNP_FN_RNG_VONMISES
+        DPNP_FN_RNG_WALD
         DPNP_FN_RNG_WEIBULL
+        DPNP_FN_RNG_ZIPF
         DPNP_FN_SIGN
         DPNP_FN_SIN
         DPNP_FN_SINH
@@ -165,19 +175,20 @@ cdef extern from "dpnp_iface_fptr.hpp":
         DPNPFuncType return_type
         void * ptr
 
-    DPNPFuncData get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type)
+    DPNPFuncData get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type) except +
 
 
 cdef extern from "dpnp_iface.hpp" namespace "QueueOptions":  # need this namespace for Enum import
     cdef enum QueueOptions "QueueOptions":
         CPU_SELECTOR
         GPU_SELECTOR
+        AUTO_SELECTOR
 
 cdef extern from "dpnp_iface.hpp":
     void dpnp_queue_initialize_c(QueueOptions selector)
     size_t dpnp_queue_is_cpu_c()
 
-    char * dpnp_memory_alloc_c(size_t size_in_bytes)
+    char * dpnp_memory_alloc_c(size_t size_in_bytes) except +
     void dpnp_memory_free_c(void * ptr)
     void dpnp_memory_memcpy_c(void * dst, const void * src, size_t size_in_bytes)
     void dpnp_rng_srand_c(size_t seed)

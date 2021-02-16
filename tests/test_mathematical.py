@@ -109,9 +109,14 @@ def test_power(array, val, data_type, val_type):
 
 
 class TestEdiff1d:
-
-    def test_ediff1d_int(self):
-        a = numpy.array([1, 2, 4, 7, 0])
+    @pytest.mark.parametrize("data_type",
+                             [numpy.float64, numpy.float32, numpy.int64, numpy.int32])
+    @pytest.mark.parametrize("array", [[1, 2, 4, 7, 0],
+                                       [],
+                                       [1],
+                                       [[1, 2, 3], [5, 2, 8], [7, 3, 4]], ])
+    def test_ediff1d_int(self, array, data_type):
+        a = numpy.array(array, dtype=data_type)
         ia = inp.array(a)
 
         result = inp.ediff1d(ia)
@@ -120,24 +125,12 @@ class TestEdiff1d:
 
     def test_ediff1d_args(self):
         a = numpy.array([1, 2, 4, 7, 0])
-        ia = inp.array(a)
 
         to_begin = numpy.array([-20, -30])
-        i_to_begin = inp.array(to_begin)
-
         to_end = numpy.array([20, 15])
-        i_to_end = inp.array(to_end)
 
-        result = inp.ediff1d(ia, to_end=i_to_end, to_begin=i_to_begin)
+        result = inp.ediff1d(a, to_end=to_end, to_begin=to_begin)
         expected = numpy.ediff1d(a, to_end=to_end, to_begin=to_begin)
-        numpy.testing.assert_array_equal(expected, result)
-
-    def test_ediff1d_float(self):
-        a = numpy.array([1., 2.5, 6., 7., 3.])
-        ia = inp.array(a)
-
-        result = inp.ediff1d(ia)
-        expected = numpy.ediff1d(a)
         numpy.testing.assert_array_equal(expected, result)
 
 

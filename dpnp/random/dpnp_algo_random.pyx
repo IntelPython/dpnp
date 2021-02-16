@@ -58,6 +58,7 @@ __all__ = [
     "dpnp_rng_multinomial",
     "dpnp_rng_multivariate_normal",
     "dpnp_rng_negative_binomial",
+    "dpnp_rng_noncentral_chisquare",
     "dpnp_rng_normal",
     "dpnp_rng_pareto",
     "dpnp_rng_poisson",
@@ -73,7 +74,10 @@ __all__ = [
     "dpnp_rng_standard_t",
     "dpnp_rng_triangular",
     "dpnp_rng_uniform",
-    "dpnp_rng_weibull"
+    "dpnp_rng_vonmises",
+    "dpnp_rng_wald",
+    "dpnp_rng_weibull",
+    "dpnp_rng_zipf"
 ]
 
 
@@ -103,6 +107,7 @@ ctypedef void(*fptr_dpnp_rng_multivariate_normal_c_1out_t)(void * ,
                                                            const size_t,
                                                            const size_t) except +
 ctypedef void(*fptr_dpnp_rng_negative_binomial_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_noncentral_chisquare_c_1out_t)(void * , const double, const double, const size_t) except +
 ctypedef void(*fptr_dpnp_rng_normal_c_1out_t)(void * , const double, const double, const size_t) except +
 ctypedef void(*fptr_dpnp_rng_pareto_c_1out_t)(void * , const double, const size_t) except +
 ctypedef void(*fptr_dpnp_rng_poisson_c_1out_t)(void * , const double, const size_t) except +
@@ -120,7 +125,10 @@ ctypedef void(*fptr_dpnp_rng_triangular_c_1out_t)(void * ,
                                                   const double,
                                                   const size_t) except +
 ctypedef void(*fptr_dpnp_rng_uniform_c_1out_t)(void * , const long, const long, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_vonmises_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_wald_c_1out_t)(void *, const double, const double, const size_t) except +
 ctypedef void(*fptr_dpnp_rng_weibull_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_zipf_c_1out_t)(void * , const double, const size_t) except +
 
 
 cpdef dparray dpnp_rng_beta(double a, double b, size):
@@ -631,6 +639,31 @@ cpdef dparray dpnp_rng_negative_binomial(double a, double p, size):
     return result
 
 
+cpdef dparray dpnp_rng_noncentral_chisquare(double df, double nonc, size):
+    """
+    Returns an array populated with samples from noncentral chisquare distribution.
+    `dpnp_rng_noncentral_chisquare` generates a matrix filled with random floats sampled from a
+    univariate noncentral chisquare distribution.
+
+    """
+
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_NONCENTRAL_CHISQUARE, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray result = dparray(size, dtype=result_type)
+
+    cdef fptr_dpnp_rng_noncentral_chisquare_c_1out_t func = < fptr_dpnp_rng_noncentral_chisquare_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), df, nonc, result.size)
+
+    return result
+
+
 cpdef dparray dpnp_rng_normal(double loc, double scale, size):
     """
     Returns an array populated with samples from normal distribution.
@@ -1055,6 +1088,57 @@ cpdef dparray dpnp_rng_uniform(long low, long high, size, dtype):
     return result
 
 
+cpdef dparray dpnp_rng_vonmises(double mu, double kappa, size):
+    """
+    Returns an array populated with samples from Vonmises distribution.
+    `dpnp_rng_vonmises` generates a matrix filled with random floats sampled from a
+    univariate Vonmises distribution.
+
+    """
+
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_VONMISES, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray result = dparray(size, dtype=result_type)
+
+    cdef fptr_dpnp_rng_vonmises_c_1out_t func = <fptr_dpnp_rng_vonmises_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), mu, kappa, result.size)
+
+    return result
+
+
+cpdef dparray dpnp_rng_wald(double mean, double scale, size):
+    """
+    Returns an array populated with samples from Wald's distribution.
+    `dpnp_rng_wald` generates a matrix filled with random floats sampled from a
+    univariate Wald's distribution.
+
+    """
+
+    dtype = numpy.float64
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_WALD, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray result = dparray(size, dtype=dtype)
+
+    cdef fptr_dpnp_rng_wald_c_1out_t func = <fptr_dpnp_rng_wald_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), mean, scale, result.size)
+
+    return result
+
+
 cpdef dparray dpnp_rng_weibull(double a, size):
     """
     Returns an array populated with samples from weibull distribution.
@@ -1086,5 +1170,30 @@ cpdef dparray dpnp_rng_weibull(double a, size):
         func = <fptr_dpnp_rng_weibull_c_1out_t > kernel_data.ptr
         # call FPTR function
         func(result.get_data(), a, result.size)
+
+    return result
+
+
+cpdef dparray dpnp_rng_zipf(double a, size):
+    """
+    Returns an array populated with samples from Zipf distribution.
+    `dpnp_rng_zipf` generates a matrix filled with random floats sampled from a
+    univariate Zipf distribution.
+
+    """
+
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_ZIPF, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray result = dparray(size, dtype=result_type)
+
+    cdef fptr_dpnp_rng_zipf_c_1out_t func = <fptr_dpnp_rng_zipf_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), a, result.size)
 
     return result

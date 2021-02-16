@@ -23,56 +23,40 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include <cstring>
-#include <exception>
-#include <iostream>
+#include "gtest/gtest.h"
 
 #include <dpnp_iface.hpp>
-#include "queue_sycl.hpp"
 
-// This variable is needed for the NumPy corner case
-// if we have zero memory array (ex. shape=(0,10)) we must keep the pointer to somewhere
-// memory of this variable must not be used
-const char* numpy_stub = "...the NumPy Stub...";
-
-char* dpnp_memory_alloc_c(size_t size_in_bytes)
+// TODO add namespace
+// will added for test_commons
+class DPNPCTestEnvironment : public testing::Environment
 {
-    char* array = const_cast<char*>(numpy_stub);
-
-    //std::cout << "dpnp_memory_alloc_c(size=" << size_in_bytes << std::flush;
-    if (size_in_bytes > 0)
+public:
+    void SetUp() override
     {
-        array = reinterpret_cast<char*>(malloc_shared(size_in_bytes, DPNP_QUEUE));
-        if (array == nullptr)
-        {
-            // TODO add information about number of allocated bytes
-            throw std::runtime_error("DPNP Error: dpnp_memory_alloc_c() out of memory.");
-        }
-
-#if not defined(NDEBUG)
-        for (size_t i = 0; i < size_in_bytes / sizeof(char); ++i)
-        {
-            array[i] = 0; // type dependant is better. set double(42.42) instead zero
-        }
-        // std::cout << ") -> ptr=" << (void*)array << std::endl;
-#endif
+        // TODO update print
+        std::cout << "starting new env" << std::endl << std::endl;
     }
+    void TearDown() override
+    {
+    }
+};
 
-    return array;
+int RunAllTests(DPNPCTestEnvironment* env)
+{
+    // testing::internal::GetUnitTestImpl()->ClearAdHocTestResult();
+    (void)env;
+
+    // It returns 0 if all tests are successful, or 1 otherwise.
+    return RUN_ALL_TESTS();
 }
 
-void dpnp_memory_free_c(void* ptr)
+int main(int argc, char** argv)
 {
-    //std::cout << "dpnp_memory_free_c(ptr=" << (void*)ptr << ")" << std::endl;
-    if (ptr != numpy_stub)
-    {
-        free(ptr, DPNP_QUEUE);
-    }
-}
+    ::testing::InitGoogleTest(&argc, argv);
 
-void dpnp_memory_memcpy_c(void* dst, const void* src, size_t size_in_bytes)
-{
-    //std::cout << "dpnp_memory_memcpy_c(dst=" << dst << ", src=" << src << ")" << std::endl;
+    // currently using global queue
 
-    memcpy(dst, src, size_in_bytes);
+    // It returns 0 if all tests are successful, or 1 otherwise.
+    return RUN_ALL_TESTS();
 }
