@@ -28,47 +28,83 @@
 
 #include <dpnp_iface.hpp>
 #include "dpnp_fptr.hpp"
+#include "dpnp_iterator.hpp"
+#include "dpnp_utils.hpp"
 #include "queue_sycl.hpp"
 
 namespace mkl_stats = oneapi::mkl::stats;
 
-template <typename _KernelNameSpecialization>
+template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2>
 class dpnp_sum_c_kernel;
 
-template <typename _DataType>
-void dpnp_sum_c(void* array1_in, void* result1, size_t size)
+template <typename _DataType_input, typename _DataType_output>
+void dpnp_sum_c(const void* input_in,
+                const size_t input_size,
+                void* result_out,
+                const long* input_shape,
+                const size_t input_shape_ndim,
+                const long* axes,
+                const size_t axes_ndim,
+                const void* initial,
+                const long* where)
 {
-    if (!size)
+    (void)where; // avoid warning unused variable
+
+    if ((input_in == nullptr) || (result_out == nullptr))
     {
         return;
     }
 
-    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
-
-    if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
+    if (!input_size)
     {
-        auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, size, array_1);
+        return;
+    }
 
-        cl::sycl::event event = mkl_stats::raw_sum(DPNP_QUEUE, dataset, result);
+    const _DataType_input* initial_ptr = reinterpret_cast<const _DataType_input*>(initial);
+    const _DataType_input init = (initial_ptr == nullptr) ? _DataType_input{0} : *initial_ptr;
 
-        event.wait();
+    _DataType_input* input = reinterpret_cast<_DataType_input*>(const_cast<void*>(input_in));
+    _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
+
+    if constexpr ((std::is_same<_DataType_input, double>::value || std::is_same<_DataType_input, float>::value) &&
+                  std::is_same<_DataType_input, _DataType_output>::value)
+    {
+        if (axes_ndim < 1)
+        {
+            auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, input_size, input);
+            cl::sycl::event event = mkl_stats::raw_sum(DPNP_QUEUE, dataset, result);
+            event.wait();
+
+            return;
+        }
+    }
+
+    std::vector<size_t> input_shape_vec;
+    if ((input_shape != nullptr) && (input_shape_ndim > 0))
+    {
+        input_shape_vec.assign(input_shape, input_shape + input_shape_ndim);
     }
     else
+    { // No shape provided. 1D array or scalar
+        input_shape_vec.assign({input_size});
+    }
+
+    DPNPC_id<_DataType_input> input_it(input, input_shape_vec);
+    if ((axes != nullptr) && (axes_ndim > 0))
     {
-        // cl::sycl::range<1> gws(size);
-        auto policy = oneapi::dpl::execution::make_device_policy<dpnp_sum_c_kernel<_DataType>>(DPNP_QUEUE);
+        input_it.set_axis(*axes);
+    }
 
-        // sycl::buffer<_DataType, 1> array_1_buf(array_1, gws);
-        // auto it_begin = oneapi::dpl::begin(array_1_buf);
-        // auto it_end = oneapi::dpl::end(array_1_buf);
-
-        _DataType accumulator = 0;
-        accumulator = std::reduce(policy, array_1, array_1 + size, _DataType(0), std::plus<_DataType>());
-
+    const size_t output_size = input_it.get_output_size();
+    auto policy =
+        oneapi::dpl::execution::make_device_policy<dpnp_sum_c_kernel<_DataType_input, _DataType_output>>(DPNP_QUEUE);
+    for (size_t output_id = 0; output_id < output_size; ++output_id)
+    {
+        _DataType_input accumulator =
+            std::reduce(policy, input_it.begin(output_id), input_it.end(output_id), init, std::plus<_DataType_input>());
         policy.queue().wait();
 
-        result[0] = accumulator;
+        result[output_id] = accumulator;
     }
 
     return;
@@ -104,10 +140,28 @@ void func_map_init_reduction(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_PROD][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_prod_c<float>};
     fmap[DPNPFuncName::DPNP_FN_PROD][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_prod_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_SUM][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_sum_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_SUM][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_sum_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_SUM][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_sum_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_SUM][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_sum_c<double>};
+    // WARNING. The meaning of the fmap is changed. Second argument represents RESULT_TYPE for this function
+    // handle "out" and "type" parameters require user selection of return type
+    // TODO. required refactoring of fmap to some kernelSelector
+    fmap[DPNPFuncName::DPNP_FN_SUM][eft_INT][eft_INT] = {eft_LNG, (void*)dpnp_sum_c<int, int>};
+    fmap[DPNPFuncName::DPNP_FN_SUM][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_sum_c<int, long>};
+    fmap[DPNPFuncName::DPNP_FN_SUM][eft_INT][eft_FLT] = {eft_FLT, (void*)dpnp_sum_c<int, float>};
+    fmap[DPNPFuncName::DPNP_FN_SUM][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_sum_c<int, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_SUM][eft_LNG][eft_INT] = {eft_INT, (void*)dpnp_sum_c<long, int>};
+    fmap[DPNPFuncName::DPNP_FN_SUM][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_sum_c<long, long>};
+    fmap[DPNPFuncName::DPNP_FN_SUM][eft_LNG][eft_FLT] = {eft_FLT, (void*)dpnp_sum_c<long, float>};
+    fmap[DPNPFuncName::DPNP_FN_SUM][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_sum_c<long, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_SUM][eft_FLT][eft_INT] = {eft_INT, (void*)dpnp_sum_c<float, int>};
+    fmap[DPNPFuncName::DPNP_FN_SUM][eft_FLT][eft_LNG] = {eft_LNG, (void*)dpnp_sum_c<float, long>};
+    fmap[DPNPFuncName::DPNP_FN_SUM][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_sum_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_SUM][eft_FLT][eft_DBL] = {eft_DBL, (void*)dpnp_sum_c<float, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_SUM][eft_DBL][eft_INT] = {eft_INT, (void*)dpnp_sum_c<double, int>};
+    fmap[DPNPFuncName::DPNP_FN_SUM][eft_DBL][eft_LNG] = {eft_LNG, (void*)dpnp_sum_c<double, long>};
+    fmap[DPNPFuncName::DPNP_FN_SUM][eft_DBL][eft_FLT] = {eft_FLT, (void*)dpnp_sum_c<double, float>};
+    fmap[DPNPFuncName::DPNP_FN_SUM][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_sum_c<double, double>};
 
     return;
 }
