@@ -398,10 +398,10 @@ Functions</h2></td></tr>
 <tr class="memitem:ga14a74b989436ea9a7e5613aa70ab1696"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga14a74b989436ea9a7e5613aa70ab1696">dpnp_cumsum_c</a> (void *array1_in, void *result1, size_t size)</td></tr>
 <tr class="memdesc:ga14a74b989436ea9a7e5613aa70ab1696"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom implementation of cumsum function.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga14a74b989436ea9a7e5613aa70ab1696">More...</a><br /></td></tr>
 <tr class="separator:ga14a74b989436ea9a7e5613aa70ab1696"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga1f9b5eea67856e31475fabc96224d5cd"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
-<tr class="memitem:ga1f9b5eea67856e31475fabc96224d5cd"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga1f9b5eea67856e31475fabc96224d5cd">dpnp_sum_c</a> (void *array, void *result, size_t size)</td></tr>
-<tr class="memdesc:ga1f9b5eea67856e31475fabc96224d5cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sum of array elements.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga1f9b5eea67856e31475fabc96224d5cd">More...</a><br /></td></tr>
-<tr class="separator:ga1f9b5eea67856e31475fabc96224d5cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae91a7a1515d7267de45e7d36a66bcb01"><td class="memTemplParams" colspan="2">template&lt;typename _DataType_input , typename _DataType_output &gt; </td></tr>
+<tr class="memitem:gae91a7a1515d7267de45e7d36a66bcb01"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gae91a7a1515d7267de45e7d36a66bcb01">dpnp_sum_c</a> (const void *input_in, const size_t input_size, void *result_out, const long *input_shape, const size_t input_shape_ndim, const long *axes, const size_t axes_ndim, const void *initial, const long *where)</td></tr>
+<tr class="memdesc:gae91a7a1515d7267de45e7d36a66bcb01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute summary of input array elements.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gae91a7a1515d7267de45e7d36a66bcb01">More...</a><br /></td></tr>
+<tr class="separator:gae91a7a1515d7267de45e7d36a66bcb01"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae2f8353b70b96703bdd19eca9d8c1ba2"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:gae2f8353b70b96703bdd19eca9d8c1ba2"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gae2f8353b70b96703bdd19eca9d8c1ba2">dpnp_prod_c</a> (void *array, void *result, size_t size)</td></tr>
 <tr class="memdesc:gae2f8353b70b96703bdd19eca9d8c1ba2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Product of array elements.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gae2f8353b70b96703bdd19eca9d8c1ba2">More...</a><br /></td></tr>
@@ -5186,31 +5186,67 @@ template&lt;typename _DataType_input1 , typename _DataType_input2 , typename _Da
 
 </div>
 </div>
-<a id="ga1f9b5eea67856e31475fabc96224d5cd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga1f9b5eea67856e31475fabc96224d5cd">&#9670;&nbsp;</a></span>dpnp_sum_c()</h2>
+<a id="gae91a7a1515d7267de45e7d36a66bcb01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gae91a7a1515d7267de45e7d36a66bcb01">&#9670;&nbsp;</a></span>dpnp_sum_c()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename _DataType &gt; </div>
+template&lt;typename _DataType_input , typename _DataType_output &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">void dpnp_sum_c </td>
           <td>(</td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>array</em>, </td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>input_in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>input_size</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>result</em>, </td>
+          <td class="paramname"><em>result_out</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>size</em>&#160;</td>
+          <td class="paramtype">const long *&#160;</td>
+          <td class="paramname"><em>input_shape</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>input_shape_ndim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const long *&#160;</td>
+          <td class="paramname"><em>axes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>axes_ndim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>initial</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const long *&#160;</td>
+          <td class="paramname"><em>where</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -5220,12 +5256,20 @@ template&lt;typename _DataType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Sum of array elements. </p>
+<p>Compute summary of input array elements. </p>
+<p>Input array is expected as _DataType_input type and assume result as _DataType_output type. The function creates no memory.</p>
+<p>Empty input_shape means scalar.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">array</td><td>Input array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of input elements in <code>array</code>. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array contains one element. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input_in</td><td>Input array pointer. _DataType_input type is expected </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input_size</td><td>Number of elements in input_in. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result_out</td><td>Output array pointer. _DataType_output type is expected </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input_shape</td><td>Shape of input_in </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input_shape_ndim</td><td>Number of elements in input_shape </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">axes</td><td>Array of axes to apply to input_shape </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">axes_ndim</td><td>Number of elements in axes </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">initial</td><td>Pointer to initial value for the algorithm. _DataType_input is expected </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">where</td><td>mask array </td></tr>
   </table>
   </dd>
 </dl>
