@@ -182,20 +182,17 @@ void dpnp_place_c(void* arr_in, long* mask_in, void* vals_in, const size_t arr_s
     {
     	return;
     }
+    _DataType* arr = reinterpret_cast<_DataType*>(arr_in);
 
     if (!vals_size)
     {
     	return;
     }
-
-    _DataType* arr = reinterpret_cast<_DataType*>(arr_in);
     _DataType* vals = reinterpret_cast<_DataType*>(vals_in);
-    size_t counter = 0;
 
+    size_t counter = 0;
     for (size_t i = 0; i < arr_size; ++i)
     {
-        std::cout << "mask_in[i] = ";
-        std::cout << mask_in[i] << std::endl;
         if (mask_in[i])
         {
             arr[i] = vals[counter % vals_size];
