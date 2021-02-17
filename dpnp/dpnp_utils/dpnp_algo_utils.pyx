@@ -33,9 +33,11 @@ This module contains differnt helpers and utilities
 
 from libcpp cimport bool as cpp_bool
 from libcpp.complex cimport complex as cpp_complex
+
 import dpnp
 import dpnp.config as config
 import numpy
+
 cimport cpython
 cimport cython
 cimport numpy
@@ -52,9 +54,9 @@ __all__ = [
     "checker_throw_type_error",
     "checker_throw_value_error",
     "dp2nd_array",
-    "_get_linear_index",
     "get_axis_indeces",
     "get_axis_offsets",
+    "_get_linear_index",
     "nd2dp_array",
     "normalize_axis",
     "_object_to_tuple",
@@ -125,6 +127,10 @@ cpdef checker_throw_value_error(function_name, param_name, param, expected):
     raise ValueError(err_msg)
 
 
+cpdef dp2nd_array(arr):
+    """Convert dparray to ndarray"""
+    return dpnp.asnumpy(arr) if isinstance(arr, dparray) else arr
+
 cdef long copy_values_to_dparray(dparray dst, input_obj, size_t dst_idx=0) except -1:
     cdef elem_dtype = dst.dtype
 
@@ -152,27 +158,6 @@ cdef long copy_values_to_dparray(dparray dst, input_obj, size_t dst_idx=0) excep
             dst_idx += 1
 
     return dst_idx
-
-
-cpdef dp2nd_array(arr):
-    """Convert dparray to ndarray"""
-    return dpnp.asnumpy(arr) if isinstance(arr, dparray) else arr
-
-
-cpdef long _get_linear_index(key, tuple shape, int ndim):
-    """
-    Compute linear index of an element in memory from array indices
-    """
-
-    if isinstance(key, tuple):
-        li = 0
-        m = 1
-        for i in range(ndim - 1, -1, -1):
-            li += key[i] * m
-            m *= shape[i]
-    else:
-        li = key
-    return li
 
 
 cpdef tuple get_axis_indeces(idx, shape):
@@ -205,6 +190,22 @@ cpdef tuple get_axis_offsets(shape):
     return _object_to_tuple(result)
 
 
+cpdef long _get_linear_index(key, tuple shape, int ndim):
+    """
+    Compute linear index of an element in memory from array indices
+    """
+
+    if isinstance(key, tuple):
+        li = 0
+        m = 1
+        for i in range(ndim - 1, -1, -1):
+            li += key[i] * m
+            m *= shape[i]
+    else:
+        li = key
+    return li
+
+
 cdef tuple get_shape_dtype(object input_obj):
     cdef dparray_shape_type return_shape  # empty shape means scalar
     return_dtype = None
@@ -232,6 +233,59 @@ cdef tuple get_shape_dtype(object input_obj):
 
     # assume scalar or object
     return (return_shape, numpy.dtype(type(input_obj)))
+
+
+cdef dparray_shape_type get_reduction_output_shape(dparray_shape_type input_shape, object axis, cpp_bool keepdims):
+    cdef dparray_shape_type result_shape
+    cdef tuple axis_tuple = _object_to_tuple(axis)
+
+    if axis is not None:
+        for it in range(input_shape.size()):
+            if it not in axis_tuple:
+                result_shape.push_back(input_shape[it])
+            elif keepdims is True:
+                result_shape.push_back(1)
+    elif keepdims is True:
+        for it in range(input_shape.size()):
+            result_shape.push_back(1)
+
+    return result_shape
+
+
+cdef DPNPFuncType get_output_c_type(DPNPFuncName funcID,
+                                    DPNPFuncType input_array_c_type,
+                                    object requested_out,
+                                    object requested_dtype):
+
+    if requested_out is None:
+        if requested_dtype is None:
+            """ get recommended result type by function ID """
+            kernel_data = get_dpnp_function_ptr(funcID, input_array_c_type, input_array_c_type)
+            return kernel_data.return_type
+        else:
+            """ return type by request """
+            return dpnp_dtype_to_DPNPFuncType(requested_dtype)
+    else:
+        if requested_dtype is None:
+            """ determined by 'out' parameter """
+            return dpnp_dtype_to_DPNPFuncType(requested_out.dtype)
+
+    checker_throw_value_error("get_output_c_type", "dtype and out", requested_dtype, requested_out)
+
+
+cdef dparray create_output_array(dparray_shape_type output_shape, DPNPFuncType c_type, object requested_out):
+    cdef dparray result
+
+    if requested_out is None:
+        """ Create DPNP array """
+        result = dparray(output_shape, dtype=dpnp_DPNPFuncType_to_dtype( < size_t > c_type))
+    else:
+        """ Based on 'out' parameter """
+        if (output_shape != requested_out.shape):
+            checker_throw_value_error("create_output_array", "out.shape", requested_out.shape, output_shape)
+        result = requested_out
+
+    return result
 
 
 cpdef nd2dp_array(arr):
