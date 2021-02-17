@@ -69,7 +69,7 @@ void dpnp_sum_c(const void* input_in,
     if constexpr ((std::is_same<_DataType_input, double>::value || std::is_same<_DataType_input, float>::value) &&
                   std::is_same<_DataType_input, _DataType_output>::value)
     {
-        if (axes_ndim < 1 && 0)
+        if (axes_ndim < 1)
         {
             auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, input_size, input);
             cl::sycl::event event = mkl_stats::raw_sum(DPNP_QUEUE, dataset, result);
