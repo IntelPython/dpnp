@@ -237,6 +237,19 @@ INP_DLLEXPORT void dpnp_sum_c(const void* input_in,
 
 /**
  * @ingroup BACKEND_API
+ * @brief Place of array elements
+ *
+ * @param [in]  arr         Input array.
+ * @param [in]  mask        Mask array.
+ * @param [in]  vals        Vals array.
+ * @param [in]  arr_size    Number of input elements in `arr`.
+ * @param [in]  vals_size   Number of input elements in `vals`.
+ */
+template<typename _DataType>
+INP_DLLEXPORT void dpnp_place_c(void* arr, long* mask, void* vals, const size_t arr_size, const size_t vals_size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief Product of array elements
  *
  * @param [in]  array  Input array.
