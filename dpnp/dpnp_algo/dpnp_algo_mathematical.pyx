@@ -431,11 +431,6 @@ cpdef dparray dpnp_sum(dparray input, object axis=None, object dtype=None, dparr
 
 cpdef dpnp_trapz(dparray y1, dparray x1, double dx):
 
-    if y1.size <= 1:
-        if y1.dtype == dpnp.float32:
-            return dpnp.array([0], dtype=dpnp.float32)
-        return dpnp.array([0], dtype=dpnp.float64)
-
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(y1.dtype)
     cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRAPZ, param1_type, param2_type)

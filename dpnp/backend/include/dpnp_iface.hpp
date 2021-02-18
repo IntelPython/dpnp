@@ -657,7 +657,7 @@ INP_DLLEXPORT void dpnp_elemwise_transpose_c(void* array1_in,
  *
  */
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
-INP_DLLEXPORT void dpnp_trapz_c(void* array1_in, void* array2_in, void* result1, 
+INP_DLLEXPORT void dpnp_trapz_c(const void* array1_in, const void* array2_in, void* result1, 
                                 double dx, size_t array1_size, size_t array2_size);
 
 #endif // BACKEND_IFACE_H

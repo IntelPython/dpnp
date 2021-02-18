@@ -281,37 +281,62 @@ template <typename _KernelNameSpecialization1, typename _KernelNameSpecializatio
 class dpnp_trapz_c_kernel;
 
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
-void dpnp_trapz_c(void* array1_in, void* array2_in, void* result1, double dx, size_t array1_size, size_t array2_size)
+void dpnp_trapz_c(const void* array1_in, const void* array2_in, void* result1, double dx, size_t array1_size, size_t array2_size)
 {
-    _DataType_input1* array1 = reinterpret_cast<_DataType_input1*>(array1_in);
-    _DataType_input2* array2 = reinterpret_cast<_DataType_input2*>(array2_in);
+    if (!array1_size)
+    {
+        return;
+    }
+
+    cl::sycl::event event;
+    _DataType_input1* array1 = reinterpret_cast<_DataType_input1*>(const_cast<void*>(array1_in));
+    _DataType_input2* array2 = reinterpret_cast<_DataType_input2*>(const_cast<void*>(array2_in));
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
 
-    if (array2_size < 2) {
-        _DataType_input1* sum = reinterpret_cast<_DataType_input1*>(dpnp_memory_alloc_c(1 * sizeof(_DataType_input1)));
+    if (array1_size < 2) {
+        result[0] = 0;
 
-        dpnp_sum_c<_DataType_input1>(array1, sum, array1_size);
+        return;
+    }
 
-        result[0] = sum[0];
+    if (array1_size != array2_size) {
 
-        dpnp_memory_free_c(sum);
+        dpnp_sum_c<_DataType_input1, _DataType_output>(array1, array1_size, result, NULL, 0, NULL, 0, NULL, NULL);
 
         result[0] -= (array1[0] + array1[array1_size - 1]) * 0.5;
         result[0] *= dx;
 
     } else {
-        result[0] += array1[0] * (array2[1] - array2[0]) +
-                     array1[array1_size - 1] * (array2[array2_size - 1] - array2[array2_size - 2]);
 
-        for (size_t i = 1; i < array1_size - 1; ++i) {
-            result[0] += array1[i] * (array2[i + 1] - array2[i - 1]);
-        }
+        _DataType_output* cur_res = reinterpret_cast<_DataType_output*>(dpnp_memory_alloc_c((array1_size - 2) * sizeof(_DataType_output)));
+
+        cl::sycl::range<1> gws(array1_size - 2);
+        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+            size_t i = global_id[0];
+            {
+                cur_res[i] = array1[i + 1] * (array2[i + 2] - array2[i]);
+            }
+        };
+
+        auto kernel_func = [&](cl::sycl::handler& cgh) {
+            cgh.parallel_for<class dpnp_trapz_c_kernel<_DataType_input1, _DataType_input2, _DataType_output>>(
+                gws, kernel_parallel_for_func);
+        };
+
+        event = DPNP_QUEUE.submit(kernel_func);
+
+        event.wait();
+
+        dpnp_sum_c<_DataType_output, _DataType_output>(cur_res, array1_size - 2, result, NULL, 0, NULL, 0, NULL, NULL);
+
+        dpnp_memory_free_c(cur_res);
+
+        result[0] += array1[0] * (array2[1] - array2[0]) +
+            array1[array1_size - 1] * (array2[array2_size - 1] - array2[array2_size - 2]);
 
         result[0] *= 0.5;
-
     }
 
-    return;
 }
 
 void func_map_init_mathematical(func_map_t& fmap)
