@@ -283,19 +283,14 @@ class dpnp_trapz_c_kernel;
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
 void dpnp_trapz_c(const void* array1_in, const void* array2_in, void* result1, double dx, size_t array1_size, size_t array2_size)
 {
-    if (!array1_size)
-    {
-        return;
-    }
-
     cl::sycl::event event;
     _DataType_input1* array1 = reinterpret_cast<_DataType_input1*>(const_cast<void*>(array1_in));
     _DataType_input2* array2 = reinterpret_cast<_DataType_input2*>(const_cast<void*>(array2_in));
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
 
     if (array1_size < 2) {
-        result[0] = 0;
 
+        result[0] = 0;
         return;
     }
 
@@ -308,9 +303,11 @@ void dpnp_trapz_c(const void* array1_in, const void* array2_in, void* result1, d
 
     } else {
 
-        _DataType_output* cur_res = reinterpret_cast<_DataType_output*>(dpnp_memory_alloc_c((array1_size - 2) * sizeof(_DataType_output)));
+        size_t cur_res_size = array1_size - 2;
 
-        cl::sycl::range<1> gws(array1_size - 2);
+        _DataType_output* cur_res = reinterpret_cast<_DataType_output*>(dpnp_memory_alloc_c((cur_res_size) * sizeof(_DataType_output)));
+
+        cl::sycl::range<1> gws(cur_res_size);
         auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
             size_t i = global_id[0];
             {
@@ -327,7 +324,7 @@ void dpnp_trapz_c(const void* array1_in, const void* array2_in, void* result1, d
 
         event.wait();
 
-        dpnp_sum_c<_DataType_output, _DataType_output>(cur_res, array1_size - 2, result, NULL, 0, NULL, 0, NULL, NULL);
+        dpnp_sum_c<_DataType_output, _DataType_output>(cur_res, cur_res_size, result, NULL, 0, NULL, 0, NULL, NULL);
 
         dpnp_memory_free_c(cur_res);
 
