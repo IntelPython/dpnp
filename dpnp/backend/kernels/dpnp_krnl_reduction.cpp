@@ -143,7 +143,7 @@ void func_map_init_reduction(func_map_t& fmap)
     // WARNING. The meaning of the fmap is changed. Second argument represents RESULT_TYPE for this function
     // handle "out" and "type" parameters require user selection of return type
     // TODO. required refactoring of fmap to some kernelSelector
-    fmap[DPNPFuncName::DPNP_FN_SUM][eft_INT][eft_INT] = {eft_LNG, (void*)dpnp_sum_c<int, int>};
+    fmap[DPNPFuncName::DPNP_FN_SUM][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_sum_c<int, int>};
     fmap[DPNPFuncName::DPNP_FN_SUM][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_sum_c<int, long>};
     fmap[DPNPFuncName::DPNP_FN_SUM][eft_INT][eft_FLT] = {eft_FLT, (void*)dpnp_sum_c<int, float>};
     fmap[DPNPFuncName::DPNP_FN_SUM][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_sum_c<int, double>};
