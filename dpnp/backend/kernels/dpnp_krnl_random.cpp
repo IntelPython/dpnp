@@ -200,10 +200,6 @@ void dpnp_rng_f_c(void* result, const _DataType df_num, const _DataType df_den, 
         event_out.wait();
 
         den = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
-        if (den == nullptr)
-        {
-            throw std::runtime_error("DPNP RNG Error: dpnp_rng_f_c() failed.");
-        }
         shape = 0.5 * df_den;
         scale = 2.0 / df_den;
         mkl_rng::gamma<_DataType> gamma_distribution2(shape, d_zero, scale);
@@ -224,10 +220,6 @@ void dpnp_rng_f_c(void* result, const _DataType df_num, const _DataType df_den, 
             throw std::runtime_error("DPNP RNG Error: dpnp_rng_f_c() failed.");
         }
         den = (_DataType*)mkl_malloc(size * sizeof(_DataType), 64);
-        if (den == nullptr)
-        {
-            throw std::runtime_error("DPNP RNG Error: dpnp_rng_f_c() failed.");
-        }
         shape = 0.5 * df_den;
         scale = 2.0 / df_den;
         errcode = vdRngGamma(VSL_RNG_METHOD_GAMMA_GNORM_ACCURATE, get_rng_stream(), size, den, shape, d_zero, scale);
@@ -566,10 +558,6 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             event_out.wait();
 
             nvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
-            if (nvec == nullptr)
-            {
-                throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
-            }
 
             loc = sqrt(nonc);
 
@@ -590,11 +578,6 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             double lambda;
             int* pvec = nullptr;
             pvec = reinterpret_cast<int*>(dpnp_memory_alloc_c(size * sizeof(int)));
-            if (pvec == nullptr)
-            {
-                throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
-            }
-            // pvec = (int*)mkl_malloc(size * sizeof(int), 64);
             lambda = 0.5 * nonc;
 
             mkl_rng::poisson<int> poisson_distribution(lambda);
@@ -608,10 +591,6 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
                 size_t* idx = nullptr;
                 _DataType* tmp = nullptr;
                 idx = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(size * sizeof(size_t)));
-                if (idx == nullptr)
-                {
-                    throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
-                }
                 for (i = 0; i < size; i++)
                     idx[i] = i;
 
@@ -620,10 +599,6 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
 
                 /* allocate workspace to store samples of gamma, enough to hold entire output */
                 tmp = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
-                if (tmp == nullptr)
-                {
-                    throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
-                }
                 for (i = 0; i < size;)
                 {
                     size_t k, j;
@@ -700,10 +675,6 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             }
 
             nvec = (double*)mkl_malloc(size * sizeof(double), 64);
-            if (nvec == nullptr)
-            {
-                throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
-            }
             loc = sqrt(nonc);
             errcode = vdRngGaussian(VSL_RNG_METHOD_GAUSSIAN_ICDF, get_rng_stream(), size, nvec, loc, d_one);
             if (errcode != VSL_STATUS_OK)
@@ -722,10 +693,6 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             double lambda;
             int* pvec = nullptr;
             pvec = (int*)mkl_malloc(size * sizeof(int), 64);
-            if (pvec == nullptr)
-            {
-                throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
-            }
 
             lambda = 0.5 * nonc;
             errcode = viRngPoisson(VSL_RNG_METHOD_POISSON_PTPE, get_rng_stream(), size, pvec, lambda);
@@ -755,10 +722,6 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
 
                 /* allocate workspace to store samples of gamma, enough to hold entire output */
                 tmp = (double*)mkl_malloc(size * sizeof(double), 64);
-                if (tmp == nullptr)
-                {
-                    throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
-                }
                 for (i = 0; i < size;)
                 {
                     size_t k, j;
@@ -973,12 +936,6 @@ void dpnp_rng_shuffle_c(
         char* buf = nullptr;
         size_t step_size = (size / high_dim_size) * itemsize; // size in bytes for x[i] element
         buf = reinterpret_cast<char*>(dpnp_memory_alloc_c(step_size * sizeof(char)));
-        // TODO
-        // nullptr check will be removed after dpnp_memory_alloc_c update
-        if (buf == nullptr)
-        {
-            throw std::runtime_error("DPNP RNG Error: dpnp_rng_shuffle_c() failed.");
-        }
         for (size_t i = uvec_size; i > 0; i--)
         {
             size_t j = (size_t)(floor((i + 1) * Uvec[i - 1]));
@@ -1079,10 +1036,6 @@ void dpnp_rng_standard_t_c(void* result, const _DataType df, const size_t size)
         event_out.wait();
 
         sn = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
-        if (sn == nullptr)
-        {
-            throw std::runtime_error("DPNP RNG Error: dpnp_rng_standard_t_c() failed.");
-        }
 
         mkl_rng::gaussian<_DataType> gaussian_distribution(d_zero, d_one);
         event_out = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, sn);
@@ -1105,10 +1058,6 @@ void dpnp_rng_standard_t_c(void* result, const _DataType df, const size_t size)
         vmdInvSqrt(size, result1, result1, VML_HA);
 
         sn = (_DataType*)mkl_malloc(size * sizeof(_DataType), 64);
-        if (sn == nullptr)
-        {
-            throw std::runtime_error("DPNP RNG Error: dpnp_rng_standard_t_c() failed.");
-        }
 
         errcode = vdRngGaussian(VSL_RNG_METHOD_GAUSSIAN_ICDF, get_rng_stream(), size, sn, d_zero, d_one);
         if (errcode != VSL_STATUS_OK)
@@ -1242,15 +1191,7 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
     s_minus_one = rho_minus_one * (0.5 * rho_minus_one / (1 + rho_minus_one));
 
     Uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
-    if (Uvec == nullptr)
-    {
-        throw std::runtime_error("DPNP RNG Error: dpnp_rng_vonmises_c() failed.");
-    }
     Vvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
-    if (Vvec == nullptr)
-    {
-        throw std::runtime_error("DPNP RNG Error: dpnp_rng_vonmises_c() failed.");
-    }
 
     for (size_t n = 0; n < size;)
     {
@@ -1340,15 +1281,7 @@ void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _Da
     s_kappa = (1 + rho * rho) / (2 * rho_over_kappa);
 
     Uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
-    if (Uvec == nullptr)
-    {
-        throw std::runtime_error("DPNP RNG Error: dpnp_rng_vonmises_c() failed.");
-    }
     Vvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
-    if (Vvec == nullptr)
-    {
-        throw std::runtime_error("DPNP RNG Error: dpnp_rng_vonmises_c() failed.");
-    }
 
     for (size_t n = 0; n < size;)
     {
@@ -1527,10 +1460,6 @@ void dpnp_rng_zipf_c(void* result, const _DataType a, const size_t size)
     b = pow(2.0, am1);
 
     Uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * 2 * sizeof(_DataType)));
-    if (Uvec == nullptr)
-    {
-        throw std::runtime_error("DPNP RNG Error: dpnp_rng_zipf_c() failed.");
-    }
     Vvec = Uvec + size;
 
     // TODO
