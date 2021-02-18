@@ -414,6 +414,7 @@ tests/test_deprecations.py::TestDTypeCoercion::test_array_construction
 tests/test_deprecations.py::TestDTypeCoercion::test_dtype_coercion
 tests/test_deprecations.py::TestFromStringAndFileInvalidData::test_deprecate_unparsable_data_file[,invalid_data]
 tests/test_deprecations.py::TestFromStringAndFileInvalidData::test_deprecate_unparsable_data_file[invalid_sep]
+tests/test_deprecations.py::TestGeneratorSum::test_generator_sum
 tests/test_deprecations.py::Test_GetSet_NumericOps::test_get_numeric_ops
 tests/test_deprecations.py::TestNonCContiguousViewDeprecation::test_fortran_contiguous
 tests/test_deprecations.py::TestNonNumericConjugate::test_conjugate
@@ -684,6 +685,7 @@ tests/test_generator_mt19937.py::TestIntegers::test_scalar_array_equiv[True]
 tests/test_generator_mt19937.py::TestIntegers::test_zero_size[False]
 tests/test_generator_mt19937.py::TestIntegers::test_zero_size[True]
 tests/test_generator_mt19937.py::TestMultinomial::test_int_negative_interval
+tests/test_generator_mt19937.py::TestMultinomial::test_p_non_contiguous
 tests/test_generator_mt19937.py::TestMultinomial::test_size
 tests/test_generator_mt19937.py::TestMultivariateHypergeometric::test_typical_cases[150000-count-25]
 tests/test_generator_mt19937.py::TestMultivariateHypergeometric::test_typical_cases[150000-count-45]
@@ -1447,6 +1449,7 @@ tests/test_protocols.py::test_getattr_warning
 tests/test_random.py::TestBinomial::test_n_zero
 tests/test_random.py::TestBinomial::test_p_is_nan
 tests/test_random.py::TestBroadcast::test_poisson
+tests/test_random.py::TestBroadcast::test_zipf
 tests/test_random.py::TestMultinomial::test_int_negative_interval
 tests/test_random.py::TestMultinomial::test_multidimensional_pvals
 tests/test_random.py::TestMultinomial::test_size
@@ -1488,6 +1491,7 @@ tests/test_random.py::TestRandomDist::test_normal_0
 tests/test_random.py::TestRandomDist::test_pareto
 tests/test_random.py::TestRandomDist::test_poisson
 tests/test_random.py::TestRandomDist::test_poisson_exceptions
+tests/test_random.py::TestRandomDist::test_power
 tests/test_random.py::TestRandomDist::test_rand
 tests/test_random.py::TestRandomDist::test_randint
 tests/test_random.py::TestRandomDist::test_randn
@@ -1497,7 +1501,6 @@ tests/test_random.py::TestRandomDist::test_random_integers_deprecated
 tests/test_random.py::TestRandomDist::test_random_integers_max_int
 tests/test_random.py::TestRandomDist::test_rayleigh
 tests/test_random.py::TestRandomDist::test_rayleigh_0
-tests/test_random.py::TestRandomDist::test_power
 tests/test_random.py::TestRandomDist::test_scalar_exception_propagation
 tests/test_random.py::TestRandomDist::test_shuffle
 tests/test_random.py::TestRandomDist::test_shuffle_masked
@@ -1510,11 +1513,12 @@ tests/test_random.py::TestRandomDist::test_standard_t
 tests/test_random.py::TestRandomDist::test_triangular
 tests/test_random.py::TestRandomDist::test_uniform
 tests/test_random.py::TestRandomDist::test_uniform_range_bounds
+tests/test_random.py::TestRandomDist::test_vonmises
+tests/test_random.py::TestRandomDist::test_wald
 tests/test_random.py::TestRandomDist::test_weibull
 tests/test_random.py::TestRandomDist::test_weibull_0
 tests/test_random.py::TestRandomDist::test_zipf
 tests/test_random.py::TestRandomDist::test_zipf_0
-tests/test_random.py::TestBroadcast::test_zipf
 tests/test_random.py::TestSeed::test_array
 tests/test_random.py::TestSeed::test_invalid_array
 tests/test_random.py::TestSeed::test_invalid_array_shape
@@ -1531,12 +1535,14 @@ tests/test_random.py::TestThread::test_normal
 tests/test_randomstate.py::TestBinomial::test_n_zero
 tests/test_randomstate.py::TestBinomial::test_p_is_nan
 tests/test_randomstate.py::TestBroadcast::test_poisson
+tests/test_randomstate.py::TestBroadcast::test_zipf
 tests/test_randomstate.py::test_integer_dtype[binomial]
 tests/test_randomstate.py::test_integer_dtype[geometric]
 tests/test_randomstate.py::test_integer_dtype[hypergeometric]
 tests/test_randomstate.py::test_integer_dtype[multinomial]
 tests/test_randomstate.py::test_integer_dtype[negative_binomial]
 tests/test_randomstate.py::test_integer_dtype[poisson]
+tests/test_randomstate.py::test_integer_dtype[zipf]
 tests/test_randomstate.py::test_integer_repeat[binomial]
 tests/test_randomstate.py::test_integer_repeat[geometric]
 tests/test_randomstate.py::test_integer_repeat[hypergeometric]
@@ -1547,6 +1553,7 @@ tests/test_randomstate.py::test_integer_repeat[poisson]
 tests/test_randomstate.py::test_integer_repeat[zipf]
 tests/test_randomstate.py::TestMultinomial::test_int_negative_interval
 tests/test_randomstate.py::TestMultinomial::test_invalid_prob
+tests/test_randomstate.py::TestMultinomial::test_p_non_contiguous
 tests/test_randomstate.py::TestMultinomial::test_size
 tests/test_randomstate.py::TestRandint::test_bounds_checking
 tests/test_randomstate.py::TestRandint::test_full_range
@@ -1587,8 +1594,10 @@ tests/test_randomstate.py::TestRandomDist::test_noncentral_chisquare
 tests/test_randomstate.py::TestRandomDist::test_normal
 tests/test_randomstate.py::TestRandomDist::test_normal_0
 tests/test_randomstate.py::TestRandomDist::test_pareto
+tests/test_randomstate.py::TestRandomDist::test_permutation
 tests/test_randomstate.py::TestRandomDist::test_poisson
 tests/test_randomstate.py::TestRandomDist::test_poisson_exceptions
+tests/test_randomstate.py::TestRandomDist::test_power
 tests/test_randomstate.py::TestRandomDist::test_rand
 tests/test_randomstate.py::TestRandomDist::test_randint
 tests/test_randomstate.py::TestRandomDist::test_randn
@@ -1600,7 +1609,6 @@ tests/test_randomstate.py::TestRandomDist::test_random_sample
 tests/test_randomstate.py::TestRandomDist::test_rand_singleton
 tests/test_randomstate.py::TestRandomDist::test_rayleigh
 tests/test_randomstate.py::TestRandomDist::test_rayleigh_0
-tests/test_randomstate.py::TestRandomDist::test_power
 tests/test_randomstate.py::TestRandomDist::test_scalar_exception_propagation
 tests/test_randomstate.py::TestRandomDist::test_shuffle
 tests/test_randomstate.py::TestRandomDist::test_shuffle_masked
@@ -1614,12 +1622,13 @@ tests/test_randomstate.py::TestRandomDist::test_tomaxint
 tests/test_randomstate.py::TestRandomDist::test_triangular
 tests/test_randomstate.py::TestRandomDist::test_uniform
 tests/test_randomstate.py::TestRandomDist::test_uniform_range_bounds
+tests/test_randomstate.py::TestRandomDist::test_vonmises
+tests/test_randomstate.py::TestRandomDist::test_vonmises_small
+tests/test_randomstate.py::TestRandomDist::test_wald
 tests/test_randomstate.py::TestRandomDist::test_weibull
 tests/test_randomstate.py::TestRandomDist::test_weibull_0
 tests/test_randomstate.py::TestRandomDist::test_zipf
 tests/test_randomstate.py::TestRandomDist::test_zipf_0
-tests/test_randomstate.py::TestBroadcast::test_zipf
-tests/test_randomstate.py::test_integer_dtype[zipf]
 tests/test_randomstate.py::TestSeed::test_array
 tests/test_randomstate.py::TestSeed::test_cannot_seed
 tests/test_randomstate.py::TestSeed::test_invalid_array
@@ -2886,6 +2895,7 @@ tests/test_umath.py::TestSpecialFloats::test_reciprocal_values
 tests/test_umath.py::TestSpecialFloats::test_sincos_values
 tests/test_umath.py::TestSpecialFloats::test_sqrt_values
 tests/test_umath.py::TestSpecialFloats::test_square_values
+tests/test_umath.py::TestSpecialMethods::test_array_too_many_args
 tests/test_umath.py::TestSpecialMethods::test_default_prepare
 tests/test_umath.py::TestSpecialMethods::test_failing_out_wrap
 tests/test_umath.py::TestSpecialMethods::test_failing_prepare

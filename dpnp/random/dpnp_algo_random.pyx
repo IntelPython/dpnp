@@ -66,6 +66,7 @@ __all__ = [
     "dpnp_rng_randn",
     "dpnp_rng_random",
     "dpnp_rng_rayleigh",
+    "dpnp_rng_shuffle",
     "dpnp_rng_srand",
     "dpnp_rng_standard_cauchy",
     "dpnp_rng_standard_exponential",
@@ -74,6 +75,8 @@ __all__ = [
     "dpnp_rng_standard_t",
     "dpnp_rng_triangular",
     "dpnp_rng_uniform",
+    "dpnp_rng_vonmises",
+    "dpnp_rng_wald",
     "dpnp_rng_weibull",
     "dpnp_rng_zipf"
 ]
@@ -111,6 +114,11 @@ ctypedef void(*fptr_dpnp_rng_pareto_c_1out_t)(void * , const double, const size_
 ctypedef void(*fptr_dpnp_rng_poisson_c_1out_t)(void * , const double, const size_t) except +
 ctypedef void(*fptr_dpnp_rng_power_c_1out_t)(void * , const double, const size_t) except +
 ctypedef void(*fptr_dpnp_rng_rayleigh_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_shuffle_c_1out_t)(void * ,
+                                               const size_t,
+                                               const size_t,
+                                               const size_t,
+                                               const size_t) except +
 ctypedef void(*fptr_dpnp_rng_srand_c_1out_t)(const size_t) except +
 ctypedef void(*fptr_dpnp_rng_standard_cauchy_c_1out_t)(void * , const size_t) except +
 ctypedef void(*fptr_dpnp_rng_standard_exponential_c_1out_t)(void * , const size_t) except +
@@ -123,6 +131,8 @@ ctypedef void(*fptr_dpnp_rng_triangular_c_1out_t)(void * ,
                                                   const double,
                                                   const size_t) except +
 ctypedef void(*fptr_dpnp_rng_uniform_c_1out_t)(void * , const long, const long, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_vonmises_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_wald_c_1out_t)(void *, const double, const double, const size_t) except +
 ctypedef void(*fptr_dpnp_rng_weibull_c_1out_t)(void * , const double, const size_t) except +
 ctypedef void(*fptr_dpnp_rng_zipf_c_1out_t)(void * , const double, const size_t) except +
 
@@ -870,6 +880,28 @@ cpdef dparray dpnp_rng_rayleigh(double scale, size):
     return result
 
 
+cpdef dparray dpnp_rng_shuffle(dparray x1):
+    """
+    Modify a sequence in-place by shuffling its contents.
+
+    """
+
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype.type)
+    cdef size_t itemsize = x1.dtype.itemsize
+    cdef size_t ndim = x1.ndim
+    cdef size_t high_dim_size = len(x1)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_SHUFFLE, param1_type, param1_type)
+
+    cdef fptr_dpnp_rng_shuffle_c_1out_t func = < fptr_dpnp_rng_shuffle_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(x1.get_data(), itemsize, ndim, high_dim_size, x1.size)
+
+    return x1
+
+
 cpdef dpnp_rng_srand(seed):
     """
     Initialize basic random number generator.
@@ -1080,6 +1112,57 @@ cpdef dparray dpnp_rng_uniform(long low, long high, size, dtype):
         func = <fptr_dpnp_rng_uniform_c_1out_t > kernel_data.ptr
         # call FPTR function
         func(result.get_data(), low, high, result.size)
+
+    return result
+
+
+cpdef dparray dpnp_rng_vonmises(double mu, double kappa, size):
+    """
+    Returns an array populated with samples from Vonmises distribution.
+    `dpnp_rng_vonmises` generates a matrix filled with random floats sampled from a
+    univariate Vonmises distribution.
+
+    """
+
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_VONMISES, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray result = dparray(size, dtype=result_type)
+
+    cdef fptr_dpnp_rng_vonmises_c_1out_t func = <fptr_dpnp_rng_vonmises_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), mu, kappa, result.size)
+
+    return result
+
+
+cpdef dparray dpnp_rng_wald(double mean, double scale, size):
+    """
+    Returns an array populated with samples from Wald's distribution.
+    `dpnp_rng_wald` generates a matrix filled with random floats sampled from a
+    univariate Wald's distribution.
+
+    """
+
+    dtype = numpy.float64
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_WALD, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray result = dparray(size, dtype=dtype)
+
+    cdef fptr_dpnp_rng_wald_c_1out_t func = <fptr_dpnp_rng_wald_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), mean, scale, result.size)
 
     return result
 

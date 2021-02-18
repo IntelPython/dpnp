@@ -151,6 +151,63 @@ TEST(TestUtilsIterator, take_value_axis_1)
     EXPECT_EQ(*begin, 2);
 }
 
+TEST(TestUtilsIterator, full_reduction_with_input_shape)
+{
+    vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({2, 3});
+    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 3});
+
+
+    dpnpc_value_t result = 0;
+    for (dpnpc_it_t data_it = result_obj.begin(0); data_it != result_obj.end(0); ++data_it)
+    {
+        result += *data_it;
+    }
+
+    EXPECT_EQ(result, 21);
+}
+
+TEST(TestUtilsIterator, output_size)
+{
+    // expected data 1, 2
+    vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({2, 3});
+    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 3});
+
+    const dpnpc_index_t output_size = result_obj.get_output_size();
+
+    EXPECT_EQ(output_size, 1);
+}
+
+TEST(TestUtilsIterator, output_size_empty)
+{
+    vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({});
+    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {});
+
+    const dpnpc_index_t output_size = result_obj.get_output_size();
+
+    EXPECT_EQ(output_size, 1);
+}
+
+TEST(TestUtilsIterator, output_size_nullptr)
+{
+    DPNPC_id<dpnpc_value_t> result_obj(nullptr, {});
+
+    const dpnpc_index_t output_size = result_obj.get_output_size();
+
+    EXPECT_EQ(output_size, 0);
+}
+
+TEST(TestUtilsIterator, output_size_axis)
+{
+    // expected data 1, 2
+    vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({2, 3, 4});
+    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 3, 4});
+    result_obj.set_axis(1);
+
+    const dpnpc_index_t output_size = result_obj.get_output_size();
+
+    EXPECT_EQ(output_size, 8);
+}
+
 TEST(TestUtilsIterator, iterator_loop)
 {
     const dpnpc_it_t::size_type size = 10;

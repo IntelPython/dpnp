@@ -31,6 +31,7 @@
 #include <cassert>
 #include <iostream>
 #include <iterator>
+#include <numeric>
 #include <vector>
 
 #include <dpnp_utils.hpp>
@@ -168,7 +169,15 @@ public:
     /// this function is designed for host execution
     DPNPC_id(void* __ptr, const std::vector<size_type>& __shape)
     {
+        if (__ptr == nullptr)
+        {
+            return;
+        }
+
         data = reinterpret_cast<pointer>(__ptr);
+        size = 1;        // means scalar at this stage
+        output_size = 1; // if input size is not zero it means we have scalar as output
+
         if (!__shape.empty())
         {
             shape_size = __shape.size();
@@ -179,6 +188,10 @@ public:
             get_shape_offsets_inkernel<size_type>(shape, shape_size, shape_strides);
 
             size = std::accumulate(__shape.begin(), __shape.end(), size_type(1), std::multiplies<size_type>());
+            if (size == 0)
+            { // shape might be shape[3, 4, 0, 6]. This means no input memory and no output expected
+                output_size = 0;
+            }
         }
     }
 

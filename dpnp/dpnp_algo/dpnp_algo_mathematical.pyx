@@ -142,7 +142,7 @@ cpdef dparray dpnp_cross(dparray x1, dparray x2):
 
 
 cpdef dparray dpnp_cumprod(dparray x1):
-    #instead of x1.shape, (x1.size, ) is passed to the function
+    # instead of x1.shape, (x1.size, ) is passed to the function
     # due to the following:
     # >>> import numpy
     # >>> a = numpy.array([[1, 2], [2, 3]])
@@ -154,7 +154,7 @@ cpdef dparray dpnp_cumprod(dparray x1):
 
 
 cpdef dparray dpnp_cumsum(dparray x1):
-    #instead of x1.shape, (x1.size, ) is passed to the function
+    # instead of x1.shape, (x1.size, ) is passed to the function
     # due to the following:
     # >>> import numpy
     # >>> a = numpy.array([[1, 2], [2, 3]])
@@ -196,41 +196,12 @@ cpdef dparray dpnp_divide(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_DIVIDE, x1, x2, x1.shape)
 
 
-cpdef dparray dpnp_ediff1d(dparray x1, dparray to_end, dparray to_begin):
+cpdef dparray dpnp_ediff1d(dparray x1):
 
-    types_map = {
-        dpnp.int32: dpnp.int64,
-        dpnp.int64: dpnp.int64,
-        dpnp.float32: dpnp.float32,
-        dpnp.float64: dpnp.float64
-    }
+    if x1.size <= 1:
+        return dpnp.empty(0, dtype=x1.dtype)
 
-    if x1.dtype.type in types_map:
-        res_type = types_map[x1.dtype.type]
-    else:
-        dpnp.dpnp_utils.checker_throw_type_error("ediff1d", x1.dtype)
-
-    res_size = x1.size - 1 + to_end.size + to_begin.size
-
-    cdef dparray result = dparray(res_size, dtype=res_type)
-
-    ind = 0
-
-    for i in range(ind, to_begin.size):
-        result._setitem_scalar(i, to_begin[i])
-
-    ind += to_begin.size
-
-    for i in range(ind, ind + x1.size - 1):
-        cur_res = x1[i - ind + 1] - x1[i - ind]
-        result._setitem_scalar(i, cur_res)
-
-    ind += x1.size - 1
-
-    for i in range(ind, ind + to_end.size):
-        result._setitem_scalar(i, to_end[i - ind])
-
-    return result
+    return call_fptr_1in_1out(DPNP_FN_EDIFF1D, x1, (x1.size -1,))
 
 
 cpdef dparray dpnp_fabs(dparray x1):
@@ -433,98 +404,28 @@ cpdef dparray dpnp_subtract(dparray x1, dparray x2):
     return call_fptr_2in_1out(DPNP_FN_SUBTRACT, x1, x2, x1.shape)
 
 
-cpdef dparray dpnp_sum_no_axis(dparray x1):
-    """
-    input:float64   : outout:float64   : name:sum
-    input:float32   : outout:float32   : name:sum
-    input:int64     : outout:int64     : name:sum
-    input:int32     : outout:int64     : name:sum
-    input:bool      : outout:int64     : name:sum
-    input:complex64 : outout:complex64 : name:sum
-    input:complex128: outout:complex128: name:sum
-    """
+cpdef dparray dpnp_sum(dparray input, object axis=None, object dtype=None, dparray out=None, cpp_bool keepdims=False, object initial=None, object where=True):
 
-    cdef dparray result = call_fptr_1in_1out(DPNP_FN_SUM, x1, (1,))
+    cdef dparray_shape_type input_shape = input.shape
+    cdef DPNPFuncType input_c_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
-    """ Numpy interface inconsistency """
-    return_type = numpy.dtype(numpy.int64) if (x1.dtype == numpy.int32) else x1.dtype
+    cdef dparray_shape_type axis_shape = _object_to_tuple(axis)
 
-    cdef dparray result_ = dparray((1,), dtype=return_type)
-    result_[0] = return_type.type(result)
+    cdef dparray_shape_type result_shape = get_reduction_output_shape(input_shape, axis, keepdims)
+    cdef DPNPFuncType result_c_type = get_output_c_type(DPNP_FN_SUM, input_c_type, out, dtype)
 
-    return result_
+    """ select kernel """
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_SUM, input_c_type, result_c_type)
 
+    """ Create result array """
+    cdef dparray result = create_output_array(result_shape, result_c_type, out)
+    cdef dpnp_reduction_c_t func = <dpnp_reduction_c_t > kernel_data.ptr
 
-cpdef dparray dpnp_sum(dparray input, axis=None):
-    if axis is None:
-        return dpnp_sum_no_axis(input)
+    """ Call FPTR interface function """
+    func(input.get_data(), input.size, result.get_data(), input_shape.data(),
+         input_shape.size(), axis_shape.data(), axis_shape.size(), NULL, NULL)
 
-    cdef long size_input = input.size
-    cdef dparray_shape_type shape_input = input.shape
-
-    return_type = numpy.int64 if input.dtype == numpy.int32 else input.dtype
-
-    axis_ = _object_to_tuple(axis)
-
-    output_shape = dparray(len(shape_input) - len(axis_), dtype=numpy.int64)
-    ind = 0
-    for id, shape_axis in enumerate(shape_input):
-        if id not in axis_:
-            output_shape[ind] = shape_axis
-            ind += 1
-
-    cdef long prod = 1
-    for i in range(len(output_shape)):
-        if output_shape[i] != 0:
-            prod *= output_shape[i]
-
-    result_array = [None] * prod
-    input_shape_offsets = [None] * len(shape_input)
-    acc = 1
-
-    for i in range(len(shape_input)):
-        ind = len(shape_input) - 1 - i
-        input_shape_offsets[ind] = acc
-        acc *= shape_input[ind]
-
-    output_shape_offsets = [None] * len(shape_input)
-    acc = 1
-
-    if len(output_shape) > 0:
-        for i in range(len(output_shape)):
-            ind = len(output_shape) - 1 - i
-            output_shape_offsets[ind] = acc
-            acc *= output_shape[ind]
-
-    for source_idx in range(size_input):
-
-        # reconstruct x,y,z from linear source_idx
-        xyz = []
-        remainder = source_idx
-        for i in input_shape_offsets:
-            quotient, remainder = divmod(remainder, i)
-            xyz.append(quotient)
-
-        # extract result axis
-        result_axis = []
-        for idx, offset in enumerate(xyz):
-            if idx not in axis_:
-                result_axis.append(offset)
-
-        # Construct result offset
-        result_offset = 0
-        for i, result_axis_val in enumerate(result_axis):
-            result_offset += (output_shape_offsets[i] * result_axis_val)
-
-        input_elem = input.item(source_idx)
-        if result_array[result_offset] is None:
-            result_array[result_offset] = input_elem
-        else:
-            result_array[result_offset] += input_elem
-
-    dpnp_array = dpnp.array(result_array, dtype=input.dtype)
-    dpnp_result_array = dpnp_array.reshape(output_shape)
-    return dpnp_result_array
+    return result
 
 
 cpdef dpnp_trapz(dparray y, dparray x, int dx):

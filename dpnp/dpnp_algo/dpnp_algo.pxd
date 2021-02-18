@@ -63,8 +63,10 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_CUMSUM
         DPNP_FN_DEGREES
         DPNP_FN_DET
+        DPNP_FN_DIAGONAL
         DPNP_FN_DIVIDE
         DPNP_FN_DOT
+        DPNP_FN_EDIFF1D
         DPNP_FN_EIG
         DPNP_FN_EIGVALS
         DPNP_FN_ERF
@@ -73,6 +75,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_EXPM1
         DPNP_FN_FABS
         DPNP_FN_FFT_FFT
+        DPNP_FN_FILL_DIAGONAL
         DPNP_FN_FLOOR
         DPNP_FN_FLOOR_DIVIDE
         DPNP_FN_FMOD
@@ -97,8 +100,11 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_MINIMUM
         DPNP_FN_MODF
         DPNP_FN_MULTIPLY
+        DPNP_FN_PLACE
         DPNP_FN_POWER
         DPNP_FN_PROD
+        DPNP_FN_PUT
+        DPNP_FN_QR
         DPNP_FN_RADIANS
         DPNP_FN_REMAINDER
         DPNP_FN_RECIP
@@ -125,6 +131,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_POISSON
         DPNP_FN_RNG_POWER
         DPNP_FN_RNG_RAYLEIGH
+        DPNP_FN_RNG_SHUFFLE
         DPNP_FN_RNG_SRAND
         DPNP_FN_RNG_STANDARD_CAUCHY
         DPNP_FN_RNG_STANDARD_EXPONENTIAL
@@ -133,6 +140,8 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_STANDARD_T
         DPNP_FN_RNG_TRIANGULAR
         DPNP_FN_RNG_UNIFORM
+        DPNP_FN_RNG_VONMISES
+        DPNP_FN_RNG_WALD
         DPNP_FN_RNG_WEIBULL
         DPNP_FN_RNG_ZIPF
         DPNP_FN_SIGN
@@ -167,19 +176,20 @@ cdef extern from "dpnp_iface_fptr.hpp":
         DPNPFuncType return_type
         void * ptr
 
-    DPNPFuncData get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type)
+    DPNPFuncData get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type) except +
 
 
 cdef extern from "dpnp_iface.hpp" namespace "QueueOptions":  # need this namespace for Enum import
     cdef enum QueueOptions "QueueOptions":
         CPU_SELECTOR
         GPU_SELECTOR
+        AUTO_SELECTOR
 
 cdef extern from "dpnp_iface.hpp":
     void dpnp_queue_initialize_c(QueueOptions selector)
     size_t dpnp_queue_is_cpu_c()
 
-    char * dpnp_memory_alloc_c(size_t size_in_bytes)
+    char * dpnp_memory_alloc_c(size_t size_in_bytes) except +
     void dpnp_memory_free_c(void * ptr)
     void dpnp_memory_memcpy_c(void * dst, const void * src, size_t size_in_bytes)
     void dpnp_rng_srand_c(size_t seed)
@@ -189,6 +199,7 @@ cdef extern from "dpnp_iface.hpp":
 ctypedef void(*fptr_1in_1out_t)(void * , void * , size_t)
 ctypedef void(*fptr_2in_1out_t)(void * , void*, void*, size_t)
 ctypedef void(*fptr_blas_gemm_2in_1out_t)(void * , void * , void * , size_t, size_t, size_t)
+ctypedef void(*dpnp_reduction_c_t)(const void *, const size_t, void * , const long*, const size_t, const long*, const size_t, const void * , const long*)
 
 cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shape_type result_shape)
 cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, dparray_shape_type result_shape)

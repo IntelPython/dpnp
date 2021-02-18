@@ -23,6 +23,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <cassert>
+#include <cmath>
 #include <mkl_vsl.h>
 #include <stdexcept>
 #include <vector>
@@ -198,10 +200,6 @@ void dpnp_rng_f_c(void* result, const _DataType df_num, const _DataType df_den, 
         event_out.wait();
 
         den = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
-        if (den == nullptr)
-        {
-            throw std::runtime_error("DPNP RNG Error: dpnp_rng_f_c() failed.");
-        }
         shape = 0.5 * df_den;
         scale = 2.0 / df_den;
         mkl_rng::gamma<_DataType> gamma_distribution2(shape, d_zero, scale);
@@ -222,10 +220,6 @@ void dpnp_rng_f_c(void* result, const _DataType df_num, const _DataType df_den, 
             throw std::runtime_error("DPNP RNG Error: dpnp_rng_f_c() failed.");
         }
         den = (_DataType*)mkl_malloc(size * sizeof(_DataType), 64);
-        if (den == nullptr)
-        {
-            throw std::runtime_error("DPNP RNG Error: dpnp_rng_f_c() failed.");
-        }
         shape = 0.5 * df_den;
         scale = 2.0 / df_den;
         errcode = vdRngGamma(VSL_RNG_METHOD_GAMMA_GNORM_ACCURATE, get_rng_stream(), size, den, shape, d_zero, scale);
@@ -564,10 +558,6 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             event_out.wait();
 
             nvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
-            if (nvec == nullptr)
-            {
-                throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
-            }
 
             loc = sqrt(nonc);
 
@@ -588,11 +578,6 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             double lambda;
             int* pvec = nullptr;
             pvec = reinterpret_cast<int*>(dpnp_memory_alloc_c(size * sizeof(int)));
-            if (pvec == nullptr)
-            {
-                throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
-            }
-            // pvec = (int*)mkl_malloc(size * sizeof(int), 64);
             lambda = 0.5 * nonc;
 
             mkl_rng::poisson<int> poisson_distribution(lambda);
@@ -606,10 +591,6 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
                 size_t* idx = nullptr;
                 _DataType* tmp = nullptr;
                 idx = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(size * sizeof(size_t)));
-                if (idx == nullptr)
-                {
-                    throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
-                }
                 for (i = 0; i < size; i++)
                     idx[i] = i;
 
@@ -618,10 +599,6 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
 
                 /* allocate workspace to store samples of gamma, enough to hold entire output */
                 tmp = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
-                if (tmp == nullptr)
-                {
-                    throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
-                }
                 for (i = 0; i < size;)
                 {
                     size_t k, j;
@@ -698,10 +675,6 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             }
 
             nvec = (double*)mkl_malloc(size * sizeof(double), 64);
-            if (nvec == nullptr)
-            {
-                throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
-            }
             loc = sqrt(nonc);
             errcode = vdRngGaussian(VSL_RNG_METHOD_GAUSSIAN_ICDF, get_rng_stream(), size, nvec, loc, d_one);
             if (errcode != VSL_STATUS_OK)
@@ -720,10 +693,6 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             double lambda;
             int* pvec = nullptr;
             pvec = (int*)mkl_malloc(size * sizeof(int), 64);
-            if (pvec == nullptr)
-            {
-                throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
-            }
 
             lambda = 0.5 * nonc;
             errcode = viRngPoisson(VSL_RNG_METHOD_POISSON_PTPE, get_rng_stream(), size, pvec, lambda);
@@ -753,10 +722,6 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
 
                 /* allocate workspace to store samples of gamma, enough to hold entire output */
                 tmp = (double*)mkl_malloc(size * sizeof(double), 64);
-                if (tmp == nullptr)
-                {
-                    throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
-                }
                 for (i = 0; i < size;)
                 {
                     size_t k, j;
@@ -926,6 +891,69 @@ void dpnp_rng_rayleigh_c(void* result, const _DataType scale, const size_t size)
 }
 
 template <typename _DataType>
+void dpnp_rng_shuffle_c(
+    void* result, const size_t itemsize, const size_t ndim, const size_t high_dim_size, const size_t size)
+{
+    if (!(size) || !(high_dim_size > 1))
+    {
+        return;
+    }
+
+    char* result1 = reinterpret_cast<char*>(result);
+
+    double* Uvec = nullptr;
+
+    size_t uvec_size = high_dim_size - 1;
+    Uvec = reinterpret_cast<double*>(dpnp_memory_alloc_c(uvec_size * sizeof(double)));
+    mkl_rng::uniform<double> uniform_distribution(0.0, 1.0);
+    auto uniform_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, uvec_size, Uvec);
+    uniform_event.wait();
+
+    if (ndim == 1)
+    {
+        // Fast, statically typed path: shuffle the underlying buffer.
+        // Only for non-empty, 1d objects of class ndarray (subclasses such
+        // as MaskedArrays may not support this approach).
+        // TODO
+        // kernel
+        char* buf = nullptr;
+        buf = reinterpret_cast<char*>(dpnp_memory_alloc_c(itemsize * sizeof(char)));
+        for (size_t i = uvec_size; i > 0; i--)
+        {
+            size_t j = (size_t)(floor((i + 1) * Uvec[i - 1]));
+            memcpy(buf, result1 + j * itemsize, itemsize);
+            memcpy(result1 + j * itemsize, result1 + i * itemsize, itemsize);
+            memcpy(result1 + i * itemsize, buf, itemsize);
+        }
+
+        dpnp_memory_free_c(buf);
+    }
+    else
+    {
+        // Multidimensional ndarrays require a bounce buffer.
+        // TODO
+        // kernel
+        char* buf = nullptr;
+        size_t step_size = (size / high_dim_size) * itemsize; // size in bytes for x[i] element
+        buf = reinterpret_cast<char*>(dpnp_memory_alloc_c(step_size * sizeof(char)));
+        for (size_t i = uvec_size; i > 0; i--)
+        {
+            size_t j = (size_t)(floor((i + 1) * Uvec[i - 1]));
+            if (j < i)
+            {
+                memcpy(buf, result1 + j * step_size, step_size);
+                memcpy(result1 + j * step_size, result1 + i * step_size, step_size);
+                memcpy(result1 + i * step_size, buf, step_size);
+            }
+        }
+
+        dpnp_memory_free_c(buf);
+    }
+
+    dpnp_memory_free_c(Uvec);
+}
+
+template <typename _DataType>
 void dpnp_rng_standard_cauchy_c(void* result, const size_t size)
 {
     if (!size)
@@ -1008,10 +1036,6 @@ void dpnp_rng_standard_t_c(void* result, const _DataType df, const size_t size)
         event_out.wait();
 
         sn = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
-        if (sn == nullptr)
-        {
-            throw std::runtime_error("DPNP RNG Error: dpnp_rng_standard_t_c() failed.");
-        }
 
         mkl_rng::gaussian<_DataType> gaussian_distribution(d_zero, d_one);
         event_out = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, sn);
@@ -1034,10 +1058,6 @@ void dpnp_rng_standard_t_c(void* result, const _DataType df, const size_t size)
         vmdInvSqrt(size, result1, result1, VML_HA);
 
         sn = (_DataType*)mkl_malloc(size * sizeof(_DataType), 64);
-        if (sn == nullptr)
-        {
-            throw std::runtime_error("DPNP RNG Error: dpnp_rng_standard_t_c() failed.");
-        }
 
         errcode = vdRngGaussian(VSL_RNG_METHOD_GAUSSIAN_ICDF, get_rng_stream(), size, sn, d_zero, d_one);
         if (errcode != VSL_STATUS_OK)
@@ -1139,6 +1159,264 @@ void dpnp_rng_uniform_c(void* result, const long low, const long high, const siz
     event_out.wait();
 }
 
+#ifndef M_PI
+/*  128-bits worth of pi */
+#define M_PI 3.141592653589793238462643383279502884197
+#endif
+
+template <typename _DataType>
+void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _DataType kappa, const size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    _DataType r_over_two_kappa, recip_two_kappa;
+    _DataType s_minus_one, hpt, r_over_two_kappa_minus_one, rho_minus_one;
+    _DataType* Uvec = nullptr;
+    _DataType* Vvec = nullptr;
+    const _DataType d_zero = 0.0, d_one = 1.0;
+
+    assert(kappa > 1.0);
+
+    recip_two_kappa = 1 / (2 * kappa);
+
+    /* variables here are dwindling to zero as kappa grows */
+    hpt = sqrt(1 + recip_two_kappa * recip_two_kappa);
+    r_over_two_kappa_minus_one = recip_two_kappa * (1 + recip_two_kappa / (1 + hpt));
+    r_over_two_kappa = 1 + r_over_two_kappa_minus_one;
+    rho_minus_one = r_over_two_kappa_minus_one - sqrt(2 * r_over_two_kappa * recip_two_kappa);
+    s_minus_one = rho_minus_one * (0.5 * rho_minus_one / (1 + rho_minus_one));
+
+    Uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+    Vvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+
+    for (size_t n = 0; n < size;)
+    {
+        size_t diff_size = size - n;
+        mkl_rng::uniform<_DataType> uniform_distribution_u(d_zero, 0.5 * M_PI);
+        auto event_out = mkl_rng::generate(uniform_distribution_u, DPNP_RNG_ENGINE, diff_size, Uvec);
+        event_out.wait();
+        // TODO
+        // use deps case
+        mkl_rng::uniform<_DataType> uniform_distribution_v(d_zero, d_one);
+        event_out = mkl_rng::generate(uniform_distribution_v, DPNP_RNG_ENGINE, diff_size, Vvec);
+        event_out.wait();
+
+        // TODO
+        // kernel
+        for (size_t i = 0; i < diff_size; i++)
+        {
+            _DataType sn, cn, sn2, cn2;
+            _DataType neg_W_minus_one, V, Y;
+
+            sn = sin(Uvec[i]);
+            cn = cos(Uvec[i]);
+            V = Vvec[i];
+            sn2 = sn * sn;
+            cn2 = cn * cn;
+
+            neg_W_minus_one = s_minus_one * sn2 / (0.5 * s_minus_one + cn2);
+            Y = kappa * (s_minus_one + neg_W_minus_one);
+
+            if ((Y * (2 - Y) >= V) || (log(Y / V) + 1 >= Y))
+            {
+                Y = neg_W_minus_one * (2 - neg_W_minus_one);
+                if (Y < 0)
+                    Y = 0.0;
+                else if (Y > 1.0)
+                    Y = 1.0;
+
+                result1[n++] = asin(sqrt(Y));
+            }
+        }
+    }
+
+    dpnp_memory_free_c(Uvec);
+
+    mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
+    auto event_out = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
+    event_out.wait();
+
+    // TODO
+    // kernel
+    for (size_t i = 0; i < size; i++)
+    {
+        _DataType mod, resi;
+
+        resi = (Vvec[i] < 0.5) ? mu - result1[i] : mu + result1[i];
+        mod = fabs(resi);
+        mod = (fmod(mod + M_PI, 2 * M_PI) - M_PI);
+        result1[i] = (resi < 0) ? -mod : mod;
+    }
+
+    dpnp_memory_free_c(Vvec);
+    return;
+}
+
+template <typename _DataType>
+void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _DataType kappa, const size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    _DataType rho_over_kappa, rho, r, s_kappa;
+    _DataType* Uvec = nullptr;
+    _DataType* Vvec = nullptr;
+
+    const _DataType d_zero = 0.0, d_one = 1.0;
+
+    assert(0. < kappa <= 1.0);
+
+    r = 1 + sqrt(1 + 4 * kappa * kappa);
+    rho_over_kappa = (2) / (r + sqrt(2 * r));
+    rho = rho_over_kappa * kappa;
+
+    /* s times kappa */
+    s_kappa = (1 + rho * rho) / (2 * rho_over_kappa);
+
+    Uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+    Vvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+
+    for (size_t n = 0; n < size;)
+    {
+        size_t diff_size = size - n;
+        mkl_rng::uniform<_DataType> uniform_distribution_u(d_zero, M_PI);
+        auto event_out = mkl_rng::generate(uniform_distribution_u, DPNP_RNG_ENGINE, diff_size, Uvec);
+        event_out.wait();
+        // TODO
+        // use deps case
+        mkl_rng::uniform<_DataType> uniform_distribution_v(d_zero, d_one);
+        event_out = mkl_rng::generate(uniform_distribution_v, DPNP_RNG_ENGINE, diff_size, Vvec);
+        event_out.wait();
+
+        // TODO
+        // kernel
+        for (size_t i = 0; i < diff_size; i++)
+        {
+            _DataType Z, W, Y, V;
+            Z = cos(Uvec[i]);
+            V = Vvec[i];
+            W = (kappa + s_kappa * Z) / (s_kappa + kappa * Z);
+            Y = s_kappa - kappa * W;
+            if ((Y * (2 - Y) >= V) || (log(Y / V) + 1 >= Y))
+            {
+                result1[n++] = acos(W);
+            }
+        }
+    }
+
+    dpnp_memory_free_c(Uvec);
+
+    mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
+    auto event_out = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
+    event_out.wait();
+
+    // TODO
+    // kernel
+    for (size_t i = 0; i < size; i++)
+    {
+        double mod, resi;
+
+        resi = (Vvec[i] < 0.5) ? mu - result1[i] : mu + result1[i];
+        mod = fabs(resi);
+        mod = (fmod(mod + M_PI, 2 * M_PI) - M_PI);
+        result1[i] = (resi < 0) ? -mod : mod;
+    }
+
+    dpnp_memory_free_c(Vvec);
+    return;
+}
+
+/* Vonmisses uses the rejection algorithm compared against the wrapped
+   Cauchy distribution suggested by Best and Fisher and documented in
+   Chapter 9 of Luc's Non-Uniform Random Variate Generation.
+   http://cg.scs.carleton.ca/~luc/rnbookindex.html
+   (but corrected to match the algorithm in R and Python)
+*/
+template <typename _DataType>
+void dpnp_rng_vonmises_c(void* result, const _DataType mu, const _DataType kappa, const size_t size)
+{
+    if (kappa > 1.0)
+        dpnp_rng_vonmises_large_kappa_c<_DataType>(result, mu, kappa, size);
+    else
+        dpnp_rng_vonmises_small_kappa_c<_DataType>(result, mu, kappa, size);
+    // TODO case when kappa < kappa < 1e-8 (very small)
+}
+
+template <typename _KernelNameSpecialization>
+class dpnp_rng_wald_acceptance_kernel1;
+
+template <typename _KernelNameSpecialization>
+class dpnp_rng_wald_acceptance_kernel2;
+
+template <typename _DataType>
+void dpnp_rng_wald_c(void* result, const _DataType mean, const _DataType scale, const size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+
+    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+    _DataType* uvec = nullptr;
+
+    const _DataType d_zero = _DataType(0.0);
+    const _DataType d_one = _DataType(1.0);
+    _DataType gsc = sqrt(0.5 * mean / scale);
+
+    mkl_rng::gaussian<_DataType> gaussian_distribution(d_zero, gsc);
+
+    auto gaussian_dstr_event = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, result1);
+
+    /* Y = mean/(2 scale) * Z^2 */
+    auto sqr_event = mkl_vm::sqr(DPNP_QUEUE, size, result1, result1, {gaussian_dstr_event}, mkl_vm::mode::ha);
+
+    cl::sycl::range<1> gws(size);
+    auto acceptance_kernel1 = [=](cl::sycl::id<1> global_id) {
+        size_t i = global_id[0];
+        if (result1[i] <= 2.0)
+        {
+            result1[i] = 1.0 + result1[i] + cl::sycl::sqrt(result1[i] * (result1[i] + 2.0));
+        }
+        else
+        {
+            result1[i] = 1.0 + result1[i] * (1.0 + cl::sycl::sqrt(1.0 + 2.0 / result1[i]));
+        }
+    };
+    auto parallel_for_acceptance1 = [&](cl::sycl::handler& cgh) {
+        cgh.depends_on({sqr_event});
+        cgh.parallel_for<class dpnp_rng_wald_acceptance_kernel1<_DataType>>(gws, acceptance_kernel1);
+    };
+    auto event_ration_acceptance = DPNP_QUEUE.submit(parallel_for_acceptance1);
+
+    uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+
+    mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
+    auto uniform_distr_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, uvec);
+
+    auto acceptance_kernel2 = [=](cl::sycl::id<1> global_id) {
+        size_t i = global_id[0];
+        if (uvec[i] * (1.0 + result1[i]) <= result1[i])
+            result1[i] = mean / result1[i];
+        else
+            result1[i] = mean * result1[i];
+    };
+    auto parallel_for_acceptance2 = [&](cl::sycl::handler& cgh) {
+        cgh.depends_on({event_ration_acceptance, uniform_distr_event});
+        cgh.parallel_for<class dpnp_rng_wald_acceptance_kernel2<_DataType>>(gws, acceptance_kernel2);
+    };
+    auto event_out = DPNP_QUEUE.submit(parallel_for_acceptance2);
+    event_out.wait();
+
+    dpnp_memory_free_c(uvec);
+}
+
 template <typename _DataType>
 void dpnp_rng_weibull_c(void* result, const double alpha, const size_t size)
 {
@@ -1182,10 +1460,6 @@ void dpnp_rng_zipf_c(void* result, const _DataType a, const size_t size)
     b = pow(2.0, am1);
 
     Uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * 2 * sizeof(_DataType)));
-    if (Uvec == nullptr)
-    {
-        throw std::runtime_error("DPNP RNG Error: dpnp_rng_zipf_c() failed.");
-    }
     Vvec = Uvec + size;
 
     // TODO
@@ -1272,6 +1546,11 @@ void func_map_init_random(func_map_t& fmap)
 
     fmap[DPNPFuncName::DPNP_FN_RNG_RAYLEIGH][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_rayleigh_c<double>};
 
+    fmap[DPNPFuncName::DPNP_FN_RNG_SHUFFLE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_shuffle_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_SHUFFLE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_shuffle_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_SHUFFLE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_shuffle_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_RNG_SHUFFLE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_rng_shuffle_c<long>};
+
     fmap[DPNPFuncName::DPNP_FN_RNG_SRAND][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_srand_c};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_STANDARD_CAUCHY][eft_DBL][eft_DBL] = {eft_DBL,
@@ -1292,6 +1571,10 @@ void func_map_init_random(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_uniform_c<double>};
     fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_rng_uniform_c<float>};
     fmap[DPNPFuncName::DPNP_FN_RNG_UNIFORM][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_rng_uniform_c<int>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_VONMISES][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_vonmises_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_RNG_WALD][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_wald_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_RNG_WEIBULL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_rng_weibull_c<double>};
 
