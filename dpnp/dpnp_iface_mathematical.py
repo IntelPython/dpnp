@@ -1394,7 +1394,7 @@ def subtract(x1, x2, **kwargs):
     return call_origin(numpy.subtract, x1, x2, **kwargs)
 
 
-def sum(x1, **kwargs):
+def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, where=True):
     """
     Sum of array elements over a given axis.
 
@@ -1402,36 +1402,42 @@ def sum(x1, **kwargs):
 
     Limitations
     -----------
-        Parameter ``x1`` is supported as :obj:`dpnp.ndarray`.
-        Only parameter ``axis`` from keyword arguments ``kwargs`` is supported.
-        Otherwise the functions will be executed sequentially on CPU.
-        Input array data types are limited by supported DPNP :ref:`Data types`.
+        Parameter ``x1`` is supported as :obj:`dpnp.dparray` only.
+        Parameters ``initial`` and ``where`` from keyword arguments ``kwargs`` are unsupported.
+        Input array data types are limited by DPNP :ref:`Data types`.
 
     Examples
     --------
     >>> import dpnp as np
     >>> np.sum(np.array([1, 2, 3, 4, 5]))
     15
-    >>> result = np.sum(np.array([[0, 1], [0, 5]]), axis=0)
-    >>> [x for x in result]
+    >>> result = np.sum([[0, 1], [0, 5]], axis=0)
     [0, 6]
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
+    if not use_origin_backend(x1):
+        if not isinstance(x1, dparray):
+            pass
+        elif out is not None and not isinstance(out, dparray):
+            pass
+        elif axis is not None and not dpnp.isscalar(axis):
+            pass
+        elif initial is not None:
+            pass
+        elif where is not True:
+            pass
+        else:
+            result = dpnp_sum(x1, axis, dtype, out, keepdims, initial, where)
 
-    if (not use_origin_backend(x1) and is_x1_dparray):
-        axis = kwargs.get('axis')
+            # one element array result should be converted into scalar
+            # TODO empty shape must be converted into scalar (it is not in test system)
+            if (len(result.shape) > 0) and (result.size == 1) and (keepdims is False):
+                return result.dtype.type(result[0])
 
-        result = dpnp_sum(x1, axis)
+            return result
 
-        # scalar returned
-        if result.shape == (1,):
-            return result.dtype.type(result[0])
-
-        return result
-
-    return call_origin(numpy.sum, x1, **kwargs)
+    return call_origin(numpy.sum, x1, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)
 
 
 def trapz(y, x=None, dx=1.0, **kwargs):

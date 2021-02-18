@@ -21,7 +21,7 @@ from tests.third_party.cupy.testing.helper import for_all_dtypes_combination
 from tests.third_party.cupy.testing.helper import for_CF_orders
 from tests.third_party.cupy.testing.helper import for_complex_dtypes
 from tests.third_party.cupy.testing.helper import for_dtypes
-# from tests.third_party.cupy.testing.helper import for_dtypes_combination
+from tests.third_party.cupy.testing.helper import for_dtypes_combination
 from tests.third_party.cupy.testing.helper import for_float_dtypes
 from tests.third_party.cupy.testing.helper import for_int_dtypes
 # from tests.third_party.cupy.testing.helper import for_int_dtypes_combination

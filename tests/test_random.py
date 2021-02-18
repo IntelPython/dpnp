@@ -3,7 +3,7 @@ import unittest
 
 import dpnp.random
 import numpy
-from numpy.testing import assert_allclose
+from numpy.testing import (assert_allclose, assert_array_equal)
 import math
 
 
@@ -934,3 +934,129 @@ class TestDistributionsZipf(TestDistribution):
     def test_seed(self):
         a = 2.56
         self.check_seed('zipf', {'a': a})
+
+
+class TestPermutationsTestShuffle:
+
+    @pytest.mark.parametrize("dtype", [dpnp.float32, dpnp.float64, dpnp.int32, dpnp.int64],
+                             ids=['float32', 'float64', 'int32', 'int64'])
+    def test_shuffle(self, dtype):
+        seed = 28041990
+        input_x_int64 = dpnp.asarray([1, 2, 3, 4, 5, 6, 7, 8, 9, 0], dtype=dpnp.int64)
+        input_x = dpnp.asarray([1, 2, 3, 4, 5, 6, 7, 8, 9, 0], dtype=dtype)
+        dpnp.random.seed(seed)
+        desired_x = dpnp.random.shuffle(input_x_int64).astype(dtype)
+        dpnp.random.seed(seed)
+        actual_x = dpnp.random.shuffle(input_x)
+        assert_array_equal(actual_x, desired_x)
+
+    @pytest.mark.parametrize("dtype", [dpnp.float32, dpnp.float64, dpnp.int32, dpnp.int64],
+                             ids=['float32', 'float64', 'int32', 'int64'])
+    def test_no_miss_numbers(self, dtype):
+        seed = 28041990
+        input_x = dpnp.asarray([5, 4, 0, 7, 6, 1, 8, 3, 2, 9], dtype=dtype)
+        desired_x = dpnp.sort(input_x)
+        dpnp.random.seed(seed)
+        output_x = dpnp.random.shuffle(input_x)
+        actual_x = dpnp.sort(output_x)
+        assert_array_equal(actual_x, desired_x)
+
+    @pytest.mark.parametrize("conv", [lambda x: dpnp.array([]),
+                                      lambda x: x,
+                                      lambda x: dpnp.asarray(x).astype(dpnp.int8),
+                                      lambda x: dpnp.asarray(x).astype(dpnp.float32),
+                                      lambda x: dpnp.asarray(x).astype(dpnp.complex64),
+                                      lambda x: dpnp.asarray(x).astype(object),
+                                      lambda x: [(i, i) for i in x],
+                                      lambda x: dpnp.asarray([[i, i] for i in x]),
+                                      lambda x: dpnp.vstack([x, x]).T,
+                                      # gh-11442
+                                      lambda x: (dpnp.asarray([(i, i) for i in x], [
+                                                              ("a", int), ("b", int)]).view(dpnp.recarray)),
+                                      # gh-4270
+                                      lambda x: dpnp.asarray([(i, i) for i in x],
+                                                             [("a", object), ("b", dpnp.int32)])],
+                             ids=[' lambda x: dpnp.array([])',
+                                  ' lambda x: x',
+                                  ' lambda x: dpnp.asarray(x).astype(dpnp.int8)',
+                                  ' lambda x: dpnp.asarray(x).astype(dpnp.float32)',
+                                  ' lambda x: dpnp.asarray(x).astype(dpnp.complex64)',
+                                  ' lambda x: dpnp.asarray(x).astype(object)',
+                                  ' lambda x: [(i, i) for i in x]',
+                                  ' lambda x: dpnp.asarray([[i, i] for i in x])',
+                                  ' lambda x: dpnp.vstack([x, x]).T',
+                                  ' lambda x: (dpnp.asarray([(i, i) for i in x], ['\
+                                  '("a", int), ("b", int)]).view(dpnp.recarray))',
+                                  ' lambda x: dpnp.asarray([(i, i) for i in x], [("a", object), ("b", dpnp.int32)])]'
+                                  ]
+                             )
+    def test_shuffle1(self, conv):
+        # `conv` contans test lists, arrays (of various dtypes), and multidimensional
+        # versions of both, c-contiguous or not.
+        #
+        # This test is a modification of the original tests of `numpy.random` (both the same):
+        # * tests/test_random.py::TestRandomDist::test_shuffle
+        # * tests/test_randomstate.py::TestRandomDist::test_shuffle
+        #
+        # The original tests do not have a parameterized launch and they
+        # do not correctly check of the results for the dpnp RNG engine.
+
+        # Computing desired 1 dim list for given 1 dim list
+        # on the current device for the given seed number.
+        seed = 1234567890
+
+        dpnp.random.seed(seed)
+        list_1d = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+        dpnp_1d = dpnp.array(list_1d)
+        dpnp_desired_1d = dpnp.random.shuffle(dpnp_1d)
+        desired_1d = [i for i in dpnp_desired_1d]
+
+        dpnp.random.seed(seed)
+        alist = conv(list_1d)
+        dpnp.random.shuffle(alist)
+        actual = alist
+        desired = conv(desired_1d)
+        assert_array_equal(actual, desired)
+
+    @pytest.mark.parametrize("conv", [lambda x: numpy.array([]),
+                                      lambda x: x,
+                                      lambda x: numpy.asarray(x).astype(numpy.int8),
+                                      lambda x: numpy.asarray(x).astype(numpy.float32),
+                                      lambda x: numpy.asarray(x).astype(numpy.complex64),
+                                      lambda x: numpy.asarray(x).astype(object),
+                                      lambda x: [(i, i) for i in x],
+                                      lambda x: numpy.asarray([[i, i] for i in x]),
+                                      lambda x: numpy.vstack([x, x]).T,
+                                      # gh-11442
+                                      lambda x: (numpy.asarray([(i, i) for i in x], [
+                                                               ("a", int), ("b", int)]).view(numpy.recarray)),
+                                      # gh-4270
+                                      lambda x: numpy.asarray([(i, i) for i in x],
+                                                              [("a", object), ("b", numpy.int32)])],
+                             ids=[' lambda x: numpy.array([])',
+                                  ' lambda x: x',
+                                  ' lambda x: numpy.asarray(x).astype(numpy.int8)',
+                                  ' lambda x: numpy.asarray(x).astype(numpy.float32)',
+                                  ' lambda x: numpy.asarray(x).astype(numpy.complex64)',
+                                  ' lambda x: numpy.asarray(x).astype(object)',
+                                  ' lambda x: [(i, i) for i in x]',
+                                  ' lambda x: numpy.asarray([[i, i] for i in x])',
+                                  ' lambda x: numpy.vstack([x, x]).T',
+                                  ' lambda x: (numpy.asarray([(i, i) for i in x], [ '\
+                                  '("a", int), ("b", int)]).view(numpy.recarray))',
+                                  ' lambda x: numpy.asarray([(i, i) for i in x], [("a", object), ("b", numpy.int32)])]'
+                                  ]
+                             )
+    def test_shuffle1_fallback(self, conv):
+        # This is parameterized version of original tests of `numpy.random` (both the same):
+        # * tests/test_random.py::TestRandomDist::test_shuffle
+        # * tests/test_randomstate.py::TestRandomDist::test_shuffle
+
+        seed = 1234567890
+
+        dpnp.random.seed(seed)
+        alist = conv([1, 2, 3, 4, 5, 6, 7, 8, 9, 0])
+        dpnp.random.shuffle(alist)
+        actual = alist
+        desired = conv([0, 1, 9, 6, 2, 4, 5, 8, 7, 3])
+        assert_array_equal(actual, desired)
