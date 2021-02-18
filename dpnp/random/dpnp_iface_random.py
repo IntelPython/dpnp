@@ -893,7 +893,22 @@ def permutation(x):
 
     For full documentation refer to :obj:`numpy.random.permutation`.
 
-    # TODO
+    Examples
+    --------
+    >>> arr = dpnp.random.permutation(10)
+    >>> print(arr)
+    [3 8 7 9 0 6 1 2 4 5] # random
+
+    >>> arr = dpnp.random.permutation([1, 4, 9, 12, 15])
+    >>> print(arr)
+    [12  1  4  9 15] # random
+
+    >>> arr = dpnp.arange(9).reshape((3, 3))
+    >>> dpnp.random.permutation(arr)
+    >>> print(arr)
+    [[0 1 2]
+     [3 4 5]
+     [6 7 8]]  # random
 
     """
     if not use_origin_backend(x):
