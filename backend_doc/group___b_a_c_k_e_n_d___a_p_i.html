@@ -402,6 +402,10 @@ Functions</h2></td></tr>
 <tr class="memitem:gae91a7a1515d7267de45e7d36a66bcb01"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gae91a7a1515d7267de45e7d36a66bcb01">dpnp_sum_c</a> (const void *input_in, const size_t input_size, void *result_out, const long *input_shape, const size_t input_shape_ndim, const long *axes, const size_t axes_ndim, const void *initial, const long *where)</td></tr>
 <tr class="memdesc:gae91a7a1515d7267de45e7d36a66bcb01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute summary of input array elements.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gae91a7a1515d7267de45e7d36a66bcb01">More...</a><br /></td></tr>
 <tr class="separator:gae91a7a1515d7267de45e7d36a66bcb01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga689c9f491f7645d86953db3968146d12"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
+<tr class="memitem:ga689c9f491f7645d86953db3968146d12"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga689c9f491f7645d86953db3968146d12">dpnp_place_c</a> (void *arr, long *mask, void *vals, const size_t arr_size, const size_t vals_size)</td></tr>
+<tr class="memdesc:ga689c9f491f7645d86953db3968146d12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Place of array elements.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga689c9f491f7645d86953db3968146d12">More...</a><br /></td></tr>
+<tr class="separator:ga689c9f491f7645d86953db3968146d12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae2f8353b70b96703bdd19eca9d8c1ba2"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:gae2f8353b70b96703bdd19eca9d8c1ba2"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gae2f8353b70b96703bdd19eca9d8c1ba2">dpnp_prod_c</a> (void *array, void *result, size_t size)</td></tr>
 <tr class="memdesc:gae2f8353b70b96703bdd19eca9d8c1ba2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Product of array elements.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gae2f8353b70b96703bdd19eca9d8c1ba2">More...</a><br /></td></tr>
@@ -4313,6 +4317,66 @@ template&lt;typename _DataType_input1 , typename _DataType_input2 , typename _Da
  </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in the output array. <br  />
  </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga689c9f491f7645d86953db3968146d12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga689c9f491f7645d86953db3968146d12">&#9670;&nbsp;</a></span>dpnp_place_c()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename _DataType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void dpnp_place_c </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>arr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long *&#160;</td>
+          <td class="paramname"><em>mask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>vals</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>arr_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>vals_size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Place of array elements. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">arr</td><td>Input array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">mask</td><td>Mask array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">vals</td><td>Vals array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">arr_size</td><td>Number of input elements in <code>arr</code>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">vals_size</td><td>Number of input elements in <code>vals</code>. </td></tr>
   </table>
   </dd>
 </dl>

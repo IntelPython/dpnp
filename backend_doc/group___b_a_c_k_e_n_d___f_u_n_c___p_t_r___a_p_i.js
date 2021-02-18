@@ -76,6 +76,7 @@ var group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i =
       [ "DPNP_FN_MINIMUM", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558abbe2672040e69d7d9962201d1e5f1eb7", null ],
       [ "DPNP_FN_MODF", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558addd017f3f6c6753bc796a1ee5e9e4dcb", null ],
       [ "DPNP_FN_MULTIPLY", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a051aaed58a292f8a66357f883923973b", null ],
+      [ "DPNP_FN_PLACE", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558aa08964ad570c09a64aaf6a7fdfb7df88", null ],
       [ "DPNP_FN_POWER", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a1ee2503a88e2f0fb7735e6f2b2390ed6", null ],
       [ "DPNP_FN_PROD", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a72a62985c0bb7a38d58d9a8ab34ab19c", null ],
       [ "DPNP_FN_PUT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a00a9730b572e03c773ad168140461a5f", null ],
