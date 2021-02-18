@@ -332,4 +332,4 @@ jobs:
       cmake --build $THEDIR/build
       cmake --install $THEDIR/build
       echo ======================= run DPNP backend tests =============================
-      ./build/tests/dpnpc_tests
+      cd build/tests/ && make check
