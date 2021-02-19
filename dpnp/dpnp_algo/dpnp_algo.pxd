@@ -100,6 +100,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_MINIMUM
         DPNP_FN_MODF
         DPNP_FN_MULTIPLY
+        DPNP_FN_PLACE
         DPNP_FN_POWER
         DPNP_FN_PROD
         DPNP_FN_PUT
@@ -157,6 +158,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_TAN
         DPNP_FN_TANH
         DPNP_FN_TRANSPOSE
+        DPNP_FN_TRAPZ
         DPNP_FN_TRUNC
         DPNP_FN_VAR
 

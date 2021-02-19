@@ -237,6 +237,19 @@ INP_DLLEXPORT void dpnp_sum_c(const void* input_in,
 
 /**
  * @ingroup BACKEND_API
+ * @brief Place of array elements
+ *
+ * @param [in]  arr         Input array.
+ * @param [in]  mask        Mask array.
+ * @param [in]  vals        Vals array.
+ * @param [in]  arr_size    Number of input elements in `arr`.
+ * @param [in]  vals_size   Number of input elements in `vals`.
+ */
+template<typename _DataType>
+INP_DLLEXPORT void dpnp_place_c(void* arr, long* mask, void* vals, const size_t arr_size, const size_t vals_size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief Product of array elements
  *
  * @param [in]  array  Input array.
@@ -643,5 +656,21 @@ INP_DLLEXPORT void dpnp_elemwise_transpose_c(void* array1_in,
                                              size_t ndim,
                                              void* result1,
                                              size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief Custom implementation of trapz function
+ *
+ * @param [in]  array1_in    First input array.
+ * @param [in]  array2_in    Second input array.
+ * @param [out] result1      Output array.
+ * @param [in]  dx           The spacing between sample points.
+ * @param [in]  array1_size  Number of elements in first input array.
+ * @param [in]  array2_size  Number of elements in second input arrays.
+ *
+ */
+template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
+INP_DLLEXPORT void dpnp_trapz_c(const void* array1_in, const void* array2_in, void* result1, 
+                                double dx, size_t array1_size, size_t array2_size);
 
 #endif // BACKEND_IFACE_H
