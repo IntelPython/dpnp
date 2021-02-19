@@ -526,6 +526,10 @@ Functions</h2></td></tr>
 <tr class="memitem:gaa7805d09d9500298c16fefff3446cdb7"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaa7805d09d9500298c16fefff3446cdb7">dpnp_elemwise_transpose_c</a> (void *array1_in, const size_t *input_shape, const size_t *result_shape, const size_t *permute_axes, size_t ndim, void *result1, size_t size)</td></tr>
 <tr class="memdesc:gaa7805d09d9500298c16fefff3446cdb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">transpose function. Permute axes of the input to the output with elements permutation.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gaa7805d09d9500298c16fefff3446cdb7">More...</a><br /></td></tr>
 <tr class="separator:gaa7805d09d9500298c16fefff3446cdb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9b3f6427b1e1a3fc9ec357d9584f1765"><td class="memTemplParams" colspan="2">template&lt;typename _DataType_input1 , typename _DataType_input2 , typename _DataType_output &gt; </td></tr>
+<tr class="memitem:ga9b3f6427b1e1a3fc9ec357d9584f1765"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga9b3f6427b1e1a3fc9ec357d9584f1765">dpnp_trapz_c</a> (const void *array1_in, const void *array2_in, void *result1, double dx, size_t array1_size, size_t array2_size)</td></tr>
+<tr class="memdesc:ga9b3f6427b1e1a3fc9ec357d9584f1765"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom implementation of trapz function.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga9b3f6427b1e1a3fc9ec357d9584f1765">More...</a><br /></td></tr>
+<tr class="separator:ga9b3f6427b1e1a3fc9ec357d9584f1765"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga5d37203d4448c22f7b046710d639fd4e"><td class="memItemLeft" align="right" valign="top">INP_DLLEXPORT <a class="el" href="group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ga52f631e01afd73cc5573f9e8f61bd78f">DPNPFuncData_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga5d37203d4448c22f7b046710d639fd4e">get_dpnp_function_ptr</a> (<a class="el" href="group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ga8b20590525bff7c7ce4f728d2021b558">DPNPFuncName</a> name, <a class="el" href="group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gaec54569b58e937e84099479f078bce15">DPNPFuncType</a> first_type, <a class="el" href="group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gaec54569b58e937e84099479f078bce15">DPNPFuncType</a> second_type=<a class="el" href="group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15a4dd2e447249c9f1ed5b4a01263bd8d06">DPNPFuncType::DPNP_FT_NONE</a>)</td></tr>
 <tr class="memdesc:ga5d37203d4448c22f7b046710d639fd4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">get runtime pointer to selected function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga5d37203d4448c22f7b046710d639fd4e">More...</a><br /></td></tr>
 <tr class="separator:ga5d37203d4448c22f7b046710d639fd4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -5489,6 +5493,73 @@ template&lt;typename _DataType_input , typename _DataType_output &gt; </div>
  </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in the input array. <br  />
  </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga9b3f6427b1e1a3fc9ec357d9584f1765"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga9b3f6427b1e1a3fc9ec357d9584f1765">&#9670;&nbsp;</a></span>dpnp_trapz_c()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename _DataType_input1 , typename _DataType_input2 , typename _DataType_output &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void dpnp_trapz_c </td>
+          <td>(</td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>array1_in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>array2_in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>result1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>dx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>array1_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>array2_size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Custom implementation of trapz function. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">array1_in</td><td>First input array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">array2_in</td><td>Second input array. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result1</td><td>Output array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">dx</td><td>The spacing between sample points. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">array1_size</td><td>Number of elements in first input array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">array2_size</td><td>Number of elements in second input arrays. </td></tr>
   </table>
   </dd>
 </dl>
