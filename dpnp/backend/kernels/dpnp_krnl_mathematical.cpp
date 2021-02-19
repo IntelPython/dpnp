@@ -283,7 +283,7 @@ class dpnp_trapz_c_kernel;
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
 void dpnp_trapz_c(const void* array1_in, const void* array2_in, void* result1, double dx, size_t array1_size, size_t array2_size)
 {
-    if ((array1_in == nullptr) || (array2_in == nullptr && array1_size > 1))
+    if ((array1_in == nullptr) || (array2_in == nullptr && array2_size > 1))
     {
         return;
     }
