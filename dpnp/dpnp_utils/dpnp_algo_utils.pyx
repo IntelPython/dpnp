@@ -80,8 +80,13 @@ def call_origin(function, *args, **kwargs):
         argx = dpnp.asnumpy(arg) if isinstance(arg, dparray) else arg
         args_new.append(argx)
 
+    kwargs_new = {}
+    for key, kwarg in kwargs.items():
+        kwargx = dpnp.asnumpy(kwarg) if isinstance(kwarg, dparray) else kwarg
+        kwargs_new[key] = kwargx
+
     # TODO need to put dparray memory into NumPy call
-    result_origin = function(*args_new, **kwargs)
+    result_origin = function(*args_new, **kwargs_new)
     result = result_origin
     if isinstance(result, numpy.ndarray):
         if (kwargs_out is None):
