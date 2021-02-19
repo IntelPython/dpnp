@@ -616,6 +616,57 @@ INP_DLLEXPORT void dpnp_modf_c(void* array1_in, void* result1_out, void* result2
 
 /**
  * @ingroup BACKEND_API
+ * @brief multiply function.
+ *
+ * @param [in]  input1_in    Input 1 either array or scalar.
+ * @param [in]  input2_in    Input 2 either array or scalar.
+ * @param [out] result_out   Output array.
+ * @param [in]  input1_size  Number of elements in input 1.
+ * @param [in]  input2_size  Number of elements in input 2.
+ */
+template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
+INP_DLLEXPORT void dpnp_multiply_c(void* input1_in,
+                                   void* input2_in,
+                                   void* result_out,
+                                   const size_t input1_size,
+                                   const size_t input2_size);
+                                //    long* input1_shape,
+                                //    long* input2_shape,
+                                //    const size_t input1_shape_ndim,
+                                //    const size_t input2_shape_ndim);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief multiply array and scalar.
+ *
+ * @param [in]  input1_in    Input array.
+ * @param [in]  input2_in    Input scalar.
+ * @param [out] result_out   Output array.
+ * @param [in]  size         Number of elements in input array.
+ */
+template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
+INP_DLLEXPORT void dpnp_multiply_array_scalar_c(void* input1_in,
+                                                void* input2_in,
+                                                void* result_out,
+                                                const size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief multiply scalar and array.
+ *
+ * @param [in]  input1_in    Input scalar.
+ * @param [in]  input2_in    Input array.
+ * @param [out] result_out   Output array.
+ * @param [in]  size         Number of elements in input array.
+ */
+template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
+INP_DLLEXPORT void dpnp_multiply_scalar_array_c(void* input1_in,
+                                                void* input2_in,
+                                                void* result_out,
+                                                const size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief remainder function.
  *
  * @param [in]  array1_in    Input array 1.

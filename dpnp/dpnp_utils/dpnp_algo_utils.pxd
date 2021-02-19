@@ -125,6 +125,11 @@ cpdef nd2dp_array(arr)
 Convert ndarray to dparray
 """
 
+cdef dparray_shape_type get_common_shape(dparray_shape_type input1_shape, dparray_shape_type input2_shape)
+"""
+Calculate common shape from input shapes
+"""
+
 cdef dparray_shape_type get_reduction_output_shape(dparray_shape_type input_shape, object axis, cpp_bool keepdims)
 """
 Calculate output array shape in reduction functions

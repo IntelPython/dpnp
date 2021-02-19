@@ -46,13 +46,18 @@ def test_diff(array):
                               '[[1, 2], [3, 4]]',
                               '[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]',
                               '[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]'])
-def test_multiply(array, val, data_type, val_type):
+def test_multiply_scalar(array, val, data_type, val_type):
     a = numpy.array(array, dtype=data_type)
     ia = inp.array(a)
-    val_ = val_type(val)
-    result = inp.multiply(ia, val_)
+    val_ = val_type(val).item()
+
+    result = inp.multiply(a, val_)
     expected = numpy.multiply(ia, val_)
-    numpy.testing.assert_array_equal(expected, result)
+    numpy.testing.assert_array_equal(result, expected)
+
+    result = inp.multiply(val_, a)
+    expected = numpy.multiply(val_, ia)
+    numpy.testing.assert_array_equal(result, expected)
 
 
 @pytest.mark.parametrize("array", [[1, 2, 3, 4, 5],

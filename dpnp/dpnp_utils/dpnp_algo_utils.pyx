@@ -240,6 +240,30 @@ cdef tuple get_shape_dtype(object input_obj):
     return (return_shape, numpy.dtype(type(input_obj)))
 
 
+cdef dparray_shape_type get_common_shape(dparray_shape_type input1_shape, dparray_shape_type input2_shape):
+    cdef dparray_shape_type result_shape
+
+    # ex (8, 1, 6, 1) and (7, 1, 5) -> (8, 1, 6, 1) and (1, 7, 1, 5)
+    cdef size_t max_shape_size = max(input1_shape.size(), input2_shape.size())
+    input1_shape.insert(input1_shape.begin(), max_shape_size - input1_shape.size(), 1)
+    input2_shape.insert(input2_shape.begin(), max_shape_size - input2_shape.size(), 1)
+
+    # ex result (8, 7, 6, 5)
+    for it in range(max_shape_size):
+        if input1_shape[it] == input2_shape[it]:
+            result_shape.push_back(input1_shape[it])
+        elif input1_shape[it] == 1:
+            result_shape.push_back(input2_shape[it])
+        elif input2_shape[it] == 1:
+            result_shape.push_back(input1_shape[it])
+        else:
+            err_msg = f"{ERROR_PREFIX} in function get_common_shape()"
+            err_msg += f"operands could not be broadcast together with shapes {input1_shape} {input2_shape}"
+            ValueError(err_msg)
+
+    return result_shape
+
+
 cdef dparray_shape_type get_reduction_output_shape(dparray_shape_type input_shape, object axis, cpp_bool keepdims):
     cdef dparray_shape_type result_shape
     cdef tuple axis_tuple = _object_to_tuple(axis)

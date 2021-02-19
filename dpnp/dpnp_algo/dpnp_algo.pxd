@@ -25,6 +25,8 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+import cython
+
 from libcpp.vector cimport vector
 from libcpp cimport bool as cpp_bool
 from dpnp.dparray cimport dparray, dparray_shape_type
@@ -100,6 +102,9 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_MINIMUM
         DPNP_FN_MODF
         DPNP_FN_MULTIPLY
+        DPNP_FN_MULTIPLY_ARRAY_ARRAY
+        DPNP_FN_MULTIPLY_ARRAY_SCALAR
+        DPNP_FN_MULTIPLY_SCALAR_ARRAY
         DPNP_FN_PLACE
         DPNP_FN_POWER
         DPNP_FN_PROD
@@ -199,11 +204,27 @@ cdef extern from "dpnp_iface.hpp":
 # C function pointer to the C library template functions
 ctypedef void(*fptr_1in_1out_t)(void * , void * , size_t)
 ctypedef void(*fptr_2in_1out_t)(void * , void*, void*, size_t)
+ctypedef void(*fptr_2in_1out_2sz_t)(const void *, const void *, const void *, const size_t, const size_t)
 ctypedef void(*fptr_blas_gemm_2in_1out_t)(void * , void * , void * , size_t, size_t, size_t)
 ctypedef void(*dpnp_reduction_c_t)(const void *, const size_t, void * , const long*, const size_t, const long*, const size_t, const void * , const long*)
 
 cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shape_type result_shape)
 cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, dparray_shape_type result_shape)
+
+
+ctypedef fused dpnp_numeric:
+    int
+    long
+    float
+    double
+
+ctypedef fused dpnp_input1:
+    dparray
+    dpnp_numeric
+
+ctypedef fused dpnp_input2:
+    dparray
+    dpnp_numeric
 
 
 cpdef dparray dpnp_astype(dparray array1, dtype_target)
@@ -268,7 +289,7 @@ cpdef dparray dpnp_divide(dparray array1, dparray array2)
 cpdef dparray dpnp_hypot(dparray array1, dparray array2)
 cpdef dparray dpnp_maximum(dparray array1, dparray array2)
 cpdef dparray dpnp_minimum(dparray array1, dparray array2)
-cpdef dparray dpnp_multiply(dparray array1, array2)
+cpdef dparray dpnp_multiply(dpnp_input1 x1, dpnp_input2 x2)
 cpdef dparray dpnp_negative(dparray array1)
 cpdef dparray dpnp_power(dparray array1, array2)
 cpdef dparray dpnp_remainder(dparray array1, dparray array2)

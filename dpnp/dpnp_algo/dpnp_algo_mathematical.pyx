@@ -273,23 +273,59 @@ cpdef tuple dpnp_modf(dparray x1):
     return result1, result2
 
 
-cpdef dparray dpnp_multiply(dparray x1, x2):
-    cdef dparray result
-    if dpnp.isscalar(x2):
-        x2_ = dpnp.array([x2])
-
-        types_map = {
-            (dpnp.int32, dpnp.float64): dpnp.float64,
-            (dpnp.int64, dpnp.float64): dpnp.float64,
-        }
-
-        res_type = types_map.get((x1.dtype.type, x2_.dtype.type), x1.dtype)
-        result = dparray(x1.shape, dtype=res_type)
-        for i in range(x1.size):
-            result[i] = x1[i] * x2
-        return result.reshape(x1.shape)
+cpdef dparray dpnp_multiply(dpnp_input1 x1, dpnp_input2 x2):
+    if dpnp_input1 in dpnp_numeric and dpnp_input2 is dparray:
+        return dpnp_multiply_scalar_array(x1, x2)
+    elif dpnp_input1 is dparray and dpnp_input2 in dpnp_numeric:
+        return dpnp_multiply_array_scalar(x1, x2)
+    elif dpnp_input1 is dparray and dpnp_input2 is dparray:
+        return call_fptr_2in_1out(DPNP_FN_MULTIPLY_ARRAY_ARRAY, x1, x2, x1.shape)
     else:
-        return call_fptr_2in_1out(DPNP_FN_MULTIPLY, x1, x2, x1.shape)
+        return x1 * x2
+
+
+cpdef dparray dpnp_multiply_array_scalar(dparray x1, dpnp_numeric x2):
+    _, x2_dtype = get_shape_dtype(x2)
+
+    # Convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(x2_dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MULTIPLY_ARRAY_SCALAR,
+                                                          param1_type, param2_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    # Create result array with type given by FPTR data
+    cdef dparray result = dparray(x1.shape, dtype=result_type)
+
+    cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
+    # Call FPTR function
+    func(x1.get_data(), &x2, result.get_data(), x1.size)
+
+    return result
+
+
+cpdef dparray dpnp_multiply_scalar_array(dpnp_numeric x1, dparray x2):
+    _, x1_dtype = get_shape_dtype(x1)
+
+    # Convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1_dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(x2.dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MULTIPLY_SCALAR_ARRAY,
+                                                          param1_type, param2_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    # Create result array with type given by FPTR data
+    cdef dparray result = dparray(x2.shape, dtype=result_type)
+
+    cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
+    # Call FPTR function
+    func(&x1, x2.get_data(), result.get_data(), x2.size)
+
+    return result
 
 
 cpdef dparray dpnp_nancumprod(dparray x1):
