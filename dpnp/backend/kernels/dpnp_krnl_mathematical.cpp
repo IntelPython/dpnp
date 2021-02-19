@@ -283,6 +283,11 @@ class dpnp_trapz_c_kernel;
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
 void dpnp_trapz_c(const void* array1_in, const void* array2_in, void* result1, double dx, size_t array1_size, size_t array2_size)
 {
+    if ((array1_in == nullptr) || (array2_in == nullptr && array1_size > 1))
+    {
+        return;
+    }
+
     cl::sycl::event event;
     _DataType_input1* array1 = reinterpret_cast<_DataType_input1*>(const_cast<void*>(array1_in));
     _DataType_input2* array2 = reinterpret_cast<_DataType_input2*>(const_cast<void*>(array2_in));
@@ -294,14 +299,7 @@ void dpnp_trapz_c(const void* array1_in, const void* array2_in, void* result1, d
         return;
     }
 
-    if (array1_size != array2_size) {
-
-        dpnp_sum_c<_DataType_input1, _DataType_output>(array1, array1_size, result, NULL, 0, NULL, 0, NULL, NULL);
-
-        result[0] -= (array1[0] + array1[array1_size - 1]) * 0.5;
-        result[0] *= dx;
-
-    } else {
+    if (array1_size == array2_size) {
 
         size_t cur_res_size = array1_size - 2;
 
@@ -332,6 +330,14 @@ void dpnp_trapz_c(const void* array1_in, const void* array2_in, void* result1, d
             array1[array1_size - 1] * (array2[array2_size - 1] - array2[array2_size - 2]);
 
         result[0] *= 0.5;
+
+    } else {
+
+        dpnp_sum_c<_DataType_input1, _DataType_output>(array1, array1_size, result, NULL, 0, NULL, 0, NULL, NULL);
+
+        result[0] -= (array1[0] + array1[array1_size - 1]) * 0.5;
+        result[0] *= dx;
+
     }
 
 }

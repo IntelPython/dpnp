@@ -142,7 +142,7 @@ class TestTrapz:
                                        [1, 4, 6, 9, 10, 12],
                                        [],
                                        [1]])
-    def test_trapz_without_params(self, array, data_type):
+    def test_trapz_default(self, array, data_type):
         a = numpy.array(array, dtype=data_type)
         ia = inp.array(a)
 
@@ -155,17 +155,26 @@ class TestTrapz:
     @pytest.mark.parametrize("data_type_x",
                              [numpy.float64, numpy.float32, numpy.int64, numpy.int32])
     @pytest.mark.parametrize("y_array", [[1, 2, 4, 5],
-                                         [1., 2.5, 6., 7., ]])
+                                         [1., 2.5, 6., 7.]])
     @pytest.mark.parametrize("x_array", [[2, 5, 6, 9]])
     def test_trapz_with_x_params(self, y_array, x_array, data_type_y, data_type_x):
         y = numpy.array(y_array, dtype=data_type_y)
-        iy = inp.array(y)
+        iy = inp.array(y_array, dtype=data_type_y)
 
         x = numpy.array(x_array, dtype=data_type_x)
-        ix = inp.array(x)
+        ix = inp.array(x_array, dtype=data_type_x)
 
         result = inp.trapz(iy, x=ix)
         expected = numpy.trapz(y, x=x)
+        numpy.testing.assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("array", [[1, 2, 3], [4, 5, 6]])
+    def test_trapz_with_x_param_2ndim(self, array):
+        a = numpy.array(array)
+        ia = inp.array(a)
+
+        result = inp.trapz(ia, x=ia)
+        expected = numpy.trapz(a, x=a)
         numpy.testing.assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("y_array", [[1, 2, 4, 5],

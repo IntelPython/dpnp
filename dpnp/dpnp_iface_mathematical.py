@@ -1477,7 +1477,7 @@ def trapz(y, x=None, dx=1.0, **kwargs):
             pass
         elif x is not None and y.shape != x.shape:
             pass
-        elif len(y.shape) > 1:
+        elif y.ndim > 1:
             pass
         else:
             if x is None:
