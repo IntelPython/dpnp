@@ -87,6 +87,90 @@ def section(header, base_mod, ref_mods, base_type, ref_types, cls=None):
     return [header, '~' * len(header), ''] + comparison_rst + ['']
 
 
+def generate_totals_numbers(header, base_mod, ref_mods, cls=None):
+    base_obj, _ = import_mod(base_mod, cls)
+    base_funcs = get_functions(base_obj)
+
+    totals = [header, len(base_funcs)]
+    for ref_mod in ref_mods:
+        ref_obj, _ = import_mod(ref_mod, cls)
+        ref_funcs = get_functions(ref_obj)
+
+        totals.append(len(ref_funcs & base_funcs))
+
+    cells = ', '.join(str(t) for t in totals)
+    total = '   {}'.format(cells)
+
+    return total, len(base_funcs), len(ref_funcs & base_funcs)
+
+
+def generate_table_numbers(base_mod, ref_mods, base_type, ref_types, cls=None):
+    all_types = ['Name'] + [base_type] + ref_types
+    header = ', '.join('**{}**'.format(t) for t in all_types)
+    header = '   {}'.format(header)
+
+    rows = []
+    base_counter = 0
+    ref_counter = 0
+
+    totals = []
+    totals_, base_col, ref_col = generate_totals_numbers('Module-Level', base_mod, ref_mods)
+    totals.append(totals_)
+    base_counter += base_col
+    ref_counter += ref_col
+    cells = ', '.join(str(t) for t in totals)
+    total = '   {}'.format(cells)
+    rows.append(total)
+
+    totals = []
+    totals_, base_col, ref_col = generate_totals_numbers('Multi-Dimensional Array', base_mod, ref_mods, cls='ndarray')
+    totals.append(totals_)
+    base_counter += base_col
+    ref_counter += ref_col
+    cells = ', '.join(str(t) for t in totals)
+    total = '   {}'.format(cells)
+    rows.append(total)
+
+    totals = []
+    totals_, base_col, ref_col = generate_totals_numbers('Linear Algebra', base_mod + '.linalg',
+                                                         [m + '.linalg' for m in ref_mods])
+    totals.append(totals_)
+    base_counter += base_col
+    ref_counter += ref_col
+    cells = ', '.join(str(t) for t in totals)
+    total = '   {}'.format(cells)
+    rows.append(total)
+
+    totals = []
+    totals_, base_col, ref_col = generate_totals_numbers('Discrete Fourier Transform', base_mod + '.fft',
+                                                         [m + '.fft' for m in ref_mods])
+    totals.append(totals_)
+    base_counter += base_col
+    ref_counter += ref_col
+    cells = ', '.join(str(t) for t in totals)
+    total = '   {}'.format(cells)
+    rows.append(total)
+
+    totals = []
+    totals_, base_col, ref_col = generate_totals_numbers('Random Sampling', base_mod + '.random',
+                                                         [m + '.random' for m in ref_mods])
+    totals.append(totals_)
+    base_counter += base_col
+    ref_counter += ref_col
+    cells = ', '.join(str(t) for t in totals)
+    total = '   {}'.format(cells)
+    rows.append(total)
+
+    summary = ['Summary', '{}'.format(base_counter), '{}'.format(ref_counter)]
+    cells = ', '.join(str(t) for t in summary)
+    summary_total = '   {}'.format(cells)
+    rows.append(summary_total)
+
+    comparison_rst = ['.. csv-table::', '   :header: Table numbers ', ''] + [header] + rows
+
+    return [''] + comparison_rst + ['']
+
+
 def generate():
     ref_mods = []
     ref_types = []
@@ -119,6 +203,8 @@ def generate():
     header = ' / '.join([base_ver] + ref_vers) + ' APIs'
     buf = ['**{}**'.format(header), '']
 
+    buf += generate_table_numbers(
+        base_mod, ref_mods, base_type, ref_types)
     buf += section(
         'Module-Level',
         base_mod, ref_mods, base_type, ref_types)

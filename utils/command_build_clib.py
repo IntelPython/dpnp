@@ -269,7 +269,6 @@ class custom_build_clib(build_clib.build_clib):
                     link_command += " " + ".lib ".join(libraries) + ".lib"  # libraries
                     link_command += " /OUT:" + c_library_filename  # output file name
                     link_command += " " + " ".join(extra_link_postargs)
-                    print(link_command)
                     os.system(link_command)
                 else:
                     self.compiler.link_shared_lib(objects,
