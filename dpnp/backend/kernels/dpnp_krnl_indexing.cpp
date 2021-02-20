@@ -175,18 +175,18 @@ void dpnp_fill_diagonal_c(void* array1_in, void* val_in, size_t* shape, const si
     return;
 }
 
-template<typename _DataType>
+template <typename _DataType>
 void dpnp_place_c(void* arr_in, long* mask_in, void* vals_in, const size_t arr_size, const size_t vals_size)
 {
     if (!arr_size)
     {
-    	return;
+        return;
     }
     _DataType* arr = reinterpret_cast<_DataType*>(arr_in);
 
     if (!vals_size)
     {
-    	return;
+        return;
     }
     _DataType* vals = reinterpret_cast<_DataType*>(vals_in);
 
@@ -203,7 +203,8 @@ void dpnp_place_c(void* arr_in, long* mask_in, void* vals_in, const size_t arr_s
 }
 
 template <typename _DataType, typename _IndecesType, typename _ValueType>
-void dpnp_put_c(void* array1_in, void* ind_in, void* v_in, const size_t size, const size_t size_ind, const size_t size_v)
+void dpnp_put_c(
+    void* array1_in, void* ind_in, void* v_in, const size_t size, const size_t size_ind, const size_t size_v)
 {
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
     size_t* ind = reinterpret_cast<size_t*>(ind_in);

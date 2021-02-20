@@ -245,7 +245,7 @@ INP_DLLEXPORT void dpnp_sum_c(const void* input_in,
  * @param [in]  arr_size    Number of input elements in `arr`.
  * @param [in]  vals_size   Number of input elements in `vals`.
  */
-template<typename _DataType>
+template <typename _DataType>
 INP_DLLEXPORT void dpnp_place_c(void* arr, long* mask, void* vals, const size_t arr_size, const size_t vals_size);
 
 /**
@@ -271,7 +271,8 @@ INP_DLLEXPORT void dpnp_prod_c(void* array, void* result, size_t size);
  * @param [in]  size_v      Number of input elements in `v`.
  */
 template <typename _DataType, typename _IndecesType, typename _ValueType>
-INP_DLLEXPORT void dpnp_put_c(void* array, void* ind, void* v, const size_t size, const size_t size_ind, const size_t size_v);
+INP_DLLEXPORT void
+    dpnp_put_c(void* array, void* ind, void* v, const size_t size, const size_t size_ind, const size_t size_v);
 
 /**
  * @ingroup BACKEND_API
@@ -670,7 +671,7 @@ INP_DLLEXPORT void dpnp_elemwise_transpose_c(void* array1_in,
  *
  */
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
-INP_DLLEXPORT void dpnp_trapz_c(const void* array1_in, const void* array2_in, void* result1, 
-                                double dx, size_t array1_size, size_t array2_size);
+INP_DLLEXPORT void dpnp_trapz_c(
+    const void* array1_in, const void* array2_in, void* result1, double dx, size_t array1_size, size_t array2_size);
 
 #endif // BACKEND_IFACE_H

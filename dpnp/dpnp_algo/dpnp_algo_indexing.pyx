@@ -59,11 +59,11 @@ __all__ += [
 ]
 
 
-ctypedef void(*custom_indexing_2in_1out_func_ptr_t)(void *, void * , void * , size_t)
-ctypedef void(*custom_indexing_2in_1out_func_ptr_t_)(void * , void * , const size_t, size_t * , size_t * , const size_t)
-ctypedef void(*custom_indexing_2in_func_ptr_t)(void * , void * , size_t * , const size_t)
-ctypedef void(*custom_indexing_3in_func_ptr_t)(void * , void * , void *, const size_t, const size_t)
-ctypedef void(*custom_indexing_6in_func_ptr_t)(void * , void * , void * , const size_t, const size_t, const size_t)
+ctypedef void(*custom_indexing_2in_1out_func_ptr_t)(void * , void * , void * , size_t)
+ctypedef void(*custom_indexing_2in_1out_func_ptr_t_)(void *, void * , const size_t, size_t * , size_t * , const size_t)
+ctypedef void(*custom_indexing_2in_func_ptr_t)(void *, void * , size_t * , const size_t)
+ctypedef void(*custom_indexing_3in_func_ptr_t)(void * , void * , void * , const size_t, const size_t)
+ctypedef void(*custom_indexing_6in_func_ptr_t)(void *, void * , void * , const size_t, const size_t, const size_t)
 
 
 cpdef dparray dpnp_choose(input, choices):
@@ -105,7 +105,7 @@ cpdef dparray dpnp_diagonal(dparray input, offset=0):
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DIAGONAL, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     cdef dparray result = dparray(res_shape, dtype=result_type)
 
     cdef custom_indexing_2in_1out_func_ptr_t_ func = <custom_indexing_2in_1out_func_ptr_t_ > kernel_data.ptr
@@ -332,7 +332,7 @@ cpdef dparray dpnp_take(dparray input, dparray indices):
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TAKE, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     cdef dparray result = dparray(indices.shape, dtype=result_type)
 
     cdef custom_indexing_2in_1out_func_ptr_t func = <custom_indexing_2in_1out_func_ptr_t > kernel_data.ptr

@@ -281,7 +281,8 @@ template <typename _KernelNameSpecialization1, typename _KernelNameSpecializatio
 class dpnp_trapz_c_kernel;
 
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
-void dpnp_trapz_c(const void* array1_in, const void* array2_in, void* result1, double dx, size_t array1_size, size_t array2_size)
+void dpnp_trapz_c(
+    const void* array1_in, const void* array2_in, void* result1, double dx, size_t array1_size, size_t array2_size)
 {
     if ((array1_in == nullptr) || (array2_in == nullptr && array2_size > 1))
     {
@@ -293,17 +294,18 @@ void dpnp_trapz_c(const void* array1_in, const void* array2_in, void* result1, d
     _DataType_input2* array2 = reinterpret_cast<_DataType_input2*>(const_cast<void*>(array2_in));
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
 
-    if (array1_size < 2) {
-
+    if (array1_size < 2)
+    {
         result[0] = 0;
         return;
     }
 
-    if (array1_size == array2_size) {
-
+    if (array1_size == array2_size)
+    {
         size_t cur_res_size = array1_size - 2;
 
-        _DataType_output* cur_res = reinterpret_cast<_DataType_output*>(dpnp_memory_alloc_c((cur_res_size) * sizeof(_DataType_output)));
+        _DataType_output* cur_res =
+            reinterpret_cast<_DataType_output*>(dpnp_memory_alloc_c((cur_res_size) * sizeof(_DataType_output)));
 
         cl::sycl::range<1> gws(cur_res_size);
         auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
@@ -327,19 +329,17 @@ void dpnp_trapz_c(const void* array1_in, const void* array2_in, void* result1, d
         dpnp_memory_free_c(cur_res);
 
         result[0] += array1[0] * (array2[1] - array2[0]) +
-            array1[array1_size - 1] * (array2[array2_size - 1] - array2[array2_size - 2]);
+                     array1[array1_size - 1] * (array2[array2_size - 1] - array2[array2_size - 2]);
 
         result[0] *= 0.5;
-
-    } else {
-
+    }
+    else
+    {
         dpnp_sum_c<_DataType_input1, _DataType_output>(array1, array1_size, result, NULL, 0, NULL, 0, NULL, NULL);
 
         result[0] -= (array1[0] + array1[array1_size - 1]) * 0.5;
         result[0] *= dx;
-
     }
-
 }
 
 void func_map_init_mathematical(func_map_t& fmap)

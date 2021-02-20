@@ -156,7 +156,6 @@ TEST(TestUtilsIterator, full_reduction_with_input_shape)
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({2, 3});
     DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 3});
 
-
     dpnpc_value_t result = 0;
     for (dpnpc_it_t data_it = result_obj.begin(0); data_it != result_obj.end(0); ++data_it)
     {
