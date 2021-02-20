@@ -2,6 +2,20 @@ import importlib
 import inspect
 
 
+def calc_totals(base_mod, ref_mods, cls):
+    base_obj, _ = import_mod(base_mod, cls)
+    base_funcs = get_functions(base_obj)
+
+    totals = [len(base_funcs)]
+    for ref_mod in ref_mods:
+        ref_obj, _ = import_mod(ref_mod, cls)
+        ref_funcs = get_functions(ref_obj)
+
+        totals.append(len(ref_funcs & base_funcs))
+
+    return totals
+
+
 def get_functions(obj):
     funcs = []
     for n, _ in inspect.getmembers(obj):
@@ -31,19 +45,11 @@ def import_mod(mod, cls):
 
 
 def generate_totals(base_mod, ref_mods, base_type, ref_types, cls):
-    base_obj, _ = import_mod(base_mod, cls)
-    base_funcs = get_functions(base_obj)
-
     all_types = [base_type] + ref_types
     header = ', '.join('**{} Total**'.format(t) for t in all_types)
     header = '   {}'.format(header)
 
-    totals = [len(base_funcs)]
-    for ref_mod in ref_mods:
-        ref_obj, _ = import_mod(ref_mod, cls)
-        ref_funcs = get_functions(ref_obj)
-
-        totals.append(len(ref_funcs & base_funcs))
+    totals = calc_totals(base_mod, ref_mods, cls)
 
     cells = ', '.join(str(t) for t in totals)
     total = '   {}'.format(cells)
@@ -91,14 +97,14 @@ def generate_totals_numbers(header, base_mod, ref_mods, cls=None):
     base_obj, _ = import_mod(base_mod, cls)
     base_funcs = get_functions(base_obj)
 
-    totals = [header, len(base_funcs)]
     counter_funcs = [len(base_funcs)]
     for ref_mod in ref_mods:
         ref_obj, _ = import_mod(ref_mod, cls)
         ref_funcs = get_functions(ref_obj)
 
-        totals.append(len(ref_funcs & base_funcs))
         counter_funcs.append(len(ref_funcs & base_funcs))
+
+    totals = [header] + calc_totals(base_mod, ref_mods, cls)
 
     cells = ', '.join(str(t) for t in totals)
     total = '   {}'.format(cells)
