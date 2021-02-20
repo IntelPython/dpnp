@@ -2,6 +2,20 @@ import importlib
 import inspect
 
 
+def calc_totals(base_mod, ref_mods, cls):
+    base_obj, _ = import_mod(base_mod, cls)
+    base_funcs = get_functions(base_obj)
+
+    totals = [len(base_funcs)]
+    for ref_mod in ref_mods:
+        ref_obj, _ = import_mod(ref_mod, cls)
+        ref_funcs = get_functions(ref_obj)
+
+        totals.append(len(ref_funcs & base_funcs))
+
+    return totals
+
+
 def get_functions(obj):
     funcs = []
     for n, _ in inspect.getmembers(obj):
@@ -31,19 +45,11 @@ def import_mod(mod, cls):
 
 
 def generate_totals(base_mod, ref_mods, base_type, ref_types, cls):
-    base_obj, _ = import_mod(base_mod, cls)
-    base_funcs = get_functions(base_obj)
-
     all_types = [base_type] + ref_types
     header = ', '.join('**{} Total**'.format(t) for t in all_types)
     header = '   {}'.format(header)
 
-    totals = [len(base_funcs)]
-    for ref_mod in ref_mods:
-        ref_obj, _ = import_mod(ref_mod, cls)
-        ref_funcs = get_functions(ref_obj)
-
-        totals.append(len(ref_funcs & base_funcs))
+    totals = calc_totals(base_mod, ref_mods, cls)
 
     cells = ', '.join(str(t) for t in totals)
     total = '   {}'.format(cells)
@@ -91,17 +97,19 @@ def generate_totals_numbers(header, base_mod, ref_mods, cls=None):
     base_obj, _ = import_mod(base_mod, cls)
     base_funcs = get_functions(base_obj)
 
-    totals = [header, len(base_funcs)]
+    counter_funcs = [len(base_funcs)]
     for ref_mod in ref_mods:
         ref_obj, _ = import_mod(ref_mod, cls)
         ref_funcs = get_functions(ref_obj)
 
-        totals.append(len(ref_funcs & base_funcs))
+        counter_funcs.append(len(ref_funcs & base_funcs))
+
+    totals = [header] + calc_totals(base_mod, ref_mods, cls)
 
     cells = ', '.join(str(t) for t in totals)
     total = '   {}'.format(cells)
 
-    return total, len(base_funcs), len(ref_funcs & base_funcs)
+    return total, counter_funcs
 
 
 def generate_table_numbers(base_mod, ref_mods, base_type, ref_types, cls=None):
@@ -110,65 +118,66 @@ def generate_table_numbers(base_mod, ref_mods, base_type, ref_types, cls=None):
     header = '   {}'.format(header)
 
     rows = []
-    base_counter = 0
-    ref_counter = 0
+    counters_funcs = []
 
     totals = []
-    totals_, base_col, ref_col = generate_totals_numbers('Module-Level', base_mod, ref_mods)
+    totals_, counters_funcs_ = generate_totals_numbers('Module-Level', base_mod, ref_mods)
     totals.append(totals_)
-    base_counter += base_col
-    ref_counter += ref_col
+    counters_funcs.append(counters_funcs_)
     cells = ', '.join(str(t) for t in totals)
     total = '   {}'.format(cells)
     rows.append(total)
 
     totals = []
-    totals_, base_col, ref_col = generate_totals_numbers('Multi-Dimensional Array', base_mod, ref_mods, cls='ndarray')
+    totals_, counters_funcs_ = generate_totals_numbers('Multi-Dimensional Array', base_mod, ref_mods, cls='ndarray')
     totals.append(totals_)
-    base_counter += base_col
-    ref_counter += ref_col
+    counters_funcs.append(counters_funcs_)
     cells = ', '.join(str(t) for t in totals)
     total = '   {}'.format(cells)
     rows.append(total)
 
     totals = []
-    totals_, base_col, ref_col = generate_totals_numbers('Linear Algebra', base_mod + '.linalg',
-                                                         [m + '.linalg' for m in ref_mods])
+    totals_, counters_funcs_ = generate_totals_numbers('Linear Algebra', base_mod + '.linalg',
+                                                       [m + '.linalg' for m in ref_mods])
     totals.append(totals_)
-    base_counter += base_col
-    ref_counter += ref_col
+    counters_funcs.append(counters_funcs_)
     cells = ', '.join(str(t) for t in totals)
     total = '   {}'.format(cells)
     rows.append(total)
 
     totals = []
-    totals_, base_col, ref_col = generate_totals_numbers('Discrete Fourier Transform', base_mod + '.fft',
-                                                         [m + '.fft' for m in ref_mods])
+    totals_, counters_funcs_ = generate_totals_numbers('Discrete Fourier Transform', base_mod + '.fft',
+                                                       [m + '.fft' for m in ref_mods])
     totals.append(totals_)
-    base_counter += base_col
-    ref_counter += ref_col
+    counters_funcs.append(counters_funcs_)
     cells = ', '.join(str(t) for t in totals)
     total = '   {}'.format(cells)
     rows.append(total)
 
     totals = []
-    totals_, base_col, ref_col = generate_totals_numbers('Random Sampling', base_mod + '.random',
-                                                         [m + '.random' for m in ref_mods])
+    totals_, counters_funcs_ = generate_totals_numbers('Random Sampling', base_mod + '.random',
+                                                       [m + '.random' for m in ref_mods])
     totals.append(totals_)
-    base_counter += base_col
-    ref_counter += ref_col
+    counters_funcs.append(counters_funcs_)
     cells = ', '.join(str(t) for t in totals)
     total = '   {}'.format(cells)
     rows.append(total)
 
-    summary = ['Summary', '{}'.format(base_counter), '{}'.format(ref_counter)]
+    counter_functions = []
+    for i in range(len(counters_funcs[0])):
+        counter = 0
+        for j in range(len(counters_funcs)):
+            counter += counters_funcs[j][i]
+        counter_functions.append('{}'.format(counter))
+
+    summary = ['Total'] + counter_functions
     cells = ', '.join(str(t) for t in summary)
     summary_total = '   {}'.format(cells)
     rows.append(summary_total)
 
-    comparison_rst = ['.. csv-table::', '   :header: Table numbers ', ''] + [header] + rows
+    comparison_rst = ['.. csv-table::', ''] + [header] + rows
 
-    return [''] + comparison_rst + ['']
+    return ['Summary', '~' * len('Summary'), ''] + comparison_rst + ['']
 
 
 def generate():
