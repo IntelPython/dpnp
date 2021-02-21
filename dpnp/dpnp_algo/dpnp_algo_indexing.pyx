@@ -305,7 +305,7 @@ cpdef dpnp_put_along_axis(dparray arr, dparray indices, values, axis):
 
 
 cpdef dpnp_putmask(dparray arr, dparray mask, dparray values):
-    cpdef int values_size = values.size
+    cdef int values_size = values.size
     for i in range(arr.size):
         if mask[i]:
             arr[i] = values[i % values_size]
