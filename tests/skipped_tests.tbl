@@ -1846,3 +1846,9 @@ tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_axis1
 tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_axis2
 tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_axis_large
 tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_ptp_nan
+tests/test_random.py::test_input_size[chisquare]
+tests/test_random.py::test_input_shape[chisquare]
+tests/test_random.py::TestDistributionsChisquare::test_seed
+tests/test_random.py::TestDistributionsMultinomial::test_check_sum
+tests/test_random.py::TestDistributionsMultinomial::test_moments
+tests/test_random.py::TestDistributionsMultinomial::test_seed
