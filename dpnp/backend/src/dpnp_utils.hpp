@@ -204,12 +204,19 @@ err:
 template <typename T>
 std::ostream& operator<<(std::ostream& out, const std::vector<T>& vec)
 {
-    if (!vec.empty())
+    std::string delimeter;
+    out << "{";
+    // std::copy(vec.begin(), vec.end(), std::ostream_iterator<T>(out, ", "));
+    // out << "\b\b}"; // last two 'backspaces' needs to eliminate last delimiter. ex: {2, 3, 4, }
+    for (auto& elem : vec)
     {
-        out << '[';
-        std::copy(vec.begin(), vec.end(), std::ostream_iterator<T>(out, ", "));
-        out << "\b\b]";
+        out << delimeter << elem;
+        if (delimeter.empty())
+        {
+            delimeter.assign(", ");
+        }
     }
+    out << "}";
 
     return out;
 }
