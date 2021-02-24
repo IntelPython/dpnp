@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['queueoptions_302',['QueueOptions',['../group___b_a_c_k_e_n_d___a_p_i.html#gaae520250ac00985feaadcbd984c30ab1',1,'dpnp_iface.hpp']]]
+  ['queueoptions_304',['QueueOptions',['../group___b_a_c_k_e_n_d___a_p_i.html#gaae520250ac00985feaadcbd984c30ab1',1,'dpnp_iface.hpp']]]
 ];

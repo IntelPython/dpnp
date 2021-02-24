@@ -173,7 +173,7 @@
 <h1>dpnp.dparray.dparray<a class="headerlink" href="#dpnp-dparray-dparray" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="dpnp.dparray.dparray">
-<em class="property">class </em><code class="sig-prename descclassname">dpnp.dparray.</code><code class="sig-name descname">dparray</code><a class="headerlink" href="#dpnp.dparray.dparray" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dpnp.dparray.</span></code><code class="sig-name descname"><span class="pre">dparray</span></code><a class="headerlink" href="#dpnp.dparray.dparray" title="Permalink to this definition">¶</a></dt>
 <dd><p>Multi-dimensional array using USM interface for an Intel GPU device.</p>
 <p>This class implements a subset of methods of <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.20)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>.
 The difference is that this class allocates the array content useing
@@ -211,21 +211,21 @@ USM interface on the current GPU device.</p>
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.__getitem__">
-<code class="sig-name descname">__getitem__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.__getitem__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__getitem__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.__getitem__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the array item(s)
 x.__getitem__(key) &lt;==&gt; x[key]</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.__setitem__">
-<code class="sig-name descname">__setitem__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.__setitem__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__setitem__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.__setitem__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the array item(s)
 x.__setitem__(key, value) &lt;==&gt; x[key] = value</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.__len__">
-<code class="sig-name descname">__len__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.__len__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__len__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.__len__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the size of the first dimension.
 Equivalent to shape[0] and also equal to size only for one-dimensional arrays.</p>
 <div class="admonition seealso">
@@ -236,18 +236,18 @@ Equivalent to shape[0] and also equal to size only for one-dimensional arrays.</
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.__next__">
-<code class="sig-name descname">__next__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.__next__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__next__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.__next__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.__iter__">
-<code class="sig-name descname">__iter__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.__iter__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__iter__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.__iter__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implement iter(self).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.all">
-<code class="sig-name descname">all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.all" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">all</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns True if all elements evaluate to True.</p>
 <p>Refer to <cite>numpy.all</cite> for full documentation.</p>
 <div class="admonition seealso">
@@ -261,7 +261,7 @@ Equivalent to shape[0] and also equal to size only for one-dimensional arrays.</
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.any">
-<code class="sig-name descname">any</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.any" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">any</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.any" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns True if any of the elements of <cite>a</cite> evaluate to True.</p>
 <p>Refer to <cite>numpy.any</cite> for full documentation.</p>
 <div class="admonition seealso">
@@ -275,7 +275,7 @@ Equivalent to shape[0] and also equal to size only for one-dimensional arrays.</
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.argmax">
-<code class="sig-name descname">argmax</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.argmax" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">argmax</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.argmax" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns array of indices of the maximum values along the given axis.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -307,7 +307,7 @@ and it must be of the right shape to hold the output.</p></li>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.argmin">
-<code class="sig-name descname">argmin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.argmin" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">argmin</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.argmin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return array of indices to the minimum values along the given axis.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -331,7 +331,7 @@ of index to the minimum values along the given axis.</p>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.argsort">
-<code class="sig-name descname">argsort</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.argsort" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">argsort</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.argsort" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an ndarray of indices that sort the array along the
 specified axis.</p>
 <dl class="field-list simple">
@@ -379,7 +379,7 @@ In other words, <code class="docutils literal notranslate"><span class="pre">a[i
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.astype">
-<code class="sig-name descname">astype</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.astype" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">astype</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.astype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copy the array with data type casting.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -409,33 +409,33 @@ Otherwise, it returns a (possibly casted) copy of the array.</p>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.choose">
-<code class="sig-name descname">choose</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.choose" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">choose</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.choose" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct an array from an index array and a set of arrays to choose from.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.conj">
-<code class="sig-name descname">conj</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.conj" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">conj</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.conj" title="Permalink to this definition">¶</a></dt>
 <dd><p>Complex-conjugate all elements.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.conj.html#numpy.ndarray.conj" title="(in NumPy v1.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.conj</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.conjugate">
-<code class="sig-name descname">conjugate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.conjugate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">conjugate</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.conjugate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the complex conjugate, element-wise.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.conjugate.html#numpy.ndarray.conjugate" title="(in NumPy v1.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.conjugate</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.copy">
-<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.copy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">copy</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a copy of the array.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.fill">
-<code class="sig-name descname">fill</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.fill" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">fill</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.fill" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fill the array with a scalar value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -457,7 +457,7 @@ Otherwise, it returns a (possibly casted) copy of the array.</p>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.flatten">
-<code class="sig-name descname">flatten</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.flatten" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">flatten</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.flatten" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a copy of the array collapsed into one dimension.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -481,7 +481,7 @@ Otherwise, it returns a (possibly casted) copy of the array.</p>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.item">
-<code class="sig-name descname">item</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.item" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">item</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.item" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copy an element of an array to a standard Python scalar and return it.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.item.html#numpy.ndarray.item" title="(in NumPy v1.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.item</span></code></a>.</p>
 <p class="rubric">Examples</p>
@@ -505,25 +505,25 @@ Otherwise, it returns a (possibly casted) copy of the array.</p>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.max">
-<code class="sig-name descname">max</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.max" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">max</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.max" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the maximum along an axis.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.mean">
-<code class="sig-name descname">mean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.mean" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">mean</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.mean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the average of the array elements.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.min">
-<code class="sig-name descname">min</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.min" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">min</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.min" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the minimum along a given axis.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.ravel">
-<code class="sig-name descname">ravel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.ravel" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">ravel</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.ravel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a contiguous flattened array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -551,7 +551,7 @@ For example, <code class="docutils literal notranslate"><span class="pre">a.resh
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.repeat">
-<code class="sig-name descname">repeat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.repeat" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">repeat</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.repeat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Repeat elements of an array.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -562,7 +562,7 @@ For example, <code class="docutils literal notranslate"><span class="pre">a.resh
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.reshape">
-<code class="sig-name descname">reshape</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.reshape" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">reshape</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.reshape" title="Permalink to this definition">¶</a></dt>
 <dd><p>Change the shape of the array.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -572,7 +572,7 @@ For example, <code class="docutils literal notranslate"><span class="pre">a.resh
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.round">
-<code class="sig-name descname">round</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.round" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">round</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.round" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return array with each element rounded to the given number of decimals.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -582,7 +582,7 @@ For example, <code class="docutils literal notranslate"><span class="pre">a.resh
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.sort">
-<code class="sig-name descname">sort</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.sort" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">sort</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.sort" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sort the array</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -622,7 +622,7 @@ include all of the fields.</p></li>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.squeeze">
-<code class="sig-name descname">squeeze</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.squeeze" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">squeeze</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.squeeze" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove single-dimensional entries from the shape of an array.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -632,7 +632,7 @@ include all of the fields.</p></li>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.std">
-<code class="sig-name descname">std</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.std" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">std</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.std" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the variance of the array elements, along given axis.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -642,7 +642,7 @@ include all of the fields.</p></li>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.sum">
-<code class="sig-name descname">sum</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.sum" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">sum</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.sum" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the sum along a given axis.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -653,14 +653,14 @@ include all of the fields.</p></li>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.take">
-<code class="sig-name descname">take</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.take" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">take</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.take" title="Permalink to this definition">¶</a></dt>
 <dd><p>Take elements from an array.
 For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.take.html#numpy.take" title="(in NumPy v1.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.take</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.tobytes">
-<code class="sig-name descname">tobytes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.tobytes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">tobytes</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.tobytes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct Python bytes containing the raw data bytes in the array.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.tobytes.html#numpy.ndarray.tobytes" title="(in NumPy v1.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.tobytes</span></code></a>.</p>
 <p class="rubric">Examples</p>
@@ -674,14 +674,14 @@ For full documentation refer to <a class="reference external" href="https://nump
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.tofile">
-<code class="sig-name descname">tofile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.tofile" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">tofile</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.tofile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write array to a file as text or binary (default).</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.tofile.html#numpy.ndarray.tofile" title="(in NumPy v1.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.tofile</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.tolist">
-<code class="sig-name descname">tolist</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.tolist" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">tolist</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.tolist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the array as an <code class="docutils literal notranslate"><span class="pre">a.ndim</span></code>-levels deep nested list of Python scalars.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.tolist.html#numpy.ndarray.tolist" title="(in NumPy v1.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.tolist</span></code></a>.</p>
 <p class="rubric">Examples</p>
@@ -725,7 +725,7 @@ For full documentation refer to <a class="reference external" href="https://nump
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.tostring">
-<code class="sig-name descname">tostring</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.tostring" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">tostring</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.tostring" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct Python bytes containing the raw data bytes in the array.</p>
 <p>This function is a compatibility alias for tobytes. Despite its name it returns bytes not strings.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.tostring.html#numpy.ndarray.tostring" title="(in NumPy v1.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.tostring</span></code></a>.</p>
@@ -733,7 +733,7 @@ For full documentation refer to <a class="reference external" href="https://nump
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.transpose">
-<code class="sig-name descname">transpose</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.transpose" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">transpose</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.transpose" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a view of the array with axes permuted.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -744,7 +744,7 @@ For full documentation refer to <a class="reference external" href="https://nump
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.var">
-<code class="sig-name descname">var</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.var" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">var</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.var" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the variance of the array elements along given axis.</p>
 <p>Masked entries are ignored, and result elements which are not
 finite will be masked.</p>
@@ -762,57 +762,57 @@ finite will be masked.</p>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.__eq__">
-<code class="sig-name descname">__eq__</code><span class="sig-paren">(</span><em class="sig-param">value</em>, <em class="sig-param">/</em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.__eq__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__eq__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">value</span></em>, <em class="sig-param"><span class="pre">/</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.__eq__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return self==value.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.__ne__">
-<code class="sig-name descname">__ne__</code><span class="sig-paren">(</span><em class="sig-param">value</em>, <em class="sig-param">/</em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.__ne__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__ne__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">value</span></em>, <em class="sig-param"><span class="pre">/</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.__ne__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return self!=value.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.__lt__">
-<code class="sig-name descname">__lt__</code><span class="sig-paren">(</span><em class="sig-param">value</em>, <em class="sig-param">/</em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.__lt__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__lt__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">value</span></em>, <em class="sig-param"><span class="pre">/</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.__lt__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return self&lt;value.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.__le__">
-<code class="sig-name descname">__le__</code><span class="sig-paren">(</span><em class="sig-param">value</em>, <em class="sig-param">/</em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.__le__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__le__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">value</span></em>, <em class="sig-param"><span class="pre">/</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.__le__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return self&lt;=value.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.__gt__">
-<code class="sig-name descname">__gt__</code><span class="sig-paren">(</span><em class="sig-param">value</em>, <em class="sig-param">/</em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.__gt__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__gt__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">value</span></em>, <em class="sig-param"><span class="pre">/</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.__gt__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return self&gt;value.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dpnp.dparray.dparray.__ge__">
-<code class="sig-name descname">__ge__</code><span class="sig-paren">(</span><em class="sig-param">value</em>, <em class="sig-param">/</em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.__ge__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__ge__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">value</span></em>, <em class="sig-param"><span class="pre">/</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.__ge__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return self&gt;=value.</p>
 </dd></dl>
 
 <p class="rubric">Attributes</p>
 <dl class="py attribute">
 <dt id="dpnp.dparray.dparray.T">
-<code class="sig-name descname">T</code><a class="headerlink" href="#dpnp.dparray.dparray.T" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">T</span></code><a class="headerlink" href="#dpnp.dparray.dparray.T" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shape-reversed view of the array.</p>
 <p>If ndim &lt; 2, then this is just a reference to the array itself.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="dpnp.dparray.dparray.dtype">
-<code class="sig-name descname">dtype</code><a class="headerlink" href="#dpnp.dparray.dparray.dtype" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">dtype</span></code><a class="headerlink" href="#dpnp.dparray.dparray.dtype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Type of the elements in the array</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="dpnp.dparray.dparray.flags">
-<code class="sig-name descname">flags</code><a class="headerlink" href="#dpnp.dparray.dparray.flags" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">flags</span></code><a class="headerlink" href="#dpnp.dparray.dparray.flags" title="Permalink to this definition">¶</a></dt>
 <dd><p>Object containing memory-layout information.</p>
 <p>It only contains <code class="docutils literal notranslate"><span class="pre">c_contiguous</span></code>, <code class="docutils literal notranslate"><span class="pre">f_contiguous</span></code>, and <code class="docutils literal notranslate"><span class="pre">owndata</span></code> attributes.
 All of these are read-only. Accessing by indexes is also supported.</p>
@@ -824,13 +824,13 @@ All of these are read-only. Accessing by indexes is also supported.</p>
 
 <dl class="py attribute">
 <dt id="dpnp.dparray.dparray.flat">
-<code class="sig-name descname">flat</code><a class="headerlink" href="#dpnp.dparray.dparray.flat" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">flat</span></code><a class="headerlink" href="#dpnp.dparray.dparray.flat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a flat iterator, or set a flattened version of self to value.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="dpnp.dparray.dparray.itemsize">
-<code class="sig-name descname">itemsize</code><a class="headerlink" href="#dpnp.dparray.dparray.itemsize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">itemsize</span></code><a class="headerlink" href="#dpnp.dparray.dparray.itemsize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Size of each element in bytes.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -840,7 +840,7 @@ All of these are read-only. Accessing by indexes is also supported.</p>
 
 <dl class="py attribute">
 <dt id="dpnp.dparray.dparray.nbytes">
-<code class="sig-name descname">nbytes</code><a class="headerlink" href="#dpnp.dparray.dparray.nbytes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">nbytes</span></code><a class="headerlink" href="#dpnp.dparray.dparray.nbytes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Total size of all elements in bytes.</p>
 <p>It does not count strides or alignment of elements.</p>
 <div class="admonition seealso">
@@ -851,7 +851,7 @@ All of these are read-only. Accessing by indexes is also supported.</p>
 
 <dl class="py attribute">
 <dt id="dpnp.dparray.dparray.ndim">
-<code class="sig-name descname">ndim</code><a class="headerlink" href="#dpnp.dparray.dparray.ndim" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">ndim</span></code><a class="headerlink" href="#dpnp.dparray.dparray.ndim" title="Permalink to this definition">¶</a></dt>
 <dd><p>Number of dimensions.</p>
 <p><code class="docutils literal notranslate"><span class="pre">a.ndim</span></code> is equivalent to <code class="docutils literal notranslate"><span class="pre">len(a.shape)</span></code>.</p>
 <div class="admonition seealso">
@@ -862,7 +862,7 @@ All of these are read-only. Accessing by indexes is also supported.</p>
 
 <dl class="py attribute">
 <dt id="dpnp.dparray.dparray.shape">
-<code class="sig-name descname">shape</code><a class="headerlink" href="#dpnp.dparray.dparray.shape" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">shape</span></code><a class="headerlink" href="#dpnp.dparray.dparray.shape" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lengths of axes. A tuple of numbers represents size of each dimention.</p>
 <p>Setter of this property involves reshaping without copy. If the array
 cannot be reshaped without copy, it raises an exception.</p>
@@ -870,7 +870,7 @@ cannot be reshaped without copy, it raises an exception.</p>
 
 <dl class="py attribute">
 <dt id="dpnp.dparray.dparray.size">
-<code class="sig-name descname">size</code><a class="headerlink" href="#dpnp.dparray.dparray.size" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">size</span></code><a class="headerlink" href="#dpnp.dparray.dparray.size" title="Permalink to this definition">¶</a></dt>
 <dd><p>Number of elements in the array.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -880,7 +880,7 @@ cannot be reshaped without copy, it raises an exception.</p>
 
 <dl class="py attribute">
 <dt id="dpnp.dparray.dparray.strides">
-<code class="sig-name descname">strides</code><a class="headerlink" href="#dpnp.dparray.dparray.strides" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">strides</span></code><a class="headerlink" href="#dpnp.dparray.dparray.strides" title="Permalink to this definition">¶</a></dt>
 <dd><p>Strides of axes in bytes.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
