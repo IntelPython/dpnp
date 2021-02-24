@@ -428,6 +428,9 @@ def put_along_axis(arr, indices, values, axis):
             pass
         elif not isinstance(values, (dparray, tuple, list)) and not dpnp.isscalar(values):
             pass
+        elif not dpnp.isscalar(values) and ((isinstance(values, dparray) and indices.size != values.size) or
+                                            ((isinstance(values, (tuple, list)) and indices.size != len(values)))):
+            pass
         elif arr.ndim == indices.ndim:
             val_list = []
             for i in list(indices.shape)[:-1]:
@@ -438,9 +441,32 @@ def put_along_axis(arr, indices, values, axis):
             if not all(val_list):
                 pass
             else:
-                return dpnp_put_along_axis(arr, indices, values, axis)
+                if dpnp.isscalar(values):
+                    values_size = 1
+                    values_ = dparray(values_size, dtype=arr.dtype)
+                    values_[0] = values
+                elif isinstance(values, dparray):
+                    values_ = values
+                else:
+                    values_size = len(values)
+                    values_ = dparray(values_size, dtype=arr.dtype)
+                    for i in range(values_size):
+                        values_[i] = values[i]
+                return dpnp_put_along_axis(arr, indices, values_, axis)
         else:
-            return dpnp_put_along_axis(arr, indices, values, axis)
+            if dpnp.isscalar(values):
+                values_size = 1
+                values_ = dparray(values_size, dtype=arr.dtype)
+                values_[0] = values
+            elif isinstance(values, dparray):
+                values_ = values
+            else:
+                values_size = len(values)
+                values_ = dparray(values_size, dtype=arr.dtype)
+                for i in range(values_size):
+                    values_[i] = values[i]
+            print('type(values) = ', type(values_))
+            return dpnp_put_along_axis(arr, indices, values_, axis)
 
     return call_origin(numpy.put_along_axis, arr, indices, values, axis)
 
