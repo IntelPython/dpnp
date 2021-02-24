@@ -472,7 +472,6 @@ def put_along_axis(arr, indices, values, axis):
                 values_ = dparray(values_size, dtype=arr.dtype)
                 for i in range(values_size):
                     values_[i] = values[i]
-            print('type(values) = ', type(values_))
             return dpnp_put_along_axis(arr, indices, values_, axis)
 
     return call_origin(numpy.put_along_axis, arr, indices, values, axis)
