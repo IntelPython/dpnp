@@ -127,6 +127,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_MINIMUM,                  /**< Used in numpy.minimum() implementation  */
     DPNP_FN_MODF,                     /**< Used in numpy.modf() implementation  */
     DPNP_FN_MULTIPLY,                 /**< Used in numpy.multiply() implementation  */
+    DPNP_FN_PLACE,                    /**< Used in numpy.place() implementation  */
     DPNP_FN_POWER,                    /**< Used in numpy.power() implementation  */
     DPNP_FN_PROD,                     /**< Used in numpy.prod() implementation  */
     DPNP_FN_PUT,                      /**< Used in numpy.put() implementation  */
@@ -185,6 +186,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_TAN,                      /**< Used in numpy.tan() implementation  */
     DPNP_FN_TANH,                     /**< Used in numpy.tanh() implementation  */
     DPNP_FN_TRANSPOSE,                /**< Used in numpy.transpose() implementation  */
+    DPNP_FN_TRAPZ,                    /**< Used in numpy.trapz() implementation  */
     DPNP_FN_TRUNC,                    /**< Used in numpy.trunc() implementation  */
     DPNP_FN_VAR,                      /**< Used in numpy.var() implementation  */
     DPNP_FN_LAST                      /**< The latest element of the enumeration */

@@ -78,8 +78,9 @@ __all__ += [
 ]
 
 
-ctypedef void(*fptr_custom_elemwise_absolute_1in_1out_t)(void * , void * , size_t)
-ctypedef void(*fptr_1in_2out_t)(void * , void * , void * , size_t)
+ctypedef void(*fptr_custom_elemwise_absolute_1in_1out_t)(void *, void * , size_t)
+ctypedef void(*fptr_1in_2out_t)(void *, void * , void * , size_t)
+ctypedef void(*ftpr_custom_trapz_2in_1out_with_2size_t)(void * , void * , void * , double, size_t, size_t)
 
 
 cpdef dparray dpnp_absolute(dparray input):
@@ -92,7 +93,7 @@ cpdef dparray dpnp_absolute(dparray input):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ABSOLUTE, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(input_shape, dtype=result_type)
 
@@ -201,7 +202,7 @@ cpdef dparray dpnp_ediff1d(dparray x1):
     if x1.size <= 1:
         return dpnp.empty(0, dtype=x1.dtype)
 
-    return call_fptr_1in_1out(DPNP_FN_EDIFF1D, x1, (x1.size -1,))
+    return call_fptr_1in_1out(DPNP_FN_EDIFF1D, x1, (x1.size - 1,))
 
 
 cpdef dparray dpnp_fabs(dparray x1):
@@ -260,7 +261,7 @@ cpdef tuple dpnp_modf(dparray x1):
     """ get the FPTR data structure """
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MODF, param1_type, DPNP_FT_NONE)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     """ Create result arrays with type given by FPTR data """
     cdef dparray result1 = dparray(x1.shape, dtype=result_type)
     cdef dparray result2 = dparray(x1.shape, dtype=result_type)
@@ -428,25 +429,20 @@ cpdef dparray dpnp_sum(dparray input, object axis=None, object dtype=None, dparr
     return result
 
 
-cpdef dpnp_trapz(dparray y, dparray x, int dx):
+cpdef dpnp_trapz(dparray y1, dparray x1, double dx):
 
-    len = y.size
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(y1.dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRAPZ, param1_type, param2_type)
 
-    cdef dparray diff = dparray(len - 1, dtype=y.dtype)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
 
-    if x.size == 0:
-        diff = dpnp.full(len - 1, dx)
-    else:
-        diff = dpnp.ediff1d(x)
+    cdef dparray result = dparray((1,), dtype=result_type)
 
-    square = diff[0] * y[0] + diff[len - 2] * y[len - 1]
+    cdef ftpr_custom_trapz_2in_1out_with_2size_t func = <ftpr_custom_trapz_2in_1out_with_2size_t > kernel_data.ptr
+    func(y1.get_data(), x1.get_data(), result.get_data(), dx, y1.size, x1.size)
 
-    for i in range(1, len - 1):
-        square += y[i] * (diff[i - 1] + diff[i])
-
-    square *= 0.5
-
-    return square
+    return result[0]
 
 
 cpdef dparray dpnp_trunc(dparray x1):

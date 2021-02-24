@@ -371,8 +371,15 @@ def place(arr, mask, vals):
             pass
         elif not isinstance(mask, dparray):
             pass
-        elif not isinstance(vals, collections.Sequence):
-            pass
+        elif not isinstance(vals, dparray):
+            if not isinstance(vals, collections.Sequence):
+                pass
+            else:
+                vals_len = len(vals)
+                vals_arr = dparray(vals_len, dtype=arr.dtype)
+                for i in range(vals_len):
+                    vals_arr[i] = vals[i]
+                return dpnp_place(arr, mask, vals_arr)
         else:
             return dpnp_place(arr, mask, vals)
 
