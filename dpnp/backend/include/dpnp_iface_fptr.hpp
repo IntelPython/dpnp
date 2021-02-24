@@ -131,6 +131,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_POWER,                    /**< Used in numpy.power() implementation  */
     DPNP_FN_PROD,                     /**< Used in numpy.prod() implementation  */
     DPNP_FN_PUT,                      /**< Used in numpy.put() implementation  */
+    DPNP_FN_PUT_ALONG_AXIS,           /**< Used in numpy.put_along_axis() implementation  */
     DPNP_FN_QR,                       /**< Used in numpy.linalg.qr() implementation  */
     DPNP_FN_RADIANS,                  /**< Used in numpy.radians() implementation  */
     DPNP_FN_REMAINDER,                /**< Used in numpy.remainder() implementation  */
