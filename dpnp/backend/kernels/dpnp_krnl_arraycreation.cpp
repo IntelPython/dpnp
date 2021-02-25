@@ -72,6 +72,39 @@ void dpnp_full_c(void* array_in, void* result, const size_t size)
     dpnp_initval_c<_DataType>(result, array_in, size);
 }
 
+template <typename _DataType>
+void dpnp_tri_c(void* result1, const size_t N, const size_t M, const int k)
+{
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    for (size_t i = 0; i < N; ++i)
+    {
+        size_t diag_idx_ = 0;
+        if (i + k + 1 > 0)
+        {
+            diag_idx_ = i + k + 1;
+        }
+
+        size_t diag_idx = diag_idx_;
+        if (M < diag_idx_)
+        {
+            diag_idx = M;
+        }
+
+        for (size_t j = 0; j < diag_idx; ++j)
+        {
+            size_t ind = i * M + j;
+            result[ind] = 1;
+        }
+        for (size_t j = diag_idx; j < M; ++j)
+        {
+            size_t ind = i * M + j;
+            result[ind] = 0;
+        }
+    }
+    return;
+}
+
 void func_map_init_arraycreation(func_map_t& fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_ARANGE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_arange_c<int>};
@@ -83,6 +116,11 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_FULL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_full_c<long>};
     fmap[DPNPFuncName::DPNP_FN_FULL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_full_c<float>};
     fmap[DPNPFuncName::DPNP_FN_FULL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_full_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_TRI][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_tri_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_TRI][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_tri_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_TRI][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_tri_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_TRI][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_tri_c<double>};
 
     return;
 }

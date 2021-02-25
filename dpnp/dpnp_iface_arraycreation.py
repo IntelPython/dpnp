@@ -1032,7 +1032,7 @@ def ones_like(x1, dtype=None, order='C', subok=False, shape=None):
     return numpy.ones_like(x1, dtype, order, subok, shape)
 
 
-def tri(N, M=None, k=0, dtype=numpy.float):
+def tri(N, M=None, k=0, dtype=numpy.float, **kwargs):
     """
     An array with ones at and below the given diagonal and zeros elsewhere.
 
@@ -1054,9 +1054,18 @@ def tri(N, M=None, k=0, dtype=numpy.float):
     """
 
     if not use_origin_backend():
-        return dpnp_tri(N, M, k, dtype)
+        if len(kwargs) != 0:
+            pass
+        elif not isinstance(N, int):
+            pass
+        elif M is not None and not isinstance(M, int):
+            pass
+        elif not isinstance(k, int):
+            pass
+        else:
+            return dpnp_tri(N, M, k, dtype)
 
-    return call_origin(numpy.tri, N, M, k, dtype)
+    return call_origin(numpy.tri, N, M, k, dtype, **kwargs)
 
 
 def tril(m, k=0):

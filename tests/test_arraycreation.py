@@ -110,3 +110,15 @@ def test_loadtxt(type):
         dpnp_res = dpnp.loadtxt(fh, dtype=type)
 
         numpy.testing.assert_array_equal(dpnp_res, np_res)
+
+
+def test_triu_int():
+    expected = numpy.tri(3, 5, 2, dtype=int)
+    result = dpnp.tri(3, 5, 2, dtype=int)
+    numpy.testing.assert_array_equal(result, expected)
+
+
+def test_triu_float():
+    expected = numpy.tri(3, 5, -1)
+    result = dpnp.tri(3, 5, -1)
+    numpy.testing.assert_array_equal(result, expected)

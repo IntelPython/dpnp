@@ -54,6 +54,9 @@ __all__ += [
 ]
 
 
+ctypedef void(*custom_indexing_1out_func_ptr_t)(void * , const size_t , const size_t , const int)
+
+
 cpdef dparray dpnp_copy(dparray x1, order, subok):
     return call_fptr_1in_1out(DPNP_FN_COPY, x1, x1.shape)
 
@@ -218,21 +221,24 @@ cpdef list dpnp_meshgrid(xi, copy, sparse, indexing):
     return result
 
 
-cpdef dparray dpnp_tri(N, M, k, dtype):
-    cdef dparray result
-
+cpdef dparray dpnp_tri(N, M=None, k=0, dtype=numpy.float):
     if M is None:
         M = N
 
-    result = dparray(shape=(N, M), dtype=dtype)
+    if dtype == numpy.float:
+        dtype = numpy.float64
 
-    for i in range(N):
-        diag_idx = max(0, i + k + 1)
-        diag_idx = min(diag_idx, M)
-        for j in range(diag_idx):
-            result[i, j] = 1
-        for j in range(diag_idx, M):
-            result[i, j] = 0
+    cdef dparray result = dparray(shape=(N, M), dtype=dtype)
+
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRI, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+
+    cdef custom_indexing_1out_func_ptr_t func = <custom_indexing_1out_func_ptr_t > kernel_data.ptr
+
+    func(result.get_data(), N, M, k)
 
     return result
 

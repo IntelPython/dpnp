@@ -537,6 +537,18 @@ INP_DLLEXPORT void dpnp_take_c(void* array, void* indices, void* result, size_t 
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of take function
+ *
+ * @param [out] result  Output array.
+ * @param [in]  N       Number of rows in the array.
+ * @param [in]  M       Number of columns in the array.
+ * @param [in]  k       The sub-diagonal at and below which the array is filled.
+ */
+template <typename _DataType, typename _IndecesType>
+INP_DLLEXPORT void dpnp_tri_c(void* result, const size_t N, const size_t M, const int k);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of var function
  *
  * @param [in]  array   Input array with data.
