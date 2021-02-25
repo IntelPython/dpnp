@@ -224,6 +224,177 @@ void dpnp_put_c(
     return;
 }
 
+template <typename _DataType>
+void dpnp_put_along_axis_c(void* arr_in, long* indices_in, void* values_in, size_t axis, const size_t* shape, size_t ndim, size_t size_indices, size_t values_size)
+{
+    _DataType* arr = reinterpret_cast<_DataType*>(arr_in);
+    size_t* indices = reinterpret_cast<size_t*>(indices_in);
+    _DataType* values = reinterpret_cast<_DataType*>(values_in);
+
+    size_t res_ndim = ndim - 1;
+    size_t res_shape[res_ndim];
+
+    size_t size_arr = 1;
+    for (size_t i = 0; i < ndim; ++i)
+    {
+        size_arr *= shape[i];
+    }
+    
+    if (axis != res_ndim)
+    {
+        int ind = 0;
+        for (size_t i = 0; i < ndim; i++)
+        {
+            if (axis != i)
+            {
+                res_shape[ind] = shape[i];
+                ind++;
+            }
+        }
+
+        size_t prod = 1;
+        for (size_t i = 0; i < res_ndim; ++i)
+        {
+            if (res_shape[i] != 0)
+            {
+                prod *= res_shape[i];
+            }
+        }
+
+        size_t ind_array[prod];
+        bool bool_ind_array[prod];
+        for (size_t i = 0; i < prod; ++i)
+        {
+            bool_ind_array[i] = true;
+        }
+        size_t arr_shape_offsets[ndim];
+        size_t acc = 1;
+        for (size_t i = ndim - 1; i > 0; --i)
+        {
+            arr_shape_offsets[i] = acc;
+            acc *= shape[i];
+        }
+        arr_shape_offsets[0] = acc;
+
+        size_t output_shape_offsets[res_ndim];
+        acc = 1;
+        if (res_ndim > 0)
+        {
+            for (size_t i = res_ndim - 1; i > 0; --i)
+            {
+                output_shape_offsets[i] = acc;
+                acc *= res_shape[i];
+            }
+        }
+        output_shape_offsets[0] = acc;
+
+        size_t size_result = 1;
+        for (size_t i = 0; i < res_ndim; ++i)
+        {
+            size_result *= res_shape[i];
+        }
+
+        //init result array
+        for (size_t result_idx = 0; result_idx < size_result; ++result_idx)
+        {
+            size_t xyz[res_ndim];
+            size_t remainder = result_idx;
+            for (size_t i = 0; i < res_ndim; ++i)
+            {
+                xyz[i] = remainder / output_shape_offsets[i];
+                remainder = remainder - xyz[i] * output_shape_offsets[i];
+            }
+
+            size_t source_axis[ndim];
+            size_t result_axis_idx = 0;
+            for (size_t idx = 0; idx < ndim; ++idx)
+            {
+                bool found = false;
+                if (axis == idx)
+                {
+                    found = true;
+                }
+                if (found)
+                {
+                    source_axis[idx] = 0;
+                }
+                else
+                {
+                    source_axis[idx] = xyz[result_axis_idx];
+                    result_axis_idx++;
+                }
+            }
+
+            size_t source_idx = 0;
+            for (size_t i = 0; i < ndim; ++i)
+            {
+                source_idx += arr_shape_offsets[i] * source_axis[i];
+            }
+        }
+
+        for (size_t source_idx = 0; source_idx < size_arr; ++source_idx)
+        {
+            // reconstruct x,y,z from linear source_idx
+            size_t xyz[ndim];
+            size_t remainder = source_idx;
+            for (size_t i = 0; i < ndim; ++i)
+            {
+                xyz[i] = remainder / arr_shape_offsets[i];
+                remainder = remainder - xyz[i] * arr_shape_offsets[i];
+            }
+
+            // extract result axis
+            size_t result_axis[res_ndim];
+            size_t result_idx = 0;
+            for (size_t idx = 0; idx < ndim; ++idx)
+            {
+                // try to find current idx in axis array
+                bool found = false;
+                if (axis == idx)
+                {
+                    found = true;
+                }
+                if (!found)
+                {
+                    result_axis[result_idx] = xyz[idx];
+                    result_idx++;
+                }
+            }
+
+            // Construct result offset
+            size_t result_offset = 0;
+            for (size_t i = 0; i < res_ndim; ++i)
+            {
+                result_offset += output_shape_offsets[i] * result_axis[i];
+            }
+
+            if (bool_ind_array[result_offset])
+            {
+                ind_array[result_offset] = 0;
+                bool_ind_array[result_offset] = false;
+            }
+            else
+            {
+                ind_array[result_offset] += 1;
+            }
+
+            if ((ind_array[result_offset] % size_indices) == indices[result_offset % size_indices])
+            {
+                arr[source_idx] = values[source_idx % values_size];
+            }
+        }
+    }
+    else
+    {
+        for (size_t i = 0; i < size_arr; ++i)
+        {
+            size_t ind = size_indices * (i / size_indices) + indices[i % size_indices];
+            arr[ind] = values[i % values_size];
+        }
+    }
+    return;
+}
+
 template <typename _DataType, typename _IndecesType>
 class dpnp_take_c_kernel;
 
@@ -272,6 +443,11 @@ void func_map_init_indexing_func(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_PUT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_put_c<long, long, long>};
     fmap[DPNPFuncName::DPNP_FN_PUT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_put_c<float, long, float>};
     fmap[DPNPFuncName::DPNP_FN_PUT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_put_c<double, long, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_put_along_axis_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_put_along_axis_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_put_along_axis_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_PUT_ALONG_AXIS][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_put_along_axis_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_TAKE][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_take_c<bool, long>};
     fmap[DPNPFuncName::DPNP_FN_TAKE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_take_c<int, long>};
