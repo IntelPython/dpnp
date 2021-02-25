@@ -129,7 +129,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_MULTIPLY,                 /**< Used in numpy.multiply() implementation  */
     DPNP_FN_MULTIPLY_ARRAY_ARRAY,     /**< Used in numpy.multiply(array, array) implementation  */
     DPNP_FN_MULTIPLY_ARRAY_SCALAR,    /**< Used in numpy.multiply(array, scalar) implementation  */
-    DPNP_FN_MULTIPLY_SCALAR_ARRAY,    /**< Used in numpy.multiply(scalar, array) implementation  */
     DPNP_FN_PLACE,                    /**< Used in numpy.place() implementation  */
     DPNP_FN_POWER,                    /**< Used in numpy.power() implementation  */
     DPNP_FN_PROD,                     /**< Used in numpy.prod() implementation  */
