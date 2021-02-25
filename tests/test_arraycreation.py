@@ -7,6 +7,32 @@ import numpy
 import tempfile
 
 
+@pytest.mark.parametrize("k",
+                         [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+                         ids=['-6', '-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5', '6'])
+@pytest.mark.parametrize("v",
+                         [[0, 1, 2, 3, 4],
+                          [1, 1, 1, 1, 1],
+                          [[0, 0], [0, 0]],
+                          [[1, 2], [1, 2]],
+                          [[1, 2], [3, 4]],
+                          [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+                          [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]],
+                         ids=['[0, 1, 2, 3, 4]',
+                              '[1, 1, 1, 1, 1]',
+                              '[[0, 0], [0, 0]]',
+                              '[[1, 2], [1, 2]]',
+                              '[[1, 2], [3, 4]]',
+                              '[[0, 1, 2], [3, 4, 5], [6, 7, 8]]',
+                              '[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]'])
+def test_diag(v, k):
+    a = numpy.array(v)
+    ia = dpnp.array(a)
+    expected = numpy.diag(a, k)
+    result = dpnp.diag(ia, k)
+    numpy.testing.assert_array_equal(expected, result)
+
+
 @pytest.mark.parametrize("type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['float64', 'float32', 'int64', 'int32'])
