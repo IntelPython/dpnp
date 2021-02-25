@@ -100,6 +100,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_MINIMUM
         DPNP_FN_MODF
         DPNP_FN_MULTIPLY
+        DNPN_FN_ONES
         DPNP_FN_PLACE
         DPNP_FN_POWER
         DPNP_FN_PROD
@@ -162,6 +163,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_TRAPZ
         DPNP_FN_TRUNC
         DPNP_FN_VAR
+        DPNP_FN_ZERO
 
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
     cdef enum DPNPFuncType "DPNPFuncType":

@@ -48,10 +48,15 @@ __all__ += [
     "dpnp_linspace",
     "dpnp_logspace",
     "dpnp_meshgrid",
+    "dpnp_ones",
     "dpnp_tri",
     "dpnp_tril",
     "dpnp_triu",
+    "dpnp_zeros"
 ]
+
+
+ctypedef void(*fptr_1out_t)(void *, size_t)
 
 
 cpdef dparray dpnp_copy(dparray x1, order, subok):
@@ -218,6 +223,25 @@ cpdef list dpnp_meshgrid(xi, copy, sparse, indexing):
     return result
 
 
+cpdef dparray dpnp_ones(result_shape, result_dtype):
+    # Convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType dtype_in = dpnp_dtype_to_DPNPFuncType(result_dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ONES, dtype_in, DPNP_FT_NONE)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+
+    # Create result array with type given by FPTR data
+    cdef dparray result = dparray(result_shape, dtype=result_type)
+
+    cdef fptr_1out_t func = <fptr_1out_t > kernel_data.ptr
+    # Call FPTR function
+    func(result.get_data(), result.size)
+
+    return result
+
+
 cpdef dparray dpnp_tri(N, M, k, dtype):
     cdef dparray result
 
@@ -299,5 +323,24 @@ cpdef dparray dpnp_triu(m, k):
                 result[i] = m[i]
             else:
                 result[i] = 0
+
+    return result
+
+
+cpdef dparray dpnp_zeros(result_shape, result_dtype):
+    # Convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType dtype_in = dpnp_dtype_to_DPNPFuncType(result_dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ZEROS, dtype_in, DPNP_FT_NONE)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+
+    # Create result array with type given by FPTR data
+    cdef dparray result = dparray(result_shape, dtype=result_type)
+
+    cdef fptr_1out_t func = <fptr_1out_t > kernel_data.ptr
+    # Call FPTR function
+    func(result.get_data(), result.size)
 
     return result

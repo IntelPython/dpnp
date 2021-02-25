@@ -72,6 +72,30 @@ void dpnp_full_c(void* array_in, void* result, const size_t size)
     dpnp_initval_c<_DataType>(result, array_in, size);
 }
 
+template <typename _KernelNameSpecialization>
+class dpnp_ones_c_kernel;
+
+template <typename _DataType>
+void dpnp_ones_c(void* result, size_t size)
+{
+    _DataType* fill_value = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(sizeof(_DataType)));
+    fill_value[0] = 1;
+
+    dpnp_initval_c<_DataType>(result, fill_value, size);
+}
+
+template <typename _KernelNameSpecialization>
+class dpnp_zeros_c_kernel;
+
+template <typename _DataType>
+void dpnp_zeros_c(void* result, size_t size)
+{
+    _DataType* fill_value = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(sizeof(_DataType)));
+    fill_value[0] = 0;
+
+    dpnp_initval_c<_DataType>(result, fill_value, size);
+}
+
 void func_map_init_arraycreation(func_map_t& fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_ARANGE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_arange_c<int>};
@@ -83,6 +107,16 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_FULL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_full_c<long>};
     fmap[DPNPFuncName::DPNP_FN_FULL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_full_c<float>};
     fmap[DPNPFuncName::DPNP_FN_FULL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_full_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_ONES][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_ones_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_ONES][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_ones_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_ONES][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_ones_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_ONES][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_ones_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_ZEROS][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_zeros_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_ZEROS][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_zeros_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_ZEROS][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_zeros_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_ZEROS][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_zeros_c<double>};
 
     return;
 }

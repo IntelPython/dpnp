@@ -661,7 +661,7 @@ def full_like(x1, fill_value, dtype=None, order='C', subok=False, shape=None):
         _shape = shape if shape is not None else x1.shape
         _dtype = dtype if dtype is not None else x1.dtype
 
-        return dpnp_init_val(_shape, _dtype, fill_value)
+        return dpnp_full(_shape, fill_value, _dtype)
 
     return numpy.full_like(x1, fill_value, dtype, order, subok, shape)
 
@@ -983,7 +983,7 @@ def ones(shape, dtype=None, order='C'):
 
         _dtype = dtype if dtype is not None else dpnp.float64
 
-        return dpnp_init_val(shape, _dtype, 1)
+        return dpnp_ones(shape, _dtype)
 
     return numpy.ones(shape, dtype=dtype, order=order)
 
@@ -1027,7 +1027,7 @@ def ones_like(x1, dtype=None, order='C', subok=False, shape=None):
         _shape = shape if shape is not None else x1.shape
         _dtype = dtype if dtype is not None else x1.dtype
 
-        return dpnp_init_val(_shape, _dtype, 1)
+        return dpnp_ones(_shape, _dtype)
 
     return numpy.ones_like(x1, dtype, order, subok, shape)
 
@@ -1152,7 +1152,7 @@ def zeros(shape, dtype=None, order='C'):
 
         _dtype = dtype if dtype is not None else dpnp.float64
 
-        return dpnp_init_val(shape, _dtype, 0)
+        return dpnp_zeros(shape, _dtype)
 
     return numpy.zeros(shape, dtype=dtype, order=order)
 
@@ -1196,6 +1196,6 @@ def zeros_like(x1, dtype=None, order='C', subok=False, shape=None):
         _shape = shape if shape is not None else x1.shape
         _dtype = dtype if dtype is not None else x1.dtype
 
-        return dpnp_init_val(_shape, _dtype, 0)
+        return dpnp_zeros(_shape, _dtype)
 
     return numpy.zeros_like(x1, dtype, order, subok, shape)
