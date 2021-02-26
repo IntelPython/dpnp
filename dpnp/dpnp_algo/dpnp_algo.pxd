@@ -100,7 +100,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_MINIMUM
         DPNP_FN_MODF
         DPNP_FN_MULTIPLY
-        DNPN_FN_ONES
+        DPNP_FN_ONES
         DPNP_FN_PLACE
         DPNP_FN_POWER
         DPNP_FN_PROD
@@ -131,7 +131,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_PARETO
         DPNP_FN_RNG_POISSON
         DPNP_FN_RNG_POWER
-        DPNP_FN_PUT_ALONG_AXIS
         DPNP_FN_RNG_RAYLEIGH
         DPNP_FN_RNG_SHUFFLE
         DPNP_FN_RNG_SRAND
