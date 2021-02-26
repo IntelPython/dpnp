@@ -64,7 +64,7 @@ void dpnp_arange_c(size_t start, size_t step, void* result1, size_t size)
 }
 
 template <typename _DataType>
-void dpnp_diag_c(void* v_in, void* result1, const int k, size_t* shape, size_t* shape_result, const size_t ndim)
+void dpnp_diag_c(void* v_in, void* result1, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim)
 {
     _DataType* v = reinterpret_cast<_DataType*>(v_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
@@ -76,13 +76,13 @@ void dpnp_diag_c(void* v_in, void* result1, const int k, size_t* shape, size_t* 
     {
         for (size_t i = 0; i < shape[0]; ++i)
         {
-            size_t ind = (init0 + i) * shape_result[1] + init1 + i;
+            size_t ind = (init0 + i) * res_shape[1] + init1 + i;
             result[ind] = v[i];
         }
     }
     else
     {
-        for (size_t i = 0; i < shape_result[0]; ++i)
+        for (size_t i = 0; i < res_shape[0]; ++i)
         {
             size_t ind = (init0 + i) * shape[1] + init1 + i;
             result[i] = v[ind];

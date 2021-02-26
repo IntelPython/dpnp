@@ -388,7 +388,7 @@ INP_DLLEXPORT void dpnp_det_c(void* array1_in, void* result1, size_t* shape, siz
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_diag_c(
-    void* array, void* result, const int k, size_t* shape, size_t* shape_result, const size_t ndim);
+    void* array, void* result, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim);
 
 /**
  * @ingroup BACKEND_API

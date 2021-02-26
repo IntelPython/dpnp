@@ -54,7 +54,7 @@ __all__ += [
 ]
 
 
-ctypedef void(*custom_indexing_1in_1out_func_ptr_t)(void * , void * , const int , size_t * , size_t * , const size_t)
+ctypedef void(*custom_1in_1out_func_ptr_t)(void * , void * , const int , size_t * , size_t * , const size_t, const size_t)
 
 
 cpdef dparray dpnp_copy(dparray x1, order, subok):
@@ -81,9 +81,9 @@ cpdef dparray dpnp_diag(dparray v, int k):
 
     result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
 
-    cdef custom_indexing_1in_1out_func_ptr_t func = <custom_indexing_1in_1out_func_ptr_t > kernel_data.ptr
+    cdef custom_1in_1out_func_ptr_t func = <custom_1in_1out_func_ptr_t > kernel_data.ptr
 
-    func(v.get_data(), result.get_data(), k, < size_t * > v._dparray_shape.data(), < size_t * > result._dparray_shape.data(), v.ndim)
+    func(v.get_data(), result.get_data(), k, < size_t * > v._dparray_shape.data(), < size_t * > result._dparray_shape.data(), v.ndim, result.ndim)
 
     return result
 
