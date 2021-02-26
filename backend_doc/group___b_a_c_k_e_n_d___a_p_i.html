@@ -451,6 +451,10 @@ template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:gacae5a64647bf0415e3aacad5544d0753"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gacae5a64647bf0415e3aacad5544d0753">dpnp_det_c</a> (void *array1_in, void *result1, size_t *shape, size_t ndim)</td></tr>
 <tr class="memdesc:gacae5a64647bf0415e3aacad5544d0753"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of det function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gacae5a64647bf0415e3aacad5544d0753">More...</a><br /></td></tr>
 <tr class="separator:gacae5a64647bf0415e3aacad5544d0753"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadc2a99736d4cc07bcfe1b7ca77ba655a"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
+<tr class="memitem:gadc2a99736d4cc07bcfe1b7ca77ba655a"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gadc2a99736d4cc07bcfe1b7ca77ba655a">dpnp_diag_c</a> (void *array, void *result, const int k, size_t *shape, size_t *res_shape, const size_t ndim, const size_t res_ndim)</td></tr>
+<tr class="memdesc:gadc2a99736d4cc07bcfe1b7ca77ba655a"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of det function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gadc2a99736d4cc07bcfe1b7ca77ba655a">More...</a><br /></td></tr>
+<tr class="separator:gadc2a99736d4cc07bcfe1b7ca77ba655a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae18d304a8fdc0f0839f4864e5cff1890"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:gae18d304a8fdc0f0839f4864e5cff1890"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gae18d304a8fdc0f0839f4864e5cff1890">dpnp_diagonal_c</a> (void *array1_in, void *result1, const size_t offset, size_t *shape, size_t *res_shape, const size_t res_ndim)</td></tr>
 <tr class="memdesc:gae18d304a8fdc0f0839f4864e5cff1890"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of diagonal function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gae18d304a8fdc0f0839f4864e5cff1890">More...</a><br /></td></tr>
@@ -2241,6 +2245,79 @@ template&lt;typename _DataType &gt; </div>
     <tr><td class="paramdir">[in]</td><td class="paramname">array</td><td>Input array with data. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">shape</td><td>Shape of input array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ndim</td><td>Number of elements in shape. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gadc2a99736d4cc07bcfe1b7ca77ba655a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gadc2a99736d4cc07bcfe1b7ca77ba655a">&#9670;&nbsp;</a></span>dpnp_diag_c()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename _DataType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void dpnp_diag_c </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>result</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>k</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>shape</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>res_shape</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>ndim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>res_ndim</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>math library implementation of det function </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">array</td><td>Input array with data. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">k</td><td>Diagonal in question. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">shape</td><td>Shape of input array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">shape_result</td><td>Shape of result array. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">ndim</td><td>Number of elements in shape. </td></tr>
   </table>
   </dd>
