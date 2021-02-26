@@ -112,16 +112,25 @@ def test_loadtxt(type):
         numpy.testing.assert_array_equal(dpnp_res, np_res)
 
 
+@pytest.mark.parametrize("N",
+                         [1, 2, 3, 4],
+                         ids=['1', '2', '3', '4'])
+@pytest.mark.parametrize("M",
+                         [1, 2, 3, 4],
+                         ids=['1', '2', '3', '4'])
+@pytest.mark.parametrize("k",
+                         [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+                         ids=['-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5'])
 @pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, float, numpy.int64, numpy.int32, int],
-                         ids=['float64', 'float32', 'float', 'int64', 'int32', 'int'])
-def test_triu(type):
-    expected = numpy.tri(3, 5, 2, dtype=type)
-    result = dpnp.tri(3, 5, 2, dtype=type)
+                         [numpy.float64, numpy.float32, float, numpy.int64, numpy.int32, numpy.int, numpy.float, int],
+                         ids=['float64', 'float32', 'numpy.float', 'float', 'int64', 'int32', 'numpy.int', 'int'])
+def test_tri(N, M, k, type):
+    expected = numpy.tri(N, M, k, dtype=type)
+    result = dpnp.tri(N, M, k, dtype=type)
     numpy.testing.assert_array_equal(result, expected)
 
 
-def test_triu_float():
+def test_tri_float():
     expected = numpy.tri(3, 5, -1)
     result = dpnp.tri(3, 5, -1)
     numpy.testing.assert_array_equal(result, expected)

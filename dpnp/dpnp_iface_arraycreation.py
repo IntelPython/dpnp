@@ -1058,7 +1058,11 @@ def tri(N, M=None, k=0, dtype=numpy.float, **kwargs):
             pass
         elif not isinstance(N, int):
             pass
+        elif N < 0:
+            pass
         elif M is not None and not isinstance(M, int):
+            pass
+        elif M is not None and M < 0:
             pass
         elif not isinstance(k, int):
             pass
