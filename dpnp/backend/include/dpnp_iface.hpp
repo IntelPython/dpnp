@@ -544,8 +544,23 @@ INP_DLLEXPORT void dpnp_take_c(void* array, void* indices, void* result, size_t 
  * @param [in]  M       Number of columns in the array.
  * @param [in]  k       The sub-diagonal at and below which the array is filled.
  */
-template <typename _DataType, typename _IndecesType>
+template <typename _DataType>
 INP_DLLEXPORT void dpnp_tri_c(void* result, const size_t N, const size_t M, const int k);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of take function
+ *
+ * @param [in]  array      Input array with data.
+ * @param [out] result     Output array.
+ * @param [in]  k          Diagonal above which to zero elements.
+ * @param [in]  shape      Shape of input array.
+ * @param [in]  res_shape  Shape of result array.
+ * @param [in]  ndim       Number of elements in array.shape.
+ * @param [in]  res_ndim   Number of elements in res_shape.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_tril_c(void* array, void* result, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim);
 
 /**
  * @ingroup BACKEND_API

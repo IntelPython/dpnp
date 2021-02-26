@@ -54,6 +54,7 @@ __all__ += [
 ]
 
 
+ctypedef void(*custom_1in_1out_func_ptr_t)(void * , void * , const int , size_t * , size_t * , const size_t, const size_t)
 ctypedef void(*custom_indexing_1out_func_ptr_t)(void * , const size_t , const size_t , const int)
 
 
@@ -243,35 +244,24 @@ cpdef dparray dpnp_tri(N, M=None, k=0, dtype=numpy.float):
     return result
 
 
-cpdef dparray dpnp_tril(m, k):
-    cdef dparray result
-
+cpdef dparray dpnp_tril(dparray m, int k):
     if m.ndim == 1:
-        result = dparray(shape=(m.shape[0], m.shape[0]), dtype=m.dtype)
-
-        for i in range(result.size):
-            ids = get_axis_indeces(i, result.shape)
-
-            diag_idx = max(-1, ids[result.ndim - 2] + k)
-            diag_idx = min(diag_idx, result.shape[result.ndim - 1])
-
-            if ids[result.ndim - 1] <= diag_idx:
-                result[i] = m[ids[result.ndim - 1]]
-            else:
-                result[i] = 0
+        result_shape = (m.shape[0], m.shape[0])
     else:
-        result = dparray(shape=m.shape, dtype=m.dtype)
+        result_shape = m.shape
 
-        for i in range(result.size):
-            ids = get_axis_indeces(i, result.shape)
+    result_ndim = len(result_shape)
+    cdef dparray result = dparray(result_shape, dtype=m.dtype)
 
-            diag_idx = max(-1, ids[result.ndim - 2] + k)
-            diag_idx = min(diag_idx, result.shape[result.ndim - 1])
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(m.dtype)
 
-            if ids[result.ndim - 1] <= diag_idx:
-                result[i] = m[i]
-            else:
-                result[i] = 0
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRIL, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+
+    cdef custom_1in_1out_func_ptr_t func = <custom_1in_1out_func_ptr_t > kernel_data.ptr
+
+    func(m.get_data(), result.get_data(), k, < size_t * > m._dparray_shape.data(), < size_t * > result._dparray_shape.data(), m.ndim, result.ndim)
 
     return result
 

@@ -134,3 +134,29 @@ def test_tri_float():
     expected = numpy.tri(3, 5, -1)
     result = dpnp.tri(3, 5, -1)
     numpy.testing.assert_array_equal(result, expected)
+
+
+@pytest.mark.parametrize("k",
+                         [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+                         ids=['-6', '-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5', '6'])
+@pytest.mark.parametrize("m",
+                         [[0, 1, 2, 3, 4],
+                          [1, 1, 1, 1, 1],
+                          [[0, 0], [0, 0]],
+                          [[1, 2], [1, 2]],
+                          [[1, 2], [3, 4]],
+                          [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+                          [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]],
+                         ids=['[0, 1, 2, 3, 4]',
+                              '[1, 1, 1, 1, 1]',
+                              '[[0, 0], [0, 0]]',
+                              '[[1, 2], [1, 2]]',
+                              '[[1, 2], [3, 4]]',
+                              '[[0, 1, 2], [3, 4, 5], [6, 7, 8]]',
+                              '[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]'])
+def test_tril(m, k):
+    a = numpy.array(m)
+    ia = dpnp.array(a)
+    expected = numpy.tril(a, k)
+    result = dpnp.tril(ia, k)
+    numpy.testing.assert_array_equal(expected, result)
