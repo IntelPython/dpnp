@@ -79,17 +79,9 @@ void dpnp_tri_c(void* result1, const size_t N, const size_t M, const int k)
 
     for (size_t i = 0; i < N; ++i)
     {
-        size_t diag_idx_ = 0;
-        if (i + k + 1 > 0)
-        {
-            diag_idx_ = i + k + 1;
-        }
+        size_t diag_idx_ = (i + k + 1 > 0) ? (i + k + 1) : 0;
 
-        size_t diag_idx = diag_idx_;
-        if (M < diag_idx_)
-        {
-            diag_idx = M;
-        }
+        size_t diag_idx = (M < diag_idx_) ? M : diag_idx_;
 
         for (size_t j = 0; j < diag_idx; ++j)
         {

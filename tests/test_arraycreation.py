@@ -112,9 +112,12 @@ def test_loadtxt(type):
         numpy.testing.assert_array_equal(dpnp_res, np_res)
 
 
-def test_triu_int():
-    expected = numpy.tri(3, 5, 2, dtype=int)
-    result = dpnp.tri(3, 5, 2, dtype=int)
+@pytest.mark.parametrize("type",
+                         [numpy.float64, numpy.float32, float, numpy.int64, numpy.int32, int],
+                         ids=['float64', 'float32', 'float', 'int64', 'int32', 'int'])
+def test_triu(type):
+    expected = numpy.tri(3, 5, 2, dtype=type)
+    result = dpnp.tri(3, 5, 2, dtype=type)
     numpy.testing.assert_array_equal(result, expected)
 
 
