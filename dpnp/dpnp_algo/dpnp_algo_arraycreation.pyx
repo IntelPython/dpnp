@@ -63,15 +63,15 @@ cpdef dparray dpnp_copy(dparray x1, order, subok):
 
 cpdef dparray dpnp_diag(dparray v, int k):
     if v.ndim == 1:
-        size = v.shape[0] + abs(k)
+        n = v.shape[0] + abs(k)
 
-        shape_result = (size, size)
+        shape_result = (n, n)
     else:
-        size = min(v.shape[0], v.shape[0] + k, v.shape[1], v.shape[1] - k)
-        if size < 0:
-            size = 0
+        n = min(v.shape[0], v.shape[0] + k, v.shape[1], v.shape[1] - k)
+        if n < 0:
+            n = 0
 
-        shape_result = (size, )
+        shape_result = (n, )
 
     cdef dparray result = dpnp.zeros(shape_result, dtype=v.dtype)
 
