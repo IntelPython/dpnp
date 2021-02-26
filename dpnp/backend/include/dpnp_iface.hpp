@@ -630,7 +630,7 @@ INP_DLLEXPORT void dpnp_modf_c(void* array1_in, void* result1_out, void* result2
  * @param [in]  size      Number of elements in the output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_ones_c(void* result, const size_t size);
+INP_DLLEXPORT void dpnp_ones_c(void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -700,6 +700,6 @@ INP_DLLEXPORT void dpnp_trapz_c(
  * @param [in]  size      Number of elements in the output array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_zeros_c(void* result, const size_t size);
+INP_DLLEXPORT void dpnp_zeros_c(void* result, size_t size);
 
 #endif // BACKEND_IFACE_H

@@ -190,8 +190,8 @@ enum class DPNPFuncName : size_t
     DPNP_FN_TRAPZ,                    /**< Used in numpy.trapz() implementation  */
     DPNP_FN_TRUNC,                    /**< Used in numpy.trunc() implementation  */
     DPNP_FN_VAR,                      /**< Used in numpy.var() implementation  */
-    DPNP_FN_LAST,                     /**< The latest element of the enumeration */
-    DPNP_FN_ZEROS                     /**< Used in numpy.zeros() implementation */
+    DPNP_FN_ZEROS,                    /**< Used in numpy.zeros() implementation */
+    DPNP_FN_LAST                      /**< The latest element of the enumeration */
 };
 
 /**

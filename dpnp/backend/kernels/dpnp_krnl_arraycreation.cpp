@@ -72,9 +72,6 @@ void dpnp_full_c(void* array_in, void* result, const size_t size)
     dpnp_initval_c<_DataType>(result, array_in, size);
 }
 
-template <typename _KernelNameSpecialization>
-class dpnp_ones_c_kernel;
-
 template <typename _DataType>
 void dpnp_ones_c(void* result, size_t size)
 {
@@ -83,9 +80,6 @@ void dpnp_ones_c(void* result, size_t size)
 
     dpnp_initval_c<_DataType>(result, fill_value, size);
 }
-
-template <typename _KernelNameSpecialization>
-class dpnp_zeros_c_kernel;
 
 template <typename _DataType>
 void dpnp_zeros_c(void* result, size_t size)
