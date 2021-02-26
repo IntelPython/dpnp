@@ -161,6 +161,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_TANH
         DPNP_FN_TRANSPOSE
         DPNP_FN_TRAPZ
+        DPNP_FN_TRIL
         DPNP_FN_TRUNC
         DPNP_FN_VAR
         DPNP_FN_ZEROS
