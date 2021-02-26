@@ -79,6 +79,8 @@ void dpnp_ones_c(void* result, size_t size)
     fill_value[0] = 1;
 
     dpnp_initval_c<_DataType>(result, fill_value, size);
+
+    dpnp_memory_free_c(fill_value);
 }
 
 template <typename _DataType>
@@ -88,6 +90,8 @@ void dpnp_zeros_c(void* result, size_t size)
     fill_value[0] = 0;
 
     dpnp_initval_c<_DataType>(result, fill_value, size);
+
+    dpnp_memory_free_c(fill_value);
 }
 
 void func_map_init_arraycreation(func_map_t& fmap)
