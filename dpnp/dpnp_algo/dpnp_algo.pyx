@@ -297,7 +297,7 @@ cdef dparray call_fptr_1out(DPNPFuncName fptr_name, result_shape, result_dtype):
     cdef DPNPFuncType dtype_in = dpnp_dtype_to_DPNPFuncType(result_dtype)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, dtype_in, DPNP_FT_NONE)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, dtype_in, dtype_in)
 
     result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
 
