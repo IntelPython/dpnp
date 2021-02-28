@@ -90,6 +90,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_CUMSUM,                   /**< Used in numpy.cumsum() implementation  */
     DPNP_FN_DEGREES,                  /**< Used in numpy.degrees() implementation  */
     DPNP_FN_DET,                      /**< Used in numpy.linalg.det() implementation  */
+    DPNP_FN_DIAG,                     /**< Used in numpy.diag() implementation  */
     DPNP_FN_DIAGONAL,                 /**< Used in numpy.diagonal() implementation  */
     DPNP_FN_DIVIDE,                   /**< Used in numpy.divide() implementation  */
     DPNP_FN_DOT,                      /**< Used in numpy.dot() implementation  */
@@ -131,6 +132,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_POWER,                    /**< Used in numpy.power() implementation  */
     DPNP_FN_PROD,                     /**< Used in numpy.prod() implementation  */
     DPNP_FN_PUT,                      /**< Used in numpy.put() implementation  */
+    DPNP_FN_PUT_ALONG_AXIS,           /**< Used in numpy.put_along_axis() implementation  */
     DPNP_FN_QR,                       /**< Used in numpy.linalg.qr() implementation  */
     DPNP_FN_RADIANS,                  /**< Used in numpy.radians() implementation  */
     DPNP_FN_REMAINDER,                /**< Used in numpy.remainder() implementation  */
@@ -186,6 +188,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_TANH,                     /**< Used in numpy.tanh() implementation  */
     DPNP_FN_TRANSPOSE,                /**< Used in numpy.transpose() implementation  */
     DPNP_FN_TRAPZ,                    /**< Used in numpy.trapz() implementation  */
+    DPNP_FN_TRIL,                     /**< Used in numpy.tril() implementation  */
     DPNP_FN_TRUNC,                    /**< Used in numpy.trunc() implementation  */
     DPNP_FN_VAR,                      /**< Used in numpy.var() implementation  */
     DPNP_FN_LAST                      /**< The latest element of the enumeration */
