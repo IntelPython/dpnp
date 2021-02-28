@@ -6,7 +6,7 @@ var class_d_p_n_p___u_s_m__iterator =
     [ "reference", "class_d_p_n_p___u_s_m__iterator.html#abfafba55af4f4de1bfa9553fca8340a3", null ],
     [ "size_type", "class_d_p_n_p___u_s_m__iterator.html#a86e02efbeb6e45506c16bf15eb0debea", null ],
     [ "value_type", "class_d_p_n_p___u_s_m__iterator.html#a820052ee7cdb89cebb6ea390e76ef4bd", null ],
-    [ "DPNP_USM_iterator", "class_d_p_n_p___u_s_m__iterator.html#ad170675b772448cd02d4666bf6a72631", null ],
+    [ "DPNP_USM_iterator", "class_d_p_n_p___u_s_m__iterator.html#a8c3aaadf0a32b284639b290a115594c4", null ],
     [ "DPNP_USM_iterator", "class_d_p_n_p___u_s_m__iterator.html#a75b5f77d2572ee3c20ef12d92257e400", null ],
     [ "operator!=", "class_d_p_n_p___u_s_m__iterator.html#af3fe30f6ecac19b44ba6fcf7ed90ca39", null ],
     [ "operator*", "class_d_p_n_p___u_s_m__iterator.html#af98b21e54c3747c24db9f582b7dd5abb", null ],
@@ -16,5 +16,6 @@ var class_d_p_n_p___u_s_m__iterator =
     [ "operator->", "class_d_p_n_p___u_s_m__iterator.html#ae08dceb63e40216316c5a69827bbc271", null ],
     [ "operator<", "class_d_p_n_p___u_s_m__iterator.html#a6d06dac6e84f3af9f6f1e9aa7cdf8e9a", null ],
     [ "operator==", "class_d_p_n_p___u_s_m__iterator.html#afdae181ca46f0cdc1ff41e114b8c5384", null ],
+    [ "operator[]", "class_d_p_n_p___u_s_m__iterator.html#ac18bdc70742d0d9309964e561d097c27", null ],
     [ "operator<<", "class_d_p_n_p___u_s_m__iterator.html#ac842925181d9da0b095b9aeec7653d05", null ]
 ];

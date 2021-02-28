@@ -121,9 +121,9 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>size_type</b> = size
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ad170675b772448cd02d4666bf6a72631"><td class="memItemLeft" align="right" valign="top"><a id="ad170675b772448cd02d4666bf6a72631"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>DPNP_USM_iterator</b> (pointer __ptr, bool __axis_use=false, size_type __axis=0, const size_type *__stride=nullptr)</td></tr>
-<tr class="separator:ad170675b772448cd02d4666bf6a72631"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c3aaadf0a32b284639b290a115594c4"><td class="memItemLeft" align="right" valign="top"><a id="a8c3aaadf0a32b284639b290a115594c4"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>DPNP_USM_iterator</b> (pointer __base_ptr, size_type __id, const size_type *__shape_stride=nullptr, const size_type *__axes_stride=nullptr, size_type __shape_size=0)</td></tr>
+<tr class="separator:a8c3aaadf0a32b284639b290a115594c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af98b21e54c3747c24db9f582b7dd5abb"><td class="memItemLeft" align="right" valign="top"><a id="af98b21e54c3747c24db9f582b7dd5abb"></a>
 reference&#160;</td><td class="memItemRight" valign="bottom"><b>operator*</b> () const</td></tr>
 <tr class="separator:af98b21e54c3747c24db9f582b7dd5abb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -147,6 +147,9 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator!=</b> (const
 <tr class="memitem:a6d06dac6e84f3af9f6f1e9aa7cdf8e9a"><td class="memItemLeft" align="right" valign="top"><a id="a6d06dac6e84f3af9f6f1e9aa7cdf8e9a"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;</b> (const <a class="el" href="class_d_p_n_p___u_s_m__iterator.html">DPNP_USM_iterator</a> &amp;__rhs) const</td></tr>
 <tr class="separator:a6d06dac6e84f3af9f6f1e9aa7cdf8e9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac18bdc70742d0d9309964e561d097c27"><td class="memItemLeft" align="right" valign="top"><a id="ac18bdc70742d0d9309964e561d097c27"></a>
+reference&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (size_type __n) const</td></tr>
+<tr class="separator:ac18bdc70742d0d9309964e561d097c27"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a83533a6b6e3d2eec645cc44e3e31c18e"><td class="memItemLeft" align="right" valign="top"><a id="a83533a6b6e3d2eec645cc44e3e31c18e"></a>
 difference_type&#160;</td><td class="memItemRight" valign="bottom"><b>operator-</b> (const <a class="el" href="class_d_p_n_p___u_s_m__iterator.html">DPNP_USM_iterator</a> &amp;__rhs) const</td></tr>
 <tr class="separator:a83533a6b6e3d2eec645cc44e3e31c18e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -155,7 +158,7 @@ difference_type&#160;</td><td class="memItemRight" valign="bottom"><b>operator-<
 Friends</h2></td></tr>
 <tr class="memitem:ac842925181d9da0b095b9aeec7653d05"><td class="memItemLeft" align="right" valign="top"><a id="ac842925181d9da0b095b9aeec7653d05"></a>
 std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_p_n_p___u_s_m__iterator.html#ac842925181d9da0b095b9aeec7653d05">operator&lt;&lt;</a> (std::ostream &amp;__out, const <a class="el" href="class_d_p_n_p___u_s_m__iterator.html">DPNP_USM_iterator</a> &amp;__it)</td></tr>
-<tr class="memdesc:ac842925181d9da0b095b9aeec7653d05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Operator needs to print this container in human readable form in error reporting. <br /></td></tr>
+<tr class="memdesc:ac842925181d9da0b095b9aeec7653d05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print this container in human readable form in error reporting. <br /></td></tr>
 <tr class="separator:ac842925181d9da0b095b9aeec7653d05"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
