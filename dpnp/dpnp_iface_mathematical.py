@@ -1421,10 +1421,6 @@ def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, where
             pass
         elif out is not None and not isinstance(out, dparray):
             pass
-        elif axis is not None and not dpnp.isscalar(axis):
-            pass
-        elif initial is not None:
-            pass
         elif where is not True:
             pass
         else:
