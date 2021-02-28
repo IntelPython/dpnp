@@ -239,6 +239,17 @@ def test_put_along_axis1():
         numpy.testing.assert_array_equal(a, ai)
 
 
+def test_put_along_axis2():
+    a = numpy.arange(64).reshape(4, 4, 4)
+    ai = dpnp.array(a)
+    ind_r = numpy.array([[[3, 0, 2, 1]]])
+    ind_r_i = dpnp.array(ind_r)
+    for axis in range(3):
+        numpy.put_along_axis(a, ind_r, [100, 200, 300, 400], axis)
+        dpnp.put_along_axis(ai, ind_r_i, [100, 200, 300, 400], axis)
+        numpy.testing.assert_array_equal(a, ai)
+
+
 @pytest.mark.parametrize("vals",
                          [[100, 200]],
                          ids=['[100, 200]'])
