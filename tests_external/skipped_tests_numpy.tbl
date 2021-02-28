@@ -2354,7 +2354,6 @@ tests/test_ufunc.py::TestUfunc::test_struct_ufunc
 tests/test_ufunc.py::TestUfunc::test_structured_equal
 tests/test_ufunc.py::TestUfunc::test_sum
 tests/test_ufunc.py::TestUfunc::test_sum_complex
-tests/test_ufunc.py::TestUfunc::test_sum_initial
 tests/test_ufunc.py::TestUfunc::test_sum_stability
 tests/test_ufunc.py::TestUfunc::test_sum_where
 tests/test_ufunc.py::TestUfunc::test_true_divide

@@ -64,7 +64,7 @@ struct AxesNormalization : public ::testing::TestWithParam<AxesParameters>
     };
 };
 
-TEST_P(AxesNormalization, cases)
+TEST_P(AxesNormalization, get_validated_axes)
 {
     const AxesParameters& param = GetParam();
     vector<size_t> result = get_validated_axes(param.axes, param.shape_size, param.duplications);
@@ -84,5 +84,6 @@ INSTANTIATE_TEST_SUITE_P(TestUtilsAxesNormalization,
                                          AxesParameters{{-1, -2, -3, -4}, 4, false, {3, 2, 1, 0}},
                                          AxesParameters{{}, 0, true, {}},
                                          AxesParameters{{}, 0, false, {}},
-                                         AxesParameters{
-                                             {}, 2, true, {}}) /*, AxesNormalization::PrintToStringParamName()*/);
+                                         AxesParameters{{}, 2, true, {}})
+                         /*, AxesNormalization::PrintToStringParamName()*/
+);
