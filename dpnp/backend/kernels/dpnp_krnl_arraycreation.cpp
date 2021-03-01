@@ -109,9 +109,8 @@ void dpnp_tri_c(void* result1, const size_t N, const size_t M, const int k)
     for (size_t i = 0; i < N; ++i)
     {
         int val = i + k + 1;
-        int diag_idx_ = (val > 0) ? val : 0;
-        int val_m = M;
-        size_t diag_idx = (val_m < diag_idx_) ? val_m : diag_idx_;
+        size_t diag_idx_ = (val > 0) ? (size_t)val : 0;
+        size_t diag_idx = (M < diag_idx_) ? M : diag_idx_;
 
         for (size_t j = 0; j < diag_idx; ++j)
         {
