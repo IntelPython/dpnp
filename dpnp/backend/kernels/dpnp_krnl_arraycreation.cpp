@@ -124,7 +124,6 @@ void dpnp_zeros_c(void* result, size_t size)
 }
 
 template <typename _DataType>
-void dpnp_tril_c(void* array_in, void* result1, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim)
 void dpnp_tril_c(void* array_in,
                  void* result1,
                  const int k,
