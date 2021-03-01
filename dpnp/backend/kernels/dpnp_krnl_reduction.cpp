@@ -34,6 +34,24 @@
 
 namespace mkl_stats = oneapi::mkl::stats;
 
+template <typename _DataType>
+_DataType* get_array_ptr(const void* __array)
+{
+    void* const_ptr = const_cast<void*>(__array);
+    _DataType* ptr = reinterpret_cast<_DataType*>(const_ptr);
+
+    return ptr;
+}
+
+template <typename _DataType>
+_DataType get_initial_value(const void* __initial)
+{
+    const _DataType* initial_ptr = reinterpret_cast<const _DataType*>(__initial);
+    const _DataType init_val = (initial_ptr == nullptr) ? _DataType{0} : *initial_ptr;
+
+    return init_val;
+}
+
 template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2>
 class dpnp_sum_c_kernel;
 
@@ -54,11 +72,10 @@ void dpnp_sum_c(const void* input_in,
         return;
     }
 
-    const _DataType_output* initial_ptr = reinterpret_cast<const _DataType_output*>(initial);
-    const _DataType_output init = (initial_ptr == nullptr) ? _DataType_output{0} : *initial_ptr;
+    const _DataType_output init = get_initial_value<_DataType_output>(initial);
 
-    _DataType_input* input = reinterpret_cast<_DataType_input*>(const_cast<void*>(input_in));
-    _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
+    _DataType_input* input = get_array_ptr<_DataType_input>(input_in);
+    _DataType_output* result = get_array_ptr<_DataType_output>(result_out);
 
     if (!input_shape && !input_shape_ndim)
     { // it is a scalar
@@ -87,11 +104,7 @@ void dpnp_sum_c(const void* input_in,
     }
 
     DPNPC_id<_DataType_input> input_it(input, input_shape, input_shape_ndim);
-    if ((axes != nullptr) && (axes_ndim > 0))
-    {
-        const std::vector<long> axes_vec(axes, axes + axes_ndim);
-        input_it.set_axes(axes_vec);
-    }
+    input_it.set_axes(axes, axes_ndim);
 
     const size_t output_size = input_it.get_output_size();
     auto policy =
