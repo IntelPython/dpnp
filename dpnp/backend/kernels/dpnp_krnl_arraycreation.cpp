@@ -64,7 +64,8 @@ void dpnp_arange_c(size_t start, size_t step, void* result1, size_t size)
 }
 
 template <typename _DataType>
-void dpnp_diag_c(void* v_in, void* result1, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim)
+void dpnp_diag_c(
+    void* v_in, void* result1, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim)
 {
     _DataType* v = reinterpret_cast<_DataType*>(v_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
@@ -91,7 +92,6 @@ void dpnp_diag_c(void* v_in, void* result1, const int k, size_t* shape, size_t* 
     return;
 }
 
-
 template <typename _KernelNameSpecialization>
 class dpnp_full_c_kernel;
 
@@ -102,7 +102,13 @@ void dpnp_full_c(void* array_in, void* result, const size_t size)
 }
 
 template <typename _DataType>
-void dpnp_tril_c(void* array_in, void* result1, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim)
+void dpnp_tril_c(void* array_in,
+                 void* result1,
+                 const int k,
+                 size_t* shape,
+                 size_t* res_shape,
+                 const size_t ndim,
+                 const size_t res_ndim)
 {
     _DataType* array_m = reinterpret_cast<_DataType*>(array_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);

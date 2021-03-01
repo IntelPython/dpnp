@@ -280,7 +280,14 @@ INP_DLLEXPORT void
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_put_along_axis_c(void* arr_in, long* indices_in, void* values_in, size_t axis, const size_t* shape, size_t ndim, size_t size_indices, size_t values_size);
+INP_DLLEXPORT void dpnp_put_along_axis_c(void* arr_in,
+                                         long* indices_in,
+                                         void* values_in,
+                                         size_t axis,
+                                         const size_t* shape,
+                                         size_t ndim,
+                                         size_t size_indices,
+                                         size_t values_size);
 
 /**
  * @ingroup BACKEND_API
@@ -563,7 +570,8 @@ INP_DLLEXPORT void dpnp_take_c(void* array, void* indices, void* result, size_t 
  * @param [in]  res_ndim   Number of elements in res_shape.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_tril_c(void* array, void* result, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim);
+INP_DLLEXPORT void dpnp_tril_c(
+    void* array, void* result, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim);
 
 /**
  * @ingroup BACKEND_API
