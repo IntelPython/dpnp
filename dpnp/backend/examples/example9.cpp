@@ -54,7 +54,7 @@ int main(int, char**)
         result_verification += i;
     }
 
-    dpnp_sum_c<long, long>(array, size, &result, NULL, 0, NULL, 0, NULL, NULL);
+    dpnp_sum_c<long, long>(array, &result, &size, 1, NULL, 0, NULL, NULL);
 
     std::cout << "SUM() value: " << result << " verification value: " << result_verification << std::endl;
 
