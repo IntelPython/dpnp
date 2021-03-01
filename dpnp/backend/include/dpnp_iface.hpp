@@ -660,6 +660,16 @@ INP_DLLEXPORT void dpnp_modf_c(void* array1_in, void* result1_out, void* result2
 
 /**
  * @ingroup BACKEND_API
+ * @brief Implementation of ones function
+ *
+ * @param [out] result    Output array.
+ * @param [in]  size      Number of elements in the output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_ones_c(void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief remainder function.
  *
  * @param [in]  array1_in    Input array 1.
@@ -717,5 +727,15 @@ INP_DLLEXPORT void dpnp_elemwise_transpose_c(void* array1_in,
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
 INP_DLLEXPORT void dpnp_trapz_c(
     const void* array1_in, const void* array2_in, void* result1, double dx, size_t array1_size, size_t array2_size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief Implementation of zeros function
+ *
+ * @param [out] result    Output array.
+ * @param [in]  size      Number of elements in the output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_zeros_c(void* result, size_t size);
 
 #endif // BACKEND_IFACE_H

@@ -291,6 +291,26 @@ cpdef dpnp_DPNPFuncType_to_dtype(size_t type):
         checker_throw_type_error("dpnp_DPNPFuncType_to_dtype", type)
 
 
+cdef dparray call_fptr_1out(DPNPFuncName fptr_name, result_shape, result_dtype):
+
+    # Convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType dtype_in = dpnp_dtype_to_DPNPFuncType(result_dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, dtype_in, dtype_in)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+
+    # Create result array with type given by FPTR data
+    cdef dparray result = dparray(result_shape, dtype=result_type)
+
+    cdef fptr_1out_t func = <fptr_1out_t > kernel_data.ptr
+    # Call FPTR function
+    func(result.get_data(), result.size)
+
+    return result
+
+
 cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shape_type result_shape):
 
     """ Convert string type names (dparray.dtype) to C enum DPNPFuncType """

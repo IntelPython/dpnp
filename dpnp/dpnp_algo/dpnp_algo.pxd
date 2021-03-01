@@ -101,6 +101,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_MINIMUM
         DPNP_FN_MODF
         DPNP_FN_MULTIPLY
+        DPNP_FN_ONES
         DPNP_FN_PLACE
         DPNP_FN_POWER
         DPNP_FN_PROD
@@ -164,6 +165,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_TRIL
         DPNP_FN_TRUNC
         DPNP_FN_VAR
+        DPNP_FN_ZEROS
 
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
     cdef enum DPNPFuncType "DPNPFuncType":
@@ -200,11 +202,13 @@ cdef extern from "dpnp_iface.hpp":
 
 
 # C function pointer to the C library template functions
+ctypedef void(*fptr_1out_t)(void *, size_t)
 ctypedef void(*fptr_1in_1out_t)(void * , void * , size_t)
 ctypedef void(*fptr_2in_1out_t)(void * , void*, void*, size_t)
 ctypedef void(*fptr_blas_gemm_2in_1out_t)(void * , void * , void * , size_t, size_t, size_t)
 ctypedef void(*dpnp_reduction_c_t)(const void * , void * , const size_t*, const size_t, const long*, const size_t, const void * , const long*)
 
+cdef dparray call_fptr_1out(DPNPFuncName fptr_name, result_shape, result_dtype)
 cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shape_type result_shape)
 cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, dparray_shape_type result_shape)
 
