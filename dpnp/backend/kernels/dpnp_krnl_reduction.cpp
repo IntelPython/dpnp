@@ -45,7 +45,7 @@ void dpnp_sum_c(const void* input_in,
                 const size_t input_shape_ndim,
                 const long* axes,
                 const size_t axes_ndim,
-                const void* initial,
+                const void* initial, // type must be _DataType_output
                 const long* where)
 {
     (void)where; // avoid warning unused variable
@@ -60,13 +60,14 @@ void dpnp_sum_c(const void* input_in,
         return;
     }
 
-    const _DataType_input* initial_ptr = reinterpret_cast<const _DataType_input*>(initial);
-    const _DataType_input init = (initial_ptr == nullptr) ? _DataType_input{0} : *initial_ptr;
+    const _DataType_output* initial_ptr = reinterpret_cast<const _DataType_output*>(initial);
+    const _DataType_output init = (initial_ptr == nullptr) ? _DataType_output{0} : *initial_ptr;
 
     _DataType_input* input = reinterpret_cast<_DataType_input*>(const_cast<void*>(input_in));
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
 
-    if constexpr ((std::is_same<_DataType_input, double>::value || std::is_same<_DataType_input, float>::value) &&
+    if constexpr ((std::is_same<_DataType_input, double>::value
+                   /* "numerically different results" || std::is_same<_DataType_input, float>::value */) &&
                   std::is_same<_DataType_input, _DataType_output>::value)
     {
         if (axes_ndim < 1)
@@ -92,7 +93,8 @@ void dpnp_sum_c(const void* input_in,
     DPNPC_id<_DataType_input> input_it(input, input_shape_vec);
     if ((axes != nullptr) && (axes_ndim > 0))
     {
-        input_it.set_axis(*axes);
+        const std::vector<long> axes_vec(axes, axes + axes_ndim);
+        input_it.set_axes(axes_vec);
     }
 
     const size_t output_size = input_it.get_output_size();
@@ -100,8 +102,9 @@ void dpnp_sum_c(const void* input_in,
         oneapi::dpl::execution::make_device_policy<dpnp_sum_c_kernel<_DataType_input, _DataType_output>>(DPNP_QUEUE);
     for (size_t output_id = 0; output_id < output_size; ++output_id)
     {
-        _DataType_input accumulator =
-            std::reduce(policy, input_it.begin(output_id), input_it.end(output_id), init, std::plus<_DataType_input>());
+        // type of "init" determine internal algorithm accumulator type
+        _DataType_output accumulator = std::reduce(
+            policy, input_it.begin(output_id), input_it.end(output_id), init, std::plus<_DataType_output>());
         policy.queue().wait();
 
         result[output_id] = accumulator;

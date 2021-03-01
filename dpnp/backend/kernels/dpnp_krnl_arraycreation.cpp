@@ -63,6 +63,35 @@ void dpnp_arange_c(size_t start, size_t step, void* result1, size_t size)
     event.wait();
 }
 
+template <typename _DataType>
+void dpnp_diag_c(
+    void* v_in, void* result1, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim)
+{
+    _DataType* v = reinterpret_cast<_DataType*>(v_in);
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    size_t init0 = std::max(0, -k);
+    size_t init1 = std::max(0, k);
+
+    if (ndim == 1)
+    {
+        for (size_t i = 0; i < shape[0]; ++i)
+        {
+            size_t ind = (init0 + i) * res_shape[1] + init1 + i;
+            result[ind] = v[i];
+        }
+    }
+    else
+    {
+        for (size_t i = 0; i < res_shape[0]; ++i)
+        {
+            size_t ind = (init0 + i) * shape[1] + init1 + i;
+            result[i] = v[ind];
+        }
+    }
+    return;
+}
+
 template <typename _KernelNameSpecialization>
 class dpnp_full_c_kernel;
 
@@ -73,7 +102,13 @@ void dpnp_full_c(void* array_in, void* result, const size_t size)
 }
 
 template <typename _DataType>
-void dpnp_tril_c(void* array_in, void* result1, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim)
+void dpnp_tril_c(void* array_in,
+                 void* result1,
+                 const int k,
+                 size_t* shape,
+                 size_t* res_shape,
+                 const size_t ndim,
+                 const size_t res_ndim)
 {
     _DataType* array_m = reinterpret_cast<_DataType*>(array_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
@@ -236,6 +271,11 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_ARANGE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_arange_c<long>};
     fmap[DPNPFuncName::DPNP_FN_ARANGE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_arange_c<float>};
     fmap[DPNPFuncName::DPNP_FN_ARANGE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_arange_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_DIAG][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_diag_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_DIAG][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_diag_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_DIAG][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_diag_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_DIAG][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_diag_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_FULL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_full_c<int>};
     fmap[DPNPFuncName::DPNP_FN_FULL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_full_c<long>};

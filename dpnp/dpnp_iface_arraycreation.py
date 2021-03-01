@@ -387,6 +387,10 @@ def diag(v, k=0):
     if not use_origin_backend(v):
         if not isinstance(v, dparray):
             pass
+        elif not isinstance(k, int):
+            pass
+        elif v.ndim != 1 and v.ndim != 2:
+            pass
         else:
             return dpnp_diag(v, k)
 
