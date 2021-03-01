@@ -77,6 +77,7 @@ var group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i =
       [ "DPNP_FN_MINIMUM", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558abbe2672040e69d7d9962201d1e5f1eb7", null ],
       [ "DPNP_FN_MODF", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558addd017f3f6c6753bc796a1ee5e9e4dcb", null ],
       [ "DPNP_FN_MULTIPLY", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a051aaed58a292f8a66357f883923973b", null ],
+      [ "DPNP_FN_ONES", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ada4b07c03838ec240fe821748c44601d", null ],
       [ "DPNP_FN_PLACE", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558aa08964ad570c09a64aaf6a7fdfb7df88", null ],
       [ "DPNP_FN_POWER", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a1ee2503a88e2f0fb7735e6f2b2390ed6", null ],
       [ "DPNP_FN_PROD", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a72a62985c0bb7a38d58d9a8ab34ab19c", null ],
@@ -140,6 +141,7 @@ var group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i =
       [ "DPNP_FN_TRIL", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ac357a9597166261dbfb2f9a720806e7c", null ],
       [ "DPNP_FN_TRUNC", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a13bde9c6fe6a1d7c4eedcaa50861010f", null ],
       [ "DPNP_FN_VAR", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a17750205304e246fad783e631614cf48", null ],
+      [ "DPNP_FN_ZEROS", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a51216d8cda7e009964d71ddd8c7fbb1d", null ],
       [ "DPNP_FN_LAST", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558aadc54195a4c41ac24ed1aa10f8e6f6a4", null ]
     ] ],
     [ "DPNPFuncType", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gaec54569b58e937e84099479f078bce15", [
