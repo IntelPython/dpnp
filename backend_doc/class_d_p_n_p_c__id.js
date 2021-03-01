@@ -12,6 +12,7 @@ var class_d_p_n_p_c__id =
     [ "end", "class_d_p_n_p_c__id.html#aa70a960886549f3d75137ac573a4c828", null ],
     [ "get_output_size", "class_d_p_n_p_c__id.html#a79168b2adbe07a8099747374bba2c483", null ],
     [ "operator[]", "class_d_p_n_p_c__id.html#a2e98849be3b71da7efdfbccdcb26c010", null ],
+    [ "set_axes", "class_d_p_n_p_c__id.html#ad295512c675b72b74825e4dbdd7054b3", null ],
     [ "set_axes", "group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga86f1f123df6b60b57542124fed792572", null ],
     [ "set_axis", "group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga743bcd47e85667e5f238b99478c54d0f", null ]
 ];

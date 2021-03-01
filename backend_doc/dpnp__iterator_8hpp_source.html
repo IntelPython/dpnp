@@ -319,168 +319,174 @@ $(document).ready(function(){initNavTree('dpnp__iterator_8hpp_source.html',''); 
 <div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160; </div>
 <div class="line"><a name="l00269"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga743bcd47e85667e5f238b99478c54d0f">  269</a></span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga743bcd47e85667e5f238b99478c54d0f">set_axis</a>(<span class="keywordtype">long</span> __axis)</div>
 <div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;    {</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;        <a class="code" href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga86f1f123df6b60b57542124fed792572">set_axes</a>({__axis});</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;        set_axes({__axis});</div>
 <div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;    }</div>
 <div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160; </div>
-<div class="line"><a name="l00291"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga86f1f123df6b60b57542124fed792572">  291</a></span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga86f1f123df6b60b57542124fed792572">set_axes</a>(<span class="keyword">const</span> std::vector&lt;long&gt;&amp; __axes)</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;    {</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;        <span class="keywordflow">if</span> (!__axes.empty() &amp;&amp; input_shape_size)</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;        {</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;            axes = get_validated_axes(__axes, input_shape_size);</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;            axis_use = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160; </div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;            output_shape_size = input_shape_size - axes.size();</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;            <span class="keyword">const</span> size_type output_shape_size_in_bytes = output_shape_size * <span class="keyword">sizeof</span>(size_type);</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160; </div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;            iteration_shape_size = axes.size();</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;            <span class="keyword">const</span> size_type iteration_shape_size_in_bytes = iteration_shape_size * <span class="keyword">sizeof</span>(size_type);</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;            std::vector&lt;size_type&gt; iteration_shape;</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160; </div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;            output_shape = <span class="keyword">reinterpret_cast&lt;</span>size_type*<span class="keyword">&gt;</span>(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gaa223e6f3142ee696936bf151d7cc5cf0">dpnp_memory_alloc_c</a>(output_shape_size_in_bytes));</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;            size_type* output_shape_it = output_shape;</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;            <span class="keywordflow">for</span> (size_type i = 0; i &lt; input_shape_size; ++i)</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;            {</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;                <span class="keywordflow">if</span> (std::find(axes.begin(), axes.end(), i) == axes.end())</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;                {</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;                    *output_shape_it = input_shape[i];</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;                    ++output_shape_it;</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;                }</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;            }</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160; </div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;            output_size = std::accumulate(</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;                output_shape, output_shape + output_shape_size, size_type(1), std::multiplies&lt;size_type&gt;());</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160; </div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;            output_shape_strides = <span class="keyword">reinterpret_cast&lt;</span>size_type*<span class="keyword">&gt;</span>(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gaa223e6f3142ee696936bf151d7cc5cf0">dpnp_memory_alloc_c</a>(output_shape_size_in_bytes));</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;            get_shape_offsets_inkernel&lt;size_type&gt;(output_shape, output_shape_size, output_shape_strides);</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">void</span> set_axes(<span class="keyword">const</span> <span class="keywordtype">long</span>* __axes, <span class="keyword">const</span> <span class="keywordtype">size_t</span> axes_ndim)</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;    {</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;        <span class="keyword">const</span> std::vector&lt;long&gt; axes_vec(__axes, __axes + axes_ndim);</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;        set_axes(axes_vec);</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;    }</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160; </div>
+<div class="line"><a name="l00297"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga86f1f123df6b60b57542124fed792572">  297</a></span>&#160;    <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga86f1f123df6b60b57542124fed792572">set_axes</a>(<span class="keyword">const</span> std::vector&lt;long&gt;&amp; __axes)</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;    {</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;        <span class="keywordflow">if</span> (!__axes.empty() &amp;&amp; input_shape_size)</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;        {</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;            axes = get_validated_axes(__axes, input_shape_size);</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;            axis_use = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160; </div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;            output_shape_size = input_shape_size - axes.size();</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;            <span class="keyword">const</span> size_type output_shape_size_in_bytes = output_shape_size * <span class="keyword">sizeof</span>(size_type);</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160; </div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;            iteration_shape_size = axes.size();</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;            <span class="keyword">const</span> size_type iteration_shape_size_in_bytes = iteration_shape_size * <span class="keyword">sizeof</span>(size_type);</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;            std::vector&lt;size_type&gt; iteration_shape;</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160; </div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;            output_shape = <span class="keyword">reinterpret_cast&lt;</span>size_type*<span class="keyword">&gt;</span>(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gaa223e6f3142ee696936bf151d7cc5cf0">dpnp_memory_alloc_c</a>(output_shape_size_in_bytes));</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;            size_type* output_shape_it = output_shape;</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;            <span class="keywordflow">for</span> (size_type i = 0; i &lt; input_shape_size; ++i)</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;            {</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;                <span class="keywordflow">if</span> (std::find(axes.begin(), axes.end(), i) == axes.end())</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;                {</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;                    *output_shape_it = input_shape[i];</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;                    ++output_shape_it;</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;                }</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;            }</div>
 <div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160; </div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;            iteration_size = 1;</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;            iteration_shape.reserve(iteration_shape_size);</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; axis : axes)</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;            {</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;                <span class="keyword">const</span> size_type axis_dim = input_shape[axis];</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;                iteration_shape.push_back(axis_dim);</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;                iteration_size *= axis_dim;</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;            }</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160; </div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;            iteration_shape_strides = <span class="keyword">reinterpret_cast&lt;</span>size_type*<span class="keyword">&gt;</span>(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gaa223e6f3142ee696936bf151d7cc5cf0">dpnp_memory_alloc_c</a>(iteration_shape_size_in_bytes));</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;            get_shape_offsets_inkernel&lt;size_type&gt;(</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;                iteration_shape.data(), iteration_shape.size(), iteration_shape_strides);</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160; </div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;            axes_shape_strides = <span class="keyword">reinterpret_cast&lt;</span>size_type*<span class="keyword">&gt;</span>(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gaa223e6f3142ee696936bf151d7cc5cf0">dpnp_memory_alloc_c</a>(iteration_shape_size_in_bytes));</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; iteration_shape_size; ++i)</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;            {</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;                axes_shape_strides[i] = input_shape_strides[axes[i]];</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;            }</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;            output_size = std::accumulate(</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;                output_shape, output_shape + output_shape_size, size_type(1), std::multiplies&lt;size_type&gt;());</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160; </div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;            output_shape_strides = <span class="keyword">reinterpret_cast&lt;</span>size_type*<span class="keyword">&gt;</span>(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gaa223e6f3142ee696936bf151d7cc5cf0">dpnp_memory_alloc_c</a>(output_shape_size_in_bytes));</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;            get_shape_offsets_inkernel&lt;size_type&gt;(output_shape, output_shape_size, output_shape_strides);</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160; </div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;            iteration_size = 1;</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;            iteration_shape.reserve(iteration_shape_size);</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; axis : axes)</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;            {</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;                <span class="keyword">const</span> size_type axis_dim = input_shape[axis];</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;                iteration_shape.push_back(axis_dim);</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;                iteration_size *= axis_dim;</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;            }</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160; </div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;            iteration_shape_strides = <span class="keyword">reinterpret_cast&lt;</span>size_type*<span class="keyword">&gt;</span>(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gaa223e6f3142ee696936bf151d7cc5cf0">dpnp_memory_alloc_c</a>(iteration_shape_size_in_bytes));</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;            get_shape_offsets_inkernel&lt;size_type&gt;(</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;                iteration_shape.data(), iteration_shape.size(), iteration_shape_strides);</div>
 <div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160; </div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;            <span class="comment">// make thread private storage for each shape by multiplying memory</span></div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;            sycl_output_xyz =</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;                <span class="keyword">reinterpret_cast&lt;</span>size_type*<span class="keyword">&gt;</span>(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gaa223e6f3142ee696936bf151d7cc5cf0">dpnp_memory_alloc_c</a>(output_size * output_shape_size_in_bytes));</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;        }</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;    }</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;            axes_shape_strides = <span class="keyword">reinterpret_cast&lt;</span>size_type*<span class="keyword">&gt;</span>(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gaa223e6f3142ee696936bf151d7cc5cf0">dpnp_memory_alloc_c</a>(iteration_shape_size_in_bytes));</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; iteration_shape_size; ++i)</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;            {</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;                axes_shape_strides[i] = input_shape_strides[axes[i]];</div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;            }</div>
 <div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160; </div>
-<div class="line"><a name="l00348"></a><span class="lineno"><a class="line" href="class_d_p_n_p_c__id.html#a1e1427181e175dacfb37d3a042d4876f">  348</a></span>&#160;    <span class="keyword">inline</span> <a class="code" href="class_d_p_n_p___u_s_m__iterator.html">iterator</a> <a class="code" href="class_d_p_n_p_c__id.html#a1e1427181e175dacfb37d3a042d4876f">begin</a>(size_type output_global_id = 0)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="class_d_p_n_p___u_s_m__iterator.html">iterator</a>(data + get_input_begin_offset(output_global_id),</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;                        0,</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;                        iteration_shape_strides,</div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;                        axes_shape_strides,</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;                        iteration_shape_size);</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;    }</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160; </div>
-<div class="line"><a name="l00358"></a><span class="lineno"><a class="line" href="class_d_p_n_p_c__id.html#aa70a960886549f3d75137ac573a4c828">  358</a></span>&#160;    <span class="keyword">inline</span> <a class="code" href="class_d_p_n_p___u_s_m__iterator.html">iterator</a> <a class="code" href="class_d_p_n_p_c__id.html#aa70a960886549f3d75137ac573a4c828">end</a>(size_type output_global_id = 0)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;        <span class="comment">// TODO it is better to get begin() iterator as a parameter</span></div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160; </div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="class_d_p_n_p___u_s_m__iterator.html">iterator</a>(data + get_input_begin_offset(output_global_id),</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;                        get_iteration_size(),</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;                        iteration_shape_strides,</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;                        axes_shape_strides,</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;                        iteration_shape_size);</div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;    }</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160; </div>
-<div class="line"><a name="l00370"></a><span class="lineno"><a class="line" href="class_d_p_n_p_c__id.html#a2e98849be3b71da7efdfbccdcb26c010">  370</a></span>&#160;    <span class="keyword">inline</span> reference <a class="code" href="class_d_p_n_p_c__id.html#a2e98849be3b71da7efdfbccdcb26c010">operator[]</a>(size_type __n)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;        <span class="keyword">const</span> <a class="code" href="class_d_p_n_p___u_s_m__iterator.html">iterator</a> it = <a class="code" href="class_d_p_n_p_c__id.html#a1e1427181e175dacfb37d3a042d4876f">begin</a>();</div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;        <span class="keywordflow">return</span> it[__n];</div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;    }</div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160; </div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;    size_type get_input_begin_offset(size_type output_global_id)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;        size_type input_global_id = 0;</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;        <span class="keywordflow">if</span> (axis_use)</div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;        {</div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;            assert(output_global_id &lt; output_size);</div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160; </div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;            <span class="comment">// use thread private storage</span></div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;            size_type* sycl_output_xyz_thread = sycl_output_xyz + (output_global_id * output_shape_size);</div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160; </div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;            <a class="code" href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga99a92e14994c6506a087f9da3a4caa61">get_xyz_by_id_inkernel</a>(output_global_id, output_shape_strides, output_shape_size, sycl_output_xyz_thread);</div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160; </div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> iit = 0, oit = 0; iit &lt; input_shape_size; ++iit)</div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;            {</div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;                <span class="keywordflow">if</span> (std::find(axes.begin(), axes.end(), iit) == axes.end())</div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;                {</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;                    input_global_id += (sycl_output_xyz_thread[oit] * input_shape_strides[iit]);</div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;                    ++oit;</div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;                }</div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;            }</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;        }</div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160; </div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;        <span class="keywordflow">return</span> input_global_id;</div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;    }</div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160; </div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;    size_type get_iteration_size()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;        <span class="keywordflow">return</span> iteration_size;</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;            <span class="comment">// make thread private storage for each shape by multiplying memory</span></div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;            sycl_output_xyz =</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;                <span class="keyword">reinterpret_cast&lt;</span>size_type*<span class="keyword">&gt;</span>(<a class="code" href="group___b_a_c_k_e_n_d___a_p_i.html#gaa223e6f3142ee696936bf151d7cc5cf0">dpnp_memory_alloc_c</a>(output_size * output_shape_size_in_bytes));</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;        }</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;    }</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160; </div>
+<div class="line"><a name="l00354"></a><span class="lineno"><a class="line" href="class_d_p_n_p_c__id.html#a1e1427181e175dacfb37d3a042d4876f">  354</a></span>&#160;    <span class="keyword">inline</span> <a class="code" href="class_d_p_n_p___u_s_m__iterator.html">iterator</a> <a class="code" href="class_d_p_n_p_c__id.html#a1e1427181e175dacfb37d3a042d4876f">begin</a>(size_type output_global_id = 0)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="class_d_p_n_p___u_s_m__iterator.html">iterator</a>(data + get_input_begin_offset(output_global_id),</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;                        0,</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;                        iteration_shape_strides,</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;                        axes_shape_strides,</div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;                        iteration_shape_size);</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;    }</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160; </div>
+<div class="line"><a name="l00364"></a><span class="lineno"><a class="line" href="class_d_p_n_p_c__id.html#aa70a960886549f3d75137ac573a4c828">  364</a></span>&#160;    <span class="keyword">inline</span> <a class="code" href="class_d_p_n_p___u_s_m__iterator.html">iterator</a> <a class="code" href="class_d_p_n_p_c__id.html#aa70a960886549f3d75137ac573a4c828">end</a>(size_type output_global_id = 0)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;        <span class="comment">// TODO it is better to get begin() iterator as a parameter</span></div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160; </div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="class_d_p_n_p___u_s_m__iterator.html">iterator</a>(data + get_input_begin_offset(output_global_id),</div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;                        get_iteration_size(),</div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;                        iteration_shape_strides,</div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;                        axes_shape_strides,</div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;                        iteration_shape_size);</div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;    }</div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160; </div>
+<div class="line"><a name="l00376"></a><span class="lineno"><a class="line" href="class_d_p_n_p_c__id.html#a2e98849be3b71da7efdfbccdcb26c010">  376</a></span>&#160;    <span class="keyword">inline</span> reference <a class="code" href="class_d_p_n_p_c__id.html#a2e98849be3b71da7efdfbccdcb26c010">operator[]</a>(size_type __n)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;        <span class="keyword">const</span> <a class="code" href="class_d_p_n_p___u_s_m__iterator.html">iterator</a> it = <a class="code" href="class_d_p_n_p_c__id.html#a1e1427181e175dacfb37d3a042d4876f">begin</a>();</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;        <span class="keywordflow">return</span> it[__n];</div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;    }</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160; </div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;    size_type get_input_begin_offset(size_type output_global_id)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;        size_type input_global_id = 0;</div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;        <span class="keywordflow">if</span> (axis_use)</div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;        {</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;            assert(output_global_id &lt; output_size);</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160; </div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;            <span class="comment">// use thread private storage</span></div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;            size_type* sycl_output_xyz_thread = sycl_output_xyz + (output_global_id * output_shape_size);</div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160; </div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;            <a class="code" href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga99a92e14994c6506a087f9da3a4caa61">get_xyz_by_id_inkernel</a>(output_global_id, output_shape_strides, output_shape_size, sycl_output_xyz_thread);</div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160; </div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> iit = 0, oit = 0; iit &lt; input_shape_size; ++iit)</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;            {</div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;                <span class="keywordflow">if</span> (std::find(axes.begin(), axes.end(), iit) == axes.end())</div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;                {</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;                    input_global_id += (sycl_output_xyz_thread[oit] * input_shape_strides[iit]);</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;                    ++oit;</div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;                }</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;            }</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;        }</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160; </div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;        <span class="keywordflow">return</span> input_global_id;</div>
 <div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;    }</div>
 <div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160; </div>
-<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;    <span class="keywordtype">void</span> free_memory()</div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;    {</div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;        dpnp_memory_free_c(input_shape);</div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;        dpnp_memory_free_c(input_shape_strides);</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;        dpnp_memory_free_c(output_shape);</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;        dpnp_memory_free_c(output_shape_strides);</div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;        dpnp_memory_free_c(iteration_shape_strides);</div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;        dpnp_memory_free_c(axes_shape_strides);</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;        dpnp_memory_free_c(sycl_output_xyz);</div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;    }</div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160; </div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;    pointer data = <span class="keyword">nullptr</span>;                   </div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;    size_type input_size = size_type{};       </div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;    size_type* input_shape = <span class="keyword">nullptr</span>;         </div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;    size_type input_shape_size = size_type{}; </div>
-<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;    size_type* input_shape_strides = <span class="keyword">nullptr</span>; </div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;    std::vector&lt;size_type&gt; axes; </div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;    <span class="keywordtype">bool</span> axis_use = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160; </div>
-<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;    size_type output_size = size_type{};       </div>
-<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;    size_type* output_shape = <span class="keyword">nullptr</span>;         </div>
-<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;    size_type output_shape_size = size_type{}; </div>
-<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;    size_type* output_shape_strides = <span class="keyword">nullptr</span>; </div>
-<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;    size_type iteration_size = size_type{}; </div>
-<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;    size_type iteration_shape_size = size_type{};</div>
-<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;    size_type* iteration_shape_strides = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;    size_type* axes_shape_strides = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160; </div>
-<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;    <span class="comment">// data allocated to use inside SYCL kernels</span></div>
-<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;    size_type* sycl_output_xyz = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;};</div>
-<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160; </div>
-<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// DPNP_ITERATOR_H</span></div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;    size_type get_iteration_size()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;        <span class="keywordflow">return</span> iteration_size;</div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;    }</div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160; </div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;    <span class="keywordtype">void</span> free_memory()</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;    {</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;        dpnp_memory_free_c(input_shape);</div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;        dpnp_memory_free_c(input_shape_strides);</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;        dpnp_memory_free_c(output_shape);</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;        dpnp_memory_free_c(output_shape_strides);</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;        dpnp_memory_free_c(iteration_shape_strides);</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;        dpnp_memory_free_c(axes_shape_strides);</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;        dpnp_memory_free_c(sycl_output_xyz);</div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;    }</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160; </div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;    pointer data = <span class="keyword">nullptr</span>;                   </div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;    size_type input_size = size_type{};       </div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;    size_type* input_shape = <span class="keyword">nullptr</span>;         </div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;    size_type input_shape_size = size_type{}; </div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;    size_type* input_shape_strides = <span class="keyword">nullptr</span>; </div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;    std::vector&lt;size_type&gt; axes; </div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;    <span class="keywordtype">bool</span> axis_use = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160; </div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;    size_type output_size = size_type{};       </div>
+<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;    size_type* output_shape = <span class="keyword">nullptr</span>;         </div>
+<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;    size_type output_shape_size = size_type{}; </div>
+<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;    size_type* output_shape_strides = <span class="keyword">nullptr</span>; </div>
+<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;    size_type iteration_size = size_type{}; </div>
+<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;    size_type iteration_shape_size = size_type{};</div>
+<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;    size_type* iteration_shape_strides = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;    size_type* axes_shape_strides = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160; </div>
+<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;    <span class="comment">// data allocated to use inside SYCL kernels</span></div>
+<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;    size_type* sycl_output_xyz = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;};</div>
+<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160; </div>
+<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// DPNP_ITERATOR_H</span></div>
 <div class="ttc" id="aclass_d_p_n_p___u_s_m__iterator_html"><div class="ttname"><a href="class_d_p_n_p___u_s_m__iterator.html">DPNP_USM_iterator</a></div><div class="ttdoc">Iterator for DPNPC_id type.</div><div class="ttdef"><b>Definition:</b> <a href="dpnp__iterator_8hpp_source.html#l00048">dpnp_iterator.hpp:49</a></div></div>
 <div class="ttc" id="aclass_d_p_n_p___u_s_m__iterator_html_a072dbb5c50b38c7ec6d4f67bb2118dbc"><div class="ttname"><a href="class_d_p_n_p___u_s_m__iterator.html#a072dbb5c50b38c7ec6d4f67bb2118dbc">DPNP_USM_iterator::operator++</a></div><div class="ttdeci">DPNP_USM_iterator &amp; operator++()</div><div class="ttdoc">prefix increment</div><div class="ttdef"><b>Definition:</b> <a href="dpnp__iterator_8hpp_source.html#l00084">dpnp_iterator.hpp:84</a></div></div>
 <div class="ttc" id="aclass_d_p_n_p___u_s_m__iterator_html_a8f31f980fbfb90d1e9367438a7351e26"><div class="ttname"><a href="class_d_p_n_p___u_s_m__iterator.html#a8f31f980fbfb90d1e9367438a7351e26">DPNP_USM_iterator::operator++</a></div><div class="ttdeci">DPNP_USM_iterator operator++(int)</div><div class="ttdoc">postfix increment</div><div class="ttdef"><b>Definition:</b> <a href="dpnp__iterator_8hpp_source.html#l00092">dpnp_iterator.hpp:92</a></div></div>
 <div class="ttc" id="aclass_d_p_n_p___u_s_m__iterator_html_ac842925181d9da0b095b9aeec7653d05"><div class="ttname"><a href="class_d_p_n_p___u_s_m__iterator.html#ac842925181d9da0b095b9aeec7653d05">DPNP_USM_iterator::operator&lt;&lt;</a></div><div class="ttdeci">friend std::ostream &amp; operator&lt;&lt;(std::ostream &amp;__out, const DPNP_USM_iterator &amp;__it)</div><div class="ttdoc">Print this container in human readable form in error reporting.</div><div class="ttdef"><b>Definition:</b> <a href="dpnp__iterator_8hpp_source.html#l00132">dpnp_iterator.hpp:132</a></div></div>
 <div class="ttc" id="aclass_d_p_n_p_c__id_html"><div class="ttname"><a href="class_d_p_n_p_c__id.html">DPNPC_id</a></div><div class="ttdoc">Type to keep USM array pointers used in kernels.</div><div class="ttdef"><b>Definition:</b> <a href="dpnp__iterator_8hpp_source.html#l00195">dpnp_iterator.hpp:196</a></div></div>
-<div class="ttc" id="aclass_d_p_n_p_c__id_html_a1e1427181e175dacfb37d3a042d4876f"><div class="ttname"><a href="class_d_p_n_p_c__id.html#a1e1427181e175dacfb37d3a042d4876f">DPNPC_id::begin</a></div><div class="ttdeci">iterator begin(size_type output_global_id=0) const</div><div class="ttdoc">this function is designed for SYCL environment execution</div><div class="ttdef"><b>Definition:</b> <a href="dpnp__iterator_8hpp_source.html#l00348">dpnp_iterator.hpp:348</a></div></div>
-<div class="ttc" id="aclass_d_p_n_p_c__id_html_a2e98849be3b71da7efdfbccdcb26c010"><div class="ttname"><a href="class_d_p_n_p_c__id.html#a2e98849be3b71da7efdfbccdcb26c010">DPNPC_id::operator[]</a></div><div class="ttdeci">reference operator[](size_type __n) const</div><div class="ttdoc">this function is designed for SYCL environment execution</div><div class="ttdef"><b>Definition:</b> <a href="dpnp__iterator_8hpp_source.html#l00370">dpnp_iterator.hpp:370</a></div></div>
+<div class="ttc" id="aclass_d_p_n_p_c__id_html_a1e1427181e175dacfb37d3a042d4876f"><div class="ttname"><a href="class_d_p_n_p_c__id.html#a1e1427181e175dacfb37d3a042d4876f">DPNPC_id::begin</a></div><div class="ttdeci">iterator begin(size_type output_global_id=0) const</div><div class="ttdoc">this function is designed for SYCL environment execution</div><div class="ttdef"><b>Definition:</b> <a href="dpnp__iterator_8hpp_source.html#l00354">dpnp_iterator.hpp:354</a></div></div>
+<div class="ttc" id="aclass_d_p_n_p_c__id_html_a2e98849be3b71da7efdfbccdcb26c010"><div class="ttname"><a href="class_d_p_n_p_c__id.html#a2e98849be3b71da7efdfbccdcb26c010">DPNPC_id::operator[]</a></div><div class="ttdeci">reference operator[](size_type __n) const</div><div class="ttdoc">this function is designed for SYCL environment execution</div><div class="ttdef"><b>Definition:</b> <a href="dpnp__iterator_8hpp_source.html#l00376">dpnp_iterator.hpp:376</a></div></div>
 <div class="ttc" id="aclass_d_p_n_p_c__id_html_a79168b2adbe07a8099747374bba2c483"><div class="ttname"><a href="class_d_p_n_p_c__id.html#a79168b2adbe07a8099747374bba2c483">DPNPC_id::get_output_size</a></div><div class="ttdeci">size_type get_output_size() const</div><div class="ttdoc">this function return number of elements in output</div><div class="ttdef"><b>Definition:</b> <a href="dpnp__iterator_8hpp_source.html#l00247">dpnp_iterator.hpp:247</a></div></div>
-<div class="ttc" id="aclass_d_p_n_p_c__id_html_aa70a960886549f3d75137ac573a4c828"><div class="ttname"><a href="class_d_p_n_p_c__id.html#aa70a960886549f3d75137ac573a4c828">DPNPC_id::end</a></div><div class="ttdeci">iterator end(size_type output_global_id=0) const</div><div class="ttdoc">this function is designed for SYCL environment execution</div><div class="ttdef"><b>Definition:</b> <a href="dpnp__iterator_8hpp_source.html#l00358">dpnp_iterator.hpp:358</a></div></div>
+<div class="ttc" id="aclass_d_p_n_p_c__id_html_aa70a960886549f3d75137ac573a4c828"><div class="ttname"><a href="class_d_p_n_p_c__id.html#aa70a960886549f3d75137ac573a4c828">DPNPC_id::end</a></div><div class="ttdeci">iterator end(size_type output_global_id=0) const</div><div class="ttdoc">this function is designed for SYCL environment execution</div><div class="ttdef"><b>Definition:</b> <a href="dpnp__iterator_8hpp_source.html#l00364">dpnp_iterator.hpp:364</a></div></div>
 <div class="ttc" id="aclass_d_p_n_p_c__id_html_ae3c3b0a869dc364c99e7e33e739dfa07"><div class="ttname"><a href="class_d_p_n_p_c__id.html#ae3c3b0a869dc364c99e7e33e739dfa07">DPNPC_id::DPNPC_id</a></div><div class="ttdeci">DPNPC_id(pointer __ptr, const std::vector&lt; size_type &gt; &amp;__shape)</div><div class="ttdoc">this function is designed for host execution</div><div class="ttdef"><b>Definition:</b> <a href="dpnp__iterator_8hpp_source.html#l00205">dpnp_iterator.hpp:205</a></div></div>
 <div class="ttc" id="agroup___b_a_c_k_e_n_d___a_p_i_html_gaa223e6f3142ee696936bf151d7cc5cf0"><div class="ttname"><a href="group___b_a_c_k_e_n_d___a_p_i.html#gaa223e6f3142ee696936bf151d7cc5cf0">dpnp_memory_alloc_c</a></div><div class="ttdeci">char * dpnp_memory_alloc_c(size_t size_in_bytes)</div><div class="ttdoc">SYCL queue memory allocation.</div></div>
 <div class="ttc" id="agroup___b_a_c_k_e_n_d___u_t_i_l_s_html_ga743bcd47e85667e5f238b99478c54d0f"><div class="ttname"><a href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga743bcd47e85667e5f238b99478c54d0f">DPNPC_id::set_axis</a></div><div class="ttdeci">void set_axis(long __axis)</div><div class="ttdoc">Set axis for the data object to use in computation.</div><div class="ttdef"><b>Definition:</b> <a href="dpnp__iterator_8hpp_source.html#l00269">dpnp_iterator.hpp:269</a></div></div>
-<div class="ttc" id="agroup___b_a_c_k_e_n_d___u_t_i_l_s_html_ga86f1f123df6b60b57542124fed792572"><div class="ttname"><a href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga86f1f123df6b60b57542124fed792572">DPNPC_id::set_axes</a></div><div class="ttdeci">void set_axes(const std::vector&lt; long &gt; &amp;__axes)</div><div class="ttdoc">Set axes for the data object to use in computation.</div><div class="ttdef"><b>Definition:</b> <a href="dpnp__iterator_8hpp_source.html#l00291">dpnp_iterator.hpp:291</a></div></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___u_t_i_l_s_html_ga86f1f123df6b60b57542124fed792572"><div class="ttname"><a href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga86f1f123df6b60b57542124fed792572">DPNPC_id::set_axes</a></div><div class="ttdeci">void set_axes(const std::vector&lt; long &gt; &amp;__axes)</div><div class="ttdoc">Set axes for the data object to use in computation.</div><div class="ttdef"><b>Definition:</b> <a href="dpnp__iterator_8hpp_source.html#l00297">dpnp_iterator.hpp:297</a></div></div>
 <div class="ttc" id="agroup___b_a_c_k_e_n_d___u_t_i_l_s_html_ga99a92e14994c6506a087f9da3a4caa61"><div class="ttname"><a href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga99a92e14994c6506a087f9da3a4caa61">get_xyz_by_id_inkernel</a></div><div class="ttdeci">void get_xyz_by_id_inkernel(size_t global_id, const _DataType *offsets, size_t offsets_size, _DataType *xyz)</div><div class="ttdoc">Calculate ids for all given axes from linear index.</div><div class="ttdef"><b>Definition:</b> <a href="dpnp__utils_8hpp_source.html#l00086">dpnp_utils.hpp:86</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
