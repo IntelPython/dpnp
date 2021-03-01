@@ -225,7 +225,14 @@ void dpnp_put_c(
 }
 
 template <typename _DataType>
-void dpnp_put_along_axis_c(void* arr_in, long* indices_in, void* values_in, size_t axis, const size_t* shape, size_t ndim, size_t size_indices, size_t values_size)
+void dpnp_put_along_axis_c(void* arr_in,
+                           long* indices_in,
+                           void* values_in,
+                           size_t axis,
+                           const size_t* shape,
+                           size_t ndim,
+                           size_t size_indices,
+                           size_t values_size)
 {
     _DataType* arr = reinterpret_cast<_DataType*>(arr_in);
     size_t* indices = reinterpret_cast<size_t*>(indices_in);
@@ -239,7 +246,7 @@ void dpnp_put_along_axis_c(void* arr_in, long* indices_in, void* values_in, size
     {
         size_arr *= shape[i];
     }
-    
+
     if (axis != res_ndim)
     {
         int ind = 0;

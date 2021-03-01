@@ -62,34 +62,29 @@ cpdef dparray dpnp_copy(dparray x1, order, subok):
     return call_fptr_1in_1out(DPNP_FN_COPY, x1, x1.shape)
 
 
-cpdef dparray dpnp_diag(v, k):
-    cdef dparray result
-
-    # computation of initial position
-    init0 = max(0, -k)
-    init1 = max(0, k)
-
+cpdef dparray dpnp_diag(dparray v, int k):
     if v.ndim == 1:
-        size = v.shape[0] + abs(k)
+        n = v.shape[0] + abs(k)
 
-        result = dpnp.zeros(shape=(size, size), dtype=v.dtype)
-
-        for i in range(v.shape[0]):
-            result[init0 + i, init1 + i] = v[i]
-    elif v.ndim == 2:
-        # computation of result size
-        size0 = min(v.shape[0], v.shape[0] + k)
-        size1 = min(v.shape[1], v.shape[1] - k)
-        size = min(size0, size1)
-        if size < 0:
-            size = 0
-
-        result = dparray((size, ), dtype=v.dtype)
-
-        for i in range(size):
-            result[i] = v[init0 + i, init1 + i]
+        shape_result = (n, n)
     else:
-        checker_throw_value_error("dpnp_diag", "v.ndim", v.ndim, "1 or 2")
+        n = min(v.shape[0], v.shape[0] + k, v.shape[1], v.shape[1] - k)
+        if n < 0:
+            n = 0
+
+        shape_result = (n, )
+
+    cdef dparray result = dpnp.zeros(shape_result, dtype=v.dtype)
+
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(v.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DIAG, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+
+    cdef custom_1in_1out_func_ptr_t func = <custom_1in_1out_func_ptr_t > kernel_data.ptr
+
+    func(v.get_data(), result.get_data(), k, < size_t * > v._dparray_shape.data(), < size_t * > result._dparray_shape.data(), v.ndim, result.ndim)
 
     return result
 
