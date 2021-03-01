@@ -271,6 +271,12 @@ public:
         set_axes({__axis});
     }
 
+    inline void set_axes(const long* __axes, const size_t axes_ndim)
+    {
+        const std::vector<long> axes_vec(__axes, __axes + axes_ndim);
+        set_axes(axes_vec);
+    }
+
     /**
      * @ingroup BACKEND_UTILS
      * @brief Set axes for the data object to use in computation.
