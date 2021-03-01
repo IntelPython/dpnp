@@ -398,10 +398,10 @@ Functions</h2></td></tr>
 <tr class="memitem:ga14a74b989436ea9a7e5613aa70ab1696"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga14a74b989436ea9a7e5613aa70ab1696">dpnp_cumsum_c</a> (void *array1_in, void *result1, size_t size)</td></tr>
 <tr class="memdesc:ga14a74b989436ea9a7e5613aa70ab1696"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom implementation of cumsum function.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga14a74b989436ea9a7e5613aa70ab1696">More...</a><br /></td></tr>
 <tr class="separator:ga14a74b989436ea9a7e5613aa70ab1696"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae91a7a1515d7267de45e7d36a66bcb01"><td class="memTemplParams" colspan="2">template&lt;typename _DataType_input , typename _DataType_output &gt; </td></tr>
-<tr class="memitem:gae91a7a1515d7267de45e7d36a66bcb01"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gae91a7a1515d7267de45e7d36a66bcb01">dpnp_sum_c</a> (const void *input_in, const size_t input_size, void *result_out, const long *input_shape, const size_t input_shape_ndim, const long *axes, const size_t axes_ndim, const void *initial, const long *where)</td></tr>
-<tr class="memdesc:gae91a7a1515d7267de45e7d36a66bcb01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute summary of input array elements.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gae91a7a1515d7267de45e7d36a66bcb01">More...</a><br /></td></tr>
-<tr class="separator:gae91a7a1515d7267de45e7d36a66bcb01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga89b121cd3898be186ae23e20d4d0151e"><td class="memTemplParams" colspan="2">template&lt;typename _DataType_input , typename _DataType_output &gt; </td></tr>
+<tr class="memitem:ga89b121cd3898be186ae23e20d4d0151e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga89b121cd3898be186ae23e20d4d0151e">dpnp_sum_c</a> (const void *input_in, void *result_out, const size_t *input_shape, const size_t input_shape_ndim, const long *axes, const size_t axes_ndim, const void *initial, const long *where)</td></tr>
+<tr class="memdesc:ga89b121cd3898be186ae23e20d4d0151e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute summary of input array elements.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga89b121cd3898be186ae23e20d4d0151e">More...</a><br /></td></tr>
+<tr class="separator:ga89b121cd3898be186ae23e20d4d0151e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga689c9f491f7645d86953db3968146d12"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:ga689c9f491f7645d86953db3968146d12"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga689c9f491f7645d86953db3968146d12">dpnp_place_c</a> (void *arr, long *mask, void *vals, const size_t arr_size, const size_t vals_size)</td></tr>
 <tr class="memdesc:ga689c9f491f7645d86953db3968146d12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Place of array elements.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga689c9f491f7645d86953db3968146d12">More...</a><br /></td></tr>
@@ -4162,15 +4162,6 @@ template&lt;typename _DataType , typename _ResultType &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A pointer to newly created memory on <a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga0368d7cc2e2eb7a3f8c4184b6aca3547">initialized SYCL device</a>. </dd></dl>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="group___b_a_c_k_e_n_d___a_p_i_gaa223e6f3142ee696936bf151d7cc5cf0_icgraph.png" border="0" usemap="#agroup___b_a_c_k_e_n_d___a_p_i_gaa223e6f3142ee696936bf151d7cc5cf0_icgraph" alt=""/></div>
-<map name="agroup___b_a_c_k_e_n_d___a_p_i_gaa223e6f3142ee696936bf151d7cc5cf0_icgraph" id="agroup___b_a_c_k_e_n_d___a_p_i_gaa223e6f3142ee696936bf151d7cc5cf0_icgraph">
-<area shape="rect" title="SYCL queue memory allocation." alt="" coords="208,5,359,32"/>
-<area shape="rect" href="class_d_p_n_p_c__id.html#ae3c3b0a869dc364c99e7e33e739dfa07" title="this function is designed for host execution" alt="" coords="5,5,160,32"/>
-</map>
-</div>
 
 </div>
 </div>
@@ -5339,8 +5330,8 @@ template&lt;typename _DataType_input1 , typename _DataType_input2 , typename _Da
 
 </div>
 </div>
-<a id="gae91a7a1515d7267de45e7d36a66bcb01"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gae91a7a1515d7267de45e7d36a66bcb01">&#9670;&nbsp;</a></span>dpnp_sum_c()</h2>
+<a id="ga89b121cd3898be186ae23e20d4d0151e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga89b121cd3898be186ae23e20d4d0151e">&#9670;&nbsp;</a></span>dpnp_sum_c()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -5356,19 +5347,13 @@ template&lt;typename _DataType_input , typename _DataType_output &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const size_t&#160;</td>
-          <td class="paramname"><em>input_size</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">void *&#160;</td>
           <td class="paramname"><em>result_out</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const long *&#160;</td>
+          <td class="paramtype">const size_t *&#160;</td>
           <td class="paramname"><em>input_shape</em>, </td>
         </tr>
         <tr>
@@ -5415,7 +5400,6 @@ template&lt;typename _DataType_input , typename _DataType_output &gt; </div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">input_in</td><td>Input array pointer. _DataType_input type is expected </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">input_size</td><td>Number of elements in input_in. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">result_out</td><td>Output array pointer. _DataType_output type is expected </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">input_shape</td><td>Shape of input_in </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">input_shape_ndim</td><td>Number of elements in input_shape </td></tr>

@@ -26,7 +26,8 @@ var group___b_a_c_k_e_n_d___u_t_i_l_s =
       [ "reference", "class_d_p_n_p_c__id.html#ab6a32e6a41e7386a9e38af3f911bfb2c", null ],
       [ "size_type", "class_d_p_n_p_c__id.html#a7fd33b641bfd4259eec3459cf259edab", null ],
       [ "value_type", "class_d_p_n_p_c__id.html#a604c016ffac6901baae26318728f3e53", null ],
-      [ "DPNPC_id", "class_d_p_n_p_c__id.html#ae3c3b0a869dc364c99e7e33e739dfa07", null ],
+      [ "DPNPC_id", "class_d_p_n_p_c__id.html#a7ad3d021fe19efbf45ba5b45ec95a002", null ],
+      [ "DPNPC_id", "group___b_a_c_k_e_n_d___u_t_i_l_s.html#gae3c3b0a869dc364c99e7e33e739dfa07", null ],
       [ "DPNPC_id", "class_d_p_n_p_c__id.html#a6648ed6e14bd1eb08814cf92eb111035", null ],
       [ "~DPNPC_id", "class_d_p_n_p_c__id.html#ac1ba1ead71fdba917dd7026646f5438d", null ],
       [ "begin", "class_d_p_n_p_c__id.html#a1e1427181e175dacfb37d3a042d4876f", null ],
@@ -37,6 +38,7 @@ var group___b_a_c_k_e_n_d___u_t_i_l_s =
       [ "set_axes", "group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga86f1f123df6b60b57542124fed792572", null ],
       [ "set_axis", "group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga743bcd47e85667e5f238b99478c54d0f", null ]
     ] ],
+    [ "DPNPC_id", "group___b_a_c_k_e_n_d___u_t_i_l_s.html#gae3c3b0a869dc364c99e7e33e739dfa07", null ],
     [ "get_id_by_xyz_inkernel", "group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga064c245ca5bae67e4c986442e22d484e", null ],
     [ "get_shape_offsets_inkernel", "group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga4706968b8ce210d69309a0cae330cea5", null ],
     [ "get_xyz_by_id_inkernel", "group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga99a92e14994c6506a087f9da3a4caa61", null ],
