@@ -110,13 +110,33 @@ void dpnp_tril_c(void* array_in,
                  const size_t ndim,
                  const size_t res_ndim)
 {
+    if ((array_in == nullptr) || (result1 == nullptr))
+    {
+        return;
+    }
+
     _DataType* array_m = reinterpret_cast<_DataType*>(array_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    if ((shape == nullptr) || (res_shape == nullptr))
+    {
+        return;
+    }
+
+    if ((ndim == 0) || (res_ndim == 0))
+    {
+        return;
+    }
 
     size_t res_size = 1;
     for (size_t i = 0; i < res_ndim; ++i)
     {
         res_size *= res_shape[i];
+    }
+
+    if (res_size == 0)
+    {
+        return;
     }
 
     if (ndim == 1)
@@ -189,13 +209,32 @@ void dpnp_tril_c(void* array_in,
 template <typename _DataType>
 void dpnp_triu_c(void* array_in, void* result1, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim)
 {
+    if ((array_in == nullptr) || (result1 == nullptr))
+    {
+        return;
+    }
     _DataType* array_m = reinterpret_cast<_DataType*>(array_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    if ((shape == nullptr) || (res_shape == nullptr))
+    {
+        return;
+    }
+
+    if ((ndim == 0) || (res_ndim == 0))
+    {
+        return;
+    }
 
     size_t res_size = 1;
     for (size_t i = 0; i < res_ndim; ++i)
     {
         res_size *= res_shape[i];
+    }
+
+    if (res_size == 0)
+    {
+        return;
     }
 
     if (ndim == 1)
