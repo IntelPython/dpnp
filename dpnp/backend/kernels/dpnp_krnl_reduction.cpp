@@ -57,9 +57,8 @@ class dpnp_sum_c_kernel;
 
 template <typename _DataType_input, typename _DataType_output>
 void dpnp_sum_c(const void* input_in,
-                const size_t input_size,
                 void* result_out,
-                const long* input_shape,
+                const size_t* input_shape,
                 const size_t input_shape_ndim,
                 const long* axes,
                 const size_t axes_ndim,
@@ -73,22 +72,29 @@ void dpnp_sum_c(const void* input_in,
         return;
     }
 
-    if (!input_size)
-    {
-        return;
-    }
-
     const _DataType_output init = get_initial_value<_DataType_output>(initial);
 
     _DataType_input* input = get_array_ptr<_DataType_input>(input_in);
     _DataType_output* result = get_array_ptr<_DataType_output>(result_out);
 
-    if constexpr ((std::is_same<_DataType_input, double>::value
-                   /* "numerically different results" || std::is_same<_DataType_input, float>::value */) &&
+    if (!input_shape && !input_shape_ndim)
+    { // it is a scalar
+        result[0] = input[0];
+
+        return;
+    }
+
+    if constexpr ((std::is_same<_DataType_input, double>::value || std::is_same<_DataType_input, float>::value) &&
                   std::is_same<_DataType_input, _DataType_output>::value)
     {
+        // Support is limited by
+        // - 1D array (no axes)
+        // - same types for input and output
+        // - float64 and float32 types only
         if (axes_ndim < 1)
         {
+            const size_t input_size =
+                std::accumulate(input_shape, input_shape + input_shape_ndim, size_t(1), std::multiplies<size_t>());
             auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, input_size, input);
             cl::sycl::event event = mkl_stats::raw_sum(DPNP_QUEUE, dataset, result);
             event.wait();
@@ -97,17 +103,7 @@ void dpnp_sum_c(const void* input_in,
         }
     }
 
-    std::vector<size_t> input_shape_vec;
-    if ((input_shape != nullptr) && (input_shape_ndim > 0))
-    {
-        input_shape_vec.assign(input_shape, input_shape + input_shape_ndim);
-    }
-    else
-    { // No shape provided. 1D array or scalar
-        input_shape_vec.assign({input_size});
-    }
-
-    DPNPC_id<_DataType_input> input_it(input, input_shape_vec);
+    DPNPC_id<_DataType_input> input_it(input, input_shape, input_shape_ndim);
     input_it.set_axes(axes, axes_ndim);
 
     const size_t output_size = input_it.get_output_size();
