@@ -48,9 +48,11 @@ __all__ += [
     "dpnp_linspace",
     "dpnp_logspace",
     "dpnp_meshgrid",
+    "dpnp_ones",
     "dpnp_tri",
     "dpnp_tril",
     "dpnp_triu",
+    "dpnp_zeros"
 ]
 
 
@@ -216,6 +218,10 @@ cpdef list dpnp_meshgrid(xi, copy, sparse, indexing):
     return result
 
 
+cpdef dparray dpnp_ones(result_shape, result_dtype):
+    return call_fptr_1out(DPNP_FN_ONES, result_shape, result_dtype)
+
+
 cpdef dparray dpnp_tri(N, M, k, dtype):
     cdef dparray result
 
@@ -288,3 +294,7 @@ cpdef dparray dpnp_triu(m, k):
                 result[i] = 0
 
     return result
+
+
+cpdef dparray dpnp_zeros(result_shape, result_dtype):
+    return call_fptr_1out(DPNP_FN_ZEROS, result_shape, result_dtype)
