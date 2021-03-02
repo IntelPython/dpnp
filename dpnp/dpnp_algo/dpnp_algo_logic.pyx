@@ -33,7 +33,11 @@ and the rest of the library
 """
 
 
+import dpnp
+import numpy
+
 from dpnp.dpnp_utils cimport *
+from dpnp.dpnp_algo cimport *
 
 
 __all__ += [
@@ -56,7 +60,7 @@ __all__ += [
 ]
 
 
-ctypedef void(*custom_1in_1out_func_ptr_t)(void * , void * , const size_t)
+ctypedef void(*custom_logic_1in_1out_func_ptr_t)(void * , void * , const size_t)
 
 
 cpdef dparray dpnp_all(dparray array1):
@@ -66,7 +70,7 @@ cpdef dparray dpnp_all(dparray array1):
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ALL, param1_type, param1_type)
 
-    cdef custom_1in_1out_func_ptr_t func = <custom_1in_1out_func_ptr_t > kernel_data.ptr
+    cdef custom_logic_1in_1out_func_ptr_t func = <custom_logic_1in_1out_func_ptr_t > kernel_data.ptr
 
     func(array1.get_data(), result.get_data(), array1.size)
 

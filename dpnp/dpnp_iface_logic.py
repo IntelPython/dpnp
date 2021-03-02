@@ -110,7 +110,9 @@ def all(in_array1, axis=None, out=None, keepdims=False):
     is_dparray1 = isinstance(in_array1, dparray)
 
     if not use_origin_backend(in_array1):
-        if axis is not None:
+        if not isinstance(in_array1, dparray):
+            pass
+        elif axis is not None:
             pass
         elif out is not None:
             pass
