@@ -230,13 +230,15 @@ cpdef dparray dpnp_tri(N, M=None, k=0, dtype=numpy.float):
     if dtype == numpy.float:
         dtype = numpy.float64
 
-    cdef dparray result = dparray(shape=(N, M), dtype=dtype)
+    cdef dparray result
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRI, param1_type, param1_type)
 
     result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+
+    result = dparray(shape=(N, M), dtype=result_type)
 
     cdef custom_indexing_1out_func_ptr_t func = <custom_indexing_1out_func_ptr_t > kernel_data.ptr
 

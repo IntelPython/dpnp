@@ -156,7 +156,7 @@ def test_tri(N, M, k, type):
     numpy.testing.assert_array_equal(result, expected)
 
 
-def test_tri_float():
+def test_tri_default_dtype():
     expected = numpy.tri(3, 5, -1)
     result = dpnp.tri(3, 5, -1)
     numpy.testing.assert_array_equal(result, expected)
