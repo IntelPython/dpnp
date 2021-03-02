@@ -215,7 +215,6 @@ INP_DLLEXPORT void dpnp_cumsum_c(void* array1_in, void* result1, size_t size);
  * Empty @ref input_shape means scalar.
  *
  * @param [in]  input_in          Input array pointer. @ref _DataType_input type is expected
- * @param [in]  input_size        Number of elements in @ref input_in.
  * @param [out] result_out        Output array pointer. @ref _DataType_output type is expected
  * @param [in]  input_shape       Shape of @ref input_in
  * @param [in]  input_shape_ndim  Number of elements in @ref input_shape
@@ -226,9 +225,8 @@ INP_DLLEXPORT void dpnp_cumsum_c(void* array1_in, void* result1, size_t size);
  */
 template <typename _DataType_input, typename _DataType_output>
 INP_DLLEXPORT void dpnp_sum_c(const void* input_in,
-                              const size_t input_size,
                               void* result_out,
-                              const long* input_shape,
+                              const size_t* input_shape,
                               const size_t input_shape_ndim,
                               const long* axes,
                               const size_t axes_ndim,
@@ -674,6 +672,16 @@ INP_DLLEXPORT void dpnp_modf_c(void* array1_in, void* result1_out, void* result2
 
 /**
  * @ingroup BACKEND_API
+ * @brief Implementation of ones function
+ *
+ * @param [out] result    Output array.
+ * @param [in]  size      Number of elements in the output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_ones_c(void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief remainder function.
  *
  * @param [in]  array1_in    Input array 1.
@@ -731,5 +739,15 @@ INP_DLLEXPORT void dpnp_elemwise_transpose_c(void* array1_in,
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
 INP_DLLEXPORT void dpnp_trapz_c(
     const void* array1_in, const void* array2_in, void* result1, double dx, size_t array1_size, size_t array2_size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief Implementation of zeros function
+ *
+ * @param [out] result    Output array.
+ * @param [in]  size      Number of elements in the output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_zeros_c(void* result, size_t size);
 
 #endif // BACKEND_IFACE_H

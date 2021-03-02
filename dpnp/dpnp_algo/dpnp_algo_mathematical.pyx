@@ -78,9 +78,9 @@ __all__ += [
 ]
 
 
-ctypedef void(*fptr_custom_elemwise_absolute_1in_1out_t)(void *, void * , size_t)
-ctypedef void(*fptr_1in_2out_t)(void *, void * , void * , size_t)
-ctypedef void(*ftpr_custom_trapz_2in_1out_with_2size_t)(void * , void * , void * , double, size_t, size_t)
+ctypedef void(*fptr_custom_elemwise_absolute_1in_1out_t)(void * , void * , size_t)
+ctypedef void(*fptr_1in_2out_t)(void * , void * , void * , size_t)
+ctypedef void(*ftpr_custom_trapz_2in_1out_with_2size_t)(void *, void * , void * , double, size_t, size_t)
 
 
 cpdef dparray dpnp_absolute(dparray input):
@@ -93,7 +93,7 @@ cpdef dparray dpnp_absolute(dparray input):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ABSOLUTE, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(input_shape, dtype=result_type)
 
@@ -261,7 +261,7 @@ cpdef tuple dpnp_modf(dparray x1):
     """ get the FPTR data structure """
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MODF, param1_type, DPNP_FT_NONE)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     """ Create result arrays with type given by FPTR data """
     cdef dparray result1 = dparray(x1.shape, dtype=result_type)
     cdef dparray result2 = dparray(x1.shape, dtype=result_type)
@@ -423,8 +423,7 @@ cpdef dparray dpnp_sum(dparray input, object axis=None, object dtype=None, dparr
     cdef dpnp_reduction_c_t func = <dpnp_reduction_c_t > kernel_data.ptr
 
     """ Call FPTR interface function """
-    func(input.get_data(), input.size, result.get_data(), input_shape.data(),
-         input_shape.size(), axis_shape.data(), axis_shape.size(), NULL, NULL)
+    func(input.get_data(), result.get_data(), < size_t * >input_shape.data(), input_shape.size(), axis_shape.data(), axis_shape.size(), NULL, NULL)
 
     return result
 
@@ -435,7 +434,7 @@ cpdef dpnp_trapz(dparray y1, dparray x1, double dx):
     cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRAPZ, param1_type, param2_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
 
     cdef dparray result = dparray((1,), dtype=result_type)
 

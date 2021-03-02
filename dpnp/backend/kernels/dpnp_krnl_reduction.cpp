@@ -34,14 +34,31 @@
 
 namespace mkl_stats = oneapi::mkl::stats;
 
+template <typename _DataType>
+_DataType* get_array_ptr(const void* __array)
+{
+    void* const_ptr = const_cast<void*>(__array);
+    _DataType* ptr = reinterpret_cast<_DataType*>(const_ptr);
+
+    return ptr;
+}
+
+template <typename _DataType>
+_DataType get_initial_value(const void* __initial)
+{
+    const _DataType* initial_ptr = reinterpret_cast<const _DataType*>(__initial);
+    const _DataType init_val = (initial_ptr == nullptr) ? _DataType{0} : *initial_ptr;
+
+    return init_val;
+}
+
 template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2>
 class dpnp_sum_c_kernel;
 
 template <typename _DataType_input, typename _DataType_output>
 void dpnp_sum_c(const void* input_in,
-                const size_t input_size,
                 void* result_out,
-                const long* input_shape,
+                const size_t* input_shape,
                 const size_t input_shape_ndim,
                 const long* axes,
                 const size_t axes_ndim,
@@ -55,23 +72,29 @@ void dpnp_sum_c(const void* input_in,
         return;
     }
 
-    if (!input_size)
-    {
+    const _DataType_output init = get_initial_value<_DataType_output>(initial);
+
+    _DataType_input* input = get_array_ptr<_DataType_input>(input_in);
+    _DataType_output* result = get_array_ptr<_DataType_output>(result_out);
+
+    if (!input_shape && !input_shape_ndim)
+    { // it is a scalar
+        result[0] = input[0];
+
         return;
     }
 
-    const _DataType_output* initial_ptr = reinterpret_cast<const _DataType_output*>(initial);
-    const _DataType_output init = (initial_ptr == nullptr) ? _DataType_output{0} : *initial_ptr;
-
-    _DataType_input* input = reinterpret_cast<_DataType_input*>(const_cast<void*>(input_in));
-    _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
-
-    if constexpr ((std::is_same<_DataType_input, double>::value
-                   /* "numerically different results" || std::is_same<_DataType_input, float>::value */) &&
+    if constexpr ((std::is_same<_DataType_input, double>::value || std::is_same<_DataType_input, float>::value) &&
                   std::is_same<_DataType_input, _DataType_output>::value)
     {
+        // Support is limited by
+        // - 1D array (no axes)
+        // - same types for input and output
+        // - float64 and float32 types only
         if (axes_ndim < 1)
         {
+            const size_t input_size =
+                std::accumulate(input_shape, input_shape + input_shape_ndim, size_t(1), std::multiplies<size_t>());
             auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, input_size, input);
             cl::sycl::event event = mkl_stats::raw_sum(DPNP_QUEUE, dataset, result);
             event.wait();
@@ -80,22 +103,8 @@ void dpnp_sum_c(const void* input_in,
         }
     }
 
-    std::vector<size_t> input_shape_vec;
-    if ((input_shape != nullptr) && (input_shape_ndim > 0))
-    {
-        input_shape_vec.assign(input_shape, input_shape + input_shape_ndim);
-    }
-    else
-    { // No shape provided. 1D array or scalar
-        input_shape_vec.assign({input_size});
-    }
-
-    DPNPC_id<_DataType_input> input_it(input, input_shape_vec);
-    if ((axes != nullptr) && (axes_ndim > 0))
-    {
-        const std::vector<long> axes_vec(axes, axes + axes_ndim);
-        input_it.set_axes(axes_vec);
-    }
+    DPNPC_id<_DataType_input> input_it(input, input_shape, input_shape_ndim);
+    input_it.set_axes(axes, axes_ndim);
 
     const size_t output_size = input_it.get_output_size();
     auto policy =

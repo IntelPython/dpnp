@@ -324,7 +324,7 @@ void dpnp_trapz_c(
 
         event.wait();
 
-        dpnp_sum_c<_DataType_output, _DataType_output>(cur_res, cur_res_size, result, NULL, 0, NULL, 0, NULL, NULL);
+        dpnp_sum_c<_DataType_output, _DataType_output>(cur_res, result, &cur_res_size, 1, NULL, 0, NULL, NULL);
 
         dpnp_memory_free_c(cur_res);
 
@@ -335,7 +335,7 @@ void dpnp_trapz_c(
     }
     else
     {
-        dpnp_sum_c<_DataType_input1, _DataType_output>(array1, array1_size, result, NULL, 0, NULL, 0, NULL, NULL);
+        dpnp_sum_c<_DataType_input1, _DataType_output>(array1, result, &array1_size, 1, NULL, 0, NULL, NULL);
 
         result[0] -= (array1[0] + array1[array1_size - 1]) * 0.5;
         result[0] *= dx;
