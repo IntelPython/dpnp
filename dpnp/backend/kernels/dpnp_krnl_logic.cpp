@@ -40,7 +40,7 @@ void dpnp_all_c(void* array1_in, void* result1, const size_t size)
 
     for (size_t i = 0; i < size; ++i)
     {
-        if (!bool(array_in[i]))
+        if (!array_in[i])
         {
             res = false;
             break;
