@@ -217,19 +217,20 @@ cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, 
 cdef dparray call_fptr_2in_1out_full(DPNPFuncName fptr_name, dparray x1, dparray x2)
 
 
-ctypedef fused dpnp_numeric:
+ctypedef fused dpnp_scalar:
     int
     long
     float
     double
+    bint
 
 ctypedef fused dpnp_input1:
     dparray
-    dpnp_numeric
+    dpnp_scalar
 
 ctypedef fused dpnp_input2:
     dparray
-    dpnp_numeric
+    dpnp_scalar
 
 
 cpdef dparray dpnp_astype(dparray array1, dtype_target)

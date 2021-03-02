@@ -26,12 +26,33 @@ def test_diff(array):
     numpy.testing.assert_allclose(expected, result)
 
 
+@pytest.mark.parametrize("dtype1",
+                         [numpy.bool_, numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['numpy.bool_', 'numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
+@pytest.mark.parametrize("dtype2",
+                         [numpy.bool_, numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['numpy.bool_', 'numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
+@pytest.mark.parametrize("data",
+                         [[[1, 2], [3, 4]]],
+                         ids=['[[1, 2], [3, 4]]'])
+def test_multiply_dtype(dtype1, dtype2, data):
+    a = numpy.array(data, dtype=dtype1)
+    ia = inp.array(data, dtype=dtype1)
+
+    b = numpy.array(data, dtype=dtype2)
+    ib = inp.array(data, dtype=dtype2)
+
+    result = numpy.multiply(ia, ib)
+    expected = numpy.multiply(a, b)
+    numpy.testing.assert_array_equal(result, expected)
+
+
 @pytest.mark.parametrize("val_type",
-                         [int, float],
-                         ids=['int', 'float'])
+                         [bool, int, float],
+                         ids=['bool', 'int', 'float'])
 @pytest.mark.parametrize("data_type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
+                         [numpy.bool_, numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['numpy.bool_', 'numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
 @pytest.mark.parametrize("val",
                          [0, 1, 5],
                          ids=['0', '1', '5'])

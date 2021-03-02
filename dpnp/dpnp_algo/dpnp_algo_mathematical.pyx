@@ -273,7 +273,7 @@ cpdef tuple dpnp_modf(dparray x1):
     return result1, result2
 
 
-cpdef dparray dpnp_multiply_array_scalar(dparray x1, dpnp_numeric x2):
+cpdef dparray dpnp_multiply_array_scalar(dparray x1, dpnp_scalar x2):
     cdef dparray_shape_type x1_shape = x1.shape
     cdef dparray_shape_type x2_shape
     x2_shape, x2_dtype = get_shape_dtype(x2)
@@ -299,9 +299,9 @@ cpdef dparray dpnp_multiply_array_scalar(dparray x1, dpnp_numeric x2):
 
 
 cpdef dparray dpnp_multiply(dpnp_input1 x1, dpnp_input2 x2):
-    if dpnp_input1 in dpnp_numeric and dpnp_input2 is dparray:
+    if dpnp_input1 in dpnp_scalar and dpnp_input2 is dparray:
         return dpnp_multiply_array_scalar(x2, x1)
-    elif dpnp_input1 is dparray and dpnp_input2 in dpnp_numeric:
+    elif dpnp_input1 is dparray and dpnp_input2 in dpnp_scalar:
         return dpnp_multiply_array_scalar(x1, x2)
     elif dpnp_input1 is dparray and dpnp_input2 is dparray:
         return call_fptr_2in_1out_full(DPNP_FN_MULTIPLY, x1, x2)
