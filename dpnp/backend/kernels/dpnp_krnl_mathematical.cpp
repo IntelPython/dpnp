@@ -556,6 +556,8 @@ void func_map_init_mathematical(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_multiply_c<double, long, double>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_multiply_c<double, float, double>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_multiply_c<double, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_C128][eft_C128] = {
+        eft_C128, (void*)dpnp_multiply_c<std::complex<double>, std::complex<double>, std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_BLN][eft_BLN] = {
         eft_BLN, (void*)dpnp_multiply_c<bool, bool, bool>};
@@ -607,6 +609,8 @@ void func_map_init_mathematical(func_map_t& fmap)
         eft_DBL, (void*)dpnp_multiply_c<double, float, double>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_DBL][eft_DBL] = {
         eft_DBL, (void*)dpnp_multiply_c<double, double, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_C128][eft_C128] = {
+        eft_C128, (void*)dpnp_multiply_c<std::complex<double>, std::complex<double>, std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_remainder_c<int, int, int>};
     fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_remainder_c<int, long, long>};

@@ -26,6 +26,29 @@ def test_diff(array):
     numpy.testing.assert_allclose(expected, result)
 
 
+@pytest.mark.parametrize("data",
+                         [[[1+1j, -2j], [3-3j, 4j]]],
+                         ids=['[[1+1j, -2j], [3-3j, 4j]]'])
+def test_multiply_complex(data):
+    a = numpy.array(data)
+    ia = inp.array(data)
+
+    b = numpy.array(data)
+    ib = inp.array(data)
+
+    result = numpy.multiply(ia, ib)
+    expected = numpy.multiply(a, b)
+    numpy.testing.assert_array_equal(result, expected)
+
+    result = numpy.multiply(ia, 0.5j)
+    expected = numpy.multiply(a, 0.5j)
+    numpy.testing.assert_array_equal(result, expected)
+
+    result = numpy.multiply(0.5j, ia)
+    expected = numpy.multiply(0.5j, a)
+    numpy.testing.assert_array_equal(result, expected)
+
+
 @pytest.mark.parametrize("dtype1",
                          [numpy.bool_, numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['numpy.bool_', 'numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])

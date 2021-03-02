@@ -223,6 +223,7 @@ ctypedef fused dpnp_scalar:
     float
     double
     bint
+    double complex
 
 ctypedef fused dpnp_input1:
     dparray
