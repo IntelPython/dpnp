@@ -25,8 +25,6 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import cython
-
 from libcpp.vector cimport vector
 from libcpp cimport bool as cpp_bool
 from dpnp.dparray cimport dparray, dparray_shape_type
