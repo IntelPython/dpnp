@@ -423,7 +423,7 @@ cpdef dparray dpnp_sum(dparray input, object axis=None, object dtype=None, dparr
     cdef dpnp_reduction_c_t func = <dpnp_reduction_c_t > kernel_data.ptr
 
     """ Call FPTR interface function """
-    func(input.get_data(), result.get_data(), < size_t * >input_shape.data(), input_shape.size(), axis_shape.data(), axis_shape.size(), NULL, NULL)
+    func(result.get_data(), input.get_data(), < size_t * >input_shape.data(), input_shape.size(), axis_shape.data(), axis_shape.size(), NULL, NULL)
 
     return result
 
