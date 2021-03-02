@@ -68,7 +68,6 @@ void dpnp_diag_c(
     void* v_in, void* result1, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim)
 {
     // avoid warning unused variable
-    (void)shape;
     (void)res_ndim;
 
     _DataType* v = reinterpret_cast<_DataType*>(v_in);
