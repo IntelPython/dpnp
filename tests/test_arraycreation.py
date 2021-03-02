@@ -162,3 +162,34 @@ def test_tril(m, k):
     expected = numpy.tril(a, k)
     result = dpnp.tril(ia, k)
     numpy.testing.assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("k",
+                         [-4, -3, -2, -1, 0, 1, 2, 3, 4],
+                         ids=['-4', '-3', '-2', '-1', '0', '1', '2', '3', '4'])
+@pytest.mark.parametrize("m",
+                         [[0, 1, 2, 3, 4],
+                          [[1, 2], [3, 4]],
+                          [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+                          [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]],
+                         ids=['[0, 1, 2, 3, 4]',
+                              '[[1, 2], [3, 4]]',
+                              '[[0, 1, 2], [3, 4, 5], [6, 7, 8]]',
+                              '[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]'])
+def test_triu(m, k):
+    a = numpy.array(m)
+    ia = dpnp.array(a)
+    expected = numpy.triu(a, k)
+    result = dpnp.triu(ia, k)
+    numpy.testing.assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("k",
+                         [-4, -3, -2, -1, 0, 1, 2, 3, 4],
+                         ids=['-4', '-3', '-2', '-1', '0', '1', '2', '3', '4'])
+def test_triu_size_null(k):
+    a = numpy.ones(shape=(1, 2, 0))
+    ia = dpnp.array(a)
+    expected = numpy.triu(a, k)
+    result = dpnp.triu(ia, k)
+    numpy.testing.assert_array_equal(expected, result)
