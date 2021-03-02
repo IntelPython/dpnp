@@ -90,6 +90,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_CUMSUM,                   /**< Used in numpy.cumsum() implementation  */
     DPNP_FN_DEGREES,                  /**< Used in numpy.degrees() implementation  */
     DPNP_FN_DET,                      /**< Used in numpy.linalg.det() implementation  */
+    DPNP_FN_DIAG,                     /**< Used in numpy.diag() implementation  */
     DPNP_FN_DIAGONAL,                 /**< Used in numpy.diagonal() implementation  */
     DPNP_FN_DIVIDE,                   /**< Used in numpy.divide() implementation  */
     DPNP_FN_DOT,                      /**< Used in numpy.dot() implementation  */
@@ -128,6 +129,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_MODF,                     /**< Used in numpy.modf() implementation  */
     DPNP_FN_MULTIPLY,                 /**< Used in numpy.multiply() implementation  */
     DPNP_FN_MULTIPLY_ARRAY_SCALAR,    /**< Used in numpy.multiply(array, scalar) implementation  */
+    DPNP_FN_ONES,                     /**< Used in numpy.ones() implementation */
     DPNP_FN_PLACE,                    /**< Used in numpy.place() implementation  */
     DPNP_FN_POWER,                    /**< Used in numpy.power() implementation  */
     DPNP_FN_PROD,                     /**< Used in numpy.prod() implementation  */
@@ -188,8 +190,10 @@ enum class DPNPFuncName : size_t
     DPNP_FN_TANH,                     /**< Used in numpy.tanh() implementation  */
     DPNP_FN_TRANSPOSE,                /**< Used in numpy.transpose() implementation  */
     DPNP_FN_TRAPZ,                    /**< Used in numpy.trapz() implementation  */
+    DPNP_FN_TRIL,                     /**< Used in numpy.tril() implementation  */
     DPNP_FN_TRUNC,                    /**< Used in numpy.trunc() implementation  */
     DPNP_FN_VAR,                      /**< Used in numpy.var() implementation  */
+    DPNP_FN_ZEROS,                    /**< Used in numpy.zeros() implementation */
     DPNP_FN_LAST                      /**< The latest element of the enumeration */
 };
 

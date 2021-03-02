@@ -55,39 +55,35 @@ public:
     using reference = value_type&;
     using size_type = size_t;
 
-    DPNP_USM_iterator(pointer __ptr, bool __axis_use = false, size_type __axis = 0, const size_type* __stride = nullptr)
-        : data(__ptr)
+    DPNP_USM_iterator(pointer __base_ptr,
+                      size_type __id,
+                      const size_type* __shape_stride = nullptr,
+                      const size_type* __axes_stride = nullptr,
+                      size_type __shape_size = 0)
+        : base(__base_ptr)
+        , iter_id(__id)
+        , iteration_shape_size(__shape_size)
+        , iteration_shape_strides(__shape_stride)
+        , axes_shape_strides(__axes_stride)
     {
-        if (__axis_use)
-        {
-            axis_use = __axis_use;
-            axis = __axis;
-            stride = __stride;
-        }
     }
 
     DPNP_USM_iterator() = delete;
 
     inline reference operator*() const
     {
-        return *data;
+        return *ptr();
     }
 
     inline pointer operator->() const
     {
-        return data;
+        return ptr();
     }
 
     /// prefix increment
     inline DPNP_USM_iterator& operator++()
     {
-        size_type axis_stride = 1;
-        if (axis_use)
-        {
-            axis_stride = stride[axis];
-        }
-
-        data += axis_stride;
+        ++iter_id;
 
         return *this;
     }
@@ -103,49 +99,88 @@ public:
 
     inline bool operator==(const DPNP_USM_iterator& __rhs) const
     {
-        return (data == __rhs.data);
+        assert(base == __rhs.base); // iterators are incomparable if base pointers are different
+        return (iter_id == __rhs.iter_id);
     };
 
     inline bool operator!=(const DPNP_USM_iterator& __rhs) const
     {
-        return (data != __rhs.data);
+        return !(*this == __rhs);
     };
 
     inline bool operator<(const DPNP_USM_iterator& __rhs) const
     {
-        return (data < __rhs.data);
+        return iter_id < __rhs.iter_id;
     };
 
     // TODO need more operators
 
-    inline difference_type operator-(const DPNP_USM_iterator& __rhs) const
+    // Random access iterator requirements
+    inline reference operator[](size_type __n) const
     {
-        size_type axis_stride = 1;
-        if (axis_use)
-        {
-            axis_stride = stride[axis];
-        }
-
-        difference_type linear_diff = data - __rhs.data;
-        difference_type elements_in_stride = axis_stride; // potential issue with unsigned conversion to signed
-
-        return linear_diff / elements_in_stride;
+        return *ptr(__n);
     }
 
-    /// Operator needs to print this container in human readable form in error reporting
+    inline difference_type operator-(const DPNP_USM_iterator& __rhs) const
+    {
+        difference_type diff = difference_type(iter_id) - difference_type(__rhs.iter_id);
+
+        return diff;
+    }
+
+    /// Print this container in human readable form in error reporting
     friend std::ostream& operator<<(std::ostream& __out, const DPNP_USM_iterator& __it)
     {
-        __out << "DPNP_USM_iterator(data:" << __it.data << ", shape_pitch=" << __it.stride
-              << ", axis_use=" << __it.axis_use << ", axis=" << __it.axis << ")";
+        const std::vector<size_type> it_strides(__it.iteration_shape_strides,
+                                                __it.iteration_shape_strides + __it.iteration_shape_size);
+        const std::vector<size_type> it_axes_strides(__it.axes_shape_strides,
+                                                     __it.axes_shape_strides + __it.iteration_shape_size);
+
+        __out << "DPNP_USM_iterator(base=" << __it.base;
+        __out << ", iter_id=" << __it.iter_id;
+        __out << ", iteration_shape_size=" << __it.iteration_shape_size;
+        __out << ", iteration_shape_strides=" << it_strides;
+        __out << ", axes_shape_strides=" << it_axes_strides;
+        __out << ")";
 
         return __out;
     }
 
 private:
-    pointer data = nullptr;
-    const size_type* stride = nullptr;
-    size_type axis = 0;    // TODO it should be a vector to support "axes" parameters
-    bool axis_use = false; // TODO it looks like it should be eliminated
+    inline pointer ptr() const
+    {
+        return ptr(iter_id);
+    }
+
+    inline pointer ptr(size_type iteration_id) const
+    {
+        size_type offset = 0;
+
+        if (iteration_shape_size > 0)
+        {
+            long reminder = iteration_id;
+            for (size_t it = 0; it < iteration_shape_size; ++it)
+            {
+                const size_type axis_val = iteration_shape_strides[it];
+                size_type xyz_id = reminder / axis_val;
+                offset += (xyz_id * axes_shape_strides[it]);
+
+                reminder = reminder % axis_val;
+            }
+        }
+        else
+        {
+            offset = iteration_id;
+        }
+
+        return base + offset;
+    }
+
+    const pointer base = nullptr;
+    size_type iter_id = size_type{};                    /**< Iterator logical ID over iteration shape */
+    const size_type iteration_shape_size = size_type{}; /**< Number of elements in @ref iteration_shape_strides array */
+    const size_type* iteration_shape_strides = nullptr;
+    const size_type* axes_shape_strides = nullptr;
 };
 
 /**
@@ -166,68 +201,112 @@ public:
     using reference = value_type&;
     using size_type = size_t;
 
-    /// this function is designed for host execution
-    DPNPC_id(void* __ptr, const std::vector<size_type>& __shape)
+    DPNPC_id(pointer __ptr, const size_type* __shape, const size_type __shape_size)
     {
-        if (__ptr == nullptr)
-        {
-            return;
-        }
+        std::vector<size_type> shape(__shape, __shape + __shape_size);
+        init_container(__ptr, shape);
+    }
 
-        data = reinterpret_cast<pointer>(__ptr);
-        size = 1;        // means scalar at this stage
-        output_size = 1; // if input size is not zero it means we have scalar as output
-
-        if (!__shape.empty())
-        {
-            shape_size = __shape.size();
-            shape = reinterpret_cast<size_type*>(dpnp_memory_alloc_c(shape_size * sizeof(size_type)));
-            std::copy(__shape.begin(), __shape.end(), shape);
-
-            shape_strides = reinterpret_cast<size_type*>(dpnp_memory_alloc_c(shape_size * sizeof(size_type)));
-            get_shape_offsets_inkernel<size_type>(shape, shape_size, shape_strides);
-
-            size = std::accumulate(__shape.begin(), __shape.end(), size_type(1), std::multiplies<size_type>());
-            if (size == 0)
-            { // shape might be shape[3, 4, 0, 6]. This means no input memory and no output expected
-                output_size = 0;
-            }
-        }
+    /**
+     * @ingroup BACKEND_UTILS
+     * @brief Main container for reduction iterator
+     *
+     * Construct object to hold @ref __ptr data with shape @ref __shape.
+     * It is needed to provide reduction iterator over the data.
+     *
+     * @note this function is designed for non-SYCL environment execution
+     *
+     * @param [in]  __ptr    Pointer to input data. Used to get values only.
+     * @param [in]  __shape  Shape of data provided by @ref __ptr.
+     *                       Empty container means scalar value pointed by @ref __ptr.
+     */
+    DPNPC_id(pointer __ptr, const std::vector<size_type>& __shape)
+    {
+        init_container(__ptr, __shape);
     }
 
     DPNPC_id() = delete;
 
     ~DPNPC_id()
     {
-        dpnp_memory_free_c(shape);
-        dpnp_memory_free_c(shape_strides);
-        dpnp_memory_free_c(output_shape);
-        dpnp_memory_free_c(output_shape_strides);
-        dpnp_memory_free_c(sycl_output_xyz);
-        dpnp_memory_free_c(sycl_input_xyz);
+        free_memory();
     }
 
     /// this function return number of elements in output
     inline size_type get_output_size() const
     {
-        // TODO if axis is not set need to return input array size
         return output_size;
     }
 
-    /// this function is designed for host execution
-    inline void set_axis(size_type __axis)
+    /**
+     * @ingroup BACKEND_UTILS
+     * @brief Set axis for the data object to use in computation.
+     *
+     * Set axis of the shape of input array to use in iteration.
+     * Axis might be negative to indicate right to left axes indexing in a shape
+     *
+     * Indexing goes from left to right.
+     * Reduction example:
+     *   Input shape A[6, 7, 8, 9]
+     *   set_axis(1)                       // same as -3 in this example
+     *   output shape will be C[6, 8, 9]
+     *
+     * @note this function is designed for non-SYCL environment execution
+     *
+     * @param [in]  __axis    Axis in a shape of input array.
+     */
+    inline void set_axis(long __axis)
     {
-        if (__axis < shape_size)
+        set_axes({__axis});
+    }
+
+    inline void set_axes(const long* __axes, const size_t axes_ndim)
+    {
+        const std::vector<long> axes_vec(__axes, __axes + axes_ndim);
+        set_axes(axes_vec);
+    }
+
+    /**
+     * @ingroup BACKEND_UTILS
+     * @brief Set axes for the data object to use in computation.
+     *
+     * Set axes of the shape of input array to use in iteration.
+     * Axes might be negative to indicate axes as reverse iterator
+     *
+     * Indexing goes from left to right.
+     * Reduction example:
+     *   Input shape A[2, 3, 4, 5]
+     *   set_axes({1, 2})                 // same as {-3, -2}
+     *   output shape will be C[2, 5]
+     *
+     * @note this function is designed for non-SYCL environment execution
+     *
+     * @param [in]  __axes       Vector of axes of a shape of input array.
+     */
+    inline void set_axes(const std::vector<long>& __axes)
+    {
+        if (!__axes.empty() && input_shape_size)
         {
-            axis = __axis;
+            axes = get_validated_axes(__axes, input_shape_size);
             axis_use = true;
 
-            output_shape_size = shape_size - 1;
+            output_shape_size = input_shape_size - axes.size();
             const size_type output_shape_size_in_bytes = output_shape_size * sizeof(size_type);
 
+            iteration_shape_size = axes.size();
+            const size_type iteration_shape_size_in_bytes = iteration_shape_size * sizeof(size_type);
+            std::vector<size_type> iteration_shape;
+
             output_shape = reinterpret_cast<size_type*>(dpnp_memory_alloc_c(output_shape_size_in_bytes));
-            size_type* output_shape_it = std::copy(shape, shape + axis, output_shape);
-            std::copy(shape + axis + 1, shape + shape_size, output_shape_it);
+            size_type* output_shape_it = output_shape;
+            for (size_type i = 0; i < input_shape_size; ++i)
+            {
+                if (std::find(axes.begin(), axes.end(), i) == axes.end())
+                {
+                    *output_shape_it = input_shape[i];
+                    ++output_shape_it;
+                }
+            }
 
             output_size = std::accumulate(
                 output_shape, output_shape + output_shape_size, size_type(1), std::multiplies<size_type>());
@@ -235,20 +314,39 @@ public:
             output_shape_strides = reinterpret_cast<size_type*>(dpnp_memory_alloc_c(output_shape_size_in_bytes));
             get_shape_offsets_inkernel<size_type>(output_shape, output_shape_size, output_shape_strides);
 
+            iteration_size = 1;
+            iteration_shape.reserve(iteration_shape_size);
+            for (const auto& axis : axes)
+            {
+                const size_type axis_dim = input_shape[axis];
+                iteration_shape.push_back(axis_dim);
+                iteration_size *= axis_dim;
+            }
+
+            iteration_shape_strides = reinterpret_cast<size_type*>(dpnp_memory_alloc_c(iteration_shape_size_in_bytes));
+            get_shape_offsets_inkernel<size_type>(
+                iteration_shape.data(), iteration_shape.size(), iteration_shape_strides);
+
+            axes_shape_strides = reinterpret_cast<size_type*>(dpnp_memory_alloc_c(iteration_shape_size_in_bytes));
+            for (size_t i = 0; i < iteration_shape_size; ++i)
+            {
+                axes_shape_strides[i] = input_shape_strides[axes[i]];
+            }
+
             // make thread private storage for each shape by multiplying memory
             sycl_output_xyz =
                 reinterpret_cast<size_type*>(dpnp_memory_alloc_c(output_size * output_shape_size_in_bytes));
-            sycl_input_xyz =
-                reinterpret_cast<size_type*>(dpnp_memory_alloc_c(output_size * shape_size * sizeof(size_type)));
         }
-        // TODO exception if wrong axis? need common function for throwing exceptions
-        // TODO need conversion from negative axis to positive one
     }
 
     /// this function is designed for SYCL environment execution
     inline iterator begin(size_type output_global_id = 0) const
     {
-        return iterator(data + get_input_begin_offset(output_global_id), axis_use, axis, shape_strides);
+        return iterator(data + get_input_begin_offset(output_global_id),
+                        0,
+                        iteration_shape_strides,
+                        axes_shape_strides,
+                        iteration_shape_size);
     }
 
     /// this function is designed for SYCL environment execution
@@ -256,17 +354,56 @@ public:
     {
         // TODO it is better to get begin() iterator as a parameter
 
-        return iterator(
-            data + get_input_begin_offset(output_global_id) + get_input_end_length(), axis_use, axis, shape_strides);
+        return iterator(data + get_input_begin_offset(output_global_id),
+                        get_iteration_size(),
+                        iteration_shape_strides,
+                        axes_shape_strides,
+                        iteration_shape_size);
     }
 
     /// this function is designed for SYCL environment execution
     inline reference operator[](size_type __n) const
     {
-        return *(data + __n); // TODO take care about shape and axis
+        const iterator it = begin();
+        return it[__n];
     }
 
 private:
+    void init_container(pointer __ptr, const std::vector<size_type>& __shape)
+    {
+        // TODO needs to address negative values in __shape with exception
+        if ((__ptr == nullptr) && __shape.empty())
+        {
+            return;
+        }
+
+        if (__ptr != nullptr)
+        {
+            data = __ptr;
+            input_size = 1;  // means scalar at this stage
+            output_size = 1; // if input size is not zero it means we have scalar as output
+            iteration_size = 1;
+        }
+
+        if (!__shape.empty())
+        {
+            input_size = std::accumulate(__shape.begin(), __shape.end(), size_type(1), std::multiplies<size_type>());
+            if (input_size == 0)
+            {                    // shape might be shape[3, 4, 0, 6]. This means no input memory and no output expected
+                output_size = 0; // depends on axes. zero at this stage only
+            }
+
+            input_shape_size = __shape.size();
+            input_shape = reinterpret_cast<size_type*>(dpnp_memory_alloc_c(input_shape_size * sizeof(size_type)));
+            std::copy(__shape.begin(), __shape.end(), input_shape);
+
+            input_shape_strides =
+                reinterpret_cast<size_type*>(dpnp_memory_alloc_c(input_shape_size * sizeof(size_type)));
+            get_shape_offsets_inkernel<size_type>(input_shape, input_shape_size, input_shape_strides);
+        }
+        iteration_size = input_size;
+    }
+
     /// this function is designed for SYCL environment execution
     size_type get_input_begin_offset(size_type output_global_id) const
     {
@@ -277,61 +414,60 @@ private:
 
             // use thread private storage
             size_type* sycl_output_xyz_thread = sycl_output_xyz + (output_global_id * output_shape_size);
-            size_type* sycl_input_xyz_thread = sycl_input_xyz + (output_global_id * shape_size);
 
             get_xyz_by_id_inkernel(output_global_id, output_shape_strides, output_shape_size, sycl_output_xyz_thread);
 
-            for (size_t iit = 0, oit = 0; iit < shape_size; ++iit)
+            for (size_t iit = 0, oit = 0; iit < input_shape_size; ++iit)
             {
-                if (iit == axis)
+                if (std::find(axes.begin(), axes.end(), iit) == axes.end())
                 {
-                    sycl_input_xyz_thread[iit] = 0; // put begin point of the axis
-                }
-                else
-                {
-                    sycl_input_xyz_thread[iit] = sycl_output_xyz_thread[oit];
+                    input_global_id += (sycl_output_xyz_thread[oit] * input_shape_strides[iit]);
                     ++oit;
                 }
             }
-
-            input_global_id = get_id_by_xyz_inkernel(sycl_input_xyz_thread, shape_size, shape_strides);
         }
 
         return input_global_id;
     }
 
     /// this function is designed for SYCL environment execution
-    size_type get_input_end_length() const
+    size_type get_iteration_size() const
     {
-        if (!axis_use)
-        {
-            return size;
-        }
-
-        const size_type dim_size = shape[axis];
-        const size_type dim_pitch = shape_strides[axis];
-
-        return (dim_size * dim_pitch);
+        return iteration_size;
     }
 
-    pointer data = nullptr;       /**< array begin pointer */
-    size_type size = size_type{}; /**< array size */
+    void free_memory()
+    {
+        dpnp_memory_free_c(input_shape);
+        dpnp_memory_free_c(input_shape_strides);
+        dpnp_memory_free_c(output_shape);
+        dpnp_memory_free_c(output_shape_strides);
+        dpnp_memory_free_c(iteration_shape_strides);
+        dpnp_memory_free_c(axes_shape_strides);
+        dpnp_memory_free_c(sycl_output_xyz);
+    }
 
-    size_type* shape = nullptr;         /**< array shape */
-    size_type shape_size = size_type{}; /**< array shape size */
-    size_type* shape_strides = nullptr; /**< array shape strides (same size as shape array) */
+    pointer data = nullptr;                   /**< input array begin pointer */
+    size_type input_size = size_type{};       /**< input array size */
+    size_type* input_shape = nullptr;         /**< input array shape */
+    size_type input_shape_size = size_type{}; /**< input array shape size */
+    size_type* input_shape_strides = nullptr; /**< input array shape strides (same size as input_shape) */
 
-    size_type axis = 0; /**< reduction axis (negative unsupported) */
+    std::vector<size_type> axes; /**< input shape reduction axes */
     bool axis_use = false;
 
-    size_type output_size = size_type{}; /**< output array size. Expected is same as GWS */
-    size_type* output_shape = nullptr;
-    size_type output_shape_size = size_type{};
-    size_type* output_shape_strides = nullptr;
+    size_type output_size = size_type{};       /**< output array size. Expected is same as GWS */
+    size_type* output_shape = nullptr;         /**< output array shape */
+    size_type output_shape_size = size_type{}; /**< output array shape size */
+    size_type* output_shape_strides = nullptr; /**< output array shape strides (same size as output_shape) */
+
+    size_type iteration_size = size_type{}; /**< iteration array size in elements */
+    size_type iteration_shape_size = size_type{};
+    size_type* iteration_shape_strides = nullptr;
+    size_type* axes_shape_strides = nullptr;
 
     // data allocated to use inside SYCL kernels
     size_type* sycl_output_xyz = nullptr;
-    size_type* sycl_input_xyz = nullptr;
 };
 
 #endif // DPNP_ITERATOR_H

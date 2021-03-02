@@ -215,7 +215,6 @@ INP_DLLEXPORT void dpnp_cumsum_c(void* array1_in, void* result1, size_t size);
  * Empty @ref input_shape means scalar.
  *
  * @param [in]  input_in          Input array pointer. @ref _DataType_input type is expected
- * @param [in]  input_size        Number of elements in @ref input_in.
  * @param [out] result_out        Output array pointer. @ref _DataType_output type is expected
  * @param [in]  input_shape       Shape of @ref input_in
  * @param [in]  input_shape_ndim  Number of elements in @ref input_shape
@@ -226,9 +225,8 @@ INP_DLLEXPORT void dpnp_cumsum_c(void* array1_in, void* result1, size_t size);
  */
 template <typename _DataType_input, typename _DataType_output>
 INP_DLLEXPORT void dpnp_sum_c(const void* input_in,
-                              const size_t input_size,
                               void* result_out,
-                              const long* input_shape,
+                              const size_t* input_shape,
                               const size_t input_shape_ndim,
                               const long* axes,
                               const size_t axes_ndim,
@@ -280,7 +278,14 @@ INP_DLLEXPORT void
  *
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_put_along_axis_c(void* arr_in, long* indices_in, void* values_in, size_t axis, const size_t* shape, size_t ndim, size_t size_indices, size_t values_size);
+INP_DLLEXPORT void dpnp_put_along_axis_c(void* arr_in,
+                                         long* indices_in,
+                                         void* values_in,
+                                         size_t axis,
+                                         const size_t* shape,
+                                         size_t ndim,
+                                         size_t size_indices,
+                                         size_t values_size);
 
 /**
  * @ingroup BACKEND_API
@@ -374,6 +379,21 @@ INP_DLLEXPORT void dpnp_cov_c(void* array1_in, void* result1, size_t nrows, size
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of det function
+ *
+ * @param [in]  array          Input array with data.
+ * @param [out] result         Output array.
+ * @param [in]  k              Diagonal in question.
+ * @param [in]  shape          Shape of input array.
+ * @param [in]  shape_result   Shape of result array.
+ * @param [in]  ndim           Number of elements in shape.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_diag_c(
+    void* array, void* result, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim);
 
 /**
  * @ingroup BACKEND_API
@@ -537,6 +557,22 @@ INP_DLLEXPORT void dpnp_take_c(void* array, void* indices, void* result, size_t 
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of take function
+ *
+ * @param [in]  array      Input array with data.
+ * @param [out] result     Output array.
+ * @param [in]  k          Diagonal above which to zero elements.
+ * @param [in]  shape      Shape of input array.
+ * @param [in]  res_shape  Shape of result array.
+ * @param [in]  ndim       Number of elements in array.shape.
+ * @param [in]  res_ndim   Number of elements in res_shape.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_tril_c(
+    void* array, void* result, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of var function
  *
  * @param [in]  array   Input array with data.
@@ -649,6 +685,16 @@ INP_DLLEXPORT void dpnp_multiply_c(const void* input1_in,
 
 /**
  * @ingroup BACKEND_API
+ * @brief Implementation of ones function
+ *
+ * @param [out] result    Output array.
+ * @param [in]  size      Number of elements in the output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_ones_c(void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief remainder function.
  *
  * @param [in]  array1_in    Input array 1.
@@ -706,5 +752,15 @@ INP_DLLEXPORT void dpnp_elemwise_transpose_c(void* array1_in,
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
 INP_DLLEXPORT void dpnp_trapz_c(
     const void* array1_in, const void* array2_in, void* result1, double dx, size_t array1_size, size_t array2_size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief Implementation of zeros function
+ *
+ * @param [out] result    Output array.
+ * @param [in]  size      Number of elements in the output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_zeros_c(void* result, size_t size);
 
 #endif // BACKEND_IFACE_H
