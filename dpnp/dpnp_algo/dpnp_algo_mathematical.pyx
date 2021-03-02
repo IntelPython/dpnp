@@ -273,19 +273,10 @@ cpdef tuple dpnp_modf(dparray x1):
     return result1, result2
 
 
-cpdef dparray dpnp_multiply(dpnp_input1 x1, dpnp_input2 x2):
-    if dpnp_input1 in dpnp_numeric and dpnp_input2 is dparray:
-        return dpnp_multiply_array_scalar(x2, x1)
-    elif dpnp_input1 is dparray and dpnp_input2 in dpnp_numeric:
-        return dpnp_multiply_array_scalar(x1, x2)
-    elif dpnp_input1 is dparray and dpnp_input2 is dparray:
-        return call_fptr_2in_1out(DPNP_FN_MULTIPLY_ARRAY_ARRAY, x1, x2, x1.shape)
-    else:
-        return x1 * x2
-
-
 cpdef dparray dpnp_multiply_array_scalar(dparray x1, dpnp_numeric x2):
-    _, x2_dtype = get_shape_dtype(x2)
+    cdef dparray_shape_type x1_shape = x1.shape
+    cdef dparray_shape_type x2_shape
+    x2_shape, x2_dtype = get_shape_dtype(x2)
 
     # Convert string type names (dparray.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
@@ -299,11 +290,23 @@ cpdef dparray dpnp_multiply_array_scalar(dparray x1, dpnp_numeric x2):
     # Create result array with type given by FPTR data
     cdef dparray result = dparray(x1.shape, dtype=result_type)
 
-    cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
+    cdef fptr_2in_1out_full_t func = <fptr_2in_1out_full_t > kernel_data.ptr
     # Call FPTR function
-    func(x1.get_data(), &x2, result.get_data(), x1.size)
+    func(x1.get_data(), &x2, result.get_data(), x1.size, 1,
+         x1_shape.data(), x2_shape.data(), x1_shape.size(), x2_shape.size())
 
     return result
+
+
+cpdef dparray dpnp_multiply(dpnp_input1 x1, dpnp_input2 x2):
+    if dpnp_input1 in dpnp_numeric and dpnp_input2 is dparray:
+        return dpnp_multiply_array_scalar(x2, x1)
+    elif dpnp_input1 is dparray and dpnp_input2 in dpnp_numeric:
+        return dpnp_multiply_array_scalar(x1, x2)
+    elif dpnp_input1 is dparray and dpnp_input2 is dparray:
+        return call_fptr_2in_1out_full(DPNP_FN_MULTIPLY, x1, x2)
+    else:
+        return x1 * x2
 
 
 cpdef dparray dpnp_nancumprod(dparray x1):

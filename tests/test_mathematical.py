@@ -27,8 +27,8 @@ def test_diff(array):
 
 
 @pytest.mark.parametrize("val_type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
+                         [int, float],
+                         ids=['int', 'float'])
 @pytest.mark.parametrize("data_type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
@@ -49,7 +49,7 @@ def test_diff(array):
 def test_multiply_scalar(array, val, data_type, val_type):
     a = numpy.array(array, dtype=data_type)
     ia = inp.array(a)
-    val_ = val_type(val).item()
+    val_ = val_type(val)
 
     result = inp.multiply(a, val_)
     expected = numpy.multiply(ia, val_)
@@ -57,6 +57,21 @@ def test_multiply_scalar(array, val, data_type, val_type):
 
     result = inp.multiply(val_, a)
     expected = numpy.multiply(val_, ia)
+    numpy.testing.assert_array_equal(result, expected)
+
+
+@pytest.mark.parametrize("shape",
+                         [(), (3, 2)],
+                         ids=['()', '(3, 2)'])
+@pytest.mark.parametrize("dtype",
+                         [numpy.float32, numpy.float64],
+                         ids=['numpy.float32', 'numpy.float64'])
+def test_multiply_scalar2(shape, dtype):
+    a = numpy.ones(shape, dtype=dtype)
+    ia = inp.ones(shape, dtype=dtype)
+
+    result = 0.5 * ia
+    expected = 0.5 * a
     numpy.testing.assert_array_equal(result, expected)
 
 
