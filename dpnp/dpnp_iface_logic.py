@@ -109,21 +109,16 @@ def all(in_array1, axis=None, out=None, keepdims=False):
 
     is_dparray1 = isinstance(in_array1, dparray)
 
-    if (not use_origin_backend(in_array1) and is_dparray1):
+    if not use_origin_backend(in_array1):
         if axis is not None:
-            checker_throw_value_error("all", "axis", type(axis), None)
-        if out is not None:
-            checker_throw_value_error("all", "out", type(out), None)
-        if keepdims is not False:
-            checker_throw_value_error("all", "keepdims", keepdims, False)
-
-        result = dpnp_all(in_array1)
-
-        # scalar returned
-        if result.shape == (1,):
-            return result.dtype.type(result[0])
-
-        return result
+            pass
+        elif out is not None:
+            pass
+        elif keepdims is not False:
+            pass
+        else:
+            result = dpnp_all(in_array1)
+            return result[0]
 
     return call_origin(numpy.all, axis, out, keepdims)
 
