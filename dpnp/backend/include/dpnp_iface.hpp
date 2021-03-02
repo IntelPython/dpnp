@@ -224,8 +224,8 @@ INP_DLLEXPORT void dpnp_cumsum_c(void* array1_in, void* result1, size_t size);
  * @param [in]  where             mask array
  */
 template <typename _DataType_input, typename _DataType_output>
-INP_DLLEXPORT void dpnp_sum_c(const void* input_in,
-                              void* result_out,
+INP_DLLEXPORT void dpnp_sum_c(void* result_out,
+                              const void* input_in,
                               const size_t* input_shape,
                               const size_t input_shape_ndim,
                               const long* axes,

@@ -56,8 +56,8 @@ template <typename _KernelNameSpecialization1, typename _KernelNameSpecializatio
 class dpnp_sum_c_kernel;
 
 template <typename _DataType_input, typename _DataType_output>
-void dpnp_sum_c(const void* input_in,
-                void* result_out,
+void dpnp_sum_c(void* result_out,
+                const void* input_in,
                 const size_t* input_shape,
                 const size_t input_shape_ndim,
                 const long* axes,
