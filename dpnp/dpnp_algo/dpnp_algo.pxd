@@ -33,6 +33,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
     cdef enum DPNPFuncName "DPNPFuncName":
         DPNP_FN_ABSOLUTE
         DPNP_FN_ADD
+        DPNP_FN_ALL
         DPNP_FN_ARANGE
         DPNP_FN_ARCCOS
         DPNP_FN_ARCCOSH

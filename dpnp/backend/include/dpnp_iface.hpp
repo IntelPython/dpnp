@@ -107,6 +107,17 @@ void dpnp_memory_memcpy_c(void* dst, const void* src, size_t size_in_bytes);
 
 /**
  * @ingroup BACKEND_API
+ * @brief Test whether all array elements along a given axis evaluate to True.
+ *
+ * @param [in]  array       Input array.
+ * @param [out] result      Output array.
+ * @param [in]  size        Number of input elements in `array`.
+ */
+template <typename _DataType, typename _ResultType>
+INP_DLLEXPORT void dpnp_all_c(void* array, void* result, const size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief Array initialization
  *
  * Input array, step based, initialization procedure.
