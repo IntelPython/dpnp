@@ -107,7 +107,7 @@ void dpnp_full_c(void* array_in, void* result, const size_t size)
 template <typename _DataType>
 void dpnp_full_like_c(void* array_in, void* result, const size_t size)
 {
-    dpnp_initval_c<_DataType>(result, array_in, size);
+    dpnp_full_c<_DataType>(array_in, result, size);
 }
 
 template <typename _DataType>
@@ -124,12 +124,7 @@ void dpnp_ones_c(void* result, size_t size)
 template <typename _DataType>
 void dpnp_ones_like_c(void* result, size_t size)
 {
-    _DataType* fill_value = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(sizeof(_DataType)));
-    fill_value[0] = 1;
-
-    dpnp_initval_c<_DataType>(result, fill_value, size);
-
-    dpnp_memory_free_c(fill_value);
+    dpnp_ones_c<_DataType>(result, size);
 }
 
 template <typename _DataType>
@@ -146,12 +141,7 @@ void dpnp_zeros_c(void* result, size_t size)
 template <typename _DataType>
 void dpnp_zeros_like_c(void* result, size_t size)
 {
-    _DataType* fill_value = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(sizeof(_DataType)));
-    fill_value[0] = 0;
-
-    dpnp_initval_c<_DataType>(result, fill_value, size);
-
-    dpnp_memory_free_c(fill_value);
+    dpnp_zeros_c<_DataType>(result, size);
 }
 
 template <typename _DataType>
