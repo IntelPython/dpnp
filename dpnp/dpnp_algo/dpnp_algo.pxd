@@ -82,6 +82,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FLOOR_DIVIDE
         DPNP_FN_FMOD
         DPNP_FN_FULL
+        DPNP_FN_FULL_LIKE
         DPNP_FN_HYPOT
         DPNP_FN_INITVAL
         DPNP_FN_INV
@@ -103,6 +104,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_MODF
         DPNP_FN_MULTIPLY
         DPNP_FN_ONES
+        DPNP_FN_ONES_LIKE
         DPNP_FN_PLACE
         DPNP_FN_POWER
         DPNP_FN_PROD
@@ -168,6 +170,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_TRUNC
         DPNP_FN_VAR
         DPNP_FN_ZEROS
+        DPNP_FN_ZEROS_LIKE
 
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
     cdef enum DPNPFuncType "DPNPFuncType":
