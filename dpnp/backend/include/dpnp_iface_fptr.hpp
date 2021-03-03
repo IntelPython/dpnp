@@ -61,6 +61,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_ABSOLUTE,                 /**< Used in numpy.absolute() implementation  */
     DPNP_FN_ADD,                      /**< Used in numpy.add() implementation  */
     DPNP_FN_ALL,                      /**< Used in numpy.all() implementation  */
+    DPNP_FN_ANY,                      /**< Used in numpy.any() implementation  */
     DPNP_FN_ARANGE,                   /**< Used in numpy.arange() implementation  */
     DPNP_FN_ARCCOS,                   /**< Used in numpy.arccos() implementation  */
     DPNP_FN_ARCCOSH,                  /**< Used in numpy.arccosh() implementation  */
