@@ -1114,6 +1114,8 @@ def triu(m, k=0):
     if not use_origin_backend(m):
         if not isinstance(m, dparray):
             pass
+        elif not isinstance(k, int):
+            pass
         else:
             return dpnp_triu(m, k)
 
