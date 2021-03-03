@@ -238,7 +238,7 @@ class dpnp_multiply_array_array_c_kernel;
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
 void dpnp_multiply_array_array_c(const void* input1_in,
                                  const void* input2_in,
-                                 const void* result_out,
+                                 void* result_out,
                                  const size_t size)
 {
     if (!size)
@@ -249,7 +249,7 @@ void dpnp_multiply_array_array_c(const void* input1_in,
     cl::sycl::event event;
     _DataType_input1* input1 = reinterpret_cast<_DataType_input1*>(const_cast<void*>(input1_in));
     _DataType_input2* input2 = reinterpret_cast<_DataType_input2*>(const_cast<void*>(input2_in));
-    _DataType_output* result = reinterpret_cast<_DataType_output*>(const_cast<void*>(result_out));
+    _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
 
     cl::sycl::range<1> gws(size);
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
@@ -284,7 +284,7 @@ class dpnp_multiply_array_scalar_c_kernel;
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
 void dpnp_multiply_array_scalar_c(const void* input1_in,
                                   const void* input2_in,
-                                  const void* result_out,
+                                  void* result_out,
                                   const size_t size)
 {
     if (!size)
@@ -296,7 +296,7 @@ void dpnp_multiply_array_scalar_c(const void* input1_in,
     _DataType_input1* input1 = reinterpret_cast<_DataType_input1*>(const_cast<void*>(input1_in));
     _DataType_input2* input2_ptr = reinterpret_cast<_DataType_input2*>(const_cast<void*>(input2_in));
     _DataType_input2 input2 = *input2_ptr;
-    _DataType_output* result = reinterpret_cast<_DataType_output*>(const_cast<void*>(result_out));
+    _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
 
     cl::sycl::range<1> gws(size);
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
@@ -316,7 +316,7 @@ void dpnp_multiply_array_scalar_c(const void* input1_in,
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
 void dpnp_multiply_c(const void* input1_in,
                      const void* input2_in,
-                     const void* result_out,
+                     void* result_out,
                      const size_t input1_size,
                      const size_t input2_size,
                      const size_t* input1_shape,
