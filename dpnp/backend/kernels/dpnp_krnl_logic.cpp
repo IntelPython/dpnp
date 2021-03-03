@@ -53,9 +53,14 @@ void dpnp_all_c(void* array1_in, void* result1, const size_t size)
 }
 
 template <typename _DataType, typename _ResultType>
-void dpnp_any_c(void* array1_in, void* result1, const size_t size)
+void dpnp_any_c(const void* array1_in, void* result1, const size_t size)
 {
-    _DataType* array_in = reinterpret_cast<_DataType*>(array1_in);
+    if ((array1_in == nullptr) || (result1 == nullptr))
+    {
+        return;
+    }
+
+    const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
     _ResultType* result = reinterpret_cast<_ResultType*>(result1);
 
     bool res = false;

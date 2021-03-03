@@ -125,7 +125,7 @@ INP_DLLEXPORT void dpnp_all_c(void* array, void* result, const size_t size);
  * @param [in]  size        Number of input elements in `array`.
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void dpnp_any_c(void* array, void* result, const size_t size);
+INP_DLLEXPORT void dpnp_any_c(const void* array, void* result, const size_t size);
 
 /**
  * @ingroup BACKEND_API
