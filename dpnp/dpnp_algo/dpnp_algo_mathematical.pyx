@@ -32,8 +32,6 @@ and the rest of the library
 
 """
 
-from libc.stdio cimport printf
-
 from dpnp.dpnp_utils cimport *
 import dpnp
 import numpy
