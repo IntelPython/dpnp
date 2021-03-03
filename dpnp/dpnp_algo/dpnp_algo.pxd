@@ -216,24 +216,6 @@ ctypedef void(*dpnp_reduction_c_t)(void * , const void * , const size_t*, const 
 cdef dparray call_fptr_1out(DPNPFuncName fptr_name, result_shape, result_dtype)
 cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shape_type result_shape)
 cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, dparray_shape_type result_shape)
-cdef dparray call_fptr_2in_1out_full(DPNPFuncName fptr_name, dparray x1, dparray x2)
-
-
-ctypedef fused dpnp_scalar:
-    int
-    long
-    float
-    double
-    bint
-    double complex
-
-ctypedef fused dpnp_input1:
-    dparray
-    dpnp_scalar
-
-ctypedef fused dpnp_input2:
-    dparray
-    dpnp_scalar
 
 
 cpdef dparray dpnp_astype(dparray array1, dtype_target)
@@ -298,7 +280,7 @@ cpdef dparray dpnp_divide(dparray array1, dparray array2)
 cpdef dparray dpnp_hypot(dparray array1, dparray array2)
 cpdef dparray dpnp_maximum(dparray array1, dparray array2)
 cpdef dparray dpnp_minimum(dparray array1, dparray array2)
-cpdef dparray dpnp_multiply(dpnp_input1 x1, dpnp_input2 x2)
+cpdef dparray dpnp_multiply(object x1_obj, object x2_obj)
 cpdef dparray dpnp_negative(dparray array1)
 cpdef dparray dpnp_power(dparray array1, array2)
 cpdef dparray dpnp_remainder(dparray array1, dparray array2)

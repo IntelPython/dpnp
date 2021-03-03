@@ -32,6 +32,7 @@ and the rest of the library
 
 """
 
+from libc.stdio cimport printf
 
 from dpnp.dpnp_utils cimport *
 import dpnp
@@ -273,40 +274,54 @@ cpdef tuple dpnp_modf(dparray x1):
     return result1, result2
 
 
-cpdef dparray dpnp_multiply_array_scalar(dparray x1, dpnp_scalar x2):
-    cdef dparray_shape_type x1_shape = x1.shape
-    cdef dparray_shape_type x2_shape
-    x2_shape, x2_dtype = get_shape_dtype(x2)
+cpdef dparray dpnp_multiply(object x1_obj, object x2_obj):
+    cdef dparray_shape_type x1_shape, x2_shape, result_shape
+
+    cdef bint x1_obj_is_dparray = isinstance(x1_obj, dparray)
+    cdef bint x2_obj_is_dparray = isinstance(x2_obj, dparray)
+
+    cdef dparray x1_dparray, x2_dparray
+
+    _, x1_dtype = get_shape_dtype(x1_obj)
+    _, x2_dtype = get_shape_dtype(x2_obj)
+
+    if x1_obj_is_dparray and not x2_obj_is_dparray:
+        x1_dparray = x1_obj
+        x2_dparray = dparray((1,), dtype=x2_dtype)
+        copy_values_to_dparray(x2_dparray, (x2_obj,))
+    elif not x1_obj_is_dparray and x2_obj_is_dparray:
+        x1_dparray = x2_obj
+        x2_dparray = dparray((1,), dtype=x1_dtype)
+        copy_values_to_dparray(x2_dparray, (x1_obj,))
+    else:
+        x1_dparray = x1_obj
+        x2_dparray = x2_obj
+
+    x1_shape = x1_dparray.shape
+    x2_shape = x2_dparray.shape
+    result_shape = get_common_shape(x1_shape, x2_shape)
 
     # Convert string type names (dparray.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
-    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(x2_dtype)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1_dparray.dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(x2_dparray.dtype)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MULTIPLY_ARRAY_SCALAR,
-                                                          param1_type, param2_type)
+    cdef DPNPFuncData kernel_data
+    if x1_obj_is_dparray and x2_obj_is_dparray:
+        kernel_data = get_dpnp_function_ptr(DPNP_FN_MULTIPLY, param1_type, param2_type)
+    else:
+        kernel_data = get_dpnp_function_ptr(DPNP_FN_MULTIPLY_ARRAY_SCALAR, param1_type, param2_type)
 
     result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # Create result array with type given by FPTR data
-    cdef dparray result = dparray(x1.shape, dtype=result_type)
+    cdef dparray result = dparray(result_shape, dtype=result_type)
 
     cdef fptr_2in_1out_full_t func = <fptr_2in_1out_full_t > kernel_data.ptr
     # Call FPTR function
-    func(x1.get_data(), &x2, result.get_data(), x1.size, 1,
+    func(x1_dparray.get_data(), x2_dparray.get_data(), result.get_data(), x1_dparray.size, x2_dparray.size,
          x1_shape.data(), x2_shape.data(), x1_shape.size(), x2_shape.size())
 
     return result
-
-
-cpdef dparray dpnp_multiply(dpnp_input1 x1, dpnp_input2 x2):
-    if dpnp_input1 in dpnp_scalar and dpnp_input2 is dparray:
-        return dpnp_multiply_array_scalar(x2, x1)
-    elif dpnp_input1 is dparray and dpnp_input2 in dpnp_scalar:
-        return dpnp_multiply_array_scalar(x1, x2)
-    elif dpnp_input1 is dparray and dpnp_input2 is dparray:
-        return call_fptr_2in_1out_full(DPNP_FN_MULTIPLY, x1, x2)
-    else:
-        return x1 * x2
 
 
 cpdef dparray dpnp_nancumprod(dparray x1):
