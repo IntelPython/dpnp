@@ -60,6 +60,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_NONE,                     /**< Very first element of the enumeration */
     DPNP_FN_ABSOLUTE,                 /**< Used in numpy.absolute() implementation  */
     DPNP_FN_ADD,                      /**< Used in numpy.add() implementation  */
+    DPNP_FN_ALL,                      /**< Used in numpy.all() implementation  */
     DPNP_FN_ARANGE,                   /**< Used in numpy.arange() implementation  */
     DPNP_FN_ARCCOS,                   /**< Used in numpy.arccos() implementation  */
     DPNP_FN_ARCCOSH,                  /**< Used in numpy.arccosh() implementation  */
@@ -191,6 +192,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_TRAPZ,                    /**< Used in numpy.trapz() implementation  */
     DPNP_FN_TRI,                      /**< Used in numpy.tri() implementation  */
     DPNP_FN_TRIL,                     /**< Used in numpy.tril() implementation  */
+    DPNP_FN_TRIU,                     /**< Used in numpy.triu() implementation  */
     DPNP_FN_TRUNC,                    /**< Used in numpy.trunc() implementation  */
     DPNP_FN_VAR,                      /**< Used in numpy.var() implementation  */
     DPNP_FN_ZEROS,                    /**< Used in numpy.zeros() implementation */
