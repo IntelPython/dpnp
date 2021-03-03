@@ -72,6 +72,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_ARGMAX,                   /**< Used in numpy.argmax() implementation  */
     DPNP_FN_ARGMIN,                   /**< Used in numpy.argmin() implementation  */
     DPNP_FN_ARGSORT,                  /**< Used in numpy.argsort() implementation  */
+    DPNP_FN_ASTYPE,                   /**< Used in numpy.astype() implementation  */
     DPNP_FN_BITWISE_AND,              /**< Used in numpy.bitwise_and() implementation  */
     DPNP_FN_BITWISE_OR,               /**< Used in numpy.bitwise_or() implementation  */
     DPNP_FN_BITWISE_XOR,              /**< Used in numpy.bitwise_xor() implementation  */
