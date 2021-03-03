@@ -225,8 +225,8 @@ INP_DLLEXPORT void dpnp_cumsum_c(void* array1_in, void* result1, size_t size);
  *
  * Empty @ref input_shape means scalar.
  *
- * @param [in]  input_in          Input array pointer. @ref _DataType_input type is expected
  * @param [out] result_out        Output array pointer. @ref _DataType_output type is expected
+ * @param [in]  input_in          Input array pointer. @ref _DataType_input type is expected
  * @param [in]  input_shape       Shape of @ref input_in
  * @param [in]  input_shape_ndim  Number of elements in @ref input_shape
  * @param [in]  axes              Array of axes to apply to @ref input_shape
@@ -266,8 +266,8 @@ INP_DLLEXPORT void dpnp_place_c(void* arr, long* mask, void* vals, const size_t 
  *
  * Empty @ref input_shape means scalar.
  *
- * @param [in]  input_in          Input array pointer. @ref _DataType_input type is expected
  * @param [out] result_out        Output array pointer. @ref _DataType_output type is expected
+ * @param [in]  input_in          Input array pointer. @ref _DataType_input type is expected
  * @param [in]  input_shape       Shape of @ref input_in
  * @param [in]  input_shape_ndim  Number of elements in @ref input_shape
  * @param [in]  axes              Array of axes to apply to @ref input_shape
