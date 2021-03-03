@@ -80,7 +80,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_ones_c", "group___b_a_c_k_e_n_d___a_p_i.html#gaa4b0f8fc56a6778a53df6e68e1acbe4b", null ],
     [ "dpnp_place_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga689c9f491f7645d86953db3968146d12", null ],
     [ "dpnp_power_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga45d6f198ea9bf5016143f47d100f0898", null ],
-    [ "dpnp_prod_c", "group___b_a_c_k_e_n_d___a_p_i.html#gae2f8353b70b96703bdd19eca9d8c1ba2", null ],
+    [ "dpnp_prod_c", "group___b_a_c_k_e_n_d___a_p_i.html#gae11916836622bfa3348becbecdfbfeb5", null ],
     [ "dpnp_put_along_axis_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga545f1e2f2ca883129600e63d1fdd4e2c", null ],
     [ "dpnp_put_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga7caded16aee29c16ca4aa1df979630c8", null ],
     [ "dpnp_queue_initialize_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga0368d7cc2e2eb7a3f8c4184b6aca3547", null ],

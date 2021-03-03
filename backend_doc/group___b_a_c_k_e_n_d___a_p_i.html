@@ -410,10 +410,10 @@ Functions</h2></td></tr>
 <tr class="memitem:ga689c9f491f7645d86953db3968146d12"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga689c9f491f7645d86953db3968146d12">dpnp_place_c</a> (void *arr, long *mask, void *vals, const size_t arr_size, const size_t vals_size)</td></tr>
 <tr class="memdesc:ga689c9f491f7645d86953db3968146d12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Place of array elements.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga689c9f491f7645d86953db3968146d12">More...</a><br /></td></tr>
 <tr class="separator:ga689c9f491f7645d86953db3968146d12"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae2f8353b70b96703bdd19eca9d8c1ba2"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
-<tr class="memitem:gae2f8353b70b96703bdd19eca9d8c1ba2"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gae2f8353b70b96703bdd19eca9d8c1ba2">dpnp_prod_c</a> (void *array, void *result, size_t size)</td></tr>
-<tr class="memdesc:gae2f8353b70b96703bdd19eca9d8c1ba2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Product of array elements.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gae2f8353b70b96703bdd19eca9d8c1ba2">More...</a><br /></td></tr>
-<tr class="separator:gae2f8353b70b96703bdd19eca9d8c1ba2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae11916836622bfa3348becbecdfbfeb5"><td class="memTemplParams" colspan="2">template&lt;typename _DataType_input , typename _DataType_output &gt; </td></tr>
+<tr class="memitem:gae11916836622bfa3348becbecdfbfeb5"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gae11916836622bfa3348becbecdfbfeb5">dpnp_prod_c</a> (void *result_out, const void *input_in, const size_t *input_shape, const size_t input_shape_ndim, const long *axes, const size_t axes_ndim, const void *initial, const long *where)</td></tr>
+<tr class="memdesc:gae11916836622bfa3348becbecdfbfeb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute Product of input array elements.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gae11916836622bfa3348becbecdfbfeb5">More...</a><br /></td></tr>
+<tr class="separator:gae11916836622bfa3348becbecdfbfeb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga7caded16aee29c16ca4aa1df979630c8"><td class="memTemplParams" colspan="2">template&lt;typename _DataType , typename _IndecesType , typename _ValueType &gt; </td></tr>
 <tr class="memitem:ga7caded16aee29c16ca4aa1df979630c8"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga7caded16aee29c16ca4aa1df979630c8">dpnp_put_c</a> (void *array, void *ind, void *v, const size_t size, const size_t size_ind, const size_t size_v)</td></tr>
 <tr class="memdesc:ga7caded16aee29c16ca4aa1df979630c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Product of array elements.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga7caded16aee29c16ca4aa1df979630c8">More...</a><br /></td></tr>
@@ -4623,31 +4623,61 @@ template&lt;typename _DataType_input1 , typename _DataType_input2 , typename _Da
 
 </div>
 </div>
-<a id="gae2f8353b70b96703bdd19eca9d8c1ba2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gae2f8353b70b96703bdd19eca9d8c1ba2">&#9670;&nbsp;</a></span>dpnp_prod_c()</h2>
+<a id="gae11916836622bfa3348becbecdfbfeb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gae11916836622bfa3348becbecdfbfeb5">&#9670;&nbsp;</a></span>dpnp_prod_c()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename _DataType &gt; </div>
+template&lt;typename _DataType_input , typename _DataType_output &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">void dpnp_prod_c </td>
           <td>(</td>
           <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>array</em>, </td>
+          <td class="paramname"><em>result_out</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>result</em>, </td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>input_in</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>size</em>&#160;</td>
+          <td class="paramtype">const size_t *&#160;</td>
+          <td class="paramname"><em>input_shape</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>input_shape_ndim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const long *&#160;</td>
+          <td class="paramname"><em>axes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>axes_ndim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>initial</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const long *&#160;</td>
+          <td class="paramname"><em>where</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -4657,12 +4687,19 @@ template&lt;typename _DataType &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Product of array elements. </p>
+<p>Compute Product of input array elements. </p>
+<p>Input array is expected as _DataType_input type and assume result as _DataType_output type. The function creates no memory.</p>
+<p>Empty input_shape means scalar.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">array</td><td>Input array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of input elements in <code>array</code>. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array contains one element. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result_out</td><td>Output array pointer. _DataType_output type is expected </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input_in</td><td>Input array pointer. _DataType_input type is expected </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input_shape</td><td>Shape of input_in </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input_shape_ndim</td><td>Number of elements in input_shape </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">axes</td><td>Array of axes to apply to input_shape </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">axes_ndim</td><td>Number of elements in axes </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">initial</td><td>Pointer to initial value for the algorithm. _DataType_input is expected </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">where</td><td>mask array </td></tr>
   </table>
   </dd>
 </dl>
@@ -5500,8 +5537,8 @@ template&lt;typename _DataType_input , typename _DataType_output &gt; </div>
 <p>Empty input_shape means scalar.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">input_in</td><td>Input array pointer. _DataType_input type is expected </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">result_out</td><td>Output array pointer. _DataType_output type is expected </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input_in</td><td>Input array pointer. _DataType_input type is expected </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">input_shape</td><td>Shape of input_in </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">input_shape_ndim</td><td>Number of elements in input_shape </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">axes</td><td>Array of axes to apply to input_shape </td></tr>

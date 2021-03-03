@@ -86,6 +86,9 @@
    .. automethod:: min
 
 
+   .. automethod:: prod
+
+
    .. automethod:: ravel
 
 
