@@ -715,7 +715,7 @@ INP_DLLEXPORT void dpnp_modf_c(void* array1_in, void* result1_out, void* result2
  * @param [in]  input1_shape_ndim  Size of shape 1.
  * @param [in]  input2_shape_ndim  Size of shape 2.
  */
-template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
+template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
 INP_DLLEXPORT void dpnp_multiply_c(void* result_out,
                                    const void* input1_in,
                                    const void* input2_in,
