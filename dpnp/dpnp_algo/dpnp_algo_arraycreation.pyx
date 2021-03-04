@@ -44,15 +44,18 @@ __all__ += [
     "dpnp_copy",
     "dpnp_diag",
     "dpnp_full",
+    "dpnp_full_like",
     "dpnp_geomspace",
     "dpnp_linspace",
     "dpnp_logspace",
     "dpnp_meshgrid",
     "dpnp_ones",
+    "dpnp_ones_like",
     "dpnp_tri",
     "dpnp_tril",
     "dpnp_triu",
-    "dpnp_zeros"
+    "dpnp_zeros",
+    "dpnp_zeros_like"
 ]
 
 
