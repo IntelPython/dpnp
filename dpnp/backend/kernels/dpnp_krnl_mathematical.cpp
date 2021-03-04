@@ -246,8 +246,6 @@ void dpnp_multiply_array_array_c(void* result_out,
         return;
     }
 
-    std::cout << "START" << std::endl;
-
     cl::sycl::event event;
     const _DataType_input1* input1 = reinterpret_cast<const _DataType_input1*>(input1_in);
     const _DataType_input2* input2 = reinterpret_cast<const _DataType_input2*>(input2_in);
