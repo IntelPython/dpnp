@@ -272,7 +272,7 @@ cpdef tuple dpnp_modf(dparray x1):
     return result1, result2
 
 
-cpdef dparray dpnp_multiply(object x1_obj, object x2_obj):
+cpdef dparray dpnp_multiply(object x1_obj, object x2_obj, dparray out=None, object where=True):
     cdef dparray_shape_type x1_shape, x2_shape, result_shape
 
     cdef bint x1_obj_is_dparray = isinstance(x1_obj, dparray)
@@ -300,24 +300,26 @@ cpdef dparray dpnp_multiply(object x1_obj, object x2_obj):
     result_shape = get_common_shape(x1_shape, x2_shape)
 
     # Convert string type names (dparray.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1_dparray.dtype)
-    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(x2_dparray.dtype)
+    cdef DPNPFuncType x1_c_type = dpnp_dtype_to_DPNPFuncType(x1_dparray.dtype)
+    cdef DPNPFuncType x2_c_type = dpnp_dtype_to_DPNPFuncType(x2_dparray.dtype)
+
+    cdef DPNPFuncName fptr_name
+    if x1_obj_is_dparray and x2_obj_is_dparray:
+        fptr_name = DPNP_FN_MULTIPLY
+    else:
+        fptr_name = DPNP_FN_MULTIPLY_ARRAY_SCALAR
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data
-    if x1_obj_is_dparray and x2_obj_is_dparray:
-        kernel_data = get_dpnp_function_ptr(DPNP_FN_MULTIPLY, param1_type, param2_type)
-    else:
-        kernel_data = get_dpnp_function_ptr(DPNP_FN_MULTIPLY_ARRAY_SCALAR, param1_type, param2_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, x1_c_type, x2_c_type) 
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-    # Create result array with type given by FPTR data
-    cdef dparray result = dparray(result_shape, dtype=result_type)
+    cdef DPNPFuncType result_c_type = get_output_c_type(fptr_name, kernel_data.return_type, out, None)
+    # Create result array
+    cdef dparray result = create_output_array(result_shape, result_c_type, out)
 
     cdef fptr_2in_1out_full_t func = <fptr_2in_1out_full_t > kernel_data.ptr
     # Call FPTR function
-    func(x1_dparray.get_data(), x2_dparray.get_data(), result.get_data(), x1_dparray.size, x2_dparray.size,
-         x1_shape.data(), x2_shape.data(), x1_shape.size(), x2_shape.size())
+    func(result.get_data(), x1_dparray.get_data(), x2_dparray.get_data(), x1_dparray.size, x2_dparray.size,
+         x1_shape.data(), x2_shape.data(), x1_shape.size(), x2_shape.size(), NULL)
 
     return result
 

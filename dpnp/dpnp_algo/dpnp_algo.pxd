@@ -208,8 +208,8 @@ cdef extern from "dpnp_iface.hpp":
 ctypedef void(*fptr_1out_t)(void *, size_t)
 ctypedef void(*fptr_1in_1out_t)(void * , void * , size_t)
 ctypedef void(*fptr_2in_1out_t)(void * , void*, void*, size_t)
-ctypedef void(*fptr_2in_1out_full_t)(const void *, const void *, void *, const size_t, const size_t,
-                                     const long*, const long*, const size_t, const size_t)
+ctypedef void(*fptr_2in_1out_full_t)(void *, const void *, const void *, const size_t, const size_t,
+                                     const long*, const long*, const size_t, const size_t, const long*)
 ctypedef void(*fptr_blas_gemm_2in_1out_t)(void * , void * , void * , size_t, size_t, size_t)
 ctypedef void(*dpnp_reduction_c_t)(void * , const void * , const size_t*, const size_t, const long*, const size_t, const void * , const long*)
 

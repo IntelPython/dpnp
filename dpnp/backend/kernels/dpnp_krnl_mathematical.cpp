@@ -232,13 +232,13 @@ void dpnp_modf_c(void* array1_in, void* result1_out, void* result2_out, size_t s
     event.wait();
 }
 
-template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
+template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
 class dpnp_multiply_array_array_c_kernel;
 
-template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
-void dpnp_multiply_array_array_c(const void* input1_in,
+template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
+void dpnp_multiply_array_array_c(void* result_out,
+                                 const void* input1_in,
                                  const void* input2_in,
-                                 void* result_out,
                                  const size_t size)
 {
     if (!size)
@@ -249,8 +249,8 @@ void dpnp_multiply_array_array_c(const void* input1_in,
     std::cout << "START" << std::endl;
 
     cl::sycl::event event;
-    _DataType_input1* input1 = reinterpret_cast<_DataType_input1*>(const_cast<void*>(input1_in));
-    _DataType_input2* input2 = reinterpret_cast<_DataType_input2*>(const_cast<void*>(input2_in));
+    const _DataType_input1* input1 = reinterpret_cast<const _DataType_input1*>(input1_in);
+    const _DataType_input2* input2 = reinterpret_cast<const _DataType_input2*>(input2_in);
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
 
     cl::sycl::range<1> gws(size);
@@ -261,16 +261,18 @@ void dpnp_multiply_array_array_c(const void* input1_in,
         }
     };
     auto kernel_func = [&](cl::sycl::handler& cgh) {
-        cgh.parallel_for<class dpnp_multiply_array_array_c_kernel<_DataType_input1, _DataType_input2,
-                                                                  _DataType_output>>(gws, kernel_parallel_for_func);
+        cgh.parallel_for<class dpnp_multiply_array_array_c_kernel<_DataType_output, _DataType_input1,
+                                                                  _DataType_input2>>(gws, kernel_parallel_for_func);
     };
 
     if constexpr ((std::is_same<_DataType_input1, double>::value ||
                    std::is_same<_DataType_input1, float>::value) &&
                   std::is_same<_DataType_input2, _DataType_input1>::value)
     {
+        _DataType_input1* in1 = const_cast<_DataType_input1*>(input1);
+        _DataType_input2* in2 = const_cast<_DataType_input2*>(input2);
         // https://docs.oneapi.com/versions/latest/onemkl/mul.html
-        event = oneapi::mkl::vm::mul(DPNP_QUEUE, size, input1, input2, result);
+        event = oneapi::mkl::vm::mul(DPNP_QUEUE, size, in1, in2, result);
     }
     else
     {
@@ -280,13 +282,13 @@ void dpnp_multiply_array_array_c(const void* input1_in,
     event.wait();
 }
 
-template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
+template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
 class dpnp_multiply_array_scalar_c_kernel;
 
-template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
-void dpnp_multiply_array_scalar_c(const void* input1_in,
+template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
+void dpnp_multiply_array_scalar_c(void* result_out,
+                                  const void* input1_in,
                                   const void* input2_in,
-                                  void* result_out,
                                   const size_t size)
 {
     if (!size)
@@ -295,8 +297,8 @@ void dpnp_multiply_array_scalar_c(const void* input1_in,
     }
 
     cl::sycl::event event;
-    _DataType_input1* input1 = reinterpret_cast<_DataType_input1*>(const_cast<void*>(input1_in));
-    _DataType_input2* input2_ptr = reinterpret_cast<_DataType_input2*>(const_cast<void*>(input2_in));
+    const _DataType_input1* input1 = reinterpret_cast<const _DataType_input1*>(input1_in);
+    const _DataType_input2* input2_ptr = reinterpret_cast<const _DataType_input2*>(input2_in);
     _DataType_input2 input2 = *input2_ptr;
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
 
@@ -308,29 +310,31 @@ void dpnp_multiply_array_scalar_c(const void* input1_in,
         }
     };
     auto kernel_func = [&](cl::sycl::handler& cgh) {
-        cgh.parallel_for<class dpnp_multiply_array_scalar_c_kernel<_DataType_input1, _DataType_input2,
-                                                                   _DataType_output>>(gws, kernel_parallel_for_func);
+        cgh.parallel_for<class dpnp_multiply_array_scalar_c_kernel<_DataType_output, _DataType_input1,
+                                                                   _DataType_input2>>(gws, kernel_parallel_for_func);
     };
     event = DPNP_QUEUE.submit(kernel_func);
     event.wait();
 }
 
-template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
-void dpnp_multiply_c(const void* input1_in,
+template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
+void dpnp_multiply_c(void* result_out,
+                     const void* input1_in,
                      const void* input2_in,
-                     void* result_out,
                      const size_t input1_size,
                      const size_t input2_size,
                      const size_t* input1_shape,
                      const size_t* input2_shape,
                      const size_t input1_shape_ndim,
-                     const size_t input2_shape_ndim)
+                     const size_t input2_shape_ndim,
+                     const size_t* where)
 {
     // avoid warning unused variable
     (void)input1_shape;
     (void)input2_shape;
     (void)input1_shape_ndim;
     (void)input2_shape_ndim;
+    (void)where;
 
     if (!input1_size || !input2_size)
     {
@@ -339,18 +343,18 @@ void dpnp_multiply_c(const void* input1_in,
 
     if (input1_size == input2_size)
     {
-        dpnp_multiply_array_array_c<_DataType_input1, _DataType_input2, _DataType_output>(input1_in, input2_in,
-                                                                                          result_out, input1_size);
+        dpnp_multiply_array_array_c<_DataType_output, _DataType_input1, _DataType_input2>(result_out, input1_in,
+                                                                                          input2_in, input1_size);
     }
     else if (input1_size == 1)
     {
-        dpnp_multiply_array_scalar_c<_DataType_input2, _DataType_input1, _DataType_output>(input2_in, input1_in,
-                                                                                           result_out, input2_size);
+        dpnp_multiply_array_scalar_c<_DataType_output, _DataType_input2, _DataType_input1>(result_out, input2_in,
+                                                                                           input1_in, input2_size);
     }
     else if (input2_size == 1)
     {
-        dpnp_multiply_array_scalar_c<_DataType_input1, _DataType_input2, _DataType_output>(input1_in, input2_in,
-                                                                                           result_out, input1_size);
+        dpnp_multiply_array_scalar_c<_DataType_output, _DataType_input1, _DataType_input2>(result_out, input1_in,
+                                                                                           input2_in, input1_size);
     }
 }
 
@@ -534,29 +538,29 @@ void func_map_init_mathematical(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_MODF][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_modf_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_multiply_c<bool, bool, bool>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_BLN][eft_INT] = {eft_INT, (void*)dpnp_multiply_c<bool, int, int>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_BLN][eft_LNG] = {eft_LNG, (void*)dpnp_multiply_c<bool, long, long>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_BLN][eft_FLT] = {eft_FLT, (void*)dpnp_multiply_c<bool, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_BLN][eft_DBL] = {eft_DBL, (void*)dpnp_multiply_c<bool, double, double>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_INT][eft_BLN] = {eft_INT, (void*)dpnp_multiply_c<int, bool, int>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_BLN][eft_INT] = {eft_INT, (void*)dpnp_multiply_c<int, bool, int>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_BLN][eft_LNG] = {eft_LNG, (void*)dpnp_multiply_c<long, bool, long>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_BLN][eft_FLT] = {eft_FLT, (void*)dpnp_multiply_c<float, bool, float>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_BLN][eft_DBL] = {eft_DBL, (void*)dpnp_multiply_c<double, bool, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_INT][eft_BLN] = {eft_INT, (void*)dpnp_multiply_c<int, int, bool>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_multiply_c<int, int, int>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_multiply_c<int, long, long>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_INT][eft_FLT] = {eft_DBL, (void*)dpnp_multiply_c<int, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_multiply_c<int, double, double>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_LNG][eft_BLN] = {eft_LNG, (void*)dpnp_multiply_c<long, bool, long>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_LNG][eft_INT] = {eft_LNG, (void*)dpnp_multiply_c<long, int, long>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_multiply_c<long, int, long>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_INT][eft_FLT] = {eft_DBL, (void*)dpnp_multiply_c<double, int, float>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_multiply_c<double, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_LNG][eft_BLN] = {eft_LNG, (void*)dpnp_multiply_c<long, long, bool>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_LNG][eft_INT] = {eft_LNG, (void*)dpnp_multiply_c<long, long, int>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_multiply_c<long, long, long>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_LNG][eft_FLT] = {eft_DBL, (void*)dpnp_multiply_c<long, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_multiply_c<long, double, double>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_FLT][eft_BLN] = {eft_FLT, (void*)dpnp_multiply_c<float, bool, float>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_FLT][eft_INT] = {eft_DBL, (void*)dpnp_multiply_c<float, int, double>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_FLT][eft_LNG] = {eft_DBL, (void*)dpnp_multiply_c<float, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_LNG][eft_FLT] = {eft_DBL, (void*)dpnp_multiply_c<double, long, float>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_multiply_c<double, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_FLT][eft_BLN] = {eft_FLT, (void*)dpnp_multiply_c<float, float, bool>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_FLT][eft_INT] = {eft_DBL, (void*)dpnp_multiply_c<double, float, int>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_FLT][eft_LNG] = {eft_DBL, (void*)dpnp_multiply_c<double, float, long>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_multiply_c<float, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_FLT][eft_DBL] = {eft_DBL, (void*)dpnp_multiply_c<float, double, double>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_DBL][eft_BLN] = {eft_DBL, (void*)dpnp_multiply_c<double, bool, double>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_multiply_c<double, int, double>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_multiply_c<double, long, double>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_multiply_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_FLT][eft_DBL] = {eft_DBL, (void*)dpnp_multiply_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_DBL][eft_BLN] = {eft_DBL, (void*)dpnp_multiply_c<double, double, bool>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_multiply_c<double, double, int>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_multiply_c<double, double, long>};
+    fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_multiply_c<double, double, float>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_multiply_c<double, double, double>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_C128][eft_C128] = {
         eft_C128, (void*)dpnp_multiply_c<std::complex<double>, std::complex<double>, std::complex<double>>};
@@ -564,51 +568,51 @@ void func_map_init_mathematical(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_BLN][eft_BLN] = {
         eft_BLN, (void*)dpnp_multiply_c<bool, bool, bool>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_BLN][eft_INT] = {
-        eft_LNG, (void*)dpnp_multiply_c<bool, int, long>};
+        eft_LNG, (void*)dpnp_multiply_c<long, bool, int>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_BLN][eft_LNG] = {
-        eft_LNG, (void*)dpnp_multiply_c<bool, long, long>};
+        eft_LNG, (void*)dpnp_multiply_c<long, bool, long>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_BLN][eft_FLT] = {
-        eft_DBL, (void*)dpnp_multiply_c<bool, float, double>};
+        eft_DBL, (void*)dpnp_multiply_c<double, bool, float>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_BLN][eft_DBL] = {
-        eft_DBL, (void*)dpnp_multiply_c<bool, double, double>};
+        eft_DBL, (void*)dpnp_multiply_c<double, bool, double>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_INT][eft_BLN] = {
-        eft_INT, (void*)dpnp_multiply_c<int, bool, int>};
+        eft_INT, (void*)dpnp_multiply_c<int, int, bool>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_INT][eft_INT] = {
         eft_INT, (void*)dpnp_multiply_c<int, int, int>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_INT][eft_LNG] = {
-        eft_INT, (void*)dpnp_multiply_c<int, long, int>};
+        eft_INT, (void*)dpnp_multiply_c<int, int, long>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_INT][eft_FLT] = {
-        eft_DBL, (void*)dpnp_multiply_c<int, float, double>};
+        eft_DBL, (void*)dpnp_multiply_c<double, int, float>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_INT][eft_DBL] = {
-        eft_DBL, (void*)dpnp_multiply_c<int, double, double>};
+        eft_DBL, (void*)dpnp_multiply_c<double, int, double>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_LNG][eft_BLN] = {
-        eft_LNG, (void*)dpnp_multiply_c<long, bool, long>};
+        eft_LNG, (void*)dpnp_multiply_c<long, long, bool>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_LNG][eft_INT] = {
-        eft_LNG, (void*)dpnp_multiply_c<long, int, long>};
+        eft_LNG, (void*)dpnp_multiply_c<long, long, int>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_LNG][eft_LNG] = {
         eft_LNG, (void*)dpnp_multiply_c<long, long, long>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_LNG][eft_FLT] = {
-        eft_DBL, (void*)dpnp_multiply_c<long, float, double>};
+        eft_DBL, (void*)dpnp_multiply_c<double, long, float>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_LNG][eft_DBL] = {
-        eft_DBL, (void*)dpnp_multiply_c<long, double, double>};
+        eft_DBL, (void*)dpnp_multiply_c<double, long, double>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_FLT][eft_BLN] = {
-        eft_FLT, (void*)dpnp_multiply_c<float, bool, float>};
+        eft_FLT, (void*)dpnp_multiply_c<float, float, bool>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_FLT][eft_INT] = {
-        eft_FLT, (void*)dpnp_multiply_c<float, int, float>};
+        eft_FLT, (void*)dpnp_multiply_c<float, float, int>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_FLT][eft_LNG] = {
-        eft_FLT, (void*)dpnp_multiply_c<float, long, float>};
+        eft_FLT, (void*)dpnp_multiply_c<float, float, long>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_FLT][eft_FLT] = {
         eft_FLT, (void*)dpnp_multiply_c<float, float, float>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_FLT][eft_DBL] = {
-        eft_FLT, (void*)dpnp_multiply_c<float, double, float>};
+        eft_FLT, (void*)dpnp_multiply_c<float, float, double>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_DBL][eft_BLN] = {
-        eft_DBL, (void*)dpnp_multiply_c<double, bool, double>};
+        eft_DBL, (void*)dpnp_multiply_c<double, double, bool>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_DBL][eft_INT] = {
-        eft_DBL, (void*)dpnp_multiply_c<double, int, double>};
+        eft_DBL, (void*)dpnp_multiply_c<double, double, int>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_DBL][eft_LNG] = {
-        eft_DBL, (void*)dpnp_multiply_c<double, long, double>};
+        eft_DBL, (void*)dpnp_multiply_c<double, double, long>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_DBL][eft_FLT] = {
-        eft_DBL, (void*)dpnp_multiply_c<double, float, double>};
+        eft_DBL, (void*)dpnp_multiply_c<double, double, float>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_DBL][eft_DBL] = {
         eft_DBL, (void*)dpnp_multiply_c<double, double, double>};
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_C128][eft_C128] = {

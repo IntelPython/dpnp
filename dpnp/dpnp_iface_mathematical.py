@@ -963,7 +963,7 @@ def modf(x, **kwargs):
     return call_origin(numpy.modf, x, **kwargs)
 
 
-def multiply(x1, x2, **kwargs):
+def multiply(x1, x2, out=None, where=True, **kwargs):
     """
     Multiply arguments element-wise.
 
@@ -1004,10 +1004,14 @@ def multiply(x1, x2, **kwargs):
             pass
         elif x1_is_dparray and x2_is_dparray and x1.shape != x2.shape:
             pass
+        elif out is not None and not isinstance(out, dparray):
+            pass
+        elif not where:
+            pass
         else:
-            return dpnp_multiply(x1, x2)
+            return dpnp_multiply(x1, x2, out, where)
 
-    return call_origin(numpy.multiply, x1, x2, **kwargs)
+    return call_origin(numpy.multiply, x1, x2, out=out, where=where, **kwargs)
 
 
 def nancumprod(x1, **kwargs):
