@@ -406,7 +406,7 @@ cpdef dparray dpnp_power(dparray x1, x2):
         return call_fptr_2in_1out(DPNP_FN_POWER, x1, x2, x1.shape)
 
 
-cpdef dpnp_prod(dparray x1):
+cpdef dparray dpnp_prod(dparray input, object axis=None, object dtype=None, dparray out=None, cpp_bool keepdims=False, object initial=None, object where=True):
     """
     input:float64   : outout:float64   : name:prod
     input:float32   : outout:float32   : name:prod
@@ -417,12 +417,25 @@ cpdef dpnp_prod(dparray x1):
     input:complex128: outout:complex128: name:prod
     """
 
-    cdef dparray result = call_fptr_1in_1out(DPNP_FN_PROD, x1, (1,))
+    cdef dparray_shape_type input_shape = input.shape
+    cdef DPNPFuncType input_c_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
-    """ Numpy interface inconsistency """
-    return_type = numpy.dtype(numpy.int64) if (x1.dtype == numpy.int32) else x1.dtype
+    cdef dparray_shape_type axis_shape = _object_to_tuple(axis)
 
-    return return_type.type(result[0])
+    cdef dparray_shape_type result_shape = get_reduction_output_shape(input_shape, axis, keepdims)
+    cdef DPNPFuncType result_c_type = get_output_c_type(DPNP_FN_PROD, input_c_type, out, dtype)
+
+    """ select kernel """
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PROD, input_c_type, result_c_type)
+
+    """ Create result array """
+    cdef dparray result = create_output_array(result_shape, result_c_type, out)
+    cdef dpnp_reduction_c_t func = <dpnp_reduction_c_t > kernel_data.ptr
+
+    """ Call FPTR interface function """
+    func(result.get_data(), input.get_data(), < size_t * >input_shape.data(), input_shape.size(), axis_shape.data(), axis_shape.size(), NULL, NULL)
+
+    return result
 
 
 cpdef dparray dpnp_remainder(dparray x1, dparray x2):
