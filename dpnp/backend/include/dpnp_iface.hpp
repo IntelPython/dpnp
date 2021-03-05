@@ -634,7 +634,8 @@ INP_DLLEXPORT void dpnp_tril_c(
  * @param [in]  res_ndim   Number of elements in res_shape.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_triu_c(void* array, void* result, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim);
+INP_DLLEXPORT void dpnp_triu_c(
+    void* array, void* result, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim);
 
 /**
  * @ingroup BACKEND_API

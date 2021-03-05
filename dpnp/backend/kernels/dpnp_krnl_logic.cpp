@@ -29,7 +29,6 @@
 #include "dpnp_iface.hpp"
 #include "queue_sycl.hpp"
 
-
 template <typename _DataType, typename _ResultType>
 void dpnp_all_c(void* array1_in, void* result1, const size_t size)
 {
