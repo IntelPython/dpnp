@@ -44,15 +44,18 @@ __all__ += [
     "dpnp_copy",
     "dpnp_diag",
     "dpnp_full",
+    "dpnp_full_like",
     "dpnp_geomspace",
     "dpnp_linspace",
     "dpnp_logspace",
     "dpnp_meshgrid",
     "dpnp_ones",
+    "dpnp_ones_like",
     "dpnp_tri",
     "dpnp_tril",
     "dpnp_triu",
-    "dpnp_zeros"
+    "dpnp_zeros",
+    "dpnp_zeros_like"
 ]
 
 
@@ -97,6 +100,28 @@ cpdef dparray dpnp_full(result_shape, value_in, result_dtype):
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FULL, dtype_in, DPNP_FT_NONE)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    # Create single-element input array with type given by FPTR data
+    cdef dparray_shape_type shape_in = (1,)
+    cdef dparray array_in = dparray(shape_in, dtype=result_type)
+    array_in[0] = value_in
+    # Create result array with type given by FPTR data
+    cdef dparray result = dparray(result_shape, dtype=result_type)
+
+    cdef fptr_1in_1out_t func = <fptr_1in_1out_t > kernel_data.ptr
+    # Call FPTR function
+    func(array_in.get_data(), result.get_data(), result.size)
+
+    return result
+
+
+cpdef dparray dpnp_full_like(result_shape, value_in, result_dtype):
+    # Convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType dtype_in = dpnp_dtype_to_DPNPFuncType(result_dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FULL_LIKE, dtype_in, DPNP_FT_NONE)
 
     result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     # Create single-element input array with type given by FPTR data
@@ -223,6 +248,10 @@ cpdef dparray dpnp_ones(result_shape, result_dtype):
     return call_fptr_1out(DPNP_FN_ONES, result_shape, result_dtype)
 
 
+cpdef dparray dpnp_ones_like(result_shape, result_dtype):
+    return call_fptr_1out(DPNP_FN_ONES_LIKE, result_shape, result_dtype)
+
+
 cpdef dparray dpnp_tri(N, M=None, k=0, dtype=numpy.float):
     if M is None:
         M = N
@@ -290,3 +319,7 @@ cpdef dparray dpnp_triu(dparray m, int k):
 
 cpdef dparray dpnp_zeros(result_shape, result_dtype):
     return call_fptr_1out(DPNP_FN_ZEROS, result_shape, result_dtype)
+
+
+cpdef dparray dpnp_zeros_like(result_shape, result_dtype):
+    return call_fptr_1out(DPNP_FN_ZEROS_LIKE, result_shape, result_dtype)

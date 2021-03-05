@@ -118,6 +118,17 @@ INP_DLLEXPORT void dpnp_all_c(void* array, void* result, const size_t size);
 
 /**
  * @ingroup BACKEND_API
+ * @brief Test whether any array element along a given axis evaluates to True.
+ *
+ * @param [in]  array       Input array.
+ * @param [out] result      Output array.
+ * @param [in]  size        Number of input elements in `array`.
+ */
+template <typename _DataType, typename _ResultType>
+INP_DLLEXPORT void dpnp_any_c(const void* array, void* result, const size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief Array initialization
  *
  * Input array, step based, initialization procedure.
@@ -140,6 +151,17 @@ INP_DLLEXPORT void dpnp_arange_c(size_t start, size_t step, void* result1, size_
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_full_c(void* array_in, void* result, const size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief Implementation of full_like function
+ *
+ * @param [in]  array_in  Input one-element array.
+ * @param [out] result    Output array.
+ * @param [in]  size      Number of elements in the output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_full_like_c(void* array_in, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -725,6 +747,16 @@ INP_DLLEXPORT void dpnp_ones_c(void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
+ * @brief Implementation of ones_like function
+ *
+ * @param [out] result    Output array.
+ * @param [in]  size      Number of elements in the output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_ones_like_c(void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief remainder function.
  *
  * @param [in]  array1_in    Input array 1.
@@ -792,5 +824,15 @@ INP_DLLEXPORT void dpnp_trapz_c(
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_zeros_c(void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief Implementation of zeros_like function
+ *
+ * @param [out] result    Output array.
+ * @param [in]  size      Number of elements in the output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_zeros_like_c(void* result, size_t size);
 
 #endif // BACKEND_IFACE_H
