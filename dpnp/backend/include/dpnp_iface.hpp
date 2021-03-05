@@ -256,7 +256,7 @@ INP_DLLEXPORT void dpnp_cumsum_c(void* array1_in, void* result1, size_t size);
  * @param [in]  initial           Pointer to initial value for the algorithm. @ref _DataType_input is expected
  * @param [in]  where             mask array
  */
-template <typename _DataType_input, typename _DataType_output>
+template <typename _DataType_output, typename _DataType_input>
 INP_DLLEXPORT void dpnp_sum_c(void* result_out,
                               const void* input_in,
                               const size_t* input_shape,
@@ -297,15 +297,15 @@ INP_DLLEXPORT void dpnp_place_c(void* arr, long* mask, void* vals, const size_t 
  * @param [in]  initial           Pointer to initial value for the algorithm. @ref _DataType_input is expected
  * @param [in]  where             mask array
  */
-template <typename _DataType_input, typename _DataType_output>
+template <typename _DataType_output, typename _DataType_input>
 INP_DLLEXPORT void dpnp_prod_c(void* result_out,
-                              const void* input_in,
-                              const size_t* input_shape,
-                              const size_t input_shape_ndim,
-                              const long* axes,
-                              const size_t axes_ndim,
-                              const void* initial,
-                              const long* where);
+                               const void* input_in,
+                               const size_t* input_shape,
+                               const size_t input_shape_ndim,
+                               const long* axes,
+                               const size_t axes_ndim,
+                               const void* initial,
+                               const long* where);
 
 /**
  * @ingroup BACKEND_API
