@@ -135,6 +135,11 @@ void dpnp_tri_c(void* result1, const size_t N, const size_t M, const int k)
 {
     cl::sycl::event event;
 
+    if (result1 == nullptr)
+    {
+        return;
+    }
+
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
     size_t idx = N* M;
