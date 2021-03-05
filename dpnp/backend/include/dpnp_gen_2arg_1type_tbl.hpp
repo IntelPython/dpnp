@@ -46,12 +46,13 @@
     /**                                                                                                              */ \
     /** Function "__name__" executes operator "__operation__" over corresponding elements of input arrays            */ \
     /**                                                                                                              */ \
-    /** @param[in]  array1   Input array 1.                                                                          */ \
-    /** @param[in]  array2   Input array 2.                                                                          */ \
     /** @param[out] result1  Output array.                                                                           */ \
-    /** @param[in]  size     Number of elements in the output array.                                                 */ \
+    /** @param[in]  array1   Input array 1.                                                                          */ \
+    /** @param[in]  size1    Number of elements in @ref array1                                                       */ \
+    /** @param[in]  array2   Input array 2.                                                                          */ \
+    /** @param[in]  size2    Number of elements in @ref array2                                                       */ \
     template <typename _DataType>                                                                                       \
-    void __name__(void* array1, void* array2, void* result1, size_t size);
+    void __name__(void* result1, const void* array1, const size_t size1, const void* array2, const size_t size2);
 
 #endif
 
