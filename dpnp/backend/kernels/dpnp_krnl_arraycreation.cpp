@@ -137,22 +137,24 @@ void dpnp_tri_c(void* result1, const size_t N, const size_t M, const int k)
 
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    cl::sycl::range<1> gws(N);
+    size_t idx = N* M;
+    cl::sycl::range<1> gws(idx);
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
-        size_t i = global_id[0];
+        size_t ind = global_id[0];
         {
+            size_t i = ind / M;
+            size_t j = ind % M;
+
             int val = i + k + 1;
             size_t diag_idx_ = (val > 0) ? (size_t)val : 0;
             size_t diag_idx = (M < diag_idx_) ? M : diag_idx_;
 
-            for (size_t j = 0; j < diag_idx; ++j)
+            if (j < diag_idx)
             {
-                size_t ind = i * M + j;
                 result[ind] = 1;
             }
-            for (size_t j = diag_idx; j < M; ++j)
+            else
             {
-                size_t ind = i * M + j;
                 result[ind] = 0;
             }
         }
