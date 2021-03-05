@@ -128,6 +128,9 @@ void dpnp_ones_like_c(void* result, size_t size)
 }
 
 template <typename _DataType>
+class dpnp_tri_c_kernel;
+
+template <typename _DataType>
 void dpnp_tri_c(void* result1, const size_t N, const size_t M, const int k)
 {
     cl::sycl::event event;
@@ -136,7 +139,7 @@ void dpnp_tri_c(void* result1, const size_t N, const size_t M, const int k)
 
     cl::sycl::range<1> gws(N);
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
-        size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/
+        size_t i = global_id[0];
         {
             int val = i + k + 1;
             size_t diag_idx_ = (val > 0) ? (size_t)val : 0;
@@ -154,6 +157,12 @@ void dpnp_tri_c(void* result1, const size_t N, const size_t M, const int k)
             }
         }
     };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_tri_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+    };
+
+    event = DPNP_QUEUE.submit(kernel_func);
 
     event.wait();
 }
