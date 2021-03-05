@@ -37,10 +37,6 @@ import dpnp
 import numpy
 cimport numpy
 
-from cython.operator import dereference
-
-from libcpp.map cimport map as cpp_map
-
 
 __all__ += [
     "dpnp_absolute",
