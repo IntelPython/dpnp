@@ -30,68 +30,89 @@
 #include "queue_sycl.hpp"
 
 
-template <typename _DataType, typename _ResultType>
+template <typename _DataType>
+class dpnp_all_c_kernel;
+
+template <typename _DataType>
 void dpnp_all_c(void* array1_in, void* result1, const size_t size)
 {
-    _DataType* array_in = reinterpret_cast<_DataType*>(array1_in);
-    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
-
-    bool res = true;
-
-    for (size_t i = 0; i < size; ++i)
-    {
-        if (!array_in[i])
-        {
-            res = false;
-            break;
-        }
-    }
-
-    result[0] = res;
-
-    return;
-}
-
-template <typename _DataType, typename _ResultType>
-void dpnp_any_c(const void* array1_in, void* result1, const size_t size)
-{
-    if ((array1_in == nullptr) || (result1 == nullptr))
-    {
-        return;
-    }
+    cl::sycl::event event;
 
     const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
-    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
+    bool* result = reinterpret_cast<bool*>(result1);
 
-    bool res = false;
+    result[0] = true;
 
-    for (size_t i = 0; i < size; ++i)
+    if ((array1_in != nullptr) && (result1 != nullptr))
     {
-        if (array_in[i])
-        {
-            res = true;
-            break;
-        }
+        cl::sycl::range<1> gws(size);
+        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+            size_t i = global_id[0];
+
+            if (!array_in[i])
+            {
+                result[0] = false;
+            }
+        };
+
+        auto kernel_func = [&](cl::sycl::handler& cgh) {
+            cgh.parallel_for<class dpnp_all_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+        };
+
+        event = DPNP_QUEUE.submit(kernel_func);
     }
 
-    result[0] = res;
+    event.wait();
+}
 
-    return;
+template <typename _DataType>
+class dpnp_any_c_kernel;
+
+template <typename _DataType>
+void dpnp_any_c(const void* array1_in, void* result1, const size_t size)
+{
+    cl::sycl::event event;
+
+    const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
+    bool* result = reinterpret_cast<bool*>(result1);
+
+    result[0] = false;
+
+    if ((array1_in != nullptr) && (result1 != nullptr))
+    {
+        cl::sycl::range<1> gws(size);
+        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+            size_t i = global_id[0];
+
+            if (array_in[i])
+            {
+                result[0] = true;
+            }
+        };
+
+        auto kernel_func = [&](cl::sycl::handler& cgh) {
+            cgh.parallel_for<class dpnp_any_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+        };
+
+        event = DPNP_QUEUE.submit(kernel_func);
+    }
+
+    event.wait();
 }
 
 void func_map_init_logic(func_map_t& fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_ALL][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_all_c<bool, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ALL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_all_c<int, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ALL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_all_c<long, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ALL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_all_c<float, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ALL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_all_c<double, bool>};
+    fmap[DPNPFuncName::DPNP_FN_ALL][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_all_c<bool>};
+    fmap[DPNPFuncName::DPNP_FN_ALL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_all_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_ALL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_all_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_ALL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_all_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_ALL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_all_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_ANY][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_any_c<bool, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ANY][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_any_c<int, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ANY][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_any_c<long, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ANY][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_any_c<float, bool>};
-    fmap[DPNPFuncName::DPNP_FN_ANY][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_any_c<double, bool>};
+    fmap[DPNPFuncName::DPNP_FN_ANY][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_any_c<bool>};
+    fmap[DPNPFuncName::DPNP_FN_ANY][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_any_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_ANY][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_any_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_ANY][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_any_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_ANY][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_any_c<double>};
 
     return;
 }
