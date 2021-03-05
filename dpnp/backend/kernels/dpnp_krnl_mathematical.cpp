@@ -563,59 +563,6 @@ void func_map_init_mathematical(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_MULTIPLY][eft_C128][eft_C128] = {
         eft_C128, (void*)dpnp_multiply_c<std::complex<double>, std::complex<double>, std::complex<double>>};
 
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_BLN][eft_BLN] = {
-        eft_BLN, (void*)dpnp_multiply_c<bool, bool, bool>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_BLN][eft_INT] = {
-        eft_LNG, (void*)dpnp_multiply_c<long, bool, int>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_BLN][eft_LNG] = {
-        eft_LNG, (void*)dpnp_multiply_c<long, bool, long>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_BLN][eft_FLT] = {
-        eft_DBL, (void*)dpnp_multiply_c<double, bool, float>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_BLN][eft_DBL] = {
-        eft_DBL, (void*)dpnp_multiply_c<double, bool, double>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_INT][eft_BLN] = {
-        eft_INT, (void*)dpnp_multiply_c<int, int, bool>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_INT][eft_INT] = {
-        eft_INT, (void*)dpnp_multiply_c<int, int, int>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_INT][eft_LNG] = {
-        eft_INT, (void*)dpnp_multiply_c<int, int, long>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_INT][eft_FLT] = {
-        eft_DBL, (void*)dpnp_multiply_c<double, int, float>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_INT][eft_DBL] = {
-        eft_DBL, (void*)dpnp_multiply_c<double, int, double>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_LNG][eft_BLN] = {
-        eft_LNG, (void*)dpnp_multiply_c<long, long, bool>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_LNG][eft_INT] = {
-        eft_LNG, (void*)dpnp_multiply_c<long, long, int>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_LNG][eft_LNG] = {
-        eft_LNG, (void*)dpnp_multiply_c<long, long, long>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_LNG][eft_FLT] = {
-        eft_DBL, (void*)dpnp_multiply_c<double, long, float>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_LNG][eft_DBL] = {
-        eft_DBL, (void*)dpnp_multiply_c<double, long, double>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_FLT][eft_BLN] = {
-        eft_FLT, (void*)dpnp_multiply_c<float, float, bool>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_FLT][eft_INT] = {
-        eft_FLT, (void*)dpnp_multiply_c<float, float, int>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_FLT][eft_LNG] = {
-        eft_FLT, (void*)dpnp_multiply_c<float, float, long>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_FLT][eft_FLT] = {
-        eft_FLT, (void*)dpnp_multiply_c<float, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_FLT][eft_DBL] = {
-        eft_FLT, (void*)dpnp_multiply_c<float, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_DBL][eft_BLN] = {
-        eft_DBL, (void*)dpnp_multiply_c<double, double, bool>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_DBL][eft_INT] = {
-        eft_DBL, (void*)dpnp_multiply_c<double, double, int>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_DBL][eft_LNG] = {
-        eft_DBL, (void*)dpnp_multiply_c<double, double, long>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_DBL][eft_FLT] = {
-        eft_DBL, (void*)dpnp_multiply_c<double, double, float>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_DBL][eft_DBL] = {
-        eft_DBL, (void*)dpnp_multiply_c<double, double, double>};
-    fmap[DPNPFuncName::DPNP_FN_MULTIPLY_ARRAY_SCALAR][eft_C128][eft_C128] = {
-        eft_C128, (void*)dpnp_multiply_c<std::complex<double>, std::complex<double>, std::complex<double>>};
-
     fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_remainder_c<int, int, int>};
     fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_remainder_c<int, long, long>};
     fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_INT][eft_FLT] = {eft_DBL, (void*)dpnp_remainder_c<int, float, double>};

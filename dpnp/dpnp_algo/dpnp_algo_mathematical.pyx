@@ -37,6 +37,10 @@ import dpnp
 import numpy
 cimport numpy
 
+from cython.operator import dereference
+
+from libcpp.map cimport map as cpp_map
+
 
 __all__ += [
     "dpnp_absolute",
@@ -283,12 +287,25 @@ cpdef dparray dpnp_multiply(object x1_obj, object x2_obj, dparray out=None, obje
     _, x1_dtype = get_shape_dtype(x1_obj)
     _, x2_dtype = get_shape_dtype(x2_obj)
 
+    input_dtypes_map_array2scalar = {
+        (dpnp.bool, dpnp.int32): (dpnp.bool, dpnp.int64),
+        (dpnp.bool, dpnp.float32): (dpnp.bool, dpnp.float64),
+        (dpnp.int32, dpnp.int64): (dpnp.int32, dpnp.int32),
+        (dpnp.float32, dpnp.int32): (dpnp.float32, dpnp.float32),
+        (dpnp.float32, dpnp.int64): (dpnp.float32, dpnp.float32),
+        (dpnp.float32, dpnp.float64): (dpnp.float32, dpnp.float32),
+    }
+
     if x1_obj_is_dparray and not x2_obj_is_dparray:
         x1_dparray = x1_obj
+        input_dtypes = (x1_dtype.type, x2_dtype.type)
+        _, x2_dtype = input_dtypes_map_array2scalar.get(input_dtypes, input_dtypes)
         x2_dparray = dparray((1,), dtype=x2_dtype)
         copy_values_to_dparray(x2_dparray, (x2_obj,))
     elif not x1_obj_is_dparray and x2_obj_is_dparray:
         x1_dparray = x2_obj
+        input_dtypes = (x2_dtype.type, x1_dtype.type)
+        _, x1_dtype = input_dtypes_map_array2scalar.get(input_dtypes, input_dtypes)
         x2_dparray = dparray((1,), dtype=x1_dtype)
         copy_values_to_dparray(x2_dparray, (x1_obj,))
     else:
@@ -303,16 +320,11 @@ cpdef dparray dpnp_multiply(object x1_obj, object x2_obj, dparray out=None, obje
     cdef DPNPFuncType x1_c_type = dpnp_dtype_to_DPNPFuncType(x1_dparray.dtype)
     cdef DPNPFuncType x2_c_type = dpnp_dtype_to_DPNPFuncType(x2_dparray.dtype)
 
-    cdef DPNPFuncName fptr_name
-    if x1_obj_is_dparray and x2_obj_is_dparray:
-        fptr_name = DPNP_FN_MULTIPLY
-    else:
-        fptr_name = DPNP_FN_MULTIPLY_ARRAY_SCALAR
-
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, x1_c_type, x2_c_type) 
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MULTIPLY, x1_c_type, x2_c_type)
 
-    cdef DPNPFuncType result_c_type = get_output_c_type(fptr_name, kernel_data.return_type, out, None)
+    cdef DPNPFuncType result_c_type = get_output_c_type(DPNP_FN_MULTIPLY, kernel_data.return_type, out, None)
+
     # Create result array
     cdef dparray result = create_output_array(result_shape, result_c_type, out)
 
