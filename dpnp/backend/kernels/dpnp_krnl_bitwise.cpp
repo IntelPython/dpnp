@@ -70,19 +70,25 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
     class __name__##_kernel;                                                                                           \
                                                                                                                        \
     template <typename _DataType>                                                                                      \
-    void __name__(void* array1_in, void* array2_in, void* result1, size_t size)                                        \
+    void __name__(void* result1, const void* array1_in, const size_t size1, const void* array2_in, const size_t size2) \
     {                                                                                                                  \
+        if (!size1 || !size2)                                                                                          \
+        {                                                                                                              \
+            return;                                                                                                    \
+        }                                                                                                              \
+                                                                                                                       \
         cl::sycl::event event;                                                                                         \
-        _DataType* array1 = reinterpret_cast<_DataType*>(array1_in);                                                   \
-        _DataType* array2 = reinterpret_cast<_DataType*>(array2_in);                                                   \
+        const _DataType* array1 = reinterpret_cast<const _DataType*>(array1_in);                                       \
+        const _DataType* array2 = reinterpret_cast<const _DataType*>(array2_in);                                       \
         _DataType* result = reinterpret_cast<_DataType*>(result1);                                                     \
                                                                                                                        \
-        cl::sycl::range<1> gws(size);                                                                                  \
+        const size_t gws_size = std::max(size1, size2);                                                                \
+        cl::sycl::range<1> gws(gws_size);                                                                              \
         auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                               \
             size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/                                             \
             {                                                                                                          \
-                _DataType input_elem1 = array1[i];                                                                     \
-                _DataType input_elem2 = array2[i];                                                                     \
+                const _DataType input_elem1 = (size1 == 1) ? array1[0] : array1[i];                                    \
+                const _DataType input_elem2 = (size2 == 1) ? array2[0] : array2[i];                                    \
                 result[i] = __operation__;                                                                             \
             }                                                                                                          \
         };                                                                                                             \
