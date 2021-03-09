@@ -30,16 +30,16 @@
 #include "queue_sycl.hpp"
 
 
-template <typename _DataType>
+template <typename _DataType, typename _ResultType>
 class dpnp_all_c_kernel;
 
-template <typename _DataType>
+template <typename _DataType, typename _ResultType>
 void dpnp_all_c(void* array1_in, void* result1, const size_t size)
 {
     cl::sycl::event event;
 
     const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
-    bool* result = reinterpret_cast<bool*>(result1);
+    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
 
     result[0] = true;
 
@@ -56,7 +56,7 @@ void dpnp_all_c(void* array1_in, void* result1, const size_t size)
         };
 
         auto kernel_func = [&](cl::sycl::handler& cgh) {
-            cgh.parallel_for<class dpnp_all_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+            cgh.parallel_for<class dpnp_all_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
         };
 
         event = DPNP_QUEUE.submit(kernel_func);
@@ -65,16 +65,16 @@ void dpnp_all_c(void* array1_in, void* result1, const size_t size)
     event.wait();
 }
 
-template <typename _DataType>
+template <typename _DataType, typename _ResultType>
 class dpnp_any_c_kernel;
 
-template <typename _DataType>
+template <typename _DataType, typename _ResultType>
 void dpnp_any_c(const void* array1_in, void* result1, const size_t size)
 {
     cl::sycl::event event;
 
     const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
-    bool* result = reinterpret_cast<bool*>(result1);
+    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
 
     result[0] = false;
 
@@ -91,7 +91,7 @@ void dpnp_any_c(const void* array1_in, void* result1, const size_t size)
         };
 
         auto kernel_func = [&](cl::sycl::handler& cgh) {
-            cgh.parallel_for<class dpnp_any_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+            cgh.parallel_for<class dpnp_any_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
         };
 
         event = DPNP_QUEUE.submit(kernel_func);
@@ -102,17 +102,17 @@ void dpnp_any_c(const void* array1_in, void* result1, const size_t size)
 
 void func_map_init_logic(func_map_t& fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_ALL][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_all_c<bool>};
-    fmap[DPNPFuncName::DPNP_FN_ALL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_all_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_ALL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_all_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_ALL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_all_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_ALL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_all_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_ALL][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_all_c<bool, bool>};
+    fmap[DPNPFuncName::DPNP_FN_ALL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_all_c<int, bool>};
+    fmap[DPNPFuncName::DPNP_FN_ALL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_all_c<long, bool>};
+    fmap[DPNPFuncName::DPNP_FN_ALL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_all_c<float, bool>};
+    fmap[DPNPFuncName::DPNP_FN_ALL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_all_c<double, bool>};
 
-    fmap[DPNPFuncName::DPNP_FN_ANY][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_any_c<bool>};
-    fmap[DPNPFuncName::DPNP_FN_ANY][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_any_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_ANY][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_any_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_ANY][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_any_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_ANY][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_any_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_ANY][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_any_c<bool, bool>};
+    fmap[DPNPFuncName::DPNP_FN_ANY][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_any_c<int, bool>};
+    fmap[DPNPFuncName::DPNP_FN_ANY][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_any_c<long, bool>};
+    fmap[DPNPFuncName::DPNP_FN_ANY][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_any_c<float, bool>};
+    fmap[DPNPFuncName::DPNP_FN_ANY][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_any_c<double, bool>};
 
     return;
 }
