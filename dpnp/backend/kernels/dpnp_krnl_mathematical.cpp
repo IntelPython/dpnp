@@ -233,104 +233,24 @@ void dpnp_modf_c(void* array1_in, void* result1_out, void* result2_out, size_t s
 }
 
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
-class dpnp_multiply_array_array_c_kernel;
-
-template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
-void dpnp_multiply_array_array_c(void* result_out,
-                                 const void* input1_in,
-                                 const void* input2_in,
-                                 const size_t size)
-{
-    if (!size)
-    {
-        return;
-    }
-
-    cl::sycl::event event;
-    const _DataType_input1* input1 = reinterpret_cast<const _DataType_input1*>(input1_in);
-    const _DataType_input2* input2 = reinterpret_cast<const _DataType_input2*>(input2_in);
-    _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
-
-    cl::sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
-        size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/
-        {
-            result[i] = input1[i] * input2[i];
-        }
-    };
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
-        cgh.parallel_for<class dpnp_multiply_array_array_c_kernel<_DataType_output, _DataType_input1,
-                                                                  _DataType_input2>>(gws, kernel_parallel_for_func);
-    };
-
-    if constexpr ((std::is_same<_DataType_input1, double>::value ||
-                   std::is_same<_DataType_input1, float>::value) &&
-                  std::is_same<_DataType_input2, _DataType_input1>::value)
-    {
-        _DataType_input1* in1 = const_cast<_DataType_input1*>(input1);
-        _DataType_input2* in2 = const_cast<_DataType_input2*>(input2);
-        // https://docs.oneapi.com/versions/latest/onemkl/mul.html
-        event = oneapi::mkl::vm::mul(DPNP_QUEUE, size, in1, in2, result);
-    }
-    else
-    {
-        event = DPNP_QUEUE.submit(kernel_func);
-    }
-
-    event.wait();
-}
-
-template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
-class dpnp_multiply_array_scalar_c_kernel;
-
-template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
-void dpnp_multiply_array_scalar_c(void* result_out,
-                                  const void* input1_in,
-                                  const void* input2_in,
-                                  const size_t size)
-{
-    if (!size)
-    {
-        return;
-    }
-
-    cl::sycl::event event;
-    const _DataType_input1* input1 = reinterpret_cast<const _DataType_input1*>(input1_in);
-    const _DataType_input2* input2_ptr = reinterpret_cast<const _DataType_input2*>(input2_in);
-    _DataType_input2 input2 = *input2_ptr;
-    _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
-
-    cl::sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
-        size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/
-        {
-            result[i] = input1[i] * input2;
-        }
-    };
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
-        cgh.parallel_for<class dpnp_multiply_array_scalar_c_kernel<_DataType_output, _DataType_input1,
-                                                                   _DataType_input2>>(gws, kernel_parallel_for_func);
-    };
-    event = DPNP_QUEUE.submit(kernel_func);
-    event.wait();
-}
+class dpnp_multiply_c_kernel;
 
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
 void dpnp_multiply_c(void* result_out,
                      const void* input1_in,
-                     const void* input2_in,
                      const size_t input1_size,
-                     const size_t input2_size,
                      const size_t* input1_shape,
-                     const size_t* input2_shape,
                      const size_t input1_shape_ndim,
+                     const void* input2_in,
+                     const size_t input2_size,
+                     const size_t* input2_shape,
                      const size_t input2_shape_ndim,
                      const size_t* where)
 {
     // avoid warning unused variable
     (void)input1_shape;
-    (void)input2_shape;
     (void)input1_shape_ndim;
+    (void)input2_shape;
     (void)input2_shape_ndim;
     (void)where;
 
@@ -339,21 +259,50 @@ void dpnp_multiply_c(void* result_out,
         return;
     }
 
+    const size_t result_size = (input1_size > input2_size) ? input1_size : input2_size;
+
+    const _DataType_input1* input1 = reinterpret_cast<const _DataType_input1*>(input1_in);
+    const _DataType_input2* input2 = reinterpret_cast<const _DataType_input2*>(input2_in);
+    _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
+
+    cl::sycl::range<1> gws(result_size);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        size_t i = global_id[0]; /*for (size_t i = 0; i < common_size; ++i)*/
+        {
+            const _DataType_input1 input1_elem = (input1_size == 1) ? input1[0] : input1[i];
+            const _DataType_input2 input2_elem = (input2_size == 1) ? input2[0] : input2[i]; 
+            result[i] = input1_elem * input2_elem;
+        }
+    };
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_multiply_c_kernel<_DataType_output, _DataType_input1,
+                                                      _DataType_input2>>(gws, kernel_parallel_for_func);
+    };
+
+    cl::sycl::event event;
+
     if (input1_size == input2_size)
     {
-        dpnp_multiply_array_array_c<_DataType_output, _DataType_input1, _DataType_input2>(result_out, input1_in,
-                                                                                          input2_in, input1_size);
+        if constexpr ((std::is_same<_DataType_input1, double>::value ||
+                       std::is_same<_DataType_input1, float>::value) &&
+                      std::is_same<_DataType_input2, _DataType_input1>::value)
+        {
+            _DataType_input1* in1 = const_cast<_DataType_input1*>(input1);
+            _DataType_input2* in2 = const_cast<_DataType_input2*>(input2);
+            // https://docs.oneapi.com/versions/latest/onemkl/mul.html
+            event = oneapi::mkl::vm::mul(DPNP_QUEUE, result_size, in1, in2, result);
+        }
+        else
+        {
+            event = DPNP_QUEUE.submit(kernel_func);
+        }
     }
-    else if (input1_size == 1)
+    else
     {
-        dpnp_multiply_array_scalar_c<_DataType_output, _DataType_input2, _DataType_input1>(result_out, input2_in,
-                                                                                           input1_in, input2_size);
+        event = DPNP_QUEUE.submit(kernel_func);
     }
-    else if (input2_size == 1)
-    {
-        dpnp_multiply_array_scalar_c<_DataType_output, _DataType_input1, _DataType_input2>(result_out, input1_in,
-                                                                                           input2_in, input1_size);
-    }
+
+    event.wait();
 }
 
 template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2, typename _KernelNameSpecialization3>

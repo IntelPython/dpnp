@@ -282,8 +282,9 @@ cpdef dparray dpnp_multiply(object x1_obj, object x2_obj, dparray out=None, obje
 
     _, x1_dtype = get_shape_dtype(x1_obj)
     _, x2_dtype = get_shape_dtype(x2_obj)
+    input_dtypes = (x1_dtype.type, x2_dtype.type)
 
-    input_dtypes_map_array2scalar = {
+    input_dtypes_map_array_scalar = {
         (dpnp.bool, dpnp.int32): (dpnp.bool, dpnp.int64),
         (dpnp.bool, dpnp.float32): (dpnp.bool, dpnp.float64),
         (dpnp.int32, dpnp.int64): (dpnp.int32, dpnp.int32),
@@ -291,22 +292,23 @@ cpdef dparray dpnp_multiply(object x1_obj, object x2_obj, dparray out=None, obje
         (dpnp.float32, dpnp.int64): (dpnp.float32, dpnp.float32),
         (dpnp.float32, dpnp.float64): (dpnp.float32, dpnp.float32),
     }
+    input_dtypes_map_scalar_array = {}
+    for (array1_dtype, array2_dtype), (array_dtype, scalar_dtype) in input_dtypes_map_array_scalar.items():
+        input_dtypes_map_scalar_array[(array2_dtype, array1_dtype)] = (scalar_dtype, array_dtype)
 
-    if x1_obj_is_dparray and not x2_obj_is_dparray:
+    if x1_obj_is_dparray:
         x1_dparray = x1_obj
-        input_dtypes = (x1_dtype.type, x2_dtype.type)
-        _, x2_dtype = input_dtypes_map_array2scalar.get(input_dtypes, input_dtypes)
-        x2_dparray = dparray((1,), dtype=x2_dtype)
-        copy_values_to_dparray(x2_dparray, (x2_obj,))
-    elif not x1_obj_is_dparray and x2_obj_is_dparray:
-        x1_dparray = x2_obj
-        input_dtypes = (x2_dtype.type, x1_dtype.type)
-        _, x1_dtype = input_dtypes_map_array2scalar.get(input_dtypes, input_dtypes)
-        x2_dparray = dparray((1,), dtype=x1_dtype)
-        copy_values_to_dparray(x2_dparray, (x1_obj,))
     else:
-        x1_dparray = x1_obj
+        scalar_dtype, _ = input_dtypes_map_scalar_array.get(input_dtypes, input_dtypes)
+        x1_dparray = dparray((1,), dtype=scalar_dtype)
+        copy_values_to_dparray(x1_dparray, (x1_obj,))
+
+    if x2_obj_is_dparray:
         x2_dparray = x2_obj
+    else:
+        _, scalar_dtype = input_dtypes_map_array_scalar.get(input_dtypes, input_dtypes)
+        x2_dparray = dparray((1,), dtype=scalar_dtype)
+        copy_values_to_dparray(x2_dparray, (x2_obj,))
 
     x1_shape = x1_dparray.shape
     x2_shape = x2_dparray.shape
@@ -326,8 +328,8 @@ cpdef dparray dpnp_multiply(object x1_obj, object x2_obj, dparray out=None, obje
 
     cdef fptr_2in_1out_full_t func = <fptr_2in_1out_full_t > kernel_data.ptr
     # Call FPTR function
-    func(result.get_data(), x1_dparray.get_data(), x2_dparray.get_data(), x1_dparray.size, x2_dparray.size,
-         x1_shape.data(), x2_shape.data(), x1_shape.size(), x2_shape.size(), NULL)
+    func(result.get_data(), x1_dparray.get_data(), x1_dparray.size, x1_shape.data(), x1_shape.size(),
+         x2_dparray.get_data(), x2_dparray.size, x2_shape.data(), x2_shape.size(), NULL)
 
     return result
 
