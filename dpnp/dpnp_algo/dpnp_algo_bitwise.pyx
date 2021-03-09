@@ -47,15 +47,15 @@ __all__ += [
 
 
 cpdef dparray dpnp_bitwise_and(dparray array1, dparray array2):
-    return call_fptr_2in_1out(DPNP_FN_BITWISE_AND, array1, array2, array1.shape)
+    return call_fptr_2in_1out(DPNP_FN_BITWISE_AND, array1, array2, array1.shape, True)
 
 
 cpdef dparray dpnp_bitwise_or(dparray array1, dparray array2):
-    return call_fptr_2in_1out(DPNP_FN_BITWISE_OR, array1, array2, array1.shape)
+    return call_fptr_2in_1out(DPNP_FN_BITWISE_OR, array1, array2, array1.shape, True)
 
 
 cpdef dparray dpnp_bitwise_xor(dparray array1, dparray array2):
-    return call_fptr_2in_1out(DPNP_FN_BITWISE_XOR, array1, array2, array1.shape)
+    return call_fptr_2in_1out(DPNP_FN_BITWISE_XOR, array1, array2, array1.shape, True)
 
 
 cpdef dparray dpnp_invert(dparray arr):
@@ -63,7 +63,7 @@ cpdef dparray dpnp_invert(dparray arr):
 
 
 cpdef dparray dpnp_left_shift(dparray array1, dparray array2):
-    return call_fptr_2in_1out(DPNP_FN_LEFT_SHIFT, array1, array2, array1.shape)
+    return call_fptr_2in_1out(DPNP_FN_LEFT_SHIFT, array1, array2, array1.shape, True)
 
 cpdef dparray dpnp_right_shift(dparray array1, dparray array2):
-    return call_fptr_2in_1out(DPNP_FN_RIGHT_SHIFT, array1, array2, array1.shape)
+    return call_fptr_2in_1out(DPNP_FN_RIGHT_SHIFT, array1, array2, array1.shape, True)
