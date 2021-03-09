@@ -146,22 +146,20 @@ void dpnp_tri_c(void* result1, const size_t N, const size_t M, const int k)
     cl::sycl::range<1> gws(idx);
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
         size_t ind = global_id[0];
+        size_t i = ind / M;
+        size_t j = ind % M;
+
+        int val = i + k + 1;
+        size_t diag_idx_ = (val > 0) ? (size_t)val : 0;
+        size_t diag_idx = (M < diag_idx_) ? M : diag_idx_;
+
+        if (j < diag_idx)
         {
-            size_t i = ind / M;
-            size_t j = ind % M;
-
-            int val = i + k + 1;
-            size_t diag_idx_ = (val > 0) ? (size_t)val : 0;
-            size_t diag_idx = (M < diag_idx_) ? M : diag_idx_;
-
-            if (j < diag_idx)
-            {
-                result[ind] = 1;
-            }
-            else
-            {
-                result[ind] = 0;
-            }
+            result[ind] = 1;
+        }
+        else
+        {
+            result[ind] = 0;
         }
     };
 
