@@ -261,6 +261,7 @@ void dpnp_multiply_c(void* result_out,
     const _DataType_input2* input2_data = reinterpret_cast<const _DataType_input2*>(input2_in);
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
 
+    cl::sycl::range<1> gws(result_size);
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
         size_t i = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/
         {
