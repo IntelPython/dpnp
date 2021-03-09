@@ -44,8 +44,8 @@ from dpnp.dpnp_iface import sum as iface_sum
 from dpnp.dpnp_iface import prod as iface_prod
 
 from dpnp.dpnp_algo cimport *
-from dpnp.dpnp_iface_statistics import min, max #TODO do the same as for iface_sum 
-from dpnp.dpnp_iface_logic import all, any #TODO do the same as for iface_sum
+from dpnp.dpnp_iface_statistics import min, max  # TODO do the same as for iface_sum
+from dpnp.dpnp_iface_logic import all, any  # TODO do the same as for iface_sum
 import numpy
 cimport numpy
 

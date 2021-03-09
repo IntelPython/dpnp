@@ -211,6 +211,7 @@ cdef extern from "dpnp_iface.hpp":
 ctypedef void(*fptr_1out_t)(void *, size_t)
 ctypedef void(*fptr_1in_1out_t)(void * , void * , size_t)
 ctypedef void(*fptr_2in_1out_t)(void * , void*, void*, size_t)
+ctypedef void(*fptr_2in_1out_new_t)(void * , void*, size_t, void*, size_t) # to be fused with fptr_2in_1out_t
 ctypedef void(*fptr_2in_1out_full_t)(void *, const void *, const void *, const size_t, const size_t,
                                      const long*, const long*, const size_t, const size_t, const long*)
 ctypedef void(*fptr_blas_gemm_2in_1out_t)(void * , void * , void * , size_t, size_t, size_t)
@@ -218,7 +219,7 @@ ctypedef void(*dpnp_reduction_c_t)(void * , const void * , const size_t*, const 
 
 cdef dparray call_fptr_1out(DPNPFuncName fptr_name, result_shape, result_dtype)
 cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shape_type result_shape)
-cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, dparray_shape_type result_shape)
+cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, dparray_shape_type result_shape, new_version=*)
 
 
 cpdef dparray dpnp_astype(dparray array1, dtype_target)
