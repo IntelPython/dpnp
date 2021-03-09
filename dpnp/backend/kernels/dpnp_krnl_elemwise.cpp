@@ -28,6 +28,7 @@
 
 #include <dpnp_iface.hpp>
 #include "dpnp_fptr.hpp"
+#include "dpnp_iterator.hpp"
 #include "dpnp_utils.hpp"
 #include "queue_sycl.hpp"
 
@@ -353,10 +354,6 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                   const size_t* where)                                                                                 \
     {                                                                                                                  \
         /* avoid warning unused variable*/                                                                             \
-        (void)input1_shape;                                                                                            \
-        (void)input1_shape_ndim;                                                                                       \
-        (void)input2_shape;                                                                                            \
-        (void)input2_shape_ndim;                                                                                       \
         (void)where;                                                                                                   \
                                                                                                                        \
         if (!input1_size || !input2_size)                                                                              \
@@ -364,18 +361,31 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
             return;                                                                                                    \
         }                                                                                                              \
                                                                                                                        \
-        const size_t result_size = (input2_size > input1_size) ? input2_size : input1_size;                            \
-                                                                                                                       \
-        const _DataType_input1* input1_data = reinterpret_cast<const _DataType_input1*>(input1_in);                    \
-        const _DataType_input2* input2_data = reinterpret_cast<const _DataType_input2*>(input2_in);                    \
+        _DataType_input1* input1_data = reinterpret_cast<_DataType_input1*>(const_cast<void*>(input1_in));             \
+        _DataType_input2* input2_data = reinterpret_cast<_DataType_input2*>(const_cast<void*>(input2_in));             \
         _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);                                    \
                                                                                                                        \
+        std::vector<size_t> result_shape = get_common_shape(input1_shape, input1_shape_ndim,                           \
+                                                            input2_shape, input2_shape_ndim);                          \
+                                                                                                                       \
+        DPNPC_id<_DataType_input1> input1(input1_data, input1_shape, input1_shape_ndim);                               \
+        input1.broadcast(result_shape);                                                                                \
+                                                                                                                       \
+        DPNPC_id<_DataType_input2> input2(input2_data, input2_shape, input2_shape_ndim);                               \
+        input2.broadcast(result_shape);                                                                                \
+                                                                                                                       \
+        const size_t result_size = input1.get_output_size();                                                           \
+                                                                                                                       \
         cl::sycl::range<1> gws(result_size);                                                                           \
+        const DPNPC_id<_DataType_input1>* input1_it = &input1;                                                         \
+        const DPNPC_id<_DataType_input2>* input2_it = &input2;                                                         \
         auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                               \
-            size_t i = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/                                      \
-            const _DataType_output input1_elem = (input1_size == 1) ? input1_data[0] : input1_data[i];                 \
-            const _DataType_output input2_elem = (input2_size == 1) ? input2_data[0] : input2_data[i];                 \
-            result[i] = __operation1__;                                                                                \
+            const size_t i = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/                                \
+            {                                                                                                          \
+                const _DataType_output input1_elem = (*input1_it)[i];                                                  \
+                const _DataType_output input2_elem = (*input2_it)[i];                                                  \
+                result[i] = __operation1__;                                                                            \
+            }                                                                                                          \
         };                                                                                                             \
         auto kernel_func = [&](cl::sycl::handler& cgh) {                                                               \
             cgh.parallel_for<class __name__##_kernel<_DataType_output, _DataType_input1,                               \
@@ -390,9 +400,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                            std::is_same<_DataType_input1, float>::value) &&                                            \
                           std::is_same<_DataType_input2, _DataType_input1>::value)                                     \
             {                                                                                                          \
-                _DataType_input1* input1 = const_cast<_DataType_input1*>(input1_data);                                 \
-                _DataType_input2* input2 = const_cast<_DataType_input2*>(input2_data);                                 \
-                event = __operation2__(DPNP_QUEUE, result_size, input1, input2, result);                               \
+                event = __operation2__(DPNP_QUEUE, result_size, input1_data, input2_data, result);                     \
             }                                                                                                          \
             else                                                                                                       \
             {                                                                                                          \
