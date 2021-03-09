@@ -34,6 +34,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_ABSOLUTE
         DPNP_FN_ADD
         DPNP_FN_ALL
+        DPNP_FN_ANY
         DPNP_FN_ARANGE
         DPNP_FN_ARCCOS
         DPNP_FN_ARCCOSH
@@ -83,6 +84,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FLOOR_DIVIDE
         DPNP_FN_FMOD
         DPNP_FN_FULL
+        DPNP_FN_FULL_LIKE
         DPNP_FN_HYPOT
         DPNP_FN_INITVAL
         DPNP_FN_INV
@@ -104,6 +106,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_MODF
         DPNP_FN_MULTIPLY
         DPNP_FN_ONES
+        DPNP_FN_ONES_LIKE
         DPNP_FN_PLACE
         DPNP_FN_POWER
         DPNP_FN_PROD
@@ -169,6 +172,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_TRUNC
         DPNP_FN_VAR
         DPNP_FN_ZEROS
+        DPNP_FN_ZEROS_LIKE
 
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
     cdef enum DPNPFuncType "DPNPFuncType":
@@ -208,12 +212,13 @@ cdef extern from "dpnp_iface.hpp":
 ctypedef void(*fptr_1out_t)(void *, size_t)
 ctypedef void(*fptr_1in_1out_t)(void * , void * , size_t)
 ctypedef void(*fptr_2in_1out_t)(void * , void*, void*, size_t)
+ctypedef void(*fptr_2in_1out_new_t)(void * , void*, size_t, void*, size_t) # to be fused with fptr_2in_1out_t
 ctypedef void(*fptr_blas_gemm_2in_1out_t)(void * , void * , void * , size_t, size_t, size_t)
 ctypedef void(*dpnp_reduction_c_t)(void * , const void * , const size_t*, const size_t, const long*, const size_t, const void * , const long*)
 
 cdef dparray call_fptr_1out(DPNPFuncName fptr_name, result_shape, result_dtype)
 cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shape_type result_shape)
-cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, dparray_shape_type result_shape)
+cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, dparray_shape_type result_shape, new_version=*)
 
 
 cpdef dparray dpnp_astype(dparray array1, dtype_target)

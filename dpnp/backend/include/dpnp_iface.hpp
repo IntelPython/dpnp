@@ -118,6 +118,17 @@ INP_DLLEXPORT void dpnp_all_c(void* array, void* result, const size_t size);
 
 /**
  * @ingroup BACKEND_API
+ * @brief Test whether any array element along a given axis evaluates to True.
+ *
+ * @param [in]  array       Input array.
+ * @param [out] result      Output array.
+ * @param [in]  size        Number of input elements in `array`.
+ */
+template <typename _DataType, typename _ResultType>
+INP_DLLEXPORT void dpnp_any_c(const void* array, void* result, const size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief Array initialization
  *
  * Input array, step based, initialization procedure.
@@ -151,6 +162,17 @@ INP_DLLEXPORT void dpnp_astype_c(void* array, void* result, size_t size);
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_full_c(void* array_in, void* result, const size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief Implementation of full_like function
+ *
+ * @param [in]  array_in  Input one-element array.
+ * @param [out] result    Output array.
+ * @param [in]  size      Number of elements in the output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_full_like_c(void* array_in, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -236,8 +258,8 @@ INP_DLLEXPORT void dpnp_cumsum_c(void* array1_in, void* result1, size_t size);
  *
  * Empty @ref input_shape means scalar.
  *
- * @param [in]  input_in          Input array pointer. @ref _DataType_input type is expected
  * @param [out] result_out        Output array pointer. @ref _DataType_output type is expected
+ * @param [in]  input_in          Input array pointer. @ref _DataType_input type is expected
  * @param [in]  input_shape       Shape of @ref input_in
  * @param [in]  input_shape_ndim  Number of elements in @ref input_shape
  * @param [in]  axes              Array of axes to apply to @ref input_shape
@@ -245,7 +267,7 @@ INP_DLLEXPORT void dpnp_cumsum_c(void* array1_in, void* result1, size_t size);
  * @param [in]  initial           Pointer to initial value for the algorithm. @ref _DataType_input is expected
  * @param [in]  where             mask array
  */
-template <typename _DataType_input, typename _DataType_output>
+template <typename _DataType_output, typename _DataType_input>
 INP_DLLEXPORT void dpnp_sum_c(void* result_out,
                               const void* input_in,
                               const size_t* input_shape,
@@ -270,14 +292,31 @@ INP_DLLEXPORT void dpnp_place_c(void* arr, long* mask, void* vals, const size_t 
 
 /**
  * @ingroup BACKEND_API
- * @brief Product of array elements
+ * @brief Compute Product of input array elements.
  *
- * @param [in]  array  Input array.
- * @param [in]  size    Number of input elements in `array`.
- * @param [out] result Output array contains one element.
+ * Input array is expected as @ref _DataType_input type and assume result as @ref _DataType_output type.
+ * The function creates no memory.
+ *
+ * Empty @ref input_shape means scalar.
+ *
+ * @param [out] result_out        Output array pointer. @ref _DataType_output type is expected
+ * @param [in]  input_in          Input array pointer. @ref _DataType_input type is expected
+ * @param [in]  input_shape       Shape of @ref input_in
+ * @param [in]  input_shape_ndim  Number of elements in @ref input_shape
+ * @param [in]  axes              Array of axes to apply to @ref input_shape
+ * @param [in]  axes_ndim         Number of elements in @ref axes
+ * @param [in]  initial           Pointer to initial value for the algorithm. @ref _DataType_input is expected
+ * @param [in]  where             mask array
  */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_prod_c(void* array, void* result, size_t size);
+template <typename _DataType_output, typename _DataType_input>
+INP_DLLEXPORT void dpnp_prod_c(void* result_out,
+                               const void* input_in,
+                               const size_t* input_shape,
+                               const size_t input_shape_ndim,
+                               const long* axes,
+                               const size_t axes_ndim,
+                               const void* initial,
+                               const long* where);
 
 /**
  * @ingroup BACKEND_API
@@ -606,7 +645,8 @@ INP_DLLEXPORT void dpnp_tril_c(
  * @param [in]  res_ndim   Number of elements in res_shape.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_triu_c(void* array, void* result, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim);
+INP_DLLEXPORT void dpnp_triu_c(
+    void* array, void* result, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim);
 
 /**
  * @ingroup BACKEND_API
@@ -637,7 +677,8 @@ INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
 
 #define MACRO_2ARG_1TYPE_OP(__name__, __operation__)                                                                   \
     template <typename _DataType>                                                                                      \
-    INP_DLLEXPORT void __name__(void* array1_in1, void* array2_in, void* result1, size_t size);
+    INP_DLLEXPORT void __name__(                                                                                       \
+        void* result1, const void* array1, const size_t size1, const void* array2, const size_t size2);
 
 #include <dpnp_gen_2arg_1type_tbl.hpp>
 
@@ -704,6 +745,16 @@ INP_DLLEXPORT void dpnp_modf_c(void* array1_in, void* result1_out, void* result2
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_ones_c(void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief Implementation of ones_like function
+ *
+ * @param [out] result    Output array.
+ * @param [in]  size      Number of elements in the output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_ones_like_c(void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -774,5 +825,15 @@ INP_DLLEXPORT void dpnp_trapz_c(
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_zeros_c(void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief Implementation of zeros_like function
+ *
+ * @param [out] result    Output array.
+ * @param [in]  size      Number of elements in the output array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_zeros_like_c(void* result, size_t size);
 
 #endif // BACKEND_IFACE_H

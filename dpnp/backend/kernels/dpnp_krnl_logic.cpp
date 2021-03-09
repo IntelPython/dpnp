@@ -29,7 +29,6 @@
 #include "dpnp_iface.hpp"
 #include "queue_sycl.hpp"
 
-
 template <typename _DataType, typename _ResultType>
 void dpnp_all_c(void* array1_in, void* result1, const size_t size)
 {
@@ -52,6 +51,33 @@ void dpnp_all_c(void* array1_in, void* result1, const size_t size)
     return;
 }
 
+template <typename _DataType, typename _ResultType>
+void dpnp_any_c(const void* array1_in, void* result1, const size_t size)
+{
+    if ((array1_in == nullptr) || (result1 == nullptr))
+    {
+        return;
+    }
+
+    const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
+    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
+
+    bool res = false;
+
+    for (size_t i = 0; i < size; ++i)
+    {
+        if (array_in[i])
+        {
+            res = true;
+            break;
+        }
+    }
+
+    result[0] = res;
+
+    return;
+}
+
 void func_map_init_logic(func_map_t& fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_ALL][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_all_c<bool, bool>};
@@ -59,6 +85,12 @@ void func_map_init_logic(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_ALL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_all_c<long, bool>};
     fmap[DPNPFuncName::DPNP_FN_ALL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_all_c<float, bool>};
     fmap[DPNPFuncName::DPNP_FN_ALL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_all_c<double, bool>};
+
+    fmap[DPNPFuncName::DPNP_FN_ANY][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_any_c<bool, bool>};
+    fmap[DPNPFuncName::DPNP_FN_ANY][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_any_c<int, bool>};
+    fmap[DPNPFuncName::DPNP_FN_ANY][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_any_c<long, bool>};
+    fmap[DPNPFuncName::DPNP_FN_ANY][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_any_c<float, bool>};
+    fmap[DPNPFuncName::DPNP_FN_ANY][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_any_c<double, bool>};
 
     return;
 }

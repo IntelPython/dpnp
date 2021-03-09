@@ -335,7 +335,7 @@ cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shap
     return result
 
 
-cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, dparray_shape_type result_shape):
+cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, dparray_shape_type result_shape, new_version=False):
 
     """ Convert string type names (dparray.dtype) to C enum DPNPFuncType """
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
@@ -348,8 +348,13 @@ cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, 
     """ Create result array with type given by FPTR data """
     cdef dparray result = dparray(result_shape, dtype=result_type)
 
-    cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
     """ Call FPTR function """
-    func(x1.get_data(), x2.get_data(), result.get_data(), x1.size)
+    # parameter 'new_version' must be removed in shortly
+    cdef fptr_2in_1out_t func_old = <fptr_2in_1out_t > kernel_data.ptr  # can't define it inside 'if' due Cython limitation
+    cdef fptr_2in_1out_new_t func_new = <fptr_2in_1out_new_t > kernel_data.ptr
+    if (new_version):
+        func_new(result.get_data(), x1.get_data(), x1.size, x2.get_data(), x2.size)
+    else:
+        func_old(x1.get_data(), x2.get_data(), result.get_data(), x1.size)
 
     return result
