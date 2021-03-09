@@ -48,6 +48,8 @@ from dpnp.dpnp_iface_statistics import min, max  # TODO do the same as for iface
 from dpnp.dpnp_iface_logic import all, any  # TODO do the same as for iface_sum
 import numpy
 cimport numpy
+from dpnp.dparray import dparray
+from dpnp.dpnp_utils import *
 
 cimport dpnp.dpnp_utils as utils
 
@@ -788,19 +790,21 @@ cdef class dparray:
 
         """
 
-        if casting is not None:
-            utils.checker_throw_value_error("astype", "casting", casting, None)
+        if (not use_origin_backend(self)):
+            if not isinstance(self, dparray):
+                pass
+            elif casting is not None:
+                pass
+            elif subok is not None:
+                pass
+            elif copy is not True:
+                pass
+            elif order is not 'K':
+                pass
+            else:
+                return dpnp_astype(self, dtype)
 
-        if subok is not None:
-            utils.checker_throw_value_error("astype", "subok", subok, None)
-
-        if copy is not True:
-            utils.checker_throw_value_error("astype", "copy", copy, True)
-
-        if order is not 'K':
-            utils.checker_throw_value_error("astype", "order", order, 'K')
-
-        return dpnp_astype(self, dtype)
+        return call_origin(numpy.ndarray.astype, self, dtype, order, casting, subok, copy)
 
     def conj(self):
         """

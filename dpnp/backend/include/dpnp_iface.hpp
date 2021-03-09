@@ -149,7 +149,7 @@ INP_DLLEXPORT void dpnp_arange_c(size_t start, size_t step, void* result1, size_
  * @param [out] result      Output array.
  * @param [in]  size        Number of input elements in `array`.
  */
-template <typename _DataType, typename _ResultType>
+template <typename _DataType, typename _TypeNew, typename _ResultType>
 INP_DLLEXPORT void dpnp_astype_c(void* array, void* result, size_t size);
 
 /**
