@@ -280,7 +280,13 @@ void dpnp_tril_c(void* array_in,
 }
 
 template <typename _DataType>
-void dpnp_triu_c(void* array_in, void* result1, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim)
+void dpnp_triu_c(void* array_in,
+                 void* result1,
+                 const int k,
+                 size_t* shape,
+                 size_t* res_shape,
+                 const size_t ndim,
+                 const size_t res_ndim)
 {
     if ((array_in == nullptr) || (result1 == nullptr))
     {
@@ -418,7 +424,8 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_FULL_LIKE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_full_like_c<float>};
     fmap[DPNPFuncName::DPNP_FN_FULL_LIKE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_full_like_c<double>};
     fmap[DPNPFuncName::DPNP_FN_FULL_LIKE][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_full_like_c<bool>};
-    fmap[DPNPFuncName::DPNP_FN_FULL_LIKE][eft_C128][eft_C128] = {eft_C128, (void*)dpnp_full_like_c<std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_FULL_LIKE][eft_C128][eft_C128] = {eft_C128,
+                                                                 (void*)dpnp_full_like_c<std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_ONES][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_ones_c<int>};
     fmap[DPNPFuncName::DPNP_FN_ONES][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_ones_c<long>};
@@ -432,7 +439,8 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_ONES_LIKE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_ones_like_c<float>};
     fmap[DPNPFuncName::DPNP_FN_ONES_LIKE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_ones_like_c<double>};
     fmap[DPNPFuncName::DPNP_FN_ONES_LIKE][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_ones_like_c<bool>};
-    fmap[DPNPFuncName::DPNP_FN_ONES_LIKE][eft_C128][eft_C128] = {eft_C128, (void*)dpnp_ones_like_c<std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_ONES_LIKE][eft_C128][eft_C128] = {eft_C128,
+                                                                 (void*)dpnp_ones_like_c<std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_TRI][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_tri_c<int>};
     fmap[DPNPFuncName::DPNP_FN_TRI][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_tri_c<long>};
@@ -461,7 +469,8 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_zeros_like_c<float>};
     fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_zeros_like_c<double>};
     fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_zeros_like_c<bool>};
-    fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE][eft_C128][eft_C128] = {eft_C128, (void*)dpnp_ones_like_c<std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE][eft_C128][eft_C128] = {eft_C128,
+                                                                  (void*)dpnp_ones_like_c<std::complex<double>>};
 
     return;
 }

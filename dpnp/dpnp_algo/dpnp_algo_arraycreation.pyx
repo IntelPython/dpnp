@@ -85,7 +85,7 @@ cpdef dparray dpnp_diag(dparray v, int k):
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DIAG, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
 
     cdef custom_1in_1out_func_ptr_t func = <custom_1in_1out_func_ptr_t > kernel_data.ptr
 
@@ -101,7 +101,7 @@ cpdef dparray dpnp_full(result_shape, value_in, result_dtype):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FULL, dtype_in, DPNP_FT_NONE)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # Create single-element input array with type given by FPTR data
     cdef dparray_shape_type shape_in = (1,)
     cdef dparray array_in = dparray(shape_in, dtype=result_type)
@@ -123,7 +123,7 @@ cpdef dparray dpnp_full_like(result_shape, value_in, result_dtype):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FULL_LIKE, dtype_in, DPNP_FT_NONE)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # Create single-element input array with type given by FPTR data
     cdef dparray_shape_type shape_in = (1,)
     cdef dparray array_in = dparray(shape_in, dtype=result_type)
@@ -289,7 +289,7 @@ cpdef dparray dpnp_tril(dparray m, int k):
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRIL, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
 
     cdef custom_1in_1out_func_ptr_t func = <custom_1in_1out_func_ptr_t > kernel_data.ptr
 
@@ -300,9 +300,9 @@ cpdef dparray dpnp_tril(dparray m, int k):
 
 cpdef dparray dpnp_triu(dparray m, int k):
     if m.ndim == 1:
-        res_shape=(m.shape[0], m.shape[0])
+        res_shape = (m.shape[0], m.shape[0])
     else:
-        res_shape=m.shape
+        res_shape = m.shape
 
     cdef dparray result = dparray(shape=res_shape, dtype=m.dtype)
 

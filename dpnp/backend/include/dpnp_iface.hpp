@@ -256,7 +256,7 @@ INP_DLLEXPORT void dpnp_cumsum_c(void* array1_in, void* result1, size_t size);
  * @param [in]  initial           Pointer to initial value for the algorithm. @ref _DataType_input is expected
  * @param [in]  where             mask array
  */
-template <typename _DataType_input, typename _DataType_output>
+template <typename _DataType_output, typename _DataType_input>
 INP_DLLEXPORT void dpnp_sum_c(void* result_out,
                               const void* input_in,
                               const size_t* input_shape,
@@ -297,15 +297,15 @@ INP_DLLEXPORT void dpnp_place_c(void* arr, long* mask, void* vals, const size_t 
  * @param [in]  initial           Pointer to initial value for the algorithm. @ref _DataType_input is expected
  * @param [in]  where             mask array
  */
-template <typename _DataType_input, typename _DataType_output>
+template <typename _DataType_output, typename _DataType_input>
 INP_DLLEXPORT void dpnp_prod_c(void* result_out,
-                              const void* input_in,
-                              const size_t* input_shape,
-                              const size_t input_shape_ndim,
-                              const long* axes,
-                              const size_t axes_ndim,
-                              const void* initial,
-                              const long* where);
+                               const void* input_in,
+                               const size_t* input_shape,
+                               const size_t input_shape_ndim,
+                               const long* axes,
+                               const size_t axes_ndim,
+                               const void* initial,
+                               const long* where);
 
 /**
  * @ingroup BACKEND_API
@@ -646,7 +646,8 @@ INP_DLLEXPORT void dpnp_tril_c(
  * @param [in]  res_ndim   Number of elements in res_shape.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_triu_c(void* array, void* result, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim);
+INP_DLLEXPORT void dpnp_triu_c(
+    void* array, void* result, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim);
 
 /**
  * @ingroup BACKEND_API
@@ -677,7 +678,8 @@ INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
 
 #define MACRO_2ARG_1TYPE_OP(__name__, __operation__)                                                                   \
     template <typename _DataType>                                                                                      \
-    INP_DLLEXPORT void __name__(void* array1_in1, void* array2_in, void* result1, size_t size);
+    INP_DLLEXPORT void __name__(                                                                                       \
+        void* result1, const void* array1, const size_t size1, const void* array2, const size_t size2);
 
 #include <dpnp_gen_2arg_1type_tbl.hpp>
 
