@@ -43,24 +43,26 @@ void dpnp_all_c(void* array1_in, void* result1, const size_t size)
 
     result[0] = true;
 
-    if ((array1_in != nullptr) && (result1 != nullptr))
+    if ((array1_in == nullptr) || (result1 == nullptr))
     {
-        cl::sycl::range<1> gws(size);
-        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
-            size_t i = global_id[0];
-
-            if (!array_in[i])
-            {
-                result[0] = false;
-            }
-        };
-
-        auto kernel_func = [&](cl::sycl::handler& cgh) {
-            cgh.parallel_for<class dpnp_all_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
-        };
-
-        event = DPNP_QUEUE.submit(kernel_func);
+        return;
     }
+
+    cl::sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        size_t i = global_id[0];
+
+        if (!array_in[i])
+        {
+            result[0] = false;
+        }
+    };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_all_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
+    };
+
+    event = DPNP_QUEUE.submit(kernel_func);
 
     event.wait();
 }
@@ -78,24 +80,26 @@ void dpnp_any_c(const void* array1_in, void* result1, const size_t size)
 
     result[0] = false;
 
-    if ((array1_in != nullptr) && (result1 != nullptr))
+    if ((array1_in == nullptr) || (result1 == nullptr))
     {
-        cl::sycl::range<1> gws(size);
-        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
-            size_t i = global_id[0];
-
-            if (array_in[i])
-            {
-                result[0] = true;
-            }
-        };
-
-        auto kernel_func = [&](cl::sycl::handler& cgh) {
-            cgh.parallel_for<class dpnp_any_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
-        };
-
-        event = DPNP_QUEUE.submit(kernel_func);
+        return;
     }
+
+    cl::sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        size_t i = global_id[0];
+
+        if (array_in[i])
+        {
+            result[0] = true;
+        }
+    };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_any_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
+    };
+
+    event = DPNP_QUEUE.submit(kernel_func);
 
     event.wait();
 }
