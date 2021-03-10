@@ -247,16 +247,20 @@ cpdef find_common_type(object x1_obj, object x2_obj):
     _, x1_dtype = get_shape_dtype(x1_obj)
     _, x2_dtype = get_shape_dtype(x2_obj)
 
-    if x1_obj_is_dparray and x2_obj_is_dparray:
-        return numpy.find_common_type([x1_dtype, x2_dtype], [])
+    cdef list array_types = []
+    cdef list scalar_types = []
 
-    if x1_obj_is_dparray and not x2_obj_is_dparray:
-        return numpy.find_common_type([x1_dtype], [x2_dtype])
+    if x1_obj_is_dparray:
+        array_types.append(x1_dtype)
+    else:
+        scalar_types.append(x1_dtype)
 
-    if not x1_obj_is_dparray and x2_obj_is_dparray:
-        return numpy.find_common_type([x2_dtype], [x1_dtype])
+    if x2_obj_is_dparray:
+        array_types.append(x2_dtype)
+    else:
+        scalar_types.append(x2_dtype)
 
-    return numpy.find_common_type([], [x1_dtype, x2_dtype])
+    return numpy.find_common_type(array_types, scalar_types)
 
 
 cdef dparray_shape_type get_common_shape(dparray_shape_type input1_shape, dparray_shape_type input2_shape):

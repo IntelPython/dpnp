@@ -248,6 +248,10 @@ void dpnp_multiply_c(void* result_out,
                      const size_t* where)
 {
     // avoid warning unused variable
+    (void)input1_shape;
+    (void)input1_shape_ndim;
+    (void)input2_shape;
+    (void)input2_shape_ndim;
     (void)where;
 
     if (!input1_size || !input2_size)
