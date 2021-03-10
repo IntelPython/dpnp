@@ -50,6 +50,7 @@ __all__ += [
 # C function pointer to the C library template functions
 ctypedef void(*fptr_custom_elemwise_transpose_1in_1out_t)(void * , size_t * , size_t * ,
                                                           size_t * , size_t, void * , size_t)
+ctypedef void(*fptr_dpnp_repeat_t)(const void *, void * , const size_t , const size_t)
 
 
 cpdef dparray dpnp_atleast_2d(dparray arr):
@@ -129,12 +130,16 @@ cpdef dparray dpnp_expand_dims(dparray in_array, axis):
 
 
 cpdef dparray dpnp_repeat(dparray array1, repeats, axes=None):
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_REPEAT, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     cdef long new_size = array1.size * repeats
     cdef dparray result = dparray((new_size, ), dtype=array1.dtype)
 
-    for idx2 in range(array1.size):
-        for idx1 in range(repeats):
-            result[(idx2 * repeats) + idx1] = array1[idx2]
+    cdef fptr_dpnp_repeat_t func = <fptr_dpnp_repeat_t > kernel_data.ptr
+    func(array1.get_data(), result.get_data(), repeats, array1.size)
 
     return result
 

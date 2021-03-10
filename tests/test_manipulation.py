@@ -21,3 +21,14 @@ def test_copyto_dtype(in_obj, out_dtype):
     dpnp.copyto(result, dparr)
 
     numpy.testing.assert_array_equal(result, expected)
+
+
+@pytest.mark.parametrize("arr",
+                         [[], [1, 2, 3, 4], [[1, 2], [3, 4]], [[[1], [2]], [[3], [4]]]],
+                         ids=['[]', '[1, 2, 3, 4]', '[[1, 2], [3, 4]]', '[[[1], [2]], [[3], [4]]]'])
+def test_repeat(arr):
+    a = numpy.array(arr)
+    dpnp_a = dpnp.array(a)
+    expected = numpy.repeat(a, 2)
+    result = dpnp.repeat(dpnp_a, 2)
+    numpy.testing.assert_array_equal(expected, result)
