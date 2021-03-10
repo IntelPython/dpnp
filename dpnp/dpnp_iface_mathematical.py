@@ -972,7 +972,7 @@ def modf(x, **kwargs):
     return call_origin(numpy.modf, x, **kwargs)
 
 
-def multiply(x1, x2, **kwargs):
+def multiply(x1, x2, out=None, where=True, **kwargs):
     """
     Multiply arguments element-wise.
 
@@ -995,33 +995,32 @@ def multiply(x1, x2, **kwargs):
     [1, 4, 9, 16, 25]
 
     """
+    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
+    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
-    is_x1_dparray = isinstance(x1, dparray)
-    is_x2_dparray = isinstance(x2, dparray)
-
-    is_x1_scalar = dpnp.isscalar(x1)
-    is_x2_scalar = dpnp.isscalar(x2)
-
-    if not use_origin_backend(x1):
-        if kwargs:
+    if not use_origin_backend(x1) and not kwargs:
+        if not x1_is_dparray and not x1_is_scalar:
             pass
-        elif not (is_x1_dparray or is_x1_scalar):
+        elif not x2_is_dparray and not x2_is_scalar:
             pass
-        elif not (is_x2_dparray or is_x2_scalar):
+        elif x1_is_scalar and x2_is_scalar:
             pass
-        elif is_x1_scalar and is_x2_scalar:
+        elif x1_is_dparray and x1.ndim == 0:
             pass
-        elif (is_x1_dparray and is_x2_dparray) and (x1.size != x2.size):
+        elif x2_is_dparray and x2.ndim == 0:
             pass
-        elif (is_x1_dparray and is_x2_dparray) and (x1.shape != x2.shape):
+        elif x1_is_dparray and x2_is_dparray and x1.size != x2.size:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.shape != x2.shape:
+            pass
+        elif out is not None and not isinstance(out, dparray):
+            pass
+        elif not where:
             pass
         else:
-            if is_x1_scalar:
-                return dpnp_multiply(x2, x1)
-            else:
-                return dpnp_multiply(x1, x2)
+            return dpnp_multiply(x1, x2, out, where)
 
-    return call_origin(numpy.multiply, x1, x2, **kwargs)
+    return call_origin(numpy.multiply, x1, x2, out=out, where=where, **kwargs)
 
 
 def nancumprod(x1, **kwargs):
