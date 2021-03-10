@@ -342,11 +342,6 @@ Functions</h2></td></tr>
 <tr class="memdesc:gae47885919db18303cd3034349d8f8096"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per element operation function dpnp_minimum_c <br  />
   <a href="group___b_a_c_k_e_n_d___a_p_i.html#gae47885919db18303cd3034349d8f8096">More...</a><br /></td></tr>
 <tr class="separator:gae47885919db18303cd3034349d8f8096"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga9754a71b3777e964e639157824b8437c"><td class="memTemplParams" colspan="2">template&lt;typename _DataType_input1 , typename _DataType_input2 , typename _DataType_output &gt; </td></tr>
-<tr class="memitem:ga9754a71b3777e964e639157824b8437c"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga9754a71b3777e964e639157824b8437c">dpnp_multiply_c</a> (void *array1, void *array2, void *result1, size_t size)</td></tr>
-<tr class="memdesc:ga9754a71b3777e964e639157824b8437c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per element operation function dpnp_multiply_c <br  />
-  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga9754a71b3777e964e639157824b8437c">More...</a><br /></td></tr>
-<tr class="separator:ga9754a71b3777e964e639157824b8437c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga45d6f198ea9bf5016143f47d100f0898"><td class="memTemplParams" colspan="2">template&lt;typename _DataType_input1 , typename _DataType_input2 , typename _DataType_output &gt; </td></tr>
 <tr class="memitem:ga45d6f198ea9bf5016143f47d100f0898"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga45d6f198ea9bf5016143f47d100f0898">dpnp_power_c</a> (void *array1, void *array2, void *result1, size_t size)</td></tr>
 <tr class="memdesc:ga45d6f198ea9bf5016143f47d100f0898"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per element operation function dpnp_power_c <br  />
@@ -543,6 +538,10 @@ template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:ga348508a813d34a62a63de163ae8d3c39"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga348508a813d34a62a63de163ae8d3c39">dpnp_modf_c</a> (void *array1_in, void *result1_out, void *result2_out, size_t size)</td></tr>
 <tr class="memdesc:ga348508a813d34a62a63de163ae8d3c39"><td class="mdescLeft">&#160;</td><td class="mdescRight">modf function.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga348508a813d34a62a63de163ae8d3c39">More...</a><br /></td></tr>
 <tr class="separator:ga348508a813d34a62a63de163ae8d3c39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaebae06c68e29b000b9bca10761f19449"><td class="memTemplParams" colspan="2">template&lt;typename _DataType_output , typename _DataType_input1 , typename _DataType_input2 &gt; </td></tr>
+<tr class="memitem:gaebae06c68e29b000b9bca10761f19449"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaebae06c68e29b000b9bca10761f19449">dpnp_multiply_c</a> (void *result_out, const void *input1_in, const size_t input1_size, const size_t *input1_shape, const size_t input1_shape_ndim, const void *input2_in, const size_t input2_size, const size_t *input2_shape, const size_t input2_shape_ndim, const size_t *where)</td></tr>
+<tr class="memdesc:gaebae06c68e29b000b9bca10761f19449"><td class="mdescLeft">&#160;</td><td class="mdescRight">multiply function.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gaebae06c68e29b000b9bca10761f19449">More...</a><br /></td></tr>
+<tr class="separator:gaebae06c68e29b000b9bca10761f19449"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa4b0f8fc56a6778a53df6e68e1acbe4b"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:gaa4b0f8fc56a6778a53df6e68e1acbe4b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaa4b0f8fc56a6778a53df6e68e1acbe4b">dpnp_ones_c</a> (void *result, size_t size)</td></tr>
 <tr class="memdesc:gaa4b0f8fc56a6778a53df6e68e1acbe4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementation of ones function.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gaa4b0f8fc56a6778a53df6e68e1acbe4b">More...</a><br /></td></tr>
@@ -4546,37 +4545,73 @@ template&lt;typename _DataType_input , typename _DataType_output &gt; </div>
 
 </div>
 </div>
-<a id="ga9754a71b3777e964e639157824b8437c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga9754a71b3777e964e639157824b8437c">&#9670;&nbsp;</a></span>dpnp_multiply_c()</h2>
+<a id="gaebae06c68e29b000b9bca10761f19449"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaebae06c68e29b000b9bca10761f19449">&#9670;&nbsp;</a></span>dpnp_multiply_c()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename _DataType_input1 , typename _DataType_input2 , typename _DataType_output &gt; </div>
+template&lt;typename _DataType_output , typename _DataType_input1 , typename _DataType_input2 &gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">void dpnp_multiply_c </td>
           <td>(</td>
           <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>array1</em>, </td>
+          <td class="paramname"><em>result_out</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>array2</em>, </td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>input1_in</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>result1</em>, </td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>input1_size</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>size</em>&#160;</td>
+          <td class="paramtype">const size_t *&#160;</td>
+          <td class="paramname"><em>input1_shape</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>input1_shape_ndim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>input2_in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>input2_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t *&#160;</td>
+          <td class="paramname"><em>input2_shape</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>input2_shape_ndim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t *&#160;</td>
+          <td class="paramname"><em>where</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -4586,19 +4621,19 @@ template&lt;typename _DataType_input1 , typename _DataType_input2 , typename _Da
       </table>
 </div><div class="memdoc">
 
-<p>Per element operation function dpnp_multiply_c <br  />
- </p>
-<p>&lt;&gt; Function "dpnp_multiply_c" executes operator "input_elem1* input_elem2" over corresponding elements of input arrays <br  />
- </p><dl class="params"><dt>Parameters</dt><dd>
+<p>multiply function. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">array1</td><td>Input array 1. <br  />
- </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">array2</td><td>Input array 2. <br  />
- </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">result1</td><td>Output array. <br  />
- </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in the output array. <br  />
- </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result_out</td><td>Output array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input1_in</td><td>Input 1 either array or scalar. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input1_size</td><td>Number of elements in input 1. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input1_shape</td><td>Shape of input 1. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input1_shape_ndim</td><td>Size of shape 1. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input2_in</td><td>Input 2 either array or scalar. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input2_size</td><td>Number of elements in input 2. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input2_shape</td><td>Shape of input 2. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input2_shape_ndim</td><td>Size of shape 2. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">where</td><td>Mask array. </td></tr>
   </table>
   </dd>
 </dl>
