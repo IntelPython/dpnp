@@ -802,7 +802,6 @@ cdef class dparray:
 
         return dpnp_astype(self, dtype)
 
-
     def conj(self):
         """
         Complex-conjugate all elements.
