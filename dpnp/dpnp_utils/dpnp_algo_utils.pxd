@@ -95,6 +95,11 @@ Returns a tuple of:
 2. dtype
 """
 
+cpdef find_common_type(object x1_obj, object x2_obj)
+"""
+Find common type of 2 input objects
+"""
+
 cdef long copy_values_to_dparray(dparray dst, input_obj, size_t dst_idx=*) except -1
 """
 Copy values to `dst` by iterating element by element in `input_obj`
