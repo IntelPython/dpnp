@@ -140,7 +140,6 @@ void dpnp_vander_c(void* array1_in, void* result1, size_t size_in, size_t N, int
     }
 
     if (increasing) {
-        std::cout <<"increasing = True, but  " << increasing << std::endl;
         for (size_t i = 0; i < size_in; ++i) { result[i * N] = 1; }
         for (size_t i = 1; i < N; ++i){
             for (size_t j = 0; j < size_in; ++j){
@@ -149,16 +148,15 @@ void dpnp_vander_c(void* array1_in, void* result1, size_t size_in, size_t N, int
         }
 
     } else {
-        std::cout << "increasing = False, but  " << increasing << std::endl;
-        for (size_t i = 0; i < size_in; ++i){ result[i * N + N - 1] = 1; }
-        for (size_t i = N - 2; i > 0; --i){
-            for (size_t j = 0; j < size_in; ++j){
-                result[j * N + i] = result[j * N + i + 1] * array_in[j];
+        int N_int = static_cast<int>(N);
+        int size_in_int = static_cast<int>(size_in);
+        for (int i = 0; i < size_in_int; ++i){ result[i * N_int + N_int - 1] = 1; }
+        for (int i = N_int - 2; i >= 0; --i){
+            for (int j = 0; j < size_in_int; ++j){
+                result[j * N_int + i] = result[j * N_int + i + 1] * array_in[j];
             }
         }
-        for (size_t i = 0; i < size_in; ++i){ result[i * N] = result[i * N + 1] * array_in[i]; }
     }
-
 }
 
 template <typename _DataType>

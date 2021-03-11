@@ -61,6 +61,7 @@ __all__ += [
 
 
 ctypedef void(*custom_1in_1out_func_ptr_t)(void *, void * , const int , size_t * , size_t * , const size_t, const size_t)
+ctypedef void(*ftpr_custom_vander_1in_1out_t)(void *, void *, size_t, size_t, int)
 
 
 cpdef dparray dpnp_copy(dparray x1, order, subok):
