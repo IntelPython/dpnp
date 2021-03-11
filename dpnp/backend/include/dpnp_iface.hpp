@@ -143,6 +143,17 @@ INP_DLLEXPORT void dpnp_arange_c(size_t start, size_t step, void* result1, size_
 
 /**
  * @ingroup BACKEND_API
+ * @brief Copy of the array, cast to a specified type.
+ *
+ * @param [in]  array       Input array.
+ * @param [out] result      Output array.
+ * @param [in]  size        Number of input elements in `array`.
+ */
+template <typename _DataType, typename _ResultType>
+INP_DLLEXPORT void dpnp_astype_c(const void* array, void* result, const size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief Implementation of full function
  *
  * @param [in]  array_in  Input one-element array.
@@ -724,6 +735,33 @@ INP_DLLEXPORT void dpnp_floor_divide_c(void* array1_in, void* array2_in, void* r
  */
 template <typename _DataType_input, typename _DataType_output>
 INP_DLLEXPORT void dpnp_modf_c(void* array1_in, void* result1_out, void* result2_out, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief multiply function.
+ *
+ * @param [out] result_out         Output array.
+ * @param [in]  input1_in          Input 1 either array or scalar.
+ * @param [in]  input1_size        Number of elements in input 1.
+ * @param [in]  input1_shape       Shape of input 1.
+ * @param [in]  input1_shape_ndim  Size of shape 1.
+ * @param [in]  input2_in          Input 2 either array or scalar.
+ * @param [in]  input2_size        Number of elements in input 2.
+ * @param [in]  input2_shape       Shape of input 2.
+ * @param [in]  input2_shape_ndim  Size of shape 2.
+ * @param [in]  where              Mask array.
+ */
+template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
+INP_DLLEXPORT void dpnp_multiply_c(void* result_out,
+                                   const void* input1_in,
+                                   const size_t input1_size,
+                                   const size_t* input1_shape,
+                                   const size_t input1_shape_ndim,
+                                   const void* input2_in,
+                                   const size_t input2_size,
+                                   const size_t* input2_shape,
+                                   const size_t input2_shape_ndim,
+                                   const size_t* where);
 
 /**
  * @ingroup BACKEND_API
