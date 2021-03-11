@@ -197,6 +197,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_TRIL,                     /**< Used in numpy.tril() implementation  */
     DPNP_FN_TRIU,                     /**< Used in numpy.triu() implementation  */
     DPNP_FN_TRUNC,                    /**< Used in numpy.trunc() implementation  */
+    DPNP_FN_VANDER,                   /**< Used in numpy.vander() implementation  */
     DPNP_FN_VAR,                      /**< Used in numpy.var() implementation  */
     DPNP_FN_ZEROS,                    /**< Used in numpy.zeros() implementation */
     DPNP_FN_ZEROS_LIKE,               /**< Used in numpy.zeros_like() implementation */

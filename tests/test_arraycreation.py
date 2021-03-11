@@ -193,3 +193,29 @@ def test_triu_size_null(k):
     expected = numpy.triu(a, k)
     result = dpnp.triu(ia, k)
     numpy.testing.assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("array",
+                         [[1, 2, 3, 4],
+                             [],
+                             [0, 3, 5]],
+                         ids=['[1, 2, 3, 4]',
+                              '[]',
+                              '[0, 3, 5]'])
+@pytest.mark.parametrize("type",
+                         [numpy.float64, numpy.float32, numpy.int64,
+                             numpy.int32, numpy.bool, numpy.complex128],
+                         ids=['float64', 'float32', 'int64', 'int32', 'bool', 'complex128'])
+@pytest.mark.parametrize("n",
+                         [0, 1, 4, None],
+                         ids=['0', '1', '4', 'None'])
+@pytest.mark.parametrize("increase",
+                         [True, False],
+                         ids=['True', 'False'])
+def test_vander(array, type, n, increase):
+    a_np = numpy.array(array, dtype=type)
+    a_dpnp = dpnp.array(a_np)
+
+    expected = numpy.vander(a_np, N=n, increasing=increase)
+    result = dpnp.vander(a_dpnp, N=n, increasing=increase)
+    numpy.testing.assert_array_equal(expected, result)

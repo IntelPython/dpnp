@@ -847,6 +847,20 @@ INP_DLLEXPORT void dpnp_trapz_c(
  * @ingroup BACKEND_API
  * @brief Implementation of zeros function
  *
+ * @param [in]  array_in    Input array.
+ * @param [out] result      Output array.
+ * @param [in]  size_in     Number of elements in the input array.
+ * @param [in]  N           Number of columns in the output.
+ * @param [in]  increasing  Order of the powers of the columns.
+ * 
+ */
+template <typename _DataType_input, typename _DataType_output>
+INP_DLLEXPORT void dpnp_vander_c(void* array1_in, void* result1, size_t size_in, size_t N, int increasing);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief Implementation of zeros function
+ *
  * @param [out] result    Output array.
  * @param [in]  size      Number of elements in the output array.
  */

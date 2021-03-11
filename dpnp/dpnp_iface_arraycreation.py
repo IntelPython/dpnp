@@ -77,6 +77,7 @@ __all__ = [
     "tri",
     "tril",
     "triu",
+    "vander",
     "zeros",
     "zeros_like"
 ]
@@ -1120,6 +1121,45 @@ def triu(m, k=0):
             return dpnp_triu(m, k)
 
     return call_origin(numpy.triu, m, k)
+
+
+def vander(x1, N=None, increasing=False):
+    """
+    Generate a Vandermonde matrix.
+
+    For full documentation refer to :obj:`numpy.vander`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 2, 3, 5])
+    >>> N = 3
+    >>> np.vander(x, N)
+    array([[ 1,  1,  1],
+           [ 4,  2,  1],
+           [ 9,  3,  1],
+           [25,  5,  1]])
+    >>> x = np.array([1, 2, 3, 5])
+    >>> np.vander(x)
+    array([[  1,   1,   1,   1],
+           [  8,   4,   2,   1],
+           [ 27,   9,   3,   1],
+           [125,  25,   5,   1]])
+    >>> np.vander(x, increasing=True)
+    array([[  1,   1,   1,   1],
+           [  1,   2,   4,   8],
+           [  1,   3,   9,  27],
+           [  1,   5,  25, 125]])
+    """
+    if (not use_origin_backend(x1)):
+        if x1.ndim != 1:
+            pass
+        else:
+            if N is None:
+                N = len(x1)
+            return dpnp_vander(x1, N, increasing)
+
+    return numpy.vander(x1, N=N, increasing=increasing)
 
 
 def zeros(shape, dtype=None, order='C'):

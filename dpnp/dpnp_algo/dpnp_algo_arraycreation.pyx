@@ -54,6 +54,7 @@ __all__ += [
     "dpnp_tri",
     "dpnp_tril",
     "dpnp_triu",
+    "dpnp_vander",
     "dpnp_zeros",
     "dpnp_zeros_like"
 ]
@@ -307,6 +308,24 @@ cpdef dparray dpnp_triu(dparray m, int k):
     cdef custom_1in_1out_func_ptr_t func = <custom_1in_1out_func_ptr_t > kernel_data.ptr
 
     func(m.get_data(), result.get_data(), k, < size_t * > m._dparray_shape.data(), < size_t * > result._dparray_shape.data(), m.ndim, result.ndim)
+
+    return result
+
+
+cpdef dparray dpnp_vander(dparray x1, int N, int increasing):
+    """ Convert string type names (dparray.dtype) to C enum DPNPFuncType """
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
+
+    """ get the FPTR data structure """
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_VANDER, param1_type, DPNP_FT_NONE)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    """ Create result array with type given by FPTR data """
+    cdef dparray result = dparray((x1.size, N), dtype=result_type)
+
+    cdef ftpr_custom_vander_1in_1out_t func = <ftpr_custom_vander_1in_1out_t > kernel_data.ptr
+    """ Call FPTR function """
+    func(x1.get_data(), result.get_data(), x1.size, N, increasing)
 
     return result
 
