@@ -45,6 +45,7 @@ __all__ = [
     "dpnp_arange",
     "dpnp_array",
     "dpnp_astype",
+    "dpnp_flatten",
     "dpnp_init_val",
     "dpnp_matmul",
     "dpnp_queue_initialize",
@@ -70,6 +71,7 @@ include "dpnp_algo_trigonometric.pyx"
 
 ctypedef void(*fptr_dpnp_arange_t)(size_t, size_t, void *, size_t)
 ctypedef void(*fptr_dpnp_astype_t)(const void *, void * , const size_t)
+ctypedef void(*fptr_dpnp_flatten_t)(const void *, void * , const size_t)
 ctypedef void(*fptr_dpnp_initval_t)(void *, void * , size_t)
 
 
@@ -136,6 +138,31 @@ cpdef dparray dpnp_astype(dparray array1, dtype_target):
 
     cdef fptr_dpnp_astype_t func = <fptr_dpnp_astype_t > kernel_data.ptr
     func(array1.get_data(), result.get_data(), array1.size)
+
+    return result
+
+
+cpdef dparray dpnp_flatten(dparray self, order):
+    c_order, fortran_order = self.flags.c_contiguous, self.flags.f_contiguous
+
+    if order == 'K':
+        # either C-style or Fortran-style found in flags
+        order = 'C' if c_order else 'F'
+    elif order == 'A':
+        order = 'F' if fortran_order else 'C'
+
+    if order == 'F':
+        return self.transpose().reshape(self.size)
+
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(self.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FLATTEN, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray(self.size, dtype=result_type)
+
+    cdef fptr_dpnp_flatten_t func = <fptr_dpnp_flatten_t > kernel_data.ptr
+    func(self.get_data(), result.get_data(), self.size)
 
     return result
 

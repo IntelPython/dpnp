@@ -497,26 +497,15 @@ cdef class dparray:
         if not utils.use_origin_backend(self):
             c_order, fortran_order = self.flags.c_contiguous, self.flags.f_contiguous
 
-            if order not in {'C', 'F', 'A', 'K'}:
+            if not isinstance(self, dparray):
+                pass
+            elif order not in {'C', 'F', 'A', 'K'}:
                 pass
             elif order == 'K' and not c_order and not fortran_order:
                 # skip dpnp backend if both C-style and Fortran-style order not found in flags
                 pass
             else:
-                if order == 'K':
-                    # either C-style or Fortran-style found in flags
-                    order = 'C' if c_order else 'F'
-                elif order == 'A':
-                    order = 'F' if fortran_order else 'C'
-
-                if order == 'F':
-                    return self.transpose().reshape(self.size)
-
-                result = dparray(self.size, dtype=self.dtype)
-                for i in range(result.size):
-                    result[i] = self[i]
-
-                return result
+                return dpnp_flatten(self, order)
 
         result = utils.dp2nd_array(self).flatten(order=order)
 

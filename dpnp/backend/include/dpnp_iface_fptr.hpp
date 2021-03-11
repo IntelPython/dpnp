@@ -107,6 +107,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_FABS,                     /**< Used in numpy.fabs() implementation  */
     DPNP_FN_FFT_FFT,                  /**< Used in numpy.fft.fft() implementation  */
     DPNP_FN_FILL_DIAGONAL,            /**< Used in numpy.fill_diagonal() implementation  */
+    DPNP_FN_FLATTEN,                  /**< Used in numpy.flatten() implementation  */
     DPNP_FN_FLOOR,                    /**< Used in numpy.floor() implementation  */
     DPNP_FN_FLOOR_DIVIDE,             /**< Used in numpy.floor_divide() implementation  */
     DPNP_FN_FMOD,                     /**< Used in numpy.fmod() implementation  */

@@ -154,6 +154,17 @@ INP_DLLEXPORT void dpnp_astype_c(const void* array, void* result, const size_t s
 
 /**
  * @ingroup BACKEND_API
+ * @brief Return a copy of the array collapsed into one dimension.
+ *
+ * @param [in]  array       Input array.
+ * @param [out] result      Output array.
+ * @param [in]  size        Number of input elements in `array`.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_flatten_c(const void* array, void* result, const size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief Implementation of full function
  *
  * @param [in]  array_in  Input one-element array.

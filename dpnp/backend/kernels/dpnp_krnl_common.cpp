@@ -254,6 +254,42 @@ void dpnp_eigvals_c(const void* array_in, void* result1, size_t size)
 }
 
 template <typename _DataType>
+class dpnp_flatten_c_kernel;
+
+template <typename _DataType>
+void dpnp_flatten_c(const void* array1_in, void* result1, const size_t size)
+{
+    cl::sycl::event event;
+
+    const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    if ((array_in == nullptr) || (result == nullptr))
+    {
+        return;
+    }
+
+    if (size == 0)
+    {
+        return;
+    }
+
+    cl::sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        size_t i = global_id[0];
+        result[i] = array_in[i];
+    };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_flatten_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+    };
+
+    event = DPNP_QUEUE.submit(kernel_func);
+
+    event.wait();
+}
+
+template <typename _DataType>
 class dpnp_initval_c_kernel;
 
 template <typename _DataType>
@@ -412,6 +448,13 @@ void func_map_init_linalg(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_EIGVALS][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_eigvals_c<long, double>};
     fmap[DPNPFuncName::DPNP_FN_EIGVALS][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_eigvals_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_EIGVALS][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_eigvals_c<double, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_FLATTEN][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_flatten_c<bool>};
+    fmap[DPNPFuncName::DPNP_FN_FLATTEN][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_flatten_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_FLATTEN][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_flatten_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_FLATTEN][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_flatten_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_FLATTEN][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_flatten_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_FLATTEN][eft_C128][eft_C128] = {eft_C128, (void*)dpnp_flatten_c<std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_initval_c<bool>};
     fmap[DPNPFuncName::DPNP_FN_INITVAL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_initval_c<int>};
