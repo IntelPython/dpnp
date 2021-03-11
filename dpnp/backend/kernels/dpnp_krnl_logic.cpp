@@ -41,12 +41,12 @@ void dpnp_all_c(void* array1_in, void* result1, const size_t size)
     const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
     _ResultType* result = reinterpret_cast<_ResultType*>(result1);
 
-    result[0] = true;
-
     if ((array1_in == nullptr) || (result1 == nullptr))
     {
         return;
     }
+
+    result[0] = true;
 
     cl::sycl::range<1> gws(size);
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
@@ -78,12 +78,13 @@ void dpnp_any_c(const void* array1_in, void* result1, const size_t size)
     const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
     _ResultType* result = reinterpret_cast<_ResultType*>(result1);
 
-    result[0] = false;
 
     if ((array1_in == nullptr) || (result1 == nullptr))
     {
         return;
     }
+
+    result[0] = false;
 
     cl::sycl::range<1> gws(size);
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
