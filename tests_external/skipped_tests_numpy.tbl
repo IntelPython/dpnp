@@ -2881,6 +2881,7 @@ tests/test_umath.py::test_rint_big_int
 tests/test_umath.py::TestRoundingFunctions::test_object_direct
 tests/test_umath.py::TestRoundingFunctions::test_object_indirect
 tests/test_umath.py::test_signaling_nan_exceptions
+tests/test_umath.py::TestSign::test_sign_dtype_nan_object
 tests/test_umath.py::TestSign::test_sign
 tests/test_umath.py::TestSign::test_sign_dtype_object
 tests/test_umath.py::test_spacing

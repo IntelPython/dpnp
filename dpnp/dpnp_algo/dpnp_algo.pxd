@@ -46,6 +46,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_ARGMAX
         DPNP_FN_ARGMIN
         DPNP_FN_ARGSORT
+        DPNP_FN_ASTYPE
         DPNP_FN_BITWISE_AND
         DPNP_FN_BITWISE_OR
         DPNP_FN_BITWISE_XOR
@@ -212,6 +213,8 @@ ctypedef void(*fptr_1out_t)(void *, size_t)
 ctypedef void(*fptr_1in_1out_t)(void * , void * , size_t)
 ctypedef void(*fptr_2in_1out_t)(void * , void*, void*, size_t)
 ctypedef void(*fptr_2in_1out_new_t)(void * , void*, size_t, void*, size_t) # to be fused with fptr_2in_1out_t
+ctypedef void(*fptr_2in_1out_full_t)(void *, const void *, const size_t, const long*, const size_t,
+                                     const void *, const size_t, const long*, const size_t, const long*)
 ctypedef void(*fptr_blas_gemm_2in_1out_t)(void * , void * , void * , size_t, size_t, size_t)
 ctypedef void(*dpnp_reduction_c_t)(void * , const void * , const size_t*, const size_t, const long*, const size_t, const void * , const long*)
 
@@ -282,7 +285,7 @@ cpdef dparray dpnp_divide(dparray array1, dparray array2)
 cpdef dparray dpnp_hypot(dparray array1, dparray array2)
 cpdef dparray dpnp_maximum(dparray array1, dparray array2)
 cpdef dparray dpnp_minimum(dparray array1, dparray array2)
-cpdef dparray dpnp_multiply(dparray array1, array2)
+cpdef dparray dpnp_multiply(object x1_obj, object x2_obj)
 cpdef dparray dpnp_negative(dparray array1)
 cpdef dparray dpnp_power(dparray array1, array2)
 cpdef dparray dpnp_remainder(dparray array1, dparray array2)
