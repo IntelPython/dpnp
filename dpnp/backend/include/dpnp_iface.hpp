@@ -845,7 +845,7 @@ INP_DLLEXPORT void dpnp_trapz_c(
 
 /**
  * @ingroup BACKEND_API
- * @brief Implementation of zeros function
+ * @brief Implementation of vander function
  *
  * @param [in]  array_in    Input array.
  * @param [out] result      Output array.
