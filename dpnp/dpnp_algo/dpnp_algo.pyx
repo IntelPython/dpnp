@@ -69,6 +69,7 @@ include "dpnp_algo_trigonometric.pyx"
 
 
 ctypedef void(*fptr_dpnp_arange_t)(size_t, size_t, void *, size_t)
+ctypedef void(*fptr_dpnp_astype_t)(const void *, void * , const size_t)
 ctypedef void(*fptr_dpnp_initval_t)(void *, void * , size_t)
 
 
@@ -125,10 +126,16 @@ cpdef dparray dpnp_array(obj, dtype=None):
 
 
 cpdef dparray dpnp_astype(dparray array1, dtype_target):
-    cdef dparray result = dparray(array1.shape, dtype=dtype_target)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(dtype_target)
 
-    for i in range(result.size):
-        result[i] = array1[i]
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ASTYPE, param1_type, param2_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray(array1.shape, dtype=result_type)
+
+    cdef fptr_dpnp_astype_t func = <fptr_dpnp_astype_t > kernel_data.ptr
+    func(array1.get_data(), result.get_data(), array1.size)
 
     return result
 

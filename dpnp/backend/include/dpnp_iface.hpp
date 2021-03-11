@@ -143,6 +143,17 @@ INP_DLLEXPORT void dpnp_arange_c(size_t start, size_t step, void* result1, size_
 
 /**
  * @ingroup BACKEND_API
+ * @brief Copy of the array, cast to a specified type.
+ *
+ * @param [in]  array       Input array.
+ * @param [out] result      Output array.
+ * @param [in]  size        Number of input elements in `array`.
+ */
+template <typename _DataType, typename _ResultType>
+INP_DLLEXPORT void dpnp_astype_c(const void* array, void* result, const size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief Implementation of full function
  *
  * @param [in]  array_in  Input one-element array.
