@@ -788,13 +788,13 @@ INP_DLLEXPORT void dpnp_remainder_c(void* array1_in, void* array2_in, void* resu
  * @ingroup BACKEND_API
  * @brief repeat elements of an array.
  *
- * @param [in]  array1_in    Input array.
- * @param [out] result1      Output array.
+ * @param [in]  array_in    Input array.
+ * @param [out] result      Output array.
  * @param [in]  repeats      The number of repetitions for each element.
  * @param [in]  size         Number of elements in input arrays.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_repeat_c(const void* array1_in, void* result1, const size_t repeats, const size_t size);
+INP_DLLEXPORT void dpnp_repeat_c(const void* array_in, void* result, const size_t repeats, const size_t size);
 
 /**
  * @ingroup BACKEND_API

@@ -60,13 +60,11 @@ void dpnp_repeat_c(const void* array1_in, void* result1, const size_t repeats, c
         return;
     }
 
-    cl::sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
-        size_t idx2 = global_id[0];
-        for (size_t idx1 = 0; idx1 < repeats; ++idx1)
-        {
-            result[(idx2 * repeats) + idx1] = array_in[idx2];
-        }
+    cl::sycl::range<2> gws(size, repeats);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
+        size_t idx1 = global_id[0];
+        size_t idx2 = global_id[1];
+        result[(idx1 * repeats) + idx2] = array_in[idx1];
     };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
