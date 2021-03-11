@@ -26,12 +26,53 @@ def test_diff(array):
     numpy.testing.assert_allclose(expected, result)
 
 
+@pytest.mark.parametrize("data",
+                         [[[1+1j, -2j], [3-3j, 4j]]],
+                         ids=['[[1+1j, -2j], [3-3j, 4j]]'])
+def test_multiply_complex(data):
+    a = numpy.array(data)
+    ia = inp.array(data)
+
+    result = inp.multiply(ia, ia)
+    expected = numpy.multiply(a, a)
+    numpy.testing.assert_array_equal(result, expected)
+
+    result = inp.multiply(ia, 0.5j)
+    expected = numpy.multiply(a, 0.5j)
+    numpy.testing.assert_array_equal(result, expected)
+
+    result = inp.multiply(0.5j, ia)
+    expected = numpy.multiply(0.5j, a)
+    numpy.testing.assert_array_equal(result, expected)
+
+
+@pytest.mark.parametrize("dtype1",
+                         [numpy.bool_, numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['numpy.bool_', 'numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
+@pytest.mark.parametrize("dtype2",
+                         [numpy.bool_, numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['numpy.bool_', 'numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
+@pytest.mark.parametrize("data",
+                         [[[1, 2], [3, 4]]],
+                         ids=['[[1, 2], [3, 4]]'])
+def test_multiply_dtype(dtype1, dtype2, data):
+    a = numpy.array(data, dtype=dtype1)
+    ia = inp.array(data, dtype=dtype1)
+
+    b = numpy.array(data, dtype=dtype2)
+    ib = inp.array(data, dtype=dtype2)
+
+    result = numpy.multiply(ia, ib)
+    expected = numpy.multiply(a, b)
+    numpy.testing.assert_array_equal(result, expected)
+
+
 @pytest.mark.parametrize("val_type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
+                         [bool, int, float],
+                         ids=['bool', 'int', 'float'])
 @pytest.mark.parametrize("data_type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
+                         [numpy.bool_, numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['numpy.bool_', 'numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
 @pytest.mark.parametrize("val",
                          [0, 1, 5],
                          ids=['0', '1', '5'])
@@ -46,13 +87,33 @@ def test_diff(array):
                               '[[1, 2], [3, 4]]',
                               '[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]',
                               '[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]'])
-def test_multiply(array, val, data_type, val_type):
+def test_multiply_scalar(array, val, data_type, val_type):
     a = numpy.array(array, dtype=data_type)
     ia = inp.array(a)
     val_ = val_type(val)
-    result = inp.multiply(ia, val_)
+
+    result = inp.multiply(a, val_)
     expected = numpy.multiply(ia, val_)
-    numpy.testing.assert_array_equal(expected, result)
+    numpy.testing.assert_array_equal(result, expected)
+
+    result = inp.multiply(val_, a)
+    expected = numpy.multiply(val_, ia)
+    numpy.testing.assert_array_equal(result, expected)
+
+
+@pytest.mark.parametrize("shape",
+                         [(), (3, 2)],
+                         ids=['()', '(3, 2)'])
+@pytest.mark.parametrize("dtype",
+                         [numpy.float32, numpy.float64],
+                         ids=['numpy.float32', 'numpy.float64'])
+def test_multiply_scalar2(shape, dtype):
+    a = numpy.ones(shape, dtype=dtype)
+    ia = inp.ones(shape, dtype=dtype)
+
+    result = 0.5 * ia
+    expected = 0.5 * a
+    numpy.testing.assert_array_equal(result, expected)
 
 
 @pytest.mark.parametrize("array", [[1, 2, 3, 4, 5],

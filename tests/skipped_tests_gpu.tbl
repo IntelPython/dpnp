@@ -211,6 +211,7 @@ tests/test_linalg.py::test_svd[(5,3)-float32]
 tests/test_linalg.py::test_svd[(5,3)-float64]
 tests/test_linalg.py::test_svd[(5,3)-int32]
 tests/test_linalg.py::test_svd[(5,3)-int64]
+tests/test_mathematical.py::test_multiply_complex[[[1+1j, -2j], [3-3j, 4j]]]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[ lambda x: x]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[ lambda x: dpnp.asarray(x).astype(dpnp.int8)]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[ lambda x: dpnp.asarray(x).astype(dpnp.complex64)]
@@ -1504,6 +1505,8 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsDiri
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsExponential_param_0_{scale_shape=(), shape=(4, 3, 2)}::test_exponential
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsExponential_param_1_{scale_shape=(), shape=(3, 2)}::test_exponential
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsExponential_param_2_{scale_shape=(), shape=None}::test_exponential
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_0_{p_shape=(), shape=(4, 3, 2)}::test_geometric
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_1_{p_shape=(), shape=(3, 2)}::test_geometric
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel_param_0_{loc_shape=(), scale_shape=(), shape=(4, 3, 2)}::test_gumbel
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel_param_1_{loc_shape=(), scale_shape=(), shape=(3, 2)}::test_gumbel
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel_param_2_{loc_shape=(), scale_shape=(3, 2), shape=(4, 3, 2)}::test_gumbel
