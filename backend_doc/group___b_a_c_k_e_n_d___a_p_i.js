@@ -18,6 +18,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_argsort_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga2c0862ae9c058efa66b1344057d53d95", null ],
     [ "dpnp_asin_c", "group___b_a_c_k_e_n_d___a_p_i.html#gaad7b181075c76074fe0b17484767dac6", null ],
     [ "dpnp_asinh_c", "group___b_a_c_k_e_n_d___a_p_i.html#gacf1514c0356e6afd9d1a42870b14b892", null ],
+    [ "dpnp_astype_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga4c182f419727e5264f35db70d3f594a4", null ],
     [ "dpnp_atan_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga4ec759afa272fb94f4e29ced10354864", null ],
     [ "dpnp_atanh_c", "group___b_a_c_k_e_n_d___a_p_i.html#gaf104ca98ee4465f95421740cd4028062", null ],
     [ "dpnp_bitwise_and_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga1f415220c0aedf2bb25b62e403e68a3e", null ],

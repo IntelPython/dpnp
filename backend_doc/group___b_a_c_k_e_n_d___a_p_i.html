@@ -373,6 +373,10 @@ Functions</h2></td></tr>
 <tr class="memitem:gaabd482562887152a9aec79d80367f7e3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaabd482562887152a9aec79d80367f7e3">dpnp_arange_c</a> (size_t start, size_t step, void *result1, size_t size)</td></tr>
 <tr class="memdesc:gaabd482562887152a9aec79d80367f7e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array initialization.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gaabd482562887152a9aec79d80367f7e3">More...</a><br /></td></tr>
 <tr class="separator:gaabd482562887152a9aec79d80367f7e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4c182f419727e5264f35db70d3f594a4"><td class="memTemplParams" colspan="2">template&lt;typename _DataType , typename _ResultType &gt; </td></tr>
+<tr class="memitem:ga4c182f419727e5264f35db70d3f594a4"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga4c182f419727e5264f35db70d3f594a4">dpnp_astype_c</a> (const void *array, void *result, const size_t size)</td></tr>
+<tr class="memdesc:ga4c182f419727e5264f35db70d3f594a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy of the array, cast to a specified type.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga4c182f419727e5264f35db70d3f594a4">More...</a><br /></td></tr>
+<tr class="separator:ga4c182f419727e5264f35db70d3f594a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2cb46fbcb3139f455af2803a20a3f68b"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:ga2cb46fbcb3139f455af2803a20a3f68b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga2cb46fbcb3139f455af2803a20a3f68b">dpnp_full_c</a> (void *array_in, void *result, const size_t size)</td></tr>
 <tr class="memdesc:ga2cb46fbcb3139f455af2803a20a3f68b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementation of full function.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga2cb46fbcb3139f455af2803a20a3f68b">More...</a><br /></td></tr>
@@ -1271,6 +1275,52 @@ template&lt;typename _DataType_input , typename _DataType_output &gt; </div>
  </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in the input array. <br  />
  </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga4c182f419727e5264f35db70d3f594a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga4c182f419727e5264f35db70d3f594a4">&#9670;&nbsp;</a></span>dpnp_astype_c()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename _DataType , typename _ResultType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void dpnp_astype_c </td>
+          <td>(</td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>result</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy of the array, cast to a specified type. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">array</td><td>Input array. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of input elements in <code>array</code>. </td></tr>
   </table>
   </dd>
 </dl>
