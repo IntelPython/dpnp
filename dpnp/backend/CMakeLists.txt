@@ -42,7 +42,7 @@ else()
   if(UNIX)
     set(DPNP_ONEAPI_ROOT "/opt/intel/oneapi" CACHE PATH "Folder contains oneapi tool set")
   elseif(WIN32)
-    set(DPNP_ONEAPI_ROOT "C:\Program Files (x86)\Intel\oneAPI" CACHE PATH "Folder contains oneapi tool set")
+    set(DPNP_ONEAPI_ROOT "C:/Program Files (x86)/Intel/oneAPI" CACHE PATH "Folder contains oneapi tool set")
   else()
     message(FATAL_ERROR "Unsupported system ${CMAKE_SYSTEM}")
   endif()
@@ -175,6 +175,7 @@ set(DPNP_SRC
     kernels/dpnp_krnl_fft.cpp
     kernels/dpnp_krnl_indexing.cpp
     kernels/dpnp_krnl_linalg.cpp
+    kernels/dpnp_krnl_logic.cpp
     kernels/dpnp_krnl_manipulation.cpp
     kernels/dpnp_krnl_mathematical.cpp
     kernels/dpnp_krnl_random.cpp

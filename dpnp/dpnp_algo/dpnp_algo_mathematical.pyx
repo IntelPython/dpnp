@@ -32,7 +32,6 @@ and the rest of the library
 
 """
 
-
 from dpnp.dpnp_utils cimport *
 import dpnp
 import numpy
@@ -80,7 +79,7 @@ __all__ += [
 
 ctypedef void(*fptr_custom_elemwise_absolute_1in_1out_t)(void * , void * , size_t)
 ctypedef void(*fptr_1in_2out_t)(void * , void * , void * , size_t)
-ctypedef void(*ftpr_custom_trapz_2in_1out_with_2size_t)(void *, void *, void *, double, size_t, size_t)
+ctypedef void(*ftpr_custom_trapz_2in_1out_with_2size_t)(void *, void * , void * , double, size_t, size_t)
 
 
 cpdef dparray dpnp_absolute(dparray input):
@@ -202,7 +201,7 @@ cpdef dparray dpnp_ediff1d(dparray x1):
     if x1.size <= 1:
         return dpnp.empty(0, dtype=x1.dtype)
 
-    return call_fptr_1in_1out(DPNP_FN_EDIFF1D, x1, (x1.size -1,))
+    return call_fptr_1in_1out(DPNP_FN_EDIFF1D, x1, (x1.size - 1,))
 
 
 cpdef dparray dpnp_fabs(dparray x1):
@@ -273,23 +272,50 @@ cpdef tuple dpnp_modf(dparray x1):
     return result1, result2
 
 
-cpdef dparray dpnp_multiply(dparray x1, x2):
-    cdef dparray result
-    if dpnp.isscalar(x2):
-        x2_ = dpnp.array([x2])
+cpdef dparray dpnp_multiply(object x1_obj, object x2_obj, dparray out=None, object where=True):
+    cdef dparray_shape_type x1_shape, x2_shape, result_shape
 
-        types_map = {
-            (dpnp.int32, dpnp.float64): dpnp.float64,
-            (dpnp.int64, dpnp.float64): dpnp.float64,
-        }
+    cdef bint x1_obj_is_dparray = isinstance(x1_obj, dparray)
+    cdef bint x2_obj_is_dparray = isinstance(x2_obj, dparray)
 
-        res_type = types_map.get((x1.dtype.type, x2_.dtype.type), x1.dtype)
-        result = dparray(x1.shape, dtype=res_type)
-        for i in range(x1.size):
-            result[i] = x1[i] * x2
-        return result.reshape(x1.shape)
+    cdef dparray x1_dparray, x2_dparray
+
+    common_type = find_common_type(x1_obj, x2_obj)
+
+    if x1_obj_is_dparray:
+        x1_dparray = x1_obj
     else:
-        return call_fptr_2in_1out(DPNP_FN_MULTIPLY, x1, x2, x1.shape)
+        x1_dparray = dparray((1,), dtype=common_type)
+        copy_values_to_dparray(x1_dparray, (x1_obj,))
+
+    if x2_obj_is_dparray:
+        x2_dparray = x2_obj
+    else:
+        x2_dparray = dparray((1,), dtype=common_type)
+        copy_values_to_dparray(x2_dparray, (x2_obj,))
+
+    x1_shape = x1_dparray.shape
+    x2_shape = x2_dparray.shape
+    result_shape = get_common_shape(x1_shape, x2_shape)
+
+    # Convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType x1_c_type = dpnp_dtype_to_DPNPFuncType(x1_dparray.dtype)
+    cdef DPNPFuncType x2_c_type = dpnp_dtype_to_DPNPFuncType(x2_dparray.dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MULTIPLY, x1_c_type, x2_c_type)
+
+    cdef DPNPFuncType result_c_type = get_output_c_type(DPNP_FN_MULTIPLY, kernel_data.return_type, out, None)
+
+    # Create result array
+    cdef dparray result = create_output_array(result_shape, result_c_type, out)
+
+    cdef fptr_2in_1out_full_t func = <fptr_2in_1out_full_t > kernel_data.ptr
+    # Call FPTR function
+    func(result.get_data(), x1_dparray.get_data(), x1_dparray.size, x1_shape.data(), x1_shape.size(),
+         x2_dparray.get_data(), x2_dparray.size, x2_shape.data(), x2_shape.size(), NULL)
+
+    return result
 
 
 cpdef dparray dpnp_nancumprod(dparray x1):
@@ -374,7 +400,7 @@ cpdef dparray dpnp_power(dparray x1, x2):
         return call_fptr_2in_1out(DPNP_FN_POWER, x1, x2, x1.shape)
 
 
-cpdef dpnp_prod(dparray x1):
+cpdef dparray dpnp_prod(dparray input, object axis=None, object dtype=None, dparray out=None, cpp_bool keepdims=False, object initial=None, object where=True):
     """
     input:float64   : outout:float64   : name:prod
     input:float32   : outout:float32   : name:prod
@@ -385,12 +411,25 @@ cpdef dpnp_prod(dparray x1):
     input:complex128: outout:complex128: name:prod
     """
 
-    cdef dparray result = call_fptr_1in_1out(DPNP_FN_PROD, x1, (1,))
+    cdef dparray_shape_type input_shape = input.shape
+    cdef DPNPFuncType input_c_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
-    """ Numpy interface inconsistency """
-    return_type = numpy.dtype(numpy.int64) if (x1.dtype == numpy.int32) else x1.dtype
+    cdef dparray_shape_type axis_shape = _object_to_tuple(axis)
 
-    return return_type.type(result[0])
+    cdef dparray_shape_type result_shape = get_reduction_output_shape(input_shape, axis, keepdims)
+    cdef DPNPFuncType result_c_type = get_output_c_type(DPNP_FN_PROD, input_c_type, out, dtype)
+
+    """ select kernel """
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PROD, input_c_type, result_c_type)
+
+    """ Create result array """
+    cdef dparray result = create_output_array(result_shape, result_c_type, out)
+    cdef dpnp_reduction_c_t func = <dpnp_reduction_c_t > kernel_data.ptr
+
+    """ Call FPTR interface function """
+    func(result.get_data(), input.get_data(), < size_t * >input_shape.data(), input_shape.size(), axis_shape.data(), axis_shape.size(), NULL, NULL)
+
+    return result
 
 
 cpdef dparray dpnp_remainder(dparray x1, dparray x2):
@@ -423,8 +462,7 @@ cpdef dparray dpnp_sum(dparray input, object axis=None, object dtype=None, dparr
     cdef dpnp_reduction_c_t func = <dpnp_reduction_c_t > kernel_data.ptr
 
     """ Call FPTR interface function """
-    func(input.get_data(), input.size, result.get_data(), input_shape.data(),
-         input_shape.size(), axis_shape.data(), axis_shape.size(), NULL, NULL)
+    func(result.get_data(), input.get_data(), < size_t * >input_shape.data(), input_shape.size(), axis_shape.data(), axis_shape.size(), NULL, NULL)
 
     return result
 

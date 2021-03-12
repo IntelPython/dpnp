@@ -61,9 +61,11 @@ __all__ += [
 
 ctypedef void(*custom_indexing_2in_1out_func_ptr_t)(void *, void * , void * , size_t)
 ctypedef void(*custom_indexing_2in_1out_func_ptr_t_)(void * , void * , const size_t, size_t * , size_t * , const size_t)
-ctypedef void(*custom_indexing_2in_func_ptr_t)(void * , void * , size_t * , const size_t)
-ctypedef void(*custom_indexing_3in_func_ptr_t)(void * , void * , void *, const size_t, const size_t)
-ctypedef void(*custom_indexing_6in_func_ptr_t)(void * , void * , void * , const size_t, const size_t, const size_t)
+ctypedef void(*custom_indexing_2in_func_ptr_t)(void *, void * , size_t * , const size_t)
+ctypedef void(*custom_indexing_3in_func_ptr_t)(void * , void * , void * , const size_t, const size_t)
+ctypedef void(*custom_indexing_3in_with_axis_func_ptr_t)(void * , void * , void * , const size_t, size_t * , const size_t,
+                                                         const size_t, const size_t,)
+ctypedef void(*custom_indexing_6in_func_ptr_t)(void *, void * , void * , const size_t, const size_t, const size_t)
 
 
 cpdef dparray dpnp_choose(input, choices):
@@ -105,7 +107,7 @@ cpdef dparray dpnp_diagonal(dparray input, offset=0):
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DIAGONAL, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     cdef dparray result = dparray(res_shape, dtype=result_type)
 
     cdef custom_indexing_2in_1out_func_ptr_t_ func = <custom_indexing_2in_1out_func_ptr_t_ > kernel_data.ptr
@@ -234,78 +236,18 @@ cpdef dpnp_put(dparray input, ind, v):
     func(input.get_data(), ind_array.get_data(), v_array.get_data(), input.size, ind_array.size, v_array.size)
 
 
-cpdef dpnp_put_along_axis(dparray arr, dparray indices, values, axis):
-    cdef long size_arr = arr.size
-    cdef dparray_shape_type shape_arr = arr.shape
-    cdef long size_indices = indices.size
+cpdef dpnp_put_along_axis(dparray arr, dparray indices, dparray values, int axis):
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
 
-    if axis != arr.ndim - 1:
-        output_shape = dparray(len(shape_arr) - 1, dtype=numpy.int64)
-        ind = 0
-        for id, shape_axis in enumerate(shape_arr):
-            if id != axis:
-                output_shape[ind] = shape_axis
-                ind += 1
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PUT_ALONG_AXIS, param1_type, param1_type)
 
-        prod = 1
-        for i in range(len(output_shape)):
-            if output_shape[i] != 0:
-                prod *= output_shape[i]
+    cdef custom_indexing_3in_with_axis_func_ptr_t func = <custom_indexing_3in_with_axis_func_ptr_t > kernel_data.ptr
 
-        ind_array = [None] * prod
-        arr_shape_offsets = [None] * len(shape_arr)
-        acc = 1
-
-        for i in range(len(shape_arr)):
-            ind = len(shape_arr) - 1 - i
-            arr_shape_offsets[ind] = acc
-            acc *= shape_arr[ind]
-
-        output_shape_offsets = [None] * len(shape_arr)
-        acc = 1
-
-        for i in range(len(output_shape)):
-            ind = len(output_shape) - 1 - i
-            output_shape_offsets[ind] = acc
-            acc *= output_shape[ind]
-
-        for source_idx in range(size_arr):
-
-            # reconstruct x,y,z from linear source_idx
-            xyz = []
-            remainder = source_idx
-            for i in arr_shape_offsets:
-                quotient, remainder = divmod(remainder, i)
-                xyz.append(quotient)
-
-            # extract result axis
-            result_axis = []
-            for idx, offset in enumerate(xyz):
-                if idx != axis:
-                    result_axis.append(offset)
-
-            # Construct result offset
-            result_offset = 0
-            for i, result_axis_val in enumerate(result_axis):
-                result_offset += (output_shape_offsets[i] * result_axis_val)
-
-            arr_elem = arr.item(source_idx)
-            if ind_array[result_offset] is None:
-                ind_array[result_offset] = 0
-            else:
-                ind_array[result_offset] += 1
-
-            if ind_array[result_offset] % size_indices == indices[result_offset % size_indices]:
-                arr[source_idx] = values
-
-    else:
-        for i in range(size_arr):
-            ind = size_indices * (i // size_indices) + indices[i % size_indices]
-            arr[ind] = values
+    func(arr.get_data(), indices.get_data(), values.get_data(), axis, < size_t * > arr._dparray_shape.data(), arr.ndim, indices.size, values.size)
 
 
 cpdef dpnp_putmask(dparray arr, dparray mask, dparray values):
-    cpdef int values_size = values.size
+    cdef int values_size = values.size
     for i in range(arr.size):
         if mask[i]:
             arr[i] = values[i % values_size]
@@ -332,7 +274,7 @@ cpdef dparray dpnp_take(dparray input, dparray indices):
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TAKE, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     cdef dparray result = dparray(indices.shape, dtype=result_type)
 
     cdef custom_indexing_2in_1out_func_ptr_t func = <custom_indexing_2in_1out_func_ptr_t > kernel_data.ptr

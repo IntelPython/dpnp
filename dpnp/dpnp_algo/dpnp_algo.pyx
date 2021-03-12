@@ -69,6 +69,7 @@ include "dpnp_algo_trigonometric.pyx"
 
 
 ctypedef void(*fptr_dpnp_arange_t)(size_t, size_t, void *, size_t)
+ctypedef void(*fptr_dpnp_astype_t)(const void *, void * , const size_t)
 ctypedef void(*fptr_dpnp_initval_t)(void *, void * , size_t)
 
 
@@ -125,10 +126,16 @@ cpdef dparray dpnp_array(obj, dtype=None):
 
 
 cpdef dparray dpnp_astype(dparray array1, dtype_target):
-    cdef dparray result = dparray(array1.shape, dtype=dtype_target)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(dtype_target)
 
-    for i in range(result.size):
-        result[i] = array1[i]
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ASTYPE, param1_type, param2_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray(array1.shape, dtype=result_type)
+
+    cdef fptr_dpnp_astype_t func = <fptr_dpnp_astype_t > kernel_data.ptr
+    func(array1.get_data(), result.get_data(), array1.size)
 
     return result
 
@@ -291,6 +298,26 @@ cpdef dpnp_DPNPFuncType_to_dtype(size_t type):
         checker_throw_type_error("dpnp_DPNPFuncType_to_dtype", type)
 
 
+cdef dparray call_fptr_1out(DPNPFuncName fptr_name, result_shape, result_dtype):
+
+    # Convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType dtype_in = dpnp_dtype_to_DPNPFuncType(result_dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, dtype_in, dtype_in)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+
+    # Create result array with type given by FPTR data
+    cdef dparray result = dparray(result_shape, dtype=result_type)
+
+    cdef fptr_1out_t func = <fptr_1out_t > kernel_data.ptr
+    # Call FPTR function
+    func(result.get_data(), result.size)
+
+    return result
+
+
 cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shape_type result_shape):
 
     """ Convert string type names (dparray.dtype) to C enum DPNPFuncType """
@@ -310,7 +337,7 @@ cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shap
     return result
 
 
-cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, dparray_shape_type result_shape):
+cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, dparray_shape_type result_shape, new_version=False):
 
     """ Convert string type names (dparray.dtype) to C enum DPNPFuncType """
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
@@ -323,8 +350,13 @@ cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, 
     """ Create result array with type given by FPTR data """
     cdef dparray result = dparray(result_shape, dtype=result_type)
 
-    cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
     """ Call FPTR function """
-    func(x1.get_data(), x2.get_data(), result.get_data(), x1.size)
+    # parameter 'new_version' must be removed in shortly
+    cdef fptr_2in_1out_t func_old = <fptr_2in_1out_t > kernel_data.ptr  # can't define it inside 'if' due Cython limitation
+    cdef fptr_2in_1out_new_t func_new = <fptr_2in_1out_new_t > kernel_data.ptr
+    if (new_version):
+        func_new(result.get_data(), x1.get_data(), x1.size, x2.get_data(), x2.size)
+    else:
+        func_old(x1.get_data(), x2.get_data(), result.get_data(), x1.size)
 
     return result

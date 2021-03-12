@@ -93,6 +93,15 @@ __all__ = [
 ]
 
 
+def convert_result_scalar(result, keepdims):
+    # one element array result should be converted into scalar
+    # TODO empty shape must be converted into scalar (it is not in test system)
+    if (len(result.shape) > 0) and (result.size == 1) and (keepdims is False):
+        return result.dtype.type(result[0])
+    else:
+        return result
+
+
 def abs(*args, **kwargs):
     """
     Calculate the absolute value element-wise.
@@ -963,7 +972,7 @@ def modf(x, **kwargs):
     return call_origin(numpy.modf, x, **kwargs)
 
 
-def multiply(x1, x2, **kwargs):
+def multiply(x1, x2, out=None, where=True, **kwargs):
     """
     Multiply arguments element-wise.
 
@@ -986,33 +995,32 @@ def multiply(x1, x2, **kwargs):
     [1, 4, 9, 16, 25]
 
     """
+    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
+    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
-    is_x1_dparray = isinstance(x1, dparray)
-    is_x2_dparray = isinstance(x2, dparray)
-
-    is_x1_scalar = dpnp.isscalar(x1)
-    is_x2_scalar = dpnp.isscalar(x2)
-
-    if not use_origin_backend(x1):
-        if kwargs:
+    if not use_origin_backend(x1) and not kwargs:
+        if not x1_is_dparray and not x1_is_scalar:
             pass
-        elif not (is_x1_dparray or is_x1_scalar):
+        elif not x2_is_dparray and not x2_is_scalar:
             pass
-        elif not (is_x2_dparray or is_x2_scalar):
+        elif x1_is_scalar and x2_is_scalar:
             pass
-        elif is_x1_scalar and is_x2_scalar:
+        elif x1_is_dparray and x1.ndim == 0:
             pass
-        elif (is_x1_dparray and is_x2_dparray) and (x1.size != x2.size):
+        elif x2_is_dparray and x2.ndim == 0:
             pass
-        elif (is_x1_dparray and is_x2_dparray) and (x1.shape != x2.shape):
+        elif x1_is_dparray and x2_is_dparray and x1.size != x2.size:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.shape != x2.shape:
+            pass
+        elif out is not None and not isinstance(out, dparray):
+            pass
+        elif not where:
             pass
         else:
-            if is_x1_scalar:
-                return dpnp_multiply(x2, x1)
-            else:
-                return dpnp_multiply(x1, x2)
+            return dpnp_multiply(x1, x2, out, where)
 
-    return call_origin(numpy.multiply, x1, x2, **kwargs)
+    return call_origin(numpy.multiply, x1, x2, out=out, where=where, **kwargs)
 
 
 def nancumprod(x1, **kwargs):
@@ -1235,7 +1243,7 @@ def power(x1, x2, **kwargs):
     return call_origin(numpy.power, x1, x2, **kwargs)
 
 
-def prod(x1, **kwargs):
+def prod(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, where=True):
     """
     Calculate product of array elements over a given axis.
 
@@ -1243,10 +1251,9 @@ def prod(x1, **kwargs):
 
     Limitations
     -----------
-        Parameter ``x1`` is supported as :obj:`dpnp.ndarray`.
-        Keyword arguments ``kwargs`` are currently unsupported.
-        Otherwise the functions will be executed sequentially on CPU.
-        Input array data types are limited by supported DPNP :ref:`Data types`.
+        Parameter ``x1`` is supported as :obj:`dpnp.dparray` only.
+        Parameter ``where`` is unsupported.
+        Input array data types are limited by DPNP :ref:`Data types`.
 
     Examples
     --------
@@ -1258,12 +1265,18 @@ def prod(x1, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
+    if not use_origin_backend(x1):
+        if not isinstance(x1, dparray):
+            pass
+        elif out is not None and not isinstance(out, dparray):
+            pass
+        elif where is not True:
+            pass
+        else:
+            result = dpnp_prod(x1, axis, dtype, out, keepdims, initial, where)
+            return convert_result_scalar(result, keepdims)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
-        return dpnp_prod(x1)
-
-    return call_origin(numpy.prod, x1, **kwargs)
+    return call_origin(numpy.prod, x1, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)
 
 
 def remainder(x1, x2, **kwargs):
@@ -1403,7 +1416,7 @@ def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, where
     Limitations
     -----------
         Parameter ``x1`` is supported as :obj:`dpnp.dparray` only.
-        Parameters ``initial`` and ``where`` from keyword arguments ``kwargs`` are unsupported.
+        Parameter `where`` is unsupported.
         Input array data types are limited by DPNP :ref:`Data types`.
 
     Examples
@@ -1421,21 +1434,11 @@ def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, where
             pass
         elif out is not None and not isinstance(out, dparray):
             pass
-        elif axis is not None and not dpnp.isscalar(axis):
-            pass
-        elif initial is not None:
-            pass
         elif where is not True:
             pass
         else:
             result = dpnp_sum(x1, axis, dtype, out, keepdims, initial, where)
-
-            # one element array result should be converted into scalar
-            # TODO empty shape must be converted into scalar (it is not in test system)
-            if (len(result.shape) > 0) and (result.size == 1) and (keepdims is False):
-                return result.dtype.type(result[0])
-
-            return result
+            return convert_result_scalar(result, keepdims)
 
     return call_origin(numpy.sum, x1, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)
 

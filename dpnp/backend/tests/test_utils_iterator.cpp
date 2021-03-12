@@ -105,6 +105,35 @@ TEST(TestUtilsIterator, take_value_loop)
     }
 }
 
+TEST(TestUtilsIterator, take_value_loop_3D)
+{
+    // expected input data 1, 2 ,3, 4...24
+    vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({2, 3, 4});
+    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 3, 4});
+
+    dpnpc_it_t begin = result_obj.begin();
+    for (size_t i = 0; i < input_data.size(); ++i, ++begin)
+    {
+        EXPECT_EQ(result_obj[i], i + 1);
+    }
+}
+
+TEST(TestUtilsIterator, take_value_axes_loop_3D)
+{
+    vector<dpnpc_value_t> expected_data{1, 2, 3, 4, 13, 14, 15, 16};
+    // expected input data 1, 2 ,3, 4...24
+    vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({2, 3, 4});
+    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 3, 4});
+    result_obj.set_axes({0, 2});
+
+    vector<dpnpc_value_t>::iterator expected_it = expected_data.begin();
+    DPNPC_id<dpnpc_value_t>::iterator end = result_obj.end();
+    for (DPNPC_id<dpnpc_value_t>::iterator it = result_obj.begin(); it != end; ++it, ++expected_it)
+    {
+        EXPECT_EQ(*it, *expected_it);
+    }
+}
+
 TEST(TestUtilsIterator, take_value_axis_0_0)
 {
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({4});
@@ -156,7 +185,6 @@ TEST(TestUtilsIterator, full_reduction_with_input_shape)
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({2, 3});
     DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 3});
 
-
     dpnpc_value_t result = 0;
     for (dpnpc_it_t data_it = result_obj.begin(0); data_it != result_obj.end(0); ++data_it)
     {
@@ -201,11 +229,29 @@ TEST(TestUtilsIterator, output_size_axis)
     // expected data 1, 2
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({2, 3, 4});
     DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 3, 4});
+
     result_obj.set_axis(1);
-
     const dpnpc_index_t output_size = result_obj.get_output_size();
-
     EXPECT_EQ(output_size, 8);
+
+    result_obj.set_axis(-2);
+    const dpnpc_index_t output_size_1 = result_obj.get_output_size();
+    EXPECT_EQ(output_size_1, 8);
+}
+
+TEST(TestUtilsIterator, output_size_axis_2D)
+{
+    // expected data 1, 2
+    vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({2, 3, 4});
+    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 3, 4});
+
+    result_obj.set_axes({0, 2});
+    const dpnpc_index_t output_size = result_obj.get_output_size();
+    EXPECT_EQ(output_size, 3);
+
+    result_obj.set_axes({-3, 2});
+    const dpnpc_index_t output_size_1 = result_obj.get_output_size();
+    EXPECT_EQ(output_size_1, 3);
 }
 
 TEST(TestUtilsIterator, iterator_loop)
@@ -276,13 +322,13 @@ TEST(TestUtilsIterator, iterator_distance)
 struct IteratorParameters
 {
     vector<dpnpc_it_t::size_type> input_shape;
-    dpnpc_it_t::size_type axis;
+    vector<long> axes;
     vector<dpnpc_value_t> result;
 
     /// Operator needs to print this container in human readable form in error reporting
     friend std::ostream& operator<<(std::ostream& out, const IteratorParameters& data)
     {
-        out << "IteratorParameters(input_shape:" << data.input_shape << ", axis=" << data.axis
+        out << "IteratorParameters(input_shape=" << data.input_shape << ", axis=" << data.axes
             << ", result=" << data.result << ")";
 
         return out;
@@ -300,7 +346,9 @@ TEST_P(IteratorReduction, loop_reduce_axis)
 
     vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>(param.input_shape);
     DPNPC_id<dpnpc_value_t> input(input_data.data(), param.input_shape);
-    input.set_axis(param.axis);
+    input.set_axes(param.axes);
+
+    ASSERT_EQ(input.get_output_size(), result_size);
 
     vector<dpnpc_value_t> test_result(result_size, 42);
     for (dpnpc_index_t output_id = 0; output_id < result_size; ++output_id)
@@ -324,9 +372,9 @@ TEST_P(IteratorReduction, pstl_reduce_axis)
 
     vector<data_type> input_data = get_input_data<data_type>(param.input_shape);
     DPNPC_id<data_type> input(input_data.data(), param.input_shape);
-    input.set_axis(param.axis);
+    input.set_axes(param.axes);
 
-    EXPECT_EQ(input.get_output_size(), result_size);
+    ASSERT_EQ(input.get_output_size(), result_size);
 
     vector<data_type> result(result_size, 42);
     for (dpnpc_index_t output_id = 0; output_id < result_size; ++output_id)
@@ -351,9 +399,9 @@ TEST_P(IteratorReduction, sycl_reduce_axis)
 
     vector<data_type> input_data = get_input_data<data_type>(param.input_shape);
     DPNPC_id<data_type> input(input_data.data(), param.input_shape);
-    input.set_axis(param.axis);
+    input.set_axes(param.axes);
 
-    EXPECT_EQ(input.get_output_size(), result_size);
+    ASSERT_EQ(input.get_output_size(), result_size);
 
     cl::sycl::range<1> gws(result_size);
     const DPNPC_id<data_type>* input_it = &input;
@@ -404,19 +452,43 @@ TEST_P(IteratorReduction, sycl_reduce_axis)
 INSTANTIATE_TEST_SUITE_P(
     TestUtilsIterator,
     IteratorReduction,
-    testing::Values(IteratorParameters{{2, 3, 4}, 0, {14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36}},
-                    IteratorParameters{{2, 3, 4}, 1, {15, 18, 21, 24, 51, 54, 57, 60}},
-                    IteratorParameters{{2, 3, 4}, 2, {10, 26, 42, 58, 74, 90}},
-                    IteratorParameters{{1, 1, 1}, 0, {1}},
-                    IteratorParameters{{1, 1, 1}, 1, {1}},
-                    IteratorParameters{{1, 1, 1}, 2, {1}},
-                    IteratorParameters{{2, 3, 4, 2}, 0, {26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48,
-                                                         50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72}},
-                    IteratorParameters{
-                        {2, 3, 4, 2}, 1, {27, 30, 33, 36, 39, 42, 45, 48, 99, 102, 105, 108, 111, 114, 117, 120}},
-                    IteratorParameters{{2, 3, 4, 2}, 2, {16, 20, 48, 52, 80, 84, 112, 116, 144, 148, 176, 180}},
-                    IteratorParameters{{2, 3, 4, 2}, 3, {3,  7,  11, 15, 19, 23, 27, 31, 35, 39, 43, 47,
-                                                         51, 55, 59, 63, 67, 71, 75, 79, 83, 87, 91, 95}},
-                    IteratorParameters{{3, 4}, 0, {15, 18, 21, 24}},
-                    IteratorParameters{{3, 4}, 1, {10, 26, 42}},
-                    IteratorParameters{{1}, 0, {1}}) /*TODO ,  testing::PrintToStringParamName() */);
+    testing::Values(
+        IteratorParameters{{2, 3, 4}, {0}, {14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36}},
+        IteratorParameters{{2, 3, 4}, {1}, {15, 18, 21, 24, 51, 54, 57, 60}},
+        IteratorParameters{{2, 3, 4}, {2}, {10, 26, 42, 58, 74, 90}},
+        IteratorParameters{{1, 1, 1}, {0}, {1}},
+        IteratorParameters{{1, 1, 1}, {1}, {1}},
+        IteratorParameters{{1, 1, 1}, {2}, {1}},
+        IteratorParameters{{2, 3, 4, 2}, {0}, {26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48,
+                                               50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72}},
+        IteratorParameters{{2, 3, 4, 2}, {1}, {27, 30, 33, 36, 39, 42, 45, 48, 99, 102, 105, 108, 111, 114, 117, 120}},
+        IteratorParameters{{2, 3, 4, 2}, {2}, {16, 20, 48, 52, 80, 84, 112, 116, 144, 148, 176, 180}},
+        IteratorParameters{{2, 3, 4, 2}, {3}, {3,  7,  11, 15, 19, 23, 27, 31, 35, 39, 43, 47,
+                                               51, 55, 59, 63, 67, 71, 75, 79, 83, 87, 91, 95}},
+        IteratorParameters{{2, 3, 4, 2}, {0, 1}, {126, 132, 138, 144, 150, 156, 162, 168}},
+        IteratorParameters{{2, 3, 4, 2}, {2, 3}, {36, 100, 164, 228, 292, 356}},
+        IteratorParameters{{2, 3, 4, 2}, {0, 3}, {54, 62, 70, 78, 86, 94, 102, 110, 118, 126, 134, 142}},
+        IteratorParameters{{2, 3, 4, 2}, {0, 1, 2}, {576, 600}},
+        IteratorParameters{{2, 3, 4, 2}, {0, 2, 3}, {264, 392, 520}},
+        IteratorParameters{{2, 3, 4, 2}, {0, -2, -1}, {264, 392, 520}},
+        IteratorParameters{{3, 4}, {0}, {15, 18, 21, 24}},
+        IteratorParameters{{3, 4}, {1}, {10, 26, 42}},
+        IteratorParameters{{2, 3, 4, 5, 6}, {0, 1, 2, 3, 4}, {259560}},
+        IteratorParameters{{2, 3, 4, 5, 6}, {0, 1, 3, 4}, {56790, 62190, 67590, 72990}},
+        IteratorParameters{{2, 3, 4, 5, 6},
+                           {1, 2, 3},
+                           {10680, 10740, 10800, 10860, 10920, 10980, 32280, 32340, 32400, 32460, 32520, 32580}},
+        IteratorParameters{{2, 3, 4, 5, 6},
+                           {3, 1, 2},
+                           {10680, 10740, 10800, 10860, 10920, 10980, 32280, 32340, 32400, 32460, 32520, 32580}},
+        IteratorParameters{{2, 3, 4, 5, 6}, {0, 3, 1, 2}, {42960, 43080, 43200, 43320, 43440, 43560}},
+        IteratorParameters{{2, 3, 4, 5}, {1, 3}, {345, 420, 495, 570, 1245, 1320, 1395, 1470}},
+        IteratorParameters{{2, 3, 0, 5}, {1, 3}, {}},
+        IteratorParameters{{2, 0, 4, 5}, {1, 3}, {0, 0, 0, 0, 0, 0, 0, 0}},
+        // IteratorParameters{{2, 3, -4, 5}, {1, 3}, {}},
+        // IteratorParameters{{2, -3, 4, 5}, {1, 3}, {0,0,0,0,0,0,0,0}},
+        IteratorParameters{{}, {}, {1}},
+        IteratorParameters{{0}, {}, {}},
+        IteratorParameters{{}, {0}, {1}},
+        IteratorParameters{{0}, {0}, {0}},
+        IteratorParameters{{1}, {0}, {1}}) /*TODO ,  testing::PrintToStringParamName() */);

@@ -3,10 +3,11 @@
 [![Build Sphinx](https://github.com/IntelPython/dpnp/workflows/Build%20Sphinx/badge.svg)](https://intelpython.github.io/dpnp)
 
 # DPNP: NumPy-like API accelerated with SYCL
+[API coverage summary](https://intelpython.github.io/dpnp/reference/comparison.html#summary)
 
-Full documentation: https://intelpython.github.io/dpnp/
+[Full documentation](https://intelpython.github.io/dpnp/)
 
-DPNP C++ backend documentation: https://intelpython.github.io/dpnp/backend_doc/
+[DPNP C++ backend documentation](https://intelpython.github.io/dpnp/backend_doc/)
 
 The project contains:
 - Python interface with NumPy-like API
