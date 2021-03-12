@@ -505,7 +505,16 @@ cdef class dparray:
                 # skip dpnp backend if both C-style and Fortran-style order not found in flags
                 pass
             else:
-                return dpnp_flatten(self, order)
+                if order == 'K':
+                    # either C-style or Fortran-style found in flags
+                    order = 'C' if c_order else 'F'
+                elif order == 'A':
+                    order = 'F' if fortran_order else 'C'
+
+                if order == 'F':
+                    return self.transpose().reshape(self.size)
+
+                return dpnp_flatten(self)
 
         result = utils.dp2nd_array(self).flatten(order=order)
 

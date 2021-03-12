@@ -142,18 +142,7 @@ cpdef dparray dpnp_astype(dparray array1, dtype_target):
     return result
 
 
-cpdef dparray dpnp_flatten(dparray self, order):
-    c_order, fortran_order = self.flags.c_contiguous, self.flags.f_contiguous
-
-    if order == 'K':
-        # either C-style or Fortran-style found in flags
-        order = 'C' if c_order else 'F'
-    elif order == 'A':
-        order = 'F' if fortran_order else 'C'
-
-    if order == 'F':
-        return self.transpose().reshape(self.size)
-
+cpdef dparray dpnp_flatten(dparray self):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(self.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FLATTEN, param1_type, param1_type)
