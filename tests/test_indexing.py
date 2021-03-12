@@ -83,6 +83,32 @@ def test_indices(dimension):
     numpy.testing.assert_array_equal(expected, result)
 
 
+@pytest.mark.parametrize("array",
+                         [[],
+                          [[0, 0], [0, 0]],
+                          [[1, 0], [1, 0]],
+                          [[1, 2], [3, 4]],
+                          [[0, 1, 2], [3, 0, 5], [6, 7, 0]],
+                          [[0, 1, 0, 3, 0], [5, 0, 7, 0, 9]],
+                          [[[1, 2], [0, 4]], [[0, 2], [0, 1]], [[0, 0], [3, 1]]],
+                          [[[[1, 2, 3], [3, 4, 5]], [[1, 2, 3], [2, 1, 0]]], [
+                              [[1, 3, 5], [3, 1, 0]], [[0, 1, 2], [1, 3, 4]]]]],
+                         ids=['[]',
+                              '[[0, 0], [0, 0]]',
+                              '[[1, 0], [1, 0]]',
+                              '[[1, 2], [3, 4]]',
+                              '[[0, 1, 2], [3, 0, 5], [6, 7, 0]]',
+                              '[[0, 1, 0, 3, 0], [5, 0, 7, 0, 9]]',
+                              '[[[1, 2], [0, 4]], [[0, 2], [0, 1]], [[0, 0], [3, 1]]]',
+                              '[[[[1, 2, 3], [3, 4, 5]], [[1, 2, 3], [2, 1, 0]]], [[[1, 3, 5], [3, 1, 0]], [[0, 1, 2], [1, 3, 4]]]]'])
+def test_nonzero(array):
+    a = numpy.array(array)
+    ia = dpnp.array(array)
+    expected = numpy.nonzero(a)
+    result = dpnp.nonzero(ia)
+    numpy.testing.assert_array_equal(expected, result)
+
+
 @pytest.mark.parametrize("vals",
                          [[100, 200],
                           (100, 200)],
