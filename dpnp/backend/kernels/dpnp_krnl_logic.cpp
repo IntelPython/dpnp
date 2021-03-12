@@ -34,7 +34,7 @@ template <typename _DataType, typename _ResultType>
 class dpnp_all_c_kernel;
 
 template <typename _DataType, typename _ResultType>
-void dpnp_all_c(void* array1_in, void* result1, const size_t size)
+void dpnp_all_c(const void* array1_in, void* result1, const size_t size)
 {
     cl::sycl::event event;
 
