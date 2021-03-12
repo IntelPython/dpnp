@@ -130,12 +130,17 @@ void dpnp_ones_like_c(void* result, size_t size)
 template <typename _DataType_input, typename _DataType_output>
 void dpnp_vander_c(void* array1_in, void* result1, size_t size_in, size_t N, int increasing)
 {
-    if (!size_in or !N) return;
-    _DataType_input* array_in = reinterpret_cast<_DataType_input*>(array1_in);
+    if ((array1_in == nullptr) || (result1 == nullptr)) return;
+
+    if (!size_in || !N) return;
+
+    const _DataType_input* array_in = reinterpret_cast<const _DataType_input*>(array1_in);
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
 
     if (N == 1) {
-        for (size_t i = 0; i < size_in; ++i) { result[i] = 1; }
+        for (size_t i = 0; i < size_in; ++i) { 
+            result[i] = 1; 
+        }
         return;
     }
 

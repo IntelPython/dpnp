@@ -855,7 +855,7 @@ INP_DLLEXPORT void dpnp_trapz_c(
  * 
  */
 template <typename _DataType_input, typename _DataType_output>
-INP_DLLEXPORT void dpnp_vander_c(void* array1_in, void* result1, size_t size_in, size_t N, int increasing);
+INP_DLLEXPORT void dpnp_vander_c(const void* array1_in, void* result1, const size_t size_in, const size_t N, const int increasing);
 
 /**
  * @ingroup BACKEND_API

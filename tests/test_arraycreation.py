@@ -214,7 +214,7 @@ def test_triu_size_null(k):
                          ids=['True', 'False'])
 def test_vander(array, type, n, increase):
     a_np = numpy.array(array, dtype=type)
-    a_dpnp = dpnp.array(a_np)
+    a_dpnp = dpnp.array(a_np,  dtype=type)
 
     expected = numpy.vander(a_np, N=n, increasing=increase)
     result = dpnp.vander(a_dpnp, N=n, increasing=increase)

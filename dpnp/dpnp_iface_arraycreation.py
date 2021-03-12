@@ -1152,14 +1152,16 @@ def vander(x1, N=None, increasing=False):
            [  1,   5,  25, 125]])
     """
     if (not use_origin_backend(x1)):
-        if x1.ndim != 1:
+        if not isinstance(x1, dparray):
+            pass
+        elif x1.ndim != 1:
             pass
         else:
             if N is None:
-                N = len(x1)
+                N = x1.size
             return dpnp_vander(x1, N, increasing)
 
-    return numpy.vander(x1, N=N, increasing=increasing)
+    return call_origin(numpy.vander, x1, N=N, increasing=increasing)
 
 
 def zeros(shape, dtype=None, order='C'):
