@@ -128,7 +128,7 @@ void dpnp_ones_like_c(void* result, size_t size)
 }
 
 template <typename _DataType_input, typename _DataType_output>
-void dpnp_vander_c(void* array1_in, void* result1, size_t size_in, size_t N, int increasing)
+void dpnp_vander_c(const void* array1_in, void* result1, const size_t size_in, const size_t N, const int increasing)
 {
     if ((array1_in == nullptr) || (result1 == nullptr)) return;
 
