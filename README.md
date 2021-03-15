@@ -56,7 +56,7 @@ python -m unittest tests/test_mixins.py
 
 ## Run numpy external test
 ```bash
-. ./0.env
+. ./0.env.sh
 python -m tests.third_party.numpy_ext
 # or
 python -m tests.third_party.numpy_ext core/tests/test_umath.py
@@ -76,7 +76,7 @@ Building:
 
 ## Packaging:
 ```bash
-. ./0.env
+. ./0.env.sh
 conda-build conda-recipe/
 ```
 

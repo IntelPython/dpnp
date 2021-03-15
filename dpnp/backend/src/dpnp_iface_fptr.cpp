@@ -134,6 +134,7 @@ static func_map_t func_map_init()
 {
     func_map_t fmap;
 
+    func_map_init_arraycreation(fmap);
     func_map_init_bitwise(fmap);
     func_map_init_elemwise(fmap);
     func_map_init_fft_func(fmap);

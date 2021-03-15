@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2020, Intel Corporation
@@ -25,10 +25,21 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""
-DPNP version module
+"""Module Backend (Special part)
+
+This module contains interface functions between C backend layer
+and the rest of the library
+
 """
 
-__version__: str = '0.5.1'
 
-version: str = __version__
+from dpnp.dpnp_utils cimport *
+
+
+__all__ += [
+    'dpnp_erf',
+]
+
+
+cpdef dparray dpnp_erf(dparray x1):
+    return call_fptr_1in_1out(DPNP_FN_ERF, x1, x1.shape)
