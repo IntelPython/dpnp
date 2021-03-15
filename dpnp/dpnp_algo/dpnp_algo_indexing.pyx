@@ -66,6 +66,7 @@ ctypedef void(*custom_indexing_3in_func_ptr_t)(void * , void * , void * , const 
 ctypedef void(*custom_indexing_3in_with_axis_func_ptr_t)(void * , void * , void * , const size_t, size_t * , const size_t,
                                                          const size_t, const size_t,)
 ctypedef void(*custom_indexing_6in_func_ptr_t)(void *, void * , void * , const size_t, const size_t, const size_t)
+ctypedef void(*fptr_dpnp_nonzero_t)(const void * , void * , const size_t * , const size_t , const size_t)
 
 
 cpdef dparray dpnp_choose(input, choices):
@@ -170,18 +171,21 @@ cpdef tuple dpnp_nonzero(dparray in_array1):
     # have to go through array one extra time to count size of result arrays
     res_size = count_nonzero(in_array1)
 
-    res_list = []
-    for i in range(res_count):
-        res_list.append(dparray((res_size, ), dtype=dpnp.int64))
-    result = _object_to_tuple(res_list)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(in_array1.dtype)
 
-    idx = 0
-    for i in range(in_array1.size):
-        if in_array1[i] != 0:
-            ids = get_axis_indeces(i, in_array1.shape)
-            for j in range(res_count):
-                result[j][idx] = ids[j]
-            idx = idx + 1
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_NONZERO, param1_type, param1_type)
+
+    cdef fptr_dpnp_nonzero_t func = <fptr_dpnp_nonzero_t > kernel_data.ptr
+
+    res_list = []
+    for j in range(res_count):
+        res_arr = dparray((res_size, ), dtype=dpnp.int64)
+
+        func(in_array1.get_data(), res_arr.get_data(), < size_t * > in_array1._dparray_shape.data(), in_array1.ndim, j)
+
+        res_list.append(res_arr)
+
+    result = _object_to_tuple(res_list)
 
     return result
 
