@@ -25,6 +25,25 @@ cd dpnp
 ./0.build.sh
 ```
 
+## Install Wheel Package from Pypi
+Install DPNP
+```cmd
+python -m pip install --index-url https://pypi.anaconda.org/intel/simple -extra-index-url https://pypi.org/simple dpnp
+```
+Note: DPNP wheel package is placed on Pypi, but some of its dependencies (like Intel numpy) are in Anaconda Cloud.
+That is why install command requires additional intel Pypi channel from Anaconda Cloud.
+
+Set path to Performance Libraries in case of using venv or system Python:
+
+On Linux:
+```cmd
+export LD_LIBRARY_PATH=<path_to_your_env>/lib
+```
+On Windows:
+```cmd
+set PATH=<path_to_your_env>\bin;<path_to_your_env>\Library\bin;%PATH%
+```
+
 ## Run test
 ```bash
 . ./0.env.sh
