@@ -191,6 +191,20 @@ INP_DLLEXPORT void
 
 /**
  * @ingroup BACKEND_API
+ * @brief Return the indices of the elements that are non-zero.
+ *
+ * @param [in]  array1    Input array.
+ * @param [out] result1   Output array.
+ * @param [in]  shape     Shape of input array.
+ * @param [in]  ndim      Number of elements in shape.
+ * @param [in]  j         Number input array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void
+    dpnp_nonzero_c(const void* array1, void* result1, const size_t* shape, const size_t ndim, const size_t j);
+
+/**
+ * @ingroup BACKEND_API
  * @brief absolute function.
  *
  * @param [in]  array1_in    Input array.
