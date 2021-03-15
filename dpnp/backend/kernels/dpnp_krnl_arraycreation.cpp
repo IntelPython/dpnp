@@ -130,36 +130,55 @@ void dpnp_ones_like_c(void* result, size_t size)
 template <typename _DataType_input, typename _DataType_output>
 void dpnp_vander_c(const void* array1_in, void* result1, const size_t size_in, const size_t N, const int increasing)
 {
-    if ((array1_in == nullptr) || (result1 == nullptr)) return;
+    if ((array1_in == nullptr) || (result1 == nullptr))
+        return;
 
-    if (!size_in || !N) return;
+    if (!size_in || !N)
+        return;
 
     const _DataType_input* array_in = reinterpret_cast<const _DataType_input*>(array1_in);
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
 
-    if (N == 1) {
-        for (size_t i = 0; i < size_in; ++i) { 
-            result[i] = 1; 
+    if (N == 1)
+    {
+        for (size_t i = 0; i < size_in; ++i)
+        {
+            result[i] = 1;
         }
         return;
     }
 
-    if (increasing) {
-        for (size_t i = 0; i < size_in; ++i) { result[i * N] = 1; }
-        for (size_t i = 1; i < N; ++i){
-            for (size_t j = 0; j < size_in; ++j){
+    if (increasing)
+    {
+        for (size_t i = 0; i < size_in; ++i)
+        {
+            result[i * N] = 1;
+        }
+        for (size_t i = 1; i < N; ++i)
+        {
+            for (size_t j = 0; j < size_in; ++j)
+            {
                 result[j * N + i] = result[j * N + i - 1] * array_in[j];
             }
         }
-
-    } else {
-        int N_int = static_cast<int>(N);
-        int size_in_int = static_cast<int>(size_in);
-        for (int i = 0; i < size_in_int; ++i){ result[i * N_int + N_int - 1] = 1; }
-        for (int i = N_int - 2; i >= 0; --i){
-            for (int j = 0; j < size_in_int; ++j){
-                result[j * N_int + i] = result[j * N_int + i + 1] * array_in[j];
+    }
+    else
+    {
+        for (size_t i = 0; i < size_in; ++i)
+        {
+            result[i * N + N - 1] = 1;
+        }
+        for (size_t i = N - 2; i > 0; --i)
+        {
+            for (size_t j = 0; j < size_in; ++j)
+            {
+                result[j * N + i] = result[j * N + i + 1] * array_in[j];
             }
+        }
+
+        for (size_t i = 0; i < size_in; ++i)
+        {
+            result[i * N] = result[i * N + 1] * array_in[i];
         }
     }
 }

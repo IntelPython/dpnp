@@ -197,14 +197,14 @@ def test_triu_size_null(k):
 
 @pytest.mark.parametrize("array",
                          [[1, 2, 3, 4],
-                             [],
-                             [0, 3, 5]],
+                          [],
+                          [0, 3, 5]],
                          ids=['[1, 2, 3, 4]',
                               '[]',
                               '[0, 3, 5]'])
 @pytest.mark.parametrize("type",
                          [numpy.float64, numpy.float32, numpy.int64,
-                             numpy.int32, numpy.bool, numpy.complex128],
+                          numpy.int32, numpy.bool, numpy.complex128],
                          ids=['float64', 'float32', 'int64', 'int32', 'bool', 'complex128'])
 @pytest.mark.parametrize("n",
                          [0, 1, 4, None],
@@ -214,7 +214,7 @@ def test_triu_size_null(k):
                          ids=['True', 'False'])
 def test_vander(array, type, n, increase):
     a_np = numpy.array(array, dtype=type)
-    a_dpnp = dpnp.array(a_np,  dtype=type)
+    a_dpnp = dpnp.array(a_np, dtype=type)
 
     expected = numpy.vander(a_np, N=n, increasing=increase)
     result = dpnp.vander(a_dpnp, N=n, increasing=increase)
