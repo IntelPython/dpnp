@@ -917,6 +917,7 @@ tests/test_multiarray.py::TestFlags::test_writeable_from_buffer
 tests/test_multiarray.py::TestFlags::test_writeable_from_readonly
 tests/test_multiarray.py::TestFlags::test_writeable_pickle
 tests/test_multiarray.py::TestHash::test_int
+tests/test_multiarray.py::TestPickling::test_correct_protocol5_error_message
 tests/test_nditer.py::test_0d_iter
 tests/test_nditer.py::test_close_equivalent
 tests/test_nditer.py::test_close_raises
