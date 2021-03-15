@@ -141,10 +141,7 @@ void dpnp_vander_c(const void* array1_in, void* result1, const size_t size_in, c
 
     if (N == 1)
     {
-        for (size_t i = 0; i < size_in; ++i)
-        {
-            result[i] = 1;
-        }
+        dpnp_ones_c<_DataType_output>(result, size_in);
         return;
     }
 
