@@ -116,15 +116,14 @@ void dpnp_rng_binomial_c(void* result, const int ntrial, const double p, const s
 
     if (ntrial == 0 || p == 0)
     {
-        _DataType* fill_value = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(sizeof(_DataType)));
-        fill_value[0] = 0;
-        dpnp_initval_c<_DataType>(result, fill_value, size);
+        dpnp_zeros_c<_DataType>(result, size);
     }
     else if (p == 1)
     {
         _DataType* fill_value = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(sizeof(_DataType)));
         fill_value[0] = static_cast<_DataType>(ntrial);
         dpnp_initval_c<_DataType>(result, fill_value, size);
+        dpnp_memory_free_c(fill_value);
     }
     else
     {
