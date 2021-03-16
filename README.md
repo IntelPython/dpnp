@@ -34,14 +34,14 @@ Note: DPNP wheel package is placed on Pypi, but some of its dependencies (like I
 That is why install command requires additional intel Pypi channel from Anaconda Cloud.
 
 Set path to Performance Libraries in case of using venv or system Python:
-
-On Linux:
 ```cmd
 export LD_LIBRARY_PATH=<path_to_your_env>/lib
 ```
-On Windows:
+
+It is also required to set following environment variables:
 ```cmd
-set PATH=<path_to_your_env>\bin;<path_to_your_env>\Library\bin;%PATH%
+export OCL_ICD_FILENAMES_RESET=1
+export OCL_ICD_FILENAMES=libintelocl.so
 ```
 
 ## Run test
