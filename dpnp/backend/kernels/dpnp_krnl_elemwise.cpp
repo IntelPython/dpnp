@@ -366,11 +366,9 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
         cl::sycl::range<1> gws(result_size);                                                                           \
         auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                               \
             size_t i = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/                                      \
-            {                                                                                                          \
-                const _DataType_output input1_elem = (input1_size == 1) ? input1_data[0] : input1_data[i];             \
-                const _DataType_output input2_elem = (input2_size == 1) ? input2_data[0] : input2_data[i];             \
-                result[i] = __operation1__;                                                                            \
-            }                                                                                                          \
+            const _DataType_output input1_elem = (input1_size == 1) ? input1_data[0] : input1_data[i];                 \
+            const _DataType_output input2_elem = (input2_size == 1) ? input2_data[0] : input2_data[i];                 \
+            result[i] = __operation1__;                                                                                \
         };                                                                                                             \
         auto kernel_func = [&](cl::sycl::handler& cgh) {                                                               \
             cgh.parallel_for<class __name__##_kernel<_DataType_output, _DataType_input1,                               \

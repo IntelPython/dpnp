@@ -102,11 +102,9 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
         cl::sycl::range<1> gws(gws_size);                                                                              \
         auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                               \
             size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/                                             \
-            {                                                                                                          \
-                const _DataType input_elem1 = (input1_size == 1) ? input1[0] : input1[i];                              \
-                const _DataType input_elem2 = (input2_size == 1) ? input2[0] : input2[i];                              \
-                result[i] = __operation__;                                                                             \
-            }                                                                                                          \
+            const _DataType input_elem1 = (input1_size == 1) ? input1[0] : input1[i];                                  \
+            const _DataType input_elem2 = (input2_size == 1) ? input2[0] : input2[i];                                  \
+            result[i] = __operation__;                                                                                 \
         };                                                                                                             \
                                                                                                                        \
         auto kernel_func = [&](cl::sycl::handler& cgh) {                                                               \
