@@ -135,7 +135,7 @@ void dpnp_tri_c(void* result1, const size_t N, const size_t M, const int k)
 {
     cl::sycl::event event;
 
-    if (result1 == nullptr)
+    if (!result1 || !N || !M)
     {
         return;
     }
