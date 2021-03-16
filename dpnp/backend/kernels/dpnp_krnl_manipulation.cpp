@@ -50,12 +50,12 @@ void dpnp_repeat_c(const void* array1_in, void* result1, const size_t repeats, c
     const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    if ((array_in == nullptr) || (result == nullptr))
+    if (!array_in || !result)
     {
         return;
     }
 
-    if (size == 0)
+    if (!size || !repeats)
     {
         return;
     }
