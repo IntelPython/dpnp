@@ -41,7 +41,7 @@ void dpnp_all_c(const void* array1_in, void* result1, const size_t size)
     const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
     _ResultType* result = reinterpret_cast<_ResultType*>(result1);
 
-    if ((array1_in == nullptr) || (result1 == nullptr))
+    if (!array1_in || !result1 || !size)
     {
         return;
     }
@@ -79,7 +79,7 @@ void dpnp_any_c(const void* array1_in, void* result1, const size_t size)
     _ResultType* result = reinterpret_cast<_ResultType*>(result1);
 
 
-    if ((array1_in == nullptr) || (result1 == nullptr))
+    if (!array1_in || !result1 || !size)
     {
         return;
     }
