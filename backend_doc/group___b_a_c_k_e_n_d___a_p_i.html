@@ -518,6 +518,10 @@ template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:ga886bc6959d54b598e3abf87026ee1abe"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga886bc6959d54b598e3abf87026ee1abe">dpnp_take_c</a> (void *array, void *indices, void *result, size_t size)</td></tr>
 <tr class="memdesc:ga886bc6959d54b598e3abf87026ee1abe"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of take function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga886bc6959d54b598e3abf87026ee1abe">More...</a><br /></td></tr>
 <tr class="separator:ga886bc6959d54b598e3abf87026ee1abe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga92c26802d31dbc38f23d0dbc81cce609"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
+<tr class="memitem:ga92c26802d31dbc38f23d0dbc81cce609"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga92c26802d31dbc38f23d0dbc81cce609">dpnp_tri_c</a> (void *result, const size_t N, const size_t M, const int k)</td></tr>
+<tr class="memdesc:ga92c26802d31dbc38f23d0dbc81cce609"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of take function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga92c26802d31dbc38f23d0dbc81cce609">More...</a><br /></td></tr>
+<tr class="separator:ga92c26802d31dbc38f23d0dbc81cce609"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga4d2bad9223531f00da0159cd3c59c6c6"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:ga4d2bad9223531f00da0159cd3c59c6c6"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga4d2bad9223531f00da0159cd3c59c6c6">dpnp_tril_c</a> (void *array, void *result, const int k, size_t *shape, size_t *res_shape, const size_t ndim, const size_t res_ndim)</td></tr>
 <tr class="memdesc:ga4d2bad9223531f00da0159cd3c59c6c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of take function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga4d2bad9223531f00da0159cd3c59c6c6">More...</a><br /></td></tr>
@@ -6103,6 +6107,59 @@ template&lt;typename _DataType_input1 , typename _DataType_input2 , typename _Da
     <tr><td class="paramdir">[in]</td><td class="paramname">dx</td><td>The spacing between sample points. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">array1_size</td><td>Number of elements in first input array. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">array2_size</td><td>Number of elements in second input arrays. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga92c26802d31dbc38f23d0dbc81cce609"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga92c26802d31dbc38f23d0dbc81cce609">&#9670;&nbsp;</a></span>dpnp_tri_c()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename _DataType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void dpnp_tri_c </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>result</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>N</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>M</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>k</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>math library implementation of take function </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">N</td><td>Number of rows in the array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">M</td><td>Number of columns in the array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">k</td><td>The sub-diagonal at and below which the array is filled. </td></tr>
   </table>
   </dd>
 </dl>
