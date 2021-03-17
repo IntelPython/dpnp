@@ -10,7 +10,7 @@ requirements:
       - setuptools
       - numpy-devel >=1.18
       - cython
-      - cmake
+      - cmake >=3.16.5
       - dpctl >=0.5.0a0
       - mkl-devel >=2021.1.1
       - wheel

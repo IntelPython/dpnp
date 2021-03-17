@@ -128,23 +128,6 @@ void dpnp_ones_like_c(void* result, size_t size)
 }
 
 template <typename _DataType>
-void dpnp_zeros_c(void* result, size_t size)
-{
-    _DataType* fill_value = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(sizeof(_DataType)));
-    fill_value[0] = 0;
-
-    dpnp_initval_c<_DataType>(result, fill_value, size);
-
-    dpnp_memory_free_c(fill_value);
-}
-
-template <typename _DataType>
-void dpnp_zeros_like_c(void* result, size_t size)
-{
-    dpnp_zeros_c<_DataType>(result, size);
-}
-
-template <typename _DataType>
 class dpnp_trace_c_kernel;
 
 template <typename _DataType>
@@ -194,6 +177,51 @@ void dpnp_trace_c(const void* array1_in, void* result1, const size_t* shape, con
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_trace_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+    };
+
+    event = DPNP_QUEUE.submit(kernel_func);
+
+    event.wait();
+}
+
+template <typename _DataType>
+class dpnp_tri_c_kernel;
+
+template <typename _DataType>
+void dpnp_tri_c(void* result1, const size_t N, const size_t M, const int k)
+{
+    cl::sycl::event event;
+
+    if (!result1 || !N || !M)
+    {
+        return;
+    }
+
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    size_t idx = N* M;
+    cl::sycl::range<1> gws(idx);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        size_t ind = global_id[0];
+        size_t i = ind / M;
+        size_t j = ind % M;
+
+        int val = i + k + 1;
+        size_t diag_idx_ = (val > 0) ? (size_t)val : 0;
+        size_t diag_idx = (M < diag_idx_) ? M : diag_idx_;
+
+        if (j < diag_idx)
+        {
+            result[ind] = 1;
+        }
+        else
+        {
+            result[ind] = 0;
+        }
+    };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_tri_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
 
     event = DPNP_QUEUE.submit(kernel_func);
@@ -410,6 +438,23 @@ void dpnp_triu_c(void* array_in,
     return;
 }
 
+template <typename _DataType>
+void dpnp_zeros_c(void* result, size_t size)
+{
+    _DataType* fill_value = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(sizeof(_DataType)));
+    fill_value[0] = 0;
+
+    dpnp_initval_c<_DataType>(result, fill_value, size);
+
+    dpnp_memory_free_c(fill_value);
+}
+
+template <typename _DataType>
+void dpnp_zeros_like_c(void* result, size_t size)
+{
+    dpnp_zeros_c<_DataType>(result, size);
+}
+
 void func_map_init_arraycreation(func_map_t& fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_ARANGE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_arange_c<int>};
@@ -452,6 +497,26 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_ONES_LIKE][eft_C128][eft_C128] = {eft_C128,
                                                                  (void*)dpnp_ones_like_c<std::complex<double>>};
 
+    fmap[DPNPFuncName::DPNP_FN_TRACE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_trace_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_TRACE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_trace_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_TRACE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_trace_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_TRACE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_trace_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_TRI][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_tri_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_TRI][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_tri_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_TRI][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_tri_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_TRI][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_tri_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_TRIL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_tril_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_TRIL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_tril_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_TRIL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_tril_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_TRIL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_tril_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_TRIU][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_triu_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_TRIU][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_triu_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_TRIU][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_triu_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_TRIU][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_triu_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_ZEROS][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_zeros_c<int>};
     fmap[DPNPFuncName::DPNP_FN_ZEROS][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_zeros_c<long>};
     fmap[DPNPFuncName::DPNP_FN_ZEROS][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_zeros_c<float>};
@@ -466,21 +531,5 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_zeros_like_c<bool>};
     fmap[DPNPFuncName::DPNP_FN_ZEROS_LIKE][eft_C128][eft_C128] = {eft_C128,
                                                                   (void*)dpnp_ones_like_c<std::complex<double>>};
-
-    fmap[DPNPFuncName::DPNP_FN_TRACE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_trace_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_trace_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_trace_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_trace_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_TRIL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_tril_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_TRIL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_tril_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_TRIL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_tril_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_TRIL][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_tril_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_TRIU][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_triu_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_TRIU][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_triu_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_TRIU][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_triu_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_TRIU][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_triu_c<double>};
-
     return;
 }
