@@ -108,6 +108,10 @@ INP_DLLEXPORT void dpnp_rng_beta_c(void* result, const _DataType a, const _DataT
 template <typename _DataType>
 void dpnp_rng_binomial_c(void* result, const int ntrial, const double p, const size_t size)
 {
+    if (result == nullptr)
+    {
+        return;
+    }
     if (!size)
     {
         return;
