@@ -111,6 +111,25 @@ void dpnp_full_like_c(void* array_in, void* result, const size_t size)
 }
 
 template <typename _DataType>
+void dpnp_identity_c(void* result1, const size_t n)
+{
+    _DataType* result = reinterpret_cast<_DataType*>(result1);   
+
+    for (size_t i = 0; i < n; ++i)
+    {
+        for (size_t j = 0; j < n; ++j)
+        {
+            if (i == j)
+            {
+                result[i * n + j] = 1;
+            } else {
+                result[i * n + j] = 0;
+            }
+        }
+    }
+}
+
+template <typename _DataType>
 void dpnp_ones_c(void* result, size_t size)
 {
     _DataType* fill_value = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(sizeof(_DataType)));
@@ -424,6 +443,13 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_FULL_LIKE][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_full_like_c<bool>};
     fmap[DPNPFuncName::DPNP_FN_FULL_LIKE][eft_C128][eft_C128] = {eft_C128,
                                                                  (void*)dpnp_full_like_c<std::complex<double>>};
+
+    fmap[DPNPFuncName::DPNP_FN_IDENTITY][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_identity_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_IDENTITY][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_identity_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_IDENTITY][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_identity_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_IDENTITY][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_identity_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_IDENTITY][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_identity_c<bool>};
+    fmap[DPNPFuncName::DPNP_FN_IDENTITY][eft_C128][eft_C128] = {eft_C128, (void*)dpnp_identity_c<std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_ONES][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_ones_c<int>};
     fmap[DPNPFuncName::DPNP_FN_ONES][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_ones_c<long>};

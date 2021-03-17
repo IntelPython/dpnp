@@ -122,6 +122,19 @@ def test_geomspace(type, num, endpoint):
         numpy.testing.assert_allclose(dpnp_res, np_res)
 
 
+@pytest.mark.parametrize("n",
+                         [0, 1, 3, 4],
+                         ids=['0', '1', '3', '4'])
+@pytest.mark.parametrize("type",
+                         [numpy.float64, numpy.float32, numpy.int64,
+                          numpy.int32, numpy.bool, numpy.complex128],
+                         ids=['float64', 'float32', 'int64', 'int32', 'bool', 'complex128'])
+def test_identity(n, type):
+    expected = numpy.identity(n, dtype=type)
+    result = dpnp.identity(n, dtype=type)
+    numpy.testing.assert_array_equal(expected, result)
+
+
 @pytest.mark.parametrize("type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['float64', 'float32', 'int64', 'int32'])

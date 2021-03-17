@@ -86,6 +86,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FULL
         DPNP_FN_FULL_LIKE
         DPNP_FN_HYPOT
+        DPNP_FN_IDENTITY
         DPNP_FN_INITVAL
         DPNP_FN_INV
         DPNP_FN_INVERT
