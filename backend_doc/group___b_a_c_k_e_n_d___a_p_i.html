@@ -361,10 +361,10 @@ Functions</h2></td></tr>
 <tr class="memitem:gaa223e6f3142ee696936bf151d7cc5cf0"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaa223e6f3142ee696936bf151d7cc5cf0">dpnp_memory_alloc_c</a> (size_t size_in_bytes)</td></tr>
 <tr class="memdesc:gaa223e6f3142ee696936bf151d7cc5cf0"><td class="mdescLeft">&#160;</td><td class="mdescRight">SYCL queue memory allocation.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gaa223e6f3142ee696936bf151d7cc5cf0">More...</a><br /></td></tr>
 <tr class="separator:gaa223e6f3142ee696936bf151d7cc5cf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga3e1b60f12fbdcd7a2a69527f64fd9a5d"><td class="memTemplParams" colspan="2">template&lt;typename _DataType , typename _ResultType &gt; </td></tr>
-<tr class="memitem:ga3e1b60f12fbdcd7a2a69527f64fd9a5d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga3e1b60f12fbdcd7a2a69527f64fd9a5d">dpnp_all_c</a> (void *array, void *result, const size_t size)</td></tr>
-<tr class="memdesc:ga3e1b60f12fbdcd7a2a69527f64fd9a5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether all array elements along a given axis evaluate to True.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga3e1b60f12fbdcd7a2a69527f64fd9a5d">More...</a><br /></td></tr>
-<tr class="separator:ga3e1b60f12fbdcd7a2a69527f64fd9a5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf3ec875066d5775cc587a463763c8d3d"><td class="memTemplParams" colspan="2">template&lt;typename _DataType , typename _ResultType &gt; </td></tr>
+<tr class="memitem:gaf3ec875066d5775cc587a463763c8d3d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaf3ec875066d5775cc587a463763c8d3d">dpnp_all_c</a> (const void *array, void *result, const size_t size)</td></tr>
+<tr class="memdesc:gaf3ec875066d5775cc587a463763c8d3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether all array elements along a given axis evaluate to True.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gaf3ec875066d5775cc587a463763c8d3d">More...</a><br /></td></tr>
+<tr class="separator:gaf3ec875066d5775cc587a463763c8d3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9956e863601302bb6c3e24c764aa90ae"><td class="memTemplParams" colspan="2">template&lt;typename _DataType , typename _ResultType &gt; </td></tr>
 <tr class="memitem:ga9956e863601302bb6c3e24c764aa90ae"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga9956e863601302bb6c3e24c764aa90ae">dpnp_any_c</a> (const void *array, void *result, const size_t size)</td></tr>
 <tr class="memdesc:ga9956e863601302bb6c3e24c764aa90ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether any array element along a given axis evaluates to True.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga9956e863601302bb6c3e24c764aa90ae">More...</a><br /></td></tr>
@@ -844,8 +844,8 @@ template&lt;typename _DataType_input1 , typename _DataType_input2 , typename _Da
 
 </div>
 </div>
-<a id="ga3e1b60f12fbdcd7a2a69527f64fd9a5d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga3e1b60f12fbdcd7a2a69527f64fd9a5d">&#9670;&nbsp;</a></span>dpnp_all_c()</h2>
+<a id="gaf3ec875066d5775cc587a463763c8d3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaf3ec875066d5775cc587a463763c8d3d">&#9670;&nbsp;</a></span>dpnp_all_c()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -855,7 +855,7 @@ template&lt;typename _DataType , typename _ResultType &gt; </div>
         <tr>
           <td class="memname">void dpnp_all_c </td>
           <td>(</td>
-          <td class="paramtype">void *&#160;</td>
+          <td class="paramtype">const void *&#160;</td>
           <td class="paramname"><em>array</em>, </td>
         </tr>
         <tr>
