@@ -337,26 +337,54 @@ cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shap
     return result
 
 
-cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, dparray_shape_type result_shape, new_version=False):
+cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, object x1_obj, object x2_obj,
+                                object dtype=None, dparray out=None, object where=True,
+                                bint new_version=False):
+    cdef dparray_shape_type x1_shape, x2_shape, result_shape
 
-    """ Convert string type names (dparray.dtype) to C enum DPNPFuncType """
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
-    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(x2.dtype)
+    cdef bint x1_obj_is_dparray = isinstance(x1_obj, dparray)
+    cdef bint x2_obj_is_dparray = isinstance(x2_obj, dparray)
 
-    """ get the FPTR data structure """
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, param1_type, param2_type)
+    cdef dparray x1_dparray, x2_dparray
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-    """ Create result array with type given by FPTR data """
-    cdef dparray result = dparray(result_shape, dtype=result_type)
+    common_type = find_common_type(x1_obj, x2_obj)
+
+    if x1_obj_is_dparray:
+        x1_dparray = x1_obj
+    else:
+        x1_dparray = dparray((1,), dtype=common_type)
+        copy_values_to_dparray(x1_dparray, (x1_obj,))
+
+    if x2_obj_is_dparray:
+        x2_dparray = x2_obj
+    else:
+        x2_dparray = dparray((1,), dtype=common_type)
+        copy_values_to_dparray(x2_dparray, (x2_obj,))
+
+    x1_shape = x1_dparray.shape
+    x2_shape = x2_dparray.shape
+    result_shape = get_common_shape(x1_shape, x2_shape)
+
+    # Convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType x1_c_type = dpnp_dtype_to_DPNPFuncType(x1_dparray.dtype)
+    cdef DPNPFuncType x2_c_type = dpnp_dtype_to_DPNPFuncType(x2_dparray.dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, x1_c_type, x2_c_type)
+
+    # TODO: apply parameters out and dtype after reafactoring fmap (required 4th level nesting)
+
+    # Create result array
+    cdef dparray result = create_output_array(result_shape, kernel_data.return_type, out)
 
     """ Call FPTR function """
     # parameter 'new_version' must be removed in shortly
     cdef fptr_2in_1out_t func_old = <fptr_2in_1out_t > kernel_data.ptr  # can't define it inside 'if' due Cython limitation
     cdef fptr_2in_1out_new_t func_new = <fptr_2in_1out_new_t > kernel_data.ptr
-    if (new_version):
-        func_new(result.get_data(), x1.get_data(), x1.size, x2.get_data(), x2.size)
+    if new_version:
+        func_new(result.get_data(), x1_dparray.get_data(), x1_dparray.size, x1_shape.data(), x1_shape.size(),
+                 x2_dparray.get_data(), x2_dparray.size, x2_shape.data(), x2_shape.size(), NULL)
     else:
-        func_old(x1.get_data(), x2.get_data(), result.get_data(), x1.size)
+        func_old(x1_dparray.get_data(), x2_dparray.get_data(), result.get_data(), x1_dparray.size)
 
     return result
