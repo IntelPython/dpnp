@@ -554,30 +554,20 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">is_x1_dparray</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">axis</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">x1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">repeats</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">repeats</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">repeat_val</span> <span class="o">=</span> <span class="n">repeats</span> <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">repeats</span><span class="p">)</span> <span class="k">else</span> <span class="n">repeats</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">dpnp_repeat</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">repeat_val</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_x1_dparray</span> <span class="ow">and</span> <span class="p">(</span><span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)):</span>
-
-        <span class="n">repeat_val</span> <span class="o">=</span> <span class="n">repeats</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">repeats</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
-            <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">repeats</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
-                <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;repeat&quot;</span><span class="p">,</span> <span class="s2">&quot;len(repeats)&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">repeats</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
-
-            <span class="n">repeat_val</span> <span class="o">=</span> <span class="n">repeats</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-
-        <span class="k">return</span> <span class="n">dpnp_repeat</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">repeat_val</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
-
-    <span class="n">input1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_x1_dparray</span> <span class="k">else</span> <span class="n">x1</span>
-
-    <span class="c1"># TODO need to put dparray memory into NumPy call</span>
-    <span class="n">result_numpy</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">input1</span><span class="p">,</span> <span class="n">repeats</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">result_numpy</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">dparray</span><span class="p">(</span><span class="n">result_numpy</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">result_numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
-            <span class="n">result</span><span class="o">.</span><span class="n">_setitem_scalar</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">result_numpy</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
-
-    <span class="k">return</span> <span class="n">result</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">repeat</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">repeats</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="rollaxis"><a class="viewcode-back" href="../../reference/generated/dpnp.rollaxis.html#dpnp.rollaxis">[docs]</a><span class="k">def</span> <span class="nf">rollaxis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>

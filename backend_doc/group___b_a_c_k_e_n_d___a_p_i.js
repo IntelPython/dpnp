@@ -93,6 +93,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_radians_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga49dcacfecef40446301ddd1d4d63f57d", null ],
     [ "dpnp_recip_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga4d59b79f49490c33cdc691250460ef53", null ],
     [ "dpnp_remainder_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga35001d110bd4b575dcd173c3efd46e96", null ],
+    [ "dpnp_repeat_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga879fbdc3db212458f8cb30030b792255", null ],
     [ "dpnp_right_shift_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga609a82bf184f55c85b7d9bd401f72da5", null ],
     [ "dpnp_sign_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga3b38955d72748f52e9c4ccc6a176fa49", null ],
     [ "dpnp_sin_c", "group___b_a_c_k_e_n_d___a_p_i.html#gacb9f222f176766ccc1761a7c940ce813", null ],
