@@ -29,53 +29,90 @@
 #include "dpnp_iface.hpp"
 #include "queue_sycl.hpp"
 
-template <typename _DataType, typename _ResultType>
-void dpnp_all_c(void* array1_in, void* result1, const size_t size)
-{
-    _DataType* array_in = reinterpret_cast<_DataType*>(array1_in);
-    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
-
-    bool res = true;
-
-    for (size_t i = 0; i < size; ++i)
-    {
-        if (!array_in[i])
-        {
-            res = false;
-            break;
-        }
-    }
-
-    result[0] = res;
-
-    return;
-}
 
 template <typename _DataType, typename _ResultType>
-void dpnp_any_c(const void* array1_in, void* result1, const size_t size)
+class dpnp_all_c_kernel;
+
+template <typename _DataType, typename _ResultType>
+void dpnp_all_c(const void* array1_in, void* result1, const size_t size)
 {
-    if ((array1_in == nullptr) || (result1 == nullptr))
-    {
-        return;
-    }
+    cl::sycl::event event;
 
     const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
     _ResultType* result = reinterpret_cast<_ResultType*>(result1);
 
-    bool res = false;
-
-    for (size_t i = 0; i < size; ++i)
+    if (!array1_in || !result1)
     {
-        if (array_in[i])
-        {
-            res = true;
-            break;
-        }
+        return;
     }
 
-    result[0] = res;
+    result[0] = true;
 
-    return;
+    if (!size)
+    {
+        return;
+    }
+
+    cl::sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        size_t i = global_id[0];
+
+        if (!array_in[i])
+        {
+            result[0] = false;
+        }
+    };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_all_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
+    };
+
+    event = DPNP_QUEUE.submit(kernel_func);
+
+    event.wait();
+}
+
+template <typename _DataType, typename _ResultType>
+class dpnp_any_c_kernel;
+
+template <typename _DataType, typename _ResultType>
+void dpnp_any_c(const void* array1_in, void* result1, const size_t size)
+{
+    cl::sycl::event event;
+
+    const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
+    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
+
+
+    if (!array1_in || !result1)
+    {
+        return;
+    }
+
+    result[0] = false;
+
+    if (!size)
+    {
+        return;
+    }
+
+    cl::sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        size_t i = global_id[0];
+
+        if (array_in[i])
+        {
+            result[0] = true;
+        }
+    };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_any_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
+    };
+
+    event = DPNP_QUEUE.submit(kernel_func);
+
+    event.wait();
 }
 
 void func_map_init_logic(func_map_t& fmap)
