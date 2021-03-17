@@ -114,7 +114,7 @@ void dpnp_memory_memcpy_c(void* dst, const void* src, size_t size_in_bytes);
  * @param [in]  size        Number of input elements in `array`.
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void dpnp_all_c(void* array, void* result, const size_t size);
+INP_DLLEXPORT void dpnp_all_c(const void* array, void* result, const size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -634,6 +634,18 @@ INP_DLLEXPORT void dpnp_take_c(void* array, void* indices, void* result, size_t 
  * @ingroup BACKEND_API
  * @brief math library implementation of take function
  *
+ * @param [out] result  Output array.
+ * @param [in]  N       Number of rows in the array.
+ * @param [in]  M       Number of columns in the array.
+ * @param [in]  k       The sub-diagonal at and below which the array is filled.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_tri_c(void* result, const size_t N, const size_t M, const int k);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of take function
+ *
  * @param [in]  array      Input array with data.
  * @param [out] result     Output array.
  * @param [in]  k          Diagonal above which to zero elements.
@@ -808,6 +820,18 @@ INP_DLLEXPORT void dpnp_ones_like_c(void* result, size_t size);
  */
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
 INP_DLLEXPORT void dpnp_remainder_c(void* array1_in, void* array2_in, void* result1, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief repeat elements of an array.
+ *
+ * @param [in]  array_in    Input array.
+ * @param [out] result      Output array.
+ * @param [in]  repeats      The number of repetitions for each element.
+ * @param [in]  size         Number of elements in input arrays.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_repeat_c(const void* array_in, void* result, const size_t repeats, const size_t size);
 
 /**
  * @ingroup BACKEND_API
