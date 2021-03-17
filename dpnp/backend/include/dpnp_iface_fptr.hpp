@@ -144,6 +144,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RADIANS,                  /**< Used in numpy.radians() implementation  */
     DPNP_FN_REMAINDER,                /**< Used in numpy.remainder() implementation  */
     DPNP_FN_RECIP,                    /**< Used in numpy.recip() implementation  */
+    DPNP_FN_REPEAT,                   /**< Used in numpy.repeat() implementation  */
     DPNP_FN_RIGHT_SHIFT,              /**< Used in numpy.right_shift() implementation  */
     DPNP_FN_RNG_BETA,                 /**< Used in numpy.random.beta() implementation  */
     DPNP_FN_RNG_BINOMIAL,             /**< Used in numpy.random.binomial() implementation  */
@@ -195,6 +196,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_TANH,                     /**< Used in numpy.tanh() implementation  */
     DPNP_FN_TRANSPOSE,                /**< Used in numpy.transpose() implementation  */
     DPNP_FN_TRAPZ,                    /**< Used in numpy.trapz() implementation  */
+    DPNP_FN_TRI,                      /**< Used in numpy.tri() implementation  */
     DPNP_FN_TRIL,                     /**< Used in numpy.tril() implementation  */
     DPNP_FN_TRIU,                     /**< Used in numpy.triu() implementation  */
     DPNP_FN_TRUNC,                    /**< Used in numpy.trunc() implementation  */

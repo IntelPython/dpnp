@@ -161,7 +161,7 @@ def absolute(x1, **kwargs):
     return call_origin(numpy.absolute, x1, **kwargs)
 
 
-def add(x1, x2, **kwargs):
+def add(x1, x2, dtype=None, out=None, where=True, **kwargs):
     """
     Add arguments element-wise.
 
@@ -169,11 +169,11 @@ def add(x1, x2, **kwargs):
 
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
-        Keyword arguments ``kwargs`` are currently unsupported.
-        Otherwise the functions will be executed sequentially on CPU.
-        Input array data types are limited by supported DPNP :ref:`Data types`.
-        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
+    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
+    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
+    Keyword arguments ``kwargs`` are currently unsupported.
+    Otherwise the functions will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
@@ -185,19 +185,36 @@ def add(x1, x2, **kwargs):
     [2, 4, 6]
 
     """
+    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
+    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
+
     if not use_origin_backend(x1) and not kwargs:
-        if not isinstance(x1, dparray):
+        if not x1_is_dparray and not x1_is_scalar:
             pass
-        elif not isinstance(x2, dparray):
+        elif not x2_is_dparray and not x2_is_scalar:
             pass
-        elif x1.size != x2.size:
+        elif x1_is_scalar and x2_is_scalar:
             pass
-        elif (x1.shape != x2.shape):
+        elif x1_is_dparray and x1.ndim == 0:
+            pass
+        elif x2_is_dparray and x2.ndim == 0:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.size != x2.size:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.shape != x2.shape:
+            pass
+        elif out is not None and not isinstance(out, dparray):
+            pass
+        elif dtype is not None:
+            pass
+        elif out is not None:
+            pass
+        elif not where:
             pass
         else:
-            return dpnp_add(x1, x2)
+            return dpnp_add(x1, x2, dtype=dtype, out=out, where=where)
 
-    return call_origin(numpy.add, x1, x2, **kwargs)
+    return call_origin(numpy.add, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
 def around(a, decimals=0, out=None):
@@ -300,7 +317,7 @@ def conjugate(x1, **kwargs):
 conj = conjugate
 
 
-def copysign(x1, x2, **kwargs):
+def copysign(x1, x2, dtype=None, out=None, where=True, **kwargs):
     """
     Change the sign of x1 to that of x2, element-wise.
 
@@ -308,11 +325,11 @@ def copysign(x1, x2, **kwargs):
 
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
-        Keyword arguments ``kwargs`` are currently unsupported.
-        Otherwise the functions will be executed sequentially on CPU.
-        Input array data types are limited by supported DPNP :ref:`Data types`.
-        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
+    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
+    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
+    Keyword arguments ``kwargs`` are currently unsupported.
+    Otherwise the functions will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
@@ -322,20 +339,34 @@ def copysign(x1, x2, **kwargs):
     [-1.0, -2.0, 6.0, 9.0]
 
     """
+    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
+    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
     if not use_origin_backend(x1) and not kwargs:
-        if not isinstance(x1, dparray):
+        if not x1_is_dparray and not x1_is_scalar:
             pass
-        elif not isinstance(x2, dparray):
+        elif not x2_is_dparray and not x2_is_scalar:
             pass
-        elif x1.size != x2.size:
+        elif x1_is_scalar and x2_is_scalar:
             pass
-        elif x1.shape != x2.shape:
+        elif x1_is_dparray and x1.ndim == 0:
+            pass
+        elif x2_is_dparray and x2.ndim == 0:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.size != x2.size:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.shape != x2.shape:
+            pass
+        elif dtype is not None:
+            pass
+        elif out is not None:
+            pass
+        elif not where:
             pass
         else:
-            return dpnp_copysign(x1, x2)
+            return dpnp_copysign(x1, x2, dtype=dtype, out=out, where=where)
 
-    return call_origin(numpy.copysign, x1, x2, **kwargs)
+    return call_origin(numpy.copysign, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
 def cross(x1, x2, axisa=-1, axisb=-1, axisc=-1, axis=None):
@@ -491,7 +522,7 @@ def diff(input, n=1, axis=-1, prepend=None, append=None):
     return call_origin(numpy.diff, input, n, axis, prepend, append)
 
 
-def divide(x1, x2, **kwargs):
+def divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
     """
     Divide arguments element-wise.
 
@@ -499,11 +530,11 @@ def divide(x1, x2, **kwargs):
 
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
-        Keyword arguments ``kwargs`` are currently unsupported.
-        Otherwise the functions will be executed sequentially on CPU.
-        Input array data types are limited by supported DPNP :ref:`Data types`.
-        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
+    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
+    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
+    Keyword arguments ``kwargs`` are currently unsupported.
+    Otherwise the functions will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
@@ -513,20 +544,34 @@ def divide(x1, x2, **kwargs):
     [-0.5, 1.0, -3.0, 4.5]
 
     """
+    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
+    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
-    is_x1_dparray = isinstance(x1, dparray)
-    is_x2_dparray = isinstance(x2, dparray)
+    if not use_origin_backend(x1) and not kwargs:
+        if not x1_is_dparray and not x1_is_scalar:
+            pass
+        elif not x2_is_dparray and not x2_is_scalar:
+            pass
+        elif x1_is_scalar and x2_is_scalar:
+            pass
+        elif x1_is_dparray and x1.ndim == 0:
+            pass
+        elif x2_is_dparray and x2.ndim == 0:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.size != x2.size:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.shape != x2.shape:
+            pass
+        elif dtype is not None:
+            pass
+        elif out is not None:
+            pass
+        elif not where:
+            pass
+        else:
+            return dpnp_divide(x1, x2, dtype=dtype, out=out, where=where)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
-        if (x1.size != x2.size):
-            checker_throw_value_error("divide", "size", x1.size, x2.size)
-
-        if (x1.shape != x2.shape):
-            checker_throw_value_error("divide", "shape", x1.shape, x2.shape)
-
-        return dpnp_divide(x1, x2)
-
-    return call_origin(numpy.divide, x1, x2, **kwargs)
+    return call_origin(numpy.divide, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
 def ediff1d(x1, to_end=None, to_begin=None):
@@ -717,7 +762,7 @@ def fmin(*args, **kwargs):
     return dpnp.minimum(*args, **kwargs)
 
 
-def fmod(x1, x2, **kwargs):
+def fmod(x1, x2, dtype=None, out=None, where=True, **kwargs):
     """
     Calculate the element-wise remainder of division.
 
@@ -725,11 +770,11 @@ def fmod(x1, x2, **kwargs):
 
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
-        Keyword arguments ``kwargs`` are currently unsupported.
-        Otherwise the functions will be executed sequentially on CPU.
-        Input array data types are limited by supported DPNP :ref:`Data types`.
-        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
+    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
+    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
+    Keyword arguments ``kwargs`` are currently unsupported.
+    Otherwise the functions will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
@@ -745,48 +790,37 @@ def fmod(x1, x2, **kwargs):
     >>> [x for x in result]
     [0.0, -1.0, 0.0, 1.0, -0.5]
 
-    """
+    """    
+    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
+    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
-    is_x1_dparray = isinstance(x1, dparray)
-    is_x2_dparray = isinstance(x2, dparray)
+    if not use_origin_backend(x1) and not kwargs:
+        if not x1_is_dparray and not x1_is_scalar:
+            pass
+        elif not x2_is_dparray and not x2_is_scalar:
+            pass
+        elif x1_is_scalar and x2_is_scalar:
+            pass
+        elif x1_is_dparray and x1.ndim == 0:
+            pass
+        elif x2_is_dparray and x2.ndim == 0:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.size != x2.size:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.shape != x2.shape:
+            pass
+        elif out is not None and not isinstance(out, dparray):
+            pass
+        elif dtype is not None:
+            pass
+        elif out is not None:
+            pass
+        elif not where:
+            pass
+        else:
+            return dpnp_fmod(x1, x2, dtype=dtype, out=out, where=where)
 
-    # "dtype is None" is important here because we have no kernels with runtime dependent output type
-    # kernels are (use "python example4.py" to investigate):
-    # input1:float64   : input2:float64   : output:float64   : name:<ufunc 'fmod'>
-    # input1:float64   : input2:float32   : output:float64   : name:<ufunc 'fmod'>
-    # input1:float64   : input2:int64     : output:float64   : name:<ufunc 'fmod'>
-    # input1:float64   : input2:int32     : output:float64   : name:<ufunc 'fmod'>
-    # input1:float64   : input2:bool      : output:float64   : name:<ufunc 'fmod'>
-    # input1:float32   : input2:float64   : output:float64   : name:<ufunc 'fmod'>
-    # input1:float32   : input2:float32   : output:float32   : name:<ufunc 'fmod'>
-    # input1:float32   : input2:int64     : output:float64   : name:<ufunc 'fmod'>
-    # input1:float32   : input2:int32     : output:float64   : name:<ufunc 'fmod'>
-    # input1:float32   : input2:bool      : output:float32   : name:<ufunc 'fmod'>
-    # input1:int64     : input2:float64   : output:float64   : name:<ufunc 'fmod'>
-    # input1:int64     : input2:float32   : output:float64   : name:<ufunc 'fmod'>
-    # input1:int64     : input2:int64     : output:int64     : name:<ufunc 'fmod'>
-    # input1:int64     : input2:int32     : output:int64     : name:<ufunc 'fmod'>
-    # input1:int64     : input2:bool      : output:int64     : name:<ufunc 'fmod'>
-    # input1:int32     : input2:float64   : output:float64   : name:<ufunc 'fmod'>
-    # input1:int32     : input2:float32   : output:float64   : name:<ufunc 'fmod'>
-    # input1:int32     : input2:int64     : output:int64     : name:<ufunc 'fmod'>
-    # input1:int32     : input2:int32     : output:int32     : name:<ufunc 'fmod'>
-    # input1:int32     : input2:bool      : output:int32     : name:<ufunc 'fmod'>
-    # input1:bool      : input2:float64   : output:float64   : name:<ufunc 'fmod'>
-    # input1:bool      : input2:float32   : output:float32   : name:<ufunc 'fmod'>
-    # input1:bool      : input2:int64     : output:int64     : name:<ufunc 'fmod'>
-    # input1:bool      : input2:int32     : output:int32     : name:<ufunc 'fmod'>
-    # input1:bool      : input2:bool      : output:int8      : name:<ufunc 'fmod'>
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
-        if (x1.size != x2.size):
-            checker_throw_value_error("fmod", "size", x1.size, x2.size)
-
-        if (x1.shape != x2.shape):
-            checker_throw_value_error("fmod", "shape", x1.shape, x2.shape)
-
-        return dpnp_fmod(x1, x2)
-
-    return call_origin(numpy.fmod, x1, x2, **kwargs)
+    return call_origin(numpy.fmod, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
 def gradient(y1, *varargs, **kwargs):
@@ -831,7 +865,7 @@ def gradient(y1, *varargs, **kwargs):
     return call_origin(numpy.gradient, y1, *varargs, **kwargs)
 
 
-def maximum(x1, x2, **kwargs):
+def maximum(x1, x2, dtype=None, out=None, where=True, **kwargs):
     """
     Element-wise maximum of array elements.
 
@@ -839,17 +873,17 @@ def maximum(x1, x2, **kwargs):
 
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
-        Keyword arguments ``kwargs`` are currently unsupported.
-        Otherwise the functions will be executed sequentially on CPU.
-        Input array data types are limited by supported DPNP :ref:`Data types`.
-        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
+    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
+    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
+    Keyword arguments ``kwargs`` are currently unsupported.
+    Otherwise the functions will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-        :obj:`dpnp.fmax` : Element-wise maximum of array elements.
-        :obj:`dpnp.fmin` : Element-wise minimum of array elements.
-        :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
+    :obj:`dpnp.fmax` : Element-wise maximum of array elements.
+    :obj:`dpnp.fmin` : Element-wise minimum of array elements.
+    :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
 
     Example
     -------
@@ -859,23 +893,37 @@ def maximum(x1, x2, **kwargs):
     [1, 5, 4]
 
     """
+    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
+    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
-    is_x1_dparray = isinstance(x1, dparray)
-    is_x2_dparray = isinstance(x2, dparray)
+    if not use_origin_backend(x1) and not kwargs:
+        if not x1_is_dparray and not x1_is_scalar:
+            pass
+        elif not x2_is_dparray and not x2_is_scalar:
+            pass
+        elif x1_is_scalar and x2_is_scalar:
+            pass
+        elif x1_is_dparray and x1.ndim == 0:
+            pass
+        elif x2_is_dparray and x2.ndim == 0:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.size != x2.size:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.shape != x2.shape:
+            pass
+        elif dtype is not None:
+            pass
+        elif out is not None:
+            pass
+        elif not where:
+            pass
+        else:
+            return dpnp_maximum(x1, x2, dtype=dtype, out=out, where=where)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
-        if (x1.size != x2.size):
-            checker_throw_value_error("maximum", "size", x1.size, x2.size)
-
-        if (x1.shape != x2.shape):
-            checker_throw_value_error("maximum", "shape", x1.shape, x2.shape)
-
-        return dpnp_maximum(x1, x2)
-
-    return call_origin(numpy.maximum, x1, x2, **kwargs)
+    return call_origin(numpy.maximum, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
-def minimum(x1, x2, **kwargs):
+def minimum(x1, x2, dtype=None, out=None, where=True, **kwargs):
     """
     Element-wise minimum of array elements.
 
@@ -883,17 +931,17 @@ def minimum(x1, x2, **kwargs):
 
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
-        Keyword arguments ``kwargs`` are currently unsupported.
-        Otherwise the functions will be executed sequentially on CPU.
-        Input array data types are limited by supported DPNP :ref:`Data types`.
-        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
+    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
+    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
+    Keyword arguments ``kwargs`` are currently unsupported.
+    Otherwise the functions will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-        :obj:`dpnp.fmax` : Element-wise maximum of array elements.
-        :obj:`dpnp.fmin` : Element-wise minimum of array elements.
-        :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
+    :obj:`dpnp.fmax` : Element-wise maximum of array elements.
+    :obj:`dpnp.fmin` : Element-wise minimum of array elements.
+    :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
 
     Example
     -------
@@ -903,20 +951,34 @@ def minimum(x1, x2, **kwargs):
     [-2, 3, 2]
 
     """
+    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
+    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
-    is_x1_dparray = isinstance(x1, dparray)
-    is_x2_dparray = isinstance(x2, dparray)
+    if not use_origin_backend(x1) and not kwargs:
+        if not x1_is_dparray and not x1_is_scalar:
+            pass
+        elif not x2_is_dparray and not x2_is_scalar:
+            pass
+        elif x1_is_scalar and x2_is_scalar:
+            pass
+        elif x1_is_dparray and x1.ndim == 0:
+            pass
+        elif x2_is_dparray and x2.ndim == 0:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.size != x2.size:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.shape != x2.shape:
+            pass
+        elif dtype is not None:
+            pass
+        elif out is not None:
+            pass
+        elif not where:
+            pass
+        else:
+            return dpnp_minimum(x1, x2, dtype=dtype, out=out, where=where)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
-        if (x1.size != x2.size):
-            checker_throw_value_error("minimum", "size", x1.size, x2.size)
-
-        if (x1.shape != x2.shape):
-            checker_throw_value_error("minimum", "shape", x1.shape, x2.shape)
-
-        return dpnp_minimum(x1, x2)
-
-    return call_origin(numpy.minimum, x1, x2, **kwargs)
+    return call_origin(numpy.minimum, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
 def mod(*args, **kwargs):
@@ -972,7 +1034,7 @@ def modf(x, **kwargs):
     return call_origin(numpy.modf, x, **kwargs)
 
 
-def multiply(x1, x2, out=None, where=True, **kwargs):
+def multiply(x1, x2, dtype=None, out=None, where=True, **kwargs):
     """
     Multiply arguments element-wise.
 
@@ -980,11 +1042,11 @@ def multiply(x1, x2, out=None, where=True, **kwargs):
 
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
-        Keyword arguments ``kwargs`` are currently unsupported.
-        Otherwise the functions will be executed sequentially on CPU.
-        Input array data types are limited by supported DPNP :ref:`Data types`.
-        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
+    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
+    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
+    Keyword arguments ``kwargs`` are currently unsupported.
+    Otherwise the functions will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
@@ -1013,14 +1075,16 @@ def multiply(x1, x2, out=None, where=True, **kwargs):
             pass
         elif x1_is_dparray and x2_is_dparray and x1.shape != x2.shape:
             pass
-        elif out is not None and not isinstance(out, dparray):
+        elif dtype is not None:
+            pass
+        elif out is not None:
             pass
         elif not where:
             pass
         else:
-            return dpnp_multiply(x1, x2, out, where)
+            return dpnp_multiply(x1, x2, dtype=dtype, out=out, where=where)
 
-    return call_origin(numpy.multiply, x1, x2, out=out, where=where, **kwargs)
+    return call_origin(numpy.multiply, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
 def nancumprod(x1, **kwargs):
@@ -1194,7 +1258,7 @@ def negative(x1, **kwargs):
     return call_origin(numpy.negative, x1, **kwargs)
 
 
-def power(x1, x2, **kwargs):
+def power(x1, x2, dtype=None, out=None, where=True, **kwargs):
     """
     First array elements raised to powers from second array, element-wise.
 
@@ -1202,17 +1266,17 @@ def power(x1, x2, **kwargs):
 
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
-        Keyword arguments ``kwargs`` are currently unsupported.
-        Otherwise the functions will be executed sequentially on CPU.
-        Input array data types are limited by supported DPNP :ref:`Data types`.
-        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
+    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
+    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
+    Keyword arguments ``kwargs`` are currently unsupported.
+    Otherwise the functions will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
     --------
-        :obj:`dpnp.fmax` : Element-wise maximum of array elements.
-        :obj:`dpnp.fmin` : Element-wise minimum of array elements.
-        :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
+    :obj:`dpnp.fmax` : Element-wise maximum of array elements.
+    :obj:`dpnp.fmin` : Element-wise minimum of array elements.
+    :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
 
 
     Example
@@ -1224,23 +1288,37 @@ def power(x1, x2, **kwargs):
     >>> [x for x in result]
     [1, 4, 9, 16, 25]
 
-    """
+    """    
+    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
+    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
-    if not use_origin_backend(x1):
-        if kwargs:
+    if not use_origin_backend(x1) and not kwargs:
+        if not x1_is_dparray and not x1_is_scalar:
             pass
-        elif not isinstance(x1, dparray):
+        elif not x2_is_dparray and not x2_is_scalar:
             pass
-        elif not isinstance(x2, dparray) and not dpnp.isscalar(x2):
+        elif x1_is_scalar and x2_is_scalar:
             pass
-        elif isinstance(x2, dparray) and x1.size != x2.size:
+        elif x1_is_dparray and x1.ndim == 0:
             pass
-        elif isinstance(x2, dparray) and x1.shape != x2.shape:
+        elif x2_is_dparray and x2.ndim == 0:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.size != x2.size:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.shape != x2.shape:
+            pass
+        elif out is not None and not isinstance(out, dparray):
+            pass
+        elif dtype is not None:
+            pass
+        elif out is not None:
+            pass
+        elif not where:
             pass
         else:
-            return dpnp_power(x1, x2)
+            return dpnp_power(x1, x2, dtype=dtype, out=out, where=where)
 
-    return call_origin(numpy.power, x1, x2, **kwargs)
+    return call_origin(numpy.power, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
 def prod(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, where=True):
@@ -1368,7 +1446,7 @@ def sign(x1, **kwargs):
     return call_origin(numpy.sign, x1, **kwargs)
 
 
-def subtract(x1, x2, **kwargs):
+def subtract(x1, x2, dtype=None, out=None, where=True, **kwargs):
     """
     Subtract arguments, element-wise.
 
@@ -1376,11 +1454,11 @@ def subtract(x1, x2, **kwargs):
 
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
-        Keyword arguments ``kwargs`` are currently unsupported.
-        Otherwise the functions will be executed sequentially on CPU.
-        Input array data types are limited by supported DPNP :ref:`Data types`.
-        Parameters ``x1`` and ``x2`` are supported with equal sizes and shapes.
+    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
+    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
+    Keyword arguments ``kwargs`` are currently unsupported.
+    Otherwise the functions will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Example
     -------
@@ -1390,21 +1468,38 @@ def subtract(x1, x2, **kwargs):
     [2, -4]
 
     """
+    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
+    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
-    is_x1_dparray = isinstance(x1, dparray)
-    is_x2_dparray = isinstance(x2, dparray)
+    if not use_origin_backend(x1) and not kwargs:
+        if not x1_is_dparray and not x1_is_scalar:
+            pass
+        elif not x2_is_dparray and not x2_is_scalar:
+            pass
+        elif x1_is_scalar and x2_is_scalar:
+            pass
+        elif x1_is_dparray and x1.ndim == 0:
+            pass
+        elif x1_is_dparray and x1.dtype == numpy.bool:
+            pass
+        elif x2_is_dparray and x2.ndim == 0:
+            pass
+        elif x2_is_dparray and x2.dtype == numpy.bool:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.size != x2.size:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.shape != x2.shape:
+            pass
+        elif dtype is not None:
+            pass
+        elif out is not None:
+            pass
+        elif not where:
+            pass
+        else:
+            return dpnp_subtract(x1, x2, dtype=dtype, out=out, where=where)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
-        if (x1.dtype != numpy.bool) and (x2.dtype != numpy.bool):
-            if (x1.size != x2.size):
-                checker_throw_value_error("subtract", "size", x1.size, x2.size)
-
-            if (x1.shape != x2.shape):
-                checker_throw_value_error("subtract", "shape", x1.shape, x2.shape)
-
-            return dpnp_subtract(x1, x2)
-
-    return call_origin(numpy.subtract, x1, x2, **kwargs)
+    return call_origin(numpy.subtract, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
 def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, where=True):
