@@ -1046,7 +1046,7 @@ def trace(arr, offset=0, axis1=0, axis2=1, dtype=None, out=None):
        Limitations
        -----------
        Input array is supported as :obj:`dpnp.ndarray`.
-       Parameters ``axis1``, ``axis2`` and ``out`` are supported only with default values.
+       Parameters ``axis1``, ``axis2``, ``out`` and ``dtype`` are supported only with default values.
        """
     if not use_origin_backend():
         if not isinstance(arr, dparray):
@@ -1059,7 +1059,9 @@ def trace(arr, offset=0, axis1=0, axis2=1, dtype=None, out=None):
             pass
         elif axis2 != 1:
             pass
-        elif out != None:
+        elif dtype is not None:
+            pass
+        elif out is not None:
             pass
         else:
             return dpnp_trace(arr, offset, axis1, axis2, dtype, out)

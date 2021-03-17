@@ -138,9 +138,6 @@ def test_loadtxt(type):
         numpy.testing.assert_array_equal(dpnp_res, np_res)
 
 
-@pytest.mark.parametrize("dtype",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
 @pytest.mark.parametrize("type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['float64', 'float32', 'int64', 'int32'])
@@ -167,11 +164,11 @@ def test_loadtxt(type):
                               '[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]',
                               '[[[[1, 2, 3], [3, 4, 5]], [[1, 2, 3], [2, 1, 0]]], [[[1, 3, 5], [3, 1, 0]], [[0, 1, 2], [1, 3, 4]]]]',
                               '[[[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]], [[[13, 14, 15], [16, 17, 18]], [[19, 20, 21], [22, 23, 24]]]]'])
-def test_trace(array, offset, type, dtype):
+def test_trace(array, offset, type):
     a = numpy.array(array, type)
     ia = dpnp.array(array, type)
-    expected = numpy.trace(a, offset=offset, dtype=dtype)
-    result = dpnp.trace(ia, offset=offset, dtype=dtype)
+    expected = numpy.trace(a, offset=offset)
+    result = dpnp.trace(ia, offset=offset)
     numpy.testing.assert_array_equal(expected, result)
 
 
