@@ -497,9 +497,7 @@ cdef class dparray:
         if not utils.use_origin_backend(self):
             c_order, fortran_order = self.flags.c_contiguous, self.flags.f_contiguous
 
-            if not isinstance(self, dparray):
-                pass
-            elif order not in {'C', 'F', 'A', 'K'}:
+            if order not in {'C', 'F', 'A', 'K'}:
                 pass
             elif order == 'K' and not c_order and not fortran_order:
                 # skip dpnp backend if both C-style and Fortran-style order not found in flags

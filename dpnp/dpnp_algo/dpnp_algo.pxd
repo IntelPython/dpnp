@@ -228,7 +228,7 @@ cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, 
 
 
 cpdef dparray dpnp_astype(dparray array1, dtype_target)
-cpdef dparray dpnp_flatten(dparray self)
+cpdef dparray dpnp_flatten(dparray array1)
 
 
 """
