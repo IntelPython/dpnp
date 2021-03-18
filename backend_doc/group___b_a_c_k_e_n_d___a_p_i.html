@@ -583,6 +583,10 @@ template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:ga9b3f6427b1e1a3fc9ec357d9584f1765"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga9b3f6427b1e1a3fc9ec357d9584f1765">dpnp_trapz_c</a> (const void *array1_in, const void *array2_in, void *result1, double dx, size_t array1_size, size_t array2_size)</td></tr>
 <tr class="memdesc:ga9b3f6427b1e1a3fc9ec357d9584f1765"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom implementation of trapz function.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga9b3f6427b1e1a3fc9ec357d9584f1765">More...</a><br /></td></tr>
 <tr class="separator:ga9b3f6427b1e1a3fc9ec357d9584f1765"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaca787631a90f323b3a742a718292e077"><td class="memTemplParams" colspan="2">template&lt;typename _DataType_input , typename _DataType_output &gt; </td></tr>
+<tr class="memitem:gaca787631a90f323b3a742a718292e077"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaca787631a90f323b3a742a718292e077">dpnp_vander_c</a> (const void *array1_in, void *result1, const size_t size_in, const size_t N, const int increasing)</td></tr>
+<tr class="memdesc:gaca787631a90f323b3a742a718292e077"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementation of vander function.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gaca787631a90f323b3a742a718292e077">More...</a><br /></td></tr>
+<tr class="separator:gaca787631a90f323b3a742a718292e077"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga906e16d71f40098e50cb56ad7ff7d515"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:ga906e16d71f40098e50cb56ad7ff7d515"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga906e16d71f40098e50cb56ad7ff7d515">dpnp_zeros_c</a> (void *result, size_t size)</td></tr>
 <tr class="memdesc:ga906e16d71f40098e50cb56ad7ff7d515"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementation of zeros function.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga906e16d71f40098e50cb56ad7ff7d515">More...</a><br /></td></tr>
@@ -6381,6 +6385,66 @@ template&lt;typename _DataType_input , typename _DataType_output &gt; </div>
  </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in the input array. <br  />
  </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gaca787631a90f323b3a742a718292e077"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaca787631a90f323b3a742a718292e077">&#9670;&nbsp;</a></span>dpnp_vander_c()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename _DataType_input , typename _DataType_output &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void dpnp_vander_c </td>
+          <td>(</td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>array1_in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>result1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>size_in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>N</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>increasing</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Implementation of vander function. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">array_in</td><td>Input array. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">size_in</td><td>Number of elements in the input array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">N</td><td>Number of columns in the output. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">increasing</td><td>Order of the powers of the columns. </td></tr>
   </table>
   </dd>
 </dl>
