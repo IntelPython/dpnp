@@ -107,6 +107,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_FABS,                     /**< Used in numpy.fabs() implementation  */
     DPNP_FN_FFT_FFT,                  /**< Used in numpy.fft.fft() implementation  */
     DPNP_FN_FILL_DIAGONAL,            /**< Used in numpy.fill_diagonal() implementation  */
+    DPNP_FN_FLATTEN,                  /**< Used in numpy.flatten() implementation  */
     DPNP_FN_FLOOR,                    /**< Used in numpy.floor() implementation  */
     DPNP_FN_FLOOR_DIVIDE,             /**< Used in numpy.floor_divide() implementation  */
     DPNP_FN_FMOD,                     /**< Used in numpy.fmod() implementation  */
@@ -200,6 +201,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_TRIL,                     /**< Used in numpy.tril() implementation  */
     DPNP_FN_TRIU,                     /**< Used in numpy.triu() implementation  */
     DPNP_FN_TRUNC,                    /**< Used in numpy.trunc() implementation  */
+    DPNP_FN_VANDER,                   /**< Used in numpy.vander() implementation  */
     DPNP_FN_VAR,                      /**< Used in numpy.var() implementation  */
     DPNP_FN_ZEROS,                    /**< Used in numpy.zeros() implementation */
     DPNP_FN_ZEROS_LIKE,               /**< Used in numpy.zeros_like() implementation */
