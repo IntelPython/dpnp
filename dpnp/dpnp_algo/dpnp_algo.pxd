@@ -80,6 +80,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_FABS
         DPNP_FN_FFT_FFT
         DPNP_FN_FILL_DIAGONAL
+        DPNP_FN_FLATTEN
         DPNP_FN_FLOOR
         DPNP_FN_FLOOR_DIVIDE
         DPNP_FN_FMOD
@@ -229,6 +230,7 @@ cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, object x1_obj, object x2
 
 
 cpdef dparray dpnp_astype(dparray array1, dtype_target)
+cpdef dparray dpnp_flatten(dparray array1)
 
 
 """
