@@ -403,30 +403,20 @@ def repeat(x1, repeats, axis=None):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
+    if not use_origin_backend(x1):
+        if not isinstance(x1, dparray):
+            pass
+        elif axis is not None and axis != 0:
+            pass
+        elif x1.ndim >= 2:
+            pass
+        elif not dpnp.isscalar(repeats) and len(repeats) > 1:
+            pass
+        else:
+            repeat_val = repeats if dpnp.isscalar(repeats) else repeats[0]
+            return dpnp_repeat(x1, repeat_val, axis)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and (axis is None or axis == 0) and (x1.ndim < 2)):
-
-        repeat_val = repeats
-        if isinstance(repeats, (tuple, list)):
-            if (len(repeats) > 1):
-                checker_throw_value_error("repeat", "len(repeats)", len(repeats), 1)
-
-            repeat_val = repeats[0]
-
-        return dpnp_repeat(x1, repeat_val, axis)
-
-    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.repeat(input1, repeats, axis=axis)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return call_origin(numpy.repeat, x1, repeats, axis)
 
 
 def rollaxis(a, axis, start=0):

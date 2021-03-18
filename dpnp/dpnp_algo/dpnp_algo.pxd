@@ -105,6 +105,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_MINIMUM
         DPNP_FN_MODF
         DPNP_FN_MULTIPLY
+        DPNP_FN_NONZERO
         DPNP_FN_ONES
         DPNP_FN_ONES_LIKE
         DPNP_FN_PLACE
@@ -115,6 +116,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RADIANS
         DPNP_FN_REMAINDER
         DPNP_FN_RECIP
+        DPNP_FN_REPEAT
         DPNP_FN_RIGHT_SHIFT
         DPNP_FN_RNG_BETA
         DPNP_FN_RNG_BINOMIAL
@@ -167,6 +169,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_TANH
         DPNP_FN_TRANSPOSE
         DPNP_FN_TRAPZ
+        DPNP_FN_TRI
         DPNP_FN_TRIL
         DPNP_FN_TRIU
         DPNP_FN_TRUNC
@@ -211,17 +214,19 @@ cdef extern from "dpnp_iface.hpp":
 
 # C function pointer to the C library template functions
 ctypedef void(*fptr_1out_t)(void *, size_t)
-ctypedef void(*fptr_1in_1out_t)(void * , void * , size_t)
-ctypedef void(*fptr_2in_1out_t)(void * , void*, void*, size_t)
-ctypedef void(*fptr_2in_1out_new_t)(void * , void*, size_t, void*, size_t) # to be fused with fptr_2in_1out_t
-ctypedef void(*fptr_2in_1out_full_t)(void *, const void *, const size_t, const long*, const size_t,
-                                     const void *, const size_t, const long*, const size_t, const long*)
+ctypedef void(*fptr_1in_1out_t)(void *, void *, size_t)
+ctypedef void(*fptr_2in_1out_t)(void *, void *, void *, size_t)
+ # to be fused with fptr_2in_1out_t
+ctypedef void(*fptr_2in_1out_new_t)(void *, const void *, const size_t, const long *, const size_t,
+                                    const void *, const size_t, const long *, const size_t, const long *)
 ctypedef void(*fptr_blas_gemm_2in_1out_t)(void * , void * , void * , size_t, size_t, size_t)
 ctypedef void(*dpnp_reduction_c_t)(void * , const void * , const size_t*, const size_t, const long*, const size_t, const void * , const long*)
 
 cdef dparray call_fptr_1out(DPNPFuncName fptr_name, result_shape, result_dtype)
 cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shape_type result_shape)
-cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, dparray_shape_type result_shape, new_version=*)
+cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, object x1_obj, object x2_obj,
+                                object dtype=*, dparray out=*, object where=*,
+                                bint new_version=*)
 
 
 cpdef dparray dpnp_astype(dparray array1, dtype_target)
@@ -237,12 +242,12 @@ cpdef dpnp_DPNPFuncType_to_dtype(size_t type)
 """
 Bitwise functions
 """
-cpdef dparray dpnp_bitwise_and(dparray array1, dparray array2)
-cpdef dparray dpnp_bitwise_or(dparray array1, dparray array2)
-cpdef dparray dpnp_bitwise_xor(dparray array1, dparray array2)
+cpdef dparray dpnp_bitwise_and(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
+cpdef dparray dpnp_bitwise_or(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
+cpdef dparray dpnp_bitwise_xor(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
 cpdef dparray dpnp_invert(dparray arr)
-cpdef dparray dpnp_left_shift(dparray array1, dparray array2)
-cpdef dparray dpnp_right_shift(dparray array1, dparray array2)
+cpdef dparray dpnp_left_shift(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
+cpdef dparray dpnp_right_shift(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
 
 
 """
@@ -279,19 +284,19 @@ cpdef dparray dpnp_init_val(shape, dtype, value)
 """
 Mathematical functions
 """
-cpdef dparray dpnp_add(dparray array1, dparray array2)
-cpdef dparray dpnp_arctan2(dparray array1, dparray array2)
+cpdef dparray dpnp_add(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
+cpdef dparray dpnp_arctan2(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
 cpdef dparray dpnp_cos(dparray array1)
-cpdef dparray dpnp_divide(dparray array1, dparray array2)
-cpdef dparray dpnp_hypot(dparray array1, dparray array2)
-cpdef dparray dpnp_maximum(dparray array1, dparray array2)
-cpdef dparray dpnp_minimum(dparray array1, dparray array2)
-cpdef dparray dpnp_multiply(object x1_obj, object x2_obj)
+cpdef dparray dpnp_divide(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
+cpdef dparray dpnp_hypot(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
+cpdef dparray dpnp_maximum(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
+cpdef dparray dpnp_minimum(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
+cpdef dparray dpnp_multiply(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
 cpdef dparray dpnp_negative(dparray array1)
-cpdef dparray dpnp_power(dparray array1, array2)
-cpdef dparray dpnp_remainder(dparray array1, dparray array2)
+cpdef dparray dpnp_power(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
+cpdef dparray dpnp_remainder(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
 cpdef dparray dpnp_sin(dparray array1)
-cpdef dparray dpnp_subtract(dparray array1, dparray array2)
+cpdef dparray dpnp_subtract(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
 
 
 """

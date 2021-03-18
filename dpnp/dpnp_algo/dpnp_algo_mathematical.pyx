@@ -103,12 +103,12 @@ cpdef dparray dpnp_absolute(dparray input):
     return result
 
 
-cpdef dparray dpnp_add(dparray x1, dparray x2):
-    return call_fptr_2in_1out(DPNP_FN_ADD, x1, x2, x1.shape)
+cpdef dparray dpnp_add(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+    return call_fptr_2in_1out(DPNP_FN_ADD, x1_obj, x2_obj, dtype=dtype, out=out, where=where, new_version=True)
 
 
-cpdef dparray dpnp_arctan2(dparray x1, dparray x2):
-    return call_fptr_2in_1out(DPNP_FN_ARCTAN2, x1, x2, x1.shape)
+cpdef dparray dpnp_arctan2(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+    return call_fptr_2in_1out(DPNP_FN_ARCTAN2, x1_obj, x2_obj, dtype=dtype, out=out, where=where, new_version=True)
 
 
 cpdef dpnp_around(dparray a, decimals, out):
@@ -133,12 +133,12 @@ cpdef dparray dpnp_conjugate(dparray x1):
     return call_fptr_1in_1out(DPNP_FN_CONJIGUATE, x1, x1.shape)
 
 
-cpdef dparray dpnp_copysign(dparray x1, dparray x2):
-    return call_fptr_2in_1out(DPNP_FN_COPYSIGN, x1, x2, x1.shape)
+cpdef dparray dpnp_copysign(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+    return call_fptr_2in_1out(DPNP_FN_COPYSIGN, x1_obj, x2_obj, dtype=dtype, out=out, where=where, new_version=True)
 
 
-cpdef dparray dpnp_cross(dparray x1, dparray x2):
-    return call_fptr_2in_1out(DPNP_FN_CROSS, x1, x2, x1.shape)
+cpdef dparray dpnp_cross(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+    return call_fptr_2in_1out(DPNP_FN_CROSS, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
 cpdef dparray dpnp_cumprod(dparray x1):
@@ -192,8 +192,8 @@ cpdef dparray dpnp_diff(dparray input, int n):
         return dpnp.array([], dtype=input.dtype)
 
 
-cpdef dparray dpnp_divide(dparray x1, dparray x2):
-    return call_fptr_2in_1out(DPNP_FN_DIVIDE, x1, x2, x1.shape)
+cpdef dparray dpnp_divide(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+    return call_fptr_2in_1out(DPNP_FN_DIVIDE, x1_obj, x2_obj, dtype=dtype, out=out, where=where, new_version=True)
 
 
 cpdef dparray dpnp_ediff1d(dparray x1):
@@ -212,12 +212,12 @@ cpdef dparray dpnp_floor(dparray x1):
     return call_fptr_1in_1out(DPNP_FN_FLOOR, x1, x1.shape)
 
 
-cpdef dparray dpnp_floor_divide(dparray x1, dparray x2):
-    return call_fptr_2in_1out(DPNP_FN_FLOOR_DIVIDE, x1, x2, x1.shape)
+cpdef dparray dpnp_floor_divide(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+    return call_fptr_2in_1out(DPNP_FN_FLOOR_DIVIDE, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
-cpdef dparray dpnp_fmod(dparray x1, dparray x2):
-    return call_fptr_2in_1out(DPNP_FN_FMOD, x1, x2, x1.shape)
+cpdef dparray dpnp_fmod(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+    return call_fptr_2in_1out(DPNP_FN_FMOD, x1_obj, x2_obj, dtype=dtype, out=out, where=where, new_version=True)
 
 
 cpdef dparray dpnp_gradient(dparray y1, int dx=1):
@@ -241,16 +241,16 @@ cpdef dparray dpnp_gradient(dparray y1, int dx=1):
     return result
 
 
-cpdef dparray dpnp_hypot(dparray x1, dparray x2):
-    return call_fptr_2in_1out(DPNP_FN_HYPOT, x1, x2, x1.shape)
+cpdef dparray dpnp_hypot(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+    return call_fptr_2in_1out(DPNP_FN_HYPOT, x1_obj, x2_obj, dtype=dtype, out=out, where=where, new_version=True)
 
 
-cpdef dparray dpnp_maximum(dparray x1, dparray x2):
-    return call_fptr_2in_1out(DPNP_FN_MAXIMUM, x1, x2, x1.shape)
+cpdef dparray dpnp_maximum(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+    return call_fptr_2in_1out(DPNP_FN_MAXIMUM, x1_obj, x2_obj, dtype=dtype, out=out, where=where, new_version=True)
 
 
-cpdef dparray dpnp_minimum(dparray x1, dparray x2):
-    return call_fptr_2in_1out(DPNP_FN_MINIMUM, x1, x2, x1.shape)
+cpdef dparray dpnp_minimum(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+    return call_fptr_2in_1out(DPNP_FN_MINIMUM, x1_obj, x2_obj, dtype=dtype, out=out, where=where, new_version=True)
 
 
 cpdef tuple dpnp_modf(dparray x1):
@@ -272,50 +272,8 @@ cpdef tuple dpnp_modf(dparray x1):
     return result1, result2
 
 
-cpdef dparray dpnp_multiply(object x1_obj, object x2_obj, dparray out=None, object where=True):
-    cdef dparray_shape_type x1_shape, x2_shape, result_shape
-
-    cdef bint x1_obj_is_dparray = isinstance(x1_obj, dparray)
-    cdef bint x2_obj_is_dparray = isinstance(x2_obj, dparray)
-
-    cdef dparray x1_dparray, x2_dparray
-
-    common_type = find_common_type(x1_obj, x2_obj)
-
-    if x1_obj_is_dparray:
-        x1_dparray = x1_obj
-    else:
-        x1_dparray = dparray((1,), dtype=common_type)
-        copy_values_to_dparray(x1_dparray, (x1_obj,))
-
-    if x2_obj_is_dparray:
-        x2_dparray = x2_obj
-    else:
-        x2_dparray = dparray((1,), dtype=common_type)
-        copy_values_to_dparray(x2_dparray, (x2_obj,))
-
-    x1_shape = x1_dparray.shape
-    x2_shape = x2_dparray.shape
-    result_shape = get_common_shape(x1_shape, x2_shape)
-
-    # Convert string type names (dparray.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType x1_c_type = dpnp_dtype_to_DPNPFuncType(x1_dparray.dtype)
-    cdef DPNPFuncType x2_c_type = dpnp_dtype_to_DPNPFuncType(x2_dparray.dtype)
-
-    # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MULTIPLY, x1_c_type, x2_c_type)
-
-    cdef DPNPFuncType result_c_type = get_output_c_type(DPNP_FN_MULTIPLY, kernel_data.return_type, out, None)
-
-    # Create result array
-    cdef dparray result = create_output_array(result_shape, result_c_type, out)
-
-    cdef fptr_2in_1out_full_t func = <fptr_2in_1out_full_t > kernel_data.ptr
-    # Call FPTR function
-    func(result.get_data(), x1_dparray.get_data(), x1_dparray.size, x1_shape.data(), x1_shape.size(),
-         x2_dparray.get_data(), x2_dparray.size, x2_shape.data(), x2_shape.size(), NULL)
-
-    return result
+cpdef dparray dpnp_multiply(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+    return call_fptr_2in_1out(DPNP_FN_MULTIPLY, x1_obj, x2_obj, dtype=dtype, out=out, where=where, new_version=True)
 
 
 cpdef dparray dpnp_nancumprod(dparray x1):
@@ -380,24 +338,8 @@ cpdef dparray dpnp_negative(dparray array1):
     return result
 
 
-cpdef dparray dpnp_power(dparray x1, x2):
-    cdef dparray result
-    if dpnp.isscalar(x2):
-        x2_ = dpnp.array([x2])
-
-        types_map = {
-            (dpnp.int32, dpnp.float64): dpnp.float64,
-            (dpnp.int64, dpnp.float64): dpnp.float64,
-        }
-
-        res_type = types_map.get((x1.dtype.type, x2_.dtype.type), x1.dtype)
-
-        result = dparray(x1.shape, dtype=res_type)
-        for i in range(x1.size):
-            result[i] = x1[i] ** x2
-        return result
-    else:
-        return call_fptr_2in_1out(DPNP_FN_POWER, x1, x2, x1.shape)
+cpdef dparray dpnp_power(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+    return call_fptr_2in_1out(DPNP_FN_POWER, x1_obj, x2_obj, dtype=dtype, out=out, where=where, new_version=True)
 
 
 cpdef dparray dpnp_prod(dparray input, object axis=None, object dtype=None, dparray out=None, cpp_bool keepdims=False, object initial=None, object where=True):
@@ -432,16 +374,16 @@ cpdef dparray dpnp_prod(dparray input, object axis=None, object dtype=None, dpar
     return result
 
 
-cpdef dparray dpnp_remainder(dparray x1, dparray x2):
-    return call_fptr_2in_1out(DPNP_FN_REMAINDER, x1, x2, x1.shape)
+cpdef dparray dpnp_remainder(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+    return call_fptr_2in_1out(DPNP_FN_REMAINDER, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
 cpdef dparray dpnp_sign(dparray x1):
     return call_fptr_1in_1out(DPNP_FN_SIGN, x1, x1.shape)
 
 
-cpdef dparray dpnp_subtract(dparray x1, dparray x2):
-    return call_fptr_2in_1out(DPNP_FN_SUBTRACT, x1, x2, x1.shape)
+cpdef dparray dpnp_subtract(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+    return call_fptr_2in_1out(DPNP_FN_SUBTRACT, x1_obj, x2_obj, dtype=dtype, out=out, where=where, new_version=True)
 
 
 cpdef dparray dpnp_sum(dparray input, object axis=None, object dtype=None, dparray out=None, cpp_bool keepdims=False, object initial=None, object where=True):
