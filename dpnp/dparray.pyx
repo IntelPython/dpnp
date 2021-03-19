@@ -946,6 +946,24 @@ cdef class dparray:
         """
         return argsort(self, axis, kind, order)
 
+    def partition(arr, kth, axis=-1, kind='introselect', order=None):
+        if not isinstance(kth, int):
+            pass
+        elif kth >= arr.shape[arr.ndim - 1] or arr.ndim + kth < 0:
+            pass
+        elif axis != -1:
+            pass
+        elif kind != 'introselect':
+            pass
+        elif order is not None:
+            pass
+        else:
+            return partition(arr, kth, axis, kind, order)
+
+        result = utils.dp2nd_array(arr).partition(kth, axis, kind, order)
+
+        return utils.nd2dp_array(result)
+
     def sort(self, axis=-1, kind=None, order=None):
         """
         Sort the array

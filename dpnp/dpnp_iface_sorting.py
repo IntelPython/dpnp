@@ -40,15 +40,20 @@ it contains:
 """
 
 
+import collections
+
 import numpy
 
 from dpnp.dpnp_algo import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 
+import dpnp
+
 
 __all__ = [
     'argsort',
+    'partition',
     'sort'
 ]
 
@@ -99,6 +104,26 @@ def argsort(in_array1, axis=-1, kind=None, order=None):
         return dpnp_argsort(in_array1)
 
     return numpy.argsort(in_array1, axis, kind, order)
+
+
+def partition(arr, kth, axis=-1, kind='introselect', order=None):
+    if not use_origin_backend():
+        if not isinstance(arr, dparray):
+            pass
+        elif not isinstance(kth, int):
+            pass
+        elif kth >= arr.shape[arr.ndim - 1] or arr.ndim + kth < 0:
+            pass
+        elif axis != -1:
+            pass
+        elif kind != 'introselect':
+            pass
+        elif order is not None:
+            pass
+        else:
+            return dpnp_partition(arr, kth, axis, kind, order)
+
+    return call_origin(numpy.partition, arr, kth, axis, kind, order)
 
 
 def sort(x1, **kwargs):
