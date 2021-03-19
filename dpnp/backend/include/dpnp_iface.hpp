@@ -295,7 +295,6 @@ INP_DLLEXPORT void dpnp_sum_c(void* result_out,
  * @ingroup BACKEND_API
  * @brief Place of array elements
  *
- * @param [in]  array       Input array.
  * @param [in]  sort_array  Input sorted array.
  * @param [out]  result     Result array.
  * @param [in]  kth         Element index to partition by.
@@ -303,7 +302,7 @@ INP_DLLEXPORT void dpnp_sum_c(void* result_out,
  * @param [in]  ndim        Number of elements in shape.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_partition_c(const void* array1_in, const void* sort_array1_in, void* result1, const size_t kth, const size_t* shape, const size_t ndim);
+INP_DLLEXPORT void dpnp_partition_c(const void* sort_array, void* result, const size_t kth, const size_t* shape, const size_t ndim);
 
 /**
  * @ingroup BACKEND_API

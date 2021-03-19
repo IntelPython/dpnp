@@ -942,7 +942,7 @@ cdef class dparray:
         """
         return argsort(self, axis, kind, order)
 
-    def partition(arr, kth, axis=-1, kind='introselect', order=None):
+    def partition(self, kth, axis=-1, kind='introselect', order=None):
         """
         Return a partitioned copy of an array.
         For full documentation refer to :obj:`numpy.partition`.
@@ -955,7 +955,7 @@ cdef class dparray:
         """
         if not isinstance(kth, int):
             pass
-        elif kth >= arr.shape[arr.ndim - 1] or arr.ndim + kth < 0:
+        elif kth >= self.shape[self.ndim - 1] or self.ndim + kth < 0:
             pass
         elif axis != -1:
             pass
@@ -964,9 +964,9 @@ cdef class dparray:
         elif order is not None:
             pass
         else:
-            return partition(arr, kth, axis, kind, order)
+            return partition(self, kth, axis, kind, order)
 
-        result = utils.dp2nd_array(arr).partition(kth, axis, kind, order)
+        result = utils.dp2nd_array(self).partition(kth, axis, kind, order)
 
         return utils.nd2dp_array(result)
 

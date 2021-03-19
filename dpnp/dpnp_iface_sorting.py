@@ -40,7 +40,6 @@ it contains:
 """
 
 
-import collections
 
 import numpy
 

@@ -87,34 +87,49 @@ template <typename _DataType>
 class dpnp_partition_c_kernel;
 
 template <typename _DataType>
-void dpnp_partition_c(const void* array1_in, const void* sort_array1_in, void* result1, const size_t kth, const size_t* shape, const size_t ndim)
+void dpnp_partition_c(const void* sort_array1_in, void* result1, const size_t kth, const size_t* shape, const size_t ndim)
 {
-    const _DataType* arr = reinterpret_cast<const _DataType*>(array1_in);
+
+    cl::sycl::event event;
+
     const _DataType* sort_arr = reinterpret_cast<const _DataType*>(sort_array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    size_t size = 1;
-    for (size_t i = 0; i < ndim; ++i)
+    size_t size_ = 1;
+    for (size_t i = 0; i < ndim - 1; ++i)
     {
-        size *= shape[i];
+        size_ *= shape[i];
     }
 
-    _DataType val = sort_arr[kth];
+    cl::sycl::range<2> gws(size_, kth+1);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
+        size_t j = global_id[0];
+        size_t k = global_id[1];
 
-    size_t ind = 0;
-    for (size_t i = 0; i < shape[ndim - 1]; ++i)
-    {
-        if (arr[i] == val)
+        _DataType val = sort_arr[j * shape[ndim - 1] + k];
+
+        size_t ind = j * shape[ndim - 1] + k;
+        for (size_t i = 0; i < shape[ndim - 1]; ++i)
         {
-            ind = i;
-            break;
+            if (result[j * shape[ndim - 1] + i] == val)
+            {
+                ind = j * shape[ndim - 1] + i;
+                break;
+            }
         }
-    }
 
-    _DataType change_val = arr[kth];
-    result[kth] = val;
-    result[ind] = change_val;
-    return;
+        _DataType change_val = result[j * shape[ndim - 1] + k];
+        result[j * shape[ndim - 1] + k] = val;
+        result[ind] = change_val;
+    };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_partition_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+    };
+
+    event = DPNP_QUEUE.submit(kernel_func);
+
+    event.wait();
 }
 
 template <typename _DataType>
