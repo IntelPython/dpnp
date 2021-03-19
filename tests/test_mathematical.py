@@ -67,6 +67,63 @@ def test_multiply_dtype(dtype1, dtype2, data):
     numpy.testing.assert_array_equal(result, expected)
 
 
+@pytest.mark.parametrize("rhs", [[2.0, 1.5, 1.0], 3, 0.3])
+@pytest.mark.parametrize("lhs", [[1.3, 2.6, 3.9], 5, 0.5])
+@pytest.mark.parametrize("dtype", [numpy.int32, numpy.int64, numpy.float32, numpy.float64])
+class TestMathematical:
+
+    @staticmethod
+    def array_or_scalar(xp, data, dtype=None):
+        if numpy.isscalar(data):
+            return data
+
+        return xp.array(data, dtype=dtype)
+
+    def _test_mathematical(self, name, dtype, lhs, rhs):
+        a = self.array_or_scalar(inp, lhs, dtype=dtype)
+        b = self.array_or_scalar(inp, rhs, dtype=dtype)
+        result = getattr(inp, name)(a, b)
+
+        a = self.array_or_scalar(numpy, lhs, dtype=dtype)
+        b = self.array_or_scalar(numpy, rhs, dtype=dtype)
+        expected = getattr(numpy, name)(a, b)
+
+        numpy.testing.assert_allclose(result, expected, atol=1e-4)
+
+    def test_add(self, dtype, lhs, rhs):
+        self._test_mathematical('add', dtype, lhs, rhs)
+
+    def test_arctan2(self, dtype, lhs, rhs):
+        self._test_mathematical('arctan2', dtype, lhs, rhs)
+
+    def test_copysign(self, dtype, lhs, rhs):
+        self._test_mathematical('copysign', dtype, lhs, rhs)
+
+    def test_divide(self, dtype, lhs, rhs):
+        self._test_mathematical('divide', dtype, lhs, rhs)
+
+    def test_fmod(self, dtype, lhs, rhs):
+        self._test_mathematical('fmod', dtype, lhs, rhs)
+
+    def test_hypot(self, dtype, lhs, rhs):
+        self._test_mathematical('hypot', dtype, lhs, rhs)
+
+    def test_maximum(self, dtype, lhs, rhs):
+        self._test_mathematical('maximum', dtype, lhs, rhs)
+
+    def test_minimum(self, dtype, lhs, rhs):
+        self._test_mathematical('minimum', dtype, lhs, rhs)
+
+    def test_multiply(self, dtype, lhs, rhs):
+        self._test_mathematical('multiply', dtype, lhs, rhs)
+
+    def test_power(self, dtype, lhs, rhs):
+        self._test_mathematical('power', dtype, lhs, rhs)
+
+    def test_subtract(self, dtype, lhs, rhs):
+        self._test_mathematical('subtract', dtype, lhs, rhs)
+
+
 @pytest.mark.parametrize("val_type",
                          [bool, int, float],
                          ids=['bool', 'int', 'float'])

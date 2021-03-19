@@ -512,11 +512,7 @@ cdef class dparray:
                 if order == 'F':
                     return self.transpose().reshape(self.size)
 
-                result = dparray(self.size, dtype=self.dtype)
-                for i in range(result.size):
-                    result[i] = self[i]
-
-                return result
+                return dpnp_flatten(self)
 
         result = utils.dp2nd_array(self).flatten(order=order)
 

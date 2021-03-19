@@ -77,6 +77,7 @@ __all__ = [
     "tri",
     "tril",
     "triu",
+    "vander",
     "zeros",
     "zeros_like"
 ]
@@ -1036,7 +1037,7 @@ def ones_like(x1, dtype=None, order='C', subok=False, shape=None):
     return numpy.ones_like(x1, dtype, order, subok, shape)
 
 
-def tri(N, M=None, k=0, dtype=numpy.float):
+def tri(N, M=None, k=0, dtype=numpy.float, **kwargs):
     """
     An array with ones at and below the given diagonal and zeros elsewhere.
 
@@ -1058,9 +1059,22 @@ def tri(N, M=None, k=0, dtype=numpy.float):
     """
 
     if not use_origin_backend():
-        return dpnp_tri(N, M, k, dtype)
+        if len(kwargs) != 0:
+            pass
+        elif not isinstance(N, int):
+            pass
+        elif N < 0:
+            pass
+        elif M is not None and not isinstance(M, int):
+            pass
+        elif M is not None and M < 0:
+            pass
+        elif not isinstance(k, int):
+            pass
+        else:
+            return dpnp_tri(N, M, k, dtype)
 
-    return call_origin(numpy.tri, N, M, k, dtype)
+    return call_origin(numpy.tri, N, M, k, dtype, **kwargs)
 
 
 def tril(m, k=0):
@@ -1120,6 +1134,47 @@ def triu(m, k=0):
             return dpnp_triu(m, k)
 
     return call_origin(numpy.triu, m, k)
+
+
+def vander(x1, N=None, increasing=False):
+    """
+    Generate a Vandermonde matrix.
+
+    For full documentation refer to :obj:`numpy.vander`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 2, 3, 5])
+    >>> N = 3
+    >>> np.vander(x, N)
+    array([[ 1,  1,  1],
+           [ 4,  2,  1],
+           [ 9,  3,  1],
+           [25,  5,  1]])
+    >>> x = np.array([1, 2, 3, 5])
+    >>> np.vander(x)
+    array([[  1,   1,   1,   1],
+           [  8,   4,   2,   1],
+           [ 27,   9,   3,   1],
+           [125,  25,   5,   1]])
+    >>> np.vander(x, increasing=True)
+    array([[  1,   1,   1,   1],
+           [  1,   2,   4,   8],
+           [  1,   3,   9,  27],
+           [  1,   5,  25, 125]])
+    """
+    if (not use_origin_backend(x1)):
+        if not isinstance(x1, dparray):
+            pass
+        elif x1.ndim != 1:
+            pass
+        else:
+            if N is None:
+                N = x1.size
+            return dpnp_vander(x1, N, increasing)
+
+    return call_origin(numpy.vander, x1, N=N, increasing=increasing)
 
 
 def zeros(shape, dtype=None, order='C'):
