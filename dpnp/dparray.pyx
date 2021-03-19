@@ -943,6 +943,16 @@ cdef class dparray:
         return argsort(self, axis, kind, order)
 
     def partition(arr, kth, axis=-1, kind='introselect', order=None):
+        """
+        Return a partitioned copy of an array.
+        For full documentation refer to :obj:`numpy.partition`.
+
+        Limitations
+        -----------
+        Input array is supported as :obj:`dpnp.ndarray`.
+        Input kth is supported as :obj:`int`.
+        Parameters ``axis``, ``kind`` and ``order`` are supported only with default values.
+        """
         if not isinstance(kth, int):
             pass
         elif kth >= arr.shape[arr.ndim - 1] or arr.ndim + kth < 0:

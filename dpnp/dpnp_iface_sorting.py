@@ -107,6 +107,16 @@ def argsort(in_array1, axis=-1, kind=None, order=None):
 
 
 def partition(arr, kth, axis=-1, kind='introselect', order=None):
+    """
+    Return a partitioned copy of an array.
+    For full documentation refer to :obj:`numpy.partition`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Input kth is supported as :obj:`int`.
+    Parameters ``axis``, ``kind`` and ``order`` are supported only with default values.
+    """
     if not use_origin_backend():
         if not isinstance(arr, dparray):
             pass
