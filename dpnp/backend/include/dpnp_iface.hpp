@@ -490,7 +490,7 @@ INP_DLLEXPORT void dpnp_diagonal_c(
  * @brief Implementation of identity function
  *
  * @param [out] result1   Output array.
- * @param [in]  n         Number of rows (and columns) in n x n output..
+ * @param [in]  n         Number of rows (and columns) in n x n output.
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_identity_c(void* result1, const size_t n);

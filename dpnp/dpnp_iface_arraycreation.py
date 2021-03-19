@@ -736,6 +736,8 @@ def identity(n, dtype=None, *, like=None):
     if not use_origin_backend():
         if like is not None:
             pass
+        if n < 0:
+            pass
         else:
             if dtype is None:
                 dtype = dpnp.float64

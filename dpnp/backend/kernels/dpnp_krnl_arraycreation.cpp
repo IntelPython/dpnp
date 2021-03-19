@@ -110,23 +110,43 @@ void dpnp_full_like_c(void* array_in, void* result, const size_t size)
     dpnp_full_c<_DataType>(array_in, result, size);
 }
 
+template <typename _KernelNameSpecialization>
+class dpnp_identity_c_kernel;
+
 template <typename _DataType>
 void dpnp_identity_c(void* result1, const size_t n)
 {
-    _DataType* result = reinterpret_cast<_DataType*>(result1);   
-
-    for (size_t i = 0; i < n; ++i)
+    if (n == 0)
     {
-        for (size_t j = 0; j < n; ++j)
+        return;
+    }
+
+    cl::sycl::event event;
+
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    cl::sycl::range<1> gws(n * n);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        size_t i = global_id[0];
         {
-            if (i == j)
+            if (i / n == i % n)
             {
-                result[i * n + j] = 1;
-            } else {
-                result[i * n + j] = 0;
+                result[i] = 1;
+            }
+            else
+            {
+                result[i] = 0;
             }
         }
-    }
+    };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_identity_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+    };
+
+    event = DPNP_QUEUE.submit(kernel_func);
+
+    event.wait();  
 }
 
 template <typename _DataType>
