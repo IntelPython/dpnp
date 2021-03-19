@@ -59,52 +59,41 @@ __all__ = [
 ]
 
 
-def _check_nd_call(origin_func, dpnp_func, *input_arrays,
-                   check_sizes=False, check_shapes=False, check_dtypes=False, **kwargs):
-    """
-    Choose function to call based on required input arrays types, data types and shapes
-    and call chosen fucntion.
+def _check_nd_call(origin_func, dpnp_func, x1, x2, dtype=None, out=None, where=True, **kwargs):
+    """Choose function to call based on input and call chosen fucntion."""
+    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
+    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
-    Parameters
-    ----------
-    origin_func : function
-        original function to call if at least one input array didn't meet the requirements
-    dpnp_func : function
-        dpnp function to call if all the input arrays met the requirements
-    input_arrays : tuple(arrays)
-        input arrays
-    check_sizes : bool
-        to check all input arrays sizes are equal
-    check_shapes : bool
-        to check all input arrays shapes are equal
-    check_dtypes : bool
-        to check all input arrays data types are equal
-    kwargs : dict
-        remaining input parameters of the function
-
-    Returns
-    -------
-        result of the function call
-    """
-    x1, *_ = input_arrays
     if not use_origin_backend(x1) and not kwargs:
-        for x in input_arrays:
-            if not isinstance(x, dparray):
-                break
+        if not x1_is_dparray and not x1_is_scalar:
+            pass
+        elif not x2_is_dparray and not x2_is_scalar:
+            pass
+        elif x1_is_scalar and x2_is_scalar:
+            pass
+        elif x1_is_dparray and x1.ndim == 0:
+            pass
+        elif x2_is_dparray and x2.ndim == 0:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.size != x2.size:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.shape != x2.shape:
+            pass
+        elif out is not None and not isinstance(out, dparray):
+            pass
+        elif dtype is not None:
+            pass
+        elif out is not None:
+            pass
+        elif not where:
+            pass
         else:
-            if check_sizes and len(set(x.size for x in input_arrays)) > 1:
-                pass  # fallback to numpy in case of different sizes of input arrays
-            elif check_shapes and len(set(x.shape for x in input_arrays)) > 1:
-                pass  # fallback to numpy in case of different shapes of input arrays
-            elif check_dtypes and len(set(x.dtype for x in input_arrays)) > 1:
-                pass  # fallback to numpy in case of different dtypes of input arrays
-            else:
-                return dpnp_func(*input_arrays)
+            return dpnp_func(x1, x2, dtype=dtype, out=out, where=where)
 
-    return call_origin(origin_func, *input_arrays, **kwargs)
+    return call_origin(origin_func, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
-def bitwise_and(x1, x2, **kwargs):
+def bitwise_and(x1, x2, dtype=None, out=None, where=True, **kwargs):
     """
     Compute the bit-wise AND of two arrays element-wise.
 
@@ -112,11 +101,12 @@ def bitwise_and(x1, x2, **kwargs):
 
     Limitations
     -----------
-    Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
-    Sizes, shapes and data types of input arrays ``x1`` and ``x2`` are supported to be equal.
+    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
+    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
+    Sizes, shapes and data types of input arrays are supported to be equal.
     Keyword arguments ``kwargs`` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input arrays ``x1`` and ``x2`` are supported as integer :obj:`dpnp.ndarray` only.
+    Input data is supported as integer only.
 
     See Also
     --------
@@ -134,11 +124,10 @@ def bitwise_and(x1, x2, **kwargs):
     [2, 4, 16]
 
     """
-    return _check_nd_call(numpy.bitwise_and, dpnp_bitwise_and, x1, x2,
-                          check_sizes=True, check_shapes=True, check_dtypes=True, **kwargs)
+    return _check_nd_call(numpy.bitwise_and, dpnp_bitwise_and, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
-def bitwise_or(x1, x2, **kwargs):
+def bitwise_or(x1, x2, dtype=None, out=None, where=True, **kwargs):
     """
     Compute the bit-wise OR of two arrays element-wise.
 
@@ -146,11 +135,12 @@ def bitwise_or(x1, x2, **kwargs):
 
     Limitations
     -----------
-    Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
-    Sizes, shapes and data types of input arrays ``x1`` and ``x2`` are supported to be equal.
+    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
+    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
+    Sizes, shapes and data types of input arrays are supported to be equal.
     Keyword arguments ``kwargs`` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input arrays ``x1`` and ``x2`` are supported as integer :obj:`dpnp.ndarray` only.
+    Input data is supported as integer only.
 
     See Also
     --------
@@ -168,11 +158,9 @@ def bitwise_or(x1, x2, **kwargs):
     [6, 5, 255]
 
     """
-    return _check_nd_call(numpy.bitwise_or, dpnp_bitwise_or, x1, x2,
-                          check_sizes=True, check_shapes=True, check_dtypes=True, **kwargs)
+    return _check_nd_call(numpy.bitwise_or, dpnp_bitwise_or, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
-
-def bitwise_xor(x1, x2, **kwargs):
+def bitwise_xor(x1, x2, dtype=None, out=None, where=True, **kwargs):
     """
     Compute the bit-wise XOR of two arrays element-wise.
 
@@ -180,11 +168,12 @@ def bitwise_xor(x1, x2, **kwargs):
 
     Limitations
     -----------
-    Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
-    Sizes, shapes and data types of input arrays ``x1`` and ``x2`` are supported to be equal.
+    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
+    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
+    Sizes, shapes and data types of input arrays are supported to be equal.
     Keyword arguments ``kwargs`` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input arrays ``x1`` and ``x2`` are supported as integer :obj:`dpnp.ndarray` only.
+    Input data is supported as integer only.
 
     See Also
     --------
@@ -202,8 +191,7 @@ def bitwise_xor(x1, x2, **kwargs):
     [26, 5]
 
     """
-    return _check_nd_call(numpy.bitwise_xor, dpnp_bitwise_xor, x1, x2,
-                          check_sizes=True, check_shapes=True, check_dtypes=True, **kwargs)
+    return _check_nd_call(numpy.bitwise_xor, dpnp_bitwise_xor, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
 def invert(x, **kwargs):
@@ -235,13 +223,19 @@ def invert(x, **kwargs):
     -14
 
     """
-    return _check_nd_call(numpy.invert, dpnp_invert, x, **kwargs)
+    if not use_origin_backend(x) and not kwargs:
+        if not isinstance(x, dparray):
+            pass
+        else:
+            return dpnp_invert(x)
+
+    return call_origin(numpy.invert, x, **kwargs)
 
 
 bitwise_not = invert  # bitwise_not is an alias for invert
 
 
-def left_shift(x1, x2, **kwargs):
+def left_shift(x1, x2, dtype=None, out=None, where=True, **kwargs):
     """
     Shift the bits of an integer to the left.
 
@@ -249,11 +243,12 @@ def left_shift(x1, x2, **kwargs):
 
     Limitations
     -----------
-    Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
-    Sizes, shapes and data types of input arrays ``x1`` and ``x2`` are supported to be equal.
+    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
+    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
+    Sizes, shapes and data types of input arrays are supported to be equal.
     Keyword arguments ``kwargs`` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input arrays ``x1`` and ``x2`` are supported as integer :obj:`dpnp.ndarray` only.
+    Input data is supported as integer only.
 
     See Also
     --------
@@ -269,11 +264,10 @@ def left_shift(x1, x2, **kwargs):
     [10, 20, 40]
 
     """
-    return _check_nd_call(numpy.left_shift, dpnp_left_shift, x1, x2,
-                          check_sizes=True, check_shapes=True, check_dtypes=True, **kwargs)
+    return _check_nd_call(numpy.left_shift, dpnp_left_shift, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
-def right_shift(x1, x2, **kwargs):
+def right_shift(x1, x2, dtype=None, out=None, where=True, **kwargs):
     """
     Shift the bits of an integer to the right.
 
@@ -281,11 +275,12 @@ def right_shift(x1, x2, **kwargs):
 
     Limitations
     -----------
-    Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
-    Sizes, shapes and data types of input arrays ``x1`` and ``x2`` are supported to be equal.
+    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
+    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
+    Sizes, shapes and data types of input arrays are supported to be equal.
     Keyword arguments ``kwargs`` are currently unsupported.
     Otherwise the function will be executed sequentially on CPU.
-    Input arrays ``x1`` and ``x2`` are supported as integer :obj:`dpnp.ndarray` only.
+    Input data is supported as integer only.
 
     See Also
     --------
@@ -301,5 +296,4 @@ def right_shift(x1, x2, **kwargs):
     [5, 2, 1]
 
     """
-    return _check_nd_call(numpy.right_shift, dpnp_right_shift, x1, x2,
-                          check_sizes=True, check_shapes=True, check_dtypes=True, **kwargs)
+    return _check_nd_call(numpy.right_shift, dpnp_right_shift, x1, x2, dtype=dtype, out=out, where=where, **kwargs)

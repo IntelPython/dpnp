@@ -108,27 +108,45 @@ INP_DLLEXPORT void dpnp_rng_beta_c(void* result, const _DataType a, const _DataT
 template <typename _DataType>
 void dpnp_rng_binomial_c(void* result, const int ntrial, const double p, const size_t size)
 {
+    if (result == nullptr)
+    {
+        return;
+    }
     if (!size)
     {
         return;
     }
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    if (dpnp_queue_is_cpu_c())
+    if (ntrial == 0 || p == 0)
     {
-        mkl_rng::binomial<_DataType> distribution(ntrial, p);
-        // perform generation
-        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-        event_out.wait();
+        dpnp_zeros_c<_DataType>(result, size);
+    }
+    else if (p == 1)
+    {
+        _DataType* fill_value = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(sizeof(_DataType)));
+        fill_value[0] = static_cast<_DataType>(ntrial);
+        dpnp_initval_c<_DataType>(result, fill_value, size);
+        dpnp_memory_free_c(fill_value);
     }
     else
     {
-        int errcode = viRngBinomial(VSL_RNG_METHOD_BINOMIAL_BTPE, get_rng_stream(), size, result1, ntrial, p);
-        if (errcode != VSL_STATUS_OK)
+        if (dpnp_queue_is_cpu_c())
         {
-            throw std::runtime_error("DPNP RNG Error: dpnp_rng_binomial_c() failed.");
+            mkl_rng::binomial<_DataType> distribution(ntrial, p);
+            auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+            event_out.wait();
+        }
+        else
+        {
+            int errcode = viRngBinomial(VSL_RNG_METHOD_BINOMIAL_BTPE, get_rng_stream(), size, result1, ntrial, p);
+            if (errcode != VSL_STATUS_OK)
+            {
+                throw std::runtime_error("DPNP RNG Error: dpnp_rng_binomial_c() failed.");
+            }
         }
     }
+    return;
 }
 
 template <typename _DataType>
