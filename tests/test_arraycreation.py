@@ -7,6 +7,32 @@ import numpy
 import tempfile
 
 
+@pytest.mark.parametrize("k",
+                         [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+                         ids=['-6', '-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5', '6'])
+@pytest.mark.parametrize("v",
+                         [[0, 1, 2, 3, 4],
+                          [1, 1, 1, 1, 1],
+                          [[0, 0], [0, 0]],
+                          [[1, 2], [1, 2]],
+                          [[1, 2], [3, 4]],
+                          [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+                          [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]],
+                         ids=['[0, 1, 2, 3, 4]',
+                              '[1, 1, 1, 1, 1]',
+                              '[[0, 0], [0, 0]]',
+                              '[[1, 2], [1, 2]]',
+                              '[[1, 2], [3, 4]]',
+                              '[[0, 1, 2], [3, 4, 5], [6, 7, 8]]',
+                              '[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]'])
+def test_diag(v, k):
+    a = numpy.array(v)
+    ia = dpnp.array(a)
+    expected = numpy.diag(a, k)
+    result = dpnp.diag(ia, k)
+    numpy.testing.assert_array_equal(expected, result)
+
+
 @pytest.mark.parametrize("type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['float64', 'float32', 'int64', 'int32'])
@@ -110,3 +136,110 @@ def test_loadtxt(type):
         dpnp_res = dpnp.loadtxt(fh, dtype=type)
 
         numpy.testing.assert_array_equal(dpnp_res, np_res)
+
+
+@pytest.mark.parametrize("N",
+                         [0, 1, 2, 3, 4],
+                         ids=['0', '1', '2', '3', '4'])
+@pytest.mark.parametrize("M",
+                         [0, 1, 2, 3, 4],
+                         ids=['0', '1', '2', '3', '4'])
+@pytest.mark.parametrize("k",
+                         [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+                         ids=['-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5'])
+@pytest.mark.parametrize("type",
+                         [numpy.float64, numpy.float32, float, numpy.int64, numpy.int32, numpy.int, numpy.float, int],
+                         ids=['float64', 'float32', 'numpy.float', 'float', 'int64', 'int32', 'numpy.int', 'int'])
+def test_tri(N, M, k, type):
+    expected = numpy.tri(N, M, k, dtype=type)
+    result = dpnp.tri(N, M, k, dtype=type)
+    numpy.testing.assert_array_equal(result, expected)
+
+
+def test_tri_default_dtype():
+    expected = numpy.tri(3, 5, -1)
+    result = dpnp.tri(3, 5, -1)
+    numpy.testing.assert_array_equal(result, expected)
+
+
+@pytest.mark.parametrize("k",
+                         [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+                         ids=['-6', '-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5', '6'])
+@pytest.mark.parametrize("m",
+                         [[0, 1, 2, 3, 4],
+                          [1, 1, 1, 1, 1],
+                          [[0, 0], [0, 0]],
+                          [[1, 2], [1, 2]],
+                          [[1, 2], [3, 4]],
+                          [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+                          [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]],
+                         ids=['[0, 1, 2, 3, 4]',
+                              '[1, 1, 1, 1, 1]',
+                              '[[0, 0], [0, 0]]',
+                              '[[1, 2], [1, 2]]',
+                              '[[1, 2], [3, 4]]',
+                              '[[0, 1, 2], [3, 4, 5], [6, 7, 8]]',
+                              '[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]'])
+def test_tril(m, k):
+    a = numpy.array(m)
+    ia = dpnp.array(a)
+    expected = numpy.tril(a, k)
+    result = dpnp.tril(ia, k)
+    numpy.testing.assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("k",
+                         [-4, -3, -2, -1, 0, 1, 2, 3, 4],
+                         ids=['-4', '-3', '-2', '-1', '0', '1', '2', '3', '4'])
+@pytest.mark.parametrize("m",
+                         [[0, 1, 2, 3, 4],
+                          [[1, 2], [3, 4]],
+                          [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+                          [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]],
+                         ids=['[0, 1, 2, 3, 4]',
+                              '[[1, 2], [3, 4]]',
+                              '[[0, 1, 2], [3, 4, 5], [6, 7, 8]]',
+                              '[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]'])
+def test_triu(m, k):
+    a = numpy.array(m)
+    ia = dpnp.array(a)
+    expected = numpy.triu(a, k)
+    result = dpnp.triu(ia, k)
+    numpy.testing.assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("k",
+                         [-4, -3, -2, -1, 0, 1, 2, 3, 4],
+                         ids=['-4', '-3', '-2', '-1', '0', '1', '2', '3', '4'])
+def test_triu_size_null(k):
+    a = numpy.ones(shape=(1, 2, 0))
+    ia = dpnp.array(a)
+    expected = numpy.triu(a, k)
+    result = dpnp.triu(ia, k)
+    numpy.testing.assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("array",
+                         [[1, 2, 3, 4],
+                          [],
+                          [0, 3, 5]],
+                         ids=['[1, 2, 3, 4]',
+                              '[]',
+                              '[0, 3, 5]'])
+@pytest.mark.parametrize("type",
+                         [numpy.float64, numpy.float32, numpy.int64,
+                          numpy.int32, numpy.bool, numpy.complex128],
+                         ids=['float64', 'float32', 'int64', 'int32', 'bool', 'complex128'])
+@pytest.mark.parametrize("n",
+                         [0, 1, 4, None],
+                         ids=['0', '1', '4', 'None'])
+@pytest.mark.parametrize("increase",
+                         [True, False],
+                         ids=['True', 'False'])
+def test_vander(array, type, n, increase):
+    a_np = numpy.array(array, dtype=type)
+    a_dpnp = dpnp.array(array, dtype=type)
+
+    expected = numpy.vander(a_np, N=n, increasing=increase)
+    result = dpnp.vander(a_dpnp, N=n, increasing=increase)
+    numpy.testing.assert_array_equal(expected, result)

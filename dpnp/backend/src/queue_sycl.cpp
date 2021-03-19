@@ -35,7 +35,7 @@ cl::sycl::queue* backend_sycl::queue = nullptr;
 #endif
 mkl_rng::mt19937* backend_sycl::rng_engine = nullptr;
 
-static void show_avalable_sycl_devices()
+static void show_available_sycl_devices()
 {
     const std::vector<cl::sycl::device> devices = cl::sycl::device::get_devices();
 
@@ -126,7 +126,7 @@ void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
     cl::sycl::device dev;
 
 #if not defined(NDEBUG)
-    show_avalable_sycl_devices();
+    show_available_sycl_devices();
 #endif
 
     if (QueueOptions::CPU_SELECTOR == selector)
