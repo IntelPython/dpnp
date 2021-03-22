@@ -257,11 +257,17 @@ cpdef dparray dpnp_ones_like(result_shape, result_dtype):
 
 
 cpdef dparray dpnp_trace(arr, offset=0, axis1=0, axis2=1, dtype=None, out=None):
+    if dtype is None:
+        dtype_ = arr.dtype
+    else:
+        dtype_ = dtype
+
     cdef dparray diagonal_arr = dpnp.diagonal(arr, offset, axis1, axis2)
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(dtype_)
 
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRACE, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRACE, param1_type, param2_type)
 
     result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     cdef dparray result = dparray(diagonal_arr.shape[:-1], dtype=result_type)

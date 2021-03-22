@@ -639,7 +639,7 @@ INP_DLLEXPORT void dpnp_take_c(void* array, void* indices, void* result, size_t 
  * @param [in]  shape      Shape of input array.
  * @param [in]  ndim       Number of elements in array.shape.
  */
-template <typename _DataType>
+template <typename _DataType, typename _ResultType>
 INP_DLLEXPORT void dpnp_trace_c(const void* array, void* result, const size_t* shape, const size_t ndim);
 
 /**
