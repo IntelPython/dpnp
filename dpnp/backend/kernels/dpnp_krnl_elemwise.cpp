@@ -365,14 +365,14 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
         _DataType_input2* input2_data = reinterpret_cast<_DataType_input2*>(const_cast<void*>(input2_in));             \
         _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);                                    \
                                                                                                                        \
-        std::vector<size_t> result_shape = get_common_shape(input1_shape, input1_shape_ndim,                           \
+        std::vector<size_t> result_shape = get_result_shape(input1_shape, input1_shape_ndim,                           \
                                                             input2_shape, input2_shape_ndim);                          \
                                                                                                                        \
         DPNPC_id<_DataType_input1> input1(input1_data, input1_shape, input1_shape_ndim);                               \
-        input1.broadcast(result_shape);                                                                                \
+        input1.broadcast_to_shape(result_shape);                                                                       \
                                                                                                                        \
         DPNPC_id<_DataType_input2> input2(input2_data, input2_shape, input2_shape_ndim);                               \
-        input2.broadcast(result_shape);                                                                                \
+        input2.broadcast_to_shape(result_shape);                                                                       \
                                                                                                                        \
         const size_t result_size = input1.get_output_size();                                                           \
                                                                                                                        \

@@ -182,19 +182,17 @@ static inline bool
  * @return                         Common shape.
  */
 static inline std::vector<size_t>
-    get_common_shape(const size_t* input1_shape, const size_t input1_shape_size,
+    get_result_shape(const size_t* input1_shape, const size_t input1_shape_size,
                      const size_t* input2_shape, const size_t input2_shape_size)
 {
     const size_t result_shape_size = (input2_shape_size > input1_shape_size) ? input2_shape_size : input1_shape_size;
     std::vector<size_t> result_shape;
     result_shape.reserve(result_shape_size);
 
-    int in1_idx = input1_shape_size - 1;
-    int in2_idx = input2_shape_size - 1;
-    for (; in1_idx >= 0 || in2_idx >= 0; --in1_idx, --in2_idx)
+    for (int irit1 = input1_shape_size - 1, irit2 = input2_shape_size - 1; irit1 >= 0 || irit2 >= 0; --irit1, --irit2)
     {
-        size_t input1_val = (in1_idx >= 0) ? input1_shape[in1_idx] : 1;
-        size_t input2_val = (in2_idx >= 0) ? input2_shape[in2_idx] : 1;
+        size_t input1_val = (irit1 >= 0) ? input1_shape[irit1] : 1;
+        size_t input2_val = (irit2 >= 0) ? input2_shape[irit2] : 1;
 
         if (input1_val == input2_val || input1_val == 1)
         {

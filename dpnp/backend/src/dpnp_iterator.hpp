@@ -248,31 +248,35 @@ public:
      *
      * @param [in]  __shape       Output shape.
      */
-    inline void broadcast(const std::vector<size_type>& __shape)
+    inline void broadcast_to_shape(const std::vector<size_type>& __shape)
     {
-        if (axis_use || broadcast_use)
+        if (axis_use)
         {
             return;
         }
 
         if (broadcastable(input_shape, input_shape_size, __shape))
         {
+            dpnp_memory_free_c(output_shape);
+            dpnp_memory_free_c(output_shape_strides);
+            dpnp_memory_free_c(sycl_output_xyz);
+            broadcast_axes.clear();
+
             broadcast_use = true;
 
             output_shape_size = __shape.size();
             const size_type output_shape_size_in_bytes = output_shape_size * sizeof(size_type);
 
             output_shape = reinterpret_cast<size_type*>(dpnp_memory_alloc_c(output_shape_size_in_bytes));
-            int in_idx = input_shape_size - 1;
-            int out_idx = output_shape_size - 1;
-            for (; out_idx >= 0; --in_idx, --out_idx)
+
+            for (int irit = input_shape_size - 1, orit = output_shape_size - 1; orit >= 0; --irit, --orit)
             {
-                output_shape[out_idx] = __shape[out_idx];
+                output_shape[orit] = __shape[orit];
 
                 // ex: input_shape = {7, 1, 5}, output_shape = {8, 7, 6, 5} => broadcast_axes = {0, 2}
-                if (in_idx < 0 || input_shape[in_idx] != output_shape[out_idx])
+                if (irit < 0 || input_shape[irit] != output_shape[orit])
                 {
-                    broadcast_axes.insert(broadcast_axes.begin(), out_idx);
+                    broadcast_axes.insert(broadcast_axes.begin(), orit);
                 }
             }
 
@@ -337,7 +341,7 @@ public:
      */
     inline void set_axes(const std::vector<long>& __axes)
     {
-        if (axis_use || broadcast_use)
+        if (broadcast_use)
         {
             return;
         }
@@ -497,12 +501,11 @@ private:
 
             get_xyz_by_id_inkernel(output_global_id, output_shape_strides, output_shape_size, sycl_output_xyz_thread);
 
-            for (size_t oit = 0, iit = 0; oit < output_shape_size; ++oit)
+            for (int irit = input_shape_size - 1, orit = output_shape_size - 1; irit >= 0; --irit, --orit)
             {
-                if (std::find(broadcast_axes.begin(), broadcast_axes.end(), oit) == broadcast_axes.end())
+                if (std::find(broadcast_axes.begin(), broadcast_axes.end(), orit) == broadcast_axes.end())
                 {
-                    input_global_id += (sycl_output_xyz_thread[oit] * input_shape_strides[iit]);
-                    ++iit;
+                    input_global_id += (sycl_output_xyz_thread[orit] * input_shape_strides[irit]);
                 }
             }
         }
