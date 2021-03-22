@@ -30,7 +30,7 @@
  * to calculate sum of the given elements vector
  *
  * Possible compile line:
- * clang++ -g -fPIC examples/example9.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example9
+ * clang++ dpnp/backend/examples/example9.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example9
  *
  */
 
@@ -54,7 +54,7 @@ int main(int, char**)
         result_verification += i;
     }
 
-    dpnp_sum_c<long>(array, &result, size);
+    dpnp_sum_c<long, long>(&result, array, &size, 1, NULL, 0, NULL, NULL);
 
     std::cout << "SUM() value: " << result << " verification value: " << result_verification << std::endl;
 

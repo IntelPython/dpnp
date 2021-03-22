@@ -33,7 +33,11 @@ and the rest of the library
 """
 
 
+import dpnp
+import numpy
+
 from dpnp.dpnp_utils cimport *
+from dpnp.dpnp_algo cimport *
 
 
 __all__ += [
@@ -56,16 +60,19 @@ __all__ += [
 ]
 
 
+ctypedef void(*custom_logic_1in_1out_func_ptr_t)(void * , void * , const size_t)
+
+
 cpdef dparray dpnp_all(dparray array1):
     cdef dparray result = dparray((1,), dtype=numpy.bool)
 
-    res = True
-    for i in range(array1.size):
-        if not numpy.bool(array1[i]):
-            res = False
-            break
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
 
-    result[0] = res
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ALL, param1_type, param1_type)
+
+    cdef custom_logic_1in_1out_func_ptr_t func = <custom_logic_1in_1out_func_ptr_t > kernel_data.ptr
+
+    func(array1.get_data(), result.get_data(), array1.size)
 
     return result
 
@@ -73,13 +80,13 @@ cpdef dparray dpnp_all(dparray array1):
 cpdef dparray dpnp_any(dparray array1):
     cdef dparray result = dparray((1,), dtype=numpy.bool)
 
-    res = False
-    for i in range(array1.size):
-        if numpy.bool(array1[i]):
-            res = True
-            break
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
 
-    result[0] = res
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ANY, param1_type, param1_type)
+
+    cdef custom_logic_1in_1out_func_ptr_t func = <custom_logic_1in_1out_func_ptr_t > kernel_data.ptr
+
+    func(array1.get_data(), result.get_data(), array1.size)
 
     return result
 

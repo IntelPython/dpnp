@@ -37,12 +37,22 @@ if(NOT Threads_FOUND)
 endif()
 
 # Emulate autotools like make check target to build tests
-# set(CMAKE_CTEST_COMMAND ctest --progress --output-on-failure -j 4)
-
+set(CMAKE_CTEST_COMMAND ctest --progress --output-on-failure)
+add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
 enable_testing()
 
 include_directories(${GTEST_INCLUDE_DIR})
 link_directories(${GTEST_LIB_DIR})
 
-add_executable(dpnpc_tests test_main.cpp test_random.cpp)
+# TODO split
+add_executable(dpnpc_tests
+               test_main.cpp
+               test_random.cpp
+               test_utils.cpp
+               test_utils_iterator.cpp)
 target_link_libraries(dpnpc_tests GTest::GTest GTest::Main pthread dpnp_backend_c)
+
+# TODO split
+add_test(dpnpc_tests dpnpc_tests)
+gtest_discover_tests(dpnpc_tests)
+add_dependencies(check dpnpc_tests)
