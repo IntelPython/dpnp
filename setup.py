@@ -74,7 +74,7 @@ with open('README.md') as f:
     __readme_file__ = f.read()
 
 CLASSIFIERS = """\
-Development Status :: 0 - Alpha
+Development Status :: 4 - Beta
 Intended Audience :: Science/Research
 Intended Audience :: Developers
 License :: OSI Approved
