@@ -1,21 +1,3 @@
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-complex-float64]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-complex-float32]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-complex-int64]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-complex-int32]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-complex-bool]
-tests/test_dparray.py::test_astype[[-2, -1, 0, 1, 2]-complex-bool_]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-complex-float64]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-complex-float32]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-complex-int64]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-complex-int32]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-complex-bool]
-tests/test_dparray.py::test_astype[[[-2, -1], [1, 2]]-complex-bool_]
-tests/test_dparray.py::test_astype[[]-complex-float64]
-tests/test_dparray.py::test_astype[[]-complex-float32]
-tests/test_dparray.py::test_astype[[]-complex-int64]
-tests/test_dparray.py::test_astype[[]-complex-int32]
-tests/test_dparray.py::test_astype[[]-complex-bool]
-tests/test_dparray.py::test_astype[[]-complex-bool_]
 tests/test_linalg.py::test_cond[None-[[1, 0, -1], [0, 1, 0], [1, 0, 1]]]
 tests/test_linalg.py::test_cond[None-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
 tests/test_linalg.py::test_cond[1-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
@@ -188,12 +170,10 @@ tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::tes
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_real_setter_zero_dim
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_real_zero_dim
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestScalarConversion::test_scalar_conversion
-tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_strides
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_strides_broadcast
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_strides_negative
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_strides_swapped
-tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_type
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_type_c_contiguous_no_copy
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_type_f_contiguous_no_copy
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_diagonal1

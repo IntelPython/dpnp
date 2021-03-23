@@ -762,7 +762,7 @@ cdef class dparray:
     def __truediv__(self, other):
         return divide(self, other)
 
-    cpdef dparray astype(self, dtype, order='K', casting=None, subok=None, copy=True):
+    cpdef dparray astype(self, dtype, order='K', casting='unsafe', subok=True, copy=True):
         """Copy the array with data type casting.
 
         Args:
@@ -784,19 +784,22 @@ cdef class dparray:
 
         """
 
-        if casting is not None:
-            utils.checker_throw_value_error("astype", "casting", casting, None)
+        if casting is not 'unsafe':
+            pass
+        elif subok is not True:
+            pass
+        elif copy is not True:
+            pass
+        elif order is not 'K':
+            pass
+        elif self.dtype == numpy.complex128:
+            pass
+        else:
+            return dpnp_astype(self, dtype)
 
-        if subok is not None:
-            utils.checker_throw_value_error("astype", "subok", subok, None)
+        result = utils.dp2nd_array(self).astype(dtype=dtype, order=order, casting=casting, subok=subok, copy=copy)
 
-        if copy is not True:
-            utils.checker_throw_value_error("astype", "copy", copy, True)
-
-        if order is not 'K':
-            utils.checker_throw_value_error("astype", "order", order, 'K')
-
-        return dpnp_astype(self, dtype)
+        return utils.nd2dp_array(result)
 
     def conj(self):
         """
