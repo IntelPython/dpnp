@@ -176,8 +176,6 @@ tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAn
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_strides_swapped
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_type_c_contiguous_no_copy
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_astype_type_f_contiguous_no_copy
-tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_diagonal1
-tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_diagonal2
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_fill_with_numpy_nonscalar_ndarray
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_flatten_copied
 tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayCopyAndView::test_isinstance_numpy_copy
@@ -417,14 +415,6 @@ tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_compr
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_compress_empty_1dim_no_axis
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_compress_no_axis
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_compress_no_bool
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal_invalid1
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal_invalid2
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal_negative1
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal_negative2
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal_negative3
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal_negative4
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_diagonal_negative5
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_extract
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_extract_empty_1dim
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestIndexing::test_extract_no_bool

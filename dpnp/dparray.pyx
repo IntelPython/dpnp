@@ -890,6 +890,12 @@ cdef class dparray:
         """
         return choose(input, choices, out, mode)
 
+    def diagonal(input, offset=0, axis1=0, axis2=1):
+        """
+        Return specified diagonals.
+        """
+        return diagonal(input, offset, axis1, axis2)
+
     def take(self, indices, axis=None, out=None, mode='raise'):
         """
         Take elements from an array.
