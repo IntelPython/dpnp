@@ -287,14 +287,11 @@ public:
     {
         if (!__axes.empty() && input_shape_size)
         {
-            if (axis_use)
-            {
-                dpnp_memory_free_c(output_shape);
-                dpnp_memory_free_c(output_shape_strides);
-                dpnp_memory_free_c(iteration_shape_strides);
-                dpnp_memory_free_c(axes_shape_strides);
-                dpnp_memory_free_c(sycl_output_xyz);
-            }
+            dpnp_memory_free_c(output_shape);
+            dpnp_memory_free_c(output_shape_strides);
+            dpnp_memory_free_c(iteration_shape_strides);
+            dpnp_memory_free_c(axes_shape_strides);
+            dpnp_memory_free_c(sycl_output_xyz);
 
             axes = get_validated_axes(__axes, input_shape_size);
             axis_use = true;
