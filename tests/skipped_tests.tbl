@@ -473,18 +473,6 @@ tests/third_party/cupy/indexing_tests/test_insert.py::TestPut_param_6_{mode='rai
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPut_param_7_{mode='raise', n_vals=3, shape=(2, 3)}::test_put
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPut_param_8_{mode='raise', n_vals=3, shape=(4, 3, 2)}::test_put
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPut_param_9_{mode='raise', n_vals=4, shape=(7,)}::test_put
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPutRaises_param_0_{shape=(7,)}::test_put_inds_overflow_error
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPutRaises_param_0_{shape=(7,)}::test_put_inds_underflow_error
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPutRaises_param_0_{shape=(7,)}::test_put_mode_error
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPutRaises_param_1_{shape=(2, 3)}::test_put_inds_overflow_error
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPutRaises_param_1_{shape=(2, 3)}::test_put_inds_underflow_error
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPutRaises_param_1_{shape=(2, 3)}::test_put_mode_error
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPutScalars_param_0_{shape=(7,)}::test_put_index_scalar
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPutScalars_param_0_{shape=(7,)}::test_put_values_scalar
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPutScalars_param_1_{shape=(2, 3)}::test_put_index_scalar
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPutScalars_param_1_{shape=(2, 3)}::test_put_values_scalar
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPutScalars_param_2_{shape=(4, 3, 2)}::test_put_index_scalar
-tests/third_party/cupy/indexing_tests/test_insert.py::TestPutScalars_param_2_{shape=(4, 3, 2)}::test_put_values_scalar
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmask::test_putmask_non_equal_shape_raises
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmaskDifferentDtypes::test_putmask_differnt_dtypes_raises
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPlaceRaises_param_0_{shape=(7,)}::test_place_empty_value_error
@@ -493,6 +481,9 @@ tests/third_party/cupy/indexing_tests/test_insert.py::TestPlaceRaises_param_1_{s
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPlaceRaises_param_1_{shape=(2, 3)}::test_place_shape_unmatch_error
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPlaceRaises_param_2_{shape=(4, 3, 2)}::test_place_empty_value_error
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPlaceRaises_param_2_{shape=(4, 3, 2)}::test_place_shape_unmatch_error
+tests/third_party/cupy/indexing_tests/test_insert.py::TestPutRaises_param_0_{shape=(7,)}::test_put_inds_overflow_error
+tests/third_party/cupy/indexing_tests/test_insert.py::TestPutRaises_param_0_{shape=(7,)}::test_put_inds_underflow_error
+tests/third_party/cupy/indexing_tests/test_insert.py::TestPutRaises_param_1_{shape=(2, 3)}::test_put_inds_underflow_error
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_0_{shape=(3, 3), val=1, wrap=True}::test_columnar_slice
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_1_{shape=(3, 3), val=1, wrap=False}::test_1darray
 tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_1_{shape=(3, 3), val=1, wrap=False}::test_columnar_slice
