@@ -388,10 +388,7 @@ private:
         if (!__shape.empty())
         {
             input_size = std::accumulate(__shape.begin(), __shape.end(), size_type(1), std::multiplies<size_type>());
-            if (input_size == 0)
-            {                    // shape might be shape[3, 4, 0, 6]. This means no input memory and no output expected
-                output_size = 0; // depends on axes. zero at this stage only
-            }
+            output_size = input_size; // will be recalculated according to output shape
 
             input_shape_size = __shape.size();
             input_shape = reinterpret_cast<size_type*>(dpnp_memory_alloc_c(input_shape_size * sizeof(size_type)));
