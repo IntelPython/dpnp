@@ -240,9 +240,9 @@ public:
 
     /**
      * @ingroup BACKEND_UTILS
-     * @brief Set output shape for the data object to use in computation.
+     * @brief Broadcast input data to specified shape.
      *
-     * Set shape of output array to use in computation of input array index by index of output array.
+     * Set output shape to use in computation of input index by output index.
      *
      * @note this function is designed for non-SYCL environment execution
      *
@@ -329,7 +329,7 @@ public:
 
     /**
      * @ingroup BACKEND_UTILS
-     * @brief Broadcast input data to specified shape.
+     * @brief Set axes for the data object to use in computation.
      *
      * Set axes of the shape of input array to use in iteration.
      * Axes might be negative to indicate axes as reverse iterator
