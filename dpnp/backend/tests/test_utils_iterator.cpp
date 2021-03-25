@@ -429,6 +429,40 @@ TEST_P(IteratorReduction, sycl_reduce_axis)
     }
 }
 
+TEST(TestUtilsIterator, sycl_get_first)
+{
+    using data_type = double;
+
+    const dpnpc_index_t result_size = 1;
+    vector<data_type> result(result_size, 42);
+    data_type* result_ptr = result.data();
+
+    vector<data_type> input_data = get_input_data<data_type>({1});
+    data_type* input_ptr = input_data.data();
+    DPNPC_id<data_type> input(input_ptr, {1});
+
+    ASSERT_EQ(input.get_output_size(), result_size);
+
+    cl::sycl::range<1> gws(result_size);
+    const DPNPC_id<data_type>* input_it = &input;
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        const size_t idx = global_id[0];
+        result_ptr[idx] = *(input_it->begin());
+    };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class test_sycl_get_first_kernel>(gws, kernel_parallel_for_func);
+    };
+
+    cl::sycl::event event = DPNP_QUEUE.submit(kernel_func);
+    event.wait();
+
+    for (dpnpc_index_t i = 0; i < result_size; ++i)
+    {
+        EXPECT_EQ(result.at(i), input_data[0]);
+    }
+}
+
 /**
  * Expected values produced by following script:
  *
