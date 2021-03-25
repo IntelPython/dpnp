@@ -1071,6 +1071,10 @@ def multiply(x1, x2, dtype=None, out=None, where=True, **kwargs):
             pass
         elif x2_is_dparray and x2.ndim == 0:
             pass
+        elif x1_is_dparray and x2_is_dparray and x1.size != x2.size:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.shape != x2.shape:
+            pass
         elif dtype is not None:
             pass
         elif out is not None:
