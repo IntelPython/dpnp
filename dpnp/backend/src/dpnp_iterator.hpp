@@ -258,14 +258,7 @@ public:
         if (broadcastable(input_shape, input_shape_size, __shape))
         {
             broadcast_axes.clear();
-            output_size = size_type{};
-            output_shape_size = size_type{};
-            dpnp_memory_free_c(output_shape);
-            dpnp_memory_free_c(output_shape_strides);
-            dpnp_memory_free_c(sycl_output_xyz);
-            output_shape = nullptr;
-            output_shape_strides = nullptr;
-            sycl_output_xyz = nullptr;
+            free_output_memory();
 
             broadcast_use = true;
 
