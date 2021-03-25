@@ -287,11 +287,9 @@ public:
     {
         if (!__axes.empty() && input_shape_size)
         {
-            dpnp_memory_free_c(output_shape);
-            dpnp_memory_free_c(output_shape_strides);
-            dpnp_memory_free_c(iteration_shape_strides);
-            dpnp_memory_free_c(axes_shape_strides);
-            dpnp_memory_free_c(sycl_output_xyz);
+            free_axes_memory();
+            free_iteration_memory();
+            free_output_memory();
 
             axes = get_validated_axes(__axes, input_shape_size);
             axis_use = true;
@@ -442,15 +440,49 @@ private:
         return iteration_size;
     }
 
-    void free_memory()
+    void free_axes_memory()
     {
+        axes.clear();
+        dpnp_memory_free_c(axes_shape_strides);
+        axes_shape_strides = nullptr;
+    }
+
+    void free_input_memory()
+    {
+        input_size = size_type{};
+        input_shape_size = size_type{};
         dpnp_memory_free_c(input_shape);
         dpnp_memory_free_c(input_shape_strides);
+        input_shape = nullptr;
+        input_shape_strides = nullptr;
+    }
+
+    void free_iteration_memory()
+    {
+        iteration_size = size_type{};
+        iteration_shape_size = size_type{};
+        dpnp_memory_free_c(iteration_shape_strides);
+        iteration_shape_strides = nullptr;
+    }
+
+    void free_output_memory()
+    {
+        output_size = size_type{};
+        output_shape_size = size_type{};
         dpnp_memory_free_c(output_shape);
         dpnp_memory_free_c(output_shape_strides);
-        dpnp_memory_free_c(iteration_shape_strides);
-        dpnp_memory_free_c(axes_shape_strides);
         dpnp_memory_free_c(sycl_output_xyz);
+        output_shape = nullptr;
+        output_shape_strides = nullptr;
+        sycl_output_xyz = nullptr;
+    }
+
+    void free_memory()
+    {
+        free_axes_memory();
+        free_input_memory();
+        free_iteration_memory();
+        free_output_memory();
     }
 
     pointer data = nullptr;                   /**< input array begin pointer */
