@@ -125,19 +125,11 @@ void dpnp_identity_c(void* result1, const size_t n)
 
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    cl::sycl::range<1> gws(n * n);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+    cl::sycl::range<2> gws(n, n);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
         size_t i = global_id[0];
-        {
-            if (i / n == i % n)
-            {
-                result[i] = 1;
-            }
-            else
-            {
-                result[i] = 0;
-            }
-        }
+        size_t j = global_id[1];
+        result[i * n + j] = i == j;
     };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
