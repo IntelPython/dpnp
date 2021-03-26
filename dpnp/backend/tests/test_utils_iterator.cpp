@@ -24,6 +24,7 @@
 //*****************************************************************************
 
 #include <gtest/gtest.h>
+#include <new>
 #include <numeric>
 #include <vector>
 
@@ -439,15 +440,17 @@ TEST(TestUtilsIterator, sycl_get_first)
 
     vector<data_type> input_data = get_input_data<data_type>({1});
     data_type* input_ptr = input_data.data();
-    DPNPC_id<data_type> input(input_ptr, {1});
 
-    ASSERT_EQ(input.get_output_size(), result_size);
+    // DPNPC_id<data_type>* input_it = reinterpret_cast<DPNPC_id<data_type>*>(dpnp_memory_alloc_c(sizeof(DPNPC_id<data_type>)));
+    DPNPC_id<data_type>* input_it = sycl::malloc_shared<DPNPC_id<data_type>>(1, DPNP_QUEUE);
+    new (input_it) DPNPC_id<data_type>(input_ptr, {1});
+
+    ASSERT_EQ(input_it->get_output_size(), result_size);
 
     cl::sycl::range<1> gws(result_size);
-    const DPNPC_id<data_type>* input_it = &input;
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
         const size_t idx = global_id[0];
-        result_ptr[idx] = *(input_it->begin());
+        result_ptr[idx] = input_it->get_output_size();
     };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
@@ -459,8 +462,10 @@ TEST(TestUtilsIterator, sycl_get_first)
 
     for (dpnpc_index_t i = 0; i < result_size; ++i)
     {
-        EXPECT_EQ(result.at(i), input_data[0]);
+        EXPECT_EQ(result.at(i), result_size);
     }
+
+    input_it->~DPNPC_id();
 }
 
 /**
