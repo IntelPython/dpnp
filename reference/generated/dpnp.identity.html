@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.ones &mdash; dpnp 0.5.1 documentation</title>
+  <title>dpnp.identity &mdash; dpnp 0.5.1 documentation</title>
   
 
   
@@ -34,8 +34,8 @@
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.ones_like" href="dpnp.ones_like.html" />
-    <link rel="prev" title="dpnp.identity" href="dpnp.identity.html" /> 
+    <link rel="next" title="dpnp.ones" href="dpnp.ones.html" />
+    <link rel="prev" title="dpnp.empty_like" href="dpnp.empty_like.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -168,13 +168,13 @@
         
           <li><a href="../creation.html">Array Creation Routines</a> &raquo;</li>
         
-      <li>dpnp.ones</li>
+      <li>dpnp.identity</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.ones.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.identity.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -187,37 +187,22 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-ones">
-<h1>dpnp.ones<a class="headerlink" href="#dpnp-ones" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-identity">
+<h1>dpnp.identity<a class="headerlink" href="#dpnp-identity" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.ones">
-<code class="sig-prename descclassname"><span class="pre">dpnp.</span></code><code class="sig-name descname"><span class="pre">ones</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'C'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#ones"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.ones" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a new array of given shape and type, filled with ones.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ones.html#numpy.ones" title="(in NumPy v1.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ones</span></code></a>.</p>
+<dt id="dpnp.identity">
+<code class="sig-prename descclassname"><span class="pre">dpnp.</span></code><code class="sig-name descname"><span class="pre">identity</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">like</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#identity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.identity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the identity array.</p>
+<p>The identity array is a square array with ones on the main diagonal.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.identity.html#numpy.identity" title="(in NumPy v1.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.identity</span></code></a>.</p>
 <p class="rubric">Limitations</p>
-<p>Parameter <code class="docutils literal notranslate"><span class="pre">order</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code>.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference internal" href="dpnp.ones_like.html#dpnp.ones_like" title="dpnp.ones_like"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ones_like</span></code></a></dt><dd><p>Return an array of ones with shape and type of input.</p>
-</dd>
-<dt><a class="reference internal" href="dpnp.empty.html#dpnp.empty" title="dpnp.empty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.empty</span></code></a></dt><dd><p>Return a new uninitialized array.</p>
-</dd>
-<dt><a class="reference internal" href="dpnp.zeros.html#dpnp.zeros" title="dpnp.zeros"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.zeros</span></code></a></dt><dd><p>Return a new array setting values to zero.</p>
-</dd>
-<dt><a class="reference internal" href="dpnp.full.html#dpnp.full" title="dpnp.full"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.full</span></code></a></dt><dd><p>Return a new array of given shape filled with value.</p>
-</dd>
-</dl>
-</div>
+<p>Parameter <code class="docutils literal notranslate"><span class="pre">like</span></code> is currently not supported .</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">5</span><span class="p">)]</span>
-<span class="go">[1.0, 1.0, 1.0, 1.0, 1.0]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
-<span class="go">(2, 2, (2, 1))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
-<span class="go">[1.0, 1.0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">array([[1.,  0.,  0.],</span>
+<span class="go">       [0.,  1.,  0.],</span>
+<span class="go">       [0.,  0.,  1.]])</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -232,10 +217,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.ones_like.html" class="btn btn-neutral float-right" title="dpnp.ones_like" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.ones.html" class="btn btn-neutral float-right" title="dpnp.ones" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.identity.html" class="btn btn-neutral float-left" title="dpnp.identity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.empty_like.html" class="btn btn-neutral float-left" title="dpnp.empty_like" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

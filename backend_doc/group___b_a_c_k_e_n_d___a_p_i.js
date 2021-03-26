@@ -61,6 +61,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_full_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga2cb46fbcb3139f455af2803a20a3f68b", null ],
     [ "dpnp_full_like_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga174e2a595bce08da1db3f330accc2aaf", null ],
     [ "dpnp_hypot_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga00f40fc9afc6ce689be35ecbe7f5e81c", null ],
+    [ "dpnp_identity_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga1bdda56fc0b76529895b50fddb28e20b", null ],
     [ "dpnp_initval_c", "group___b_a_c_k_e_n_d___a_p_i.html#gad4c474efc608296a1a44091171574fe4", null ],
     [ "dpnp_inv_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga4fbe904ef278f65b77ae23e17a8651d9", null ],
     [ "dpnp_invert_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga4cd44ff6610bb2de9635f6a5ecae63fe", null ],
