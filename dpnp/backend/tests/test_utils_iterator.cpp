@@ -49,6 +49,15 @@ vector<_DataType> get_input_data(const vector<dpnpc_index_t>& shape)
     return input_data;
 }
 
+template <typename _DataType>
+_DataType* get_shared_data(const vector<dpnpc_index_t>& shape)
+{
+    vector<_DataType> input_data = get_input_data<_DataType>(shape);
+    _DataType* shared_data = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(input_data.size() * sizeof(_DataType)));
+
+    return shared_data;
+}
+
 TEST(TestUtilsIterator, begin_prefix_postfix)
 {
     using test_it = dpnpc_it_t;
@@ -320,6 +329,43 @@ TEST(TestUtilsIterator, iterator_distance)
     EXPECT_EQ(axis_1_1_diff_distance, 4);
 }
 
+TEST(TestUtilsIterator, sycl_getitem)
+{
+    using data_type = double;
+
+    const dpnpc_index_t result_size = 12;
+    data_type* result = reinterpret_cast<data_type*>(dpnp_memory_alloc_c(result_size * sizeof(data_type)));
+    data_type* input_data = get_shared_data<data_type>({3, 4});
+
+    DPNPC_id<data_type>* input_it;
+    input_it = reinterpret_cast<DPNPC_id<data_type>*>(dpnp_memory_alloc_c(sizeof(DPNPC_id<data_type>)));
+    new (input_it) DPNPC_id<data_type>(input_data, {3, 4});
+
+    ASSERT_EQ(input_it->get_output_size(), result_size);
+
+    cl::sycl::range<1> gws(result_size);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        const size_t idx = global_id[0];
+        result[idx] = (*input_it)[idx];
+    };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class test_sycl_get_first_kernel>(gws, kernel_parallel_for_func);
+    };
+
+    cl::sycl::event event = DPNP_QUEUE.submit(kernel_func);
+    event.wait();
+
+    for (dpnpc_index_t i = 0; i < result_size; ++i)
+    {
+        EXPECT_EQ(result[i], input_data[i]);
+    }
+
+    input_it->~DPNPC_id();
+    dpnp_memory_free_c(input_data);
+    dpnp_memory_free_c(result);
+}
+
 struct IteratorParameters
 {
     vector<dpnpc_it_t::size_type> input_shape;
@@ -395,17 +441,18 @@ TEST_P(IteratorReduction, sycl_reduce_axis)
 
     const IteratorParameters& param = GetParam();
     const dpnpc_index_t result_size = param.result.size();
-    vector<data_type> result(result_size, 42);
-    data_type* result_ptr = result.data();
+    data_type* result = reinterpret_cast<data_type*>(dpnp_memory_alloc_c(result_size * sizeof(data_type)));
+    data_type* input_data = get_shared_data<data_type>(param.input_shape);
 
-    vector<data_type> input_data = get_input_data<data_type>(param.input_shape);
-    DPNPC_id<data_type> input(input_data.data(), param.input_shape);
-    input.set_axes(param.axes);
+    DPNPC_id<data_type>* input_it;
+    input_it = reinterpret_cast<DPNPC_id<data_type>*>(dpnp_memory_alloc_c(sizeof(DPNPC_id<data_type>)));
+    new (input_it) DPNPC_id<data_type>(input_data, param.input_shape);
 
-    ASSERT_EQ(input.get_output_size(), result_size);
+    input_it->set_axes(param.axes);
+
+    ASSERT_EQ(input_it->get_output_size(), result_size);
 
     cl::sycl::range<1> gws(result_size);
-    const DPNPC_id<data_type>* input_it = &input;
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
         const size_t idx = global_id[0];
 
@@ -414,7 +461,7 @@ TEST_P(IteratorReduction, sycl_reduce_axis)
         {
             accumulator += *data_it;
         }
-        result_ptr[idx] = accumulator;
+        result[idx] = accumulator;
     };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
@@ -426,46 +473,12 @@ TEST_P(IteratorReduction, sycl_reduce_axis)
 
     for (dpnpc_index_t i = 0; i < result_size; ++i)
     {
-        EXPECT_EQ(result.at(i), param.result.at(i));
-    }
-}
-
-TEST(TestUtilsIterator, sycl_get_first)
-{
-    using data_type = double;
-
-    const dpnpc_index_t result_size = 1;
-    vector<data_type> result(result_size, 42);
-    data_type* result_ptr = result.data();
-
-    vector<data_type> input_data = get_input_data<data_type>({1});
-    data_type* input_ptr = input_data.data();
-
-    // DPNPC_id<data_type>* input_it = reinterpret_cast<DPNPC_id<data_type>*>(dpnp_memory_alloc_c(sizeof(DPNPC_id<data_type>)));
-    DPNPC_id<data_type>* input_it = sycl::malloc_shared<DPNPC_id<data_type>>(1, DPNP_QUEUE);
-    new (input_it) DPNPC_id<data_type>(input_ptr, {1});
-
-    ASSERT_EQ(input_it->get_output_size(), result_size);
-
-    cl::sycl::range<1> gws(result_size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
-        const size_t idx = global_id[0];
-        result_ptr[idx] = input_it->get_output_size();
-    };
-
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
-        cgh.parallel_for<class test_sycl_get_first_kernel>(gws, kernel_parallel_for_func);
-    };
-
-    cl::sycl::event event = DPNP_QUEUE.submit(kernel_func);
-    event.wait();
-
-    for (dpnpc_index_t i = 0; i < result_size; ++i)
-    {
-        EXPECT_EQ(result.at(i), result_size);
+        EXPECT_EQ(result[i], param.result.at(i));
     }
 
     input_it->~DPNPC_id();
+    dpnp_memory_free_c(input_data);
+    dpnp_memory_free_c(result);
 }
 
 /**
