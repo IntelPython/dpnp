@@ -101,6 +101,11 @@ void dpnp_partition_c(const void* sort_array1_in, void* result1, const size_t kt
         size_ *= shape[i];
     }
 
+    if (size_ == 0)
+    {
+        return;
+    }
+
     cl::sycl::range<2> gws(size_, kth+1);
     auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
         size_t j = global_id[0];

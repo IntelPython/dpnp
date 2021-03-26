@@ -953,22 +953,8 @@ cdef class dparray:
         Input kth is supported as :obj:`int`.
         Parameters ``axis``, ``kind`` and ``order`` are supported only with default values.
         """
-        if not isinstance(kth, int):
-            pass
-        elif kth >= self.shape[self.ndim - 1] or self.ndim + kth < 0:
-            pass
-        elif axis != -1:
-            pass
-        elif kind != 'introselect':
-            pass
-        elif order is not None:
-            pass
-        else:
-            return partition(self, kth, axis, kind, order)
 
-        result = utils.dp2nd_array(self).partition(kth, axis, kind, order)
-
-        return utils.nd2dp_array(result)
+        return partition(self, kth, axis, kind, order)
 
     def sort(self, axis=-1, kind=None, order=None):
         """
