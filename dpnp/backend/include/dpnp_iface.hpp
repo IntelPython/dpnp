@@ -230,14 +230,30 @@ INP_DLLEXPORT void dpnp_dot_c(void* array1, void* array2, void* result1, size_t 
  * @ingroup BACKEND_API
  * @brief Custom implementation of cross function
  *
- * @param [in]  array1_in  First input array.
- * @param [in]  array2_in  Second input array.
- * @param [out] result1 Output array.
- * @param [in]  size    Number of elements in input arrays.
- *
+ * @param [out] result_out          Output array.
+ * @param [in]  input1_in           First input array.
+ * @param [in]  input1_size         Size of first input array.
+ * @param [in]  input1_shape        Shape of first input array.
+ * @param [in]  input1_shape_ndim   Number of first array dimensions.
+ * @param [in]  input2_in           Second input array.
+ * @param [in]  input2_size         Shape of second input array.
+ * @param [in]  input2_shape        Shape of first input array.
+ * @param [in]  input2_shape_ndim   Number of second array dimensions.
+ * @param [in]  where               Mask array.
+ * @param [out] result1             Output array.
+ * @param [in]  size                Number of elements in input arrays.
  */
-template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
-INP_DLLEXPORT void dpnp_cross_c(void* array1_in, void* array2_in, void* result1, size_t size);
+template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
+INP_DLLEXPORT void dpnp_cross_c(void* result_out,
+                                const void* input1_in,
+                                const size_t input1_size,
+                                const size_t* input1_shape,
+                                const size_t input1_shape_ndim,
+                                const void* input2_in,
+                                const size_t input2_size,
+                                const size_t* input2_shape,
+                                const size_t input2_shape_ndim,
+                                const size_t* where);
 
 /**
  * @ingroup BACKEND_API
@@ -782,13 +798,30 @@ INP_DLLEXPORT void dpnp_fill_diagonal_c(void* array1_in, void* val, size_t* shap
  * @ingroup BACKEND_API
  * @brief floor_divide function.
  *
- * @param [in]  array1_in    Input array 1.
- * @param [in]  array2_in    Input array 2.
- * @param [out] result1      Output array.
- * @param [in]  size         Number of elements in input arrays.
+ * @param [out] result_out          Output array.
+ * @param [in]  input1_in           First input array.
+ * @param [in]  input1_size         Size of first input array.
+ * @param [in]  input1_shape        Shape of first input array.
+ * @param [in]  input1_shape_ndim   Number of first array dimensions.
+ * @param [in]  input2_in           Second input array.
+ * @param [in]  input2_size         Shape of second input array.
+ * @param [in]  input2_shape        Shape of first input array.
+ * @param [in]  input2_shape_ndim   Number of second array dimensions.
+ * @param [in]  where               Mask array.
+ * @param [out] result1             Output array.
+ * @param [in]  size                Number of elements in input arrays.
  */
 template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
-INP_DLLEXPORT void dpnp_floor_divide_c(void* array1_in, void* array2_in, void* result1, size_t size);
+INP_DLLEXPORT void dpnp_floor_divide_c(void* result_out,
+                                        const void* input1_in,
+                                        const size_t input1_size,
+                                        const size_t* input1_shape,
+                                        const size_t input1_shape_ndim,
+                                        const void* input2_in,
+                                        const size_t input2_size,
+                                        const size_t* input2_shape,
+                                        const size_t input2_shape_ndim,
+                                        const size_t* where);
 
 /**
  * @ingroup BACKEND_API
@@ -826,13 +859,30 @@ INP_DLLEXPORT void dpnp_ones_like_c(void* result, size_t size);
  * @ingroup BACKEND_API
  * @brief remainder function.
  *
- * @param [in]  array1_in    Input array 1.
- * @param [in]  array2_in    Input array 2.
- * @param [out] result1      Output array.
- * @param [in]  size         Number of elements in input arrays.
+ * @param [out] result_out          Output array.
+ * @param [in]  input1_in           First input array.
+ * @param [in]  input1_size         Size of first input array.
+ * @param [in]  input1_shape        Shape of first input array.
+ * @param [in]  input1_shape_ndim   Number of first array dimensions.
+ * @param [in]  input2_in           Second input array.
+ * @param [in]  input2_size         Shape of second input array.
+ * @param [in]  input2_shape        Shape of first input array.
+ * @param [in]  input2_shape_ndim   Number of second array dimensions.
+ * @param [in]  where               Mask array.
+ * @param [out] result1             Output array.
+ * @param [in]  size                Number of elements in input arrays.
  */
-template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
-INP_DLLEXPORT void dpnp_remainder_c(void* array1_in, void* array2_in, void* result1, size_t size);
+template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
+INP_DLLEXPORT void dpnp_remainder_c(void* result_out,
+                                        const void* input1_in,
+                                        const size_t input1_size,
+                                        const size_t* input1_shape,
+                                        const size_t input1_shape_ndim,
+                                        const void* input2_in,
+                                        const size_t input2_size,
+                                        const size_t* input2_shape,
+                                        const size_t input2_shape_ndim,
+                                        const size_t* where);
 
 /**
  * @ingroup BACKEND_API

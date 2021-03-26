@@ -138,7 +138,7 @@ cpdef dparray dpnp_copysign(object x1_obj, object x2_obj, object dtype=None, dpa
 
 
 cpdef dparray dpnp_cross(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
-    return call_fptr_2in_1out(DPNP_FN_CROSS, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
+    return call_fptr_2in_1out(DPNP_FN_CROSS, x1_obj, x2_obj, dtype=dtype, out=out, where=where, new_version=True)
 
 
 cpdef dparray dpnp_cumprod(dparray x1):
@@ -213,7 +213,7 @@ cpdef dparray dpnp_floor(dparray x1):
 
 
 cpdef dparray dpnp_floor_divide(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
-    return call_fptr_2in_1out(DPNP_FN_FLOOR_DIVIDE, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
+    return call_fptr_2in_1out(DPNP_FN_FLOOR_DIVIDE, x1_obj, x2_obj, dtype=dtype, out=out, where=where, new_version=True)
 
 
 cpdef dparray dpnp_fmod(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
@@ -375,7 +375,7 @@ cpdef dparray dpnp_prod(dparray input, object axis=None, object dtype=None, dpar
 
 
 cpdef dparray dpnp_remainder(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
-    return call_fptr_2in_1out(DPNP_FN_REMAINDER, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
+    return call_fptr_2in_1out(DPNP_FN_REMAINDER, x1_obj, x2_obj, dtype=dtype, out=out, where=where, new_version=True)
 
 
 cpdef dparray dpnp_sign(dparray x1):
