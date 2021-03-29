@@ -500,6 +500,16 @@ INP_DLLEXPORT void dpnp_diagonal_c(
 
 /**
  * @ingroup BACKEND_API
+ * @brief Implementation of identity function
+ *
+ * @param [out] result1   Output array.
+ * @param [in]  n         Number of rows (and columns) in n x n output.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_identity_c(void* result1, const size_t n);
+
+/**
+ * @ingroup BACKEND_API
  * @brief implementation of creating filled with value array function
  *
  * @param [out] result  Output array.
