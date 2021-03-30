@@ -57,8 +57,6 @@ int main(int argc, char** argv)
 
     // currently using global queue
 
-    dpnp_queue_initialize_c(QueueOptions::GPU_SELECTOR);
-
     // It returns 0 if all tests are successful, or 1 otherwise.
     return RUN_ALL_TESTS();
 }
