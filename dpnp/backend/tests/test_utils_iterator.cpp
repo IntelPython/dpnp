@@ -55,6 +55,11 @@ _DataType* get_shared_data(const vector<dpnpc_index_t>& shape)
     vector<_DataType> input_data = get_input_data<_DataType>(shape);
     _DataType* shared_data = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(input_data.size() * sizeof(_DataType)));
 
+    for (size_t i = 0; i < input_data.size(); ++i)
+    {
+        shared_data[i] = input_data[i];
+    }
+
     return shared_data;
 }
 
@@ -340,8 +345,6 @@ TEST(TestUtilsIterator, sycl_getitem)
     DPNPC_id<data_type>* input_it;
     input_it = reinterpret_cast<DPNPC_id<data_type>*>(dpnp_memory_alloc_c(sizeof(DPNPC_id<data_type>)));
     new (input_it) DPNPC_id<data_type>(input_data, {3, 4});
-
-    ASSERT_EQ(input_it->get_output_size(), result_size);
 
     cl::sycl::range<1> gws(result_size);
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
