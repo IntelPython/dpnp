@@ -50,11 +50,10 @@ vector<_DataType> get_input_data(const vector<dpnpc_index_t>& shape)
 }
 
 template <typename _DataType>
-_DataType* get_shared_data(const vector<dpnpc_index_t>& shape)
+_DataType* get_shared_data(const vector<_DataType>& input_data)
 {
-    vector<_DataType> input_data = get_input_data<_DataType>(shape);
-    _DataType* shared_data = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(input_data.size() * sizeof(_DataType)));
-
+    const size_t data_size_in_bytes = input_data.size() * sizeof(_DataType);
+    _DataType* shared_data = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(data_size_in_bytes));
     for (size_t i = 0; i < input_data.size(); ++i)
     {
         shared_data[i] = input_data[i];
@@ -340,11 +339,13 @@ TEST(TestUtilsIterator, sycl_getitem)
 
     const dpnpc_index_t result_size = 12;
     data_type* result = reinterpret_cast<data_type*>(dpnp_memory_alloc_c(result_size * sizeof(data_type)));
-    data_type* input_data = get_shared_data<data_type>({3, 4});
+
+    vector<data_type> input_data = get_input_data<data_type>({3, 4});
+    data_type* shared_data = get_shared_data<data_type>(input_data);
 
     DPNPC_id<data_type>* input_it;
     input_it = reinterpret_cast<DPNPC_id<data_type>*>(dpnp_memory_alloc_c(sizeof(DPNPC_id<data_type>)));
-    new (input_it) DPNPC_id<data_type>(input_data, {3, 4});
+    new (input_it) DPNPC_id<data_type>(shared_data, {3, 4});
 
     cl::sycl::range<1> gws(result_size);
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
@@ -361,11 +362,11 @@ TEST(TestUtilsIterator, sycl_getitem)
 
     for (dpnpc_index_t i = 0; i < result_size; ++i)
     {
-        EXPECT_EQ(result[i], input_data[i]);
+        EXPECT_EQ(result[i], shared_data[i]);
     }
 
     input_it->~DPNPC_id();
-    dpnp_memory_free_c(input_data);
+    dpnp_memory_free_c(shared_data);
     dpnp_memory_free_c(result);
 }
 
@@ -445,11 +446,13 @@ TEST_P(IteratorReduction, sycl_reduce_axis)
     const IteratorParameters& param = GetParam();
     const dpnpc_index_t result_size = param.result.size();
     data_type* result = reinterpret_cast<data_type*>(dpnp_memory_alloc_c(result_size * sizeof(data_type)));
-    data_type* input_data = get_shared_data<data_type>(param.input_shape);
+
+    vector<data_type> input_data = get_input_data<data_type>(param.input_shape);
+    data_type* shared_data = get_shared_data<data_type>(input_data);
 
     DPNPC_id<data_type>* input_it;
     input_it = reinterpret_cast<DPNPC_id<data_type>*>(dpnp_memory_alloc_c(sizeof(DPNPC_id<data_type>)));
-    new (input_it) DPNPC_id<data_type>(input_data, param.input_shape);
+    new (input_it) DPNPC_id<data_type>(shared_data, param.input_shape);
 
     input_it->set_axes(param.axes);
 
@@ -480,7 +483,7 @@ TEST_P(IteratorReduction, sycl_reduce_axis)
     }
 
     input_it->~DPNPC_id();
-    dpnp_memory_free_c(input_data);
+    dpnp_memory_free_c(shared_data);
     dpnp_memory_free_c(result);
 }
 

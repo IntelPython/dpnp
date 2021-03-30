@@ -291,13 +291,21 @@ public:
             free_iteration_memory();
             free_output_memory();
 
-            axes = get_validated_axes(__axes, input_shape_size);
+            std::vector<size_type> valid_axes = get_validated_axes(__axes, input_shape_size);
             axis_use = true;
 
-            output_shape_size = input_shape_size - axes.size();
+            axes_size = valid_axes.size();
+            const size_type axes_size_in_bytes = axes_size * sizeof(size_type);
+            axes = reinterpret_cast<size_type*>(dpnp_memory_alloc_c(axes_size_in_bytes));
+            for (size_type i = 0; i < axes_size; ++i)
+            {
+                axes[i] = valid_axes[i];
+            }
+
+            output_shape_size = input_shape_size - axes_size;
             const size_type output_shape_size_in_bytes = output_shape_size * sizeof(size_type);
 
-            iteration_shape_size = axes.size();
+            iteration_shape_size = axes_size;
             const size_type iteration_shape_size_in_bytes = iteration_shape_size * sizeof(size_type);
             std::vector<size_type> iteration_shape;
 
@@ -305,7 +313,7 @@ public:
             size_type* output_shape_it = output_shape;
             for (size_type i = 0; i < input_shape_size; ++i)
             {
-                if (std::find(axes.begin(), axes.end(), i) == axes.end())
+                if (std::find(valid_axes.begin(), valid_axes.end(), i) == valid_axes.end())
                 {
                     *output_shape_it = input_shape[i];
                     ++output_shape_it;
@@ -320,7 +328,7 @@ public:
 
             iteration_size = 1;
             iteration_shape.reserve(iteration_shape_size);
-            for (const auto& axis : axes)
+            for (const auto& axis : valid_axes)
             {
                 const size_type axis_dim = input_shape[axis];
                 iteration_shape.push_back(axis_dim);
@@ -423,7 +431,7 @@ private:
 
             for (size_t iit = 0, oit = 0; iit < input_shape_size; ++iit)
             {
-                if (std::find(axes.begin(), axes.end(), iit) == axes.end())
+                if (std::find(axes, axes + axes_size, iit) == axes + axes_size)
                 {
                     input_global_id += (sycl_output_xyz_thread[oit] * input_shape_strides[iit]);
                     ++oit;
@@ -442,8 +450,10 @@ private:
 
     void free_axes_memory()
     {
-        axes.clear();
+        axes_size = size_type{};
+        dpnp_memory_free_c(axes);
         dpnp_memory_free_c(axes_shape_strides);
+        axes = nullptr;
         axes_shape_strides = nullptr;
     }
 
@@ -491,7 +501,8 @@ private:
     size_type input_shape_size = size_type{}; /**< input array shape size */
     size_type* input_shape_strides = nullptr; /**< input array shape strides (same size as input_shape) */
 
-    std::vector<size_type> axes; /**< input shape reduction axes */
+    size_type* axes = nullptr;         /**< input shape reduction axes */
+    size_type axes_size = size_type{}; /**< input shape reduction axes size */
     bool axis_use = false;
 
     size_type output_size = size_type{};       /**< output array size. Expected is same as GWS */
