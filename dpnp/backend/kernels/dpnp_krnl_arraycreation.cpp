@@ -110,6 +110,37 @@ void dpnp_full_like_c(void* array_in, void* result, const size_t size)
     dpnp_full_c<_DataType>(array_in, result, size);
 }
 
+template <typename _KernelNameSpecialization>
+class dpnp_identity_c_kernel;
+
+template <typename _DataType>
+void dpnp_identity_c(void* result1, const size_t n)
+{
+    if (n == 0)
+    {
+        return;
+    }
+
+    cl::sycl::event event;
+
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    cl::sycl::range<2> gws(n, n);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
+        size_t i = global_id[0];
+        size_t j = global_id[1];
+        result[i * n + j] = i == j;
+    };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_identity_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+    };
+
+    event = DPNP_QUEUE.submit(kernel_func);
+
+    event.wait();  
+}
+
 template <typename _DataType>
 void dpnp_ones_c(void* result, size_t size)
 {
@@ -477,6 +508,13 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_FULL_LIKE][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_full_like_c<bool>};
     fmap[DPNPFuncName::DPNP_FN_FULL_LIKE][eft_C128][eft_C128] = {eft_C128,
                                                                  (void*)dpnp_full_like_c<std::complex<double>>};
+
+    fmap[DPNPFuncName::DPNP_FN_IDENTITY][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_identity_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_IDENTITY][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_identity_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_IDENTITY][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_identity_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_IDENTITY][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_identity_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_IDENTITY][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_identity_c<bool>};
+    fmap[DPNPFuncName::DPNP_FN_IDENTITY][eft_C128][eft_C128] = {eft_C128, (void*)dpnp_identity_c<std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_ONES][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_ones_c<int>};
     fmap[DPNPFuncName::DPNP_FN_ONES][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_ones_c<long>};
