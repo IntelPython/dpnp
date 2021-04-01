@@ -28,63 +28,10 @@
 #include <vector>
 
 #include "dpnp_iterator.hpp"
+#include "dpnp_test_utils.hpp"
 
 #define DPNP_LOCAL_QUEUE 1 // TODO need to fix build procedure and remove this workaround. Issue #551
 #include "queue_sycl.hpp"
-
-using namespace std;
-using dpnpc_it_t = DPNPC_id<size_t>::iterator;
-using dpnpc_value_t = dpnpc_it_t::value_type;
-using dpnpc_index_t = dpnpc_it_t::size_type;
-
-template <typename _DataType>
-vector<_DataType> get_input_data(const vector<dpnpc_index_t>& shape)
-{
-    const dpnpc_index_t size = accumulate(shape.begin(), shape.end(), dpnpc_index_t(1), multiplies<dpnpc_index_t>());
-
-    vector<_DataType> input_data(size);
-    iota(input_data.begin(), input_data.end(), 1); // let's start from 1 to avoid cleaned memory comparison
-
-    return input_data;
-}
-
-TEST(TestBroadcastIterator, take_value_broadcast_loop_2D)
-{
-    vector<dpnpc_value_t> expected_data{1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3};
-    // expected input data 1, 2, 3
-    vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({3, 1});
-    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {3, 1});
-    result_obj.broadcast_to_shape({3, 4});
-
-    for (dpnpc_index_t output_id = 0; output_id < result_obj.get_output_size(); ++output_id)
-    {
-        EXPECT_EQ(result_obj[output_id], expected_data[output_id]);
-    }
-}
-
-TEST(TestBroadcastIterator, take_value_broadcast_loop_3D)
-{
-    vector<dpnpc_value_t> expected_data{1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6};
-    // expected input data 1, 2, 3, 4, 5, 6
-    vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({2, 3});
-    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {2, 3});
-    result_obj.broadcast_to_shape({2, 2, 3});
-
-    for (dpnpc_index_t output_id = 0; output_id < result_obj.get_output_size(); ++output_id)
-    {
-        EXPECT_EQ(result_obj[output_id], expected_data[output_id]);
-    }
-}
-
-TEST(TestBroadcastIterator, output_size_broadcast)
-{
-    vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>({3, 4});
-    DPNPC_id<dpnpc_value_t> result_obj(input_data.data(), {3, 4});
-    result_obj.broadcast_to_shape({2, 3, 4});
-
-    const dpnpc_index_t output_size = result_obj.get_output_size();
-    EXPECT_EQ(output_size, 24);
-}
 
 struct IteratorParameters
 {
@@ -108,22 +55,19 @@ class IteratorBroadcasting : public ::testing::TestWithParam<IteratorParameters>
 
 TEST_P(IteratorBroadcasting, loop_broadcast)
 {
-    const IteratorParameters& param = GetParam();
-    const dpnpc_index_t result_size = param.result.size();
+    using data_type = double;
 
-    vector<dpnpc_value_t> input_data = get_input_data<dpnpc_value_t>(param.input_shape);
-    DPNPC_id<dpnpc_value_t> input(input_data.data(), param.input_shape);
+    const IteratorParameters& param = GetParam();
+    std::vector<data_type> input_data = get_input_data<data_type>(param.input_shape);
+
+    DPNPC_id<data_type> input(input_data.data(), param.input_shape);
     input.broadcast_to_shape(param.output_shape);
 
-    ASSERT_EQ(input.get_output_size(), result_size);
+    ASSERT_EQ(input.get_output_size(), param.result.size());
 
-    vector<dpnpc_value_t> test_result(result_size, 42);
-    for (dpnpc_index_t output_id = 0; output_id < result_size; ++output_id)
+    for (dpnpc_index_t output_id = 0; output_id < input.get_output_size(); ++output_id)
     {
-        test_result[output_id] = input[output_id];
-        std::cout << "test_result[" << output_id << "] = " << test_result[output_id] << std::endl;
-        std::cout << "param.result.at(" << output_id << ") = " << param.result.at(output_id) << std::endl;
-        EXPECT_EQ(test_result[output_id], param.result.at(output_id));
+        EXPECT_EQ(input[output_id], param.result.at(output_id));
     }
 }
 
@@ -133,20 +77,23 @@ TEST_P(IteratorBroadcasting, sycl_broadcast)
 
     const IteratorParameters& param = GetParam();
     const dpnpc_index_t result_size = param.result.size();
-    vector<data_type> result(result_size, 42);
-    data_type* result_ptr = result.data();
+    data_type* result = reinterpret_cast<data_type*>(dpnp_memory_alloc_c(result_size * sizeof(data_type)));
 
-    vector<data_type> input_data = get_input_data<data_type>(param.input_shape);
-    DPNPC_id<data_type> input(input_data.data(), param.input_shape);
-    input.broadcast_to_shape(param.output_shape);
+    std::vector<data_type> input_data = get_input_data<data_type>(param.input_shape);
+    data_type* shared_data = get_shared_data<data_type>(input_data);
 
-    ASSERT_EQ(input.get_output_size(), result_size);
+    DPNPC_id<data_type>* input_it;
+    input_it = reinterpret_cast<DPNPC_id<data_type>*>(dpnp_memory_alloc_c(sizeof(DPNPC_id<data_type>)));
+    new (input_it) DPNPC_id<data_type>(shared_data, param.input_shape);
+
+    input_it->broadcast_to_shape(param.output_shape);
+
+    ASSERT_EQ(input_it->get_output_size(), result_size);
 
     cl::sycl::range<1> gws(result_size);
-    const DPNPC_id<data_type>* input_it = &input;
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
         const size_t idx = global_id[0];
-        result_ptr[idx] = (*input_it)[idx];
+        result[idx] = (*input_it)[idx];
     };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
@@ -158,8 +105,12 @@ TEST_P(IteratorBroadcasting, sycl_broadcast)
 
     for (dpnpc_index_t i = 0; i < result_size; ++i)
     {
-        EXPECT_EQ(result.at(i), param.result.at(i));
+        EXPECT_EQ(result[i], param.result.at(i));
     }
+
+    input_it->~DPNPC_id();
+    dpnp_memory_free_c(shared_data);
+    dpnp_memory_free_c(result);
 }
 
 /**
