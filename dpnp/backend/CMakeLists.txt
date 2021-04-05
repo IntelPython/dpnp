@@ -219,7 +219,6 @@ if(UNIX)
 # -DMKL_ILP64 -I"${MKLROOT}/include"
 # -lmkl_sycl -lmkl_intel_ilp64 -lmkl_sequential -lmkl_core -lsycl -lOpenCL -lpthread -lm -ldl
   set(DPNP_MATHLIB_DEP_LIBS
-      mkl_rt
       mkl_sycl
       mkl_intel_ilp64
       mkl_sequential
