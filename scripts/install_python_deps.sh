@@ -10,6 +10,9 @@ pip3 install numpy cython pytest pytest-valgrind hypothesis
 echo ========================= Conda: install prerequisites ===============================
 conda install -y conda-build numpy cython pytest hypothesis
 
+echo ========================= Conda: remove mkl ===============================
+conda remove mkl --force -y || true
+
 echo ========================= SW versions ====================================
 conda list
 
