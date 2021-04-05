@@ -378,8 +378,8 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
             result[i] = __operation1__;                                                                                \
         };                                                                                                             \
         auto kernel_func = [&](cl::sycl::handler& cgh) {                                                               \
-            cgh.parallel_for<class __name__##_kernel<_DataType_output, _DataType_input1,                               \
-                                                     _DataType_input2>>(gws, kernel_parallel_for_func);                \
+            cgh.parallel_for<class __name__##_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(           \
+                gws, kernel_parallel_for_func);                                                                        \
         };                                                                                                             \
                                                                                                                        \
         cl::sycl::event event;                                                                                         \
