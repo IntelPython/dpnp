@@ -72,7 +72,7 @@ void dpnp_rng_srand_c(size_t seed)
 }
 
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_beta_c(void* result, const _DataType a, const _DataType b, const size_t size)
+void dpnp_rng_beta_c(void* result, const _DataType a, const _DataType b, const size_t size)
 {
     if (!size)
     {
@@ -116,7 +116,6 @@ void dpnp_rng_binomial_c(void* result, const int ntrial, const double p, const s
     {
         return;
     }
-    _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
     if (ntrial == 0 || p == 0)
     {
@@ -131,6 +130,7 @@ void dpnp_rng_binomial_c(void* result, const int ntrial, const double p, const s
     }
     else
     {
+        _DataType* result1 = reinterpret_cast<_DataType*>(result);
         if (dpnp_queue_is_cpu_c())
         {
             mkl_rng::binomial<_DataType> distribution(ntrial, p);
@@ -253,29 +253,34 @@ void dpnp_rng_f_c(void* result, const _DataType df_num, const _DataType df_den, 
 template <typename _DataType>
 void dpnp_rng_gamma_c(void* result, const _DataType shape, const _DataType scale, const size_t size)
 {
-    if (!size)
+    if (!size || result == nullptr)
     {
         return;
     }
 
-    // set displacement a
-    const _DataType a = (_DataType(0.0));
-
-    _DataType* result1 = reinterpret_cast<_DataType*>(result);
-
-    if (dpnp_queue_is_cpu_c())
+    if (shape == 0.0 || scale == 0.0)
     {
-        mkl_rng::gamma<_DataType> distribution(shape, a, scale);
-        // perform generation
-        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-        event_out.wait();
+        dpnp_zeros_c<_DataType>(result, size);
     }
     else
     {
-        int errcode = vdRngGamma(VSL_RNG_METHOD_GAMMA_GNORM, get_rng_stream(), size, result1, shape, a, scale);
-        if (errcode != VSL_STATUS_OK)
+        _DataType* result1 = reinterpret_cast<_DataType*>(result);
+        const _DataType a = (_DataType(0.0));
+
+        if (dpnp_queue_is_cpu_c())
         {
-            throw std::runtime_error("DPNP RNG Error: dpnp_rng_gamma_c() failed.");
+            mkl_rng::gamma<_DataType> distribution(shape, a, scale);
+            // perform generation
+            auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+            event_out.wait();
+        }
+        else
+        {
+            int errcode = vdRngGamma(VSL_RNG_METHOD_GAMMA_GNORM, get_rng_stream(), size, result1, shape, a, scale);
+            if (errcode != VSL_STATUS_OK)
+            {
+                throw std::runtime_error("DPNP RNG Error: dpnp_rng_gamma_c() failed.");
+            }
         }
     }
 }
@@ -298,16 +303,23 @@ void dpnp_rng_gaussian_c(void* result, const _DataType mean, const _DataType std
 template <typename _DataType>
 void dpnp_rng_geometric_c(void* result, const float p, const size_t size)
 {
-    if (!size)
+    if (!size || !result)
     {
         return;
     }
-    _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    mkl_rng::geometric<_DataType> distribution(p);
-    // perform generation
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
+    if (p == 1.0)
+    {
+        dpnp_ones_c<_DataType>(result, size);
+    }
+    else
+    {
+        _DataType* result1 = reinterpret_cast<_DataType*>(result);
+        mkl_rng::geometric<_DataType> distribution(p);
+        // perform generation
+        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+        event_out.wait();
+    }
 }
 
 template <typename _KernelNameSpecialization>
@@ -316,65 +328,90 @@ class dpnp_blas_scal_c_kernel;
 template <typename _DataType>
 void dpnp_rng_gumbel_c(void* result, const double loc, const double scale, const size_t size)
 {
-    cl::sycl::event event;
-    if (!size)
+    if (!size || !result)
     {
         return;
     }
 
-    const _DataType alpha = (_DataType(-1.0));
-    std::int64_t incx = 1;
-    _DataType* result1 = reinterpret_cast<_DataType*>(result);
-    double negloc = loc * (double(-1.0));
-
-    mkl_rng::gumbel<_DataType> distribution(negloc, scale);
-    event = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event.wait();
-
-    // OK for CPU and segfault for GPU device
-    // event = mkl_blas::scal(DPNP_QUEUE, size, alpha, result1, incx);
-    if (dpnp_queue_is_cpu_c())
+    if (scale == 0.0)
     {
-        event = mkl_blas::scal(DPNP_QUEUE, size, alpha, result1, incx);
+        _DataType* fill_value = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(sizeof(_DataType)));
+        fill_value[0] = static_cast<_DataType>(loc);
+        dpnp_initval_c<_DataType>(result, fill_value, size);
+        dpnp_memory_free_c(fill_value);
     }
     else
     {
-        // for (size_t i = 0; i < size; i++) result1[i] *= alpha;
-        cl::sycl::range<1> gws(size);
-        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
-            size_t i = global_id[0];
-            result1[i] *= alpha;
-        };
-        auto kernel_func = [&](cl::sycl::handler& cgh) {
-            cgh.parallel_for<class dpnp_blas_scal_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
-        };
-        event = DPNP_QUEUE.submit(kernel_func);
+        const _DataType alpha = (_DataType(-1.0));
+        std::int64_t incx = 1;
+        _DataType* result1 = reinterpret_cast<_DataType*>(result);
+        double negloc = loc * (double(-1.0));
+
+        mkl_rng::gumbel<_DataType> distribution(negloc, scale);
+        auto event_distribution = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+
+        // OK for CPU and segfault for GPU device
+        // event = mkl_blas::scal(DPNP_QUEUE, size, alpha, result1, incx);
+        cl::sycl::event prod_event;
+        if (dpnp_queue_is_cpu_c())
+        {
+            prod_event = mkl_blas::scal(DPNP_QUEUE, size, alpha, result1, incx, {event_distribution});
+        }
+        else
+        {
+            // for (size_t i = 0; i < size; i++) result1[i] *= alpha;
+            cl::sycl::range<1> gws(size);
+            auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+                size_t i = global_id[0];
+                result1[i] *= alpha;
+            };
+            auto kernel_func = [&](cl::sycl::handler& cgh) {
+                cgh.depends_on({event_distribution});
+                cgh.parallel_for<class dpnp_blas_scal_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+            };
+            prod_event = DPNP_QUEUE.submit(kernel_func);
+        }
+        prod_event.wait();
     }
-    event.wait();
 }
 
 template <typename _DataType>
 void dpnp_rng_hypergeometric_c(void* result, const int l, const int s, const int m, const size_t size)
 {
-    if (!size)
+    if (!size || !result)
     {
         return;
     }
-    _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    if (dpnp_queue_is_cpu_c())
+    if (m == 0)
     {
-        mkl_rng::hypergeometric<_DataType> distribution(l, s, m);
-        // perform generation
-        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-        event_out.wait();
+        dpnp_zeros_c<_DataType>(result, size);
+    }
+    else if (l == m)
+    {
+        _DataType* fill_value = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(sizeof(_DataType)));
+        fill_value[0] = static_cast<_DataType>(s);
+        dpnp_initval_c<_DataType>(result, fill_value, size);
+        dpnp_memory_free_c(fill_value);
     }
     else
     {
-        int errcode = viRngHypergeometric(VSL_RNG_METHOD_HYPERGEOMETRIC_H2PE, get_rng_stream(), size, result1, l, s, m);
-        if (errcode != VSL_STATUS_OK)
+        _DataType* result1 = reinterpret_cast<_DataType*>(result);
+        if (dpnp_queue_is_cpu_c())
         {
-            throw std::runtime_error("DPNP RNG Error: dpnp_rng_hypergeometric_c() failed.");
+            mkl_rng::hypergeometric<_DataType> distribution(l, s, m);
+            // perform generation
+            auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+            event_out.wait();
+        }
+        else
+        {
+            int errcode =
+                viRngHypergeometric(VSL_RNG_METHOD_HYPERGEOMETRIC_H2PE, get_rng_stream(), size, result1, l, s, m);
+            if (errcode != VSL_STATUS_OK)
+            {
+                throw std::runtime_error("DPNP RNG Error: dpnp_rng_hypergeometric_c() failed.");
+            }
         }
     }
 }
@@ -382,16 +419,23 @@ void dpnp_rng_hypergeometric_c(void* result, const int l, const int s, const int
 template <typename _DataType>
 void dpnp_rng_laplace_c(void* result, const double loc, const double scale, const size_t size)
 {
-    if (!size)
+    if (!size || !result)
     {
         return;
     }
-    _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    mkl_rng::laplace<_DataType> distribution(loc, scale);
-    // perform generation
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
+    if (scale == 0.0)
+    {
+        dpnp_zeros_c<_DataType>(result, size);
+    }
+    else
+    {
+        _DataType* result1 = reinterpret_cast<_DataType*>(result);
+        mkl_rng::laplace<_DataType> distribution(loc, scale);
+        // perform generation
+        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+        event_out.wait();
+    }
 }
 
 /*   Logistic(loc, scale) ~ loc + scale * log(u/(1.0 - u)) */
