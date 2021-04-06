@@ -46,6 +46,7 @@ link_directories(${GTEST_LIB_DIR})
 
 # TODO split
 add_executable(dpnpc_tests
+               test_broadcast_iterator.cpp
                test_main.cpp
                test_random.cpp
                test_utils.cpp
