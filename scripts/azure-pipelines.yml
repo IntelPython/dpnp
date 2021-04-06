@@ -9,13 +9,8 @@ jobs:
   steps:
 
   - bash: |
-      . ./scripts/set_ci_env.sh
-      echo ========================= Conda ENV ===============================
-      conda create -q -y -n CondaCodeStyle python=3.8 conda-build conda-verify \
-                                                      numpy cython pytest \
-                                                      pycodestyle autopep8 black
-      . /usr/share/miniconda/etc/profile.d/conda.sh
-      conda activate CondaCodeStyle
+      . ./scripts/set_ci_env.sh 3.8
+      conda install -y conda-build conda-verify numpy cython pytest pycodestyle autopep8 black
       echo ========================= Run style check ===============================
       # variables are not used but have to be installed for setuptools
       # export ONEAPI_ROOT=/opt/intel
@@ -47,14 +42,8 @@ jobs:
     vmImage: 'ubuntu-20.04'
   steps:
   - bash: |
-      . ./scripts/set_ci_env.sh
-      echo ========================= Conda ENV ===============================
-      conda create -q -y -n CondaCodeStyle python=3.8 conda-build conda-verify \
-                                                      numpy cython pytest \
-                                                      pycodestyle autopep8 \
-                                                      cython pytest pytest-cov
-      . /usr/share/miniconda/etc/profile.d/conda.sh
-      conda activate CondaCodeStyle
+      . ./scripts/set_ci_env.sh 3.8
+      conda install -y conda-build conda-verify numpy cython pytest pycodestyle autopep8 cython pytest pytest-cov
       echo ========================= build DPNP ===============================
       ./0.build.sh
       echo ========================= run code coverage ===============================
@@ -80,12 +69,7 @@ jobs:
       versionSpec: '$(python.version)'
     displayName: 'Use Python $(python.version)'
   - bash: |
-      echo ========================= Conda ENV ================================
-      conda create -q -y -n dpnp$(python.version) python=$(python.version)
-      . /usr/share/miniconda/etc/profile.d/conda.sh
-      conda activate dpnp$(python.version)
-      echo ========================= set CI ENV ===============================
-      . ./scripts/set_ci_env.sh
+      . ./scripts/set_ci_env.sh $(python.version)
       echo ========================= build DPNP ===============================
       ./0.build.sh
       echo ========================= run pytest ===============================
@@ -109,8 +93,7 @@ jobs:
       versionSpec: '$(python.version)'
     displayName: 'Use Python $(python.version)'
   - bash: |
-      . ./scripts/set_ci_env.sh
-      pip3 install numpy==1.19
+      . ./scripts/set_ci_env.sh $(python.version)
       echo ========================= build DPNP ===============================
       ./0.build.sh
       echo ========================= run tests ===============================
