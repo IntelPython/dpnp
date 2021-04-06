@@ -84,6 +84,60 @@ struct _sort_less
 };
 
 template <typename _DataType>
+class dpnp_partition_c_kernel;
+
+template <typename _DataType>
+void dpnp_partition_c(const void* sort_array1_in, void* result1, const size_t kth, const size_t* shape, const size_t ndim)
+{
+
+    cl::sycl::event event;
+
+    const _DataType* sort_arr = reinterpret_cast<const _DataType*>(sort_array1_in);
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    size_t size_ = 1;
+    for (size_t i = 0; i < ndim - 1; ++i)
+    {
+        size_ *= shape[i];
+    }
+
+    if (size_ == 0)
+    {
+        return;
+    }
+
+    cl::sycl::range<2> gws(size_, kth+1);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
+        size_t j = global_id[0];
+        size_t k = global_id[1];
+
+        _DataType val = sort_arr[j * shape[ndim - 1] + k];
+
+        size_t ind = j * shape[ndim - 1] + k;
+        for (size_t i = 0; i < shape[ndim - 1]; ++i)
+        {
+            if (result[j * shape[ndim - 1] + i] == val)
+            {
+                ind = j * shape[ndim - 1] + i;
+                break;
+            }
+        }
+
+        _DataType change_val = result[j * shape[ndim - 1] + k];
+        result[j * shape[ndim - 1] + k] = val;
+        result[ind] = change_val;
+    };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_partition_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+    };
+
+    event = DPNP_QUEUE.submit(kernel_func);
+
+    event.wait();
+}
+
+template <typename _DataType>
 class dpnp_sort_c_kernel;
 
 template <typename _DataType>
@@ -109,6 +163,11 @@ void func_map_init_sorting(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_argsort_c<long, long>};
     fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_FLT][eft_FLT] = {eft_LNG, (void*)dpnp_argsort_c<float, long>};
     fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_DBL][eft_DBL] = {eft_LNG, (void*)dpnp_argsort_c<double, long>};
+
+    fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_partition_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_partition_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_partition_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_partition_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_SORT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_sort_c<int>};
     fmap[DPNPFuncName::DPNP_FN_SORT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_sort_c<long>};

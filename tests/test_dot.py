@@ -33,7 +33,7 @@ def test_dot_arange(type):
 
     result = inp.dot(ia, ib)
     expected = numpy.dot(a, b)
-    numpy.testing.assert_array_equal(expected, result)
+    numpy.testing.assert_allclose(expected, result)
 
 
 @pytest.mark.parametrize("type",

@@ -39,12 +39,33 @@ from dpnp.dpnp_utils cimport *
 
 __all__ += [
     "dpnp_argsort",
+    "dpnp_partition",
     "dpnp_sort"
 ]
 
 
+ctypedef void(*fptr_dpnp_partition_t)(const void * , void * , const size_t , const size_t * , const size_t)
+
+
 cpdef dparray dpnp_argsort(dparray in_array1):
     return call_fptr_1in_1out(DPNP_FN_ARGSORT, in_array1, in_array1.shape)
+
+
+cpdef dparray dpnp_partition(dparray arr, int kth, axis=-1, kind='introselect', order=None):
+    cdef size_t kth_ = kth if kth >= 0 else (arr.ndim + kth)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PARTITION, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    cdef dparray result = dpnp.copy(arr)
+    cdef dparray sort_arr = dpnp.sort(arr)
+
+    cdef fptr_dpnp_partition_t func = <fptr_dpnp_partition_t > kernel_data.ptr
+
+    func(sort_arr.get_data(), result.get_data(), kth_, < size_t * > arr._dparray_shape.data(), arr.ndim)
+
+    return result
 
 
 cpdef dparray dpnp_sort(dparray in_array1):
