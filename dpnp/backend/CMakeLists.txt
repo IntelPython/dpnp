@@ -219,7 +219,6 @@ if(UNIX)
 # -DMKL_ILP64 -I"${MKLROOT}/include"
 # -lmkl_sycl -lmkl_intel_ilp64 -lmkl_sequential -lmkl_core -lsycl -lOpenCL -lpthread -lm -ldl
   set(DPNP_MATHLIB_DEP_LIBS
-      mkl_rt
       mkl_sycl
       mkl_intel_ilp64
       mkl_sequential
@@ -235,7 +234,6 @@ elseif(WIN32)
 # -DMKL_ILP64 -I"%MKLROOT%\include"
 # mkl_sycl_dll.lib mkl_intel_ilp64_dll.lib mkl_sequential_dll.lib mkl_core_dll.lib sycl.lib OpenCL.lib
   set(DPNP_MATHLIB_DEP_LIBS
-      mkl_rt
       mkl_sycl        # _dll
       mkl_intel_ilp64 # _dll
       mkl_sequential  # _dll
