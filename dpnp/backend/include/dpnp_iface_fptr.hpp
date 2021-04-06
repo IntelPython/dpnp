@@ -60,6 +60,8 @@ enum class DPNPFuncName : size_t
     DPNP_FN_NONE,                     /**< Very first element of the enumeration */
     DPNP_FN_ABSOLUTE,                 /**< Used in numpy.absolute() implementation  */
     DPNP_FN_ADD,                      /**< Used in numpy.add() implementation  */
+    DPNP_FN_ALL,                      /**< Used in numpy.all() implementation  */
+    DPNP_FN_ANY,                      /**< Used in numpy.any() implementation  */
     DPNP_FN_ARANGE,                   /**< Used in numpy.arange() implementation  */
     DPNP_FN_ARCCOS,                   /**< Used in numpy.arccos() implementation  */
     DPNP_FN_ARCCOSH,                  /**< Used in numpy.arccosh() implementation  */
@@ -71,6 +73,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_ARGMAX,                   /**< Used in numpy.argmax() implementation  */
     DPNP_FN_ARGMIN,                   /**< Used in numpy.argmin() implementation  */
     DPNP_FN_ARGSORT,                  /**< Used in numpy.argsort() implementation  */
+    DPNP_FN_ASTYPE,                   /**< Used in numpy.astype() implementation  */
     DPNP_FN_BITWISE_AND,              /**< Used in numpy.bitwise_and() implementation  */
     DPNP_FN_BITWISE_OR,               /**< Used in numpy.bitwise_or() implementation  */
     DPNP_FN_BITWISE_XOR,              /**< Used in numpy.bitwise_xor() implementation  */
@@ -80,6 +83,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_CONJIGUATE,               /**< Used in numpy.conjugate() implementation  */
     DPNP_FN_COPY,                     /**< Used in numpy.copy() implementation  */
     DPNP_FN_COPYSIGN,                 /**< Used in numpy.copysign() implementation  */
+    DPNP_FN_COPYTO,                   /**< Used in numpy.copyto() implementation  */
     DPNP_FN_CORRELATE,                /**< Used in numpy.correlate() implementation  */
     DPNP_FN_COS,                      /**< Used in numpy.cos() implementation  */
     DPNP_FN_COSH,                     /**< Used in numpy.cosh() implementation  */
@@ -89,8 +93,11 @@ enum class DPNPFuncName : size_t
     DPNP_FN_CUMSUM,                   /**< Used in numpy.cumsum() implementation  */
     DPNP_FN_DEGREES,                  /**< Used in numpy.degrees() implementation  */
     DPNP_FN_DET,                      /**< Used in numpy.linalg.det() implementation  */
+    DPNP_FN_DIAG,                     /**< Used in numpy.diag() implementation  */
+    DPNP_FN_DIAGONAL,                 /**< Used in numpy.diagonal() implementation  */
     DPNP_FN_DIVIDE,                   /**< Used in numpy.divide() implementation  */
     DPNP_FN_DOT,                      /**< Used in numpy.dot() implementation  */
+    DPNP_FN_EDIFF1D,                  /**< Used in numpy.ediff1d() implementation  */
     DPNP_FN_EIG,                      /**< Used in numpy.linalg.eig() implementation  */
     DPNP_FN_EIGVALS,                  /**< Used in numpy.linalg.eigvals() implementation  */
     DPNP_FN_ERF,                      /**< Used in scipy.special.erf implementation  */
@@ -99,11 +106,15 @@ enum class DPNPFuncName : size_t
     DPNP_FN_EXPM1,                    /**< Used in numpy.expm1() implementation  */
     DPNP_FN_FABS,                     /**< Used in numpy.fabs() implementation  */
     DPNP_FN_FFT_FFT,                  /**< Used in numpy.fft.fft() implementation  */
+    DPNP_FN_FILL_DIAGONAL,            /**< Used in numpy.fill_diagonal() implementation  */
+    DPNP_FN_FLATTEN,                  /**< Used in numpy.flatten() implementation  */
     DPNP_FN_FLOOR,                    /**< Used in numpy.floor() implementation  */
     DPNP_FN_FLOOR_DIVIDE,             /**< Used in numpy.floor_divide() implementation  */
     DPNP_FN_FMOD,                     /**< Used in numpy.fmod() implementation  */
     DPNP_FN_FULL,                     /**< Used in numpy.full() implementation  */
+    DPNP_FN_FULL_LIKE,                /**< Used in numpy.full_like() implementation  */
     DPNP_FN_HYPOT,                    /**< Used in numpy.hypot() implementation  */
+    DPNP_FN_IDENTITY,                 /**< Used in numpy.identity() implementation  */
     DPNP_FN_INITVAL,                  /**< Used in numpy ones, ones_like, zeros, zeros_like, full, full_like impl  */
     DPNP_FN_INV,                      /**< Used in numpy.linalg.inv() implementation  */
     DPNP_FN_INVERT,                   /**< Used in numpy.invert() implementation  */
@@ -123,11 +134,19 @@ enum class DPNPFuncName : size_t
     DPNP_FN_MINIMUM,                  /**< Used in numpy.minimum() implementation  */
     DPNP_FN_MODF,                     /**< Used in numpy.modf() implementation  */
     DPNP_FN_MULTIPLY,                 /**< Used in numpy.multiply() implementation  */
+    DPNP_FN_NONZERO,                  /**< Used in numpy.nonzero() implementation  */
+    DPNP_FN_ONES,                     /**< Used in numpy.ones() implementation */
+    DPNP_FN_ONES_LIKE,                /**< Used in numpy.ones_like() implementation */
+    DPNP_FN_PLACE,                    /**< Used in numpy.place() implementation  */
     DPNP_FN_POWER,                    /**< Used in numpy.power() implementation  */
     DPNP_FN_PROD,                     /**< Used in numpy.prod() implementation  */
+    DPNP_FN_PUT,                      /**< Used in numpy.put() implementation  */
+    DPNP_FN_PUT_ALONG_AXIS,           /**< Used in numpy.put_along_axis() implementation  */
+    DPNP_FN_QR,                       /**< Used in numpy.linalg.qr() implementation  */
     DPNP_FN_RADIANS,                  /**< Used in numpy.radians() implementation  */
     DPNP_FN_REMAINDER,                /**< Used in numpy.remainder() implementation  */
     DPNP_FN_RECIP,                    /**< Used in numpy.recip() implementation  */
+    DPNP_FN_REPEAT,                   /**< Used in numpy.repeat() implementation  */
     DPNP_FN_RIGHT_SHIFT,              /**< Used in numpy.right_shift() implementation  */
     DPNP_FN_RNG_BETA,                 /**< Used in numpy.random.beta() implementation  */
     DPNP_FN_RNG_BINOMIAL,             /**< Used in numpy.random.binomial() implementation  */
@@ -145,12 +164,14 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RNG_MULTINOMIAL,          /**< Used in numpy.random.multinomial() implementation  */
     DPNP_FN_RNG_MULTIVARIATE_NORMAL,  /**< Used in numpy.random.multivariate_normal() implementation  */
     DPNP_FN_RNG_NEGATIVE_BINOMIAL,    /**< Used in numpy.random.negative_binomial() implementation  */
+    DPNP_FN_RNG_NONCENTRAL_CHISQUARE, /**< Used in numpy.random.noncentral_chisquare() implementation  */
     DPNP_FN_RNG_NORMAL,               /**< Used in numpy.random.normal() implementation  */
     DPNP_FN_RNG_PARETO,               /**< Used in numpy.random.pareto() implementation  */
     DPNP_FN_RNG_POISSON,              /**< Used in numpy.random.poisson() implementation  */
     DPNP_FN_RNG_POWER,                /**< Used in numpy.random.power() implementation  */
     DPNP_FN_RNG_RAYLEIGH,             /**< Used in numpy.random.rayleigh() implementation  */
     DPNP_FN_RNG_SRAND,                /**< Used in numpy.random.seed() implementation  */
+    DPNP_FN_RNG_SHUFFLE,              /**< Used in numpy.random.shuffle() implementation  */
     DPNP_FN_RNG_STANDARD_CAUCHY,      /**< Used in numpy.random.standard_cauchy() implementation  */
     DPNP_FN_RNG_STANDARD_EXPONENTIAL, /**< Used in numpy.random.standard_exponential() implementation  */
     DPNP_FN_RNG_STANDARD_GAMMA,       /**< Used in numpy.random.standard_gamma() implementation  */
@@ -158,7 +179,10 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RNG_STANDARD_T,           /**< Used in numpy.random.standard_t() implementation  */
     DPNP_FN_RNG_TRIANGULAR,           /**< Used in numpy.random.triangular() implementation  */
     DPNP_FN_RNG_UNIFORM,              /**< Used in numpy.random.uniform() implementation  */
+    DPNP_FN_RNG_VONMISES,             /**< Used in numpy.random.vonmises() implementation  */
+    DPNP_FN_RNG_WALD,                 /**< Used in numpy.random.wald() implementation  */
     DPNP_FN_RNG_WEIBULL,              /**< Used in numpy.random.weibull() implementation  */
+    DPNP_FN_RNG_ZIPF,                 /**< Used in numpy.random.zipf() implementation  */
     DPNP_FN_SIGN,                     /**< Used in numpy.sign() implementation  */
     DPNP_FN_SIN,                      /**< Used in numpy.sin() implementation  */
     DPNP_FN_SINH,                     /**< Used in numpy.sinh() implementation  */
@@ -173,8 +197,15 @@ enum class DPNPFuncName : size_t
     DPNP_FN_TAN,                      /**< Used in numpy.tan() implementation  */
     DPNP_FN_TANH,                     /**< Used in numpy.tanh() implementation  */
     DPNP_FN_TRANSPOSE,                /**< Used in numpy.transpose() implementation  */
+    DPNP_FN_TRAPZ,                    /**< Used in numpy.trapz() implementation  */
+    DPNP_FN_TRI,                      /**< Used in numpy.tri() implementation  */
+    DPNP_FN_TRIL,                     /**< Used in numpy.tril() implementation  */
+    DPNP_FN_TRIU,                     /**< Used in numpy.triu() implementation  */
     DPNP_FN_TRUNC,                    /**< Used in numpy.trunc() implementation  */
+    DPNP_FN_VANDER,                   /**< Used in numpy.vander() implementation  */
     DPNP_FN_VAR,                      /**< Used in numpy.var() implementation  */
+    DPNP_FN_ZEROS,                    /**< Used in numpy.zeros() implementation */
+    DPNP_FN_ZEROS_LIKE,               /**< Used in numpy.zeros_like() implementation */
     DPNP_FN_LAST                      /**< The latest element of the enumeration */
 };
 

@@ -45,6 +45,7 @@ __all__ = [
     "dpnp_arange",
     "dpnp_array",
     "dpnp_astype",
+    "dpnp_flatten",
     "dpnp_init_val",
     "dpnp_matmul",
     "dpnp_queue_initialize",
@@ -68,8 +69,10 @@ include "dpnp_algo_statistics.pyx"
 include "dpnp_algo_trigonometric.pyx"
 
 
-ctypedef void(*fptr_dpnp_arange_t)(size_t, size_t, void * , size_t)
-ctypedef void(*fptr_dpnp_initval_t)(void * , void * , size_t)
+ctypedef void(*fptr_dpnp_arange_t)(size_t, size_t, void *, size_t)
+ctypedef void(*fptr_dpnp_astype_t)(const void *, void * , const size_t)
+ctypedef void(*fptr_dpnp_flatten_t)(const void *, void * , const size_t)
+ctypedef void(*fptr_dpnp_initval_t)(void *, void * , size_t)
 
 
 cpdef dparray dpnp_arange(start, stop, step, dtype):
@@ -84,7 +87,7 @@ cpdef dparray dpnp_arange(start, stop, step, dtype):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ARANGE, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     cdef dparray result = dparray(obj_len, dtype=result_type)
 
     # for i in range(result.size):
@@ -125,10 +128,30 @@ cpdef dparray dpnp_array(obj, dtype=None):
 
 
 cpdef dparray dpnp_astype(dparray array1, dtype_target):
-    cdef dparray result = dparray(array1.shape, dtype=dtype_target)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(dtype_target)
 
-    for i in range(result.size):
-        result[i] = array1[i]
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ASTYPE, param1_type, param2_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray(array1.shape, dtype=result_type)
+
+    cdef fptr_dpnp_astype_t func = <fptr_dpnp_astype_t > kernel_data.ptr
+    func(array1.get_data(), result.get_data(), array1.size)
+
+    return result
+
+
+cpdef dparray dpnp_flatten(dparray array_):
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array_.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FLATTEN, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray(array_.size, dtype=result_type)
+
+    cdef fptr_dpnp_flatten_t func = <fptr_dpnp_flatten_t > kernel_data.ptr
+    func(array_.get_data(), result.get_data(), array_.size)
 
     return result
 
@@ -138,7 +161,7 @@ cpdef dparray dpnp_init_val(shape, dtype, value):
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_INITVAL, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     cdef dparray result = dparray(shape, dtype=dtype)
 
     # TODO: find better way to pass single value with type conversion
@@ -211,7 +234,7 @@ cpdef dparray dpnp_matmul(dparray in_array1, dparray in_array2):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MATMUL, param1_type, param2_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(shape_result, dtype=result_type)
     if result.size == 0:
@@ -257,7 +280,7 @@ cpdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype):
 
     if dtype in [numpy.float64, 'float64']:
         return DPNP_FT_DOUBLE
-    elif dtype in [numpy.float32,  'float32']:
+    elif dtype in [numpy.float32, 'float32', 'f4']:
         return DPNP_FT_FLOAT
     elif dtype in [numpy.int64, 'int64', 'int', int]:
         return DPNP_FT_LONG
@@ -265,7 +288,7 @@ cpdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype):
         return DPNP_FT_INT
     elif dtype in [numpy.complex128, 'complex128']:
         return DPNP_FT_CMPLX128
-    elif dtype in [numpy.bool, numpy.bool_, 'bool']:
+    elif dtype in [numpy.bool, numpy.bool_, 'bool', '?']:
         return DPNP_FT_BOOL
     else:
         checker_throw_type_error("dpnp_dtype_to_DPNPFuncType", dtype)
@@ -291,6 +314,26 @@ cpdef dpnp_DPNPFuncType_to_dtype(size_t type):
         checker_throw_type_error("dpnp_DPNPFuncType_to_dtype", type)
 
 
+cdef dparray call_fptr_1out(DPNPFuncName fptr_name, result_shape, result_dtype):
+
+    # Convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType dtype_in = dpnp_dtype_to_DPNPFuncType(result_dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, dtype_in, dtype_in)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+
+    # Create result array with type given by FPTR data
+    cdef dparray result = dparray(result_shape, dtype=result_type)
+
+    cdef fptr_1out_t func = <fptr_1out_t > kernel_data.ptr
+    # Call FPTR function
+    func(result.get_data(), result.size)
+
+    return result
+
+
 cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shape_type result_shape):
 
     """ Convert string type names (dparray.dtype) to C enum DPNPFuncType """
@@ -299,7 +342,7 @@ cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shap
     """ get the FPTR data structure """
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     """ Create result array with type given by FPTR data """
     cdef dparray result = dparray(result_shape, dtype=result_type)
 
@@ -310,21 +353,54 @@ cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shap
     return result
 
 
-cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, dparray_shape_type result_shape):
+cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, object x1_obj, object x2_obj,
+                                object dtype=None, dparray out=None, object where=True,
+                                bint new_version=False):
+    cdef dparray_shape_type x1_shape, x2_shape, result_shape
 
-    """ Convert string type names (dparray.dtype) to C enum DPNPFuncType """
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
-    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(x2.dtype)
+    cdef bint x1_obj_is_dparray = isinstance(x1_obj, dparray)
+    cdef bint x2_obj_is_dparray = isinstance(x2_obj, dparray)
 
-    """ get the FPTR data structure """
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, param1_type, param2_type)
+    cdef dparray x1_dparray, x2_dparray
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-    """ Create result array with type given by FPTR data """
-    cdef dparray result = dparray(result_shape, dtype=result_type)
+    common_type = find_common_type(x1_obj, x2_obj)
 
-    cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
+    if x1_obj_is_dparray:
+        x1_dparray = x1_obj
+    else:
+        x1_dparray = dparray((1,), dtype=common_type)
+        copy_values_to_dparray(x1_dparray, (x1_obj,))
+
+    if x2_obj_is_dparray:
+        x2_dparray = x2_obj
+    else:
+        x2_dparray = dparray((1,), dtype=common_type)
+        copy_values_to_dparray(x2_dparray, (x2_obj,))
+
+    x1_shape = x1_dparray.shape
+    x2_shape = x2_dparray.shape
+    result_shape = get_common_shape(x1_shape, x2_shape)
+
+    # Convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType x1_c_type = dpnp_dtype_to_DPNPFuncType(x1_dparray.dtype)
+    cdef DPNPFuncType x2_c_type = dpnp_dtype_to_DPNPFuncType(x2_dparray.dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, x1_c_type, x2_c_type)
+
+    # TODO: apply parameters out and dtype after reafactoring fmap (required 4th level nesting)
+
+    # Create result array
+    cdef dparray result = create_output_array(result_shape, kernel_data.return_type, out)
+
     """ Call FPTR function """
-    func(x1.get_data(), x2.get_data(), result.get_data(), x1.size)
+    # parameter 'new_version' must be removed in shortly
+    cdef fptr_2in_1out_t func_old = <fptr_2in_1out_t > kernel_data.ptr  # can't define it inside 'if' due Cython limitation
+    cdef fptr_2in_1out_new_t func_new = <fptr_2in_1out_new_t > kernel_data.ptr
+    if new_version:
+        func_new(result.get_data(), x1_dparray.get_data(), x1_dparray.size, x1_shape.data(), x1_shape.size(),
+                 x2_dparray.get_data(), x2_dparray.size, x2_shape.data(), x2_shape.size(), NULL)
+    else:
+        func_old(x1_dparray.get_data(), x2_dparray.get_data(), result.get_data(), x1_dparray.size)
 
     return result

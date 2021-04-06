@@ -111,7 +111,7 @@ void get_xyz_by_id_inkernel(size_t global_id, const _DataType* offsets, size_t o
  * @param [in] xyz       array with array indexes.
  * @param [in] xyz_size  array size for @ref xyz parameter.
  * @param [in] offsets   array with input offsets.
- * @return global_id     linear index id of the element in multy-D array.
+ * @return               linear index id of the element in multy-D array.
  */
 template <typename _DataType>
 size_t get_id_by_xyz_inkernel(const _DataType* xyz, size_t xyz_size, const _DataType* offsets)
@@ -129,6 +129,72 @@ size_t get_id_by_xyz_inkernel(const _DataType* xyz, size_t xyz_size, const _Data
 
 /**
  * @ingroup BACKEND_UTILS
+ * @brief Normalizes an axes into a non-negative integer axes.
+ *
+ * Return vector of normalized axes with a non-negative integer axes.
+ *
+ * By default, this forbids axes from being specified multiple times.
+ *
+ * @param [in] __axes             Array with positive or negative indexes.
+ * @param [in] __shape_size       The number of dimensions of the array that @ref __axes should be normalized against.
+ * @param [in] __allow_duplicate  Disallow an axis from being specified twice. Default: false
+ *
+ * @exception std::range_error    Particular axis is out of range or other error.
+ * @return                        The normalized axes indexes, such that `0 <= result < __shape_size`
+ */
+static inline std::vector<size_t>
+    get_validated_axes(const std::vector<long>& __axes, const size_t __shape_size, const bool __allow_duplicate = false)
+{
+    std::vector<size_t> result;
+
+    if (__axes.empty())
+    {
+        goto out;
+    }
+
+    if (__axes.size() > __shape_size)
+    {
+        goto err;
+    }
+
+    result.reserve(__axes.size());
+    for (std::vector<long>::const_iterator it = __axes.cbegin(); it != __axes.cend(); ++it)
+    {
+        const long _axis = *it;
+        const long input_shape_size_signed = static_cast<long>(__shape_size);
+        if (_axis >= input_shape_size_signed)
+        { // positive axis range check
+            goto err;
+        }
+
+        if (_axis < -input_shape_size_signed)
+        { // negative axis range check
+            goto err;
+        }
+
+        const size_t positive_axis = _axis < 0 ? (_axis + input_shape_size_signed) : _axis;
+
+        if (!__allow_duplicate)
+        {
+            if (std::find(result.begin(), result.end(), positive_axis) != result.end())
+            { // find axis duplication
+                goto err;
+            }
+        }
+
+        result.push_back(positive_axis);
+    }
+
+out:
+    return result;
+
+err:
+    // TODO exception if wrong axis? need common function for throwing exceptions
+    throw std::range_error("DPNP Error: validate_axes() failed with axis check");
+}
+
+/**
+ * @ingroup BACKEND_UTILS
  * @brief print std::vector to std::ostream.
  *
  * To print std::vector with POD types to std::out.
@@ -138,12 +204,19 @@ size_t get_id_by_xyz_inkernel(const _DataType* xyz, size_t xyz_size, const _Data
 template <typename T>
 std::ostream& operator<<(std::ostream& out, const std::vector<T>& vec)
 {
-    if (!vec.empty())
+    std::string delimeter;
+    out << "{";
+    // std::copy(vec.begin(), vec.end(), std::ostream_iterator<T>(out, ", "));
+    // out << "\b\b}"; // last two 'backspaces' needs to eliminate last delimiter. ex: {2, 3, 4, }
+    for (auto& elem : vec)
     {
-        out << '[';
-        std::copy(vec.begin(), vec.end(), std::ostream_iterator<T>(out, ", "));
-        out << "\b\b]";
+        out << delimeter << elem;
+        if (delimeter.empty())
+        {
+            delimeter.assign(", ");
+        }
     }
+    out << "}";
 
     return out;
 }

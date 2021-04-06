@@ -815,12 +815,23 @@ def noncentral_chisquare(df, nonc, size=None):
 
     For full documentation refer to :obj:`numpy.random.noncentral_chisquare`.
 
-    Notes
-    -----
-    The function uses `numpy.random.noncentral_chisquare` on the backend and
-    will be executed on fallback backend.
+    TODO
 
     """
+
+    if not use_origin_backend(df):
+        # TODO:
+        # array_like of floats for `mean` and `scale`
+        if not dpnp.isscalar(df):
+            pass
+        elif not dpnp.isscalar(nonc):
+            pass
+        elif df <= 0:
+            pass
+        elif nonc < 0:
+            pass
+        else:
+            return dpnp_rng_noncentral_chisquare(df, nonc, size)
 
     return call_origin(numpy.random.noncentral_chisquare, df, nonc, size)
 
@@ -882,12 +893,31 @@ def permutation(x):
 
     For full documentation refer to :obj:`numpy.random.permutation`.
 
-    Notes
-    -----
-    The function uses `numpy.random.permutation` on the backend and will be
-    executed on fallback backend.
+    Examples
+    --------
+    >>> arr = dpnp.random.permutation(10)
+    >>> print(arr)
+    [3 8 7 9 0 6 1 2 4 5] # random
+
+    >>> arr = dpnp.random.permutation([1, 4, 9, 12, 15])
+    >>> print(arr)
+    [12  1  4  9 15] # random
+
+    >>> arr = dpnp.arange(9).reshape((3, 3))
+    >>> dpnp.random.permutation(arr)
+    >>> print(arr)
+    [[0 1 2]
+     [3 4 5]
+     [6 7 8]]  # random
 
     """
+    if not use_origin_backend(x):
+        if isinstance(x, (int, dpnp.integer)):
+            arr = dpnp.arange(x)
+        else:
+            arr = dpnp.array(x)
+        shuffle(arr)
+        return arr
 
     return call_origin(numpy.random.permutation, x)
 
@@ -1265,12 +1295,19 @@ def shuffle(x):
 
     For full documentation refer to :obj:`numpy.random.shuffle`.
 
-    Notes
-    -----
-    The function uses `numpy.random.shuffle` on the backend and will be
-    executed on fallback backend.
+    Limitations
+    -----------
+    Parameter ``x`` is supported as a ``dpnp.dparray``.
+    Otherwise, the function will use :obj:`numpy.random.shuffle` on the backend
+    and will be executed on fallback backend.
 
     """
+
+    if not use_origin_backend(seed):
+        if not isinstance(x, dparray):
+            pass
+        else:
+            return dpnp_rng_shuffle(x)
 
     return call_origin(numpy.random.shuffle, x)
 
@@ -1538,12 +1575,34 @@ def vonmises(mu, kappa, size=None):
 
     For full documentation refer to :obj:`numpy.random.vonmises`.
 
-    Notes
-    -----
-    The function uses `numpy.random.vonmises` on the backend and
-    will be executed on fallback backend.
+    Limitations
+    -----------
+    Parameter ``mu`` and ``kappa`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.vonmises(mu, kappa, size)`
+    samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    Draw samples from the distribution:
+    >>> mu, kappa = 0.0, 4.0 # mean and dispersion
+    >>> s = dpnp.random.vonmises(mu, kappa, 1000)
 
     """
+
+    if not use_origin_backend(mu):
+        # TODO:
+        # array_like of floats for `mu`, `kappa`.
+        if not dpnp.isscalar(mu):
+            pass
+        elif not dpnp.isscalar(kappa):
+            pass
+        elif dpnp.isnan(kappa):
+            return dpnp.nan
+        elif kappa < 0:
+            pass
+        else:
+            return dpnp_rng_vonmises(mu, kappa, size)
 
     return call_origin(numpy.random.vonmises, mu, kappa, size)
 
@@ -1555,12 +1614,32 @@ def wald(mean, scale, size=None):
 
     For full documentation refer to :obj:`numpy.random.wald`.
 
-    Notes
-    -----
-    The function uses `numpy.random.wald` on the backend and
-    will be executed on fallback backend.
+    Limitations
+    -----------
+    Parameters ``mean`` and ``scale`` are supported as scalar.
+    Otherwise, :obj:`numpy.random.wald(mean, scale, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    >>> loc, scale = 3., 2.
+    >>> s = dpnp.random.wald(loc, scale, 1000)
 
     """
+
+    if not use_origin_backend(mean):
+        # TODO:
+        # array_like of floats for `mean` and `scale`
+        if not dpnp.isscalar(mean):
+            pass
+        elif not dpnp.isscalar(scale):
+            pass
+        elif mean <= 0:
+            pass
+        elif scale <= 0:
+            pass
+        else:
+            return dpnp_rng_wald(mean, scale, size)
 
     return call_origin(numpy.random.wald, mean, scale, size)
 
@@ -1605,11 +1684,27 @@ def zipf(a, size=None):
 
     For full documentation refer to :obj:`numpy.random.zipf`.
 
-    Notes
-    -----
-    The function uses `numpy.random.zipf` on the backend and
-    will be executed on fallback backend.
+    Limitations
+    -----------
+    Parameter ``a`` is supported as a scalar.
+    Otherwise, :obj:`numpy.zipf.weibull(a, size)` samples are drawn.
+    Output array data type is :obj:`dpnp.float64`.
+
+    Examples
+    --------
+    >>> a = 2. # parameter
+    >>> s = np.random.zipf(a, 1000)
 
     """
+
+    if not use_origin_backend(a):
+        # TODO:
+        # array_like of floats for `a` param
+        if not dpnp.isscalar(a):
+            pass
+        elif a <= 1:
+            pass
+        else:
+            return dpnp_rng_zipf(a, size)
 
     return call_origin(numpy.random.zipf, a, size)

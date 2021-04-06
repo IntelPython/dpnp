@@ -42,7 +42,7 @@ else()
   if(UNIX)
     set(DPNP_ONEAPI_ROOT "/opt/intel/oneapi" CACHE PATH "Folder contains oneapi tool set")
   elseif(WIN32)
-    set(DPNP_ONEAPI_ROOT "C:\Program Files (x86)\Intel\oneAPI" CACHE PATH "Folder contains oneapi tool set")
+    set(DPNP_ONEAPI_ROOT "C:/Program Files (x86)/Intel/oneAPI" CACHE PATH "Folder contains oneapi tool set")
   else()
     message(FATAL_ERROR "Unsupported system ${CMAKE_SYSTEM}")
   endif()
@@ -53,6 +53,10 @@ option(DPNP_DEBUG_ENABLE "Enable output for DPNP_DEBUG statements" FALSE)
 option(DPNP_INSTALL_STRUCTURED "if FALSE, install package files into same directory" TRUE)
 option(DPNP_SYCL_QUEUE_MGR_ENABLE "Use external manager for SYCL queue" FALSE)
 option(DPNP_BACKEND_TESTS "Enable DPNP tests" FALSE)
+
+if(DEFINED ENV{DPNP_DEBUG})
+  set(DPNP_DEBUG_ENABLE $ENV{DPNP_DEBUG})
+endif()
 
 message(STATUS "CMAKE_VERSION:                   ${CMAKE_VERSION}")
 message(STATUS "CMAKE_GENERATOR:                 ${CMAKE_GENERATOR}")
@@ -171,6 +175,7 @@ set(DPNP_SRC
     kernels/dpnp_krnl_fft.cpp
     kernels/dpnp_krnl_indexing.cpp
     kernels/dpnp_krnl_linalg.cpp
+    kernels/dpnp_krnl_logic.cpp
     kernels/dpnp_krnl_manipulation.cpp
     kernels/dpnp_krnl_mathematical.cpp
     kernels/dpnp_krnl_random.cpp
