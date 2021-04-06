@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>dpnp.dparray.dparray &mdash; dpnp 0.5.1 documentation</title>
@@ -169,7 +170,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-dparray-dparray">
+  <section id="dpnp-dparray-dparray">
 <h1>dpnp.dparray.dparray<a class="headerlink" href="#dpnp-dparray-dparray" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="dpnp.dparray.dparray">
@@ -434,6 +435,12 @@ Otherwise, it returns a (possibly casted) copy of the array.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="dpnp.dparray.dparray.diagonal">
+<code class="sig-name descname"><span class="pre">diagonal</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.diagonal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return specified diagonals.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="dpnp.dparray.dparray.fill">
 <code class="sig-name descname"><span class="pre">fill</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.fill" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fill the array with a scalar value.</p>
@@ -519,6 +526,17 @@ Otherwise, it returns a (possibly casted) copy of the array.</p>
 <dt id="dpnp.dparray.dparray.min">
 <code class="sig-name descname"><span class="pre">min</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.min" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the minimum along a given axis.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dpnp.dparray.dparray.partition">
+<code class="sig-name descname"><span class="pre">partition</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dparray.dparray.partition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a partitioned copy of an array.
+For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.partition.html#numpy.partition" title="(in NumPy v1.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.partition</span></code></a>.</p>
+<p class="rubric">Limitations</p>
+<p>Input array is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
+Input kth is supported as <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>.
+Parameters <code class="docutils literal notranslate"><span class="pre">axis</span></code>, <code class="docutils literal notranslate"><span class="pre">kind</span></code> and <code class="docutils literal notranslate"><span class="pre">order</span></code> are supported only with default values.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -901,7 +919,7 @@ cannot be reshaped without copy, it raises an exception.</p>
 
 </dd></dl>
 
-</div>
+</section>
 
 
            </div>

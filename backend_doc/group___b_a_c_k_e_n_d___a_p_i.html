@@ -422,6 +422,10 @@ Functions</h2></td></tr>
 <tr class="memitem:ga621b64983b5affe5724e026ce18200c0"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga621b64983b5affe5724e026ce18200c0">dpnp_sum_c</a> (void *result_out, const void *input_in, const size_t *input_shape, const size_t input_shape_ndim, const long *axes, const size_t axes_ndim, const void *initial, const long *where)</td></tr>
 <tr class="memdesc:ga621b64983b5affe5724e026ce18200c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute summary of input array elements.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga621b64983b5affe5724e026ce18200c0">More...</a><br /></td></tr>
 <tr class="separator:ga621b64983b5affe5724e026ce18200c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9980d1c6fd9b78e93b275c0e0e464b00"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
+<tr class="memitem:ga9980d1c6fd9b78e93b275c0e0e464b00"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga9980d1c6fd9b78e93b275c0e0e464b00">dpnp_partition_c</a> (const void *sort_array, void *result, const size_t kth, const size_t *shape, const size_t ndim)</td></tr>
+<tr class="memdesc:ga9980d1c6fd9b78e93b275c0e0e464b00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Place of array elements.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga9980d1c6fd9b78e93b275c0e0e464b00">More...</a><br /></td></tr>
+<tr class="separator:ga9980d1c6fd9b78e93b275c0e0e464b00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga689c9f491f7645d86953db3968146d12"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:ga689c9f491f7645d86953db3968146d12"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga689c9f491f7645d86953db3968146d12">dpnp_place_c</a> (void *arr, long *mask, void *vals, const size_t arr_size, const size_t vals_size)</td></tr>
 <tr class="memdesc:ga689c9f491f7645d86953db3968146d12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Place of array elements.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga689c9f491f7645d86953db3968146d12">More...</a><br /></td></tr>
@@ -4697,7 +4701,7 @@ template&lt;typename _DataType_input1 , typename _DataType_input2 , typename _Da
 
 <p>Per element operation function dpnp_multiply_c <br  />
  </p>
-<p>&lt;&gt; Function "dpnp_multiply_c" executes operator "input1_elem * input2_elem" over corresponding elements of input arrays <br  />
+<p>&lt;&gt; Function "dpnp_multiply_c" executes operator "input1_elem* input2_elem" over corresponding elements of input arrays <br  />
  </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">array1</td><td>Input array 1. <br  />
@@ -4846,6 +4850,66 @@ template&lt;typename _DataType &gt; </div>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in the output array. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga9980d1c6fd9b78e93b275c0e0e464b00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga9980d1c6fd9b78e93b275c0e0e464b00">&#9670;&nbsp;</a></span>dpnp_partition_c()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename _DataType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void dpnp_partition_c </td>
+          <td>(</td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>sort_array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>result</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>kth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t *&#160;</td>
+          <td class="paramname"><em>shape</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>ndim</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Place of array elements. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">sort_array</td><td>Input sorted array. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Result array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">kth</td><td>Element index to partition by. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">shape</td><td>Shape of input array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ndim</td><td>Number of elements in shape. </td></tr>
   </table>
   </dd>
 </dl>

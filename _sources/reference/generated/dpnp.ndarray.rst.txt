@@ -68,6 +68,9 @@
    .. automethod:: copy
 
 
+   .. automethod:: diagonal
+
+
    .. automethod:: fill
 
 
@@ -84,6 +87,9 @@
 
 
    .. automethod:: min
+
+
+   .. automethod:: partition
 
 
    .. automethod:: prod

@@ -84,6 +84,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_nonzero_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga6fd897f416eb94bd15d00f338583752e", null ],
     [ "dpnp_ones_c", "group___b_a_c_k_e_n_d___a_p_i.html#gaa4b0f8fc56a6778a53df6e68e1acbe4b", null ],
     [ "dpnp_ones_like_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga5e720c1b06f6adfc11d373394d5b5f10", null ],
+    [ "dpnp_partition_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga9980d1c6fd9b78e93b275c0e0e464b00", null ],
     [ "dpnp_place_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga689c9f491f7645d86953db3968146d12", null ],
     [ "dpnp_power_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga45d6f198ea9bf5016143f47d100f0898", null ],
     [ "dpnp_prod_c", "group___b_a_c_k_e_n_d___a_p_i.html#gae11916836622bfa3348becbecdfbfeb5", null ],

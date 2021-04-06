@@ -105,6 +105,9 @@ Functions</h2></td></tr>
 <tr class="memitem:gae3c3b0a869dc364c99e7e33e739dfa07"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#gae3c3b0a869dc364c99e7e33e739dfa07">DPNPC_id&lt; _Tp &gt;::DPNPC_id</a> (pointer __ptr, const std::vector&lt; size_type &gt; &amp;__shape)</td></tr>
 <tr class="memdesc:gae3c3b0a869dc364c99e7e33e739dfa07"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main container for reduction iterator.  <a href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#gae3c3b0a869dc364c99e7e33e739dfa07">More...</a><br /></td></tr>
 <tr class="separator:gae3c3b0a869dc364c99e7e33e739dfa07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5f47f787627aa8dbd02301760482d7d6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga5f47f787627aa8dbd02301760482d7d6">DPNPC_id&lt; _Tp &gt;::broadcast_to_shape</a> (const std::vector&lt; size_type &gt; &amp;__shape)</td></tr>
+<tr class="memdesc:ga5f47f787627aa8dbd02301760482d7d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Broadcast input data to specified shape.  <a href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga5f47f787627aa8dbd02301760482d7d6">More...</a><br /></td></tr>
+<tr class="separator:ga5f47f787627aa8dbd02301760482d7d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga743bcd47e85667e5f238b99478c54d0f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga743bcd47e85667e5f238b99478c54d0f">DPNPC_id&lt; _Tp &gt;::set_axis</a> (long __axis)</td></tr>
 <tr class="memdesc:ga743bcd47e85667e5f238b99478c54d0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set axis for the data object to use in computation.  <a href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga743bcd47e85667e5f238b99478c54d0f">More...</a><br /></td></tr>
 <tr class="separator:ga743bcd47e85667e5f238b99478c54d0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -135,6 +138,46 @@ Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>This section describes utilities used in Backend API. </p>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="ga5f47f787627aa8dbd02301760482d7d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga5f47f787627aa8dbd02301760482d7d6">&#9670;&nbsp;</a></span>broadcast_to_shape()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename _Tp &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_d_p_n_p_c__id.html">DPNPC_id</a>&lt; _Tp &gt;::broadcast_to_shape </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; size_type &gt; &amp;&#160;</td>
+          <td class="paramname"><em>__shape</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Broadcast input data to specified shape. </p>
+<p>Set output shape to use in computation of input index by output index.</p>
+<dl class="section note"><dt>Note</dt><dd>this function is designed for non-SYCL environment execution</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">__shape</td><td>Output shape. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="dpnp__iterator_8hpp_source.html#l00251">251</a> of file <a class="el" href="dpnp__iterator_8hpp_source.html">dpnp_iterator.hpp</a>.</p>
+
+</div>
+</div>
 <a id="gae3c3b0a869dc364c99e7e33e739dfa07"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gae3c3b0a869dc364c99e7e33e739dfa07">&#9670;&nbsp;</a></span>DPNPC_id()</h2>
 
@@ -378,7 +421,7 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="dpnp__utils_8hpp_source.html#l00205">205</a> of file <a class="el" href="dpnp__utils_8hpp_source.html">dpnp_utils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp__utils_8hpp_source.html#l00289">289</a> of file <a class="el" href="dpnp__utils_8hpp_source.html">dpnp_utils.hpp</a>.</p>
 
 </div>
 </div>
@@ -419,7 +462,7 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="dpnp__utils_8hpp_source.html#l00234">234</a> of file <a class="el" href="dpnp__utils_8hpp_source.html">dpnp_utils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp__utils_8hpp_source.html#l00318">318</a> of file <a class="el" href="dpnp__utils_8hpp_source.html">dpnp_utils.hpp</a>.</p>
 
 </div>
 </div>
@@ -460,7 +503,7 @@ template&lt;typename _Tp &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="dpnp__iterator_8hpp_source.html#l00286">286</a> of file <a class="el" href="dpnp__iterator_8hpp_source.html">dpnp_iterator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp__iterator_8hpp_source.html#l00345">345</a> of file <a class="el" href="dpnp__iterator_8hpp_source.html">dpnp_iterator.hpp</a>.</p>
 
 </div>
 </div>
@@ -501,7 +544,7 @@ template&lt;typename _Tp &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="dpnp__iterator_8hpp_source.html#l00258">258</a> of file <a class="el" href="dpnp__iterator_8hpp_source.html">dpnp_iterator.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp__iterator_8hpp_source.html#l00317">317</a> of file <a class="el" href="dpnp__iterator_8hpp_source.html">dpnp_iterator.hpp</a>.</p>
 
 </div>
 </div>

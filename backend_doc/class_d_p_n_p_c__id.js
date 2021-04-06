@@ -10,6 +10,7 @@ var class_d_p_n_p_c__id =
     [ "DPNPC_id", "class_d_p_n_p_c__id.html#a6648ed6e14bd1eb08814cf92eb111035", null ],
     [ "~DPNPC_id", "class_d_p_n_p_c__id.html#ac1ba1ead71fdba917dd7026646f5438d", null ],
     [ "begin", "class_d_p_n_p_c__id.html#a1e1427181e175dacfb37d3a042d4876f", null ],
+    [ "broadcast_to_shape", "group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga5f47f787627aa8dbd02301760482d7d6", null ],
     [ "end", "class_d_p_n_p_c__id.html#aa70a960886549f3d75137ac573a4c828", null ],
     [ "get_output_size", "class_d_p_n_p_c__id.html#a79168b2adbe07a8099747374bba2c483", null ],
     [ "operator[]", "class_d_p_n_p_c__id.html#a2e98849be3b71da7efdfbccdcb26c010", null ],
