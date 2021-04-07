@@ -295,6 +295,19 @@ INP_DLLEXPORT void dpnp_sum_c(void* result_out,
  * @ingroup BACKEND_API
  * @brief Place of array elements
  *
+ * @param [in]  sort_array  Input sorted array.
+ * @param [out]  result     Result array.
+ * @param [in]  kth         Element index to partition by.
+ * @param [in]  shape       Shape of input array.
+ * @param [in]  ndim        Number of elements in shape.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_partition_c(const void* sort_array, void* result, const size_t kth, const size_t* shape, const size_t ndim);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief Place of array elements
+ *
  * @param [in]  arr         Input array.
  * @param [in]  mask        Mask array.
  * @param [in]  vals        Vals array.
@@ -890,10 +903,11 @@ INP_DLLEXPORT void dpnp_trapz_c(
  * @param [in]  size_in     Number of elements in the input array.
  * @param [in]  N           Number of columns in the output.
  * @param [in]  increasing  Order of the powers of the columns.
- * 
+ *
  */
 template <typename _DataType_input, typename _DataType_output>
-INP_DLLEXPORT void dpnp_vander_c(const void* array1_in, void* result1, const size_t size_in, const size_t N, const int increasing);
+INP_DLLEXPORT void
+    dpnp_vander_c(const void* array1_in, void* result1, const size_t size_in, const size_t N, const int increasing);
 
 /**
  * @ingroup BACKEND_API

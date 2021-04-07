@@ -240,6 +240,65 @@ public:
 
     /**
      * @ingroup BACKEND_UTILS
+     * @brief Broadcast input data to specified shape.
+     *
+     * Set output shape to use in computation of input index by output index.
+     *
+     * @note this function is designed for non-SYCL environment execution
+     *
+     * @param [in]  __shape       Output shape.
+     */
+    inline void broadcast_to_shape(const std::vector<size_type>& __shape)
+    {
+        if (axis_use)
+        {
+            return;
+        }
+
+        if (broadcastable(input_shape, input_shape_size, __shape))
+        {
+            free_broadcast_axes_memory();
+            free_output_memory();
+
+            std::vector<size_type> valid_axes;
+            broadcast_use = true;
+
+            output_shape_size = __shape.size();
+            const size_type output_shape_size_in_bytes = output_shape_size * sizeof(size_type);
+            output_shape = reinterpret_cast<size_type*>(dpnp_memory_alloc_c(output_shape_size_in_bytes));
+
+            for (int irit = input_shape_size - 1, orit = output_shape_size - 1; orit >= 0; --irit, --orit)
+            {
+                output_shape[orit] = __shape[orit];
+
+                // ex: input_shape = {7, 1, 5}, output_shape = {8, 7, 6, 5} => valid_axes = {0, 2}
+                if (irit < 0 || input_shape[irit] != output_shape[orit])
+                {
+                    valid_axes.insert(valid_axes.begin(), orit);
+                }
+            }
+
+            broadcast_axes_size = valid_axes.size();
+            const size_type broadcast_axes_size_in_bytes = broadcast_axes_size * sizeof(size_type);
+            broadcast_axes = reinterpret_cast<size_type*>(dpnp_memory_alloc_c(broadcast_axes_size_in_bytes));
+            std::copy(valid_axes.begin(), valid_axes.end(), broadcast_axes);
+
+            output_size = std::accumulate(
+                output_shape, output_shape + output_shape_size, size_type(1), std::multiplies<size_type>());
+
+            output_shape_strides = reinterpret_cast<size_type*>(dpnp_memory_alloc_c(output_shape_size_in_bytes));
+            get_shape_offsets_inkernel<size_type>(output_shape, output_shape_size, output_shape_strides);
+
+            iteration_size = 1;
+
+            // make thread private storage for each shape by multiplying memory
+            sycl_output_xyz =
+                reinterpret_cast<size_type*>(dpnp_memory_alloc_c(output_size * output_shape_size_in_bytes));
+        }
+    }
+
+    /**
+     * @ingroup BACKEND_UTILS
      * @brief Set axis for the data object to use in computation.
      *
      * Set axis of the shape of input array to use in iteration.
@@ -285,6 +344,11 @@ public:
      */
     inline void set_axes(const std::vector<long>& __axes)
     {
+        if (broadcast_use)
+        {
+            return;
+        }
+
         if (!__axes.empty() && input_shape_size)
         {
             free_axes_memory();
@@ -376,6 +440,11 @@ public:
     /// this function is designed for SYCL environment execution
     inline reference operator[](size_type __n) const
     {
+        if (broadcast_use)
+        {
+            return *begin(__n);
+        }
+
         const iterator it = begin();
         return it[__n];
     }
@@ -438,6 +507,24 @@ private:
                 }
             }
         }
+        else if (broadcast_use)
+        {
+            assert(output_global_id < output_size);
+
+            // use thread private storage
+            size_type* sycl_output_xyz_thread = sycl_output_xyz + (output_global_id * output_shape_size);
+
+            get_xyz_by_id_inkernel(output_global_id, output_shape_strides, output_shape_size, sycl_output_xyz_thread);
+
+            for (int irit = input_shape_size - 1, orit = output_shape_size - 1; irit >= 0; --irit, --orit)
+            {
+                size_type* broadcast_axes_end = broadcast_axes + broadcast_axes_size;
+                if (std::find(broadcast_axes, broadcast_axes_end, orit) == broadcast_axes_end)
+                {
+                    input_global_id += (sycl_output_xyz_thread[orit] * input_shape_strides[irit]);
+                }
+            }
+        }
 
         return input_global_id;
     }
@@ -455,6 +542,13 @@ private:
         dpnp_memory_free_c(axes_shape_strides);
         axes = nullptr;
         axes_shape_strides = nullptr;
+    }
+
+    void free_broadcast_axes_memory()
+    {
+        broadcast_axes_size = size_type{};
+        dpnp_memory_free_c(broadcast_axes);
+        broadcast_axes = nullptr;
     }
 
     void free_input_memory()
@@ -490,6 +584,7 @@ private:
     void free_memory()
     {
         free_axes_memory();
+        free_broadcast_axes_memory();
         free_input_memory();
         free_iteration_memory();
         free_output_memory();
@@ -504,6 +599,10 @@ private:
     size_type* axes = nullptr;         /**< input shape reduction axes */
     size_type axes_size = size_type{}; /**< input shape reduction axes size */
     bool axis_use = false;
+
+    size_type* broadcast_axes = nullptr;         /**< input shape broadcast axes */
+    size_type broadcast_axes_size = size_type{}; /**< input shape broadcast axes size */
+    bool broadcast_use = false;
 
     size_type output_size = size_type{};       /**< output array size. Expected is same as GWS */
     size_type* output_shape = nullptr;         /**< output array shape */
