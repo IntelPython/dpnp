@@ -9,14 +9,20 @@ jobs:
   steps:
 
   - bash: |
-      . ./scripts/set_ci_env.sh 3.8
-      conda install -y conda-build conda-verify numpy cython pytest pycodestyle autopep8 black
-      echo ========================= Run style check ===============================
+      echo ========================= Conda ENV ====================================
+      conda create -q -y -n CondaCodeStyle python=3.8 conda-build conda-verify \
+                                                      numpy cython pytest \
+                                                      pycodestyle autopep8 black
+      . /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate CondaCodeStyle
+      echo ========================= CI ENV =======================================
+      . ./scripts/set_ci_env.sh
+      echo ========================= Run style check ==============================
       # variables are not used but have to be installed for setuptools
       # export ONEAPI_ROOT=/opt/intel
       # export MKLROOT=/opt/intel
       python ./setup.py style
-      echo ========================= style check finished ===============================
+      echo ========================= style check finished =========================
 
 - job: test_valgrind
   displayName: Valgrind
@@ -27,10 +33,15 @@ jobs:
   steps:
 
   - bash: |
+      echo ========================= Conda ENV =======================================
+      conda create -q -y -n dpnp
+      . /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate dpnp
+      echo ========================= CI ENV ==========================================
       . ./scripts/set_ci_env.sh
-      echo ========================= build DPNP ===============================
+      echo ========================= build DPNP ======================================
       ./0.build.sh
-      echo ========================= run valgrind ===============================
+      echo ========================= run valgrind ====================================
       export PYTHONMALLOC=malloc
       valgrind --show-leak-kinds=definite --log-file=/tmp/valgrind-output            \
                python -m pytest tests/third_party/cupy/math_tests/test_arithmetic.py \
@@ -42,11 +53,18 @@ jobs:
     vmImage: 'ubuntu-20.04'
   steps:
   - bash: |
-      . ./scripts/set_ci_env.sh 3.8
-      conda install -y conda-build conda-verify numpy cython pytest pycodestyle autopep8 cython pytest pytest-cov
-      echo ========================= build DPNP ===============================
+      echo ========================= Conda ENV =================================
+      conda create -q -y -n CondaCodeCov python=3.8 conda-build conda-verify \
+                                                    numpy cython pytest \
+                                                    pycodestyle autopep8 \
+                                                    cython pytest pytest-cov
+      . /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate CondaCodeCov
+      echo ========================= CI ENV ====================================
+      . ./scripts/set_ci_env.sh
+      echo ========================= build DPNP ================================
       ./0.build.sh
-      echo ========================= run code coverage ===============================
+      echo ========================= run code coverage =========================
       pytest --cov-report xml:coverage.xml --cov-report term-missing --cov=dpnp
       export CODECOV_TOKEN="1158b545-b00a-4a84-a6f9-2bc2c4265d8b"
       bash <(curl -s https://codecov.io/bash) -f coverage.xml
@@ -69,10 +87,15 @@ jobs:
       versionSpec: '$(python.version)'
     displayName: 'Use Python $(python.version)'
   - bash: |
-      . ./scripts/set_ci_env.sh $(python.version)
-      echo ========================= build DPNP ===============================
+      echo ========================= Conda ENV ===========================
+      conda create -q -y -n dpnp$(python.version) python=$(python.version)
+      . /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate dpnp$(python.version)
+      echo ========================= CI ENV ==============================
+      . ./scripts/set_ci_env.sh
+      echo ========================= build DPNP ==========================
       ./0.build.sh
-      echo ========================= run pytest ===============================
+      echo ========================= run pytest ==========================
       pytest
 
 - job: ubuntu2004_tests_external
@@ -93,10 +116,15 @@ jobs:
       versionSpec: '$(python.version)'
     displayName: 'Use Python $(python.version)'
   - bash: |
-      . ./scripts/set_ci_env.sh $(python.version)
-      echo ========================= build DPNP ===============================
+      echo ========================= Conda ENV ===========================
+      conda create -q -y -n dpnp$(python.version) python=$(python.version)
+      . /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate dpnp$(python.version)
+      echo ========================= CI ENV ==============================
+      . ./scripts/set_ci_env.sh
+      echo ========================= build DPNP ==========================
       ./0.build.sh
-      echo ========================= run tests ===============================
+      echo ========================= run tests ===========================
       python -m tests_external.numpy.runtests
 
 # test python ./setup.py bdist_wheel command with no dpctl
@@ -106,6 +134,12 @@ jobs:
     vmImage: 'ubuntu-20.04'
   steps:
   - bash: |
+      echo ========================= Conda ENV =======================================
+      conda create -q -y -n dpnp
+      . /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate dpnp
+
+      echo ========================= CI ENV ==========================================
       ./scripts/install_system_deps.sh
       . ./scripts/install_cmake_lin.sh
       . /opt/intel/oneapi/setvars.sh
@@ -113,7 +147,7 @@ jobs:
       ./scripts/install_python_deps.sh
       # ./scripts/build_deps_dpctl.sh
 
-      echo ========================= make DPNP bdist package ===============================
+      echo ========================= make DPNP bdist package =========================
       python ./setup.py bdist_wheel
   - publish: dist
     artifact: 'package_$(Agent.JobName)_$(Agent.OS)'
@@ -218,6 +252,12 @@ jobs:
     vmImage: 'ubuntu-20.04'
   steps:
   - bash: |
+      echo ========================= Conda ENV =============================================
+      conda create -q -y -n dpnp
+      . /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate dpnp
+
+      echo ========================= CI ENV ================================================
       ./scripts/install_system_deps.sh
       ./scripts/install_system_deps_intelpython.sh
 
@@ -227,7 +267,7 @@ jobs:
       ./scripts/install_python_deps.sh
       ./scripts/build_deps_dpctl.sh
 
-      echo ========================= make DPNP+DPCTL bdist package ===============================
+      echo ========================= make DPNP+DPCTL bdist package =========================
       python ./setup.py bdist_wheel
   - publish: dist
     artifact: 'package_dpnp_dpctl_$(Agent.JobName)_$(Agent.OS)'
@@ -239,6 +279,12 @@ jobs:
     vmImage: 'ubuntu-20.04'
   steps:
   - bash: |
+      echo ========================= Conda ENV =================================
+      conda create -q -y -n dpnp
+      . /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate dpnp
+
+      echo ========================= CI ENV ====================================
       ./scripts/install_system_deps.sh
       . ./scripts/install_cmake_lin.sh
       ./scripts/install_system_deps_intelpython.sh
@@ -249,7 +295,7 @@ jobs:
       ./scripts/build_deps_dpctl.sh
 
       conda list
-      echo ========================= make DPNP package ===============================
+      echo ========================= make DPNP package =========================
       conda-build conda-recipe/
   - publish: /opt/intel/oneapi/intelpython/latest/conda-bld
     artifact: 'package_$(Agent.JobName)_$(Agent.OS)'
@@ -295,10 +341,15 @@ jobs:
     vmImage: 'ubuntu-20.04'
   steps:
   - bash: |
+      echo ========================= Conda ENV ==================================
+      conda create -q -y -n dpnp
+      . /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate dpnp
+      echo ========================= CI ENV =====================================
       . ./scripts/install_cmake_lin.sh
       ./scripts/install_system_deps.sh  # no intel python
       ./scripts/install_python_deps.sh  # numpy, conda-build and etc.
-      echo ========================= build DPNP package ===============================
+      echo ========================= build DPNP package =========================
       ./0.build.sh
 
 # DPNP backend clib tests building and running
