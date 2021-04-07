@@ -137,7 +137,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_NONZERO,                  /**< Used in numpy.nonzero() implementation  */
     DPNP_FN_ONES,                     /**< Used in numpy.ones() implementation */
     DPNP_FN_ONES_LIKE,                /**< Used in numpy.ones_like() implementation */
-    DPNP_FN_PARTITION,                /**< Used in numpy.partition() implementation */
     DPNP_FN_PLACE,                    /**< Used in numpy.place() implementation  */
     DPNP_FN_POWER,                    /**< Used in numpy.power() implementation  */
     DPNP_FN_PROD,                     /**< Used in numpy.prod() implementation  */
