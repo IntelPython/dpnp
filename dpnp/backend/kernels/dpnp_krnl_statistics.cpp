@@ -193,12 +193,11 @@ void dpnp_mean_c(void* array1_in, void* result1, const size_t* shape, size_t ndi
     }
     else
     {
-        _ResultType* sum = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(1 * sizeof(_ResultType)));
+        _DataType* sum = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(1 * sizeof(_DataType)));
 
-        dpnp_sum_c<_ResultType, _DataType>(
-            sum, array1_in, shape, ndim, reinterpret_cast<const long*>(axis), naxis, nullptr, nullptr);
+        dpnp_sum_c<_DataType>(array1_in, sum, size);
 
-        result[0] = sum[0] / static_cast<_ResultType>(size);
+        result[0] = static_cast<_ResultType>(sum[0]) / static_cast<_ResultType>(size);
 
         dpnp_memory_free_c(sum);
     }

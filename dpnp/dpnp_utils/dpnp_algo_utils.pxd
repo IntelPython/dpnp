@@ -25,15 +25,9 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+from dpnp.dparray cimport dparray, dparray_shape_type
 from libcpp cimport bool as cpp_bool
 from libcpp.vector cimport vector
-
-from dpnp.dparray cimport dparray, dparray_shape_type
-from dpnp.dpnp_algo cimport(DPNPFuncType,
-                            DPNPFuncName,
-                            get_dpnp_function_ptr,
-                            dpnp_dtype_to_DPNPFuncType,
-                            dpnp_DPNPFuncType_to_dtype)
 
 
 cpdef checker_throw_runtime_error(function_name, message)
@@ -95,11 +89,6 @@ Returns a tuple of:
 2. dtype
 """
 
-cpdef find_common_type(object x1_obj, object x2_obj)
-"""
-Find common type of 2 input objects
-"""
-
 cdef long copy_values_to_dparray(dparray dst, input_obj, size_t dst_idx=*) except -1
 """
 Copy values to `dst` by iterating element by element in `input_obj`
@@ -128,27 +117,4 @@ Convert dparray to ndarray
 cpdef nd2dp_array(arr)
 """
 Convert ndarray to dparray
-"""
-
-cdef dparray_shape_type get_common_shape(dparray_shape_type input1_shape, dparray_shape_type input2_shape)
-"""
-Calculate common shape from input shapes
-"""
-
-cdef dparray_shape_type get_reduction_output_shape(dparray_shape_type input_shape, object axis, cpp_bool keepdims)
-"""
-Calculate output array shape in reduction functions
-"""
-
-cdef DPNPFuncType get_output_c_type(DPNPFuncName funcID,
-                                    DPNPFuncType input_array_c_type,
-                                    object requested_out,
-                                    object requested_dtype)
-"""
-Calculate output array type by 'out' and 'dtype' cast parameters
-"""
-
-cdef dparray create_output_array(dparray_shape_type output_shape, DPNPFuncType c_type, object requested_out)
-"""
-Create output array based on shape, type and 'out' parameters
 """

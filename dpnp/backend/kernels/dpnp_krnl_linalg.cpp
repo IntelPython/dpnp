@@ -98,6 +98,9 @@ void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const si
 }
 
 template <typename _DataType>
+class dpnp_det_c_kernel;
+
+template <typename _DataType>
 void dpnp_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
 {
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
@@ -192,6 +195,9 @@ void dpnp_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
 
     return;
 }
+
+template <typename _DataType>
+class dpnp_inv_c_kernel;
 
 template <typename _DataType>
 void dpnp_inv_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
@@ -357,6 +363,9 @@ void dpnp_kron_c(void* array1_in,
 }
 
 template <typename _DataType>
+class dpnp_matrix_rank_c_kernel;
+
+template <typename _DataType>
 void dpnp_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
 {
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
@@ -388,89 +397,6 @@ void dpnp_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t nd
     return;
 }
 
-template <typename _InputDT, typename _ComputeDT>
-void dpnp_qr_c(void* array1_in, void* result1, void* result2, void* result3, size_t size_m, size_t size_n)
-{
-    cl::sycl::event event;
-
-    _InputDT* in_array = reinterpret_cast<_InputDT*>(array1_in);
-
-    // math lib func overrides input
-    _ComputeDT* in_a = reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(size_m * size_n * sizeof(_ComputeDT)));
-
-    for (size_t i = 0; i < size_m; ++i)
-    {
-        for (size_t j = 0; j < size_n; ++j)
-        {
-            in_a[j * size_m + i] = in_array[i * size_n + j];
-        }
-    }
-
-    _ComputeDT* res_q = reinterpret_cast<_ComputeDT*>(result1);
-    _ComputeDT* res_r = reinterpret_cast<_ComputeDT*>(result2);
-    _ComputeDT* tau = reinterpret_cast<_ComputeDT*>(result3);
-
-    const std::int64_t lda = size_m;
-
-    const std::int64_t geqrf_scratchpad_size =
-        mkl_lapack::geqrf_scratchpad_size<_ComputeDT>(DPNP_QUEUE, size_m, size_n, lda);
-
-    _ComputeDT* geqrf_scratchpad =
-        reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(geqrf_scratchpad_size * sizeof(_ComputeDT)));
-
-    event = mkl_lapack::geqrf(DPNP_QUEUE, size_m, size_n, in_a, lda, tau, geqrf_scratchpad, geqrf_scratchpad_size);
-
-    event.wait();
-    dpnp_memory_free_c(geqrf_scratchpad);
-
-    // R
-    for (size_t i = 0; i < size_m; ++i)
-    {
-        for (size_t j = 0; j < size_n; ++j)
-        {
-            if (j >= i)
-            {
-                res_r[i * size_n + j] = in_a[j * size_m + i];
-            }
-            else
-            {
-                res_r[i * size_n + j] = _ComputeDT(0);
-            }
-        }
-    }
-
-    // Q
-    const size_t nrefl = std::min<size_t>(size_m, size_n);
-    const std::int64_t orgqr_scratchpad_size =
-        mkl_lapack::orgqr_scratchpad_size<_ComputeDT>(DPNP_QUEUE, size_m, size_m, nrefl, lda);
-
-    _ComputeDT* orgqr_scratchpad =
-        reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(orgqr_scratchpad_size * sizeof(_ComputeDT)));
-
-    event =
-        mkl_lapack::orgqr(DPNP_QUEUE, size_m, size_m, nrefl, in_a, lda, tau, orgqr_scratchpad, orgqr_scratchpad_size);
-
-    event.wait();
-    dpnp_memory_free_c(orgqr_scratchpad);
-
-    for (size_t i = 0; i < size_m; ++i)
-    {
-        for (size_t j = 0; j < size_m; ++j)
-        {
-            if (j < nrefl)
-            {
-                res_q[i * size_m + j] = in_a[j * size_m + i];
-            }
-            else
-            {
-                res_q[i * size_m + j] = _ComputeDT(0);
-            }
-        }
-    }
-
-    dpnp_memory_free_c(in_a);
-}
-
 template <typename _InputDT, typename _ComputeDT, typename _SVDT>
 void dpnp_svd_c(void* array1_in, void* result1, void* result2, void* result3, size_t size_m, size_t size_n)
 {
@@ -496,8 +422,10 @@ void dpnp_svd_c(void* array1_in, void* result1, void* result2, void* result3, si
     const std::int64_t ldu = std::max<size_t>(1UL, m);
     const std::int64_t ldvt = std::max<size_t>(1UL, n);
 
-    const std::int64_t scratchpad_size = mkl_lapack::gesvd_scratchpad_size<_ComputeDT>(
+    const std::int64_t scratchpad_size1 = mkl_lapack::gesvd_scratchpad_size<_ComputeDT>(
         DPNP_QUEUE, oneapi::mkl::jobsvd::vectors, oneapi::mkl::jobsvd::vectors, n, m, lda, ldvt, ldu);
+
+    const std::int64_t scratchpad_size = scratchpad_size1;
 
     _ComputeDT* scratchpad = reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(_ComputeDT)));
 
@@ -575,13 +503,6 @@ void func_map_init_linalg_func(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_matrix_rank_c<long>};
     fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_matrix_rank_c<float>};
     fmap[DPNPFuncName::DPNP_FN_MATRIX_RANK][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_matrix_rank_c<double>};
-
-    fmap[DPNPFuncName::DPNP_FN_QR][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_qr_c<int, double>};
-    fmap[DPNPFuncName::DPNP_FN_QR][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_qr_c<long, double>};
-    fmap[DPNPFuncName::DPNP_FN_QR][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_qr_c<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_QR][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_qr_c<double, double>};
-    // fmap[DPNPFuncName::DPNP_FN_QR][eft_C128][eft_C128] = {
-    // eft_C128, (void*)dpnp_qr_c<std::complex<double>, std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_SVD][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_svd_c<int, double, double>};
     fmap[DPNPFuncName::DPNP_FN_SVD][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_svd_c<long, double, double>};

@@ -107,18 +107,23 @@ def all(in_array1, axis=None, out=None, keepdims=False):
 
     """
 
-    if not use_origin_backend(in_array1):
-        if not isinstance(in_array1, dparray):
-            pass
-        elif axis is not None:
-            pass
-        elif out is not None:
-            pass
-        elif keepdims is not False:
-            pass
-        else:
-            result = dpnp_all(in_array1)
-            return result[0]
+    is_dparray1 = isinstance(in_array1, dparray)
+
+    if (not use_origin_backend(in_array1) and is_dparray1):
+        if axis is not None:
+            checker_throw_value_error("all", "axis", type(axis), None)
+        if out is not None:
+            checker_throw_value_error("all", "out", type(out), None)
+        if keepdims is not False:
+            checker_throw_value_error("all", "keepdims", keepdims, False)
+
+        result = dpnp_all(in_array1)
+
+        # scalar returned
+        if result.shape == (1,):
+            return result.dtype.type(result[0])
+
+        return result
 
     return call_origin(numpy.all, axis, out, keepdims)
 
@@ -162,18 +167,23 @@ def any(in_array1, axis=None, out=None, keepdims=False):
 
     """
 
-    if (not use_origin_backend(in_array1)):
-        if not isinstance(in_array1, dparray):
-            pass
-        elif axis is not None:
-            pass
-        elif out is not None:
-            pass
-        elif keepdims is not False:
-            pass
-        else:
-            result = dpnp_any(in_array1)
-            return result[0]
+    is_dparray1 = isinstance(in_array1, dparray)
+
+    if (not use_origin_backend(in_array1) and is_dparray1):
+        if axis is not None:
+            checker_throw_value_error("any", "axis", type(axis), None)
+        if out is not None:
+            checker_throw_value_error("any", "out", type(out), None)
+        if keepdims is not False:
+            checker_throw_value_error("any", "keepdims", keepdims, False)
+
+        result = dpnp_any(in_array1)
+
+        # scalar returned
+        if result.shape == (1,):
+            return result.dtype.type(result[0])
+
+        return result
 
     return call_origin(numpy.any, axis, out, keepdims)
 

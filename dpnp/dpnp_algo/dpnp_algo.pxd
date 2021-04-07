@@ -33,8 +33,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
     cdef enum DPNPFuncName "DPNPFuncName":
         DPNP_FN_ABSOLUTE
         DPNP_FN_ADD
-        DPNP_FN_ALL
-        DPNP_FN_ANY
         DPNP_FN_ARANGE
         DPNP_FN_ARCCOS
         DPNP_FN_ARCCOSH
@@ -46,7 +44,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_ARGMAX
         DPNP_FN_ARGMIN
         DPNP_FN_ARGSORT
-        DPNP_FN_ASTYPE
         DPNP_FN_BITWISE_AND
         DPNP_FN_BITWISE_OR
         DPNP_FN_BITWISE_XOR
@@ -56,7 +53,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_CONJIGUATE
         DPNP_FN_COPY
         DPNP_FN_COPYSIGN
-        DPNP_FN_COPYTO
         DPNP_FN_CORRELATE
         DPNP_FN_COS
         DPNP_FN_COSH
@@ -66,11 +62,8 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_CUMSUM
         DPNP_FN_DEGREES
         DPNP_FN_DET
-        DPNP_FN_DIAG
-        DPNP_FN_DIAGONAL
         DPNP_FN_DIVIDE
         DPNP_FN_DOT
-        DPNP_FN_EDIFF1D
         DPNP_FN_EIG
         DPNP_FN_EIGVALS
         DPNP_FN_ERF
@@ -79,15 +72,11 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_EXPM1
         DPNP_FN_FABS
         DPNP_FN_FFT_FFT
-        DPNP_FN_FILL_DIAGONAL
-        DPNP_FN_FLATTEN
         DPNP_FN_FLOOR
         DPNP_FN_FLOOR_DIVIDE
         DPNP_FN_FMOD
         DPNP_FN_FULL
-        DPNP_FN_FULL_LIKE
         DPNP_FN_HYPOT
-        DPNP_FN_IDENTITY
         DPNP_FN_INITVAL
         DPNP_FN_INV
         DPNP_FN_INVERT
@@ -107,18 +96,11 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_MINIMUM
         DPNP_FN_MODF
         DPNP_FN_MULTIPLY
-        DPNP_FN_NONZERO
-        DPNP_FN_ONES
-        DPNP_FN_ONES_LIKE
-        DPNP_FN_PLACE
         DPNP_FN_POWER
         DPNP_FN_PROD
-        DPNP_FN_PUT
-        DPNP_FN_QR
         DPNP_FN_RADIANS
         DPNP_FN_REMAINDER
         DPNP_FN_RECIP
-        DPNP_FN_REPEAT
         DPNP_FN_RIGHT_SHIFT
         DPNP_FN_RNG_BETA
         DPNP_FN_RNG_BINOMIAL
@@ -136,14 +118,11 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_MULTINOMIAL
         DPNP_FN_RNG_MULTIVARIATE_NORMAL
         DPNP_FN_RNG_NEGATIVE_BINOMIAL
-        DPNP_FN_RNG_NONCENTRAL_CHISQUARE
         DPNP_FN_RNG_NORMAL
         DPNP_FN_RNG_PARETO
         DPNP_FN_RNG_POISSON
         DPNP_FN_RNG_POWER
-        DPNP_FN_PUT_ALONG_AXIS
         DPNP_FN_RNG_RAYLEIGH
-        DPNP_FN_RNG_SHUFFLE
         DPNP_FN_RNG_SRAND
         DPNP_FN_RNG_STANDARD_CAUCHY
         DPNP_FN_RNG_STANDARD_EXPONENTIAL
@@ -152,10 +131,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_STANDARD_T
         DPNP_FN_RNG_TRIANGULAR
         DPNP_FN_RNG_UNIFORM
-        DPNP_FN_RNG_VONMISES
-        DPNP_FN_RNG_WALD
         DPNP_FN_RNG_WEIBULL
-        DPNP_FN_RNG_ZIPF
         DPNP_FN_SIGN
         DPNP_FN_SIN
         DPNP_FN_SINH
@@ -170,15 +146,8 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_TAN
         DPNP_FN_TANH
         DPNP_FN_TRANSPOSE
-        DPNP_FN_TRAPZ
-        DPNP_FN_TRI
-        DPNP_FN_TRIL
-        DPNP_FN_TRIU
         DPNP_FN_TRUNC
-        DPNP_FN_VANDER
         DPNP_FN_VAR
-        DPNP_FN_ZEROS
-        DPNP_FN_ZEROS_LIKE
 
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncType":  # need this namespace for Enum import
     cdef enum DPNPFuncType "DPNPFuncType":
@@ -195,44 +164,34 @@ cdef extern from "dpnp_iface_fptr.hpp":
         DPNPFuncType return_type
         void * ptr
 
-    DPNPFuncData get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type) except +
+    DPNPFuncData get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type)
 
 
 cdef extern from "dpnp_iface.hpp" namespace "QueueOptions":  # need this namespace for Enum import
     cdef enum QueueOptions "QueueOptions":
         CPU_SELECTOR
         GPU_SELECTOR
-        AUTO_SELECTOR
 
 cdef extern from "dpnp_iface.hpp":
     void dpnp_queue_initialize_c(QueueOptions selector)
     size_t dpnp_queue_is_cpu_c()
 
-    char * dpnp_memory_alloc_c(size_t size_in_bytes) except +
+    char * dpnp_memory_alloc_c(size_t size_in_bytes)
     void dpnp_memory_free_c(void * ptr)
     void dpnp_memory_memcpy_c(void * dst, const void * src, size_t size_in_bytes)
     void dpnp_rng_srand_c(size_t seed)
 
 
 # C function pointer to the C library template functions
-ctypedef void(*fptr_1out_t)(void *, size_t)
-ctypedef void(*fptr_1in_1out_t)(void *, void *, size_t)
-ctypedef void(*fptr_2in_1out_t)(void *, void *, void *, size_t)
- # to be fused with fptr_2in_1out_t
-ctypedef void(*fptr_2in_1out_new_t)(void *, const void *, const size_t, const long *, const size_t,
-                                    const void *, const size_t, const long *, const size_t, const long *)
+ctypedef void(*fptr_1in_1out_t)(void * , void * , size_t)
+ctypedef void(*fptr_2in_1out_t)(void * , void*, void*, size_t)
 ctypedef void(*fptr_blas_gemm_2in_1out_t)(void * , void * , void * , size_t, size_t, size_t)
-ctypedef void(*dpnp_reduction_c_t)(void * , const void * , const size_t*, const size_t, const long*, const size_t, const void * , const long*)
 
-cdef dparray call_fptr_1out(DPNPFuncName fptr_name, result_shape, result_dtype)
 cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shape_type result_shape)
-cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, object x1_obj, object x2_obj,
-                                object dtype=*, dparray out=*, object where=*,
-                                bint new_version=*)
+cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, dparray x1, dparray x2, dparray_shape_type result_shape)
 
 
 cpdef dparray dpnp_astype(dparray array1, dtype_target)
-cpdef dparray dpnp_flatten(dparray array1)
 
 
 """
@@ -245,12 +204,12 @@ cpdef dpnp_DPNPFuncType_to_dtype(size_t type)
 """
 Bitwise functions
 """
-cpdef dparray dpnp_bitwise_and(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dparray dpnp_bitwise_or(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dparray dpnp_bitwise_xor(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
+cpdef dparray dpnp_bitwise_and(dparray array1, dparray array2)
+cpdef dparray dpnp_bitwise_or(dparray array1, dparray array2)
+cpdef dparray dpnp_bitwise_xor(dparray array1, dparray array2)
 cpdef dparray dpnp_invert(dparray arr)
-cpdef dparray dpnp_left_shift(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dparray dpnp_right_shift(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
+cpdef dparray dpnp_left_shift(dparray array1, dparray array2)
+cpdef dparray dpnp_right_shift(dparray array1, dparray array2)
 
 
 """
@@ -287,19 +246,19 @@ cpdef dparray dpnp_init_val(shape, dtype, value)
 """
 Mathematical functions
 """
-cpdef dparray dpnp_add(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dparray dpnp_arctan2(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
+cpdef dparray dpnp_add(dparray array1, dparray array2)
+cpdef dparray dpnp_arctan2(dparray array1, dparray array2)
 cpdef dparray dpnp_cos(dparray array1)
-cpdef dparray dpnp_divide(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dparray dpnp_hypot(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dparray dpnp_maximum(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dparray dpnp_minimum(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dparray dpnp_multiply(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
+cpdef dparray dpnp_divide(dparray array1, dparray array2)
+cpdef dparray dpnp_hypot(dparray array1, dparray array2)
+cpdef dparray dpnp_maximum(dparray array1, dparray array2)
+cpdef dparray dpnp_minimum(dparray array1, dparray array2)
+cpdef dparray dpnp_multiply(dparray array1, array2)
 cpdef dparray dpnp_negative(dparray array1)
-cpdef dparray dpnp_power(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dparray dpnp_remainder(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
+cpdef dparray dpnp_power(dparray array1, array2)
+cpdef dparray dpnp_remainder(dparray array1, dparray array2)
 cpdef dparray dpnp_sin(dparray array1)
-cpdef dparray dpnp_subtract(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
+cpdef dparray dpnp_subtract(dparray array1, dparray array2)
 
 
 """

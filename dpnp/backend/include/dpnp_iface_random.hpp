@@ -256,19 +256,6 @@ INP_DLLEXPORT void dpnp_rng_negative_binomial_c(void* result, const double a, co
 
 /**
  * @ingroup BACKEND_RANDOM_API
- * @brief math library implementation of random number generator (noncentral chisquare distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- * @param [in]  df     Degrees of freedom.
- * @param [in]  nonc   Non-centrality param.
- * @param [out] result Output array.
- */
-template <typename _DataType>
-INP_DLLEXPORT void
-    dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _DataType nonc, const size_t size);
-
-/**
- * @ingroup BACKEND_RANDOM_API
  * @brief math library implementation of random number generator (normal continious distribution)
  *
  * @param [in]  size   Number of elements in `result` arrays.
@@ -322,20 +309,6 @@ INP_DLLEXPORT void dpnp_rng_power_c(void* result, const double alpha, const size
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_rng_rayleigh_c(void* result, const _DataType scale, const size_t size);
-
-/**
- * @ingroup BACKEND_RANDOM_API
- * @brief math library implementation of random in-place shuffle.
- *
- * @param [in]  itemsize      Length of `result` array element in bytes.
- * @param [in]  ndim          Number of array dimensions in `result` arrays.
- * @param [in]  high_dim_size Number of elements in `result` arrays higer dimension, or len(result).
- * @param [in]  size          Number of elements in `result` arrays.
- * @param [out] result        Input/output array.
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_shuffle_c(
-    void* result, const size_t itemsize, const size_t ndim, const size_t high_dim_size, const size_t size);
 
 /**
  * @ingroup BACKEND_RANDOM_API
@@ -425,30 +398,6 @@ INP_DLLEXPORT void dpnp_rng_uniform_c(void* result, const long low, const long h
 
 /**
  * @ingroup BACKEND_RANDOM_API
- * @brief math library implementation of random number generator (Vonmises distribution)
- *
- * @param [in]  mu     Mode of the distribution.
- * @param [in]  kappa  Dispersion of the distribution.
- * @param [in]  size   Number of elements in `result` array.
- * @param [out] result Output array.
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_vonmises_c(void* result, const _DataType mu, const _DataType kappa, const size_t size);
-
-/**
- * @ingroup BACKEND_RANDOM_API
- * @brief math library implementation of random number generator (Wald's distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- * @param [in]  mean   Mean value.
- * @param [in]  scale  The scale of the distribution.
- * @param [out] result Output array.
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_wald_c(void* result, const _DataType mean, const _DataType scale, size_t size);
-
-/**
- * @ingroup BACKEND_RANDOM_API
  * @brief math library implementation of random number generator (weibull distribution)
  *
  * @param [in]  size   Number of elements in `result` arrays.
@@ -457,16 +406,5 @@ INP_DLLEXPORT void dpnp_rng_wald_c(void* result, const _DataType mean, const _Da
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_rng_weibull_c(void* result, const double alpha, const size_t size);
-
-/**
- * @ingroup BACKEND_RANDOM_API
- * @brief math library implementation of random number generator (Zipf distribution)
- *
- * @param [in]  size   Number of elements in `result` arrays.
- * @param [in]  a      Distribution parameter.
- * @param [out] result Output array.
- */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_rng_zipf_c(void* result, const _DataType a, const size_t size);
 
 #endif // BACKEND_IFACE_RANDOM_H

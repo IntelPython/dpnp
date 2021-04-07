@@ -277,71 +277,6 @@ void dpnp_remainder_c(void* array1_in, void* array2_in, void* result1, size_t si
     event.wait();
 }
 
-template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2, typename _KernelNameSpecialization3>
-class dpnp_trapz_c_kernel;
-
-template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
-void dpnp_trapz_c(
-    const void* array1_in, const void* array2_in, void* result1, double dx, size_t array1_size, size_t array2_size)
-{
-    if ((array1_in == nullptr) || (array2_in == nullptr && array2_size > 1))
-    {
-        return;
-    }
-
-    cl::sycl::event event;
-    _DataType_input1* array1 = reinterpret_cast<_DataType_input1*>(const_cast<void*>(array1_in));
-    _DataType_input2* array2 = reinterpret_cast<_DataType_input2*>(const_cast<void*>(array2_in));
-    _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
-
-    if (array1_size < 2)
-    {
-        result[0] = 0;
-        return;
-    }
-
-    if (array1_size == array2_size)
-    {
-        size_t cur_res_size = array1_size - 2;
-
-        _DataType_output* cur_res =
-            reinterpret_cast<_DataType_output*>(dpnp_memory_alloc_c((cur_res_size) * sizeof(_DataType_output)));
-
-        cl::sycl::range<1> gws(cur_res_size);
-        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
-            size_t i = global_id[0];
-            {
-                cur_res[i] = array1[i + 1] * (array2[i + 2] - array2[i]);
-            }
-        };
-
-        auto kernel_func = [&](cl::sycl::handler& cgh) {
-            cgh.parallel_for<class dpnp_trapz_c_kernel<_DataType_input1, _DataType_input2, _DataType_output>>(
-                gws, kernel_parallel_for_func);
-        };
-
-        event = DPNP_QUEUE.submit(kernel_func);
-
-        event.wait();
-
-        dpnp_sum_c<_DataType_output, _DataType_output>(result, cur_res, &cur_res_size, 1, NULL, 0, NULL, NULL);
-
-        dpnp_memory_free_c(cur_res);
-
-        result[0] += array1[0] * (array2[1] - array2[0]) +
-                     array1[array1_size - 1] * (array2[array2_size - 1] - array2[array2_size - 2]);
-
-        result[0] *= 0.5;
-    }
-    else
-    {
-        dpnp_sum_c<_DataType_output, _DataType_input1>(result, array1, &array1_size, 1, NULL, 0, NULL, NULL);
-
-        result[0] -= (array1[0] + array1[array1_size - 1]) * 0.5;
-        result[0] *= dx;
-    }
-}
-
 void func_map_init_mathematical(func_map_t& fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_ABSOLUTE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_elemwise_absolute_c<int>};
@@ -428,23 +363,6 @@ void func_map_init_mathematical(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_remainder_c<double, float, double>};
     fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_DBL][eft_DBL] = {eft_DBL,
                                                                (void*)dpnp_remainder_c<double, double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_trapz_c<int, int, double>};
-    fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_INT][eft_LNG] = {eft_DBL, (void*)dpnp_trapz_c<int, long, double>};
-    fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_INT][eft_FLT] = {eft_DBL, (void*)dpnp_trapz_c<int, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_trapz_c<int, double, double>};
-    fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_LNG][eft_INT] = {eft_DBL, (void*)dpnp_trapz_c<long, int, double>};
-    fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_trapz_c<long, long, double>};
-    fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_LNG][eft_FLT] = {eft_DBL, (void*)dpnp_trapz_c<long, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_trapz_c<long, double, double>};
-    fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_FLT][eft_INT] = {eft_DBL, (void*)dpnp_trapz_c<float, int, double>};
-    fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_FLT][eft_LNG] = {eft_DBL, (void*)dpnp_trapz_c<float, long, double>};
-    fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_trapz_c<float, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_FLT][eft_DBL] = {eft_DBL, (void*)dpnp_trapz_c<float, double, double>};
-    fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_trapz_c<double, int, double>};
-    fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_trapz_c<double, long, double>};
-    fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_trapz_c<double, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_TRAPZ][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_trapz_c<double, double, double>};
 
     return;
 }

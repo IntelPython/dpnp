@@ -1,56 +1,56 @@
-import pytest
+import unittest
 
 import dpnp as inp
 
 import numpy
 
 
-@pytest.mark.parametrize("lhs", [[-3, -2, -1, 0, 1, 2, 3], 0])
-@pytest.mark.parametrize("rhs", [[0, 1, 2, 3, 4, 5, 6], 3])
-@pytest.mark.parametrize("dtype", [numpy.int32, numpy.int64])
-class TestBitwise:
+class TestBitwise(unittest.TestCase):
 
-    @staticmethod
-    def array_or_scalar(xp, data, dtype=None):
-        if numpy.isscalar(data):
-            return data
+    def _test_unary_int(self, name):
+        data = [-3, -2, -1, 0, 1, 2, 3]
+        for dtype in (numpy.int32, numpy.int64):
+            with self.subTest(dtype=dtype):
+                a = inp.array(data, dtype=dtype)
+                result = getattr(inp, name)(a)
 
-        return xp.array(data, dtype=dtype)
+                a = numpy.array(data, dtype=dtype)
+                expected = getattr(numpy, name)(a)
 
-    def _test_unary_int(self, name, data, dtype):
-        a = self.array_or_scalar(inp, data, dtype=dtype)
-        result = getattr(inp, name)(a)
+                numpy.testing.assert_array_equal(result, expected)
 
-        a = self.array_or_scalar(numpy, data, dtype=dtype)
-        expected = getattr(numpy, name)(a)
+    def _test_binary_int(self, name):
+        data1, data2 = [-3, -2, -1, 0, 1, 2, 3], [0, 1, 2, 3, 4, 5, 6]
+        for dtype in (numpy.int32, numpy.int64):
+            with self.subTest(dtype=dtype):
+                a = inp.array(data1, dtype=dtype)
+                b = inp.array(data2, dtype=dtype)
+                result = getattr(inp, name)(a, b)
 
-        numpy.testing.assert_array_equal(result, expected)
+                a = numpy.array(data1, dtype=dtype)
+                b = numpy.array(data2, dtype=dtype)
+                expected = getattr(numpy, name)(a, b)
 
-    def _test_binary_int(self, name, lhs, rhs, dtype):
-        a = self.array_or_scalar(inp, lhs, dtype=dtype)
-        b = self.array_or_scalar(inp, rhs, dtype=dtype)
-        result = getattr(inp, name)(a, b)
+                numpy.testing.assert_array_equal(result, expected)
 
-        a = self.array_or_scalar(numpy, lhs, dtype=dtype)
-        b = self.array_or_scalar(numpy, rhs, dtype=dtype)
-        expected = getattr(numpy, name)(a, b)
+    def test_bitwise_and(self):
+        self._test_binary_int('bitwise_and')
 
-        numpy.testing.assert_array_equal(result, expected)
+    def test_bitwise_or(self):
+        self._test_binary_int('bitwise_or')
 
-    def test_bitwise_and(self, lhs, rhs, dtype):
-        self._test_binary_int('bitwise_and', lhs, rhs, dtype)
+    def test_bitwise_xor(self):
+        self._test_binary_int('bitwise_xor')
 
-    def test_bitwise_or(self, lhs, rhs, dtype):
-        self._test_binary_int('bitwise_or', lhs, rhs, dtype)
+    def test_invert(self):
+        self._test_unary_int('invert')
 
-    def test_bitwise_xor(self, lhs, rhs, dtype):
-        self._test_binary_int('bitwise_xor', lhs, rhs, dtype)
+    def test_left_shift(self):
+        self._test_binary_int('left_shift')
 
-    def test_invert(self, lhs, rhs, dtype):
-        self._test_unary_int('invert', lhs, dtype)
+    def test_right_shift(self):
+        self._test_binary_int('right_shift')
 
-    def test_left_shift(self, lhs, rhs, dtype):
-        self._test_binary_int('left_shift', lhs, rhs, dtype)
 
-    def test_right_shift(self, lhs, rhs, dtype):
-        self._test_binary_int('right_shift', lhs, rhs, dtype)
+if __name__ == '__main__':
+    unittest.main()

@@ -59,7 +59,6 @@ __all__ = [
     "matrix_rank",
     "multi_dot",
     "norm",
-    "qr",
     "svd",
 ]
 
@@ -399,34 +398,6 @@ def norm(input, ord=None, axis=None, keepdims=False):
         return result
 
     return call_origin(numpy.linalg.norm, input, ord, axis, keepdims)
-
-
-#linalg.qr(a, mode='reduced')
-def qr(a, mode='complete'):
-    """
-    Compute the qr factorization of a matrix.
-
-    Factor the matrix `a` as *qr*, where `q` is orthonormal and `r` is
-    upper-triangular.
-
-    For full documentation refer to :obj:`numpy.linalg.qr`.
-
-    Limitations
-    -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Parameter mode='complete' is supported.
-
-    """
-
-    if not use_origin_backend(a):
-        if not isinstance(a, dparray):
-            pass
-        elif not mode == 'complete':
-            pass
-        else:
-            return dpnp_qr(a, mode)
-
-    return call_origin(numpy.linalg.qr, a, mode)
 
 
 def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
