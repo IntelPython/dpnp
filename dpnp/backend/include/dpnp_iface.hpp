@@ -218,13 +218,30 @@ INP_DLLEXPORT void dpnp_elemwise_absolute_c(void* array1_in, void* result1, size
  * @ingroup BACKEND_API
  * @brief Custom implementation of dot function
  *
- * @param [in]  array1  Input array.
- * @param [in]  array2  Input array.
- * @param [out] result1 Output array.
- * @param [in]  size    Number of elements in input arrays.
+ * @param [out] result_out          Output array.
+ * @param [in]  input1_in           First input array.
+ * @param [in]  input1_size         Size of first input array.
+ * @param [in]  input1_shape        Shape of first input array.
+ * @param [in]  input1_shape_ndim   Number of first array dimensions.
+ * @param [in]  input2_in           Second input array.
+ * @param [in]  input2_size         Shape of second input array.
+ * @param [in]  input2_shape        Shape of first input array.
+ * @param [in]  input2_shape_ndim   Number of second array dimensions.
+ * @param [in]  where               Mask array.
+ * @param [out] result1             Output array.
+ * @param [in]  size                Number of elements in input arrays.
  */
-template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
-INP_DLLEXPORT void dpnp_dot_c(void* array1, void* array2, void* result1, size_t size);
+template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
+INP_DLLEXPORT void dpnp_dot_c(void* result_out,
+                                const void* input1_in,
+                                const size_t input1_size,
+                                const size_t* input1_shape,
+                                const size_t input1_shape_ndim,
+                                const void* input2_in,
+                                const size_t input2_size,
+                                const size_t* input2_shape,
+                                const size_t input2_shape_ndim,
+                                const size_t* where);
 
 /**
  * @ingroup BACKEND_API
@@ -452,13 +469,30 @@ INP_DLLEXPORT void dpnp_cholesky_c(void* array1_in, void* result1, const size_t 
  * @ingroup BACKEND_API
  * @brief correlate function
  *
- * @param [in]  array1_in   Input array 1.
- * @param [in]  array2_in   Input array 2.
- * @param [out] result      Output array.
- * @param [in]  size        Number of elements in input arrays.
+ * @param [out] result_out          Output array.
+ * @param [in]  input1_in           First input array.
+ * @param [in]  input1_size         Size of first input array.
+ * @param [in]  input1_shape        Shape of first input array.
+ * @param [in]  input1_shape_ndim   Number of first array dimensions.
+ * @param [in]  input2_in           Second input array.
+ * @param [in]  input2_size         Shape of second input array.
+ * @param [in]  input2_shape        Shape of first input array.
+ * @param [in]  input2_shape_ndim   Number of second array dimensions.
+ * @param [in]  where               Mask array.
+ * @param [out] result1             Output array.
+ * @param [in]  size                Number of elements in input arrays.
  */
-template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
-INP_DLLEXPORT void dpnp_correlate_c(void* array1_in, void* array2_in, void* result, size_t size);
+template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
+INP_DLLEXPORT void dpnp_correlate_c(void* result_out,
+                                const void* input1_in,
+                                const size_t input1_size,
+                                const size_t* input1_shape,
+                                const size_t input1_shape_ndim,
+                                const void* input2_in,
+                                const size_t input2_size,
+                                const size_t* input2_shape,
+                                const size_t input2_shape_ndim,
+                                const size_t* where);
 
 /**
  * @ingroup BACKEND_API
