@@ -188,20 +188,13 @@ def copyto(dst, src, casting='same_kind', where=True):
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     """
+
     if not use_origin_backend(dst):
         if not isinstance(dst, dparray):
             pass
         elif not isinstance(src, dparray):
             pass
         elif casting != 'same_kind':
-            pass
-        elif (dst.dtype == dpnp.bool and  # due to 'same_kind' casting
-              src.dtype in [dpnp.int32, dpnp.int64, dpnp.float32, dpnp.float64, dpnp.complex128]):
-            pass
-        elif (dst.dtype in [dpnp.int32, dpnp.int64] and  # due to 'same_kind' casting
-              src.dtype in [dpnp.float32, dpnp.float64, dpnp.complex128]):
-            pass
-        elif dst.dtype in [dpnp.float32, dpnp.float64] and src.dtype == dpnp.complex128:  # due to 'same_kind' casting
             pass
         elif where is not True:
             pass
@@ -403,20 +396,30 @@ def repeat(x1, repeats, axis=None):
 
     """
 
-    if not use_origin_backend(x1):
-        if not isinstance(x1, dparray):
-            pass
-        elif axis is not None and axis != 0:
-            pass
-        elif x1.ndim >= 2:
-            pass
-        elif not dpnp.isscalar(repeats) and len(repeats) > 1:
-            pass
-        else:
-            repeat_val = repeats if dpnp.isscalar(repeats) else repeats[0]
-            return dpnp_repeat(x1, repeat_val, axis)
+    is_x1_dparray = isinstance(x1, dparray)
 
-    return call_origin(numpy.repeat, x1, repeats, axis)
+    if (not use_origin_backend(x1) and is_x1_dparray and (axis is None or axis == 0) and (x1.ndim < 2)):
+
+        repeat_val = repeats
+        if isinstance(repeats, (tuple, list)):
+            if (len(repeats) > 1):
+                checker_throw_value_error("repeat", "len(repeats)", len(repeats), 1)
+
+            repeat_val = repeats[0]
+
+        return dpnp_repeat(x1, repeat_val, axis)
+
+    input1 = dpnp.asnumpy(x1) if is_x1_dparray else x1
+
+    # TODO need to put dparray memory into NumPy call
+    result_numpy = numpy.repeat(input1, repeats, axis=axis)
+    result = result_numpy
+    if isinstance(result, numpy.ndarray):
+        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
+        for i in range(result.size):
+            result._setitem_scalar(i, result_numpy.item(i))
+
+    return result
 
 
 def rollaxis(a, axis, start=0):

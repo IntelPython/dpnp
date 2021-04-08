@@ -38,14 +38,9 @@ from libcpp cimport bool as cpp_bool
 
 from dpnp.dpnp_iface_types import *
 from dpnp.dpnp_iface import *
-
-# to avoid interference with Python internal functions
-from dpnp.dpnp_iface import sum as iface_sum
-from dpnp.dpnp_iface import prod as iface_prod
-
 from dpnp.dpnp_algo cimport *
-from dpnp.dpnp_iface_statistics import min, max  # TODO do the same as for iface_sum
-from dpnp.dpnp_iface_logic import all, any  # TODO do the same as for iface_sum
+from dpnp.dpnp_iface_statistics import min, max
+from dpnp.dpnp_iface_logic import all, any
 import numpy
 cimport numpy
 
@@ -441,22 +436,9 @@ cdef class dparray:
 
         """
         if isinstance(key, slice):
-            start = 0 if key.start is None else key.start
-            stop = self.size if key.stop is None else key.stop
-            step = 1 if key.step is None else key.step
-
-            if not isinstance(value, dparray):
-                pass
-            elif start != 0:
-                pass
-            elif stop != self.size:
-                pass
-            elif step != 1:
-                pass
-            else:
-                copyto(self, value)
-                return
-
+            start = 0 if (key.start is None) else key.start
+            stop = self.size if (key.stop is None) else key.stop
+            step = 1 if (key.step is None) else key.step
             for i in range(start, stop, step):
                 self._setitem_scalar(i, value[i])
         else:
@@ -512,7 +494,11 @@ cdef class dparray:
                 if order == 'F':
                     return self.transpose().reshape(self.size)
 
-                return dpnp_flatten(self)
+                result = dparray(self.size, dtype=self.dtype)
+                for i in range(result.size):
+                    result[i] = self[i]
+
+                return result
 
         result = utils.dp2nd_array(self).flatten(order=order)
 
@@ -830,18 +816,6 @@ cdef class dparray:
     -------------------------------------------------------------------------
     """
 
-    def prod(*args, **kwargs):
-        """
-        Returns the prod along a given axis.
-
-        .. seealso::
-           :obj:`dpnp.prod` for full documentation,
-           :meth:`dpnp.dparray.sum`
-
-        """
-
-        return iface_prod(*args, **kwargs)
-
     def sum(*args, **kwargs):
         """
         Returns the sum along a given axis.
@@ -852,7 +826,9 @@ cdef class dparray:
 
         """
 
-        return iface_sum(*args, **kwargs)
+        # TODO don't know how to call `sum from python public interface. Simple call executes internal `sum` function.
+        # numpy with dparray call public dpnp.sum via __array_interface__`
+        return numpy.sum(*args, **kwargs)
 
     def max(self, axis=None):
         """

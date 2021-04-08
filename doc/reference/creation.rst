@@ -20,7 +20,6 @@ Basic creation routines
    dpnp.zeros_like
    dpnp.full
    dpnp.full_like
-   dpnp.vander
 
 
 Creation from other data

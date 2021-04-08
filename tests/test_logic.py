@@ -9,8 +9,8 @@ import numpy
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.bool, numpy.bool_],
                          ids=['float64', 'float32', 'int64', 'int32', 'bool', 'bool_'])
 @pytest.mark.parametrize("shape",
-                         [(0,), (4,), (2, 3), (2, 2, 2)],
-                         ids=['(0,)', '(4,)', '(2,3)', '(2,2,2)'])
+                         [(4,), (2, 3), (2, 2, 2)],
+                         ids=['(4,)', '(2,3)', '(2,2,2)'])
 def test_all(type, shape):
     size = 1
     for i in range(len(shape)):
@@ -42,8 +42,8 @@ def test_all(type, shape):
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.bool, numpy.bool_],
                          ids=['float64', 'float32', 'int64', 'int32', 'bool', 'bool_'])
 @pytest.mark.parametrize("shape",
-                         [(0,), (4,), (2, 3), (2, 2, 2)],
-                         ids=['(0,)', '(4,)', '(2,3)', '(2,2,2)'])
+                         [(4,), (2, 3), (2, 2, 2)],
+                         ids=['(4,)', '(2,3)', '(2,2,2)'])
 def test_any(type, shape):
     size = 1
     for i in range(len(shape)):

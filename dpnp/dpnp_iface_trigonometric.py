@@ -45,7 +45,6 @@ import numpy
 from dpnp.dpnp_algo import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
-import dpnp
 
 
 __all__ = [
@@ -324,7 +323,7 @@ def cbrt(x1):
     return dpnp_cbrt(x1)
 
 
-def arctan2(x1, x2, dtype=None, out=None, where=True, **kwargs):
+def arctan2(x1, x2, out=None):
     """
     Element-wise arc tangent of ``x1/x2`` choosing the quadrant correctly.
 
@@ -332,10 +331,10 @@ def arctan2(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     Limitations
     -----------
-    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
-    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
-    Keyword arguments ``kwargs`` are currently unsupported.
-    Otherwise the functions will be executed sequentially on CPU.
+    Input arrays are supported as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Parameter ``out`` is supported only with default value ``None``.
+    Sizes, shapes of input arrays are supported to be equal.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -354,36 +353,23 @@ def arctan2(x1, x2, dtype=None, out=None, where=True, **kwargs):
     [1.57079633, -1.57079633]
 
     """
-    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
-    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
-    if not use_origin_backend(x1) and not kwargs:
-        if not x1_is_dparray and not x1_is_scalar:
-            pass
-        elif not x2_is_dparray and not x2_is_scalar:
-            pass
-        elif x1_is_scalar and x2_is_scalar:
-            pass
-        elif x1_is_dparray and x1.ndim == 0:
-            pass
-        elif x2_is_dparray and x2.ndim == 0:
-            pass
-        elif x1_is_dparray and x2_is_dparray and x1.size != x2.size:
-            pass
-        elif x1_is_dparray and x2_is_dparray and x1.shape != x2.shape:
-            pass
-        elif out is not None and not isinstance(out, dparray):
-            pass
-        elif dtype is not None:
-            pass
-        elif out is not None:
-            pass
-        elif not where:
-            pass
-        else:
-            return dpnp_arctan2(x1, x2, dtype=dtype, out=out, where=where)
+    if (use_origin_backend(x1)):
+        return numpy.arctan2(x1, x2)
 
-    return call_origin(numpy.arctan2, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
+    if not (isinstance(x1, dparray) or isinstance(x2, dparray)):
+        return numpy.arctan2(x1, x2, out=out)
+
+    if out is not None:
+        checker_throw_value_error("arctan2", "out", type(out), None)
+
+    if (x1.size != x2.size):
+        checker_throw_value_error("arctan2", "size", x1.size, x2.size)
+
+    if (x1.shape != x2.shape):
+        checker_throw_value_error("arctan2", "shape", x1.shape, x2.shape)
+
+    return dpnp_arctan2(x1, x2)
 
 
 def cos(x1):
@@ -604,7 +590,7 @@ def expm1(x1):
     return dpnp_expm1(x1)
 
 
-def hypot(x1, x2, dtype=None, out=None, where=True, **kwargs):
+def hypot(x1, x2, out=None):
     """
     Given the "legs" of a right triangle, return its hypotenuse.
 
@@ -612,10 +598,10 @@ def hypot(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     Limitations
     -----------
-    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
-    Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
-    Keyword arguments ``kwargs`` are currently unsupported.
-    Otherwise the functions will be executed sequentially on CPU.
+    Input arrays are supported as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Parameter ``out`` is supported only with default value ``None``.
+    Sizes, shapes of input arrays are supported to be equal.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
@@ -628,36 +614,23 @@ def hypot(x1, x2, dtype=None, out=None, where=True, **kwargs):
     [5.0, 5.0, 5.0]
 
     """
-    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
-    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
-    if not use_origin_backend(x1) and not kwargs:
-        if not x1_is_dparray and not x1_is_scalar:
-            pass
-        elif not x2_is_dparray and not x2_is_scalar:
-            pass
-        elif x1_is_scalar and x2_is_scalar:
-            pass
-        elif x1_is_dparray and x1.ndim == 0:
-            pass
-        elif x2_is_dparray and x2.ndim == 0:
-            pass
-        elif x1_is_dparray and x2_is_dparray and x1.size != x2.size:
-            pass
-        elif x1_is_dparray and x2_is_dparray and x1.shape != x2.shape:
-            pass
-        elif out is not None and not isinstance(out, dparray):
-            pass
-        elif dtype is not None:
-            pass
-        elif out is not None:
-            pass
-        elif not where:
-            pass
-        else:
-            return dpnp_hypot(x1, x2, dtype=dtype, out=out, where=where)
+    if (use_origin_backend(x1)):
+        return numpy.hypot(x1, x2)
 
-    return call_origin(numpy.hypot, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
+    if not (isinstance(x1, dparray) or isinstance(x2, dparray)):
+        return numpy.hypot(x1, x2, out=out)
+
+    if out is not None:
+        checker_throw_value_error("hypot", "out", type(out), None)
+
+    if (x1.size != x2.size):
+        checker_throw_value_error("hypot", "size", x1.size, x2.size)
+
+    if (x1.shape != x2.shape):
+        checker_throw_value_error("hypot", "shape", x1.shape, x2.shape)
+
+    return dpnp_hypot(x1, x2)
 
 
 def log(x1):

@@ -83,32 +83,6 @@ def test_indices(dimension):
     numpy.testing.assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("array",
-                         [[],
-                          [[0, 0], [0, 0]],
-                          [[1, 0], [1, 0]],
-                          [[1, 2], [3, 4]],
-                          [[0, 1, 2], [3, 0, 5], [6, 7, 0]],
-                          [[0, 1, 0, 3, 0], [5, 0, 7, 0, 9]],
-                          [[[1, 2], [0, 4]], [[0, 2], [0, 1]], [[0, 0], [3, 1]]],
-                          [[[[1, 2, 3], [3, 4, 5]], [[1, 2, 3], [2, 1, 0]]], [
-                              [[1, 3, 5], [3, 1, 0]], [[0, 1, 2], [1, 3, 4]]]]],
-                         ids=['[]',
-                              '[[0, 0], [0, 0]]',
-                              '[[1, 0], [1, 0]]',
-                              '[[1, 2], [3, 4]]',
-                              '[[0, 1, 2], [3, 0, 5], [6, 7, 0]]',
-                              '[[0, 1, 0, 3, 0], [5, 0, 7, 0, 9]]',
-                              '[[[1, 2], [0, 4]], [[0, 2], [0, 1]], [[0, 0], [3, 1]]]',
-                              '[[[[1, 2, 3], [3, 4, 5]], [[1, 2, 3], [2, 1, 0]]], [[[1, 3, 5], [3, 1, 0]], [[0, 1, 2], [1, 3, 4]]]]'])
-def test_nonzero(array):
-    a = numpy.array(array)
-    ia = dpnp.array(array)
-    expected = numpy.nonzero(a)
-    result = dpnp.nonzero(ia)
-    numpy.testing.assert_array_equal(expected, result)
-
-
 @pytest.mark.parametrize("vals",
                          [[100, 200],
                           (100, 200)],
@@ -243,39 +217,6 @@ def test_put3():
     numpy.testing.assert_array_equal(a, ia)
 
 
-def test_put_along_axis_val_int():
-    a = numpy.arange(16).reshape(4, 4)
-    ai = dpnp.array(a)
-    ind_r = numpy.array([[3, 0, 2, 1]])
-    ind_r_i = dpnp.array(ind_r)
-    for axis in range(2):
-        numpy.put_along_axis(a, ind_r, 777, axis)
-        dpnp.put_along_axis(ai, ind_r_i, 777, axis)
-        numpy.testing.assert_array_equal(a, ai)
-
-
-def test_put_along_axis1():
-    a = numpy.arange(64).reshape(4, 4, 4)
-    ai = dpnp.array(a)
-    ind_r = numpy.array([[[3, 0, 2, 1]]])
-    ind_r_i = dpnp.array(ind_r)
-    for axis in range(3):
-        numpy.put_along_axis(a, ind_r, 777, axis)
-        dpnp.put_along_axis(ai, ind_r_i, 777, axis)
-        numpy.testing.assert_array_equal(a, ai)
-
-
-def test_put_along_axis2():
-    a = numpy.arange(64).reshape(4, 4, 4)
-    ai = dpnp.array(a)
-    ind_r = numpy.array([[[3, 0, 2, 1]]])
-    ind_r_i = dpnp.array(ind_r)
-    for axis in range(3):
-        numpy.put_along_axis(a, ind_r, [100, 200, 300, 400], axis)
-        dpnp.put_along_axis(ai, ind_r_i, [100, 200, 300, 400], axis)
-        numpy.testing.assert_array_equal(a, ai)
-
-
 @pytest.mark.parametrize("vals",
                          [[100, 200]],
                          ids=['[100, 200]'])
@@ -403,28 +344,6 @@ def test_take(array, indices):
     expected = numpy.take(a, ind)
     result = dpnp.take(ia, iind)
     numpy.testing.assert_array_equal(expected, result)
-
-
-def test_take_along_axis():
-    a = numpy.arange(16).reshape(4, 4)
-    ai = dpnp.array(a)
-    ind_r = numpy.array([[3, 0, 2, 1]])
-    ind_r_i = dpnp.array(ind_r)
-    for axis in range(2):
-        expected = numpy.take_along_axis(a, ind_r, axis)
-        result = dpnp.take_along_axis(ai, ind_r_i, axis)
-        numpy.testing.assert_array_equal(expected, result)
-
-
-def test_take_along_axis1():
-    a = numpy.arange(64).reshape(4, 4, 4)
-    ai = dpnp.array(a)
-    ind_r = numpy.array([[[3, 0, 2, 1]]])
-    ind_r_i = dpnp.array(ind_r)
-    for axis in range(3):
-        expected = numpy.take_along_axis(a, ind_r, axis)
-        result = dpnp.take_along_axis(ai, ind_r_i, axis)
-        numpy.testing.assert_array_equal(expected, result)
 
 
 @pytest.mark.parametrize("m",
