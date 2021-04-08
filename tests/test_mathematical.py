@@ -67,8 +67,8 @@ def test_multiply_dtype(dtype1, dtype2, data):
     numpy.testing.assert_array_equal(result, expected)
 
 
-@pytest.mark.parametrize("rhs", [[2.0, 1.5, 1.0], 3, 0.3])
-@pytest.mark.parametrize("lhs", [[1.3, 2.6, 3.9], 5, 0.5])
+@pytest.mark.parametrize("rhs", [[[1, 2, 3], [4, 5, 6]], [2.0, 1.5, 1.0], 3, 0.3])
+@pytest.mark.parametrize("lhs", [[[6, 5, 4], [3, 2, 1]], [1.3, 2.6, 3.9], 5, 0.5])
 @pytest.mark.parametrize("dtype", [numpy.int32, numpy.int64, numpy.float32, numpy.float64])
 class TestMathematical:
 
