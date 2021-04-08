@@ -38,26 +38,26 @@ class dpnp_correlate_c_kernel;
 
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
 void dpnp_correlate_c(void* result_out,
-                  const void* input1_in,
-                  const size_t input1_size,
-                  const size_t* input1_shape,
-                  const size_t input1_shape_ndim,
-                  const void* input2_in,
-                  const size_t input2_size,
-                  const size_t* input2_shape,
-                  const size_t input2_shape_ndim,
-                  const size_t* where)
+                      const void* input1_in,
+                      const size_t input1_size,
+                      const size_t* input1_shape,
+                      const size_t input1_shape_ndim,
+                      const void* input2_in,
+                      const size_t input2_size,
+                      const size_t* input2_shape,
+                      const size_t input2_shape_ndim,
+                      const size_t* where)
 {
     dpnp_dot_c<_DataType_output, _DataType_input1, _DataType_input2>(result_out,
-                                                                    input1_in,
-                                                                    input1_size,
-                                                                    input1_shape,
-                                                                    input1_shape_ndim,
-                                                                    input2_in,
-                                                                    input2_size,
-                                                                    input2_shape,
-                                                                    input2_shape_ndim,
-                                                                    where);
+                                                                     input1_in,
+                                                                     input1_size,
+                                                                     input1_shape,
+                                                                     input1_shape_ndim,
+                                                                     input2_in,
+                                                                     input2_size,
+                                                                     input2_shape,
+                                                                     input2_shape_ndim,
+                                                                     where);
 
     return;
 }
