@@ -44,48 +44,55 @@ __all__ += [
     "dpnp_copy",
     "dpnp_diag",
     "dpnp_full",
+    "dpnp_full_like",
     "dpnp_geomspace",
+    "dpnp_identity",
     "dpnp_linspace",
     "dpnp_logspace",
     "dpnp_meshgrid",
+    "dpnp_ones",
+    "dpnp_ones_like",
     "dpnp_tri",
     "dpnp_tril",
     "dpnp_triu",
+    "dpnp_vander",
+    "dpnp_zeros",
+    "dpnp_zeros_like"
 ]
+
+
+ctypedef void(*custom_1in_1out_func_ptr_t)(void *, void * , const int , size_t * , size_t * , const size_t, const size_t)
+ctypedef void(*ftpr_custom_vander_1in_1out_t)(void *, void *, size_t, size_t, int)
+ctypedef void(*custom_indexing_1out_func_ptr_t)(void * , const size_t , const size_t , const int)
 
 
 cpdef dparray dpnp_copy(dparray x1, order, subok):
     return call_fptr_1in_1out(DPNP_FN_COPY, x1, x1.shape)
 
 
-cpdef dparray dpnp_diag(v, k):
-    cdef dparray result
-
-    # computation of initial position
-    init0 = max(0, -k)
-    init1 = max(0, k)
-
+cpdef dparray dpnp_diag(dparray v, int k):
     if v.ndim == 1:
-        size = v.shape[0] + abs(k)
+        n = v.shape[0] + abs(k)
 
-        result = dpnp.zeros(shape=(size, size), dtype=v.dtype)
-
-        for i in range(v.shape[0]):
-            result[init0 + i, init1 + i] = v[i]
-    elif v.ndim == 2:
-        # computation of result size
-        size0 = min(v.shape[0], v.shape[0] + k)
-        size1 = min(v.shape[1], v.shape[1] - k)
-        size = min(size0, size1)
-        if size < 0:
-            size = 0
-
-        result = dparray((size, ), dtype=v.dtype)
-
-        for i in range(size):
-            result[i] = v[init0 + i, init1 + i]
+        shape_result = (n, n)
     else:
-        checker_throw_value_error("dpnp_diag", "v.ndim", v.ndim, "1 or 2")
+        n = min(v.shape[0], v.shape[0] + k, v.shape[1], v.shape[1] - k)
+        if n < 0:
+            n = 0
+
+        shape_result = (n, )
+
+    cdef dparray result = dpnp.zeros(shape_result, dtype=v.dtype)
+
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(v.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DIAG, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+
+    cdef custom_1in_1out_func_ptr_t func = <custom_1in_1out_func_ptr_t > kernel_data.ptr
+
+    func(v.get_data(), result.get_data(), k, < size_t * > v._dparray_shape.data(), < size_t * > result._dparray_shape.data(), v.ndim, result.ndim)
 
     return result
 
@@ -97,7 +104,29 @@ cpdef dparray dpnp_full(result_shape, value_in, result_dtype):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FULL, dtype_in, DPNP_FT_NONE)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    # Create single-element input array with type given by FPTR data
+    cdef dparray_shape_type shape_in = (1,)
+    cdef dparray array_in = dparray(shape_in, dtype=result_type)
+    array_in[0] = value_in
+    # Create result array with type given by FPTR data
+    cdef dparray result = dparray(result_shape, dtype=result_type)
+
+    cdef fptr_1in_1out_t func = <fptr_1in_1out_t > kernel_data.ptr
+    # Call FPTR function
+    func(array_in.get_data(), result.get_data(), result.size)
+
+    return result
+
+
+cpdef dparray dpnp_full_like(result_shape, value_in, result_dtype):
+    # Convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType dtype_in = dpnp_dtype_to_DPNPFuncType(result_dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FULL_LIKE, dtype_in, DPNP_FT_NONE)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # Create single-element input array with type given by FPTR data
     cdef dparray_shape_type shape_in = (1,)
     cdef dparray array_in = dparray(shape_in, dtype=result_type)
@@ -135,6 +164,21 @@ cpdef dparray dpnp_geomspace(start, stop, num, endpoint, dtype, axis):
         result[0] = start
         if endpoint and result.size > 1:
             result[result.size - 1] = stop
+
+    return result
+
+
+cpdef dparray dpnp_identity(n, result_dtype):
+    cdef DPNPFuncType dtype_in = dpnp_dtype_to_DPNPFuncType(result_dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_IDENTITY, dtype_in, DPNP_FT_NONE)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+
+    cdef dparray result = dparray((n, n), dtype=result_type)
+
+    cdef fptr_1out_t func = <fptr_1out_t > kernel_data.ptr
+    func(result.get_data(), n)
 
     return result
 
@@ -218,86 +262,96 @@ cpdef list dpnp_meshgrid(xi, copy, sparse, indexing):
     return result
 
 
-cpdef dparray dpnp_tri(N, M, k, dtype):
-    cdef dparray result
+cpdef dparray dpnp_ones(result_shape, result_dtype):
+    return call_fptr_1out(DPNP_FN_ONES, result_shape, result_dtype)
 
+
+cpdef dparray dpnp_ones_like(result_shape, result_dtype):
+    return call_fptr_1out(DPNP_FN_ONES_LIKE, result_shape, result_dtype)
+
+
+cpdef dparray dpnp_tri(N, M=None, k=0, dtype=numpy.float):
     if M is None:
         M = N
 
-    result = dparray(shape=(N, M), dtype=dtype)
+    if dtype == numpy.float:
+        dtype = numpy.float64
 
-    for i in range(N):
-        diag_idx = max(0, i + k + 1)
-        diag_idx = min(diag_idx, M)
-        for j in range(diag_idx):
-            result[i, j] = 1
-        for j in range(diag_idx, M):
-            result[i, j] = 0
-
-    return result
-
-
-cpdef dparray dpnp_tril(m, k):
     cdef dparray result
 
-    if m.ndim == 1:
-        result = dparray(shape=(m.shape[0], m.shape[0]), dtype=m.dtype)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
-        for i in range(result.size):
-            ids = get_axis_indeces(i, result.shape)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRI, param1_type, param1_type)
 
-            diag_idx = max(-1, ids[result.ndim - 2] + k)
-            diag_idx = min(diag_idx, result.shape[result.ndim - 1])
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
 
-            if ids[result.ndim - 1] <= diag_idx:
-                result[i] = m[ids[result.ndim - 1]]
-            else:
-                result[i] = 0
-    else:
-        result = dparray(shape=m.shape, dtype=m.dtype)
+    result = dparray(shape=(N, M), dtype=result_type)
 
-        for i in range(result.size):
-            ids = get_axis_indeces(i, result.shape)
+    cdef custom_indexing_1out_func_ptr_t func = <custom_indexing_1out_func_ptr_t > kernel_data.ptr
 
-            diag_idx = max(-1, ids[result.ndim - 2] + k)
-            diag_idx = min(diag_idx, result.shape[result.ndim - 1])
-
-            if ids[result.ndim - 1] <= diag_idx:
-                result[i] = m[i]
-            else:
-                result[i] = 0
+    func(result.get_data(), N, M, k)
 
     return result
 
 
-cpdef dparray dpnp_triu(m, k):
-    cdef dparray result
+cpdef dparray dpnp_tril(dparray m, int k):
     if m.ndim == 1:
-
-        result = dparray(shape=(m.shape[0], m.shape[0]), dtype=m.dtype)
-
-        for i in range(result.size):
-            ids = get_axis_indeces(i, result.shape)
-
-            diag_idx = max(-1, ids[result.ndim - 2] + k)
-            diag_idx = min(diag_idx, result.shape[result.ndim - 1])
-
-            if ids[result.ndim - 1] >= diag_idx:
-                result[i] = m[ids[result.ndim - 1]]
-            else:
-                result[i] = 0
+        result_shape = (m.shape[0], m.shape[0])
     else:
-        result = dparray(shape=m.shape, dtype=m.dtype)
+        result_shape = m.shape
 
-        for i in range(result.size):
-            ids = get_axis_indeces(i, result.shape)
+    result_ndim = len(result_shape)
+    cdef dparray result = dparray(result_shape, dtype=m.dtype)
 
-            diag_idx = max(-1, ids[result.ndim - 2] + k)
-            diag_idx = min(diag_idx, result.shape[result.ndim - 1])
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(m.dtype)
 
-            if ids[result.ndim - 1] >= diag_idx:
-                result[i] = m[i]
-            else:
-                result[i] = 0
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRIL, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+
+    cdef custom_1in_1out_func_ptr_t func = <custom_1in_1out_func_ptr_t > kernel_data.ptr
+
+    func(m.get_data(), result.get_data(), k, < size_t * > m._dparray_shape.data(), < size_t * > result._dparray_shape.data(), m.ndim, result.ndim)
 
     return result
+
+
+cpdef dparray dpnp_triu(dparray m, int k):
+    if m.ndim == 1:
+        res_shape = (m.shape[0], m.shape[0])
+    else:
+        res_shape = m.shape
+
+    cdef dparray result = dparray(shape=res_shape, dtype=m.dtype)
+
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(m.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRIU, param1_type, param1_type)
+
+    cdef custom_1in_1out_func_ptr_t func = <custom_1in_1out_func_ptr_t > kernel_data.ptr
+
+    func(m.get_data(), result.get_data(), k, < size_t * > m._dparray_shape.data(), < size_t * > result._dparray_shape.data(), m.ndim, result.ndim)
+
+    return result
+
+
+cpdef dparray dpnp_vander(dparray x1, int N, int increasing):
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_VANDER, param1_type, DPNP_FT_NONE)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    cdef dparray result = dparray((x1.size, N), dtype=result_type)
+
+    cdef ftpr_custom_vander_1in_1out_t func = <ftpr_custom_vander_1in_1out_t > kernel_data.ptr
+    func(x1.get_data(), result.get_data(), x1.size, N, increasing)
+
+    return result
+
+
+cpdef dparray dpnp_zeros(result_shape, result_dtype):
+    return call_fptr_1out(DPNP_FN_ZEROS, result_shape, result_dtype)
+
+
+cpdef dparray dpnp_zeros_like(result_shape, result_dtype):
+    return call_fptr_1out(DPNP_FN_ZEROS_LIKE, result_shape, result_dtype)

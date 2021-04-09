@@ -38,9 +38,14 @@ from libcpp cimport bool as cpp_bool
 
 from dpnp.dpnp_iface_types import *
 from dpnp.dpnp_iface import *
+
+# to avoid interference with Python internal functions
+from dpnp.dpnp_iface import sum as iface_sum
+from dpnp.dpnp_iface import prod as iface_prod
+
 from dpnp.dpnp_algo cimport *
-from dpnp.dpnp_iface_statistics import min, max
-from dpnp.dpnp_iface_logic import all, any
+from dpnp.dpnp_iface_statistics import min, max  # TODO do the same as for iface_sum
+from dpnp.dpnp_iface_logic import all, any  # TODO do the same as for iface_sum
 import numpy
 cimport numpy
 
@@ -436,9 +441,22 @@ cdef class dparray:
 
         """
         if isinstance(key, slice):
-            start = 0 if (key.start is None) else key.start
-            stop = self.size if (key.stop is None) else key.stop
-            step = 1 if (key.step is None) else key.step
+            start = 0 if key.start is None else key.start
+            stop = self.size if key.stop is None else key.stop
+            step = 1 if key.step is None else key.step
+
+            if not isinstance(value, dparray):
+                pass
+            elif start != 0:
+                pass
+            elif stop != self.size:
+                pass
+            elif step != 1:
+                pass
+            else:
+                copyto(self, value)
+                return
+
             for i in range(start, stop, step):
                 self._setitem_scalar(i, value[i])
         else:
@@ -494,11 +512,7 @@ cdef class dparray:
                 if order == 'F':
                     return self.transpose().reshape(self.size)
 
-                result = dparray(self.size, dtype=self.dtype)
-                for i in range(result.size):
-                    result[i] = self[i]
-
-                return result
+                return dpnp_flatten(self)
 
         result = utils.dp2nd_array(self).flatten(order=order)
 
@@ -748,7 +762,7 @@ cdef class dparray:
     def __truediv__(self, other):
         return divide(self, other)
 
-    cpdef dparray astype(self, dtype, order='K', casting=None, subok=None, copy=True):
+    cpdef dparray astype(self, dtype, order='K', casting='unsafe', subok=True, copy=True):
         """Copy the array with data type casting.
 
         Args:
@@ -770,19 +784,22 @@ cdef class dparray:
 
         """
 
-        if casting is not None:
-            utils.checker_throw_value_error("astype", "casting", casting, None)
+        if casting is not 'unsafe':
+            pass
+        elif subok is not True:
+            pass
+        elif copy is not True:
+            pass
+        elif order is not 'K':
+            pass
+        elif self.dtype == numpy.complex128:
+            pass
+        else:
+            return dpnp_astype(self, dtype)
 
-        if subok is not None:
-            utils.checker_throw_value_error("astype", "subok", subok, None)
+        result = utils.dp2nd_array(self).astype(dtype=dtype, order=order, casting=casting, subok=subok, copy=copy)
 
-        if copy is not True:
-            utils.checker_throw_value_error("astype", "copy", copy, True)
-
-        if order is not 'K':
-            utils.checker_throw_value_error("astype", "order", order, 'K')
-
-        return dpnp_astype(self, dtype)
+        return utils.nd2dp_array(result)
 
     def conj(self):
         """
@@ -816,6 +833,18 @@ cdef class dparray:
     -------------------------------------------------------------------------
     """
 
+    def prod(*args, **kwargs):
+        """
+        Returns the prod along a given axis.
+
+        .. seealso::
+           :obj:`dpnp.prod` for full documentation,
+           :meth:`dpnp.dparray.sum`
+
+        """
+
+        return iface_prod(*args, **kwargs)
+
     def sum(*args, **kwargs):
         """
         Returns the sum along a given axis.
@@ -826,16 +855,14 @@ cdef class dparray:
 
         """
 
-        # TODO don't know how to call `sum from python public interface. Simple call executes internal `sum` function.
-        # numpy with dparray call public dpnp.sum via __array_interface__`
-        return numpy.sum(*args, **kwargs)
+        return iface_sum(*args, **kwargs)
 
-    def max(self, axis=None):
+    def max(self, axis=None, out=None, keepdims=numpy._NoValue, initial=numpy._NoValue, where=numpy._NoValue):
         """
         Return the maximum along an axis.
         """
 
-        return max(self, axis)
+        return max(self, axis, out, keepdims, initial, where)
 
     def mean(self, axis=None):
         """
@@ -844,12 +871,12 @@ cdef class dparray:
 
         return mean(self, axis)
 
-    def min(self, axis=None):
+    def min(self, axis=None, out=None, keepdims=numpy._NoValue, initial=numpy._NoValue, where=numpy._NoValue):
         """
         Return the minimum along a given axis.
         """
 
-        return min(self, axis)
+        return min(self, axis, out, keepdims, initial, where)
 
     """
     -------------------------------------------------------------------------
@@ -862,6 +889,12 @@ cdef class dparray:
         Construct an array from an index array and a set of arrays to choose from.
         """
         return choose(input, choices, out, mode)
+
+    def diagonal(input, offset=0, axis1=0, axis2=1):
+        """
+        Return specified diagonals.
+        """
+        return diagonal(input, offset, axis1, axis2)
 
     def take(self, indices, axis=None, out=None, mode='raise'):
         """
@@ -917,6 +950,20 @@ cdef class dparray:
 
         """
         return argsort(self, axis, kind, order)
+
+    def partition(self, kth, axis=-1, kind='introselect', order=None):
+        """
+        Return a partitioned copy of an array.
+        For full documentation refer to :obj:`numpy.partition`.
+
+        Limitations
+        -----------
+        Input array is supported as :obj:`dpnp.ndarray`.
+        Input kth is supported as :obj:`int`.
+        Parameters ``axis``, ``kind`` and ``order`` are supported only with default values.
+        """
+
+        return partition(self, kth, axis, kind, order)
 
     def sort(self, axis=-1, kind=None, order=None):
         """

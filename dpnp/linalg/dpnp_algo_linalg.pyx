@@ -49,6 +49,7 @@ __all__ = [
     "dpnp_inv",
     "dpnp_matrix_rank",
     "dpnp_norm",
+    "dpnp_qr",
     "dpnp_svd",
 ]
 
@@ -59,6 +60,7 @@ ctypedef void(*custom_linalg_1in_1out_func_ptr_t_)(void * , void * , size_t * )
 ctypedef void(*custom_linalg_1in_1out_with_size_func_ptr_t_)(void *, void * , size_t)
 ctypedef void(*custom_linalg_1in_1out_with_2size_func_ptr_t_)(void *, void * , size_t, size_t)
 ctypedef void(*custom_linalg_1in_3out_shape_t)(void *, void * , void * , void * , size_t , size_t )
+ctypedef void(*custom_linalg_2in_1out_func_ptr_t)(void *, void *, void* , size_t )
 
 
 cpdef dparray dpnp_cholesky(dparray input):
@@ -145,7 +147,7 @@ cpdef tuple dpnp_eig(dparray x1):
     cdef dparray res_val = dparray((size,), dtype=result_type)
     cdef dparray res_vec = dparray(x1_shape, dtype=result_type)
 
-    cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
+    cdef custom_linalg_2in_1out_func_ptr_t func = <custom_linalg_2in_1out_func_ptr_t > kernel_data.ptr
     # call FPTR function
     func(x1.get_data(), res_val.get_data(), res_vec.get_data(), size)
 
@@ -304,6 +306,28 @@ cpdef dparray dpnp_norm(dparray input, ord=None, axis=None):
         return ret
     else:
         raise ValueError("Improper number of dimensions to norm.")
+
+
+cpdef tuple dpnp_qr(dparray x1, mode):
+    cdef size_t size_m = x1.shape[0]
+    cdef size_t size_n = x1.shape[1]
+
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_QR, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+
+    cdef dparray res_q = dparray((size_m, size_m), dtype=result_type)
+    cdef dparray res_r = dparray((size_m, size_n), dtype=result_type)
+
+    size_tau = min(size_m, size_n)
+    cdef dparray tau = dparray((size_tau, ), dtype=result_type)
+
+    cdef custom_linalg_1in_3out_shape_t func = < custom_linalg_1in_3out_shape_t > kernel_data.ptr
+
+    func(x1.get_data(), res_q.get_data(), res_r.get_data(), tau.get_data(), size_m, size_n)
+
+    return (res_q, res_r)
 
 
 cpdef tuple dpnp_svd(dparray x1, full_matrices, compute_uv, hermitian):

@@ -69,9 +69,11 @@ MACRO_1ARG_2TYPES_OP(dpnp_atanh_c,
                      oneapi::mkl::vm::atanh(DPNP_QUEUE, size, array1, result))
 MACRO_1ARG_2TYPES_OP(dpnp_cbrt_c, cl::sycl::cbrt(input_elem), oneapi::mkl::vm::cbrt(DPNP_QUEUE, size, array1, result))
 MACRO_1ARG_2TYPES_OP(dpnp_ceil_c, cl::sycl::ceil(input_elem), oneapi::mkl::vm::ceil(DPNP_QUEUE, size, array1, result))
+MACRO_1ARG_2TYPES_OP(__dpnp_copyto_c, input_elem, DPNP_QUEUE.submit(kernel_func))
 MACRO_1ARG_2TYPES_OP(dpnp_cos_c, cl::sycl::cos(input_elem), oneapi::mkl::vm::cos(DPNP_QUEUE, size, array1, result))
 MACRO_1ARG_2TYPES_OP(dpnp_cosh_c, cl::sycl::cosh(input_elem), oneapi::mkl::vm::cosh(DPNP_QUEUE, size, array1, result))
 MACRO_1ARG_2TYPES_OP(dpnp_degrees_c, cl::sycl::degrees(input_elem), DPNP_QUEUE.submit(kernel_func))
+MACRO_1ARG_2TYPES_OP(dpnp_ediff1d_c, array1[i + 1] - input_elem, DPNP_QUEUE.submit(kernel_func))
 MACRO_1ARG_2TYPES_OP(dpnp_exp2_c, cl::sycl::exp2(input_elem), oneapi::mkl::vm::exp2(DPNP_QUEUE, size, array1, result))
 MACRO_1ARG_2TYPES_OP(dpnp_exp_c, cl::sycl::exp(input_elem), oneapi::mkl::vm::exp(DPNP_QUEUE, size, array1, result))
 MACRO_1ARG_2TYPES_OP(dpnp_expm1_c,

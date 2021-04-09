@@ -49,8 +49,11 @@ ctypedef void(*fptr_2in_1out_shapes_t)(void * , void * , void * , size_t * , siz
 
 
 cpdef dparray dpnp_dot(dparray in_array1, dparray in_array2):
-    cdef vector[Py_ssize_t] shape1 = in_array1.shape
-    cdef vector[Py_ssize_t] shape2 = in_array2.shape
+
+    cdef dparray_shape_type shape1, shape2
+
+    shape1 = in_array1.shape
+    shape2 = in_array2.shape
 
     cdef size_t dim1 = in_array1.ndim
     cdef size_t dim2 = in_array2.ndim
@@ -88,7 +91,8 @@ cpdef dparray dpnp_dot(dparray in_array1, dparray in_array2):
 
     cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
     # call FPTR function
-    func(in_array1.get_data(), in_array2.get_data(), result.get_data(), size1)
+    func(result.get_data(), in_array1.get_data(), in_array1.size, shape1.data(), shape1.size(),
+                 in_array2.get_data(), in_array2.size, shape2.data(), shape2.size(), NULL)
 
     return result
 

@@ -26,12 +26,110 @@ def test_diff(array):
     numpy.testing.assert_allclose(expected, result)
 
 
+@pytest.mark.parametrize("data",
+                         [[[1+1j, -2j], [3-3j, 4j]]],
+                         ids=['[[1+1j, -2j], [3-3j, 4j]]'])
+def test_multiply_complex(data):
+    a = numpy.array(data)
+    ia = inp.array(data)
+
+    result = inp.multiply(ia, ia)
+    expected = numpy.multiply(a, a)
+    numpy.testing.assert_array_equal(result, expected)
+
+    result = inp.multiply(ia, 0.5j)
+    expected = numpy.multiply(a, 0.5j)
+    numpy.testing.assert_array_equal(result, expected)
+
+    result = inp.multiply(0.5j, ia)
+    expected = numpy.multiply(0.5j, a)
+    numpy.testing.assert_array_equal(result, expected)
+
+
+@pytest.mark.parametrize("dtype1",
+                         [numpy.bool_, numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['numpy.bool_', 'numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
+@pytest.mark.parametrize("dtype2",
+                         [numpy.bool_, numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['numpy.bool_', 'numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
+@pytest.mark.parametrize("data",
+                         [[[1, 2], [3, 4]]],
+                         ids=['[[1, 2], [3, 4]]'])
+def test_multiply_dtype(dtype1, dtype2, data):
+    a = numpy.array(data, dtype=dtype1)
+    ia = inp.array(data, dtype=dtype1)
+
+    b = numpy.array(data, dtype=dtype2)
+    ib = inp.array(data, dtype=dtype2)
+
+    result = numpy.multiply(ia, ib)
+    expected = numpy.multiply(a, b)
+    numpy.testing.assert_array_equal(result, expected)
+
+
+@pytest.mark.parametrize("rhs", [[[1, 2, 3], [4, 5, 6]], [2.0, 1.5, 1.0], 3, 0.3])
+@pytest.mark.parametrize("lhs", [[[6, 5, 4], [3, 2, 1]], [1.3, 2.6, 3.9], 5, 0.5])
+@pytest.mark.parametrize("dtype", [numpy.int32, numpy.int64, numpy.float32, numpy.float64])
+class TestMathematical:
+
+    @staticmethod
+    def array_or_scalar(xp, data, dtype=None):
+        if numpy.isscalar(data):
+            return data
+
+        return xp.array(data, dtype=dtype)
+
+    def _test_mathematical(self, name, dtype, lhs, rhs):
+        a = self.array_or_scalar(inp, lhs, dtype=dtype)
+        b = self.array_or_scalar(inp, rhs, dtype=dtype)
+        result = getattr(inp, name)(a, b)
+
+        a = self.array_or_scalar(numpy, lhs, dtype=dtype)
+        b = self.array_or_scalar(numpy, rhs, dtype=dtype)
+        expected = getattr(numpy, name)(a, b)
+
+        numpy.testing.assert_allclose(result, expected, atol=1e-4)
+
+    def test_add(self, dtype, lhs, rhs):
+        self._test_mathematical('add', dtype, lhs, rhs)
+
+    def test_arctan2(self, dtype, lhs, rhs):
+        self._test_mathematical('arctan2', dtype, lhs, rhs)
+
+    def test_copysign(self, dtype, lhs, rhs):
+        self._test_mathematical('copysign', dtype, lhs, rhs)
+
+    def test_divide(self, dtype, lhs, rhs):
+        self._test_mathematical('divide', dtype, lhs, rhs)
+
+    def test_fmod(self, dtype, lhs, rhs):
+        self._test_mathematical('fmod', dtype, lhs, rhs)
+
+    def test_hypot(self, dtype, lhs, rhs):
+        self._test_mathematical('hypot', dtype, lhs, rhs)
+
+    def test_maximum(self, dtype, lhs, rhs):
+        self._test_mathematical('maximum', dtype, lhs, rhs)
+
+    def test_minimum(self, dtype, lhs, rhs):
+        self._test_mathematical('minimum', dtype, lhs, rhs)
+
+    def test_multiply(self, dtype, lhs, rhs):
+        self._test_mathematical('multiply', dtype, lhs, rhs)
+
+    def test_power(self, dtype, lhs, rhs):
+        self._test_mathematical('power', dtype, lhs, rhs)
+
+    def test_subtract(self, dtype, lhs, rhs):
+        self._test_mathematical('subtract', dtype, lhs, rhs)
+
+
 @pytest.mark.parametrize("val_type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
+                         [bool, int, float],
+                         ids=['bool', 'int', 'float'])
 @pytest.mark.parametrize("data_type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
+                         [numpy.bool_, numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['numpy.bool_', 'numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
 @pytest.mark.parametrize("val",
                          [0, 1, 5],
                          ids=['0', '1', '5'])
@@ -46,13 +144,33 @@ def test_diff(array):
                               '[[1, 2], [3, 4]]',
                               '[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]',
                               '[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]'])
-def test_multiply(array, val, data_type, val_type):
+def test_multiply_scalar(array, val, data_type, val_type):
     a = numpy.array(array, dtype=data_type)
     ia = inp.array(a)
     val_ = val_type(val)
-    result = inp.multiply(ia, val_)
+
+    result = inp.multiply(a, val_)
     expected = numpy.multiply(ia, val_)
-    numpy.testing.assert_array_equal(expected, result)
+    numpy.testing.assert_array_equal(result, expected)
+
+    result = inp.multiply(val_, a)
+    expected = numpy.multiply(val_, ia)
+    numpy.testing.assert_array_equal(result, expected)
+
+
+@pytest.mark.parametrize("shape",
+                         [(), (3, 2)],
+                         ids=['()', '(3, 2)'])
+@pytest.mark.parametrize("dtype",
+                         [numpy.float32, numpy.float64],
+                         ids=['numpy.float32', 'numpy.float64'])
+def test_multiply_scalar2(shape, dtype):
+    a = numpy.ones(shape, dtype=dtype)
+    ia = inp.ones(shape, dtype=dtype)
+
+    result = 0.5 * ia
+    expected = 0.5 * a
+    numpy.testing.assert_array_equal(result, expected)
 
 
 @pytest.mark.parametrize("array", [[1, 2, 3, 4, 5],
@@ -109,9 +227,14 @@ def test_power(array, val, data_type, val_type):
 
 
 class TestEdiff1d:
-
-    def test_ediff1d_int(self):
-        a = numpy.array([1, 2, 4, 7, 0])
+    @pytest.mark.parametrize("data_type",
+                             [numpy.float64, numpy.float32, numpy.int64, numpy.int32])
+    @pytest.mark.parametrize("array", [[1, 2, 4, 7, 0],
+                                       [],
+                                       [1],
+                                       [[1, 2, 3], [5, 2, 8], [7, 3, 4]], ])
+    def test_ediff1d_int(self, array, data_type):
+        a = numpy.array(array, dtype=data_type)
         ia = inp.array(a)
 
         result = inp.ediff1d(ia)
@@ -120,61 +243,62 @@ class TestEdiff1d:
 
     def test_ediff1d_args(self):
         a = numpy.array([1, 2, 4, 7, 0])
-        ia = inp.array(a)
 
         to_begin = numpy.array([-20, -30])
-        i_to_begin = inp.array(to_begin)
-
         to_end = numpy.array([20, 15])
-        i_to_end = inp.array(to_end)
 
-        result = inp.ediff1d(ia, to_end=i_to_end, to_begin=i_to_begin)
+        result = inp.ediff1d(a, to_end=to_end, to_begin=to_begin)
         expected = numpy.ediff1d(a, to_end=to_end, to_begin=to_begin)
-        numpy.testing.assert_array_equal(expected, result)
-
-    def test_ediff1d_float(self):
-        a = numpy.array([1., 2.5, 6., 7., 3.])
-        ia = inp.array(a)
-
-        result = inp.ediff1d(ia)
-        expected = numpy.ediff1d(a)
         numpy.testing.assert_array_equal(expected, result)
 
 
 class TestTrapz:
-
-    @pytest.mark.parametrize("array", [[1, 2, 4, 5],
-                                       [1., 2.5, 6., 7., 3.],
-                                       [2, 4, 6, 8]])
-    def test_trapz_without_params(self, array):
-        a = numpy.array(array)
+    @pytest.mark.parametrize("data_type",
+                             [numpy.float64, numpy.float32, numpy.int64, numpy.int32])
+    @pytest.mark.parametrize("array", [[1, 2, 3],
+                                       [[1, 2, 3], [4, 5, 6]],
+                                       [1, 4, 6, 9, 10, 12],
+                                       [],
+                                       [1]])
+    def test_trapz_default(self, array, data_type):
+        a = numpy.array(array, dtype=data_type)
         ia = inp.array(a)
 
         result = inp.trapz(ia)
         expected = numpy.trapz(a)
         numpy.testing.assert_array_equal(expected, result)
 
+    @pytest.mark.parametrize("data_type_y",
+                             [numpy.float64, numpy.float32, numpy.int64, numpy.int32])
+    @pytest.mark.parametrize("data_type_x",
+                             [numpy.float64, numpy.float32, numpy.int64, numpy.int32])
     @pytest.mark.parametrize("y_array", [[1, 2, 4, 5],
-                                         [1., 2.5, 6., 7., ],
-                                         [2, 4, 6, 8]])
-    @pytest.mark.parametrize("x_array", [[1, 2, 3, 4],
-                                         [2, 4, 6, 8]])
-    def test_trapz_without_params(self, y_array, x_array):
-        y = numpy.array(y_array)
-        iy = inp.array(y)
+                                         [1., 2.5, 6., 7.]])
+    @pytest.mark.parametrize("x_array", [[2, 5, 6, 9]])
+    def test_trapz_with_x_params(self, y_array, x_array, data_type_y, data_type_x):
+        y = numpy.array(y_array, dtype=data_type_y)
+        iy = inp.array(y_array, dtype=data_type_y)
 
-        x = numpy.array(x_array)
-        ix = inp.array(x)
+        x = numpy.array(x_array, dtype=data_type_x)
+        ix = inp.array(x_array, dtype=data_type_x)
 
         result = inp.trapz(iy, x=ix)
         expected = numpy.trapz(y, x=x)
         numpy.testing.assert_array_equal(expected, result)
 
+    @pytest.mark.parametrize("array", [[1, 2, 3], [4, 5, 6]])
+    def test_trapz_with_x_param_2ndim(self, array):
+        a = numpy.array(array)
+        ia = inp.array(a)
+
+        result = inp.trapz(ia, x=ia)
+        expected = numpy.trapz(a, x=a)
+        numpy.testing.assert_array_equal(expected, result)
+
     @pytest.mark.parametrize("y_array", [[1, 2, 4, 5],
-                                         [1., 2.5, 6., 7., ],
-                                         [2, 4, 6, 8]])
-    @pytest.mark.parametrize("dx", [1, 2, 3, 4])
-    def test_trapz_without_params(self, y_array, dx):
+                                         [1., 2.5, 6., 7., ]])
+    @pytest.mark.parametrize("dx", [2, 3, 4])
+    def test_trapz_with_dx_params(self, y_array, dx):
         y = numpy.array(y_array)
         iy = inp.array(y)
 

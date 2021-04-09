@@ -66,6 +66,7 @@ __all__ = [
     "full",
     "full_like",
     "geomspace",
+    "identity",
     "linspace",
     "loadtxt",
     "logspace",
@@ -77,6 +78,7 @@ __all__ = [
     "tri",
     "tril",
     "triu",
+    "vander",
     "zeros",
     "zeros_like"
 ]
@@ -387,6 +389,10 @@ def diag(v, k=0):
     if not use_origin_backend(v):
         if not isinstance(v, dparray):
             pass
+        elif not isinstance(k, int):
+            pass
+        elif v.ndim != 1 and v.ndim != 2:
+            pass
         else:
             return dpnp_diag(v, k)
 
@@ -661,7 +667,7 @@ def full_like(x1, fill_value, dtype=None, order='C', subok=False, shape=None):
         _shape = shape if shape is not None else x1.shape
         _dtype = dtype if dtype is not None else x1.dtype
 
-        return dpnp_init_val(_shape, _dtype, fill_value)
+        return dpnp_full_like(_shape, fill_value, _dtype)
 
     return numpy.full_like(x1, fill_value, dtype, order, subok, shape)
 
@@ -704,6 +710,40 @@ def geomspace(start, stop, num=50, endpoint=True, dtype=None, axis=0):
         return dpnp_geomspace(start, stop, num, endpoint, dtype, axis)
 
     return call_origin(numpy.geomspace, start, stop, num, endpoint, dtype, axis)
+
+
+def identity(n, dtype=None, *, like=None):
+    """
+    Return the identity array.
+
+    The identity array is a square array with ones on the main diagonal.
+
+    For full documentation refer to :obj:`numpy.identity`.
+
+    Limitations
+    -----------
+    Parameter ``like`` is currently not supported .
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.identity(3)
+    array([[1.,  0.,  0.],
+           [0.,  1.,  0.],
+           [0.,  0.,  1.]])
+
+    """
+    if not use_origin_backend():
+        if like is not None:
+            pass
+        elif n < 0:
+            pass
+        else:
+            if dtype is None:
+                dtype = dpnp.float64
+            return dpnp_identity(n, dtype)
+
+    return call_origin(numpy.identity, n, dtype=dtype, like=like)
 
 
 def linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis=0):
@@ -983,7 +1023,7 @@ def ones(shape, dtype=None, order='C'):
 
         _dtype = dtype if dtype is not None else dpnp.float64
 
-        return dpnp_init_val(shape, _dtype, 1)
+        return dpnp_ones(shape, _dtype)
 
     return numpy.ones(shape, dtype=dtype, order=order)
 
@@ -1027,12 +1067,12 @@ def ones_like(x1, dtype=None, order='C', subok=False, shape=None):
         _shape = shape if shape is not None else x1.shape
         _dtype = dtype if dtype is not None else x1.dtype
 
-        return dpnp_init_val(_shape, _dtype, 1)
+        return dpnp_ones_like(_shape, _dtype)
 
     return numpy.ones_like(x1, dtype, order, subok, shape)
 
 
-def tri(N, M=None, k=0, dtype=numpy.float):
+def tri(N, M=None, k=0, dtype=numpy.float, **kwargs):
     """
     An array with ones at and below the given diagonal and zeros elsewhere.
 
@@ -1054,9 +1094,22 @@ def tri(N, M=None, k=0, dtype=numpy.float):
     """
 
     if not use_origin_backend():
-        return dpnp_tri(N, M, k, dtype)
+        if len(kwargs) != 0:
+            pass
+        elif not isinstance(N, int):
+            pass
+        elif N < 0:
+            pass
+        elif M is not None and not isinstance(M, int):
+            pass
+        elif M is not None and M < 0:
+            pass
+        elif not isinstance(k, int):
+            pass
+        else:
+            return dpnp_tri(N, M, k, dtype)
 
-    return call_origin(numpy.tri, N, M, k, dtype)
+    return call_origin(numpy.tri, N, M, k, dtype, **kwargs)
 
 
 def tril(m, k=0):
@@ -1110,10 +1163,53 @@ def triu(m, k=0):
     if not use_origin_backend(m):
         if not isinstance(m, dparray):
             pass
+        elif not isinstance(k, int):
+            pass
         else:
             return dpnp_triu(m, k)
 
     return call_origin(numpy.triu, m, k)
+
+
+def vander(x1, N=None, increasing=False):
+    """
+    Generate a Vandermonde matrix.
+
+    For full documentation refer to :obj:`numpy.vander`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 2, 3, 5])
+    >>> N = 3
+    >>> np.vander(x, N)
+    array([[ 1,  1,  1],
+           [ 4,  2,  1],
+           [ 9,  3,  1],
+           [25,  5,  1]])
+    >>> x = np.array([1, 2, 3, 5])
+    >>> np.vander(x)
+    array([[  1,   1,   1,   1],
+           [  8,   4,   2,   1],
+           [ 27,   9,   3,   1],
+           [125,  25,   5,   1]])
+    >>> np.vander(x, increasing=True)
+    array([[  1,   1,   1,   1],
+           [  1,   2,   4,   8],
+           [  1,   3,   9,  27],
+           [  1,   5,  25, 125]])
+    """
+    if (not use_origin_backend(x1)):
+        if not isinstance(x1, dparray):
+            pass
+        elif x1.ndim != 1:
+            pass
+        else:
+            if N is None:
+                N = x1.size
+            return dpnp_vander(x1, N, increasing)
+
+    return call_origin(numpy.vander, x1, N=N, increasing=increasing)
 
 
 def zeros(shape, dtype=None, order='C'):
@@ -1152,7 +1248,7 @@ def zeros(shape, dtype=None, order='C'):
 
         _dtype = dtype if dtype is not None else dpnp.float64
 
-        return dpnp_init_val(shape, _dtype, 0)
+        return dpnp_zeros(shape, _dtype)
 
     return numpy.zeros(shape, dtype=dtype, order=order)
 
@@ -1196,6 +1292,6 @@ def zeros_like(x1, dtype=None, order='C', subok=False, shape=None):
         _shape = shape if shape is not None else x1.shape
         _dtype = dtype if dtype is not None else x1.dtype
 
-        return dpnp_init_val(_shape, _dtype, 0)
+        return dpnp_zeros_like(_shape, _dtype)
 
     return numpy.zeros_like(x1, dtype, order, subok, shape)
