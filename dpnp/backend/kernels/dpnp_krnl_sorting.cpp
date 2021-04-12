@@ -87,45 +87,70 @@ template <typename _DataType>
 class dpnp_partition_c_kernel;
 
 template <typename _DataType>
-void dpnp_partition_c(const void* sort_array1_in, void* result1, const size_t kth, const size_t* shape, const size_t ndim)
+void dpnp_partition_c(void* array1_in, void* result1, const size_t kth, const size_t* shape_, const size_t ndim)
 {
 
     cl::sycl::event event;
 
-    const _DataType* sort_arr = reinterpret_cast<const _DataType*>(sort_array1_in);
+    _DataType* arr = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-    size_t size_ = 1;
-    for (size_t i = 0; i < ndim - 1; ++i)
+    size_t size = 1;
+    for (size_t i = 0; i < ndim; ++i)
     {
-        size_ *= shape[i];
+        size *= shape_[i];
     }
+
+    size_t size_ = size/shape_[ndim-1];
 
     if (size_ == 0)
     {
         return;
     }
 
+    for (size_t i = 0; i < size_; ++i)
+    {
+        size_t ind_begin = i * shape_[ndim-1];
+        size_t ind_end = (i + 1) * shape_[ndim-1] - 1;
+
+        _DataType matrix[shape_[ndim-1]];
+        for (size_t j = ind_begin; j < ind_end + 1; ++j)
+        {
+            size_t ind = j - ind_begin;
+            matrix[ind] = arr[j];
+        }
+        std::partial_sort(matrix, matrix + shape_[ndim-1], matrix + shape_[ndim-1]);
+        for (size_t j = ind_begin; j < ind_end + 1; ++j)
+        {
+            size_t ind = j - ind_begin;
+            arr[j] = matrix[ind];
+        }
+    }
+
+    size_t* shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
+    std::copy(shape_, shape_ + ndim, shape);
+
     cl::sycl::range<2> gws(size_, kth+1);
     auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
         size_t j = global_id[0];
         size_t k = global_id[1];
 
-        _DataType val = sort_arr[j * shape[ndim - 1] + k];
+        size_t ind = j * shape_[ndim - 1] + k;
+        _DataType val = arr[j * shape_[ndim - 1] + k];
 
-        size_t ind = j * shape[ndim - 1] + k;
-        for (size_t i = 0; i < shape[ndim - 1]; ++i)
+        for (size_t i = 0; i < shape_[ndim - 1]; ++i)
         {
-            if (result[j * shape[ndim - 1] + i] == val)
+            if (result[j * shape_[ndim - 1] + i] == val)
             {
-                ind = j * shape[ndim - 1] + i;
+                ind = j * shape_[ndim - 1] + i;
                 break;
             }
         }
 
-        _DataType change_val = result[j * shape[ndim - 1] + k];
-        result[j * shape[ndim - 1] + k] = val;
+        _DataType change_val = result[j * shape_[ndim - 1] + k];
+        result[j * shape_[ndim - 1] + k] = val;
         result[ind] = change_val;
+
     };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
@@ -135,6 +160,8 @@ void dpnp_partition_c(const void* sort_array1_in, void* result1, const size_t kt
     event = DPNP_QUEUE.submit(kernel_func);
 
     event.wait();
+
+    dpnp_memory_free_c(shape);
 }
 
 template <typename _DataType>
