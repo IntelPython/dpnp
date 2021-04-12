@@ -354,8 +354,7 @@ cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shap
 
 
 cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, object x1_obj, object x2_obj,
-                                object dtype=None, dparray out=None, object where=True,
-                                bint new_version=False):
+                                object dtype=None, dparray out=None, object where=True):
     cdef dparray_shape_type x1_shape, x2_shape, result_shape
 
     cdef bint x1_obj_is_dparray = isinstance(x1_obj, dparray)
@@ -394,13 +393,8 @@ cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, object x1_obj, object x2
     cdef dparray result = create_output_array(result_shape, kernel_data.return_type, out)
 
     """ Call FPTR function """
-    # parameter 'new_version' must be removed in shortly
-    cdef fptr_2in_1out_t func_old = <fptr_2in_1out_t > kernel_data.ptr  # can't define it inside 'if' due Cython limitation
-    cdef fptr_2in_1out_new_t func_new = <fptr_2in_1out_new_t > kernel_data.ptr
-    if new_version:
-        func_new(result.get_data(), x1_dparray.get_data(), x1_dparray.size, x1_shape.data(), x1_shape.size(),
+    cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
+    func(result.get_data(), x1_dparray.get_data(), x1_dparray.size, x1_shape.data(), x1_shape.size(),
                  x2_dparray.get_data(), x2_dparray.size, x2_shape.data(), x2_shape.size(), NULL)
-    else:
-        func_old(x1_dparray.get_data(), x2_dparray.get_data(), result.get_data(), x1_dparray.size)
 
     return result

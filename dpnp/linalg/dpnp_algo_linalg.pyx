@@ -60,6 +60,7 @@ ctypedef void(*custom_linalg_1in_1out_func_ptr_t_)(void * , void * , size_t * )
 ctypedef void(*custom_linalg_1in_1out_with_size_func_ptr_t_)(void *, void * , size_t)
 ctypedef void(*custom_linalg_1in_1out_with_2size_func_ptr_t_)(void *, void * , size_t, size_t)
 ctypedef void(*custom_linalg_1in_3out_shape_t)(void *, void * , void * , void * , size_t , size_t )
+ctypedef void(*custom_linalg_2in_1out_func_ptr_t)(void *, void *, void* , size_t )
 
 
 cpdef dparray dpnp_cholesky(dparray input):
@@ -146,7 +147,7 @@ cpdef tuple dpnp_eig(dparray x1):
     cdef dparray res_val = dparray((size,), dtype=result_type)
     cdef dparray res_vec = dparray(x1_shape, dtype=result_type)
 
-    cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
+    cdef custom_linalg_2in_1out_func_ptr_t func = <custom_linalg_2in_1out_func_ptr_t > kernel_data.ptr
     # call FPTR function
     func(x1.get_data(), res_val.get_data(), res_vec.get_data(), size)
 
