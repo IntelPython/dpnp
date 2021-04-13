@@ -89,9 +89,6 @@ class dpnp_partition_c_kernel;
 template <typename _DataType>
 void dpnp_partition_c(void* array1_in, void* result1, const size_t kth, const size_t* shape_, const size_t ndim)
 {
-
-    cl::sycl::event event;
-
     _DataType* arr = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
@@ -133,8 +130,7 @@ void dpnp_partition_c(void* array1_in, void* result1, const size_t kth, const si
     }
 
     size_t* shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
-    DPNP_QUEUE.memcpy(shape, shape_, ndim * sizeof(size_t));
-    std::copy(shape_, shape_ + ndim, shape);
+    auto memcpy_event = DPNP_QUEUE.memcpy(shape, shape_, ndim * sizeof(size_t));
 
     cl::sycl::range<2> gws(size_, kth+1);
     auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
@@ -160,10 +156,11 @@ void dpnp_partition_c(void* array1_in, void* result1, const size_t kth, const si
     };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.depends_on({memcpy_event});
         cgh.parallel_for<class dpnp_partition_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
     };
 
-    event = DPNP_QUEUE.submit(kernel_func);
+    auto event = DPNP_QUEUE.submit(kernel_func);
 
     event.wait();
 
