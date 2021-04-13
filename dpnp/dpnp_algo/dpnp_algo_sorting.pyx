@@ -58,7 +58,7 @@ cpdef dparray dpnp_partition(dparray arr, int kth, axis=-1, kind='introselect', 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PARTITION, param1_type, param1_type)
 
     result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-    cdef dparray result = dpnp.copy(arr)
+    cdef dparray result = dparray(arr.shape, dtype=result_type)
 
     cdef fptr_dpnp_partition_t func = <fptr_dpnp_partition_t > kernel_data.ptr
 

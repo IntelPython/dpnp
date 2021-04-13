@@ -110,6 +110,9 @@ void dpnp_partition_c(void* array1_in, void* result1, const size_t kth, const si
         return;
     }
 
+    auto arr_to_result_event = DPNP_QUEUE.memcpy(result, arr, size * sizeof(_DataType));
+    arr_to_result_event.wait();
+
     for (size_t i = 0; i < size_; ++i)
     {
         size_t ind_begin = i * shape_[ndim-1];
