@@ -1108,7 +1108,8 @@ void dpnp_rng_standard_t_c(void* result, const _DataType df, const size_t size)
         mkl_rng::gaussian<_DataType> gaussian_distribution(d_zero, d_one);
         auto gaussian_distr_event = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, sn);
 
-        auto event_out = mkl_vm::mul(DPNP_QUEUE, size, result1, sn, result1, {invsqrt_event, gaussian_distr_event}, mkl_vm::mode::ha);
+        auto event_out = mkl_vm::mul(
+            DPNP_QUEUE, size, result1, sn, result1, {invsqrt_event, gaussian_distr_event}, mkl_vm::mode::ha);
         free(sn, DPNP_QUEUE);
         event_out.wait();
     }
