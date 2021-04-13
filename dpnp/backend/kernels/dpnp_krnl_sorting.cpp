@@ -95,6 +95,11 @@ void dpnp_partition_c(void* array1_in, void* result1, const size_t kth, const si
     _DataType* arr = reinterpret_cast<_DataType*>(array1_in);
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
+    if ((arr == nullptr) || (result == nullptr))
+    {
+        return;
+    }
+
     size_t size = 1;
     for (size_t i = 0; i < ndim; ++i)
     {
@@ -128,6 +133,7 @@ void dpnp_partition_c(void* array1_in, void* result1, const size_t kth, const si
     }
 
     size_t* shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
+    DPNP_QUEUE.memcpy(shape, shape_, ndim * sizeof(size_t));
     std::copy(shape_, shape_ + ndim, shape);
 
     cl::sycl::range<2> gws(size_, kth+1);
@@ -135,20 +141,20 @@ void dpnp_partition_c(void* array1_in, void* result1, const size_t kth, const si
         size_t j = global_id[0];
         size_t k = global_id[1];
 
-        size_t ind = j * shape_[ndim - 1] + k;
-        _DataType val = arr[j * shape_[ndim - 1] + k];
+        size_t ind = j * shape[ndim - 1] + k;
+        _DataType val = arr[j * shape[ndim - 1] + k];
 
-        for (size_t i = 0; i < shape_[ndim - 1]; ++i)
+        for (size_t i = 0; i < shape[ndim - 1]; ++i)
         {
-            if (result[j * shape_[ndim - 1] + i] == val)
+            if (result[j * shape[ndim - 1] + i] == val)
             {
-                ind = j * shape_[ndim - 1] + i;
+                ind = j * shape[ndim - 1] + i;
                 break;
             }
         }
 
-        _DataType change_val = result[j * shape_[ndim - 1] + k];
-        result[j * shape_[ndim - 1] + k] = val;
+        _DataType change_val = result[j * shape[ndim - 1] + k];
+        result[j * shape[ndim - 1] + k] = val;
         result[ind] = change_val;
 
     };
