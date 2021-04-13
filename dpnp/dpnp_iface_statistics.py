@@ -276,7 +276,7 @@ def cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=N
     return call_origin(numpy.cov, m, y, rowvar, bias, ddof, fweights, aweights)
 
 
-def max(input, axis=None, out=None):
+def max(input, axis=None, out=None, keepdims=numpy._NoValue, initial=numpy._NoValue, where=numpy._NoValue):
     """
     Return the maximum of an array or maximum along an axis.
 
@@ -300,33 +300,27 @@ def max(input, axis=None, out=None):
 
     """
 
-    dim_input = input.ndim
+    if not use_origin_backend(input):
+        if not isinstance(input, dparray):
+            pass
+        elif out is not None:
+            pass
+        elif keepdims is not numpy._NoValue:
+            pass
+        elif initial is not numpy._NoValue:
+            pass
+        elif where is not numpy._NoValue:
+            pass
+        else:
+            result = dpnp_max(input, axis=axis)
 
-    is_input_dparray = isinstance(input, dparray)
+            # scalar returned
+            if result.shape == (1,):
+                return result.dtype.type(result[0])
 
-    if not use_origin_backend(input) and is_input_dparray:
-        if out is not None:
-            checker_throw_value_error("max", "out", type(out), None)
+            return result
 
-        result = dpnp_max(input, axis=axis)
-
-        # scalar returned
-        if result.shape == (1,):
-            return result.dtype.type(result[0])
-
-        return result
-
-    input1 = dpnp.asnumpy(input) if is_input_dparray else input
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.max(input1, axis=axis)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return call_origin(numpy.max, input, axis, out, keepdims, initial, where)
 
 
 def mean(a, axis=None, **kwargs):
@@ -433,7 +427,7 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
     return call_origin(numpy.median, a, axis, out, overwrite_input, keepdims)
 
 
-def min(input, axis=None, out=None):
+def min(input, axis=None, out=None, keepdims=numpy._NoValue, initial=numpy._NoValue, where=numpy._NoValue):
     """
     Return the minimum along a given axis.
 
@@ -457,31 +451,27 @@ def min(input, axis=None, out=None):
 
     """
 
-    is_input_dparray = isinstance(input, dparray)
+    if not use_origin_backend(input):
+        if not isinstance(input, dparray):
+            pass
+        elif out is not None:
+            pass
+        elif keepdims is not numpy._NoValue:
+            pass
+        elif initial is not numpy._NoValue:
+            pass
+        elif where is not numpy._NoValue:
+            pass
+        else:
+            result = dpnp_min(input, axis=axis)
 
-    if not use_origin_backend(input) and is_input_dparray:
-        if out is not None:
-            checker_throw_value_error("min", "out", type(out), None)
+            # scalar returned
+            if result.shape == (1,):
+                return result.dtype.type(result[0])
 
-        result = dpnp_min(input, axis=axis)
+            return result
 
-        # scalar returned
-        if result.shape == (1,):
-            return result.dtype.type(result[0])
-
-        return result
-
-    input1 = dpnp.asnumpy(input) if is_input_dparray else input
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.min(input1, axis=axis)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return call_origin(numpy.min, input, axis, out, keepdims, initial, where)
 
 
 def std(a, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue):

@@ -28,25 +28,12 @@
 #include <vector>
 
 #include "dpnp_iterator.hpp"
+#include "dpnp_test_utils.hpp"
 
 #define DPNP_LOCAL_QUEUE 1 // TODO need to fix build procedure and remove this workaround. Issue #551
 #include "queue_sycl.hpp"
 
 using namespace std;
-using dpnpc_it_t = DPNPC_id<size_t>::iterator;
-using dpnpc_value_t = dpnpc_it_t::value_type;
-using dpnpc_index_t = dpnpc_it_t::size_type;
-
-template <typename _DataType>
-vector<_DataType> get_input_data(const vector<dpnpc_index_t>& shape)
-{
-    const dpnpc_index_t size = accumulate(shape.begin(), shape.end(), dpnpc_index_t(1), multiplies<dpnpc_index_t>());
-
-    vector<_DataType> input_data(size);
-    iota(input_data.begin(), input_data.end(), 1); // let's start from 1 to avoid cleaned memory comparison
-
-    return input_data;
-}
 
 TEST(TestUtilsIterator, begin_prefix_postfix)
 {

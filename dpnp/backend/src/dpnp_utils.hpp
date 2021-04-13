@@ -129,6 +129,90 @@ size_t get_id_by_xyz_inkernel(const _DataType* xyz, size_t xyz_size, const _Data
 
 /**
  * @ingroup BACKEND_UTILS
+ * @brief Check input shape is broadcastable to output one.
+ *
+ * @param [in] input_shape        Input shape.
+ * @param [in] output_shape       Output shape.
+ *
+ * @return                        Input shape is broadcastable to output one or not.
+ */
+static inline bool
+    broadcastable(const std::vector<size_t>& input_shape, const std::vector<size_t>& output_shape)
+{
+    if (input_shape.size() > output_shape.size())
+    {
+        return false;
+    }
+
+    std::vector<size_t>::const_reverse_iterator irit = input_shape.rbegin();
+    std::vector<size_t>::const_reverse_iterator orit = output_shape.rbegin();
+    for (; irit != input_shape.rend(); ++irit, ++orit)
+    {
+        if (*irit != 1 && *irit != *orit)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+static inline bool
+    broadcastable(const size_t* input_shape, const size_t input_shape_size, const std::vector<size_t>& output_shape)
+{
+    const std::vector<size_t> input_shape_vec(input_shape, input_shape + input_shape_size);
+    return broadcastable(input_shape_vec, output_shape);
+}
+
+/**
+ * @ingroup BACKEND_UTILS
+ * @brief Get common shape based on input shapes.
+ * 
+ * Example:
+ *   Input1 shape A[8, 1, 6, 1]
+ *   Input2 shape B[7, 1, 5]
+ *   Output shape will be C[8, 7, 6, 5]
+ *
+ * @param [in] input1_shape        Input1 shape.
+ * @param [in] input1_shape_size   Input1 shape size.
+ * @param [in] input2_shape        Input2 shape.
+ * @param [in] input2_shape_size   Input2 shape size.
+ *
+ * @exception std::domain_error    Input shapes are not broadcastable.
+ * @return                         Common shape.
+ */
+static inline std::vector<size_t>
+    get_result_shape(const size_t* input1_shape, const size_t input1_shape_size,
+                     const size_t* input2_shape, const size_t input2_shape_size)
+{
+    const size_t result_shape_size = (input2_shape_size > input1_shape_size) ? input2_shape_size : input1_shape_size;
+    std::vector<size_t> result_shape;
+    result_shape.reserve(result_shape_size);
+
+    for (int irit1 = input1_shape_size - 1, irit2 = input2_shape_size - 1; irit1 >= 0 || irit2 >= 0; --irit1, --irit2)
+    {
+        size_t input1_val = (irit1 >= 0) ? input1_shape[irit1] : 1;
+        size_t input2_val = (irit2 >= 0) ? input2_shape[irit2] : 1;
+
+        if (input1_val == input2_val || input1_val == 1)
+        {
+            result_shape.insert(result_shape.begin(), input2_val);
+        }
+        else if (input2_val == 1)
+        {
+            result_shape.insert(result_shape.begin(), input1_val);
+        }
+        else
+        {
+            throw std::domain_error("DPNP Error: get_common_shape() failed with input shapes check");
+        }
+    }
+
+    return result_shape;
+}
+
+/**
+ * @ingroup BACKEND_UTILS
  * @brief Normalizes an axes into a non-negative integer axes.
  *
  * Return vector of normalized axes with a non-negative integer axes.

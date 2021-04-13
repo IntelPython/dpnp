@@ -67,8 +67,8 @@ def test_multiply_dtype(dtype1, dtype2, data):
     numpy.testing.assert_array_equal(result, expected)
 
 
-@pytest.mark.parametrize("rhs", [[2.0, 1.5, 1.0], 3, 0.3])
-@pytest.mark.parametrize("lhs", [[1.3, 2.6, 3.9], 5, 0.5])
+@pytest.mark.parametrize("rhs", [[[1, 2, 3], [4, 5, 6]], [2.0, 1.5, 1.0], 3, 0.3])
+@pytest.mark.parametrize("lhs", [[[6, 5, 4], [3, 2, 1]], [1.3, 2.6, 3.9], 5, 0.5])
 @pytest.mark.parametrize("dtype", [numpy.int32, numpy.int64, numpy.float32, numpy.float64])
 class TestMathematical:
 
@@ -195,6 +195,21 @@ def test_nancumsum(array):
     result = inp.nancumsum(ia)
     expected = numpy.nancumsum(a)
     numpy.testing.assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("data",
+                         [[[1., -1.], [0.1, -0.1]], [-2, -1, 0, 1, 2]],
+                         ids=['[[1., -1.], [0.1, -0.1]]', '[-2, -1, 0, 1, 2]'])
+@pytest.mark.parametrize("dtype",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
+def test_negative(data, dtype):
+    a = numpy.array(data, dtype=dtype)
+    ia = inp.array(data, dtype=dtype)
+
+    result = inp.negative(ia)
+    expected = numpy.negative(a)
+    numpy.testing.assert_array_equal(result, expected)
 
 
 @pytest.mark.parametrize("val_type",
