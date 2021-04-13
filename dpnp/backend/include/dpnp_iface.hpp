@@ -233,15 +233,15 @@ INP_DLLEXPORT void dpnp_elemwise_absolute_c(void* array1_in, void* result1, size
  */
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
 INP_DLLEXPORT void dpnp_dot_c(void* result_out,
-                                const void* input1_in,
-                                const size_t input1_size,
-                                const size_t* input1_shape,
-                                const size_t input1_shape_ndim,
-                                const void* input2_in,
-                                const size_t input2_size,
-                                const size_t* input2_shape,
-                                const size_t input2_shape_ndim,
-                                const size_t* where);
+                              const void* input1_in,
+                              const size_t input1_size,
+                              const size_t* input1_shape,
+                              const size_t input1_shape_ndim,
+                              const void* input2_in,
+                              const size_t input2_size,
+                              const size_t* input2_shape,
+                              const size_t input2_shape_ndim,
+                              const size_t* where);
 
 /**
  * @ingroup BACKEND_API
@@ -335,7 +335,8 @@ INP_DLLEXPORT void dpnp_sum_c(void* result_out,
  * @param [in]  ndim        Number of elements in shape.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_partition_c(const void* sort_array, void* result, const size_t kth, const size_t* shape, const size_t ndim);
+INP_DLLEXPORT void
+    dpnp_partition_c(const void* sort_array, void* result, const size_t kth, const size_t* shape, const size_t ndim);
 
 /**
  * @ingroup BACKEND_API
@@ -484,15 +485,15 @@ INP_DLLEXPORT void dpnp_cholesky_c(void* array1_in, void* result1, const size_t 
  */
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
 INP_DLLEXPORT void dpnp_correlate_c(void* result_out,
-                                const void* input1_in,
-                                const size_t input1_size,
-                                const size_t* input1_shape,
-                                const size_t input1_shape_ndim,
-                                const void* input2_in,
-                                const size_t input2_size,
-                                const size_t* input2_shape,
-                                const size_t input2_shape_ndim,
-                                const size_t* where);
+                                    const void* input1_in,
+                                    const size_t input1_size,
+                                    const size_t* input1_shape,
+                                    const size_t input1_shape_ndim,
+                                    const void* input2_in,
+                                    const size_t input2_size,
+                                    const size_t* input2_shape,
+                                    const size_t input2_shape_ndim,
+                                    const size_t* where);
 
 /**
  * @ingroup BACKEND_API

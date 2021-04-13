@@ -87,9 +87,9 @@ template <typename _DataType>
 class dpnp_partition_c_kernel;
 
 template <typename _DataType>
-void dpnp_partition_c(const void* sort_array1_in, void* result1, const size_t kth, const size_t* shape, const size_t ndim)
+void dpnp_partition_c(
+    const void* sort_array1_in, void* result1, const size_t kth, const size_t* shape, const size_t ndim)
 {
-
     cl::sycl::event event;
 
     const _DataType* sort_arr = reinterpret_cast<const _DataType*>(sort_array1_in);
@@ -106,7 +106,7 @@ void dpnp_partition_c(const void* sort_array1_in, void* result1, const size_t kt
         return;
     }
 
-    cl::sycl::range<2> gws(size_, kth+1);
+    cl::sycl::range<2> gws(size_, kth + 1);
     auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
         size_t j = global_id[0];
         size_t k = global_id[1];

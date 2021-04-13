@@ -86,7 +86,6 @@ void dpnp_dot_c(void* result_out,
                 const size_t input2_shape_ndim,
                 const size_t* where)
 {
-
     (void)input1_shape;
     (void)input1_shape_ndim;
     (void)input2_size;
