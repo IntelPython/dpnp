@@ -964,17 +964,20 @@ template <typename _DataType>
 void dpnp_rng_shuffle_c(
     void* result, const size_t itemsize, const size_t ndim, const size_t high_dim_size, const size_t size)
 {
-    if (!(size) || !(high_dim_size > 1))
+    if (!result)
+    {
+        return;
+    }
+
+    if (!size || !ndim || !(high_dim_size > 1))
     {
         return;
     }
 
     char* result1 = reinterpret_cast<char*>(result);
 
-    double* Uvec = nullptr;
-
     size_t uvec_size = high_dim_size - 1;
-    Uvec = reinterpret_cast<double*>(dpnp_memory_alloc_c(uvec_size * sizeof(double)));
+    double* Uvec = reinterpret_cast<double*>(dpnp_memory_alloc_c(uvec_size * sizeof(double)));
     mkl_rng::uniform<double> uniform_distribution(0.0, 1.0);
     auto uniform_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, uvec_size, Uvec);
     uniform_event.wait();
@@ -984,42 +987,35 @@ void dpnp_rng_shuffle_c(
         // Fast, statically typed path: shuffle the underlying buffer.
         // Only for non-empty, 1d objects of class ndarray (subclasses such
         // as MaskedArrays may not support this approach).
-        // TODO
-        // kernel
-        char* buf = nullptr;
-        buf = reinterpret_cast<char*>(dpnp_memory_alloc_c(itemsize * sizeof(char)));
+        char* buf = reinterpret_cast<char*>(dpnp_memory_alloc_c(itemsize * sizeof(char)));
         for (size_t i = uvec_size; i > 0; i--)
         {
             size_t j = (size_t)(floor((i + 1) * Uvec[i - 1]));
-            memcpy(buf, result1 + j * itemsize, itemsize);
-            memcpy(result1 + j * itemsize, result1 + i * itemsize, itemsize);
-            memcpy(result1 + i * itemsize, buf, itemsize);
+            DPNP_QUEUE.memcpy(buf, result1 + j * itemsize, itemsize);
+            DPNP_QUEUE.memcpy(result1 + j * itemsize, result1 + i * itemsize, itemsize);
+            DPNP_QUEUE.memcpy(result1 + i * itemsize, buf, itemsize);
+            DPNP_QUEUE.wait();
         }
-
         dpnp_memory_free_c(buf);
     }
     else
     {
         // Multidimensional ndarrays require a bounce buffer.
-        // TODO
-        // kernel
-        char* buf = nullptr;
         size_t step_size = (size / high_dim_size) * itemsize; // size in bytes for x[i] element
-        buf = reinterpret_cast<char*>(dpnp_memory_alloc_c(step_size * sizeof(char)));
+        char* buf = reinterpret_cast<char*>(dpnp_memory_alloc_c(step_size * sizeof(char)));
         for (size_t i = uvec_size; i > 0; i--)
         {
             size_t j = (size_t)(floor((i + 1) * Uvec[i - 1]));
             if (j < i)
             {
-                memcpy(buf, result1 + j * step_size, step_size);
-                memcpy(result1 + j * step_size, result1 + i * step_size, step_size);
-                memcpy(result1 + i * step_size, buf, step_size);
+                DPNP_QUEUE.memcpy(buf, result1 + j * step_size, step_size);
+                DPNP_QUEUE.memcpy(result1 + j * step_size, result1 + i * step_size, step_size);
+                DPNP_QUEUE.memcpy(result1 + i * step_size, buf, step_size);
+                DPNP_QUEUE.wait();
             }
         }
-
         dpnp_memory_free_c(buf);
     }
-
     dpnp_memory_free_c(Uvec);
 }
 
