@@ -27,6 +27,7 @@
 #ifndef BACKEND_UTILS_H // Cython compatibility
 #define BACKEND_UTILS_H
 
+#include <cassert>
 #include <algorithm>
 #include <iostream>
 #include <iterator>
@@ -96,6 +97,39 @@ void get_xyz_by_id_inkernel(size_t global_id, const _DataType* offsets, size_t o
     }
 
     return;
+}
+
+/**
+ * @ingroup BACKEND_UTILS
+ * @brief Calculate xyz id for given axis from linear index
+ *
+ * Calculates xyz id of the array with given shape.
+ * for example:
+ *   input_array_shape_offsets[20, 5, 1]
+ *   global_id == 5
+ *   axis == 1
+ *   xyz_id should be 1
+ *
+ * @param [in]  global_id     linear index of the element in multy-D array.
+ * @param [in]  offsets       array with input offsets.
+ * @param [in]  offsets_size  array size for @ref offsets parameter.
+ * @param [in]  axis          axis.
+ */
+template <typename _DataType>
+_DataType get_xyz_id_by_id_inkernel(size_t global_id, const _DataType* offsets, size_t offsets_size, size_t axis)
+{
+    assert(axis < offsets_size);
+
+    _DataType xyz_id = 0;
+    long reminder = global_id;
+    for (size_t i = 0; i < axis + 1; ++i)
+    {
+        const _DataType axis_val = offsets[i];
+        xyz_id = reminder / axis_val;
+        reminder = reminder % axis_val;
+    }
+
+    return xyz_id;
 }
 
 /**
