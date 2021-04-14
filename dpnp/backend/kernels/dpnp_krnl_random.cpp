@@ -1237,7 +1237,7 @@ void dpnp_rng_uniform_c(void* result, const long low, const long high, const siz
 template <typename _DataType>
 void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _DataType kappa, const size_t size)
 {
-    if (!size)
+    if (!size || !result)
     {
         return;
     }
@@ -1247,6 +1247,7 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
     _DataType s_minus_one, hpt, r_over_two_kappa_minus_one, rho_minus_one;
     _DataType* Uvec = nullptr;
     _DataType* Vvec = nullptr;
+    size_t* n = nullptr;
     const _DataType d_zero = 0.0, d_one = 1.0;
 
     assert(kappa > 1.0);
@@ -1262,7 +1263,7 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
 
     Uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
     Vvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
-    size_t* n = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(sizeof(size_t)));
+    n = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(sizeof(size_t)));
     for (n[0] = 0; n[0] < size;)
     {
         size_t diff_size = size - n[0];
@@ -1343,6 +1344,7 @@ void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _Da
     _DataType rho_over_kappa, rho, r, s_kappa;
     _DataType* Uvec = nullptr;
     _DataType* Vvec = nullptr;
+    size_t* n = nullptr;
 
     const _DataType d_zero = 0.0, d_one = 1.0;
 
@@ -1357,7 +1359,7 @@ void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _Da
 
     Uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
     Vvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
-    size_t* n = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(sizeof(size_t)));
+    n = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(sizeof(size_t)));
 
     for (n[0] = 0; n[0] < size;)
     {
