@@ -70,37 +70,6 @@ void get_shape_offsets_inkernel(const _DataType* shape, size_t shape_size, _Data
 
 /**
  * @ingroup BACKEND_UTILS
- * @brief Calculate ids for all given axes from linear index
- *
- * Calculates ids of the array with given shape. This is reverse operation of @ref get_id_by_xyz_inkernel
- * for example:
- *   input_array_shape_offsets[20, 5, 1]
- *   global_id == 5
- *   xyz array ids should be [0, 1, 0]
- *
- * @param [in]  global_id     linear index id of the element in multy-D array.
- * @param [in]  offsets       array with input offsets.
- * @param [in]  offsets_size  array size for @ref offsets parameter.
- * @param [out] xyz           Result array with @ref offsets_size size.
- */
-template <typename _DataType>
-void get_xyz_by_id_inkernel(size_t global_id, const _DataType* offsets, size_t offsets_size, _DataType* xyz)
-{
-    long reminder = global_id;
-    for (size_t axis = 0; axis < offsets_size; ++axis)
-    {
-        /* reconstruct [x][y][z] from given linear idx */
-        const _DataType axis_val = offsets[axis];
-        _DataType xyz_id = reminder / axis_val;
-        reminder = reminder % axis_val;
-        xyz[axis] = xyz_id;
-    }
-
-    return;
-}
-
-/**
- * @ingroup BACKEND_UTILS
  * @brief Calculate xyz id for given axis from linear index
  *
  * Calculates xyz id of the array with given shape.
@@ -118,6 +87,9 @@ void get_xyz_by_id_inkernel(size_t global_id, const _DataType* offsets, size_t o
 template <typename _DataType>
 _DataType get_xyz_id_by_id_inkernel(size_t global_id, const _DataType* offsets, size_t offsets_size, size_t axis)
 {
+    /* avoid warning unused variable*/
+    (void)offsets_size;
+
     assert(axis < offsets_size);
 
     _DataType xyz_id = 0;
