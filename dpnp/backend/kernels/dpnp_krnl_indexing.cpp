@@ -254,14 +254,23 @@ void dpnp_put_c(
     size_t* ind = reinterpret_cast<size_t*>(ind_in);
     _DataType* v = reinterpret_cast<_DataType*>(v_in);
 
+    if ((array_1 == nullptr) || (ind == nullptr) || (v == nullptr))
+    {
+        return;
+    }
+
+    if (size_v == 0)
+    {
+        return;
+    }
+
     for (size_t i = 0; i < size; ++i)
     {
         for (size_t j = 0; j < size_ind; ++j)
         {
-            if (i == ind[j])
+            if (i == ind[j] or i == (size + ind[j]))
             {
                 array_1[i] = v[j % size_v];
-                break;
             }
         }
     }
