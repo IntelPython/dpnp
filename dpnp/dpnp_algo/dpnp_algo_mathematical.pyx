@@ -330,12 +330,7 @@ cpdef dpnp_nansum(dparray x1):
 
 
 cpdef dparray dpnp_negative(dparray array1):
-    cdef dparray result = dparray(array1.shape, dtype=array1.dtype)
-
-    for i in range(result.size):
-        result[i] = -(array1[i])
-
-    return result
+    return call_fptr_1in_1out(DPNP_FN_NEGATIVE, array1, array1.shape)
 
 
 cpdef dparray dpnp_power(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):

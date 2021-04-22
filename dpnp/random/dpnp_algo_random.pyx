@@ -284,23 +284,15 @@ cpdef dparray dpnp_rng_gamma(double shape, double scale, size):
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_gamma_c_1out_t func
 
-    if shape == 0.0 or scale == 0.0:
-        result = dparray(size, dtype=dtype)
-        result.fill(0.0)
-    else:
-        # convert string type names (dparray.dtype) to C enum DPNPFuncType
-        param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+    param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
-        # get the FPTR data structure
-        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GAMMA, param1_type, param1_type)
+    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GAMMA, param1_type, param1_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    result = dparray(size, dtype=result_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-        # ceate result array with type given by FPTR data
-        result = dparray(size, dtype=result_type)
-
-        func = <fptr_dpnp_rng_gamma_c_1out_t > kernel_data.ptr
-        # call FPTR function
-        func(result.get_data(), shape, scale, result.size)
+    func = <fptr_dpnp_rng_gamma_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), shape, scale, result.size)
 
     return result
 
@@ -320,23 +312,19 @@ cpdef dparray dpnp_rng_geometric(float p, size):
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_geometric_c_1out_t func
 
-    if p == 1.0:
-        result = dparray(size, dtype=dtype)
-        result.fill(1)
-    else:
-        # convert string type names (dparray.dtype) to C enum DPNPFuncType
-        param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
-        # get the FPTR data structure
-        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GEOMETRIC, param1_type, param1_type)
+    # get the FPTR data structure
+    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GEOMETRIC, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-        # ceate result array with type given by FPTR data
-        result = dparray(size, dtype=result_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    result = dparray(size, dtype=result_type)
 
-        func = <fptr_dpnp_rng_geometric_c_1out_t > kernel_data.ptr
-        # call FPTR function
-        func(result.get_data(), p, result.size)
+    func = <fptr_dpnp_rng_geometric_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), p, result.size)
 
     return result
 
@@ -355,23 +343,14 @@ cpdef dparray dpnp_rng_gumbel(double loc, double scale, size):
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_gumbel_c_1out_t func
 
-    if scale == 0.0:
-        result = dparray(size, dtype=dtype)
-        result.fill(loc)
-    else:
-        # convert string type names (dparray.dtype) to C enum DPNPFuncType
-        param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+    param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GUMBEL, param1_type, param1_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    result = dparray(size, dtype=result_type)
 
-        # get the FPTR data structure
-        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GUMBEL, param1_type, param1_type)
-
-        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-        # ceate result array with type given by FPTR data
-        result = dparray(size, dtype=result_type)
-
-        func = <fptr_dpnp_rng_gumbel_c_1out_t > kernel_data.ptr
-        # call FPTR function
-        func(result.get_data(), loc, scale, result.size)
+    func = <fptr_dpnp_rng_gumbel_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), loc, scale, result.size)
 
     return result
 
@@ -390,26 +369,19 @@ cpdef dparray dpnp_rng_hypergeometric(int l, int s, int m, size):
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_hypergeometric_c_1out_t func
 
-    if m == 0:
-        result = dparray(size, dtype=dtype)
-        result.fill(0)
-    if l == m:
-        result = dparray(size, dtype=dtype)
-        result.fill(s)
-    else:
-        # convert string type names (dparray.dtype) to C enum DPNPFuncType
-        param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
-        # get the FPTR data structure
-        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_HYPERGEOMETRIC, param1_type, param1_type)
+    # get the FPTR data structure
+    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_HYPERGEOMETRIC, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-        # ceate result array with type given by FPTR data
-        result = dparray(size, dtype=result_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    result = dparray(size, dtype=result_type)
 
-        func = <fptr_dpnp_rng_hypergeometric_c_1out_t > kernel_data.ptr
-        # call FPTR function
-        func(result.get_data(), l, s, m, result.size)
+    func = <fptr_dpnp_rng_hypergeometric_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), l, s, m, result.size)
 
     return result
 
@@ -428,23 +400,19 @@ cpdef dparray dpnp_rng_laplace(double loc, double scale, size):
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_laplace_c_1out_t func
 
-    if scale == 0.0:
-        result = dparray(size, dtype=dtype)
-        result.fill(0.0)
-    else:
-        # convert string type names (dparray.dtype) to C enum DPNPFuncType
-        param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
-        # get the FPTR data structure
-        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_LAPLACE, param1_type, param1_type)
+    # get the FPTR data structure
+    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_LAPLACE, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-        # ceate result array with type given by FPTR data
-        result = dparray(size, dtype=result_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    result = dparray(size, dtype=result_type)
 
-        func = <fptr_dpnp_rng_laplace_c_1out_t > kernel_data.ptr
-        # call FPTR function
-        func(result.get_data(), loc, scale, result.size)
+    func = <fptr_dpnp_rng_laplace_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), loc, scale, result.size)
 
     return result
 
