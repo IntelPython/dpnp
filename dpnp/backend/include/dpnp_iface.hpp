@@ -335,6 +335,7 @@ INP_DLLEXPORT void dpnp_sum_c(void* result_out,
  * @param [in]  shape       Shape of input array.
  * @param [in]  ndim        Number of elements in shape.
  */
+template <typename _DataType>
 INP_DLLEXPORT void
     dpnp_partition_c(void* array, void* array2, void* result, const size_t kth, const size_t* shape, const size_t ndim);
 
