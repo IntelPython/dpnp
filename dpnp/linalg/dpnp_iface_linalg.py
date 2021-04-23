@@ -382,21 +382,23 @@ def norm(input, ord=None, axis=None, keepdims=False):
         Norm of the matrix or vector(s).
     """
 
-    is_input_dparray = isinstance(input, dparray)
+    if not use_origin_backend(input):
+        if not isinstance(input, dparray):
+            pass
+        elif not isinstance(axis, int) and not isinstance(axis, tuple) and axis is not None:
+            pass
+        elif keepdims is not False:
+            pass
+        elif ord not in [None, 0, 3, 'fro', 'f']:
+            pass
+        else:
+            result = dpnp_norm(input, ord=ord, axis=axis)
 
-    if not use_origin_backend(input) and is_input_dparray:
-        if keepdims is not False:
-            checker_throw_value_error("norm", "keepdims", keepdims, False)
-        if not isinstance(axis, int) and not isinstance(axis, tuple) and axis is not None:
-            raise TypeError("'axis' must be None, an integer or a tuple of integers")
+            # scalar returned
+            if result.shape == (1,) and axis is None:
+                return result.dtype.type(result[0])
 
-        result = dpnp_norm(input, ord=ord, axis=axis)
-
-        # scalar returned
-        if result.shape == (1,) and axis is None:
-            return result.dtype.type(result[0])
-
-        return result
+            return result
 
     return call_origin(numpy.linalg.norm, input, ord, axis, keepdims)
 
