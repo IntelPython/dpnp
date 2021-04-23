@@ -136,8 +136,7 @@ size_t get_id_by_xyz_inkernel(const _DataType* xyz, size_t xyz_size, const _Data
  *
  * @return                        Input shape is broadcastable to output one or not.
  */
-static inline bool
-    broadcastable(const std::vector<size_t>& input_shape, const std::vector<size_t>& output_shape)
+static inline bool broadcastable(const std::vector<size_t>& input_shape, const std::vector<size_t>& output_shape)
 {
     if (input_shape.size() > output_shape.size())
     {
@@ -167,7 +166,7 @@ static inline bool
 /**
  * @ingroup BACKEND_UTILS
  * @brief Get common shape based on input shapes.
- * 
+ *
  * Example:
  *   Input1 shape A[8, 1, 6, 1]
  *   Input2 shape B[7, 1, 5]
@@ -181,9 +180,10 @@ static inline bool
  * @exception std::domain_error    Input shapes are not broadcastable.
  * @return                         Common shape.
  */
-static inline std::vector<size_t>
-    get_result_shape(const size_t* input1_shape, const size_t input1_shape_size,
-                     const size_t* input2_shape, const size_t input2_shape_size)
+static inline std::vector<size_t> get_result_shape(const size_t* input1_shape,
+                                                   const size_t input1_shape_size,
+                                                   const size_t* input2_shape,
+                                                   const size_t input2_shape_size)
 {
     const size_t result_shape_size = (input2_shape_size > input1_shape_size) ? input2_shape_size : input1_shape_size;
     std::vector<size_t> result_shape;
