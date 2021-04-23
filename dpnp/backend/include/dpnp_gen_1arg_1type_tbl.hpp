@@ -57,7 +57,10 @@
 
 MACRO_1ARG_1TYPE_OP(dpnp_conjugate_c, std::conj(input_elem), DPNP_QUEUE.submit(kernel_func))
 MACRO_1ARG_1TYPE_OP(dpnp_copy_c, input_elem, DPNP_QUEUE.submit(kernel_func))
-MACRO_1ARG_1TYPE_OP(dpnp_erf_c, input_elem, oneapi::mkl::vm::erf(DPNP_QUEUE, size, array1, result))
+MACRO_1ARG_1TYPE_OP(dpnp_erf_c,
+                    cl::sycl::erf((double)input_elem),
+                    oneapi::mkl::vm::erf(DPNP_QUEUE, size, array1, result)) // no sycl::erf for int and long
+MACRO_1ARG_1TYPE_OP(dpnp_negative_c, -input_elem, DPNP_QUEUE.submit(kernel_func))
 MACRO_1ARG_1TYPE_OP(dpnp_recip_c,
                     _DataType(1) / input_elem,
                     DPNP_QUEUE.submit(kernel_func)) // error: no member named 'recip' in namespace 'cl::sycl'

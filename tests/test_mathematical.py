@@ -197,6 +197,21 @@ def test_nancumsum(array):
     numpy.testing.assert_array_equal(expected, result)
 
 
+@pytest.mark.parametrize("data",
+                         [[[1., -1.], [0.1, -0.1]], [-2, -1, 0, 1, 2]],
+                         ids=['[[1., -1.], [0.1, -0.1]]', '[-2, -1, 0, 1, 2]'])
+@pytest.mark.parametrize("dtype",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
+def test_negative(data, dtype):
+    a = numpy.array(data, dtype=dtype)
+    ia = inp.array(data, dtype=dtype)
+
+    result = inp.negative(ia)
+    expected = numpy.negative(a)
+    numpy.testing.assert_array_equal(result, expected)
+
+
 @pytest.mark.parametrize("val_type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
