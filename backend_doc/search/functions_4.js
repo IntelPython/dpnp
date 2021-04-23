@@ -7,5 +7,5 @@ var searchData=
   ['get_5fqueue_512',['get_queue',['../classbackend__sycl.html#ae542c859b7075e058f14197b025a1b4b',1,'backend_sycl']]],
   ['get_5frng_5fengine_513',['get_rng_engine',['../classbackend__sycl.html#a9531c22868410d767bc1d959d036e286',1,'backend_sycl']]],
   ['get_5fshape_5foffsets_5finkernel_514',['get_shape_offsets_inkernel',['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga4706968b8ce210d69309a0cae330cea5',1,'dpnp_utils.hpp']]],
-  ['get_5fxyz_5fby_5fid_5finkernel_515',['get_xyz_by_id_inkernel',['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga99a92e14994c6506a087f9da3a4caa61',1,'dpnp_utils.hpp']]]
+  ['get_5fxyz_5fid_5fby_5fid_5finkernel_515',['get_xyz_id_by_id_inkernel',['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#gad37eb9ce0ad29590cc931a9b6cd538e2',1,'dpnp_utils.hpp']]]
 ];
