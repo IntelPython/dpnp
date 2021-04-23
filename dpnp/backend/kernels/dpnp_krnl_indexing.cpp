@@ -268,7 +268,7 @@ void dpnp_put_c(
     {
         for (size_t j = 0; j < size_ind; ++j)
         {
-            if (i == ind[j] or i == (size + ind[j]))
+            if (i == ind[j] || (i == (size + ind[j])))
             {
                 array_1[i] = v[j % size_v];
             }
