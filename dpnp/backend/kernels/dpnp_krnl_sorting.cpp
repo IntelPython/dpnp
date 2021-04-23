@@ -110,7 +110,7 @@ void dpnp_partition_c(
         size *= shape_[i];
     }
 
-    size_t size_ = size/shape_[ndim-1];
+    size_t size_ = size / shape_[ndim - 1];
 
     if (size_ == 0)
     {
@@ -122,16 +122,16 @@ void dpnp_partition_c(
 
     for (size_t i = 0; i < size_; ++i)
     {
-        size_t ind_begin = i * shape_[ndim-1];
-        size_t ind_end = (i + 1) * shape_[ndim-1] - 1;
+        size_t ind_begin = i * shape_[ndim - 1];
+        size_t ind_end = (i + 1) * shape_[ndim - 1] - 1;
 
-        _DataType matrix[shape_[ndim-1]];
+        _DataType matrix[shape_[ndim - 1]];
         for (size_t j = ind_begin; j < ind_end + 1; ++j)
         {
             size_t ind = j - ind_begin;
             matrix[ind] = arr2[j];
         }
-        std::partial_sort(matrix, matrix + shape_[ndim-1], matrix + shape_[ndim-1]);
+        std::partial_sort(matrix, matrix + shape_[ndim - 1], matrix + shape_[ndim - 1]);
         for (size_t j = ind_begin; j < ind_end + 1; ++j)
         {
             size_t ind = j - ind_begin;
@@ -139,12 +139,12 @@ void dpnp_partition_c(
         }
     }
 
-    size_t* shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
+        size_t* shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
     auto memcpy_event = DPNP_QUEUE.memcpy(shape, shape_, ndim * sizeof(size_t));
 
     memcpy_event.wait();
 
-    cl::sycl::range<2> gws(size_, kth+1);
+    cl::sycl::range<2> gws(size_, kth + 1);
 
     auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
         size_t j = global_id[0];
@@ -162,7 +162,6 @@ void dpnp_partition_c(
                 result[j * shape[ndim - 1] + i] = change_val2;
             }
         }
-
     };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
@@ -174,7 +173,7 @@ void dpnp_partition_c(
 
     event.wait();
 
-    dpnp_memory_free_c(shape);
+        dpnp_memory_free_c(shape);
 }
 
 template <typename _DataType>
