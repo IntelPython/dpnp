@@ -122,6 +122,7 @@ jobs:
       conda activate dpnp$(python.version)
       echo ========================= CI ENV ==============================
       . ./scripts/set_ci_env.sh
+      pip3 install numpy==1.19
       echo ========================= build DPNP ==========================
       ./0.build.sh
       echo ========================= run tests ===========================
