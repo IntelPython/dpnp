@@ -50,10 +50,6 @@ def pytest_collection_modifyitems(config, items):
 
     if os.getenv('DPNP_QUEUE_GPU') == '1':
         excluded_tests.extend(get_excluded_tests(test_exclude_file_gpu))
-        # TODO: remove below logic when all the tests passed on special GPU device
-        if os.getenv('DPNP_GPU_SPECIAL') == '1':
-            test_exclude_file_gpu2 = os.path.join(test_path, 'skipped_tests_gpu2.tbl')
-            excluded_tests.extend(get_excluded_tests(test_exclude_file_gpu2))
     else:
         excluded_tests.extend(get_excluded_tests(test_exclude_file))
 
