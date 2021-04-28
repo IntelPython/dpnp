@@ -116,16 +116,15 @@ jobs:
       versionSpec: '$(python.version)'
     displayName: 'Use Python $(python.version)'
   - bash: |
-      echo ========================= Conda ENV ===========================
-      conda create -q -y -n dpnp$(python.version) python=$(python.version)
+      echo ========================= Conda ENV ======================================
+      conda create -q -y -n dpnp$(python.version) python=$(python.version) numpy=1.19
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate dpnp$(python.version)
-      echo ========================= CI ENV ==============================
+      echo ========================= CI ENV =========================================
       . ./scripts/set_ci_env.sh
-      pip3 install numpy==1.19
-      echo ========================= build DPNP ==========================
+      echo ========================= build DPNP =====================================
       ./0.build.sh
-      echo ========================= run tests ===========================
+      echo ========================= run tests ======================================
       python -m tests_external.numpy.runtests
 
 # test python ./setup.py bdist_wheel command with no dpctl
