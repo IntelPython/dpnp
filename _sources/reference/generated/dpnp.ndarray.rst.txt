@@ -68,6 +68,12 @@
    .. automethod:: copy
 
 
+   .. automethod:: cumprod
+
+
+   .. automethod:: cumsum
+
+
    .. automethod:: diagonal
 
 
