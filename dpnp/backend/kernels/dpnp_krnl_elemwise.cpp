@@ -370,8 +370,8 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
         _DataType_input2* input2_data = reinterpret_cast<_DataType_input2*>(const_cast<void*>(input2_in));             \
         _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);                                    \
                                                                                                                        \
-        std::vector<size_t> result_shape = get_result_shape(input1_shape, input1_shape_ndim,                           \
-                                                            input2_shape, input2_shape_ndim);                          \
+        std::vector<size_t> result_shape =                                                                             \
+            get_result_shape(input1_shape, input1_shape_ndim, input2_shape, input2_shape_ndim);                        \
                                                                                                                        \
         DPNPC_id<_DataType_input1>* input1_it;                                                                         \
         const size_t input1_it_size_in_bytes = sizeof(DPNPC_id<_DataType_input1>);                                     \

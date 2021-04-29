@@ -548,27 +548,9 @@ void dpnp_rng_multivariate_normal_c(void* result,
     // `size1` is a number of random values to be generated for each dimension.
     size_t size1 = size / dimen;
 
-    if (dpnp_queue_is_cpu_c())
-    {
-        mkl_rng::gaussian_mv<_DataType> distribution(dimen, mean, cov);
-        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size1, result1);
-        event_out.wait();
-    }
-    else
-    {
-        int errcode = vdRngGaussianMV(VSL_RNG_METHOD_GAUSSIANMV_BOXMULLER2,
-                                      get_rng_stream(),
-                                      size1,
-                                      result1,
-                                      dimen,
-                                      VSL_MATRIX_STORAGE_FULL,
-                                      mean_vector,
-                                      cov_vector);
-        if (errcode != VSL_STATUS_OK)
-        {
-            throw std::runtime_error("DPNP RNG Error: dpnp_rng_multivariate_normal_c() failed.");
-        }
-    }
+    mkl_rng::gaussian_mv<_DataType> distribution(dimen, mean, cov);
+    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size1, result1);
+    event_out.wait();
 }
 
 template <typename _DataType>
