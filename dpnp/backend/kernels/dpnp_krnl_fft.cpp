@@ -67,7 +67,6 @@ void dpnp_fft_fft_c(const void* array1_in,
     long* output_shape_offsets = reinterpret_cast<long*>(dpnp_memory_alloc_c(shape_size * sizeof(long)));
     long* input_shape_offsets = reinterpret_cast<long*>(dpnp_memory_alloc_c(shape_size * sizeof(long)));
     // must be a thread local storage.
-    long* xyz = reinterpret_cast<long*>(dpnp_memory_alloc_c(result_size * shape_size * sizeof(long)));
     long* axis_iterator = reinterpret_cast<long*>(dpnp_memory_alloc_c(result_size * shape_size * sizeof(long)));
 
     get_shape_offsets_inkernel<long>(output_shape, shape_size, output_shape_offsets);
@@ -79,14 +78,14 @@ void dpnp_fft_fft_c(const void* array1_in,
 
         double sum_real = 0.0;
         double sum_imag = 0.0;
-        // need to replace these arrays by thread local storage
-        long* xyz_thread = xyz + (output_id * shape_size);
+        // need to replace this array by thread local storage
         long* axis_iterator_thread = axis_iterator + (output_id * shape_size);
 
-        get_xyz_by_id_inkernel(output_id, output_shape_offsets, shape_size, xyz_thread);
+        size_t xyz_id;
         for (size_t i = 0; i < shape_size; ++i)
         {
-            axis_iterator_thread[i] = xyz_thread[i];
+            xyz_id = get_xyz_id_by_id_inkernel(output_id, output_shape_offsets, shape_size, i);
+            axis_iterator_thread[i] = xyz_id;
         }
 
         const long axis_length = input_boundarie;
@@ -114,7 +113,8 @@ void dpnp_fft_fft_c(const void* array1_in,
                 }
             }
 
-            const size_t output_local_id = xyz_thread[axis];
+            xyz_id = get_xyz_id_by_id_inkernel(output_id, output_shape_offsets, shape_size, axis);
+            const size_t output_local_id = xyz_id;
             const double angle = 2.0 * kernel_pi * it * output_local_id / axis_length;
 
             const double angle_cos = cl::sycl::cos(angle);
@@ -153,7 +153,6 @@ void dpnp_fft_fft_c(const void* array1_in,
     dpnp_memory_free_c(input_shape_offsets);
     dpnp_memory_free_c(output_shape_offsets);
     dpnp_memory_free_c(axis_iterator);
-    dpnp_memory_free_c(xyz);
 
     return;
 }

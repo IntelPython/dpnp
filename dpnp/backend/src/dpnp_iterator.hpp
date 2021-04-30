@@ -290,10 +290,6 @@ public:
             get_shape_offsets_inkernel<size_type>(output_shape, output_shape_size, output_shape_strides);
 
             iteration_size = 1;
-
-            // make thread private storage for each shape by multiplying memory
-            sycl_output_xyz =
-                reinterpret_cast<size_type*>(dpnp_memory_alloc_c(output_size * output_shape_size_in_bytes));
         }
     }
 
@@ -400,10 +396,6 @@ public:
             {
                 axes_shape_strides[i] = input_shape_strides[axes[i]];
             }
-
-            // make thread private storage for each shape by multiplying memory
-            sycl_output_xyz =
-                reinterpret_cast<size_type*>(dpnp_memory_alloc_c(output_size * output_shape_size_in_bytes));
         }
     }
 
@@ -485,16 +477,13 @@ private:
         {
             assert(output_global_id < output_size);
 
-            // use thread private storage
-            size_type* sycl_output_xyz_thread = sycl_output_xyz + (output_global_id * output_shape_size);
-
-            get_xyz_by_id_inkernel(output_global_id, output_shape_strides, output_shape_size, sycl_output_xyz_thread);
-
             for (size_t iit = 0, oit = 0; iit < input_shape_size; ++iit)
             {
                 if (std::find(axes.begin(), axes.end(), iit) == axes.end())
                 {
-                    input_global_id += (sycl_output_xyz_thread[oit] * input_shape_strides[iit]);
+                    const size_type output_xyz_id = get_xyz_id_by_id_inkernel(output_global_id, output_shape_strides,
+                                                                              output_shape_size, oit);
+                    input_global_id += (output_xyz_id * input_shape_strides[iit]);
                     ++oit;
                 }
             }
@@ -502,18 +491,16 @@ private:
         else if (broadcast_use)
         {
             assert(output_global_id < output_size);
-
-            // use thread private storage
-            size_type* sycl_output_xyz_thread = sycl_output_xyz + (output_global_id * output_shape_size);
-
-            get_xyz_by_id_inkernel(output_global_id, output_shape_strides, output_shape_size, sycl_output_xyz_thread);
+            assert(input_shape_size <= output_shape_size);
 
             for (int irit = input_shape_size - 1, orit = output_shape_size - 1; irit >= 0; --irit, --orit)
             {
                 size_type* broadcast_axes_end = broadcast_axes + broadcast_axes_size;
                 if (std::find(broadcast_axes, broadcast_axes_end, orit) == broadcast_axes_end)
                 {
-                    input_global_id += (sycl_output_xyz_thread[orit] * input_shape_strides[irit]);
+                    const size_type output_xyz_id = get_xyz_id_by_id_inkernel(output_global_id, output_shape_strides,
+                                                                              output_shape_size, orit);
+                    input_global_id += (output_xyz_id * input_shape_strides[irit]);
                 }
             }
         }
@@ -565,10 +552,8 @@ private:
         output_shape_size = size_type{};
         dpnp_memory_free_c(output_shape);
         dpnp_memory_free_c(output_shape_strides);
-        dpnp_memory_free_c(sycl_output_xyz);
         output_shape = nullptr;
         output_shape_strides = nullptr;
-        sycl_output_xyz = nullptr;
     }
 
     void free_memory()
@@ -602,9 +587,6 @@ private:
     size_type iteration_shape_size = size_type{};
     size_type* iteration_shape_strides = nullptr;
     size_type* axes_shape_strides = nullptr;
-
-    // data allocated to use inside SYCL kernels
-    size_type* sycl_output_xyz = nullptr;
 };
 
 #endif // DPNP_ITERATOR_H
