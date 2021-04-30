@@ -1085,14 +1085,14 @@ void dpnp_rng_standard_t_c(void* result, const _DataType df, const size_t size)
 
         auto invsqrt_event = mkl_vm::invsqrt(DPNP_QUEUE, size, result1, result1, {gamma_distr_event}, mkl_vm::mode::ha);
 
-        sn = reinterpret_cast<_DataType*>(malloc_shared(size * sizeof(_DataType), DPNP_QUEUE));
+        sn = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
 
         mkl_rng::gaussian<_DataType> gaussian_distribution(d_zero, d_one);
         auto gaussian_distr_event = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, sn);
 
         auto event_out = mkl_vm::mul(
             DPNP_QUEUE, size, result1, sn, result1, {invsqrt_event, gaussian_distr_event}, mkl_vm::mode::ha);
-        free(sn, DPNP_QUEUE);
+        dpnp_memory_free_c(sn);
         event_out.wait();
     }
     else
