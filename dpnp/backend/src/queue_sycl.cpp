@@ -35,6 +35,29 @@ cl::sycl::queue* backend_sycl::queue = nullptr;
 #endif
 mkl_rng::mt19937* backend_sycl::rng_engine = nullptr;
 
+static void dpnpc_show_mathlib_version()
+{
+#if 1
+    const int len = 256;
+    std::string mathlib_version_str(len, 0x0);
+
+    char* buf = const_cast<char*>(mathlib_version_str.c_str()); // TODO avoid write into the container
+
+    mkl_get_version_string(buf, len);
+
+    std::cout << "Math backend version: " << mathlib_version_str << std::endl;
+#else
+    // Failed to load library under Python environment die to unresolved symbol
+    MKLVersion version;
+
+    mkl_get_version(&version);
+
+    std::cout << "Math backend version: " << version.MajorVersion << "." << version.UpdateVersion << "."
+              << version.MinorVersion << std::endl;
+#endif
+}
+
+#if not defined(NDEBUG)
 static void show_available_sycl_devices()
 {
     const std::vector<cl::sycl::device> devices = cl::sycl::device::get_devices();
@@ -51,6 +74,7 @@ static void show_available_sycl_devices()
             << ", name=" << it->get_info<cl::sycl::info::device::name>() << std::endl;
     }
 }
+#endif
 
 static cl::sycl::device get_default_sycl_device()
 {
@@ -162,7 +186,10 @@ void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
 #else
     std::cout << "DPCtrl SYCL queue used\n";
 #endif
-    std::cout << "SYCL kernels link time: " << time_kernels_link.count() << " (sec.)\n" << std::endl;
+    std::cout << "SYCL kernels link time: " << time_kernels_link.count() << " (sec.)\n";
+    dpnpc_show_mathlib_version();
+
+    std::cout << std::endl;
 }
 
 bool backend_sycl::backend_sycl_is_cpu()
