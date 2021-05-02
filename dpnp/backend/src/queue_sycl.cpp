@@ -76,6 +76,7 @@ static void show_available_sycl_devices()
 }
 #endif
 
+#if defined(DPNP_LOCAL_QUEUE)
 static cl::sycl::device get_default_sycl_device()
 {
     int dpnpc_queue_gpu = 0;
@@ -94,6 +95,7 @@ static cl::sycl::device get_default_sycl_device()
 
     return dev;
 }
+#endif
 
 /**
  * Function push the SYCL kernels to be linked (final stage of the compilation) for the current queue
