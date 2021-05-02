@@ -11,7 +11,7 @@ jobs:
   - bash: |
       echo ========================= Conda ENV ====================================
       conda create -q -y -n CondaCodeStyle python=3.8 conda-build conda-verify \
-                                                      numpy cython pytest \
+                                                      numpy=1.19 cython pytest \
                                                       pycodestyle autopep8 black
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate CondaCodeStyle
@@ -55,7 +55,7 @@ jobs:
   - bash: |
       echo ========================= Conda ENV =================================
       conda create -q -y -n CondaCodeCov python=3.8 conda-build conda-verify \
-                                                    numpy cython pytest \
+                                                    numpy=1.19 cython pytest \
                                                     pycodestyle autopep8 \
                                                     cython pytest pytest-cov
       . /usr/share/miniconda/etc/profile.d/conda.sh
@@ -96,7 +96,7 @@ jobs:
       echo ========================= build DPNP ==========================
       ./0.build.sh
       echo ========================= run pytest ==========================
-      pytest
+      pytest -s
 
 - job: ubuntu2004_tests_external
   displayName: Ubuntu 20.04 External Tests
@@ -172,7 +172,7 @@ jobs:
 
   - script: |
       call activate
-      conda install -y conda-build numpy cython pytest hypothesis
+      conda install -y conda-build numpy=1.19 cython pytest hypothesis
     displayName: Install extra conda packages
 
   - script: |
