@@ -292,7 +292,7 @@ jobs:
       . /opt/intel/oneapi/setvars.sh
 
       ./scripts/install_python_deps.sh
-      ./scripts/build_deps_dpctl.sh
+      # ./scripts/build_deps_dpctl.sh
 
       conda list
       echo ========================= make DPNP package =========================
