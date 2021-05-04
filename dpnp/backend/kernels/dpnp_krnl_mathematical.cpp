@@ -29,6 +29,7 @@
 
 #include <dpnp_iface.hpp>
 #include "dpnp_fptr.hpp"
+#include "dpnp_iterator.hpp"
 #include "dpnp_utils.hpp"
 #include "queue_sycl.hpp"
 
@@ -188,9 +189,8 @@ void dpnp_floor_divide_c(void* result_out,
         return;
     }
 
-    cl::sycl::event event;
-    _DataType_input1* input1 = reinterpret_cast<_DataType_input1*>(const_cast<void*>(input1_in));
-    _DataType_input2* input2 = reinterpret_cast<_DataType_input2*>(const_cast<void*>(input2_in));
+    _DataType_input1* input1_data = reinterpret_cast<_DataType_input1*>(const_cast<void*>(input1_in));
+    _DataType_input2* input2_data = reinterpret_cast<_DataType_input2*>(const_cast<void*>(input2_in));
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
 
     std::vector<size_t> result_shape = get_result_shape(input1_shape, input1_shape_ndim,
@@ -219,11 +219,11 @@ void dpnp_floor_divide_c(void* result_out,
         const _DataType_output input1_elem = (*input1_it)[i];
         const _DataType_output input2_elem = (*input2_it)[i];
 
-        double div = (double)input_elem1 / (double)input_elem2;
+        double div = (double)input1_elem / (double)input2_elem;
         result[i] = static_cast<_DataType_output>(cl::sycl::floor(div));
     };
     auto kernel_func = [&](cl::sycl::handler& cgh) {
-        cgh.parallel_for<class __name__##_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(
+        cgh.parallel_for<class dpnp_floor_divide_c_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(
             gws, kernel_parallel_for_func);
     };
 
@@ -235,7 +235,7 @@ void dpnp_floor_divide_c(void* result_out,
                         std::is_same<_DataType_input1, float>::value) &&
                         std::is_same<_DataType_input2, _DataType_input1>::value)
         {
-            event = oneapi::mkl::vm::div(DPNP_QUEUE, input1_size, input1, input2, result);
+            event = oneapi::mkl::vm::div(DPNP_QUEUE, input1_size, input1_data, input2_data, result);
             event.wait();
             event = oneapi::mkl::vm::floor(DPNP_QUEUE, input1_size, result, result);
         }

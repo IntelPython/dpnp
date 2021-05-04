@@ -678,7 +678,7 @@ def floor_divide(x1, x2, **kwargs):
 
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
+        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray` and as a number.
         Keyword arguments ``kwargs`` are currently unsupported.
         Otherwise the functions will be executed sequentially on CPU.
         Input array data types are limited by supported DPNP :ref:`Data types`.
@@ -699,10 +699,7 @@ def floor_divide(x1, x2, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-    is_x2_dparray = isinstance(x2, dparray)
-
-    if not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs:
+    if not use_origin_backend(x1) and not kwargs:
         return dpnp_floor_divide(x1, x2)
 
     return call_origin(numpy.floor_divide, x1, x2, **kwargs)
