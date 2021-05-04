@@ -11,7 +11,7 @@ jobs:
   - bash: |
       echo ========================= Conda ENV ====================================
       conda create -q -y -n CondaCodeStyle python=3.8 conda-build conda-verify \
-                                                      numpy=1.19 cython pytest \
+                                                      numpy=1.20.1 cython pytest \
                                                       pycodestyle autopep8 black
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate CondaCodeStyle
@@ -55,7 +55,7 @@ jobs:
   - bash: |
       echo ========================= Conda ENV =================================
       conda create -q -y -n CondaCodeCov python=3.8 conda-build conda-verify \
-                                                    numpy=1.19 cython pytest \
+                                                    numpy=1.20.1 cython pytest \
                                                     pycodestyle autopep8 \
                                                     cython pytest pytest-cov
       . /usr/share/miniconda/etc/profile.d/conda.sh
@@ -117,7 +117,7 @@ jobs:
     displayName: 'Use Python $(python.version)'
   - bash: |
       echo ========================= Conda ENV ======================================
-      conda create -q -y -n dpnp$(python.version) python=$(python.version) numpy=1.19
+      conda create -q -y -n dpnp$(python.version) python=$(python.version) numpy=1.20.1
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate dpnp$(python.version)
       echo ========================= CI ENV =========================================
@@ -172,7 +172,7 @@ jobs:
 
   - script: |
       call activate
-      conda install -y conda-build numpy=1.19 cython pytest hypothesis
+      conda install -y conda-build numpy=1.20.1 cython pytest hypothesis
     displayName: Install extra conda packages
 
   - script: |
