@@ -833,6 +833,12 @@ cdef class dparray:
     -------------------------------------------------------------------------
     """
 
+    def cumprod(x1, **kwargs):
+        return cumprod(x1, **kwargs)
+
+    def cumsum(x1, **kwargs):
+        return cumsum(x1, **kwargs)
+
     def prod(*args, **kwargs):
         """
         Returns the prod along a given axis.

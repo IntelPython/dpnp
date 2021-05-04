@@ -27,6 +27,7 @@
 #ifndef BACKEND_UTILS_H // Cython compatibility
 #define BACKEND_UTILS_H
 
+#include <cassert>
 #include <algorithm>
 #include <iostream>
 #include <iterator>
@@ -69,33 +70,38 @@ void get_shape_offsets_inkernel(const _DataType* shape, size_t shape_size, _Data
 
 /**
  * @ingroup BACKEND_UTILS
- * @brief Calculate ids for all given axes from linear index
+ * @brief Calculate xyz id for given axis from linear index
  *
- * Calculates ids of the array with given shape. This is reverse operation of @ref get_id_by_xyz_inkernel
+ * Calculates xyz id of the array with given shape.
  * for example:
  *   input_array_shape_offsets[20, 5, 1]
  *   global_id == 5
- *   xyz array ids should be [0, 1, 0]
+ *   axis == 1
+ *   xyz_id should be 1
  *
- * @param [in]  global_id     linear index id of the element in multy-D array.
+ * @param [in]  global_id     linear index of the element in multy-D array.
  * @param [in]  offsets       array with input offsets.
  * @param [in]  offsets_size  array size for @ref offsets parameter.
- * @param [out] xyz           Result array with @ref offsets_size size.
+ * @param [in]  axis          axis.
  */
 template <typename _DataType>
-void get_xyz_by_id_inkernel(size_t global_id, const _DataType* offsets, size_t offsets_size, _DataType* xyz)
+_DataType get_xyz_id_by_id_inkernel(size_t global_id, const _DataType* offsets, size_t offsets_size, size_t axis)
 {
+    /* avoid warning unused variable*/
+    (void)offsets_size;
+
+    assert(axis < offsets_size);
+
+    _DataType xyz_id = 0;
     long reminder = global_id;
-    for (size_t axis = 0; axis < offsets_size; ++axis)
+    for (size_t i = 0; i < axis + 1; ++i)
     {
-        /* reconstruct [x][y][z] from given linear idx */
-        const _DataType axis_val = offsets[axis];
-        _DataType xyz_id = reminder / axis_val;
+        const _DataType axis_val = offsets[i];
+        xyz_id = reminder / axis_val;
         reminder = reminder % axis_val;
-        xyz[axis] = xyz_id;
     }
 
-    return;
+    return xyz_id;
 }
 
 /**
@@ -136,8 +142,7 @@ size_t get_id_by_xyz_inkernel(const _DataType* xyz, size_t xyz_size, const _Data
  *
  * @return                        Input shape is broadcastable to output one or not.
  */
-static inline bool
-    broadcastable(const std::vector<size_t>& input_shape, const std::vector<size_t>& output_shape)
+static inline bool broadcastable(const std::vector<size_t>& input_shape, const std::vector<size_t>& output_shape)
 {
     if (input_shape.size() > output_shape.size())
     {
@@ -167,7 +172,7 @@ static inline bool
 /**
  * @ingroup BACKEND_UTILS
  * @brief Get common shape based on input shapes.
- * 
+ *
  * Example:
  *   Input1 shape A[8, 1, 6, 1]
  *   Input2 shape B[7, 1, 5]
@@ -181,9 +186,10 @@ static inline bool
  * @exception std::domain_error    Input shapes are not broadcastable.
  * @return                         Common shape.
  */
-static inline std::vector<size_t>
-    get_result_shape(const size_t* input1_shape, const size_t input1_shape_size,
-                     const size_t* input2_shape, const size_t input2_shape_size)
+static inline std::vector<size_t> get_result_shape(const size_t* input1_shape,
+                                                   const size_t input1_shape_size,
+                                                   const size_t* input2_shape,
+                                                   const size_t input2_shape_size)
 {
     const size_t result_shape_size = (input2_shape_size > input1_shape_size) ? input2_shape_size : input1_shape_size;
     std::vector<size_t> result_shape;
