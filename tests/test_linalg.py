@@ -193,11 +193,11 @@ def test_norm2(array, ord, axis):
                          [[[[1, 2], [3, 4]], [[5, 6], [7, 8]]], [[[1, 0], [3, 0]], [[5, 0], [7, 0]]]],
                          ids=['[[[1, 2], [3, 4]], [[5, 6], [7, 8]]]', '[[[1, 0], [3, 0]], [[5, 0], [7, 0]]]'])
 @pytest.mark.parametrize("ord",
-                         [None, -numpy.Inf, -2, -1, 0, 1, 2, 3, numpy.Inf],
-                         ids=['None', '-numpy.Inf', '-2', '-1', '0', '1', '2', '3', 'numpy.Inf'])
+                         [None, -numpy.Inf, -2, -1, 1, 2, numpy.Inf],
+                         ids=['None', '-numpy.Inf', '-2', '-1', '1', '2', 'numpy.Inf'])
 @pytest.mark.parametrize("axis",
-                         [None, 0, 1, 2, (0, 1), (0, 2), (1, 2)],
-                         ids=['None', '0', '1', '2', '(0, 1)', '(0, 2)', '(1, 2)'])
+                         [0, 1, 2, (0, 1), (0, 2), (1, 2)],
+                         ids=['0', '1', '2', '(0, 1)', '(0, 2)', '(1, 2)'])
 def test_norm3(array, ord, axis):
     a = numpy.array(array)
     ia = inp.array(a)

@@ -548,27 +548,9 @@ void dpnp_rng_multivariate_normal_c(void* result,
     // `size1` is a number of random values to be generated for each dimension.
     size_t size1 = size / dimen;
 
-    if (dpnp_queue_is_cpu_c())
-    {
-        mkl_rng::gaussian_mv<_DataType> distribution(dimen, mean, cov);
-        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size1, result1);
-        event_out.wait();
-    }
-    else
-    {
-        int errcode = vdRngGaussianMV(VSL_RNG_METHOD_GAUSSIANMV_BOXMULLER2,
-                                      get_rng_stream(),
-                                      size1,
-                                      result1,
-                                      dimen,
-                                      VSL_MATRIX_STORAGE_FULL,
-                                      mean_vector,
-                                      cov_vector);
-        if (errcode != VSL_STATUS_OK)
-        {
-            throw std::runtime_error("DPNP RNG Error: dpnp_rng_multivariate_normal_c() failed.");
-        }
-    }
+    mkl_rng::gaussian_mv<_DataType> distribution(dimen, mean, cov);
+    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size1, result1);
+    event_out.wait();
 }
 
 template <typename _DataType>
@@ -1086,11 +1068,10 @@ void dpnp_rng_standard_normal_c(void* result, size_t size)
 template <typename _DataType>
 void dpnp_rng_standard_t_c(void* result, const _DataType df, const size_t size)
 {
-    if (!size)
+    if (!size || !result)
     {
         return;
     }
-    cl::sycl::vector_class<cl::sycl::event> no_deps;
 
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
     const _DataType d_zero = 0.0, d_one = 1.0;
@@ -1100,18 +1081,17 @@ void dpnp_rng_standard_t_c(void* result, const _DataType df, const size_t size)
     if (dpnp_queue_is_cpu_c())
     {
         mkl_rng::gamma<_DataType> gamma_distribution(shape, d_zero, 1.0 / shape);
-        auto event_out = mkl_rng::generate(gamma_distribution, DPNP_RNG_ENGINE, size, result1);
-        event_out.wait();
-        event_out = mkl_vm::invsqrt(DPNP_QUEUE, size, result1, result1, no_deps, mkl_vm::mode::ha);
-        event_out.wait();
+        auto gamma_distr_event = mkl_rng::generate(gamma_distribution, DPNP_RNG_ENGINE, size, result1);
+
+        auto invsqrt_event = mkl_vm::invsqrt(DPNP_QUEUE, size, result1, result1, {gamma_distr_event}, mkl_vm::mode::ha);
 
         sn = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
 
         mkl_rng::gaussian<_DataType> gaussian_distribution(d_zero, d_one);
-        event_out = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, sn);
-        event_out.wait();
+        auto gaussian_distr_event = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, sn);
 
-        event_out = mkl_vm::mul(DPNP_QUEUE, size, result1, sn, result1, no_deps, mkl_vm::mode::ha);
+        auto event_out = mkl_vm::mul(
+            DPNP_QUEUE, size, result1, sn, result1, {invsqrt_event, gaussian_distr_event}, mkl_vm::mode::ha);
         dpnp_memory_free_c(sn);
         event_out.wait();
     }
