@@ -139,7 +139,7 @@ void dpnp_partition_c(
         }
     }
 
-        size_t* shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
+    size_t* shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
     auto memcpy_event = DPNP_QUEUE.memcpy(shape, shape_, ndim * sizeof(size_t));
 
     memcpy_event.wait();
@@ -172,7 +172,7 @@ void dpnp_partition_c(
 
     event.wait();
 
-        dpnp_memory_free_c(shape);
+    dpnp_memory_free_c(shape);
 }
 
 template <typename _DataType>
