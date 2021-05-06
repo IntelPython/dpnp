@@ -382,6 +382,20 @@ INP_DLLEXPORT void dpnp_prod_c(void* result_out,
 
 /**
  * @ingroup BACKEND_API
+ * @brief Range of values (maximum - minimum) along an axis.
+ *
+ * @param [in]  array   Input array with data.
+ * @param [out] result  Output array.
+ * @param [in]  shape   Shape of input array.
+ * @param [in]  ndim    Number of elements in shape.
+ * @param [in]  axis    Axis.
+ * @param [in]  naxis   Number of elements in axis.
+ */
+template <typename _DataType>
+void dpnp_ptp_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
+
+/**
+ * @ingroup BACKEND_API
  * @brief Product of array elements
  *
  * @param [in]  array       Input array.

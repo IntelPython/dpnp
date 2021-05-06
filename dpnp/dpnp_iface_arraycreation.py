@@ -1074,6 +1074,17 @@ def ones_like(x1, dtype=None, order='C', subok=False, shape=None):
 
 
 def ptp(arr, axis=None, out=None, keepdims=numpy._NoValue):
+    """
+    Range of values (maximum - minimum) along an axis.
+
+    For full documentation refer to :obj:`numpy.ptp`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters ``out`` and ``keepdims`` are supported only with default values.
+    """
+
     if not use_origin_backend(arr):
         if not isinstance(arr, dparray):
             pass

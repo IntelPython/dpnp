@@ -158,6 +158,32 @@ void dpnp_ones_like_c(void* result, size_t size)
     dpnp_ones_c<_DataType>(result, size);
 }
 
+template <typename _DataType>
+void dpnp_ptp_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
+{
+    _DataType* arr = reinterpret_cast<_DataType*>(array1_in);
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    if ((arr == nullptr) || (result == nullptr))
+    {
+        return;
+    }
+
+    if (ndim < 1)
+    {
+        return;
+    }
+
+    size_t size = 1;
+    for (size_t i = 0; i < ndim; ++i)
+    {
+        size *= shape[i];
+    }
+
+    _DataType* min_arr = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+    dpnp_min_c<_DataType>(arr, result, shape, ndim, axis, naxis);
+}
+
 template <typename _DataType_input, typename _DataType_output>
 void dpnp_vander_c(const void* array1_in, void* result1, const size_t size_in, const size_t N, const int increasing)
 {
@@ -530,6 +556,11 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_ONES_LIKE][eft_BLN][eft_BLN] = {eft_BLN, (void*)dpnp_ones_like_c<bool>};
     fmap[DPNPFuncName::DPNP_FN_ONES_LIKE][eft_C128][eft_C128] = {eft_C128,
                                                                  (void*)dpnp_ones_like_c<std::complex<double>>};
+
+    fmap[DPNPFuncName::DPNP_FN_PTP][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_ptp_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_PTP][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_ptp_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_PTP][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_ptp_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_PTP][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_ptp_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_VANDER][eft_INT][eft_INT] = {eft_LNG, (void*)dpnp_vander_c<int, long>};
     fmap[DPNPFuncName::DPNP_FN_VANDER][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_vander_c<long, long>};

@@ -64,6 +64,7 @@ __all__ += [
 
 ctypedef void(*custom_1in_1out_func_ptr_t)(void *, void * , const int , size_t * , size_t * , const size_t, const size_t)
 ctypedef void(*ftpr_custom_vander_1in_1out_t)(void *, void *, size_t, size_t, int)
+ctypedef void(*custom_arraycreation_1in_1out_func_ptr_t)(void * , void * , size_t * , size_t, size_t * , size_t)
 ctypedef void(*custom_indexing_1out_func_ptr_t)(void * , const size_t , const size_t , const int)
 
 
@@ -272,12 +273,65 @@ cpdef dparray dpnp_ones_like(result_shape, result_dtype):
 
 
 cpdef dparray dpnp_ptp(dparray arr, axis=None):
+    cdef dparray_shape_type shape_arr = arr.shape
+    if axis is None:
+        axis_ = axis
+        output_shape = 1
+    else:
+        if isinstance(axis, int):
+            if axis < 0:
+                axis_ = tuple([arr.ndim - axis])
+            else:
+                axis_ = tuple([axis])
+        else:
+            _axis_ = []
+            for i in range(len(axis)):
+                if axis[i] < 0:
+                    _axis_.append(arr.ndim - axis[i])
+                else:
+                    _axis_.append(axis[i])
+            axis_ = tuple(_axis_)
+
+        output_shape = dparray(len(shape_arr) - len(axis_), dtype=numpy.int64)
+        ind = 0
+        for id, shape_axis in enumerate(shape_arr):
+            if id not in axis_:
+                output_shape[ind] = shape_axis
+                ind += 1
+
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PTP, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    cdef dparray result = dparray(output_shape, dtype=result_type)
+
+    cdef custom_arraycreation_1in_1out_func_ptr_t func = <custom_arraycreation_1in_1out_func_ptr_t > kernel_data.ptr
+    cdef dparray_shape_type axis1
+    cdef Py_ssize_t axis_size = 0
+    cdef dparray_shape_type axis2 = axis1
+
+    if axis_ is not None:
+        axis1 = axis_
+        axis2.reserve(len(axis1))
+        for shape_it in axis1:
+            if shape_it < 0:
+                raise ValueError("DPNP dparray::__init__(): Negative values in 'shape' are not allowed")
+            axis2.push_back(shape_it)
+        axis_size = len(axis1)
+
+    func(arr.get_data(), result.get_data(), < size_t * > arr._dparray_shape.data(), arr.ndim, < size_t * > axis2.data(), axis_size)
+
+    dpnp_array = dpnp.array(result, dtype=arr.dtype)
+    dpnp_result_array = dpnp_array.reshape(output_shape)
+    # return dpnp_result_array
+
     cpdef max_arr = dpnp.max(arr, axis=axis)
     cpdef min_arr = dpnp.min(arr, axis=axis)
-    cpdef result = max_arr - min_arr
-    if dpnp.isscalar(result):
-        return dpnp.array([result])
-    return result
+    cpdef result_ = max_arr - min_arr
+    if dpnp.isscalar(result_):
+        return dpnp.array([result_])
+    return result_
 
 
 cpdef dparray dpnp_tri(N, M=None, k=0, dtype=numpy.float):
