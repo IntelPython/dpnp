@@ -52,6 +52,7 @@ __all__ += [
     "dpnp_meshgrid",
     "dpnp_ones",
     "dpnp_ones_like",
+    "dpnp_ptp",
     "dpnp_tri",
     "dpnp_tril",
     "dpnp_triu",
@@ -268,6 +269,15 @@ cpdef dparray dpnp_ones(result_shape, result_dtype):
 
 cpdef dparray dpnp_ones_like(result_shape, result_dtype):
     return call_fptr_1out(DPNP_FN_ONES_LIKE, result_shape, result_dtype)
+
+
+cpdef dparray dpnp_ptp(dparray arr, axis=None):
+    cpdef max_arr = dpnp.max(arr, axis=axis)
+    cpdef min_arr = dpnp.min(arr, axis=axis)
+    cpdef result = max_arr - min_arr
+    if dpnp.isscalar(result):
+        return dpnp.array([result])
+    return result
 
 
 cpdef dparray dpnp_tri(N, M=None, k=0, dtype=numpy.float):

@@ -75,6 +75,7 @@ __all__ = [
     "ogrid",
     "ones",
     "ones_like",
+    "ptp",
     "tri",
     "tril",
     "triu",
@@ -1070,6 +1071,28 @@ def ones_like(x1, dtype=None, order='C', subok=False, shape=None):
         return dpnp_ones_like(_shape, _dtype)
 
     return numpy.ones_like(x1, dtype, order, subok, shape)
+
+
+def ptp(arr, axis=None, out=None, keepdims=numpy._NoValue):
+    if not use_origin_backend(arr):
+        if not isinstance(arr, dparray):
+            pass
+        elif axis is not None and not isinstance(axis, int):
+            pass
+        elif out is not None:
+            pass
+        elif keepdims is not numpy._NoValue:
+            pass
+        else:
+            result = dpnp_ptp(arr, axis=axis)
+
+            # scalar returned
+            if result.shape == (1,):
+                return result.dtype.type(result[0])
+
+            return result
+
+    return call_origin(numpy.ptp, arr, axis, out, keepdims)
 
 
 def tri(N, M=None, k=0, dtype=numpy.float, **kwargs):
