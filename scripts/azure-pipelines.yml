@@ -116,10 +116,13 @@ jobs:
       versionSpec: '$(python.version)'
     displayName: 'Use Python $(python.version)'
   - bash: |
+      ./scripts/install_system_deps.sh
+
       echo ========================= Conda ENV ======================================
       conda create -q -y -n dpnp$(python.version) python=$(python.version) numpy=1.19
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate dpnp$(python.version)
+
       echo ========================= build DPNP =====================================
       ./0.build.sh
       echo ========================= run tests ======================================
