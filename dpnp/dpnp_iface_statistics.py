@@ -301,7 +301,27 @@ def max(input, axis=None, out=None, keepdims=numpy._NoValue, initial=numpy._NoVa
     """
 
     if not use_origin_backend(input):
+        isaxis = True
+        if axis is not None:
+            if dpnp.isscalar(axis):
+                if axis < 0:
+                    isaxis = False
+            else:
+                for val in axis:
+                    if val < 0:
+                        isaxis = False
+                        break
+                if isaxis:
+                    for i in range(len(axis)):
+                        for j in range(len(axis)):
+                            if i != j:
+                                if axis[i] == axis[j]:
+                                    isaxis = False
+                                    break
+
         if not isinstance(input, dparray):
+            pass
+        elif not isaxis:
             pass
         elif out is not None:
             pass
