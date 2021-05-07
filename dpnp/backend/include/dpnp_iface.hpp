@@ -707,6 +707,18 @@ INP_DLLEXPORT void dpnp_take_c(void* array, void* indices, void* result, size_t 
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of trace function
+ *
+ * @param [in]  array      Input array with data.
+ * @param [out] result     Output array.
+ * @param [in]  shape      Shape of input array.
+ * @param [in]  ndim       Number of elements in array.shape.
+ */
+template <typename _DataType, typename _ResultType>
+INP_DLLEXPORT void dpnp_trace_c(const void* array, void* result, const size_t* shape, const size_t ndim);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of take function
  *
  * @param [out] result  Output array.
