@@ -118,10 +118,10 @@ jobs:
   - bash: |
       ./scripts/install_system_deps.sh
       
-      conda install -y conda-build numpy=1.19 cython pytest hypothesis
+      # conda install -y conda-build numpy=1.19 cython pytest hypothesis
       
       echo ========================= Conda ENV ======================================
-      conda create -q -y -n dpnp$(python.version) python=$(python.version) numpy=1.19
+      conda create -q -y -n dpnp$(python.version) python=$(python.version) numpy=1.19 conda-build cython pytest hypothesis
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate dpnp$(python.version)
 
