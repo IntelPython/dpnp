@@ -114,6 +114,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_FULL,                     /**< Used in numpy.full() implementation  */
     DPNP_FN_FULL_LIKE,                /**< Used in numpy.full_like() implementation  */
     DPNP_FN_HYPOT,                    /**< Used in numpy.hypot() implementation  */
+    DPNP_FN_IDENTITY,                 /**< Used in numpy.identity() implementation  */
     DPNP_FN_INITVAL,                  /**< Used in numpy ones, ones_like, zeros, zeros_like, full, full_like impl  */
     DPNP_FN_INV,                      /**< Used in numpy.linalg.inv() implementation  */
     DPNP_FN_INVERT,                   /**< Used in numpy.invert() implementation  */
@@ -133,9 +134,11 @@ enum class DPNPFuncName : size_t
     DPNP_FN_MINIMUM,                  /**< Used in numpy.minimum() implementation  */
     DPNP_FN_MODF,                     /**< Used in numpy.modf() implementation  */
     DPNP_FN_MULTIPLY,                 /**< Used in numpy.multiply() implementation  */
+    DPNP_FN_NEGATIVE,                 /**< Used in numpy.negative() implementation  */
     DPNP_FN_NONZERO,                  /**< Used in numpy.nonzero() implementation  */
     DPNP_FN_ONES,                     /**< Used in numpy.ones() implementation */
     DPNP_FN_ONES_LIKE,                /**< Used in numpy.ones_like() implementation */
+    DPNP_FN_PARTITION,                /**< Used in numpy.partition() implementation */
     DPNP_FN_PLACE,                    /**< Used in numpy.place() implementation  */
     DPNP_FN_POWER,                    /**< Used in numpy.power() implementation  */
     DPNP_FN_PROD,                     /**< Used in numpy.prod() implementation  */

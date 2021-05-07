@@ -389,7 +389,6 @@ tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_eye
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full_default_dtype
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full_default_dtype_cpu_input
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_full_like_subok
-tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_identity
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_ones_like_subok
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_zeros_like_subok
 tests/third_party/cupy/creation_tests/test_basic.py::TestBasic::test_zeros_strides
@@ -2124,6 +2123,8 @@ tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_h
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_weights_basic
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_weights_mismatch
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestAverage::test_average_all
+tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_mean_axis
+tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_mean_axis
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_all_nan
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_float16
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_huge

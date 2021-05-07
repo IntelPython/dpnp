@@ -46,6 +46,7 @@ __all__ += [
     "dpnp_full",
     "dpnp_full_like",
     "dpnp_geomspace",
+    "dpnp_identity",
     "dpnp_linspace",
     "dpnp_logspace",
     "dpnp_meshgrid",
@@ -165,6 +166,21 @@ cpdef dparray dpnp_geomspace(start, stop, num, endpoint, dtype, axis):
         result[0] = start
         if endpoint and result.size > 1:
             result[result.size - 1] = stop
+
+    return result
+
+
+cpdef dparray dpnp_identity(n, result_dtype):
+    cdef DPNPFuncType dtype_in = dpnp_dtype_to_DPNPFuncType(result_dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_IDENTITY, dtype_in, DPNP_FT_NONE)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+
+    cdef dparray result = dparray((n, n), dtype=result_type)
+
+    cdef fptr_1out_t func = <fptr_1out_t > kernel_data.ptr
+    func(result.get_data(), n)
 
     return result
 

@@ -25,6 +25,10 @@ if [ -n "${TBBROOT}" ]; then
     . ${TBBROOT}/env/vars.sh
 fi
 
+# Set RPATH for wheels
+export CFLAGS="-Wl,-rpath,\$ORIGIN/../dpctl,-rpath,\$ORIGIN $CFLAGS"
+export LDFLAGS="-Wl,-rpath,\$ORIGIN/../dpctl,-rpath,\$ORIGIN $LDFLAGS"
+
 $PYTHON setup.py build_clib
 $PYTHON setup.py build_ext install
 

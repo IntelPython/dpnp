@@ -66,6 +66,7 @@ __all__ = [
     "full",
     "full_like",
     "geomspace",
+    "identity",
     "linspace",
     "loadtxt",
     "logspace",
@@ -710,6 +711,40 @@ def geomspace(start, stop, num=50, endpoint=True, dtype=None, axis=0):
         return dpnp_geomspace(start, stop, num, endpoint, dtype, axis)
 
     return call_origin(numpy.geomspace, start, stop, num, endpoint, dtype, axis)
+
+
+def identity(n, dtype=None, *, like=None):
+    """
+    Return the identity array.
+
+    The identity array is a square array with ones on the main diagonal.
+
+    For full documentation refer to :obj:`numpy.identity`.
+
+    Limitations
+    -----------
+    Parameter ``like`` is currently not supported .
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.identity(3)
+    array([[1.,  0.,  0.],
+           [0.,  1.,  0.],
+           [0.,  0.,  1.]])
+
+    """
+    if not use_origin_backend():
+        if like is not None:
+            pass
+        elif n < 0:
+            pass
+        else:
+            if dtype is None:
+                dtype = dpnp.float64
+            return dpnp_identity(n, dtype)
+
+    return call_origin(numpy.identity, n, dtype=dtype, like=like)
 
 
 def linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis=0):

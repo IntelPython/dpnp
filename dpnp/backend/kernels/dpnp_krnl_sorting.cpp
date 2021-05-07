@@ -84,6 +84,98 @@ struct _sort_less
 };
 
 template <typename _DataType>
+class dpnp_partition_c_kernel;
+
+template <typename _DataType>
+void dpnp_partition_c(
+    void* array1_in, void* array2_in, void* result1, const size_t kth, const size_t* shape_, const size_t ndim)
+{
+    _DataType* arr = reinterpret_cast<_DataType*>(array1_in);
+    _DataType* arr2 = reinterpret_cast<_DataType*>(array2_in);
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    if ((arr == nullptr) || (result == nullptr))
+    {
+        return;
+    }
+
+    if (ndim < 1)
+    {
+        return;
+    }
+
+    size_t size = 1;
+    for (size_t i = 0; i < ndim; ++i)
+    {
+        size *= shape_[i];
+    }
+
+    size_t size_ = size / shape_[ndim - 1];
+
+    if (size_ == 0)
+    {
+        return;
+    }
+
+    auto arr_to_result_event = DPNP_QUEUE.memcpy(result, arr, size * sizeof(_DataType));
+    arr_to_result_event.wait();
+
+    for (size_t i = 0; i < size_; ++i)
+    {
+        size_t ind_begin = i * shape_[ndim - 1];
+        size_t ind_end = (i + 1) * shape_[ndim - 1] - 1;
+
+        _DataType matrix[shape_[ndim - 1]];
+        for (size_t j = ind_begin; j < ind_end + 1; ++j)
+        {
+            size_t ind = j - ind_begin;
+            matrix[ind] = arr2[j];
+        }
+        std::partial_sort(matrix, matrix + shape_[ndim - 1], matrix + shape_[ndim - 1]);
+        for (size_t j = ind_begin; j < ind_end + 1; ++j)
+        {
+            size_t ind = j - ind_begin;
+            arr2[j] = matrix[ind];
+        }
+    }
+
+    size_t* shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
+    auto memcpy_event = DPNP_QUEUE.memcpy(shape, shape_, ndim * sizeof(size_t));
+
+    memcpy_event.wait();
+
+    cl::sycl::range<2> gws(size_, kth + 1);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
+        size_t j = global_id[0];
+        size_t k = global_id[1];
+
+        _DataType val = arr2[j * shape[ndim - 1] + k];
+
+        for (size_t i = 0; i < shape[ndim - 1]; ++i)
+        {
+            if (result[j * shape[ndim - 1] + i] == val)
+            {
+                _DataType change_val1 = result[j * shape[ndim - 1] + i];
+                _DataType change_val2 = result[j * shape[ndim - 1] + k];
+                result[j * shape[ndim - 1] + k] = change_val1;
+                result[j * shape[ndim - 1] + i] = change_val2;
+            }
+        }
+    };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.depends_on({memcpy_event});
+        cgh.parallel_for<class dpnp_partition_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+    };
+
+    auto event = DPNP_QUEUE.submit(kernel_func);
+
+    event.wait();
+
+    dpnp_memory_free_c(shape);
+}
+
+template <typename _DataType>
 class dpnp_sort_c_kernel;
 
 template <typename _DataType>
@@ -109,6 +201,11 @@ void func_map_init_sorting(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_argsort_c<long, long>};
     fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_FLT][eft_FLT] = {eft_LNG, (void*)dpnp_argsort_c<float, long>};
     fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_DBL][eft_DBL] = {eft_LNG, (void*)dpnp_argsort_c<double, long>};
+
+    fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_partition_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_partition_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_partition_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_partition_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_SORT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_sort_c<int>};
     fmap[DPNPFuncName::DPNP_FN_SORT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_sort_c<long>};

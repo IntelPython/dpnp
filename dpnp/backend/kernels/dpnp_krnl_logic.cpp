@@ -29,7 +29,6 @@
 #include "dpnp_iface.hpp"
 #include "queue_sycl.hpp"
 
-
 template <typename _DataType, typename _ResultType>
 class dpnp_all_c_kernel;
 
@@ -82,7 +81,6 @@ void dpnp_any_c(const void* array1_in, void* result1, const size_t size)
 
     const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
     _ResultType* result = reinterpret_cast<_ResultType*>(result1);
-
 
     if (!array1_in || !result1)
     {

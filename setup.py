@@ -73,11 +73,8 @@ Set project auxilary data like readme and licence files
 with open('README.md') as f:
     __readme_file__ = f.read()
 
-with open('LICENSE.txt') as f:
-    __license_file__ = f.read()
-
 CLASSIFIERS = """\
-Development Status :: 0 - Alpha
+Development Status :: 4 - Beta
 Intended Audience :: Science/Research
 Intended Audience :: Developers
 License :: OSI Approved
@@ -183,13 +180,13 @@ setup(name="dpnp",
       version=__version__,
       description="NumPy-like API accelerated with SYCL",
       long_description=__readme_file__,
+      long_description_content_type="text/markdown",
       author="Intel Corporation",
-      author_email="Intel Corporation",
       maintainer="Intel Corp.",
       maintainer_email="scripting@intel.com",
       url="https://intelpython.github.io/dpnp/",
       download_url="https://github.com/IntelPython/dpnp",
-      license=__license_file__,
+      license='BSD',
       classifiers=[_f for _f in CLASSIFIERS.split('\n') if _f],
       keywords="sycl numpy python3 intel mkl oneapi gpu dpcpp pstl",
       platforms=["Linux", "Windows"],

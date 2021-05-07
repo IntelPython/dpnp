@@ -74,15 +74,31 @@ void dpnp_astype_c(const void* array1_in, void* result1, const size_t size)
 template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2, typename _KernelNameSpecialization3>
 class dpnp_dot_c_kernel;
 
-template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
-void dpnp_dot_c(void* array1_in, void* array2_in, void* result1, size_t size)
+template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
+void dpnp_dot_c(void* result_out,
+                const void* input1_in,
+                const size_t input1_size,
+                const size_t* input1_shape,
+                const size_t input1_shape_ndim,
+                const void* input2_in,
+                const size_t input2_size,
+                const size_t* input2_shape,
+                const size_t input2_shape_ndim,
+                const size_t* where)
 {
-    cl::sycl::event event;
-    _DataType_input1* array_1 = reinterpret_cast<_DataType_input1*>(array1_in);
-    _DataType_input2* array_2 = reinterpret_cast<_DataType_input2*>(array2_in);
-    _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
+    (void)input1_shape;
+    (void)input1_shape_ndim;
+    (void)input2_size;
+    (void)input2_shape;
+    (void)input2_shape_ndim;
+    (void)where;
 
-    if (!size)
+    cl::sycl::event event;
+    _DataType_input1* input1 = reinterpret_cast<_DataType_input1*>(const_cast<void*>(input1_in));
+    _DataType_input2* input2 = reinterpret_cast<_DataType_input2*>(const_cast<void*>(input2_in));
+    _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
+
+    if (!input1_size)
     {
         return;
     }
@@ -92,29 +108,29 @@ void dpnp_dot_c(void* array1_in, void* array2_in, void* result1, size_t size)
                   std::is_same<_DataType_output, _DataType_input1>::value)
     {
         event = mkl_blas::dot(DPNP_QUEUE,
-                              size,
-                              array_1,
-                              1, // array_1 stride
-                              array_2,
-                              1, // array_2 stride
+                              input1_size,
+                              input1,
+                              1, // input1 stride
+                              input2,
+                              1, // input2 stride
                               result);
         event.wait();
     }
     else
     {
         _DataType_output* local_mem =
-            reinterpret_cast<_DataType_output*>(dpnp_memory_alloc_c(size * sizeof(_DataType_output)));
+            reinterpret_cast<_DataType_output*>(dpnp_memory_alloc_c(input1_size * sizeof(_DataType_output)));
 
         // what about reduction??
-        cl::sycl::range<1> gws(size);
+        cl::sycl::range<1> gws(input1_size);
 
         auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
             const size_t index = global_id[0];
-            local_mem[index] = array_1[index] * array_2[index];
+            local_mem[index] = input1[index] * input2[index];
         };
 
         auto kernel_func = [&](cl::sycl::handler& cgh) {
-            cgh.parallel_for<class dpnp_dot_c_kernel<_DataType_input1, _DataType_input2, _DataType_output>>(
+            cgh.parallel_for<class dpnp_dot_c_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(
                 gws, kernel_parallel_for_func);
         };
 
@@ -123,11 +139,11 @@ void dpnp_dot_c(void* array1_in, void* array2_in, void* result1, size_t size)
         event.wait();
 
         auto policy = oneapi::dpl::execution::make_device_policy<
-            class dpnp_dot_c_kernel<_DataType_input1, _DataType_input2, _DataType_output>>(DPNP_QUEUE);
+            class dpnp_dot_c_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(DPNP_QUEUE);
 
         _DataType_output accumulator = 0;
         accumulator =
-            std::reduce(policy, local_mem, local_mem + size, _DataType_output(0), std::plus<_DataType_output>());
+            std::reduce(policy, local_mem, local_mem + input1_size, _DataType_output(0), std::plus<_DataType_output>());
         policy.queue().wait();
 
         result[0] = accumulator;
@@ -385,23 +401,24 @@ void func_map_init_linalg(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_DBL][eft_LNG] = {eft_LNG, (void*)dpnp_astype_c<double, long>};
     fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_DBL][eft_FLT] = {eft_FLT, (void*)dpnp_astype_c<double, float>};
     fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_astype_c<double, double>};
-    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_C128][eft_C128] = {eft_C128, (void*)dpnp_astype_c<std::complex<double>, std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_ASTYPE][eft_C128][eft_C128] = {
+        eft_C128, (void*)dpnp_astype_c<std::complex<double>, std::complex<double>>};
 
     fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_dot_c<int, int, int>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_dot_c<int, long, long>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_FLT] = {eft_DBL, (void*)dpnp_dot_c<int, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_dot_c<int, double, double>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_INT] = {eft_LNG, (void*)dpnp_dot_c<long, int, long>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_dot_c<long, int, long>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_FLT] = {eft_DBL, (void*)dpnp_dot_c<double, int, float>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_dot_c<double, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_INT] = {eft_LNG, (void*)dpnp_dot_c<long, long, int>};
     fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_dot_c<long, long, long>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_FLT] = {eft_DBL, (void*)dpnp_dot_c<long, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_dot_c<long, double, double>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_INT] = {eft_DBL, (void*)dpnp_dot_c<float, int, double>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_LNG] = {eft_DBL, (void*)dpnp_dot_c<float, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_FLT] = {eft_DBL, (void*)dpnp_dot_c<double, long, float>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_dot_c<double, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_INT] = {eft_DBL, (void*)dpnp_dot_c<double, float, int>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_LNG] = {eft_DBL, (void*)dpnp_dot_c<double, float, long>};
     fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_dot_c<float, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_DBL] = {eft_DBL, (void*)dpnp_dot_c<float, double, double>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_dot_c<double, int, double>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_dot_c<double, long, double>};
-    fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_dot_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_FLT][eft_DBL] = {eft_DBL, (void*)dpnp_dot_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_dot_c<double, double, int>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_dot_c<double, double, long>};
+    fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_dot_c<double, double, float>};
     fmap[DPNPFuncName::DPNP_FN_DOT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_dot_c<double, double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_EIG][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_eig_c<int, double>};

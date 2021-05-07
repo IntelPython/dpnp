@@ -762,7 +762,7 @@ cdef class dparray:
     def __truediv__(self, other):
         return divide(self, other)
 
-    cpdef dparray astype(self, dtype, order='K', casting=None, subok=None, copy=True):
+    cpdef dparray astype(self, dtype, order='K', casting='unsafe', subok=True, copy=True):
         """Copy the array with data type casting.
 
         Args:
@@ -784,19 +784,22 @@ cdef class dparray:
 
         """
 
-        if casting is not None:
-            utils.checker_throw_value_error("astype", "casting", casting, None)
+        if casting is not 'unsafe':
+            pass
+        elif subok is not True:
+            pass
+        elif copy is not True:
+            pass
+        elif order is not 'K':
+            pass
+        elif self.dtype == numpy.complex128:
+            pass
+        else:
+            return dpnp_astype(self, dtype)
 
-        if subok is not None:
-            utils.checker_throw_value_error("astype", "subok", subok, None)
+        result = utils.dp2nd_array(self).astype(dtype=dtype, order=order, casting=casting, subok=subok, copy=copy)
 
-        if copy is not True:
-            utils.checker_throw_value_error("astype", "copy", copy, True)
-
-        if order is not 'K':
-            utils.checker_throw_value_error("astype", "order", order, 'K')
-
-        return dpnp_astype(self, dtype)
+        return utils.nd2dp_array(result)
 
     def conj(self):
         """
@@ -830,6 +833,12 @@ cdef class dparray:
     -------------------------------------------------------------------------
     """
 
+    def cumprod(x1, **kwargs):
+        return cumprod(x1, **kwargs)
+
+    def cumsum(x1, **kwargs):
+        return cumsum(x1, **kwargs)
+
     def prod(*args, **kwargs):
         """
         Returns the prod along a given axis.
@@ -854,12 +863,12 @@ cdef class dparray:
 
         return iface_sum(*args, **kwargs)
 
-    def max(self, axis=None):
+    def max(self, axis=None, out=None, keepdims=numpy._NoValue, initial=numpy._NoValue, where=numpy._NoValue):
         """
         Return the maximum along an axis.
         """
 
-        return max(self, axis)
+        return max(self, axis, out, keepdims, initial, where)
 
     def mean(self, axis=None):
         """
@@ -868,12 +877,12 @@ cdef class dparray:
 
         return mean(self, axis)
 
-    def min(self, axis=None):
+    def min(self, axis=None, out=None, keepdims=numpy._NoValue, initial=numpy._NoValue, where=numpy._NoValue):
         """
         Return the minimum along a given axis.
         """
 
-        return min(self, axis)
+        return min(self, axis, out, keepdims, initial, where)
 
     """
     -------------------------------------------------------------------------
@@ -886,6 +895,12 @@ cdef class dparray:
         Construct an array from an index array and a set of arrays to choose from.
         """
         return choose(input, choices, out, mode)
+
+    def diagonal(input, offset=0, axis1=0, axis2=1):
+        """
+        Return specified diagonals.
+        """
+        return diagonal(input, offset, axis1, axis2)
 
     def take(self, indices, axis=None, out=None, mode='raise'):
         """
@@ -941,6 +956,20 @@ cdef class dparray:
 
         """
         return argsort(self, axis, kind, order)
+
+    def partition(self, kth, axis=-1, kind='introselect', order=None):
+        """
+        Return a partitioned copy of an array.
+        For full documentation refer to :obj:`numpy.partition`.
+
+        Limitations
+        -----------
+        Input array is supported as :obj:`dpnp.ndarray`.
+        Input kth is supported as :obj:`int`.
+        Parameters ``axis``, ``kind`` and ``order`` are supported only with default values.
+        """
+
+        return partition(self, kth, axis, kind, order)
 
     def sort(self, axis=-1, kind=None, order=None):
         """
