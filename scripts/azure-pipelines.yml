@@ -116,9 +116,8 @@ jobs:
       versionSpec: '$(python.version)'
     displayName: 'Use Python $(python.version)'
   - bash: |
+      echo ========================= install OneAPI =================================
       ./scripts/install_system_deps.sh
-      
-      # conda install -y conda-build numpy=1.19 cython pytest hypothesis
       
       echo ========================= Conda ENV ======================================
       conda create -q -y -n dpnp$(python.version) python=$(python.version) numpy=1.19 conda-build cython pytest hypothesis
@@ -128,6 +127,7 @@ jobs:
       echo ========================= build DPNP =====================================
       ./0.build.sh
       echo ========================= run tests ======================================
+      . ./0.env.sh
       python -m tests_external.numpy.runtests
 
 # test python ./setup.py bdist_wheel command with no dpctl
