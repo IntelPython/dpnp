@@ -973,10 +973,20 @@ void dpnp_rng_shuffle_c(
         for (size_t i = uvec_size; i > 0; i--)
         {
             size_t j = (size_t)(floor((i + 1) * Uvec[i - 1]));
-            DPNP_QUEUE.memcpy(buf, result1 + j * itemsize, itemsize);
-            DPNP_QUEUE.memcpy(result1 + j * itemsize, result1 + i * itemsize, itemsize);
-            DPNP_QUEUE.memcpy(result1 + i * itemsize, buf, itemsize);
-            DPNP_QUEUE.wait();
+            if (i != j)
+            {
+                auto memcpy1 =
+                    DPNP_QUEUE.submit([&](cl::sycl::handler& h) { h.memcpy(buf, result1 + j * itemsize, itemsize); });
+                auto memcpy2 = DPNP_QUEUE.submit([&](cl::sycl::handler& h) {
+                    h.depends_on({memcpy1});
+                    h.memcpy(result1 + j * itemsize, result1 + i * itemsize, itemsize);
+                });
+                auto memcpy3 = DPNP_QUEUE.submit([&](cl::sycl::handler& h) {
+                    h.depends_on({memcpy2});
+                    h.memcpy(result1 + i * itemsize, buf, itemsize);
+                });
+                memcpy3.wait();
+            }
         }
         dpnp_memory_free_c(buf);
     }
@@ -990,10 +1000,17 @@ void dpnp_rng_shuffle_c(
             size_t j = (size_t)(floor((i + 1) * Uvec[i - 1]));
             if (j < i)
             {
-                DPNP_QUEUE.memcpy(buf, result1 + j * step_size, step_size);
-                DPNP_QUEUE.memcpy(result1 + j * step_size, result1 + i * step_size, step_size);
-                DPNP_QUEUE.memcpy(result1 + i * step_size, buf, step_size);
-                DPNP_QUEUE.wait();
+                auto memcpy1 =
+                    DPNP_QUEUE.submit([&](cl::sycl::handler& h) { h.memcpy(buf, result1 + j * step_size, step_size); });
+                auto memcpy2 = DPNP_QUEUE.submit([&](cl::sycl::handler& h) {
+                    h.depends_on({memcpy1});
+                    h.memcpy(result1 + j * step_size, result1 + i * step_size, step_size);
+                });
+                auto memcpy3 = DPNP_QUEUE.submit([&](cl::sycl::handler& h) {
+                    h.depends_on({memcpy2});
+                    h.memcpy(result1 + i * step_size, buf, step_size);
+                });
+                memcpy3.wait();
             }
         }
         dpnp_memory_free_c(buf);
