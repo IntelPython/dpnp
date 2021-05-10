@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.linalg.inv &mdash; dpnp 0.5.1 documentation</title>
+  <title>dpnp.trace &mdash; dpnp 0.5.1 documentation</title>
   
 
   
@@ -34,8 +34,8 @@
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Logic Functions" href="../logic.html" />
-    <link rel="prev" title="dpnp.trace" href="dpnp.trace.html" /> 
+    <link rel="next" title="dpnp.linalg.inv" href="dpnp.linalg.inv.html" />
+    <link rel="prev" title="dpnp.linalg.matrix_rank" href="dpnp.linalg.matrix_rank.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -97,8 +97,8 @@
 <li class="toctree-l4"><a class="reference internal" href="../linalg.html#matrix-and-vector-products">Matrix and vector products</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../linalg.html#decompositions">Decompositions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../linalg.html#matrix-eigenvalues">Matrix eigenvalues</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../linalg.html#norms-etc">Norms etc.</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../linalg.html#solving-linear-equations">Solving linear equations</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../linalg.html#norms-etc">Norms etc.</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../linalg.html#solving-linear-equations">Solving linear equations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../linalg.html#special-matrices">Special Matrices</a></li>
 </ul>
 </li>
@@ -170,13 +170,13 @@
         
           <li><a href="../linalg.html">Linear Algebra</a> &raquo;</li>
         
-      <li>dpnp.linalg.inv</li>
+      <li>dpnp.trace</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.linalg.inv.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.trace.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -189,18 +189,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-linalg-inv">
-<h1>dpnp.linalg.inv<a class="headerlink" href="#dpnp-linalg-inv" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="dpnp-trace">
+<h1>dpnp.trace<a class="headerlink" href="#dpnp-trace" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.linalg.inv">
-<code class="sig-prename descclassname"><span class="pre">dpnp.linalg.</span></code><code class="sig-name descname"><span class="pre">inv</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#inv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.linalg.inv" title="Permalink to this definition">¶</a></dt>
-<dd><p>Divide arguments element-wise.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.linalg.inv.html#numpy.linalg.inv" title="(in NumPy v1.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.linalg.inv</span></code></a>.</p>
+<dt id="dpnp.trace">
+<code class="sig-prename descclassname"><span class="pre">dpnp.</span></code><code class="sig-name descname"><span class="pre">trace</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the sum along diagonals of the array.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.trace.html#numpy.trace" title="(in NumPy v1.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.trace</span></code></a>.</p>
 <p class="rubric">Limitations</p>
 <p>Input array is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
-Dimension of input array is supported to be equal to <code class="docutils literal notranslate"><span class="pre">2</span></code>.
-Shape of input array is limited by <code class="docutils literal notranslate"><span class="pre">input.shape[0]</span> <span class="pre">==</span> <span class="pre">input.shape[1]</span></code>, <code class="docutils literal notranslate"><span class="pre">input.shape[0]</span> <span class="pre">&gt;=</span> <span class="pre">2</span></code>.
-Otherwise the function will be executed sequentially on CPU.</p>
+Parameters <code class="docutils literal notranslate"><span class="pre">axis1</span></code>, <code class="docutils literal notranslate"><span class="pre">axis2</span></code>, <code class="docutils literal notranslate"><span class="pre">out</span></code> and <code class="docutils literal notranslate"><span class="pre">dtype</span></code> are supported only with default values.</p>
 </dd></dl>
 
 </div>
@@ -213,10 +211,10 @@ Otherwise the function will be executed sequentially on CPU.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../logic.html" class="btn btn-neutral float-right" title="Logic Functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.linalg.inv.html" class="btn btn-neutral float-right" title="dpnp.linalg.inv" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.trace.html" class="btn btn-neutral float-left" title="dpnp.trace" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.linalg.matrix_rank.html" class="btn btn-neutral float-left" title="dpnp.linalg.matrix_rank" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

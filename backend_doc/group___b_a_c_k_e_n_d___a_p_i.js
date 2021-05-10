@@ -110,6 +110,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_take_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga886bc6959d54b598e3abf87026ee1abe", null ],
     [ "dpnp_tan_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga312e6d54042adcf5f3142b602c111bd3", null ],
     [ "dpnp_tanh_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga2de426275f6882f5a355e72aeb76c59d", null ],
+    [ "dpnp_trace_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga1e43d40949112673b0177eb499dedb6f", null ],
     [ "dpnp_trapz_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga9b3f6427b1e1a3fc9ec357d9584f1765", null ],
     [ "dpnp_tri_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga92c26802d31dbc38f23d0dbc81cce609", null ],
     [ "dpnp_tril_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga4d2bad9223531f00da0159cd3c59c6c6", null ],

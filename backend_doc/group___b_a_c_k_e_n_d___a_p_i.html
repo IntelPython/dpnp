@@ -536,6 +536,10 @@ template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:ga886bc6959d54b598e3abf87026ee1abe"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga886bc6959d54b598e3abf87026ee1abe">dpnp_take_c</a> (void *array, void *indices, void *result, size_t size)</td></tr>
 <tr class="memdesc:ga886bc6959d54b598e3abf87026ee1abe"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of take function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga886bc6959d54b598e3abf87026ee1abe">More...</a><br /></td></tr>
 <tr class="separator:ga886bc6959d54b598e3abf87026ee1abe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1e43d40949112673b0177eb499dedb6f"><td class="memTemplParams" colspan="2">template&lt;typename _DataType , typename _ResultType &gt; </td></tr>
+<tr class="memitem:ga1e43d40949112673b0177eb499dedb6f"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga1e43d40949112673b0177eb499dedb6f">dpnp_trace_c</a> (const void *array, void *result, const size_t *shape, const size_t ndim)</td></tr>
+<tr class="memdesc:ga1e43d40949112673b0177eb499dedb6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of trace function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga1e43d40949112673b0177eb499dedb6f">More...</a><br /></td></tr>
+<tr class="separator:ga1e43d40949112673b0177eb499dedb6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga92c26802d31dbc38f23d0dbc81cce609"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:ga92c26802d31dbc38f23d0dbc81cce609"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga92c26802d31dbc38f23d0dbc81cce609">dpnp_tri_c</a> (void *result, const size_t N, const size_t M, const int k)</td></tr>
 <tr class="memdesc:ga92c26802d31dbc38f23d0dbc81cce609"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of take function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga92c26802d31dbc38f23d0dbc81cce609">More...</a><br /></td></tr>
@@ -6456,6 +6460,59 @@ template&lt;typename _DataType_input , typename _DataType_output &gt; </div>
  </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in the input array. <br  />
  </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga1e43d40949112673b0177eb499dedb6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga1e43d40949112673b0177eb499dedb6f">&#9670;&nbsp;</a></span>dpnp_trace_c()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename _DataType , typename _ResultType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void dpnp_trace_c </td>
+          <td>(</td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>result</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t *&#160;</td>
+          <td class="paramname"><em>shape</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>ndim</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>math library implementation of trace function </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">array</td><td>Input array with data. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">shape</td><td>Shape of input array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ndim</td><td>Number of elements in array.shape. </td></tr>
   </table>
   </dd>
 </dl>

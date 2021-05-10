@@ -148,6 +148,7 @@ var group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i =
       [ "DPNP_FN_TAN", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a1cffd235f788463d6e4e57768fa7de18", null ],
       [ "DPNP_FN_TANH", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ac7b0abf31d4a2ac1db81be2fcb55e834", null ],
       [ "DPNP_FN_TRANSPOSE", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558aea1af5a5fd54ec2b30455fa94646bfdc", null ],
+      [ "DPNP_FN_TRACE", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a06a999ac7e5ee204ccb207cc9db31147", null ],
       [ "DPNP_FN_TRAPZ", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a5ada13cf2d582fd7a46d9c33d46d6f32", null ],
       [ "DPNP_FN_TRI", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a8e19ec4eb08e33a2b3ec216a0ada6da0", null ],
       [ "DPNP_FN_TRIL", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ac357a9597166261dbfb2f9a720806e7c", null ],
