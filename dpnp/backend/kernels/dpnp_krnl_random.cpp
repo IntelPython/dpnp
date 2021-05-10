@@ -475,54 +475,72 @@ void dpnp_rng_logistic_c(void* result, const double loc, const double scale, con
 template <typename _DataType>
 void dpnp_rng_lognormal_c(void* result, const _DataType mean, const _DataType stddev, const size_t size)
 {
-    if (!size)
+    if (!size || !result)
     {
         return;
     }
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    const _DataType displacement = _DataType(0.0);
+    if (stddev == 0.0)
+    {
+        _DataType* fill_value = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(sizeof(_DataType)));
+        fill_value[0] = static_cast<_DataType>(std::exp(mean + (stddev * stddev) / 2));
+        dpnp_initval_c<_DataType>(result, fill_value, size);
+        dpnp_memory_free_c(fill_value);
+    }
+    else
+    {
+        const _DataType displacement = _DataType(0.0);
+        const _DataType scalefactor = _DataType(1.0);
 
-    const _DataType scalefactor = _DataType(1.0);
-
-    mkl_rng::lognormal<_DataType> distribution(mean, stddev, displacement, scalefactor);
-    // perform generation
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
+        mkl_rng::lognormal<_DataType> distribution(mean, stddev, displacement, scalefactor);
+        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+        event_out.wait();
+    }
+    return;
 }
 
 template <typename _DataType>
 void dpnp_rng_multinomial_c(
     void* result, const int ntrial, const double* p_vector, const size_t p_vector_size, const size_t size)
 {
-    if (!size)
+    if (!size || !result)
     {
         return;
     }
-    std::int32_t* result1 = reinterpret_cast<std::int32_t*>(result);
-    std::vector<double> p(p_vector, p_vector + p_vector_size);
-    // size = size
-    // `result` is a array for random numbers
-    // `size` is a `result`'s len. `size = n * p.size()`
-    // `n` is a number of random values to be generated.
-    size_t n = size / p.size();
 
-    if (dpnp_queue_is_cpu_c())
+    if (ntrial == 0)
     {
-        mkl_rng::multinomial<std::int32_t> distribution(ntrial, p);
-        // perform generation
-        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, n, result1);
-        event_out.wait();
+        dpnp_zeros_c<_DataType>(result, size);
     }
     else
     {
-        int errcode = viRngMultinomial(
-            VSL_RNG_METHOD_MULTINOMIAL_MULTPOISSON, get_rng_stream(), n, result1, ntrial, p_vector_size, p_vector);
-        if (errcode != VSL_STATUS_OK)
+        std::int32_t* result1 = reinterpret_cast<std::int32_t*>(result);
+        std::vector<double> p(p_vector, p_vector + p_vector_size);
+        // size = size
+        // `result` is a array for random numbers
+        // `size` is a `result`'s len. `size = n * p.size()`
+        // `n` is a number of random values to be generated.
+        size_t n = size / p.size();
+
+        if (dpnp_queue_is_cpu_c())
         {
-            throw std::runtime_error("DPNP RNG Error: dpnp_rng_multinomial_c() failed.");
+            mkl_rng::multinomial<std::int32_t> distribution(ntrial, p);
+            // perform generation
+            auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, n, result1);
+            event_out.wait();
+        }
+        else
+        {
+            int errcode = viRngMultinomial(
+                VSL_RNG_METHOD_MULTINOMIAL_MULTPOISSON, get_rng_stream(), n, result1, ntrial, p_vector_size, p_vector);
+            if (errcode != VSL_STATUS_OK)
+            {
+                throw std::runtime_error("DPNP RNG Error: dpnp_rng_multinomial_c() failed.");
+            }
         }
     }
+    return;
 }
 
 template <typename _DataType>
