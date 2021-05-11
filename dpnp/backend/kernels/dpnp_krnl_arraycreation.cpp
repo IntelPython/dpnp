@@ -251,8 +251,6 @@ void dpnp_trace_c(const void* array1_in, void* result1, const size_t* shape_, co
     size_t* shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
     auto memcpy_event = DPNP_QUEUE.memcpy(shape, shape_, ndim * sizeof(size_t));
 
-    memcpy_event.wait();
-
     cl::sycl::range<1> gws(size);
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
         size_t i = global_id[0];
