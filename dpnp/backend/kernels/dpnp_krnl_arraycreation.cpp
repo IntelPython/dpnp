@@ -211,63 +211,6 @@ void dpnp_vander_c(const void* array1_in, void* result1, const size_t size_in, c
     }
 }
 
-template <typename _DataType, typename _ResultType>
-class dpnp_trace_c_kernel;
-
-template <typename _DataType, typename _ResultType>
-void dpnp_trace_c(const void* array1_in, void* result1, const size_t* shape, const size_t ndim)
-{
-    cl::sycl::event event;
-
-    if ((array1_in == nullptr) || (result1 == nullptr))
-    {
-        return;
-    }
-
-    const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
-    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
-
-    if (shape == nullptr)
-    {
-        return;
-    }
-
-    if (ndim == 0)
-    {
-        return;
-    }
-
-    size_t size = 1;
-    for (size_t i = 0; i < ndim - 1; ++i)
-    {
-        size *= shape[i];
-    }
-
-    if (size == 0)
-    {
-        return;
-    }
-
-    cl::sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
-        size_t i = global_id[0];
-        _DataType elem = 0;
-        for (size_t j = 0; j < shape[ndim - 1]; ++j)
-        {
-            elem += array_in[i * shape[ndim - 1] + j];
-        }
-        result[i] = elem;
-    };
-
-    auto kernel_func = [&](cl::sycl::handler& cgh) {
-        cgh.parallel_for<class dpnp_trace_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
-    };
-
-    event = DPNP_QUEUE.submit(kernel_func);
-
-    event.wait();
-}
-
 template <typename _DataType>
 class dpnp_tri_c_kernel;
 
@@ -595,23 +538,6 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_VANDER][eft_BLN][eft_BLN] = {eft_LNG, (void*)dpnp_vander_c<bool, long>};
     fmap[DPNPFuncName::DPNP_FN_VANDER][eft_C128][eft_C128] = {
         eft_C128, (void*)dpnp_vander_c<std::complex<double>, std::complex<double>>};
-
-    fmap[DPNPFuncName::DPNP_FN_TRACE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_trace_c<int, int>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE][eft_LNG][eft_INT] = {eft_INT, (void*)dpnp_trace_c<long, int>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE][eft_FLT][eft_INT] = {eft_INT, (void*)dpnp_trace_c<float, int>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE][eft_DBL][eft_INT] = {eft_INT, (void*)dpnp_trace_c<double, int>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_trace_c<int, long>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_trace_c<long, long>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE][eft_FLT][eft_LNG] = {eft_LNG, (void*)dpnp_trace_c<float, long>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE][eft_DBL][eft_LNG] = {eft_LNG, (void*)dpnp_trace_c<double, long>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE][eft_INT][eft_FLT] = {eft_FLT, (void*)dpnp_trace_c<int, float>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE][eft_LNG][eft_FLT] = {eft_FLT, (void*)dpnp_trace_c<long, float>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_trace_c<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE][eft_DBL][eft_FLT] = {eft_FLT, (void*)dpnp_trace_c<double, float>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_trace_c<int, double>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_trace_c<long, double>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE][eft_FLT][eft_DBL] = {eft_DBL, (void*)dpnp_trace_c<float, double>};
-    fmap[DPNPFuncName::DPNP_FN_TRACE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_trace_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_TRI][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_tri_c<int>};
     fmap[DPNPFuncName::DPNP_FN_TRI][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_tri_c<long>};
