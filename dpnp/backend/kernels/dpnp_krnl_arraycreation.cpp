@@ -264,6 +264,7 @@ void dpnp_trace_c(const void* array1_in, void* result1, const size_t* shape_, co
     };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.depends_on({memcpy_event});
         cgh.parallel_for<class dpnp_trace_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
     };
 
