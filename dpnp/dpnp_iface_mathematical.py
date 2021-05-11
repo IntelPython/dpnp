@@ -670,7 +670,7 @@ def floor(x1, **kwargs):
     return call_origin(numpy.floor, x1, **kwargs)
 
 
-def floor_divide(x1, x2, **kwargs):
+def floor_divide(x1, x2, out=None, where=True, **kwargs):
     """
     Compute the largest integer smaller or equal to the division of the inputs.
 
@@ -678,7 +678,8 @@ def floor_divide(x1, x2, **kwargs):
 
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray` and as a number.
+        Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
+        Parameters ``out`` and ``where`` are supported with their default values.
         Keyword arguments ``kwargs`` are currently unsupported.
         Otherwise the functions will be executed sequentially on CPU.
         Input array data types are limited by supported DPNP :ref:`Data types`.
@@ -699,10 +700,38 @@ def floor_divide(x1, x2, **kwargs):
 
     """
 
+    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
+    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
+    
     if not use_origin_backend(x1) and not kwargs:
-        return dpnp_floor_divide(x1, x2)
+        if not x1_is_dparray and not x1_is_scalar:
+            pass
+        elif not x2_is_dparray and not x2_is_scalar:
+            pass
+        elif x1_is_scalar and x2_is_scalar:
+            pass
+        elif x1_is_dparray and x1.ndim == 0:
+            pass
+        elif x2_is_dparray and x2.ndim == 0:
+            pass
+        elif x2_is_scalar and x2 == 0:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.size != x2.size:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.shape != x2.shape:
+            pass
+        elif out is not None and not isinstance(out, dparray):
+            pass
+        elif out is not None:
+            pass
+        elif not where:
+            pass
+        elif x1_is_scalar and x2.ndim > 1:
+            pass
+        else:
+            return dpnp_floor_divide(x1, x2, out=out, where=where)
 
-    return call_origin(numpy.floor_divide, x1, x2, **kwargs)
+    return call_origin(numpy.floor_divide, x1, x2, out=out, where=where, **kwargs)
 
 
 def fmax(*args, **kwargs):
