@@ -271,6 +271,8 @@ void dpnp_trace_c(const void* array1_in, void* result1, const size_t* shape_, co
     event = DPNP_QUEUE.submit(kernel_func);
 
     event.wait();
+
+    dpnp_memory_free_c(shape);
 }
 
 template <typename _DataType>
