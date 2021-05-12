@@ -52,6 +52,7 @@ __all__ += [
     "dpnp_meshgrid",
     "dpnp_ones",
     "dpnp_ones_like",
+    "dpnp_trace",
     "dpnp_tri",
     "dpnp_tril",
     "dpnp_triu",
@@ -64,6 +65,7 @@ __all__ += [
 ctypedef void(*custom_1in_1out_func_ptr_t)(void *, void * , const int , size_t * , size_t * , const size_t, const size_t)
 ctypedef void(*ftpr_custom_vander_1in_1out_t)(void *, void *, size_t, size_t, int)
 ctypedef void(*custom_indexing_1out_func_ptr_t)(void * , const size_t , const size_t , const int)
+ctypedef void(*fptr_dpnp_trace_t)(const void *, void * , const size_t * , const size_t)
 
 
 cpdef dparray dpnp_copy(dparray x1, order, subok):
@@ -268,6 +270,29 @@ cpdef dparray dpnp_ones(result_shape, result_dtype):
 
 cpdef dparray dpnp_ones_like(result_shape, result_dtype):
     return call_fptr_1out(DPNP_FN_ONES_LIKE, result_shape, result_dtype)
+
+
+cpdef dparray dpnp_trace(arr, offset=0, axis1=0, axis2=1, dtype=None, out=None):
+    if dtype is None:
+        dtype_ = arr.dtype
+    else:
+        dtype_ = dtype
+
+    cdef dparray diagonal_arr = dpnp.diagonal(arr, offset, axis1, axis2)
+
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(dtype_)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRACE, param1_type, param2_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    cdef dparray result = dparray(diagonal_arr.shape[:-1], dtype=result_type)
+
+    cdef fptr_dpnp_trace_t func = <fptr_dpnp_trace_t > kernel_data.ptr
+
+    func(diagonal_arr.get_data(), result.get_data(), < size_t * > diagonal_arr._dparray_shape.data(), diagonal_arr.ndim)
+
+    return result
 
 
 cpdef dparray dpnp_tri(N, M=None, k=0, dtype=numpy.float):

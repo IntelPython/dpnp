@@ -475,54 +475,72 @@ void dpnp_rng_logistic_c(void* result, const double loc, const double scale, con
 template <typename _DataType>
 void dpnp_rng_lognormal_c(void* result, const _DataType mean, const _DataType stddev, const size_t size)
 {
-    if (!size)
+    if (!size || !result)
     {
         return;
     }
     _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    const _DataType displacement = _DataType(0.0);
+    if (stddev == 0.0)
+    {
+        _DataType* fill_value = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(sizeof(_DataType)));
+        fill_value[0] = static_cast<_DataType>(std::exp(mean + (stddev * stddev) / 2));
+        dpnp_initval_c<_DataType>(result, fill_value, size);
+        dpnp_memory_free_c(fill_value);
+    }
+    else
+    {
+        const _DataType displacement = _DataType(0.0);
+        const _DataType scalefactor = _DataType(1.0);
 
-    const _DataType scalefactor = _DataType(1.0);
-
-    mkl_rng::lognormal<_DataType> distribution(mean, stddev, displacement, scalefactor);
-    // perform generation
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
+        mkl_rng::lognormal<_DataType> distribution(mean, stddev, displacement, scalefactor);
+        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+        event_out.wait();
+    }
+    return;
 }
 
 template <typename _DataType>
 void dpnp_rng_multinomial_c(
     void* result, const int ntrial, const double* p_vector, const size_t p_vector_size, const size_t size)
 {
-    if (!size)
+    if (!size || !result)
     {
         return;
     }
-    std::int32_t* result1 = reinterpret_cast<std::int32_t*>(result);
-    std::vector<double> p(p_vector, p_vector + p_vector_size);
-    // size = size
-    // `result` is a array for random numbers
-    // `size` is a `result`'s len. `size = n * p.size()`
-    // `n` is a number of random values to be generated.
-    size_t n = size / p.size();
 
-    if (dpnp_queue_is_cpu_c())
+    if (ntrial == 0)
     {
-        mkl_rng::multinomial<std::int32_t> distribution(ntrial, p);
-        // perform generation
-        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, n, result1);
-        event_out.wait();
+        dpnp_zeros_c<_DataType>(result, size);
     }
     else
     {
-        int errcode = viRngMultinomial(
-            VSL_RNG_METHOD_MULTINOMIAL_MULTPOISSON, get_rng_stream(), n, result1, ntrial, p_vector_size, p_vector);
-        if (errcode != VSL_STATUS_OK)
+        std::int32_t* result1 = reinterpret_cast<std::int32_t*>(result);
+        std::vector<double> p(p_vector, p_vector + p_vector_size);
+        // size = size
+        // `result` is a array for random numbers
+        // `size` is a `result`'s len. `size = n * p.size()`
+        // `n` is a number of random values to be generated.
+        size_t n = size / p.size();
+
+        if (dpnp_queue_is_cpu_c())
         {
-            throw std::runtime_error("DPNP RNG Error: dpnp_rng_multinomial_c() failed.");
+            mkl_rng::multinomial<std::int32_t> distribution(ntrial, p);
+            // perform generation
+            auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, n, result1);
+            event_out.wait();
+        }
+        else
+        {
+            int errcode = viRngMultinomial(
+                VSL_RNG_METHOD_MULTINOMIAL_MULTPOISSON, get_rng_stream(), n, result1, ntrial, p_vector_size, p_vector);
+            if (errcode != VSL_STATUS_OK)
+            {
+                throw std::runtime_error("DPNP RNG Error: dpnp_rng_multinomial_c() failed.");
+            }
         }
     }
+    return;
 }
 
 template <typename _DataType>
@@ -946,17 +964,20 @@ template <typename _DataType>
 void dpnp_rng_shuffle_c(
     void* result, const size_t itemsize, const size_t ndim, const size_t high_dim_size, const size_t size)
 {
-    if (!(size) || !(high_dim_size > 1))
+    if (!result)
+    {
+        return;
+    }
+
+    if (!size || !ndim || !(high_dim_size > 1))
     {
         return;
     }
 
     char* result1 = reinterpret_cast<char*>(result);
 
-    double* Uvec = nullptr;
-
     size_t uvec_size = high_dim_size - 1;
-    Uvec = reinterpret_cast<double*>(dpnp_memory_alloc_c(uvec_size * sizeof(double)));
+    double* Uvec = reinterpret_cast<double*>(dpnp_memory_alloc_c(uvec_size * sizeof(double)));
     mkl_rng::uniform<double> uniform_distribution(0.0, 1.0);
     auto uniform_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, uvec_size, Uvec);
     uniform_event.wait();
@@ -966,42 +987,52 @@ void dpnp_rng_shuffle_c(
         // Fast, statically typed path: shuffle the underlying buffer.
         // Only for non-empty, 1d objects of class ndarray (subclasses such
         // as MaskedArrays may not support this approach).
-        // TODO
-        // kernel
-        char* buf = nullptr;
-        buf = reinterpret_cast<char*>(dpnp_memory_alloc_c(itemsize * sizeof(char)));
+        char* buf = reinterpret_cast<char*>(dpnp_memory_alloc_c(itemsize * sizeof(char)));
         for (size_t i = uvec_size; i > 0; i--)
         {
             size_t j = (size_t)(floor((i + 1) * Uvec[i - 1]));
-            memcpy(buf, result1 + j * itemsize, itemsize);
-            memcpy(result1 + j * itemsize, result1 + i * itemsize, itemsize);
-            memcpy(result1 + i * itemsize, buf, itemsize);
+            if (i != j)
+            {
+                auto memcpy1 =
+                    DPNP_QUEUE.submit([&](cl::sycl::handler& h) { h.memcpy(buf, result1 + j * itemsize, itemsize); });
+                auto memcpy2 = DPNP_QUEUE.submit([&](cl::sycl::handler& h) {
+                    h.depends_on({memcpy1});
+                    h.memcpy(result1 + j * itemsize, result1 + i * itemsize, itemsize);
+                });
+                auto memcpy3 = DPNP_QUEUE.submit([&](cl::sycl::handler& h) {
+                    h.depends_on({memcpy2});
+                    h.memcpy(result1 + i * itemsize, buf, itemsize);
+                });
+                memcpy3.wait();
+            }
         }
-
         dpnp_memory_free_c(buf);
     }
     else
     {
         // Multidimensional ndarrays require a bounce buffer.
-        // TODO
-        // kernel
-        char* buf = nullptr;
         size_t step_size = (size / high_dim_size) * itemsize; // size in bytes for x[i] element
-        buf = reinterpret_cast<char*>(dpnp_memory_alloc_c(step_size * sizeof(char)));
+        char* buf = reinterpret_cast<char*>(dpnp_memory_alloc_c(step_size * sizeof(char)));
         for (size_t i = uvec_size; i > 0; i--)
         {
             size_t j = (size_t)(floor((i + 1) * Uvec[i - 1]));
             if (j < i)
             {
-                memcpy(buf, result1 + j * step_size, step_size);
-                memcpy(result1 + j * step_size, result1 + i * step_size, step_size);
-                memcpy(result1 + i * step_size, buf, step_size);
+                auto memcpy1 =
+                    DPNP_QUEUE.submit([&](cl::sycl::handler& h) { h.memcpy(buf, result1 + j * step_size, step_size); });
+                auto memcpy2 = DPNP_QUEUE.submit([&](cl::sycl::handler& h) {
+                    h.depends_on({memcpy1});
+                    h.memcpy(result1 + j * step_size, result1 + i * step_size, step_size);
+                });
+                auto memcpy3 = DPNP_QUEUE.submit([&](cl::sycl::handler& h) {
+                    h.depends_on({memcpy2});
+                    h.memcpy(result1 + i * step_size, buf, step_size);
+                });
+                memcpy3.wait();
             }
         }
-
         dpnp_memory_free_c(buf);
     }
-
     dpnp_memory_free_c(Uvec);
 }
 
