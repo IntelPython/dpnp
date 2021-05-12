@@ -185,6 +185,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RNG_WALD,                 /**< Used in numpy.random.wald() implementation  */
     DPNP_FN_RNG_WEIBULL,              /**< Used in numpy.random.weibull() implementation  */
     DPNP_FN_RNG_ZIPF,                 /**< Used in numpy.random.zipf() implementation  */
+    DPNP_FN_SEARCHSORTED,             /**< Used in numpy.searchsorted() implementation  */
     DPNP_FN_SIGN,                     /**< Used in numpy.sign() implementation  */
     DPNP_FN_SIN,                      /**< Used in numpy.sin() implementation  */
     DPNP_FN_SINH,                     /**< Used in numpy.sinh() implementation  */
