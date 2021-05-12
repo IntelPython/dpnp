@@ -46,7 +46,7 @@ __all__ += [
 
 
 ctypedef void(*fptr_dpnp_partition_t)(void * , void * , void * , const size_t , const size_t * , const size_t)
-ctypedef void(*fptr_dpnp_searchsorted_t)(const void * , const void * , void * , bool , const size_t , const size_t )
+ctypedef void(*fptr_dpnp_searchsorted_t)(void * , const void * , const void * , bool , const size_t , const size_t )
 
 
 cpdef dparray dpnp_argsort(dparray in_array1):

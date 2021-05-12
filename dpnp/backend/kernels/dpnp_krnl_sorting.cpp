@@ -179,7 +179,7 @@ template<typename _DataType, typename _IndexingType>
 class dpnp_searchsorted_c_kernel;
 
 template<typename _DataType, typename _IndexingType>
-void dpnp_searchsorted_c(const void* array1_in, const void* v1_in, void* result1, bool side, const size_t arr_size, const size_t v_size)
+void dpnp_searchsorted_c(void* result1, const void* array1_in, const void* v1_in, bool side, const size_t arr_size, const size_t v_size)
 {
     const _DataType* arr = reinterpret_cast<const _DataType*>(array1_in);
     const _DataType* v = reinterpret_cast<const _DataType*>(v1_in);

@@ -1965,12 +1965,16 @@ tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_pa
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_0_{right=True}::test_digitize_nan_bins_decreasing
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_0_{right=True}::test_digitize_nan_bins_decreasing_repeated
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_0_{right=True}::test_digitize_nan_bins_repeated
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_0_{right=True}::test_searchsorted_inf
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_0_{right=True}::test_searchsorted_minf
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_1_{right=False}::test_digitize_all_nan_bins
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_1_{right=False}::test_digitize_nan
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_1_{right=False}::test_digitize_nan_bins
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_1_{right=False}::test_digitize_nan_bins_decreasing
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_1_{right=False}::test_digitize_nan_bins_decreasing_repeated
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_1_{right=False}::test_digitize_nan_bins_repeated
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_1_{right=False}::test_searchsorted_inf
+tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitizeNanInf_param_1_{right=False}::test_searchsorted_minf
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_0_{bins=[1.5, 2.5, 4.0, 6.0], increasing=True, right=True, shape=()}::test_digitize
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_10_{bins=[1.5, 2.5, 4.0, 6.0], increasing=False, right=False, shape=(10,)}::test_digitize
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestDigitize_param_11_{bins=[1.5, 2.5, 4.0, 6.0], increasing=False, right=False, shape=(6, 3, 3)}::test_digitize
