@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>dpnp.linalg.cholesky &mdash; dpnp 0.6.2 documentation</title>
@@ -21,6 +22,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
@@ -32,6 +34,8 @@
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="dpnp.linalg.qr" href="dpnp.linalg.qr.html" />
@@ -189,11 +193,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dpnp-linalg-cholesky">
+  <section id="dpnp-linalg-cholesky">
 <h1>dpnp.linalg.cholesky<a class="headerlink" href="#dpnp-linalg-cholesky" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="dpnp.linalg.cholesky">
-<code class="sig-prename descclassname"><span class="pre">dpnp.linalg.</span></code><code class="sig-name descname"><span class="pre">cholesky</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#cholesky"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.linalg.cholesky" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="dpnp.linalg.cholesky">
+<span class="sig-prename descclassname"><span class="pre">dpnp.linalg.</span></span><span class="sig-name descname"><span class="pre">cholesky</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/linalg/dpnp_iface_linalg.html#cholesky"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.linalg.cholesky" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cholesky decomposition.
 Return the Cholesky decomposition, <cite>L * L.H</cite>, of the square matrix <cite>input</cite>,
 where <cite>L</cite> is lower-triangular and .H is the conjugate transpose operator
@@ -204,7 +208,7 @@ In addition, only the lower-triangular and diagonal elements of <cite>input</cit
 are used. Only <cite>L</cite> is actually returned.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>input</strong> (<em>(</em><em>..</em><em>, </em><em>M</em><em>, </em><em>M</em><em>) </em><em>array_like</em>) – Hermitian (symmetric if all elements are real), positive-definite
+<dd class="field-odd"><p><strong>input</strong> (<em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>M</em><em>) </em><em>array_like</em>) – Hermitian (symmetric if all elements are real), positive-definite
 input matrix.</p>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -212,12 +216,12 @@ input matrix.</p>
 matrix object if <cite>input</cite> is a matrix object.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(.., M, M) array_like</p>
+<dd class="field-odd"><p>(…, M, M) array_like</p>
 </dd>
 </dl>
 </dd></dl>
 
-</div>
+</section>
 
 
            </div>
