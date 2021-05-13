@@ -7,7 +7,7 @@ echo +++++++++++++++++++++++++ Python prerequisites ++++++++++++++++++++++++++++
 echo ========================= Conda: install prerequisites =========================
 # explicitly install mkl blas instead of openblas
 # because numpy is installed with openblas for Python 3.9 by default
-conda install -y conda-build numpy=1.19 blas=*=mkl cython pytest hypothesis
+conda install -y conda-build numpy=1.20.1 blas=*=mkl cython pytest hypothesis
 
 echo ========================= Conda: remove mkl ====================================
 conda remove mkl --force -y || true
