@@ -1325,7 +1325,7 @@ def prod(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, wher
     return call_origin(numpy.prod, x1, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)
 
 
-def remainder(x1, x2, out=None, where=True, **kwargs):
+def remainder(x1, x2, out=None, where=True, dtype=None, **kwargs):
     """
     Return element-wise remainder of division.
 
@@ -1334,7 +1334,7 @@ def remainder(x1, x2, out=None, where=True, **kwargs):
     Limitations
     -----------
         Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
-        Parameters ``out`` and ``where`` are supported with their default values.
+        Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
         Keyword arguments ``kwargs`` are currently unsupported.
         Otherwise the functions will be executed sequentially on CPU.
         Input array data types are limited by supported DPNP :ref:`Data types`.
@@ -1377,6 +1377,8 @@ def remainder(x1, x2, out=None, where=True, **kwargs):
             pass
         elif out is not None and not isinstance(out, dparray):
             pass
+        elif dtype is not None:
+            pass
         elif out is not None:
             pass
         elif not where:
@@ -1384,9 +1386,9 @@ def remainder(x1, x2, out=None, where=True, **kwargs):
         elif x1_is_scalar and x2.ndim > 1:
             pass
         else:
-            return dpnp_remainder(x1, x2, out=out, where=where)
+            return dpnp_remainder(x1, x2, out=out, where=where, dtype=dtype)
 
-    return call_origin(numpy.remainder, x1, x2, out=out, where=where, **kwargs)
+    return call_origin(numpy.remainder, x1, x2, out=out, where=where, dtype=dtype **kwargs)
 
 
 
