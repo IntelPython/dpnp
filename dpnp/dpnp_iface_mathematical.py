@@ -670,7 +670,7 @@ def floor(x1, **kwargs):
     return call_origin(numpy.floor, x1, **kwargs)
 
 
-def floor_divide(x1, x2, out=None, where=True, **kwargs):
+def floor_divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
     """
     Compute the largest integer smaller or equal to the division of the inputs.
 
@@ -679,7 +679,7 @@ def floor_divide(x1, x2, out=None, where=True, **kwargs):
     Limitations
     -----------
         Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
-        Parameters ``out`` and ``where`` are supported with their default values.
+        Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
         Keyword arguments ``kwargs`` are currently unsupported.
         Otherwise the functions will be executed sequentially on CPU.
         Input array data types are limited by supported DPNP :ref:`Data types`.
@@ -722,6 +722,8 @@ def floor_divide(x1, x2, out=None, where=True, **kwargs):
             pass
         elif out is not None and not isinstance(out, dparray):
             pass
+        elif dtype is not None:
+            pass
         elif out is not None:
             pass
         elif not where:
@@ -729,9 +731,9 @@ def floor_divide(x1, x2, out=None, where=True, **kwargs):
         elif x1_is_scalar and x2.ndim > 1:
             pass
         else:
-            return dpnp_floor_divide(x1, x2, out=out, where=where)
+            return dpnp_floor_divide(x1, x2, out=out, where=where, dtype=dtype)
 
-    return call_origin(numpy.floor_divide, x1, x2, out=out, where=where, **kwargs)
+    return call_origin(numpy.floor_divide, x1, x2, out=out, where=where, dtype=dtype, **kwargs)
 
 
 def fmax(*args, **kwargs):
