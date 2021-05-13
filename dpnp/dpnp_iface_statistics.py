@@ -301,6 +301,8 @@ def max(input, axis=None, out=None, keepdims=numpy._NoValue, initial=numpy._NoVa
     """
 
     if not use_origin_backend(input):
+        # Negative values in 'shape' are not allowed in dparray
+        # 306-322 check on negative and duplicate axis
         isaxis = True
         if axis is not None:
             if dpnp.isscalar(axis):
