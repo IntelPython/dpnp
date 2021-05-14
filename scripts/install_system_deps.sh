@@ -5,16 +5,23 @@ THEDIR=$(dirname $(readlink -e ${BASH_SOURCE[0]}))
 echo +++++++++++++++++++++++++ System prerequisites +++++++++++++++++++++++++++
 
 echo ========================= install Intel repository =======================
-wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+# wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+# sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+# rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+
+wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+
 sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
 sudo apt-get update
 
 echo ========================= install Intel OneAPI ===========================
-sudo apt-get install intel-oneapi-mkl       \
-                     intel-oneapi-mkl-devel \
-                     intel-oneapi-dpcpp-cpp-compiler
+sudo apt install intel-basekit
+# sudo apt-get install intel-oneapi-mkl       \
+#                     intel-oneapi-mkl-devel \
+#                     intel-oneapi-dpcpp-cpp-compiler
 
 echo ========================= list /opt/intel/oneapi/ ========================
 ls -l /opt/intel/oneapi/
