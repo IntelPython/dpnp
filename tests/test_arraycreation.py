@@ -33,6 +33,24 @@ def test_diag(v, k):
     numpy.testing.assert_array_equal(expected, result)
 
 
+@pytest.mark.parametrize("N",
+                         [0, 1, 2, 3, 4],
+                         ids=['0', '1', '2', '3', '4'])
+@pytest.mark.parametrize("M",
+                         [None, 0, 1, 2, 3, 4],
+                         ids=['None', '0', '1', '2', '3', '4'])
+@pytest.mark.parametrize("k",
+                         [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+                         ids=['-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5'])
+@pytest.mark.parametrize("dtype",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['float64', 'float32', 'int64', 'int32'])
+def test_eye(N, M, k, dtype):
+    expected = numpy.eye(N, M=M, k=k, dtype=dtype)
+    result = dpnp.eye(N, M=M, k=k, dtype=dtype)
+    numpy.testing.assert_array_equal(expected, result)
+
+
 @pytest.mark.parametrize("type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['float64', 'float32', 'int64', 'int32'])

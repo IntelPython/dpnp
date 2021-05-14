@@ -95,6 +95,65 @@ void dpnp_diag_c(
     return;
 }
 
+template <typename _DataType>
+void dpnp_eye_c(void* result1, int k, const size_t* res_shape)
+{
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    if (result == nullptr)
+    {
+        return;
+    }
+
+    if (res_shape == nullptr)
+    {
+        return;
+    }
+
+    int diag_val_;
+    diag_val_ = std::min((int)res_shape[0], (int)res_shape[1]);
+    diag_val_ = std::min(diag_val_, ((int)res_shape[0] + k));
+    diag_val_ = std::min(diag_val_, ((int)res_shape[1] - k));
+
+    size_t diag_val;
+    if (diag_val_ < 0)
+    {
+        diag_val = 0;
+    }
+    else
+    {
+        diag_val = (size_t)diag_val_;
+    }
+
+    size_t size = res_shape[0] * res_shape[1];
+
+    for (size_t i = 0; i < size; ++i)
+    {
+        result[i] = 0;
+        for (size_t j = 0; j < diag_val; j ++)
+        {
+            if (k >= 0)
+            {
+                size_t ind = j * res_shape[1] + j + k;
+                if (i == ind)
+                {
+                    result[i] = 1;
+                }
+            }
+            else
+            {
+                size_t ind = (j - k) * res_shape[1] + j;
+                if (i == ind)
+                {
+                    result[i] = 1;
+                }
+            }
+        }
+    }
+
+    return;
+}
+
 template <typename _KernelNameSpecialization>
 class dpnp_full_c_kernel;
 
@@ -555,6 +614,11 @@ void func_map_init_arraycreation(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_DIAG][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_diag_c<long>};
     fmap[DPNPFuncName::DPNP_FN_DIAG][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_diag_c<float>};
     fmap[DPNPFuncName::DPNP_FN_DIAG][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_diag_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_EYE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_eye_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_EYE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_eye_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_EYE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_eye_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_EYE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_eye_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_FULL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_full_c<int>};
     fmap[DPNPFuncName::DPNP_FN_FULL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_full_c<long>};

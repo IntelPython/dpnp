@@ -43,6 +43,7 @@ from dpnp.dpnp_algo cimport *
 __all__ += [
     "dpnp_copy",
     "dpnp_diag",
+    "dpnp_eye",
     "dpnp_full",
     "dpnp_full_like",
     "dpnp_geomspace",
@@ -65,6 +66,7 @@ __all__ += [
 ctypedef void(*custom_1in_1out_func_ptr_t)(void *, void * , const int , size_t * , size_t * , const size_t, const size_t)
 ctypedef void(*ftpr_custom_vander_1in_1out_t)(void *, void *, size_t, size_t, int)
 ctypedef void(*custom_indexing_1out_func_ptr_t)(void * , const size_t , const size_t , const int)
+ctypedef void(*fptr_dpnp_eye_t)(void * , int , const size_t * )
 ctypedef void(*fptr_dpnp_trace_t)(const void *, void * , const size_t * , const size_t)
 
 
@@ -95,6 +97,32 @@ cpdef dparray dpnp_diag(dparray v, int k):
     cdef custom_1in_1out_func_ptr_t func = <custom_1in_1out_func_ptr_t > kernel_data.ptr
 
     func(v.get_data(), result.get_data(), k, < size_t * > v._dparray_shape.data(), < size_t * > result._dparray_shape.data(), v.ndim, result.ndim)
+
+    return result
+
+
+cpdef dparray dpnp_eye(N, M=None, k=0, dtype=None):
+    if dtype is None:
+        dtype_ = dpnp.float64
+    else:
+        dtype_ = dtype
+
+    if M is None:
+        M_ = N
+    else:
+        M_ = M
+
+    cpdef dparray result = dparray((N, M_), dtype=dtype_)
+
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype_)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_EYE, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+
+    cdef fptr_dpnp_eye_t func = <fptr_dpnp_eye_t > kernel_data.ptr
+
+    func(result.get_data(), k, < size_t * > result._dparray_shape.data())
 
     return result
 
