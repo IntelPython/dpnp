@@ -115,15 +115,7 @@ void dpnp_eye_c(void* result1, int k, const size_t* res_shape)
     diag_val_ = std::min(diag_val_, ((int)res_shape[0] + k));
     diag_val_ = std::min(diag_val_, ((int)res_shape[1] - k));
 
-    size_t diag_val;
-    if (diag_val_ < 0)
-    {
-        diag_val = 0;
-    }
-    else
-    {
-        diag_val = (size_t)diag_val_;
-    }
+    size_t diag_val = (diag_val_ < 0) ? 0 : (size_t)diag_val_;
 
     size_t size = res_shape[0] * res_shape[1];
 
