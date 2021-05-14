@@ -215,7 +215,7 @@ template <typename _DataType, typename _ResultType>
 class dpnp_trace_c_kernel;
 
 template <typename _DataType, typename _ResultType>
-void dpnp_trace_c(const void* array1_in, void* result1, const size_t* shape, const size_t ndim)
+void dpnp_trace_c(const void* array1_in, void* result1, const size_t* shape_, const size_t ndim)
 {
     cl::sycl::event event;
 
@@ -227,7 +227,7 @@ void dpnp_trace_c(const void* array1_in, void* result1, const size_t* shape, con
     const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
     _ResultType* result = reinterpret_cast<_ResultType*>(result1);
 
-    if (shape == nullptr)
+    if (shape_ == nullptr)
     {
         return;
     }
@@ -240,7 +240,7 @@ void dpnp_trace_c(const void* array1_in, void* result1, const size_t* shape, con
     size_t size = 1;
     for (size_t i = 0; i < ndim - 1; ++i)
     {
-        size *= shape[i];
+        size *= shape_[i];
     }
 
     if (size == 0)
@@ -248,24 +248,29 @@ void dpnp_trace_c(const void* array1_in, void* result1, const size_t* shape, con
         return;
     }
 
+    size_t* shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
+    auto memcpy_event = DPNP_QUEUE.memcpy(shape, shape_, ndim * sizeof(size_t));
+
     cl::sycl::range<1> gws(size);
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
         size_t i = global_id[0];
-        _DataType elem = 0;
+        result[i] = 0;
         for (size_t j = 0; j < shape[ndim - 1]; ++j)
         {
-            elem += array_in[i * shape[ndim - 1] + j];
+            result[i] += array_in[i * shape[ndim - 1] + j];
         }
-        result[i] = elem;
     };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.depends_on({memcpy_event});
         cgh.parallel_for<class dpnp_trace_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
     };
 
     event = DPNP_QUEUE.submit(kernel_func);
 
     event.wait();
+
+    dpnp_memory_free_c(shape);
 }
 
 template <typename _DataType>
