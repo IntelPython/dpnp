@@ -75,7 +75,6 @@ __all__ = [
     "ogrid",
     "ones",
     "ones_like",
-    "trace",
     "tri",
     "tril",
     "triu",
@@ -1071,36 +1070,6 @@ def ones_like(x1, dtype=None, order='C', subok=False, shape=None):
         return dpnp_ones_like(_shape, _dtype)
 
     return numpy.ones_like(x1, dtype, order, subok, shape)
-
-
-def trace(arr, offset=0, axis1=0, axis2=1, dtype=None, out=None):
-    """
-       Return the sum along diagonals of the array.
-
-       For full documentation refer to :obj:`numpy.trace`.
-
-       Limitations
-       -----------
-       Input array is supported as :obj:`dpnp.ndarray`.
-       Parameters ``axis1``, ``axis2``, ``out`` and ``dtype`` are supported only with default values.
-       """
-    if not use_origin_backend():
-        if not isinstance(arr, dparray):
-            pass
-        elif arr.size == 0:
-            pass
-        elif arr.ndim < 2:
-            pass
-        elif axis1 != 0:
-            pass
-        elif axis2 != 1:
-            pass
-        elif out is not None and (not isinstance(out, dparray) or (isinstance(out, dparray) and out.shape != arr.shape)):
-            pass
-        else:
-            return dpnp_trace(arr, offset, axis1, axis2, dtype, out)
-
-    return call_origin(numpy.trace, arr, offset, axis1, axis2, dtype, out)
 
 
 def tri(N, M=None, k=0, dtype=numpy.float, **kwargs):

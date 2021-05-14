@@ -11,7 +11,7 @@ jobs:
   - bash: |
       echo ========================= Conda ENV ====================================
       conda create -q -y -n CondaCodeStyle python=3.8 conda-build conda-verify \
-                                                      numpy=1.20.1 cython pytest \
+                                                      numpy=1.19 cython pytest \
                                                       pycodestyle autopep8 black
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate CondaCodeStyle
@@ -55,7 +55,7 @@ jobs:
   - bash: |
       echo ========================= Conda ENV =================================
       conda create -q -y -n CondaCodeCov python=3.8 conda-build conda-verify \
-                                                    numpy=1.20.1 cython pytest \
+                                                    numpy=1.19 cython pytest \
                                                     pycodestyle autopep8 \
                                                     cython pytest pytest-cov
       . /usr/share/miniconda/etc/profile.d/conda.sh
@@ -116,18 +116,15 @@ jobs:
       versionSpec: '$(python.version)'
     displayName: 'Use Python $(python.version)'
   - bash: |
-      echo ========================= install OneAPI =================================
-      ./scripts/install_system_deps.sh
-      
       echo ========================= Conda ENV ======================================
-      conda create -q -y -n dpnp$(python.version) python=$(python.version) numpy=1.19 conda-build cython pytest hypothesis
+      conda create -q -y -n dpnp$(python.version) python=$(python.version) numpy=1.19
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate dpnp$(python.version)
-
+      echo ========================= CI ENV =========================================
+      . ./scripts/set_ci_env.sh
       echo ========================= build DPNP =====================================
       ./0.build.sh
       echo ========================= run tests ======================================
-      . ./0.env.sh
       python -m tests_external.numpy.runtests
 
 # test python ./setup.py bdist_wheel command with no dpctl
@@ -175,7 +172,7 @@ jobs:
 
   - script: |
       call activate
-      conda install -y conda-build numpy=1.20.1 cython pytest hypothesis
+      conda install -y conda-build numpy=1.19 cython pytest hypothesis
     displayName: Install extra conda packages
 
   - script: |
@@ -295,7 +292,7 @@ jobs:
       . /opt/intel/oneapi/setvars.sh
 
       ./scripts/install_python_deps.sh
-      # ./scripts/build_deps_dpctl.sh
+      ./scripts/build_deps_dpctl.sh
 
       conda list
       echo ========================= make DPNP package =========================

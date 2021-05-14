@@ -1145,6 +1145,7 @@ tests/test_numeric.py::TestNonarrayArgs::test_reshape
 tests/test_numeric.py::TestNonarrayArgs::test_searchsorted
 tests/test_numeric.py::TestNonarrayArgs::test_size
 tests/test_numeric.py::TestNonarrayArgs::test_std
+tests/test_numeric.py::TestNonarrayArgs::test_trace
 tests/test_numeric.py::TestNonarrayArgs::test_var
 tests/test_numeric.py::TestNonzero::test_array_method
 tests/test_numeric.py::TestNonzero::test_count_nonzero_axis
