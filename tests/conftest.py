@@ -25,6 +25,7 @@
 # *****************************************************************************
 
 import os
+import sys
 import dpnp
 import numpy
 import pytest
@@ -52,9 +53,10 @@ def pytest_collection_modifyitems(config, items):
 
     current_queue_is_cpu = dpnp.dpnp_queue_is_cpu()
     print("")
-    print(f" DPNP: current queue is CPU: {current_queue_is_cpu}")
-    print(f" DPNP: version: {dpnp.__version__}")
-    print(f"NumPy: version: {numpy.__version__}")
+    print(f"DPNP current queue is CPU: {current_queue_is_cpu}")
+    print(f"DPNP version: {dpnp.__version__}, location: {dpnp}")
+    print(f"NumPy version: {numpy.__version__}, location: {numpy}")
+    print(f"Python version: {sys.version}")
     print("")
     if not current_queue_is_cpu or os.getenv('DPNP_QUEUE_GPU') == '1':
         excluded_tests.extend(get_excluded_tests(test_exclude_file_gpu))
