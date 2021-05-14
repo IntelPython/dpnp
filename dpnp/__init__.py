@@ -27,6 +27,13 @@
 import sys
 import warnings
 
+import os
+myvar=os.environ
+
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
+pp.pprint(myvar)
+
 if "numpy" in sys.modules:
     warnings.warn("\nDPNP: Module NumPy found. Please load DPNP module before NumPy.\n")
 
