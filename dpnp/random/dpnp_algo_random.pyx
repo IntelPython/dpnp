@@ -456,19 +456,24 @@ cpdef dparray dpnp_rng_lognormal(double mean, double stddev, size):
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_lognormal_c_1out_t func
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
-    param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+    if stddev == 0.0:
+        val = numpy.exp(mean + (stddev ** 2) / 2)
+        result = dparray(size, dtype=dtype)
+        result.fill(val)
+    else:
+        # convert string type names (dparray.dtype) to C enum DPNPFuncType
+        param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
-    # get the FPTR data structure
-    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_LOGNORMAL, param1_type, param1_type)
+        # get the FPTR data structure
+        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_LOGNORMAL, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-    # ceate result array with type given by FPTR data
-    result = dparray(size, dtype=result_type)
+        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+        # ceate result array with type given by FPTR data
+        result = dparray(size, dtype=result_type)
 
-    func = <fptr_dpnp_rng_lognormal_c_1out_t > kernel_data.ptr
-    # call FPTR function
-    func(result.get_data(), mean, stddev, result.size)
+        func = <fptr_dpnp_rng_lognormal_c_1out_t > kernel_data.ptr
+        # call FPTR function
+        func(result.get_data(), mean, stddev, result.size)
 
     return result
 
@@ -493,19 +498,23 @@ cpdef dparray dpnp_rng_multinomial(int ntrial, p, size):
     cdef double * p_vector = <double * > numpy.PyArray_DATA(p)
     cdef size_t p_vector_size = len(p)
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
-    param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
+    if ntrial == 0:
+        result = dparray(size, dtype=dtype)
+        result.fill(0.0)
+    else:
+        # convert string type names (dparray.dtype) to C enum DPNPFuncType
+        param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
-    # get the FPTR data structure
-    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_MULTINOMIAL, param1_type, param1_type)
+        # get the FPTR data structure
+        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_MULTINOMIAL, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-    # ceate result array with type given by FPTR data
-    result = dparray(size, dtype=result_type)
+        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+        # ceate result array with type given by FPTR data
+        result = dparray(size, dtype=result_type)
 
-    func = <fptr_dpnp_rng_multinomial_c_1out_t > kernel_data.ptr
-    # call FPTR function
-    func(result.get_data(), ntrial, p_vector, p_vector_size, result.size)
+        func = <fptr_dpnp_rng_multinomial_c_1out_t > kernel_data.ptr
+        # call FPTR function
+        func(result.get_data(), ntrial, p_vector, p_vector_size, result.size)
 
     return result
 

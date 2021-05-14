@@ -97,7 +97,6 @@ static cl::sycl::device get_default_sycl_device()
 }
 #endif
 
-#if defined(DPNPC_TOUCH_KERNEL_TO_LINK)
 /**
  * Function push the SYCL kernels to be linked (final stage of the compilation) for the current queue
  *
@@ -121,7 +120,6 @@ static long dpnp_kernels_link()
 
     return result;
 }
-#endif
 
 #if defined(DPNP_LOCAL_QUEUE)
 // Catch asynchronous exceptions
@@ -179,10 +177,7 @@ void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
 #endif
 
     std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
-#if defined(DPNPC_TOUCH_KERNEL_TO_LINK)
-    // Remove pre-link kernel library at startup time
     dpnp_kernels_link();
-#endif
     std::chrono::high_resolution_clock::time_point t4 = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> time_kernels_link =
         std::chrono::duration_cast<std::chrono::duration<double>>(t4 - t3);
