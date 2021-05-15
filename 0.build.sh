@@ -20,6 +20,9 @@ echo =========example3==============
 clang++ -g -fPIC dpnp/backend/examples/example3.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example3
 ./example3
 
+gcc --version
+
+
 echo =========LD_LIBRARY_PATH==============
 echo $LD_LIBRARY_PATH
 
