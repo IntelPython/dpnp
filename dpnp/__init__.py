@@ -37,6 +37,7 @@ pp.pprint(myvar)
 if "numpy" in sys.modules:
     warnings.warn("\nDPNP: Module NumPy found. Please load DPNP module before NumPy.\n")
 
+print(dpnp.dparray)
 from dpnp.dparray import dparray as ndarray
 from dpnp.dpnp_iface import *
 from dpnp.dpnp_iface import __all__ as _iface__all__
