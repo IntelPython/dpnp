@@ -35,6 +35,11 @@ ldd ./dpnp/libdpnp_backend_c.so
 echo =========readelf dpnp/libdpnp_backend_c.so==============
 readelf -d ./dpnp/libdpnp_backend_c.so
 
+echo ========= libstdc++.so ==============
+ls -l /usr/share/miniconda/envs/dpnp3.7/lib/libstdc++.so
+strings /usr/share/miniconda/envs/dpnp3.7/lib/libstdc++.so | grep GLIBCXX | sort -n
+
+
 echo
 echo =========example1==============
 python examples/example1.py
