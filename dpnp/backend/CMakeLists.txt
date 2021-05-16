@@ -144,6 +144,7 @@ endif()
 add_definitions(-D_FORTIFY_SOURCE=2 -Wformat -Wformat-security)
 if(NOT WIN32)
   add_compile_options(-fno-delete-null-pointer-checks -fstack-protector-strong -fno-strict-overflow)
+  add_link_options(-static-libstdc++ -static-libgcc)
   add_link_options(-Wl,-z,noexecstack,-z,relro,-z,now)
 endif()
 
