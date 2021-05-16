@@ -12,9 +12,10 @@ sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
 sudo apt-get update
 
 echo ========================= install Intel OneAPI ===========================
-sudo apt-get install intel-oneapi-mkl       \
-                     intel-oneapi-mkl-devel \
-                     intel-oneapi-dpcpp-cpp-compiler
+sudo apt-get install intel-oneapi-mkl                \
+                     intel-oneapi-mkl-devel          \
+                     intel-oneapi-dpcpp-cpp-compiler \
+                     intel-oneapi-python
 
 echo ========================= list /opt/intel/oneapi/ ========================
 ls -l /opt/intel/oneapi/
