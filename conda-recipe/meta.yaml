@@ -8,7 +8,7 @@ requirements:
     host:
       - python
       - setuptools
-      - numpy >=1.15
+      - numpy 1.17
       - cython
       - cmake >=3.16.5
       - dpctl >=0.5.0a0
