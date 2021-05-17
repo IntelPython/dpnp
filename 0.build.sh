@@ -18,7 +18,8 @@ python setup.py build_ext --inplace
 echo
 echo =========example3==============
 dpcpp -g -fPIC dpnp/backend/examples/example3.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example3
-LD_DEBUG=libs,bindings,symbols ./example3
+# LD_DEBUG=libs,bindings,symbols ./example3
+./example3
 
 gcc --version
 
@@ -42,4 +43,5 @@ strings /usr/share/miniconda/envs/dpnp*/lib/libstdc++.so | grep GLIBCXX | sort -
 
 echo
 echo =========example1==============
-LD_DEBUG=libs,bindings,symbols python examples/example1.py
+# LD_DEBUG=libs,bindings,symbols python examples/example1.py
+LD_DEBUG=libs python examples/example1.py
