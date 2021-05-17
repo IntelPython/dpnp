@@ -538,14 +538,6 @@ tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclo
 tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_infinite
 tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_infinite_equal_nan
 tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_min_int
-tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_invlarge
-tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_large
-tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_of_two
-tests/third_party/cupy/linalg_tests/test_product.py::TestDot_param_64_{shape=((2,), (2, 4)), trans_a=True, trans_b=True}::test_dot
-tests/third_party/cupy/linalg_tests/test_product.py::TestDot_param_65_{shape=((2,), (2, 4)), trans_a=True, trans_b=False}::test_dot
-tests/third_party/cupy/linalg_tests/test_product.py::TestDot_param_66_{shape=((2,), (2, 4)), trans_a=False, trans_b=True}::test_dot
-tests/third_party/cupy/linalg_tests/test_product.py::TestDot_param_67_{shape=((2,), (2, 4)), trans_a=False, trans_b=False}::test_dot
-tests/third_party/cupy/logic_tests/test_comparison.py::TestComparisonOperator::test_binary_npscalar_array
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_broadcast_not_allowed
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_diff_dtypes_is_equal
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_diff_dtypes_not_equal
