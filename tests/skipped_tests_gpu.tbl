@@ -521,6 +521,13 @@ tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumLarge_param_9_{opt
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperationWithScalar::test_scalar_float
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumUnaryOperationWithScalar::test_scalar_int
 tests/third_party/cupy/linalg_tests/test_einsum.py::TestListArgEinSumError::test_invalid_sub1
+tests/third_party/cupy/linalg_tests/test_product.py::TestDot_param_64_{shape=((2,), (2, 4)), trans_a=True, trans_b=True}::test_dot
+tests/third_party/cupy/linalg_tests/test_product.py::TestDot_param_65_{shape=((2,), (2, 4)), trans_a=True, trans_b=False}::test_dot
+tests/third_party/cupy/linalg_tests/test_product.py::TestDot_param_66_{shape=((2,), (2, 4)), trans_a=False, trans_b=True}::test_dot
+tests/third_party/cupy/linalg_tests/test_product.py::TestDot_param_67_{shape=((2,), (2, 4)), trans_a=False, trans_b=False}::test_dot
+tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_invlarge
+tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_large
+tests/third_party/cupy/linalg_tests/test_product.py::TestMatrixPower::test_matrix_power_of_two
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_dot_vec2
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_multidim_vdot
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_tensordot_zero_dim
@@ -545,6 +552,7 @@ tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_arra
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_diff_length
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_is_equal
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_not_equal
+tests/third_party/cupy/logic_tests/test_comparison.py::TestComparisonOperator::test_binary_npscalar_array
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_0_{shapes=[(), ()]}::test_broadcast
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_0_{shapes=[(), ()]}::test_broadcast_arrays
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_10_{shapes=[(0, 1, 1, 0, 3), (5, 2, 0, 1, 0, 0, 3), (2, 1, 0, 0, 0, 3)]}::test_broadcast
@@ -769,10 +777,6 @@ tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_1
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_15_{axis=0, func='nanprod', keepdims=False, shape=(20, 30, 40), transpose_axes=False}::test_nansum_axis_transposed
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_9_{axis=0, func='nanprod', keepdims=True, shape=(2, 3, 4), transpose_axes=False}::test_nansum_all
 tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodLong_param_9_{axis=0, func='nanprod', keepdims=True, shape=(2, 3, 4), transpose_axes=False}::test_nansum_axis_transposed
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodAxes_param_0_{axis=(1, 3), shape=(2, 3, 4, 5)}::test_nansum_axes
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodAxes_param_1_{axis=(1, 3), shape=(20, 30, 40, 50)}::test_nansum_axes
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodAxes_param_2_{axis=(0, 2, 3), shape=(2, 3, 4, 5)}::test_nansum_axes
-tests/third_party/cupy/math_tests/test_sumprod.py::TestNansumNanprodAxes_param_3_{axis=(0, 2, 3), shape=(20, 30, 40, 50)}::test_nansum_axes
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim_with_discont
 tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_2dim_with_axis
@@ -795,12 +799,6 @@ tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumb
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel_param_3_{loc_shape=(), scale_shape=(3, 2), shape=(3, 2)}::test_gumbel
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel_param_4_{loc_shape=(3, 2), scale_shape=(), shape=(4, 3, 2)}::test_gumbel
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel_param_5_{loc_shape=(3, 2), scale_shape=(), shape=(3, 2)}::test_gumbel
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace_param_0_{loc_shape=(), scale_shape=(), shape=(4, 3, 2)}::test_laplace
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace_param_1_{loc_shape=(), scale_shape=(), shape=(3, 2)}::test_laplace
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace_param_2_{loc_shape=(), scale_shape=(3, 2), shape=(4, 3, 2)}::test_laplace
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace_param_3_{loc_shape=(), scale_shape=(3, 2), shape=(3, 2)}::test_laplace
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace_param_4_{loc_shape=(3, 2), scale_shape=(), shape=(4, 3, 2)}::test_laplace
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace_param_5_{loc_shape=(3, 2), scale_shape=(), shape=(3, 2)}::test_laplace
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogistic_param_0_{loc_shape=(), scale_shape=(), shape=(4, 3, 2)}::test_logistic
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogistic_param_1_{loc_shape=(), scale_shape=(), shape=(3, 2)}::test_logistic
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogistic_param_2_{loc_shape=(), scale_shape=(3, 2), shape=(4, 3, 2)}::test_logistic
@@ -939,6 +937,14 @@ tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_4_
 tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_5_{func='argmax', is_module=True, shape=()}::test_argminmax_dtype
 tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_6_{func='argmax', is_module=False, shape=(3, 4)}::test_argminmax_dtype
 tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_7_{func='argmax', is_module=False, shape=()}::test_argminmax_dtype
+tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere_param_0_{array=array([], dtype=float64)}::test_argwhere
+tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere_param_1_{array=array([], shape=(0, 2), dtype=float64)}::test_argwhere
+tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere_param_2_{array=array([], shape=(0, 2, 0), dtype=float64)}::test_argwhere
+tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_0_{array=array(0)}::test_flatnonzero
+tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_1_{array=array(1)}::test_flatnonzero
+tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_2_{array=array([], dtype=float64)}::test_flatnonzero
+tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_3_{array=array([], shape=(0, 2), dtype=float64)}::test_flatnonzero
+tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_4_{array=array([], shape=(0, 2, 0), dtype=float64)}::test_flatnonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_all
 tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_axis0
 tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_axis1
@@ -967,20 +973,6 @@ tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargm
 tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_zero_size
 tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_zero_size_axis0
 tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_zero_size_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_all
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_axis0
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_axis2
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_axis_large
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_nan
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_nan2
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_nan3
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_nan4
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_nan5
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_tie
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_zero_size
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_zero_size_axis0
-tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_zero_size_axis1
 tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_0_{array=array(0)}::test_nonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_1_{array=array(1)}::test_nonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSortedInvalid::test_searchsorted_ndbins
@@ -992,14 +984,6 @@ tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSortedNanInf_para
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSortedNanInf_param_1_{side='right'}::test_searchsorted_minf
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSortedNanInf_param_1_{side='right'}::test_searchsorted_nan
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSortedNanInf_param_1_{side='right'}::test_searchsorted_nanbins
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere_param_0_{array=array([], dtype=float64)}::test_argwhere
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere_param_1_{array=array([], shape=(0, 2), dtype=float64)}::test_argwhere
-tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere_param_2_{array=array([], shape=(0, 2, 0), dtype=float64)}::test_argwhere
-tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_0_{array=array(0)}::test_flatnonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_1_{array=array(1)}::test_flatnonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_2_{array=array([], dtype=float64)}::test_flatnonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_3_{array=array([], shape=(0, 2), dtype=float64)}::test_flatnonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_4_{array=array([], shape=(0, 2, 0), dtype=float64)}::test_flatnonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_0_{bins=[], shape=(), side='left'}::test_searchsorted
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_10_{bins=[0, 1, 2, 4, 10], shape=(6, 3, 3), side='left'}::test_searchsorted
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_11_{bins=[0, 1, 2, 4, 10], shape=(6, 3, 3), side='right'}::test_searchsorted
