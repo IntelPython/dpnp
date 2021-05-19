@@ -45,3 +45,9 @@ echo
 echo =========example1==============
 # LD_DEBUG=libs,bindings,symbols python examples/example1.py
 LD_DEBUG=libs python examples/example1.py
+
+echo ========= find /opt ==============
+find /opt -name libstdc++.so
+echo ========= find anaconda ==============
+find /usr/share/miniconda -name libstdc++.so
+
