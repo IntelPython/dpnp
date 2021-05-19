@@ -50,4 +50,8 @@ echo ========= find /opt ==============
 find /opt -name libstdc++.so
 echo ========= find anaconda ==============
 find /usr/share/miniconda -name libstdc++.so
+echo ========= dpkg-query -L libstdc++6 ==============
+dpkg-query -L libstdc++6
+echo ========= ls -l /lib/x86_64-linux-gnu/libstdc* ==============
+ls -l /lib/x86_64-linux-gnu/libstdc*
 
