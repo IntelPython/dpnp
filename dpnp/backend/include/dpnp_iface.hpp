@@ -191,6 +191,18 @@ INP_DLLEXPORT void
 
 /**
  * @ingroup BACKEND_API
+ * @brief Compute the variance along the specified axis, while ignoring NaNs.
+ *
+ * @param [in]  array     Input array.
+ * @param [in]  mask_arr  Input mask array when elem is nan.
+ * @param [out] result    Output array.
+ * @param [in]  size      Number of elements in input arrays.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_nanvar_c(void* array, void* mask_arr, void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief Return the indices of the elements that are non-zero.
  *
  * @param [in]  array1    Input array.
