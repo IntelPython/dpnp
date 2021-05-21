@@ -4,6 +4,9 @@ THEDIR=$(dirname $(readlink -e ${BASH_SOURCE[0]}))
 
 echo +++++++++++++++++++++++++ System prerequisites +++++++++++++++++++++++++++
 
+sudo apt-get clean
+sudo apt-get autoclean
+
 echo ========================= install Intel repository =======================
 wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
 sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
