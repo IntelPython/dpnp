@@ -12,8 +12,12 @@ sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
 sudo apt-get update
 
 echo ========================= make same libstdc++ ===========================
+sudo apt-get install -y aptitude
 echo ========================= remove GCC ===========================
 sudo apt remove -y gcc g++ gcc-6 g++-6 gcc-7 g++-7 gcc-8 g++-8 gcc-10 g++-10 gcc-11 g++-11 libstdc++6 libstdc++-7-dev libstdc++-8-dev libstdc++-10-dev libstdc++-11-dev
+echo ========================= remove by aptitude =========
+sudo aptitude remove -y gcc g++ gcc-6 g++-6 gcc-7 g++-7 gcc-8 g++-8 gcc-10 g++-10 gcc-11 g++-11 libstdc++6 libstdc++-7-dev libstdc++-8-dev libstdc++-10-dev libstdc++-11-dev
+
 echo ========================= auto-remove GCC ===========================
 sudo apt autoremove
 echo ========================= install GCC ===========================
