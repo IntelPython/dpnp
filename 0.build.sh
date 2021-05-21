@@ -44,7 +44,8 @@ strings /usr/share/miniconda/envs/dpnp*/lib/libstdc++.so | grep GLIBCXX | sort -
 echo
 echo =========example1==============
 # LD_DEBUG=libs,bindings,symbols python examples/example1.py
-LD_DEBUG=libs python examples/example1.py
+# LD_DEBUG=libs python examples/example1.py
+python examples/example1.py
 
 echo ========= find /opt ==============
 find /opt -name libstdc++.so*
@@ -55,7 +56,11 @@ dpkg-query -L libstdc++6
 echo ========= ls -l /lib/x86_64-linux-gnu/libstdc* ==============
 ls -l /lib/x86_64-linux-gnu/libstdc*
 
+gcc --version
 g++ --version
+dpcpp --version
 
 echo ========= APT ==============
 apt list --installed
+echo ========= conda ==============
+conda list
