@@ -144,7 +144,7 @@ def get_include():
     return dpnp_path
 
 
-def matmul(in_array1, in_array2, out=None):
+def matmul(in_array1, in_array2, out=None, **kwargs):
     """
     Matrix product of two arrays.
 
@@ -154,7 +154,7 @@ def matmul(in_array1, in_array2, out=None):
     -----------
     Input arrays are supported as :obj:`dpnp.ndarray`.
     Otherwise the function will be executed sequentially on CPU.
-    Parameter ``out`` is supported only with default value ``None``.
+    Parameter ``out`` is supported as :obj:`dpnp.ndarray` and as default value ``None``.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -182,12 +182,9 @@ def matmul(in_array1, in_array2, out=None):
 
     is_dparray1 = isinstance(in_array1, dparray)
     is_dparray2 = isinstance(in_array2, dparray)
+    is_dparray_out = isinstance(out, dparray)
 
-    if (not use_origin_backend(in_array1) and is_dparray1 and is_dparray2):
-
-        if out is not None:
-            checker_throw_value_error("matmul", "out", type(out), None)
-
+    if not use_origin_backend(in_array1) and not kwargs:
         """
         Cost model checks
         """
@@ -201,12 +198,15 @@ def matmul(in_array1, in_array2, out=None):
         dparray1_size = in_array1.size
         dparray2_size = in_array2.size
 
-        if (dparray1_size > cost_size) and (dparray2_size > cost_size):
-            # print(f"dparray1_size={dparray1_size}")
-            return dpnp_matmul(in_array1, in_array2)
+        if not isinstance(in_array1, dparray):
+            pass
+        elif not isinstance(in_array2, dparray):
+            pass
+        elif out is not None and not isinstance(out, dparray) :
+            pass
+        elif (dparray1_size < cost_size) or (dparray2_size < cost_size):
+            pass
+        else:
+            return dpnp_matmul(in_array1, in_array2, out=out)
 
-    input1 = asnumpy(in_array1) if is_dparray1 else in_array1
-    input2 = asnumpy(in_array2) if is_dparray2 else in_array2
-
-    # TODO need to return dparray instead ndarray
-    return numpy.matmul(input1, input2, out=out)
+    return call_origin(numpy.matmul, in_array1, in_array2, out=out, **kwargs)
