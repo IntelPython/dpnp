@@ -32,10 +32,10 @@ sudo aptitude remove -y llvm-8 llvm-9 llvm-10 llvm-11 llvm-12
 echo ========================= auto-remove GCC ===========================
 sudo apt autoremove
 echo ========================= install GCC ===========================
-sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
+sudo aptitude install -y gcc-9 g++-9 libstdc++-9-dev
 
 echo ========================= install Intel OneAPI ===========================
-sudo apt-get install intel-oneapi-mkl                \
+sudo aptitude install intel-oneapi-mkl                \
                      intel-oneapi-mkl-devel          \
                      intel-oneapi-dpcpp-cpp-compiler \
                      intel-oneapi-python
@@ -43,14 +43,14 @@ sudo apt-get install intel-oneapi-mkl                \
 echo ========================= list /opt/intel/oneapi/ ========================
 ls -l /opt/intel/oneapi/
 
-echo ========================= Change python3 to python executanble name ======
-sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
-echo ========================= Python version =================================
-python --version
-python3 --version
+#echo ========================= Change python3 to python executanble name ======
+#sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
+#echo ========================= Python version =================================
+#python --version
+#python3 --version
 
 echo ========================= install extra packages ==========================
-sudo apt-get install cmake valgrind libgtest-dev
+sudo aptitude install cmake valgrind libgtest-dev
 
 #echo ========================= install/delete libstdc++-dev ===================
 #sudo apt remove -y gcc-7 g++-7 gcc-8 g++-8 gcc-10 g++-10
@@ -60,11 +60,13 @@ sudo apt-get install cmake valgrind libgtest-dev
 #sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
 
 
-# echo ========================= SW versions ====================================
+echo ========================= SW versions ====================================
 # sudo apt list --installed
 
-# gcc --version
-# which gcc
+gcc --version
+which gcc
+g++ --version
+which g++
 
 # clang++ --version
 # which clang++
