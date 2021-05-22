@@ -1,0 +1,24 @@
+Bit-twiddling functions
+dpnp.bitwise_and
+
+Compute the bit-wise AND of two arrays element-wise.
+
+dpnp.bitwise_or
+
+Compute the bit-wise OR of two arrays element-wise.
+
+dpnp.bitwise_xor
+
+Compute the bit-wise XOR of two arrays element-wise.
+
+dpnp.invert
+
+Compute bit-wise inversion, or bit-wise NOT, element-wise.
+
+dpnp.left_shift
+
+Shift the bits of an integer to the left.
+
+dpnp.right_shift
+
+Shift the bits of an integer to the right.
