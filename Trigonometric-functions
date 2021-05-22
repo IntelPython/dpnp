@@ -1,0 +1,64 @@
+Trigonometric functions
+dpnp.sin
+
+Trigonometric sine, element-wise.
+
+dpnp.cos
+
+Trigonometric cosine, element-wise.
+
+dpnp.tan
+
+Compute tangent element-wise.
+
+dpnp.arcsin
+
+Inverse sine, element-wise.
+
+dpnp.arccos
+
+Trigonometric inverse cosine, element-wise.
+
+dpnp.arctan
+
+Trigonometric inverse tangent, element-wise.
+
+dpnp.arctan2
+
+Element-wise arc tangent of x1/x2 choosing the quadrant correctly.
+
+dpnp.hypot
+
+Given the “legs” of a right triangle, return its hypotenuse.
+
+dpnp.sinh
+
+Trigonometric hyperbolic sine, element-wise.
+
+dpnp.cosh
+
+Trigonometric hyperbolic cosine, element-wise.
+
+dpnp.tanh
+
+Compute hyperbolic tangent element-wise.
+
+dpnp.arcsinh
+
+Inverse hyperbolic sine, element-wise.
+
+dpnp.arccosh
+
+Trigonometric inverse hyperbolic cosine, element-wise.
+
+dpnp.arctanh
+
+Trigonometric hyperbolic inverse tangent, element-wise.
+
+dpnp.deg2rad
+
+Convert angles from degrees to radians.
+
+dpnp.rad2deg
+
+Convert angles from radians to degrees.
