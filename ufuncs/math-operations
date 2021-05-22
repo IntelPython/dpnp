@@ -1,0 +1,100 @@
+###Math operations
+dpnp.add
+
+Add arguments element-wise.
+
+dpnp.subtract
+
+Subtract arguments, element-wise.
+
+dpnp.multiply
+
+Multiply arguments element-wise.
+
+dpnp.divide
+
+Divide arguments element-wise.
+
+dpnp.true_divide
+
+Provide a true division of the inputs, element-wise.
+
+dpnp.floor_divide
+
+Compute the largest integer smaller or equal to the division of the inputs.
+
+dpnp.negative
+
+Negative element-wise.
+
+dpnp.power
+
+First array elements raised to powers from second array, element-wise.
+
+dpnp.remainder
+
+Return element-wise remainder of division.
+
+dpnp.mod
+
+Compute element-wise remainder of division.
+
+dpnp.fmod
+
+Calculate the element-wise remainder of division.
+
+dpnp.abs
+
+Calculate the absolute value element-wise.
+
+dpnp.absolute
+
+Calculate the absolute value element-wise.
+
+dpnp.fabs
+
+Compute the absolute values element-wise.
+
+dpnp.sign
+
+Returns an element-wise indication of the sign of a number.
+
+dpnp.exp
+
+Trigonometric exponent, element-wise.
+
+dpnp.exp2
+
+Trigonometric exponent2, element-wise.
+
+dpnp.log
+
+Trigonometric logarithm, element-wise.
+
+dpnp.log2
+
+Trigonometric logarithm, element-wise.
+
+dpnp.log10
+
+Trigonometric logarithm, element-wise.
+
+dpnp.expm1
+
+Trigonometric exponent minus 1, element-wise.
+
+dpnp.log1p
+
+Trigonometric logarithm, element-wise.
+
+dpnp.sqrt
+
+Return the positive square-root of an array, element-wise.
+
+dpnp.square
+
+Return the element-wise square of the input.
+
+dpnp.reciprocal
+
+Return the reciprocal of the argument, element-wise.

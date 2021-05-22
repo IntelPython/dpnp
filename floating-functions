@@ -1,0 +1,36 @@
+###Floating functions
+dpnp.isfinite
+
+Test element-wise for finiteness (not infinity or not Not a Number).
+
+dpnp.isinf
+
+Test element-wise for positive or negative infinity.
+
+dpnp.isnan
+
+Test element-wise for NaN and return result as a boolean array.
+
+dpnp.copysign
+
+Change the sign of x1 to that of x2, element-wise.
+
+dpnp.modf
+
+Return the fractional and integral parts of an array, element-wise.
+
+dpnp.fmod
+
+Calculate the element-wise remainder of division.
+
+dpnp.floor
+
+Round a number to the nearest integer toward minus infinity.
+
+dpnp.ceil
+
+Compute the ceiling of the input, element-wise.
+
+dpnp.trunc
+
+Compute the truncated value of the input, element-wise.

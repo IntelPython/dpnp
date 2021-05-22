@@ -1,0 +1,56 @@
+###Comparison functions
+dpnp.greater
+
+Return (x1 > x2) element-wise.
+
+dpnp.greater_equal
+
+Return (x1 >= x2) element-wise.
+
+dpnp.less
+
+Return (x1 < x2) element-wise.
+
+dpnp.less_equal
+
+Return (x1 <= x2) element-wise.
+
+dpnp.not_equal
+
+Return (x1 != x2) element-wise.
+
+dpnp.equal
+
+Return (x1 == x2) element-wise.
+
+dpnp.logical_and
+
+Compute the truth value of x1 AND x2 element-wise.
+
+dpnp.logical_or
+
+Compute the truth value of x1 OR x2 element-wise.
+
+dpnp.logical_xor
+
+Compute the truth value of x1 XOR x2, element-wise.
+
+dpnp.logical_not
+
+Compute the truth value of NOT x element-wise.
+
+dpnp.maximum
+
+Element-wise maximum of array elements.
+
+dpnp.minimum
+
+Element-wise minimum of array elements.
+
+dpnp.fmax
+
+Element-wise maximum of array elements.
+
+dpnp.fmin
+
+Element-wise minimum of array elements.
