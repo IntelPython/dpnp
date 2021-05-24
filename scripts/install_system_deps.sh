@@ -32,10 +32,15 @@ sudo update-alternatives --remove-all g++
 
 echo ========================= make same libstdc++ ===========================
 echo ========================= remove by aptitude =========
-sudo aptitude remove -y build-essential   \
-                        gcc g++ gfortran  \
-                        lib32stdc++6      \
-                        gcc-6 g++-6 gcc-6-base gcc-7 g++-7 gcc-7-base gcc-8 g++-8 gcc-8-base gcc-9 g++-9 gcc-9-base gcc-10 g++-10 gcc-10-base gcc-11 g++-11 gcc-11-base \
+sudo aptitude remove -y build-essential           \
+                        gcc g++ gfortran          \
+                        lib32stdc++6              \
+                        gcc-6 g++-6 gcc-6-base    \
+                        gcc-7 g++-7 gcc-7-base    \
+                        gcc-8 g++-8 gcc-8-base    \
+                        gcc-9 g++-9 gcc-9-base    \
+                        gcc-10 g++-10 gcc-10-base \
+                        gcc-11 g++-11 gcc-11-base \
                         libstdc++6 libstdc++-7-dev libstdc++-8-dev libstdc++-9-dev libstdc++-10-dev libstdc++-11-dev \
                         llvm-8 llvm-9 llvm-10 llvm-11 llvm-12
 
