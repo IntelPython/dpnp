@@ -27,7 +27,7 @@ sudo aptitude remove -y build-essential
 sudo aptitude remove -y gcc g++ gfortran
 sudo aptitude remove -y lib32stdc++6
 sudo aptitude remove -y gcc-6 g++-6 gcc-6-base gcc-7 g++-7 gcc-7-base gcc-8 g++-8 gcc-8-base gcc-10 g++-10 gcc-10-base gcc-11 g++-11 gcc-11-base
-sudo aptitude remove -y libstdc++6 libstdc++-7-dev libstdc++-8-dev libstdc++-10-dev libstdc++-11-dev
+sudo aptitude remove -y libstdc++6 libstdc++-7-dev libstdc++-8-dev libstdc++-9-dev libstdc++-10-dev libstdc++-11-dev
 sudo aptitude remove -y llvm-8 llvm-9 llvm-10 llvm-11 llvm-12
 
 echo ========================= auto-remove GCC ===========================
