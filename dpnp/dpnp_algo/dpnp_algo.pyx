@@ -241,14 +241,14 @@ cpdef dparray dpnp_matmul(dparray in_array1, dparray in_array2, dparray out=None
 
     if out is not None:
         if out.dtype != result_type:
-            raise TypeError
+            raise TypeError("Inappropriate type of ``out`` variable")
         elif out.shape != shape_result:
-            raise ValueError
+            raise ValueError("Inappropriate shape of ``out`` variable")
         else:
             result = out
     else:
         result = dparray(shape_result, dtype=result_type)
-    
+
     if result.size == 0:
         return result
 

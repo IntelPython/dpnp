@@ -47,21 +47,20 @@ class TestMatMul(unittest.TestCase):
         numpy.testing.assert_array_equal(expected, result)
 
     def test_matmul3(self):
-        array_data = [1., 2., 3., 4., 5.]
-        out = numpy.empty(5)
+        array_data1 = numpy.full((513, 513), 5)
+        array_data2 = numpy.full((513, 513), 2)
+        out = numpy.empty((513, 513), dtype=numpy.float64)
 
         # DPNP
-        array1 = inp.array(array_data, dtype=inp.float64)
-        array2 = inp.array(array_data, dtype=inp.float64)
+        array1 = inp.array(array_data1, dtype=inp.float64)
+        array2 = inp.array(array_data2, dtype=inp.float64)
         out1 = inp.array(out, dtype=inp.float64)
         result = inp.matmul(array1, array2, out=out1)
-        # print(result)
 
         # original
-        array_1 = numpy.array(array_data, dtype=numpy.float64)
-        array_2 = numpy.array(array_data, dtype=numpy.float64)
+        array_1 = numpy.array(array_data1, dtype=numpy.float64)
+        array_2 = numpy.array(array_data2, dtype=numpy.float64)
         expected = numpy.matmul(array_1, array_2, out=out)
-        # print(expected)
 
         numpy.testing.assert_array_equal(expected, result)
 
