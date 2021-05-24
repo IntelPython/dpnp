@@ -38,7 +38,7 @@ sudo aptitude install -y gcc-9 g++-9 libstdc++-9-dev
 echo ========================= install Intel OneAPI ===========================
 sudo aptitude install -y intel-oneapi-mkl                \
                          intel-oneapi-mkl-devel          \
-                         intel-oneapi-dpcpp-cpp-compiler \
+                         intel-oneapi-compiler-dpcpp-cpp \
                          intel-oneapi-python
 
 echo ========================= list /opt/intel/oneapi/ ========================
