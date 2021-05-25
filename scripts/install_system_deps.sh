@@ -31,6 +31,11 @@ sudo update-alternatives --remove-all g++
 
 
 echo ========================= make same libstdc++ ===========================
+echo ========================= conda uninstall ===========================
+conda uninstall gcc
+conda uninstall libgcc
+conda uninstall libstdcxx-ng
+
 echo ========================= remove by aptitude =========
 sudo aptitude remove -y build-essential           \
                         gcc g++ gfortran          \
