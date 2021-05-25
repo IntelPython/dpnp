@@ -88,6 +88,7 @@ jobs:
     displayName: 'Use Python $(python.version)'
   - bash: |
       echo ========================= Conda ENV ===========================
+      conda config --env --add channels conda-forge
       conda create -q -y -n dpnp$(python.version) python=$(python.version) libgcc-ng=9.3
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate dpnp$(python.version)
