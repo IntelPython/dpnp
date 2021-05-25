@@ -182,7 +182,7 @@ def matmul(in_array1, in_array2, out=None, **kwargs):
 
     is_dparray1 = isinstance(in_array1, dparray)
     is_dparray2 = isinstance(in_array2, dparray)
-    is_dparray_out = isinstance(out, dparray)
+    out_is_dparray = isinstance(out, dparray)
 
     if not use_origin_backend(in_array1) and not kwargs:
         """
@@ -202,7 +202,7 @@ def matmul(in_array1, in_array2, out=None, **kwargs):
             pass
         elif not isinstance(in_array2, dparray):
             pass
-        elif out is not None and not isinstance(out, dparray):
+        elif out is not None and not out_is_dparray:
             pass
         elif (dparray1_size < cost_size) or (dparray2_size < cost_size):
             pass
