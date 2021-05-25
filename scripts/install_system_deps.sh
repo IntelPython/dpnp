@@ -34,6 +34,7 @@ echo ========================= make same libstdc++ ===========================
 echo ========================= conda uninstall ===========================
 conda uninstall gcc
 conda uninstall libgcc
+conda uninstall libgcc-ng
 conda uninstall libstdcxx-ng
 
 echo ========================= remove by aptitude =========
