@@ -21,39 +21,39 @@ sudo apt-get update
 
 echo ========================= alternatives status =======================
 update-alternatives --get-selections
-echo ========================= alternatives gcc =======================
-sudo update-alternatives --query gcc
-echo ========================= alternatives g++ =======================
-sudo update-alternatives --query g++
-echo ========================= delete alternatives =======================
-sudo update-alternatives --remove-all gcc
-sudo update-alternatives --remove-all g++
+#echo ========================= alternatives gcc =======================
+#sudo update-alternatives --query gcc
+#echo ========================= alternatives g++ =======================
+#sudo update-alternatives --query g++
+#echo ========================= delete alternatives =======================
+#sudo update-alternatives --remove-all gcc
+#sudo update-alternatives --remove-all g++
 
 
-echo ========================= make same libstdc++ ===========================
-echo ========================= conda uninstall ===========================
-conda uninstall gcc
-conda uninstall libgcc
-conda uninstall libgcc-ng
-conda uninstall libstdcxx-ng
+#echo ========================= make same libstdc++ ===========================
+#echo ========================= conda uninstall ===========================
+#conda uninstall gcc
+#conda uninstall libgcc
+#conda uninstall libgcc-ng
+#conda uninstall libstdcxx-ng
 
-echo ========================= remove by aptitude =========
-sudo aptitude remove -y build-essential           \
-                        gcc g++ gfortran          \
-                        lib32stdc++6              \
-                        gcc-6 g++-6 gcc-6-base    \
-                        gcc-7 g++-7 gcc-7-base    \
-                        gcc-8 g++-8 gcc-8-base    \
-                        gcc-9 g++-9 gcc-9-base    \
-                        gcc-10 g++-10 gcc-10-base \
-                        gcc-11 g++-11 gcc-11-base \
-                        libstdc++6 libstdc++-7-dev libstdc++-8-dev libstdc++-9-dev libstdc++-10-dev libstdc++-11-dev \
-                        llvm-8 llvm-9 llvm-10 llvm-11 llvm-12
+#echo ========================= remove by aptitude =========
+#sudo aptitude remove -y build-essential           \
+#                        gcc g++ gfortran          \
+#                        lib32stdc++6              \
+#                        gcc-6 g++-6 gcc-6-base    \
+#                        gcc-7 g++-7 gcc-7-base    \
+#                        gcc-8 g++-8 gcc-8-base    \
+#                        gcc-9 g++-9 gcc-9-base    \
+#                        gcc-10 g++-10 gcc-10-base \
+#                        gcc-11 g++-11 gcc-11-base \
+#                        libstdc++6 libstdc++-7-dev libstdc++-8-dev libstdc++-9-dev libstdc++-10-dev libstdc++-11-dev \
+#                        llvm-8 llvm-9 llvm-10 llvm-11 llvm-12
 
-echo ========================= auto-remove GCC ===========================
-sudo apt autoremove
-echo ========================= install GCC ===========================
-sudo aptitude install -y gcc-9 g++-9 libstdc++-9-dev
+#echo ========================= auto-remove GCC ===========================
+#sudo apt autoremove
+#echo ========================= install GCC ===========================
+#sudo aptitude install -y gcc-9 g++-9 libstdc++-9-dev
 
 echo ========================= install Intel OneAPI ===========================
 sudo aptitude install -y intel-oneapi-mkl                \
