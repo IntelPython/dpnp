@@ -89,6 +89,11 @@ jobs:
   - bash: |
       echo ========================= Conda ENV ===========================
       conda config --env --add channels conda-forge
+      echo ========================= update Conda ENV ===========================
+      conda update -y
+      echo ========================= 1 update Conda ENV ===========================
+      conda update -y libgcc-ng=9.3
+      echo ========================= create Conda ENV ===========================
       conda create -q -y -n dpnp$(python.version) python=$(python.version) libgcc-ng=9.3
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate dpnp$(python.version)
