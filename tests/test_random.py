@@ -874,7 +874,7 @@ class TestDistributionsVonmises:
     @pytest.mark.parametrize("kappa", [5.0, 0.5], ids=['large_kappa', 'small_kappa'])
     def test_seed(self, kappa):
         seed = 28041990
-        size = 10
+        size = 1000
         mu = 2.
         dpnp.random.seed(seed)
         a1 = numpy.asarray(dpnp.random.vonmises(mu, kappa, size=size))
