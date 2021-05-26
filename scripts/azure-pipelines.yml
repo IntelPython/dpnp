@@ -90,7 +90,7 @@ jobs:
       echo ========================= Conda ENV ===========================
       conda config --env --add channels conda-forge
       echo ========================= update Conda ENV ===========================
-      conda update -y
+      conda update -y --prefix /usr/share/miniconda anaconda
       echo ========================= 1 update Conda ENV ===========================
       conda update -y libgcc-ng=9.3 libstdcxx-ng=9.3
       echo ========================= create Conda ENV ===========================
