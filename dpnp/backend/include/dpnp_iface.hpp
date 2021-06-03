@@ -679,6 +679,21 @@ INP_DLLEXPORT void dpnp_argmin_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of around function
+ *
+ * @param [in]  input_in     Input array with data.
+ * @param [out] result_out   Output array with indeces.
+ * @param [in]  input_size   Number of elements in input arrays.
+ * @param [in]  decimals     Number of decimal places to round.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_around_c(const void* input_in,
+                                  void* result_out,
+                                  const size_t input_size,
+                                  const int decimals);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of std function
  *
  * @param [in]  array   Input array with data.
