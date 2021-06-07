@@ -1082,7 +1082,7 @@ def shaped_arange(shape, xp=dpnp, dtype=numpy.float64, order='C'):
 
     """
     dtype = numpy.dtype(dtype)
-    a = dpnp.arange(1, prod(shape) + 1, 1)
+    a = xp.arange(1, prod(shape) + 1, 1)
     if dtype == '?':
         a = a % 2 == 0
     elif dtype.kind == 'c':
@@ -1108,8 +1108,8 @@ def shaped_reverse_arange(shape, xp=dpnp, dtype=numpy.float32):
     """
     dtype = numpy.dtype(dtype)
     size = prod(shape)
-    # a = dpnp.arange(size, 0, -1)
-    a = dpnp.arange(0, size)
+    # a = xp.arange(size, 0, -1)
+    a = xp.arange(0, size)
     if dtype == '?':
         a = a % 2 == 0
     elif dtype.kind == 'c':

@@ -404,7 +404,7 @@ def put(input, ind, v, mode='raise'):
             pass
         elif type(ind) != type(v):
             pass
-        elif numpy.max(ind) > input.size:
+        elif numpy.max(ind) >= input.size or numpy.min(ind) + input.size < 0:
             pass
         else:
             return dpnp_put(input, ind, v)

@@ -35,6 +35,29 @@ cl::sycl::queue* backend_sycl::queue = nullptr;
 #endif
 mkl_rng::mt19937* backend_sycl::rng_engine = nullptr;
 
+static void dpnpc_show_mathlib_version()
+{
+#if 1
+    const int len = 256;
+    std::string mathlib_version_str(len, 0x0);
+
+    char* buf = const_cast<char*>(mathlib_version_str.c_str()); // TODO avoid write into the container
+
+    mkl_get_version_string(buf, len);
+
+    std::cout << "Math backend version: " << mathlib_version_str << std::endl;
+#else
+    // Failed to load library under Python environment die to unresolved symbol
+    MKLVersion version;
+
+    mkl_get_version(&version);
+
+    std::cout << "Math backend version: " << version.MajorVersion << "." << version.UpdateVersion << "."
+              << version.MinorVersion << std::endl;
+#endif
+}
+
+#if (not defined(NDEBUG)) && defined(DPNP_LOCAL_QUEUE)
 static void show_available_sycl_devices()
 {
     const std::vector<cl::sycl::device> devices = cl::sycl::device::get_devices();
@@ -51,7 +74,9 @@ static void show_available_sycl_devices()
             << ", name=" << it->get_info<cl::sycl::info::device::name>() << std::endl;
     }
 }
+#endif
 
+#if defined(DPNP_LOCAL_QUEUE)
 static cl::sycl::device get_default_sycl_device()
 {
     int dpnpc_queue_gpu = 0;
@@ -70,7 +95,9 @@ static cl::sycl::device get_default_sycl_device()
 
     return dev;
 }
+#endif
 
+#if defined(DPNPC_TOUCH_KERNEL_TO_LINK)
 /**
  * Function push the SYCL kernels to be linked (final stage of the compilation) for the current queue
  *
@@ -94,6 +121,7 @@ static long dpnp_kernels_link()
 
     return result;
 }
+#endif
 
 #if defined(DPNP_LOCAL_QUEUE)
 // Catch asynchronous exceptions
@@ -151,7 +179,10 @@ void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
 #endif
 
     std::chrono::high_resolution_clock::time_point t3 = std::chrono::high_resolution_clock::now();
+#if defined(DPNPC_TOUCH_KERNEL_TO_LINK)
+    // Remove pre-link kernel library at startup time
     dpnp_kernels_link();
+#endif
     std::chrono::high_resolution_clock::time_point t4 = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> time_kernels_link =
         std::chrono::duration_cast<std::chrono::duration<double>>(t4 - t3);
@@ -162,7 +193,10 @@ void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
 #else
     std::cout << "DPCtrl SYCL queue used\n";
 #endif
-    std::cout << "SYCL kernels link time: " << time_kernels_link.count() << " (sec.)\n" << std::endl;
+    std::cout << "SYCL kernels link time: " << time_kernels_link.count() << " (sec.)\n";
+    dpnpc_show_mathlib_version();
+
+    std::cout << std::endl;
 }
 
 bool backend_sycl::backend_sycl_is_cpu()

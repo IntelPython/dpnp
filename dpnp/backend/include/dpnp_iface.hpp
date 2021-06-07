@@ -233,15 +233,15 @@ INP_DLLEXPORT void dpnp_elemwise_absolute_c(void* array1_in, void* result1, size
  */
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
 INP_DLLEXPORT void dpnp_dot_c(void* result_out,
-                                const void* input1_in,
-                                const size_t input1_size,
-                                const size_t* input1_shape,
-                                const size_t input1_shape_ndim,
-                                const void* input2_in,
-                                const size_t input2_size,
-                                const size_t* input2_shape,
-                                const size_t input2_shape_ndim,
-                                const size_t* where);
+                              const void* input1_in,
+                              const size_t input1_size,
+                              const size_t* input1_shape,
+                              const size_t input1_shape_ndim,
+                              const void* input2_in,
+                              const size_t input2_size,
+                              const size_t* input2_shape,
+                              const size_t input2_shape_ndim,
+                              const size_t* where);
 
 /**
  * @ingroup BACKEND_API
@@ -328,14 +328,16 @@ INP_DLLEXPORT void dpnp_sum_c(void* result_out,
  * @ingroup BACKEND_API
  * @brief Place of array elements
  *
- * @param [in]  sort_array  Input sorted array.
+ * @param [in]  array       Input array.
+ * @param [in]  array2      Copy input array.
  * @param [out]  result     Result array.
  * @param [in]  kth         Element index to partition by.
  * @param [in]  shape       Shape of input array.
  * @param [in]  ndim        Number of elements in shape.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_partition_c(const void* sort_array, void* result, const size_t kth, const size_t* shape, const size_t ndim);
+INP_DLLEXPORT void
+    dpnp_partition_c(void* array, void* array2, void* result, const size_t kth, const size_t* shape, const size_t ndim);
 
 /**
  * @ingroup BACKEND_API
@@ -484,15 +486,15 @@ INP_DLLEXPORT void dpnp_cholesky_c(void* array1_in, void* result1, const size_t 
  */
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
 INP_DLLEXPORT void dpnp_correlate_c(void* result_out,
-                                const void* input1_in,
-                                const size_t input1_size,
-                                const size_t* input1_shape,
-                                const size_t input1_shape_ndim,
-                                const void* input2_in,
-                                const size_t input2_size,
-                                const size_t* input2_shape,
-                                const size_t input2_shape_ndim,
-                                const size_t* where);
+                                    const void* input1_in,
+                                    const size_t input1_size,
+                                    const size_t* input1_shape,
+                                    const size_t input1_shape_ndim,
+                                    const void* input2_in,
+                                    const size_t input2_size,
+                                    const size_t* input2_shape,
+                                    const size_t input2_shape_ndim,
+                                    const size_t* where);
 
 /**
  * @ingroup BACKEND_API
@@ -702,6 +704,18 @@ INP_DLLEXPORT void dpnp_std_c(
  */
 template <typename _DataType, typename _IndecesType>
 INP_DLLEXPORT void dpnp_take_c(void* array, void* indices, void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of trace function
+ *
+ * @param [in]  array      Input array with data.
+ * @param [out] result     Output array.
+ * @param [in]  shape      Shape of input array.
+ * @param [in]  ndim       Number of elements in array.shape.
+ */
+template <typename _DataType, typename _ResultType>
+INP_DLLEXPORT void dpnp_trace_c(const void* array, void* result, const size_t* shape, const size_t ndim);
 
 /**
  * @ingroup BACKEND_API
