@@ -27,14 +27,14 @@
 import sys
 import warnings
 
-import os
-myvar=os.environ
+# import os
+# myvar=os.environ
 
-import pprint
-pp = pprint.PrettyPrinter(indent=4)
-pp.pprint(myvar)
+# import pprint
+# pp = pprint.PrettyPrinter(indent=4)
+# pp.pprint(myvar)
 
-os.system("ldd ./dpnp/libdpnp_backend_c.so")
+# os.system("ldd ./dpnp/libdpnp_backend_c.so")
 # subprocess.call("echo Hello 123", shell=True)
 
 if "numpy" in sys.modules:
