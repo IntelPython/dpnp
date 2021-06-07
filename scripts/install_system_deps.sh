@@ -82,13 +82,13 @@ sudo aptitude install -y cmake valgrind libgtest-dev
 #sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
 
 
-echo ========================= SW versions ====================================
+# echo ========================= SW versions ====================================
 # sudo apt list --installed
 
-gcc --version
-which gcc
-g++ --version
-which g++
+# gcc --version
+# which gcc
+# g++ --version
+# which g++
 
 # clang++ --version
 # which clang++
