@@ -57,7 +57,7 @@ static void dpnpc_show_mathlib_version()
 #endif
 }
 
-#if not defined(NDEBUG)
+#if (not defined(NDEBUG)) && defined(DPNP_LOCAL_QUEUE)
 static void show_available_sycl_devices()
 {
     const std::vector<cl::sycl::device> devices = cl::sycl::device::get_devices();
