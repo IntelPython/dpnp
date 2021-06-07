@@ -41,7 +41,7 @@ void dpnp_around_c(const void* input_in,
                    const size_t input_size,
                    const int decimals)
 {
-    void(decimals);
+    (void)decimals;
 
     if (!input_size)
     {

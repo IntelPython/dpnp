@@ -219,6 +219,13 @@ def around(x1, decimals=0, out=None):
 
     For full documentation refer to :obj:`numpy.around`.
 
+    Limitations
+    -----------
+    Parameters ``x1`` is supported as :obj:`dpnp.ndarray`.
+    Parameters ``decimals`` and ``out`` are supported with their default values.
+    Otherwise the functions will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
     Examples
     --------
     >>> import dpnp as np
