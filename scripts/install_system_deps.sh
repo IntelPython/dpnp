@@ -2,13 +2,13 @@
 
 THEDIR=$(dirname $(readlink -e ${BASH_SOURCE[0]}))
 
-echo +++++++++++++++++++++++++ System prerequisites +++++++++++++++++++++++++++
-sudo apt-get install -f
-sudo dpkg --configure -a
-sudo apt-get install -f 
+# echo +++++++++++++++++++++++++ System prerequisites +++++++++++++++++++++++++++
+# sudo apt-get install -f
+# sudo dpkg --configure -a
+# sudo apt-get install -f 
 
-sudo apt-get clean
-sudo apt-get autoclean
+# sudo apt-get clean
+# sudo apt-get autoclean
 
 sudo apt-get install -y aptitude
 
