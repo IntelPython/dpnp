@@ -17,7 +17,7 @@ ${THEDIR}/install_system_deps.sh
 echo ========================= setup Intel OneAPI python changed to Intel OneAPI ====
 . /opt/intel/oneapi/setvars.sh
 
-${THEDIR}/install_python_deps.sh # install any python modules into Intel OneAPI Python
+${THEDIR}/install_python_deps.sh
 
 echo ========================= SW versions ===============================
 g++ --version

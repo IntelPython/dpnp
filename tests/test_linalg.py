@@ -193,17 +193,57 @@ def test_norm2(array, ord, axis):
                          [[[[1, 2], [3, 4]], [[5, 6], [7, 8]]], [[[1, 0], [3, 0]], [[5, 0], [7, 0]]]],
                          ids=['[[[1, 2], [3, 4]], [[5, 6], [7, 8]]]', '[[[1, 0], [3, 0]], [[5, 0], [7, 0]]]'])
 @pytest.mark.parametrize("ord",
-                         [None, -numpy.Inf, -2, -1, 0, 1, 2, 3, numpy.Inf],
-                         ids=['None', '-numpy.Inf', '-2', '-1', '0', '1', '2', '3', 'numpy.Inf'])
+                         [None, -numpy.Inf, -2, -1, 1, 2, numpy.Inf],
+                         ids=['None', '-numpy.Inf', '-2', '-1', '1', '2', 'numpy.Inf'])
 @pytest.mark.parametrize("axis",
-                         [None, 0, 1, 2, (0, 1), (0, 2), (1, 2)],
-                         ids=['None', '0', '1', '2', '(0, 1)', '(0, 2)', '(1, 2)'])
+                         [0, 1, 2, (0, 1), (0, 2), (1, 2)],
+                         ids=['0', '1', '2', '(0, 1)', '(0, 2)', '(1, 2)'])
 def test_norm3(array, ord, axis):
     a = numpy.array(array)
     ia = inp.array(a)
     result = inp.linalg.norm(ia, ord=ord, axis=axis)
     expected = numpy.linalg.norm(a, ord=ord, axis=axis)
     numpy.testing.assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("type",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['float64', 'float32', 'int64', 'int32'])
+@pytest.mark.parametrize("shape",
+                         [(2, 2), (3, 4), (5, 3), (16, 16)],
+                         ids=['(2,2)', '(3,4)', '(5,3)', '(16,16)'])
+def test_qr(type, shape):
+    a = numpy.arange(shape[0] * shape[1], dtype=type).reshape(shape)
+    ia = inp.array(a)
+
+    np_q, np_r = numpy.linalg.qr(a, "complete")
+    dpnp_q, dpnp_r = inp.linalg.qr(ia, "complete")
+
+    assert (dpnp_q.dtype == np_q.dtype)
+    assert (dpnp_r.dtype == np_r.dtype)
+    assert (dpnp_q.shape == np_q.shape)
+    assert (dpnp_r.shape == np_r.shape)
+
+    if type == numpy.float32:
+        tol = 1e-02
+    else:
+        tol = 1e-11
+
+    # check decomposition
+    numpy.testing.assert_allclose(ia, numpy.dot(dpnp_q, dpnp_r), rtol=tol, atol=tol)
+
+    # NP change sign for comparison
+    ncols = min(a.shape[0], a.shape[1])
+    for i in range(ncols):
+        j = numpy.where(numpy.abs(np_q[:, i]) > tol)[0][0]
+        if np_q[j, i] * dpnp_q[j, i] < 0:
+            np_q[:, i] = -np_q[:, i]
+            np_r[i, :] = -np_r[i, :]
+
+        if numpy.any(numpy.abs(np_r[i, :]) > tol):
+            numpy.testing.assert_allclose(numpy.array(dpnp_q)[:, i], np_q[:, i], rtol=tol, atol=tol)
+
+    numpy.testing.assert_allclose(dpnp_r, np_r, rtol=tol, atol=tol)
 
 
 @pytest.mark.parametrize("type",

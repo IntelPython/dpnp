@@ -3,10 +3,11 @@
 [![Build Sphinx](https://github.com/IntelPython/dpnp/workflows/Build%20Sphinx/badge.svg)](https://intelpython.github.io/dpnp)
 
 # DPNP: NumPy-like API accelerated with SYCL
+[API coverage summary](https://intelpython.github.io/dpnp/reference/comparison.html#summary)
 
-Full documentation: https://intelpython.github.io/dpnp/
+[Full documentation](https://intelpython.github.io/dpnp/)
 
-DPNP C++ backend documentation: https://intelpython.github.io/dpnp/backend_doc/
+[DPNP C++ backend documentation](https://intelpython.github.io/dpnp/backend_doc/)
 
 The project contains:
 - Python interface with NumPy-like API
@@ -23,6 +24,25 @@ DPNP_QUEUE_GPU=1 python examples/example1.py
 git clone https://github.com/IntelPython/dpnp
 cd dpnp
 ./0.build.sh
+```
+
+## Install Wheel Package from Pypi
+Install DPNP
+```cmd
+python -m pip install --index-url https://pypi.anaconda.org/intel/simple -extra-index-url https://pypi.org/simple dpnp
+```
+Note: DPNP wheel package is placed on Pypi, but some of its dependencies (like Intel numpy) are in Anaconda Cloud.
+That is why install command requires additional intel Pypi channel from Anaconda Cloud.
+
+Set path to Performance Libraries in case of using venv or system Python:
+```cmd
+export LD_LIBRARY_PATH=<path_to_your_env>/lib
+```
+
+It is also required to set following environment variables:
+```cmd
+export OCL_ICD_FILENAMES_RESET=1
+export OCL_ICD_FILENAMES=libintelocl.so
 ```
 
 ## Run test

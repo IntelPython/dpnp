@@ -142,7 +142,7 @@ Get the math library environemnt
 """
 _project_cmplr_macro += [("MKL_ILP64", "1")]  # using 64bit integers in MKL interface (long)
 if IS_LIN:
-    _mathlibs = ["mkl_rt", "mkl_sycl", "mkl_intel_ilp64", "mkl_sequential",
+    _mathlibs = ["mkl_sycl", "mkl_intel_ilp64", "mkl_sequential",
                  "mkl_core", "sycl", "OpenCL", "pthread", "m", "dl"]
 elif IS_WIN:
     _mathlibs = ["mkl_sycl", "mkl_intel_ilp64", "mkl_tbb_thread", "mkl_core", "sycl", "OpenCL", "tbb"]
@@ -269,7 +269,6 @@ class custom_build_clib(build_clib.build_clib):
                     link_command += " " + ".lib ".join(libraries) + ".lib"  # libraries
                     link_command += " /OUT:" + c_library_filename  # output file name
                     link_command += " " + " ".join(extra_link_postargs)
-                    print(link_command)
                     os.system(link_command)
                 else:
                     self.compiler.link_shared_lib(objects,

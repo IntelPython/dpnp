@@ -70,21 +70,41 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
     class __name__##_kernel;                                                                                           \
                                                                                                                        \
     template <typename _DataType>                                                                                      \
-    void __name__(void* array1_in, void* array2_in, void* result1, size_t size)                                        \
+    void __name__(void* result_out,                                                                                    \
+                  const void* input1_in,                                                                               \
+                  const size_t input1_size,                                                                            \
+                  const size_t* input1_shape,                                                                          \
+                  const size_t input1_shape_ndim,                                                                      \
+                  const void* input2_in,                                                                               \
+                  const size_t input2_size,                                                                            \
+                  const size_t* input2_shape,                                                                          \
+                  const size_t input2_shape_ndim,                                                                      \
+                  const size_t* where)                                                                                 \
     {                                                                                                                  \
-        cl::sycl::event event;                                                                                         \
-        _DataType* array1 = reinterpret_cast<_DataType*>(array1_in);                                                   \
-        _DataType* array2 = reinterpret_cast<_DataType*>(array2_in);                                                   \
-        _DataType* result = reinterpret_cast<_DataType*>(result1);                                                     \
+        /* avoid warning unused variable*/                                                                             \
+        (void)input1_shape;                                                                                            \
+        (void)input1_shape_ndim;                                                                                       \
+        (void)input2_shape;                                                                                            \
+        (void)input2_shape_ndim;                                                                                       \
+        (void)where;                                                                                                   \
                                                                                                                        \
-        cl::sycl::range<1> gws(size);                                                                                  \
+        if (!input1_size || !input2_size)                                                                              \
+        {                                                                                                              \
+            return;                                                                                                    \
+        }                                                                                                              \
+                                                                                                                       \
+        cl::sycl::event event;                                                                                         \
+        const _DataType* input1 = reinterpret_cast<const _DataType*>(input1_in);                                       \
+        const _DataType* input2 = reinterpret_cast<const _DataType*>(input2_in);                                       \
+        _DataType* result = reinterpret_cast<_DataType*>(result_out);                                                  \
+                                                                                                                       \
+        const size_t gws_size = std::max(input1_size, input2_size);                                                    \
+        cl::sycl::range<1> gws(gws_size);                                                                              \
         auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                               \
             size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/                                             \
-            {                                                                                                          \
-                _DataType input_elem1 = array1[i];                                                                     \
-                _DataType input_elem2 = array2[i];                                                                     \
-                result[i] = __operation__;                                                                             \
-            }                                                                                                          \
+            const _DataType input_elem1 = (input1_size == 1) ? input1[0] : input1[i];                                  \
+            const _DataType input_elem2 = (input2_size == 1) ? input2[0] : input2[i];                                  \
+            result[i] = __operation__;                                                                                 \
         };                                                                                                             \
                                                                                                                        \
         auto kernel_func = [&](cl::sycl::handler& cgh) {                                                               \

@@ -36,10 +36,28 @@ namespace mkl_stats = oneapi::mkl::stats;
 template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2, typename _KernelNameSpecialization3>
 class dpnp_correlate_c_kernel;
 
-template <typename _DataType_input1, typename _DataType_input2, typename _DataType_output>
-void dpnp_correlate_c(void* array1_in, void* array2_in, void* result1, size_t size)
+template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
+void dpnp_correlate_c(void* result_out,
+                      const void* input1_in,
+                      const size_t input1_size,
+                      const size_t* input1_shape,
+                      const size_t input1_shape_ndim,
+                      const void* input2_in,
+                      const size_t input2_size,
+                      const size_t* input2_shape,
+                      const size_t input2_shape_ndim,
+                      const size_t* where)
 {
-    dpnp_dot_c<_DataType_input1, _DataType_input2, _DataType_output>(array1_in, array2_in, result1, size);
+    dpnp_dot_c<_DataType_output, _DataType_input1, _DataType_input2>(result_out,
+                                                                     input1_in,
+                                                                     input1_size,
+                                                                     input1_shape,
+                                                                     input1_shape_ndim,
+                                                                     input2_in,
+                                                                     input2_size,
+                                                                     input2_shape,
+                                                                     input2_shape_ndim,
+                                                                     where);
 
     return;
 }
@@ -193,11 +211,12 @@ void dpnp_mean_c(void* array1_in, void* result1, const size_t* shape, size_t ndi
     }
     else
     {
-        _DataType* sum = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(1 * sizeof(_DataType)));
+        _ResultType* sum = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(1 * sizeof(_ResultType)));
 
-        dpnp_sum_c<_DataType>(array1_in, sum, size);
+        dpnp_sum_c<_ResultType, _DataType>(
+            sum, array1_in, shape, ndim, reinterpret_cast<const long*>(axis), naxis, nullptr, nullptr);
 
-        result[0] = static_cast<_ResultType>(sum[0]) / static_cast<_ResultType>(size);
+        result[0] = sum[0] / static_cast<_ResultType>(size);
 
         dpnp_memory_free_c(sum);
     }
@@ -499,20 +518,20 @@ void dpnp_var_c(
 void func_map_init_statistics(func_map_t& fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_correlate_c<int, int, int>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_correlate_c<int, long, long>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_FLT] = {eft_DBL, (void*)dpnp_correlate_c<int, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_correlate_c<int, double, double>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_INT] = {eft_LNG, (void*)dpnp_correlate_c<long, int, long>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_correlate_c<long, int, long>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_FLT] = {eft_DBL, (void*)dpnp_correlate_c<double, int, float>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_correlate_c<double, int, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_INT] = {eft_LNG, (void*)dpnp_correlate_c<long, long, int>};
     fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_correlate_c<long, long, long>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_FLT] = {eft_DBL, (void*)dpnp_correlate_c<long, float, double>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_correlate_c<long, double, double>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_INT] = {eft_DBL, (void*)dpnp_correlate_c<float, int, double>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_LNG] = {eft_DBL, (void*)dpnp_correlate_c<float, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_FLT] = {eft_DBL, (void*)dpnp_correlate_c<double, long, float>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_correlate_c<double, long, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_INT] = {eft_DBL, (void*)dpnp_correlate_c<double, float, int>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_LNG] = {eft_DBL, (void*)dpnp_correlate_c<double, float, long>};
     fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_correlate_c<float, float, float>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_DBL] = {eft_DBL, (void*)dpnp_correlate_c<float, double, double>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_correlate_c<double, int, double>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_correlate_c<double, long, double>};
-    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_correlate_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_FLT][eft_DBL] = {eft_DBL, (void*)dpnp_correlate_c<double, float, double>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_INT] = {eft_DBL, (void*)dpnp_correlate_c<double, double, int>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_LNG] = {eft_DBL, (void*)dpnp_correlate_c<double, double, long>};
+    fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_correlate_c<double, double, float>};
     fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_DBL] = {eft_DBL,
                                                                (void*)dpnp_correlate_c<double, double, double>};
 

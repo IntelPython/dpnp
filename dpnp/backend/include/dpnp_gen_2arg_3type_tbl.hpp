@@ -56,18 +56,18 @@
 
 #endif
 
-MACRO_2ARG_3TYPES_OP(dpnp_add_c, input_elem1 + input_elem2, oneapi::mkl::vm::add)
-MACRO_2ARG_3TYPES_OP(dpnp_arctan2_c, cl::sycl::atan2((double)input_elem1, (double)input_elem2), oneapi::mkl::vm::atan2)
+MACRO_2ARG_3TYPES_OP(dpnp_add_c, input1_elem + input2_elem, oneapi::mkl::vm::add)
+MACRO_2ARG_3TYPES_OP(dpnp_arctan2_c, cl::sycl::atan2((double)input1_elem, (double)input2_elem), oneapi::mkl::vm::atan2)
 MACRO_2ARG_3TYPES_OP(dpnp_copysign_c,
-                     cl::sycl::copysign((double)input_elem1, (double)input_elem2),
+                     cl::sycl::copysign((double)input1_elem, (double)input2_elem),
                      oneapi::mkl::vm::copysign)
-MACRO_2ARG_3TYPES_OP(dpnp_divide_c, input_elem1 / input_elem2, oneapi::mkl::vm::div)
-MACRO_2ARG_3TYPES_OP(dpnp_fmod_c, cl::sycl::fmod((double)input_elem1, (double)input_elem2), oneapi::mkl::vm::fmod)
-MACRO_2ARG_3TYPES_OP(dpnp_hypot_c, cl::sycl::hypot((double)input_elem1, (double)input_elem2), oneapi::mkl::vm::hypot)
-MACRO_2ARG_3TYPES_OP(dpnp_maximum_c, cl::sycl::max(input_elem1, input_elem2), oneapi::mkl::vm::fmax)
-MACRO_2ARG_3TYPES_OP(dpnp_minimum_c, cl::sycl::min(input_elem1, input_elem2), oneapi::mkl::vm::fmin)
-MACRO_2ARG_3TYPES_OP(dpnp_multiply_c, input_elem1* input_elem2, oneapi::mkl::vm::mul)
-MACRO_2ARG_3TYPES_OP(dpnp_power_c, cl::sycl::pow((double)input_elem1, (double)input_elem2), oneapi::mkl::vm::pow)
-MACRO_2ARG_3TYPES_OP(dpnp_subtract_c, input_elem1 - input_elem2, oneapi::mkl::vm::sub)
+MACRO_2ARG_3TYPES_OP(dpnp_divide_c, input1_elem / input2_elem, oneapi::mkl::vm::div)
+MACRO_2ARG_3TYPES_OP(dpnp_fmod_c, cl::sycl::fmod((double)input1_elem, (double)input2_elem), oneapi::mkl::vm::fmod)
+MACRO_2ARG_3TYPES_OP(dpnp_hypot_c, cl::sycl::hypot((double)input1_elem, (double)input2_elem), oneapi::mkl::vm::hypot)
+MACRO_2ARG_3TYPES_OP(dpnp_maximum_c, cl::sycl::max(input1_elem, input2_elem), oneapi::mkl::vm::fmax)
+MACRO_2ARG_3TYPES_OP(dpnp_minimum_c, cl::sycl::min(input1_elem, input2_elem), oneapi::mkl::vm::fmin)
+MACRO_2ARG_3TYPES_OP(dpnp_multiply_c, input1_elem* input2_elem, oneapi::mkl::vm::mul)
+MACRO_2ARG_3TYPES_OP(dpnp_power_c, cl::sycl::pow((double)input1_elem, (double)input2_elem), oneapi::mkl::vm::pow)
+MACRO_2ARG_3TYPES_OP(dpnp_subtract_c, input1_elem - input2_elem, oneapi::mkl::vm::sub)
 
 #undef MACRO_2ARG_3TYPES_OP

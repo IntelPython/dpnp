@@ -27,8 +27,8 @@
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-# set(DPNP_VERSION 0.5.0)
-# set(DPNP_API_VERSION 0.5)
+# set(DPNP_VERSION 0.6.2)
+# set(DPNP_API_VERSION 0.6)
 
 # set directory where the custom finders live
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
@@ -42,7 +42,7 @@ else()
   if(UNIX)
     set(DPNP_ONEAPI_ROOT "/opt/intel/oneapi" CACHE PATH "Folder contains oneapi tool set")
   elseif(WIN32)
-    set(DPNP_ONEAPI_ROOT "C:\Program Files (x86)\Intel\oneAPI" CACHE PATH "Folder contains oneapi tool set")
+    set(DPNP_ONEAPI_ROOT "C:/Program Files (x86)/Intel/oneAPI" CACHE PATH "Folder contains oneapi tool set")
   else()
     message(FATAL_ERROR "Unsupported system ${CMAKE_SYSTEM}")
   endif()
@@ -53,6 +53,10 @@ option(DPNP_DEBUG_ENABLE "Enable output for DPNP_DEBUG statements" FALSE)
 option(DPNP_INSTALL_STRUCTURED "if FALSE, install package files into same directory" TRUE)
 option(DPNP_SYCL_QUEUE_MGR_ENABLE "Use external manager for SYCL queue" FALSE)
 option(DPNP_BACKEND_TESTS "Enable DPNP tests" FALSE)
+
+if(DEFINED ENV{DPNP_DEBUG})
+  set(DPNP_DEBUG_ENABLE $ENV{DPNP_DEBUG})
+endif()
 
 message(STATUS "CMAKE_VERSION:                   ${CMAKE_VERSION}")
 message(STATUS "CMAKE_GENERATOR:                 ${CMAKE_GENERATOR}")
@@ -171,6 +175,7 @@ set(DPNP_SRC
     kernels/dpnp_krnl_fft.cpp
     kernels/dpnp_krnl_indexing.cpp
     kernels/dpnp_krnl_linalg.cpp
+    kernels/dpnp_krnl_logic.cpp
     kernels/dpnp_krnl_manipulation.cpp
     kernels/dpnp_krnl_mathematical.cpp
     kernels/dpnp_krnl_random.cpp
@@ -214,7 +219,6 @@ if(UNIX)
 # -DMKL_ILP64 -I"${MKLROOT}/include"
 # -lmkl_sycl -lmkl_intel_ilp64 -lmkl_sequential -lmkl_core -lsycl -lOpenCL -lpthread -lm -ldl
   set(DPNP_MATHLIB_DEP_LIBS
-      mkl_rt
       mkl_sycl
       mkl_intel_ilp64
       mkl_sequential
@@ -230,7 +234,6 @@ elseif(WIN32)
 # -DMKL_ILP64 -I"%MKLROOT%\include"
 # mkl_sycl_dll.lib mkl_intel_ilp64_dll.lib mkl_sequential_dll.lib mkl_core_dll.lib sycl.lib OpenCL.lib
   set(DPNP_MATHLIB_DEP_LIBS
-      mkl_rt
       mkl_sycl        # _dll
       mkl_intel_ilp64 # _dll
       mkl_sequential  # _dll

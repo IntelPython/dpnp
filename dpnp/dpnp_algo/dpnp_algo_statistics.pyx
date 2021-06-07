@@ -96,20 +96,24 @@ cpdef dpnp_average(dparray x1):
 
 
 cpdef dparray dpnp_correlate(dparray x1, dparray x2):
-    """ Convert string type names (dparray.dtype) to C enum DPNPFuncType """
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
     cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(x2.dtype)
 
-    """ get the FPTR data structure """
+    cdef dparray_shape_type x1_shape, x2_shape
+
+    x1_shape = x1.shape
+    x2_shape = x2.shape
+
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_CORRELATE, param1_type, param2_type)
 
     result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-    """ Create result array with type given by FPTR data """
+
     cdef dparray result = dparray(1, dtype=result_type)
 
     cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
-    """ Call FPTR function """
-    func(x1.get_data(), x2.get_data(), result.get_data(), x1.size)
+
+    func(result.get_data(), x1.get_data(), x1.size, x1_shape.data(), x1_shape.size(),
+                 x2.get_data(), x2.size, x2_shape.data(), x2_shape.size(), NULL)
 
     return result
 

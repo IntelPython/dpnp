@@ -67,9 +67,15 @@ Sums, products, differences
    dpnp.sum
    dpnp.cumprod
    dpnp.cumsum
+   dpnp.nancumprod
+   dpnp.nancumsum
    dpnp.nansum
    dpnp.nanprod
+   dpnp.cross
    dpnp.diff
+   dpnp.ediff1d
+   dpnp.gradient
+   dpnp.trapz
 
 
 Exponents and logarithms
