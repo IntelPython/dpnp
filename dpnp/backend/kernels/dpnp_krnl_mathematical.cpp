@@ -33,6 +33,51 @@
 #include "queue_sycl.hpp"
 
 template <typename _KernelNameSpecialization>
+class dpnp_around_c_kernel;
+
+template <typename _DataType>
+void dpnp_around_c(const void* input_in,
+                   void* result_out,
+                   const size_t input_size,
+                   const int decimals)
+{
+    (void)decimals;
+
+    if (!input_size)
+    {
+        return;
+    }
+
+    cl::sycl::event event;
+    _DataType* input = reinterpret_cast<_DataType*>(const_cast<void*>(input_in));
+    _DataType* result = reinterpret_cast<_DataType*>(result_out);
+
+    if constexpr(std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
+    {
+        event = oneapi::mkl::vm::rint(DPNP_QUEUE, input_size, input, result);
+    }
+    else
+    {
+        cl::sycl::range<1> gws(input_size);
+        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+            size_t i = global_id[0];
+            {
+                result[i] = std::rint(input[i]);
+            }
+        };
+
+        auto kernel_func = [&](cl::sycl::handler& cgh) {
+            cgh.parallel_for<class dpnp_around_c_kernel<_DataType>>(
+                gws, kernel_parallel_for_func);
+        };
+
+        event = DPNP_QUEUE.submit(kernel_func);
+    }
+
+    event.wait();
+}
+
+template <typename _KernelNameSpecialization>
 class dpnp_elemwise_absolute_c_kernel;
 
 template <typename _DataType>
@@ -393,6 +438,11 @@ void func_map_init_mathematical(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_ABSOLUTE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_elemwise_absolute_c<long>};
     fmap[DPNPFuncName::DPNP_FN_ABSOLUTE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_elemwise_absolute_c<float>};
     fmap[DPNPFuncName::DPNP_FN_ABSOLUTE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_elemwise_absolute_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_AROUND][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_around_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_AROUND][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_around_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_AROUND][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_around_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_AROUND][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_around_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_CROSS][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_cross_c<int, int, int>};
     fmap[DPNPFuncName::DPNP_FN_CROSS][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_cross_c<long, int, long>};
