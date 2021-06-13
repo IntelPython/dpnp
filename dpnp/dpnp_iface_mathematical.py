@@ -213,11 +213,18 @@ def add(x1, x2, dtype=None, out=None, where=True, **kwargs):
     return call_origin(numpy.add, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
-def around(a, decimals=0, out=None):
+def around(x1, decimals=0, out=None):
     """
     Evenly round to the given number of decimals.
 
     For full documentation refer to :obj:`numpy.around`.
+
+    Limitations
+    -----------
+    Parameters ``x1`` is supported as :obj:`dpnp.ndarray`.
+    Parameters ``decimals`` and ``out`` are supported with their default values.
+    Otherwise the functions will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
@@ -235,13 +242,17 @@ def around(a, decimals=0, out=None):
 
     """
 
-    if not use_origin_backend(a):
-        if not isinstance(a, dparray):
+    if not use_origin_backend(x1):
+        if not isinstance(x1, dparray):
+            pass
+        elif out is not None:
+            pass
+        elif decimals != 0:
             pass
         else:
-            return dpnp_around(a, decimals, out)
+            return dpnp_around(x1, decimals)
 
-    return call_origin(numpy.around, a, decimals, out)
+    return call_origin(numpy.around, x1, decimals=decimals, out=out)
 
 
 def ceil(x1, **kwargs):
