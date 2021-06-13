@@ -22,6 +22,7 @@ var group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i =
       [ "DPNP_FN_ARGMAX", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ad7a30d5f1ef5f03e82d0ec4a06b2cfd3", null ],
       [ "DPNP_FN_ARGMIN", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a563f719d139a7d794b600213dccef1de", null ],
       [ "DPNP_FN_ARGSORT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a33a515ed4d5cd48b8e755dc4d5525643", null ],
+      [ "DPNP_FN_AROUND", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a61a213515cbcb4d08cca1d10a4da8f9b", null ],
       [ "DPNP_FN_ASTYPE", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558abae2dffa5011ba57c66789951a8c2ca9", null ],
       [ "DPNP_FN_BITWISE_AND", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a88112d747c085c02766a4a161672f071", null ],
       [ "DPNP_FN_BITWISE_OR", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a06b511fedc7bba874a0b5e8679f23320", null ],

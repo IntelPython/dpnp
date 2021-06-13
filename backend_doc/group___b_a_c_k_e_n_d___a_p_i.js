@@ -16,6 +16,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_argmax_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga83aa623c66fc8b0623d145aea964bfdc", null ],
     [ "dpnp_argmin_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga2fca7fcd329774f0771688109f462d67", null ],
     [ "dpnp_argsort_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga2c0862ae9c058efa66b1344057d53d95", null ],
+    [ "dpnp_around_c", "group___b_a_c_k_e_n_d___a_p_i.html#gad764b091e5d240ce1e5496e396ae3850", null ],
     [ "dpnp_asin_c", "group___b_a_c_k_e_n_d___a_p_i.html#gaad7b181075c76074fe0b17484767dac6", null ],
     [ "dpnp_asinh_c", "group___b_a_c_k_e_n_d___a_p_i.html#gacf1514c0356e6afd9d1a42870b14b892", null ],
     [ "dpnp_astype_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga4c182f419727e5264f35db70d3f594a4", null ],

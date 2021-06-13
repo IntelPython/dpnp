@@ -528,6 +528,10 @@ template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:ga2fca7fcd329774f0771688109f462d67"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga2fca7fcd329774f0771688109f462d67">dpnp_argmin_c</a> (void *array, void *result, size_t size)</td></tr>
 <tr class="memdesc:ga2fca7fcd329774f0771688109f462d67"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of argmin function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga2fca7fcd329774f0771688109f462d67">More...</a><br /></td></tr>
 <tr class="separator:ga2fca7fcd329774f0771688109f462d67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad764b091e5d240ce1e5496e396ae3850"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
+<tr class="memitem:gad764b091e5d240ce1e5496e396ae3850"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gad764b091e5d240ce1e5496e396ae3850">dpnp_around_c</a> (const void *input_in, void *result_out, const size_t input_size, const int decimals)</td></tr>
+<tr class="memdesc:gad764b091e5d240ce1e5496e396ae3850"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of around function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gad764b091e5d240ce1e5496e396ae3850">More...</a><br /></td></tr>
+<tr class="separator:gad764b091e5d240ce1e5496e396ae3850"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gabd0a713a1fd8be04e1cb6be2a06c578b"><td class="memTemplParams" colspan="2">template&lt;typename _DataType , typename _ResultType &gt; </td></tr>
 <tr class="memitem:gabd0a713a1fd8be04e1cb6be2a06c578b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gabd0a713a1fd8be04e1cb6be2a06c578b">dpnp_std_c</a> (void *array, void *result, const size_t *shape, size_t ndim, const size_t *axis, size_t naxis, size_t ddof)</td></tr>
 <tr class="memdesc:gabd0a713a1fd8be04e1cb6be2a06c578b"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of std function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gabd0a713a1fd8be04e1cb6be2a06c578b">More...</a><br /></td></tr>
@@ -1207,6 +1211,59 @@ template&lt;typename _DataType , typename _idx_DataType &gt; </div>
     <tr><td class="paramdir">[in]</td><td class="paramname">array</td><td>Input array with data. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array with indeces. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in input arrays. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gad764b091e5d240ce1e5496e396ae3850"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gad764b091e5d240ce1e5496e396ae3850">&#9670;&nbsp;</a></span>dpnp_around_c()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename _DataType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void dpnp_around_c </td>
+          <td>(</td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>input_in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>result_out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>input_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>decimals</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>math library implementation of around function </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">input_in</td><td>Input array with data. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result_out</td><td>Output array with indeces. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input_size</td><td>Number of elements in input arrays. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">decimals</td><td>Number of decimal places to round. Support only with default value 0. </td></tr>
   </table>
   </dd>
 </dl>
