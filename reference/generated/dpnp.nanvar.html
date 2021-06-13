@@ -9,7 +9,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.var &mdash; dpnp 0.6.2 documentation</title>
+  <title>dpnp.nanvar &mdash; dpnp 0.6.2 documentation</title>
   
 
   
@@ -38,8 +38,8 @@
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.std" href="dpnp.std.html" />
-    <link rel="prev" title="dpnp.mean" href="dpnp.mean.html" /> 
+    <link rel="next" title="dpnp.cov" href="dpnp.cov.html" />
+    <link rel="prev" title="dpnp.std" href="dpnp.std.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -172,13 +172,13 @@
         
           <li><a href="../statistics.html">Statistical Functions</a> &raquo;</li>
         
-      <li>dpnp.var</li>
+      <li>dpnp.nanvar</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.var.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.nanvar.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -191,44 +191,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <section id="dpnp-var">
-<h1>dpnp.var<a class="headerlink" href="#dpnp-var" title="Permalink to this headline">¶</a></h1>
+  <section id="dpnp-nanvar">
+<h1>dpnp.nanvar<a class="headerlink" href="#dpnp-nanvar" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="dpnp.var">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">a</span></em>, <em class="sig-param"><span class="pre">axis=None</span></em>, <em class="sig-param"><span class="pre">dtype=None</span></em>, <em class="sig-param"><span class="pre">out=None</span></em>, <em class="sig-param"><span class="pre">ddof=0</span></em>, <em class="sig-param"><span class="pre">keepdims=&lt;no</span> <span class="pre">value&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_statistics.html#var"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.var" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute the variance along the specified axis.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.var.html#numpy.var" title="(in NumPy v1.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.var</span></code></a>.</p>
+<dt class="sig sig-object py" id="dpnp.nanvar">
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">nanvar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">arr</span></em>, <em class="sig-param"><span class="pre">axis=None</span></em>, <em class="sig-param"><span class="pre">dtype=None</span></em>, <em class="sig-param"><span class="pre">out=None</span></em>, <em class="sig-param"><span class="pre">ddof=0</span></em>, <em class="sig-param"><span class="pre">keepdims=&lt;no</span> <span class="pre">value&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_statistics.html#nanvar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.nanvar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the variance along the specified axis, while ignoring NaNs.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.nanvar.html#numpy.nanvar" title="(in NumPy v1.20)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.nanvar</span></code></a>.</p>
 <p class="rubric">Limitations</p>
 <p>Input array is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
-Size of input array is limited by <code class="docutils literal notranslate"><span class="pre">a.size</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>.
 Prameters <code class="docutils literal notranslate"><span class="pre">axis</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
 Prameters <code class="docutils literal notranslate"><span class="pre">dtype</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
 Prameters <code class="docutils literal notranslate"><span class="pre">out</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
 Prameters <code class="docutils literal notranslate"><span class="pre">keepdims</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">numpy._NoValue</span></code>.
-Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference internal" href="dpnp.std.html#dpnp.std" title="dpnp.std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.std</span></code></a></dt><dd><p>Compute the standard deviation along the specified axis.</p>
-</dd>
-<dt><a class="reference internal" href="dpnp.mean.html#dpnp.mean" title="dpnp.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.mean</span></code></a></dt><dd><p>Compute the arithmetic mean along the specified axis.</p>
-</dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanmean</span></code></dt><dd><p>Compute the arithmetic mean along the specified axis, ignoring NaNs.</p>
-</dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanstd</span></code></dt><dd><p>Compute the standard deviation along the specified axis, while ignoring NaNs.</p>
-</dd>
-<dt><a class="reference internal" href="dpnp.nanvar.html#dpnp.nanvar" title="dpnp.nanvar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nanvar</span></code></a></dt><dd><p>Compute the variance along the specified axis, while ignoring NaNs.</p>
-</dd>
-</dl>
-</div>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-<span class="go">1.25</span>
-</pre></div>
-</div>
+Otherwise the function will be executed sequentially on CPU.</p>
 </dd></dl>
 
 </section>
@@ -241,10 +217,10 @@ Input array data types are limited by supported DPNP <a class="reference interna
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.std.html" class="btn btn-neutral float-right" title="dpnp.std" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.cov.html" class="btn btn-neutral float-right" title="dpnp.cov" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.mean.html" class="btn btn-neutral float-left" title="dpnp.mean" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.std.html" class="btn btn-neutral float-left" title="dpnp.std" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
