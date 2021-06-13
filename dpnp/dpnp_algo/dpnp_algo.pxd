@@ -108,6 +108,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_MINIMUM
         DPNP_FN_MODF
         DPNP_FN_MULTIPLY
+        DPNP_FN_NANVAR
         DPNP_FN_NEGATIVE
         DPNP_FN_NONZERO
         DPNP_FN_ONES
