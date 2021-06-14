@@ -135,6 +135,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_MINIMUM,                  /**< Used in numpy.minimum() implementation  */
     DPNP_FN_MODF,                     /**< Used in numpy.modf() implementation  */
     DPNP_FN_MULTIPLY,                 /**< Used in numpy.multiply() implementation  */
+    DPNP_FN_NANVAR,                   /**< Used in numpy.nanvar() implementation  */
     DPNP_FN_NEGATIVE,                 /**< Used in numpy.negative() implementation  */
     DPNP_FN_NONZERO,                  /**< Used in numpy.nonzero() implementation  */
     DPNP_FN_ONES,                     /**< Used in numpy.ones() implementation */
