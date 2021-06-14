@@ -464,6 +464,10 @@ template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:ga2c0862ae9c058efa66b1344057d53d95"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga2c0862ae9c058efa66b1344057d53d95">dpnp_argsort_c</a> (void *array, void *result, size_t size)</td></tr>
 <tr class="memdesc:ga2c0862ae9c058efa66b1344057d53d95"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of argsort function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga2c0862ae9c058efa66b1344057d53d95">More...</a><br /></td></tr>
 <tr class="separator:ga2c0862ae9c058efa66b1344057d53d95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa0c4fc3e9cbcf7c27ecb2a60bcf6d3b1"><td class="memTemplParams" colspan="2">template&lt;typename _DataType , typename _IndexingType &gt; </td></tr>
+<tr class="memitem:gaa0c4fc3e9cbcf7c27ecb2a60bcf6d3b1"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaa0c4fc3e9cbcf7c27ecb2a60bcf6d3b1">dpnp_searchsorted_c</a> (void *result, const void *array, const void *v, bool side, const size_t arr_size, const size_t v_size)</td></tr>
+<tr class="memdesc:gaa0c4fc3e9cbcf7c27ecb2a60bcf6d3b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of searchsorted function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gaa0c4fc3e9cbcf7c27ecb2a60bcf6d3b1">More...</a><br /></td></tr>
+<tr class="separator:gaa0c4fc3e9cbcf7c27ecb2a60bcf6d3b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga432d73a771f6b64f5e2a47325c044858"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:ga432d73a771f6b64f5e2a47325c044858"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga432d73a771f6b64f5e2a47325c044858">dpnp_sort_c</a> (void *array, void *result, size_t size)</td></tr>
 <tr class="memdesc:ga432d73a771f6b64f5e2a47325c044858"><td class="mdescLeft">&#160;</td><td class="mdescRight">math library implementation of sort function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga432d73a771f6b64f5e2a47325c044858">More...</a><br /></td></tr>
@@ -5902,6 +5906,73 @@ template&lt;typename _DataType &gt; </div>
  </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">size2</td><td>Number of elements in array2 <br  />
  </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gaa0c4fc3e9cbcf7c27ecb2a60bcf6d3b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaa0c4fc3e9cbcf7c27ecb2a60bcf6d3b1">&#9670;&nbsp;</a></span>dpnp_searchsorted_c()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename _DataType , typename _IndexingType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void dpnp_searchsorted_c </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>result</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>array</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>v</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>side</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>arr_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>v_size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>math library implementation of searchsorted function </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">array</td><td>Input array with data. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">v</td><td>Input values to insert into array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">side</td><td>Param for choosing a case of searching for elements. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">arr_size</td><td>Number of elements in input arrays. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">v_size</td><td>Number of elements in input values arrays. </td></tr>
   </table>
   </dd>
 </dl>
