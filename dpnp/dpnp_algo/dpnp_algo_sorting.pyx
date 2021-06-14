@@ -40,11 +40,13 @@ from dpnp.dpnp_utils cimport *
 __all__ += [
     "dpnp_argsort",
     "dpnp_partition",
+    "dpnp_searchsorted",
     "dpnp_sort"
 ]
 
 
 ctypedef void(*fptr_dpnp_partition_t)(void * , void * , void * , const size_t , const size_t * , const size_t)
+ctypedef void(*fptr_dpnp_searchsorted_t)(void * , const void * , const void * , bool , const size_t , const size_t )
 
 
 cpdef dparray dpnp_argsort(dparray in_array1):
@@ -64,6 +66,25 @@ cpdef dparray dpnp_partition(dparray arr, int kth, axis=-1, kind='introselect', 
     cdef fptr_dpnp_partition_t func = <fptr_dpnp_partition_t > kernel_data.ptr
 
     func(arr.get_data(), arr2.get_data(), result.get_data(), kth_, < size_t * > arr._dparray_shape.data(), arr.ndim)
+
+    return result
+
+
+cpdef dparray dpnp_searchsorted(dparray arr, dparray v, side='left'):
+    if side is 'left':
+        side_ = True
+    else:
+        side_ = False
+
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_SEARCHSORTED, param1_type, param1_type)
+
+    cdef dparray result = dparray(v.shape, dtype=dpnp.int64)
+
+    cdef fptr_dpnp_searchsorted_t func = <fptr_dpnp_searchsorted_t > kernel_data.ptr
+
+    func(arr.get_data(), v.get_data(), result.get_data(), side_, arr.size, v.size)
 
     return result
 

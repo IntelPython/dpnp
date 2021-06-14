@@ -142,8 +142,32 @@ cpdef dparray dpnp_radians(dparray x1):
     return call_fptr_1in_1out(DPNP_FN_RADIANS, x1, x1.shape)
 
 
-cpdef dparray dpnp_sin(dparray x1):
-    return call_fptr_1in_1out(DPNP_FN_SIN, x1, x1.shape)
+cpdef dparray dpnp_sin(dparray x1, dparray out=None):
+
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_SIN, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+
+    shape_result = x1.shape
+
+    cdef dparray result
+
+    if out is not None:
+        if out.dtype != result_type:
+            checker_throw_value_error('sin', 'out.dtype', out.dtype, result_type)
+        if out.shape != shape_result:
+            checker_throw_value_error('sin', 'out.shape', out.shape, shape_result)
+        result = out
+    else:
+        result = dparray(shape_result, dtype=result_type)
+
+    cdef fptr_1in_1out_t func = <fptr_1in_1out_t > kernel_data.ptr
+
+    func(x1.get_data(), result.get_data(), x1.size)
+
+    return result
 
 
 cpdef dparray dpnp_sinh(dparray x1):
