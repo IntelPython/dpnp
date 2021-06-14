@@ -105,6 +105,9 @@ class TestMathematical:
     def test_fmod(self, dtype, lhs, rhs):
         self._test_mathematical('fmod', dtype, lhs, rhs)
 
+    def test_floor_divide(self, dtype, lhs, rhs):
+        self._test_mathematical('floor_divide', dtype, lhs, rhs)
+
     def test_hypot(self, dtype, lhs, rhs):
         self._test_mathematical('hypot', dtype, lhs, rhs)
 
