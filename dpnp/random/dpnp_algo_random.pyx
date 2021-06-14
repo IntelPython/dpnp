@@ -1133,23 +1133,19 @@ cpdef dparray dpnp_rng_weibull(double a, size):
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_weibull_c_1out_t func
 
-    if a == 0.0:
-        result = dparray(size, dtype=dtype)
-        result.fill(0.0)
-    else:
-        # convert string type names (dparray.dtype) to C enum DPNPFuncType
-        param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
-        # get the FPTR data structure
-        kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_WEIBULL, param1_type, param1_type)
+    # get the FPTR data structure
+    kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_WEIBULL, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-        # ceate result array with type given by FPTR data
-        result = dparray(size, dtype=result_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    # ceate result array with type given by FPTR data
+    result = dparray(size, dtype=result_type)
 
-        func = <fptr_dpnp_rng_weibull_c_1out_t > kernel_data.ptr
-        # call FPTR function
-        func(result.get_data(), a, result.size)
+    func = <fptr_dpnp_rng_weibull_c_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(result.get_data(), a, result.size)
 
     return result
 

@@ -135,6 +135,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_MINIMUM,                  /**< Used in numpy.minimum() implementation  */
     DPNP_FN_MODF,                     /**< Used in numpy.modf() implementation  */
     DPNP_FN_MULTIPLY,                 /**< Used in numpy.multiply() implementation  */
+    DPNP_FN_NANVAR,                   /**< Used in numpy.nanvar() implementation  */
     DPNP_FN_NEGATIVE,                 /**< Used in numpy.negative() implementation  */
     DPNP_FN_NONZERO,                  /**< Used in numpy.nonzero() implementation  */
     DPNP_FN_ONES,                     /**< Used in numpy.ones() implementation */
@@ -186,6 +187,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RNG_WALD,                 /**< Used in numpy.random.wald() implementation  */
     DPNP_FN_RNG_WEIBULL,              /**< Used in numpy.random.weibull() implementation  */
     DPNP_FN_RNG_ZIPF,                 /**< Used in numpy.random.zipf() implementation  */
+    DPNP_FN_SEARCHSORTED,             /**< Used in numpy.searchsorted() implementation  */
     DPNP_FN_SIGN,                     /**< Used in numpy.sign() implementation  */
     DPNP_FN_SIN,                      /**< Used in numpy.sin() implementation  */
     DPNP_FN_SINH,                     /**< Used in numpy.sinh() implementation  */

@@ -222,7 +222,7 @@ if(UNIX)
   set(DPNP_MATHLIB_DEP_LIBS
       mkl_sycl
       mkl_intel_ilp64
-      mkl_sequential
+      mkl_tbb_thread # mkl_sequential
       mkl_core
       sycl
       OpenCL
