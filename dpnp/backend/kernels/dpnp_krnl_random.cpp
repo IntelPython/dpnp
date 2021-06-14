@@ -1505,18 +1505,21 @@ void dpnp_rng_weibull_c(void* result, const double alpha, const size_t size)
     {
         return;
     }
-    _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    // set displacement a
-    const _DataType a = (_DataType(0.0));
+    if (alpha == 0)
+    {
+        dpnp_zeros_c<_DataType>(result, size);
+    }
+    else
+    {
+        _DataType* result1 = reinterpret_cast<_DataType*>(result);
+        const _DataType a = (_DataType(0.0));
+        const _DataType beta = (_DataType(1.0));
 
-    // set beta
-    const _DataType beta = (_DataType(1.0));
-
-    mkl_rng::weibull<_DataType> distribution(alpha, a, beta);
-    // perform generation
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
+        mkl_rng::weibull<_DataType> distribution(alpha, a, beta);
+        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+        event_out.wait();
+    }
 }
 
 template <typename _DataType>

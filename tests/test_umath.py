@@ -71,3 +71,19 @@ def test_umaths(test_cases):
     result = getattr(dpnp, umath)(*iargs)
 
     numpy.testing.assert_allclose(result, expected, rtol=1e-6)
+
+
+def test_sin():
+    array_data = numpy.arange(10)
+    out = numpy.empty(10, dtype=numpy.float64)
+
+    # DPNP
+    dp_array = dpnp.array(array_data, dtype=dpnp.float64)
+    dp_out = dpnp.array(out, dtype=dpnp.float64)
+    result = dpnp.sin(dp_array, out=dp_out)
+
+    # original
+    np_array = numpy.array(array_data, dtype=numpy.float64)
+    expected = numpy.sin(np_array, out=out)
+
+    numpy.testing.assert_array_equal(expected, result)
