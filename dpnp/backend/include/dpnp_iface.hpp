@@ -472,6 +472,20 @@ INP_DLLEXPORT void dpnp_argsort_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of searchsorted function
+ *
+ * @param [out] result      Output array.
+ * @param [in]  array       Input array with data.
+ * @param [in]  v           Input values to insert into array.
+ * @param [in]  side        Param for choosing a case of searching for elements.
+ * @param [in]  arr_size    Number of elements in input arrays.
+ * @param [in]  v_size      Number of elements in input values arrays.
+ */
+template<typename _DataType, typename _IndexingType>
+INP_DLLEXPORT void dpnp_searchsorted_c(void* result, const void* array, const void* v, bool side, const size_t arr_size, const size_t v_size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of sort function
  *
  * @param [in]  array   Input array with data.

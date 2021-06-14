@@ -175,6 +175,105 @@ void dpnp_partition_c(
     dpnp_memory_free_c(shape);
 }
 
+template<typename _DataType, typename _IndexingType>
+class dpnp_searchsorted_c_kernel;
+
+template<typename _DataType, typename _IndexingType>
+void dpnp_searchsorted_c(void* result1, const void* array1_in, const void* v1_in, bool side, const size_t arr_size, const size_t v_size)
+{
+    const _DataType* arr = reinterpret_cast<const _DataType*>(array1_in);
+    const _DataType* v = reinterpret_cast<const _DataType*>(v1_in);
+    _IndexingType* result = reinterpret_cast<_IndexingType*>(result1);
+
+    if ((arr == nullptr) || (v == nullptr) || (result == nullptr))
+    {
+        return;
+    }
+
+    if (arr_size == 0)
+    {
+        return;
+    }
+
+    if (v_size == 0)
+    {
+        return;
+    }
+
+    cl::sycl::range<2> gws(v_size, arr_size);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
+        size_t i = global_id[0];
+        size_t j = global_id[1];
+
+        if (j != 0)
+        {
+            if (side)
+            {
+                if (j == arr_size-1)
+                {
+                    if (v[i] == arr[j])
+                    {
+                        result[i] = arr_size - 1;
+                    }
+                    else
+                    {
+                        if (v[i] > arr[j])
+                        {
+                            result[i] = arr_size;
+                        }
+                    }
+                }
+                else
+                {
+                    if ((arr[j-1] < v[i]) && (v[i] <= arr[j]))
+                    {
+                        result[i] = j;
+                    }
+                }
+            }
+            else
+            {
+                if (j == arr_size - 1)
+                {
+                    if ((arr[j-1] <= v[i]) && (v[i] < arr[j]))
+                    {
+                        result[i] = arr_size - 1;
+                    }
+                    else
+                    {
+                        if (v[i] == arr[j])
+                        {
+                            result[i] = arr_size;
+                        }
+                        else
+                        {
+                            if (v[i] > arr[j])
+                            {
+                                result[i] = arr_size;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if ((arr[j-1] <= v[i]) && (v[i] < arr[j]))
+                    {
+                        result[i] = j;
+                    }
+                }
+            }
+        }
+    };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_searchsorted_c_kernel<_DataType, _IndexingType>>(gws, kernel_parallel_for_func);
+    };
+
+    auto event = DPNP_QUEUE.submit(kernel_func);
+
+    event.wait();
+}
+
 template <typename _DataType>
 class dpnp_sort_c_kernel;
 
@@ -206,6 +305,11 @@ void func_map_init_sorting(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_partition_c<long>};
     fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_partition_c<float>};
     fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_partition_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_searchsorted_c<int, long>};
+    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_searchsorted_c<long, long>};
+    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_searchsorted_c<float, long>};
+    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_searchsorted_c<double, long>};
 
     fmap[DPNPFuncName::DPNP_FN_SORT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_sort_c<int>};
     fmap[DPNPFuncName::DPNP_FN_SORT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_sort_c<long>};
