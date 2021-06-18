@@ -892,10 +892,6 @@ tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargm
 tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_zero_size
 tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_zero_size_axis0
 tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMax::test_nanargmax_zero_size_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSortedInvalid::test_searchsorted_ndbins
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSortedWithSorter::test_invalid_sorter
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSortedWithSorter::test_nonint_sorter
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSortedWithSorter::test_sorter
 tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_0_{func='argmin', is_module=True, shape=(3, 4)}::test_argminmax_dtype
 tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_1_{func='argmin', is_module=True, shape=()}::test_argminmax_dtype
 tests/third_party/cupy/sorting_tests/test_search.py::TestArgMinMaxDtype_param_2_{func='argmin', is_module=False, shape=(3, 4)}::test_argminmax_dtype
@@ -922,80 +918,6 @@ tests/third_party/cupy/sorting_tests/test_search.py::TestFlatNonzero_param_4_{ar
 tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere_param_0_{array=array([], dtype=float64)}::test_argwhere
 tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere_param_1_{array=array([], shape=(0, 2), dtype=float64)}::test_argwhere
 tests/third_party/cupy/sorting_tests/test_search.py::TestArgwhere_param_2_{array=array([], shape=(0, 2, 0), dtype=float64)}::test_argwhere
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_0_{bins=[], shape=(), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_1_{bins=[], shape=(), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_2_{bins=[], shape=(10,), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_3_{bins=[], shape=(10,), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_4_{bins=[], shape=(6, 3, 3), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_5_{bins=[], shape=(6, 3, 3), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_6_{bins=[0, 1, 2, 4, 10], shape=(), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_7_{bins=[0, 1, 2, 4, 10], shape=(), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_8_{bins=[0, 1, 2, 4, 10], shape=(10,), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_9_{bins=[0, 1, 2, 4, 10], shape=(10,), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_10_{bins=[0, 1, 2, 4, 10], shape=(6, 3, 3), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_11_{bins=[0, 1, 2, 4, 10], shape=(6, 3, 3), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_12_{bins=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10], shape=(), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_13_{bins=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10], shape=(), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_14_{bins=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10], shape=(10,), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_15_{bins=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10], shape=(10,), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_16_{bins=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10], shape=(6, 3, 3), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_17_{bins=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10], shape=(6, 3, 3), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_18_{bins=[0.0, 1.0, 2.5, 4.0, 10.0], shape=(), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_19_{bins=[0.0, 1.0, 2.5, 4.0, 10.0], shape=(), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_20_{bins=[0.0, 1.0, 2.5, 4.0, 10.0], shape=(10,), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_21_{bins=[0.0, 1.0, 2.5, 4.0, 10.0], shape=(10,), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_22_{bins=[0.0, 1.0, 2.5, 4.0, 10.0], shape=(6, 3, 3), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_23_{bins=[0.0, 1.0, 2.5, 4.0, 10.0], shape=(6, 3, 3), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_24_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], shape=(), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_25_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], shape=(), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_26_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], shape=(10,), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_27_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], shape=(10,), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_28_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], shape=(6, 3, 3), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_29_{bins=[-1.0, 1.0, 2.5, 4.0, 20.0], shape=(6, 3, 3), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_30_{bins=[1.5, 2.5, 4.0, 6.0], shape=(), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_31_{bins=[1.5, 2.5, 4.0, 6.0], shape=(), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_32_{bins=[1.5, 2.5, 4.0, 6.0], shape=(10,), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_33_{bins=[1.5, 2.5, 4.0, 6.0], shape=(10,), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_34_{bins=[1.5, 2.5, 4.0, 6.0], shape=(6, 3, 3), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_35_{bins=[1.5, 2.5, 4.0, 6.0], shape=(6, 3, 3), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_36_{bins=[-inf, 1.5, 2.5, 4.0, 6.0], shape=(), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_37_{bins=[-inf, 1.5, 2.5, 4.0, 6.0], shape=(), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_38_{bins=[-inf, 1.5, 2.5, 4.0, 6.0], shape=(10,), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_39_{bins=[-inf, 1.5, 2.5, 4.0, 6.0], shape=(10,), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_40_{bins=[-inf, 1.5, 2.5, 4.0, 6.0], shape=(6, 3, 3), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_41_{bins=[-inf, 1.5, 2.5, 4.0, 6.0], shape=(6, 3, 3), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_42_{bins=[1.5, 2.5, 4.0, 6.0, inf], shape=(), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_43_{bins=[1.5, 2.5, 4.0, 6.0, inf], shape=(), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_44_{bins=[1.5, 2.5, 4.0, 6.0, inf], shape=(10,), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_45_{bins=[1.5, 2.5, 4.0, 6.0, inf], shape=(10,), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_46_{bins=[1.5, 2.5, 4.0, 6.0, inf], shape=(6, 3, 3), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_47_{bins=[1.5, 2.5, 4.0, 6.0, inf], shape=(6, 3, 3), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_48_{bins=[-inf, 1.5, 2.5, 4.0, 6.0, inf], shape=(), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_49_{bins=[-inf, 1.5, 2.5, 4.0, 6.0, inf], shape=(), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_50_{bins=[-inf, 1.5, 2.5, 4.0, 6.0, inf], shape=(10,), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_51_{bins=[-inf, 1.5, 2.5, 4.0, 6.0, inf], shape=(10,), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_52_{bins=[-inf, 1.5, 2.5, 4.0, 6.0, inf], shape=(6, 3, 3), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_53_{bins=[-inf, 1.5, 2.5, 4.0, 6.0, inf], shape=(6, 3, 3), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_54_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], shape=(), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_55_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], shape=(), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_56_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], shape=(10,), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_57_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], shape=(10,), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_58_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], shape=(6, 3, 3), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_59_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 10.0], shape=(6, 3, 3), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_60_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 4.0, 4.0, 10.0], shape=(), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_61_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 4.0, 4.0, 10.0], shape=(), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_62_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 4.0, 4.0, 10.0], shape=(10,), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_63_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 4.0, 4.0, 10.0], shape=(10,), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_64_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 4.0, 4.0, 10.0], shape=(6, 3, 3), side='left'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSorted_param_65_{bins=[0.0, 1.0, 1.0, 4.0, 4.0, 4.0, 4.0, 10.0], shape=(6, 3, 3), side='right'}::test_searchsorted
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSortedNanInf_param_0_{side='left'}::test_searchsorted_inf
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSortedNanInf_param_0_{side='left'}::test_searchsorted_minf
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSortedNanInf_param_0_{side='left'}::test_searchsorted_nan
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSortedNanInf_param_0_{side='left'}::test_searchsorted_nanbins
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSortedNanInf_param_1_{side='right'}::test_searchsorted_inf
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSortedNanInf_param_1_{side='right'}::test_searchsorted_minf
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSortedNanInf_param_1_{side='right'}::test_searchsorted_nan
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearchSortedNanInf_param_1_{side='right'}::test_searchsorted_nanbins
 tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_external_sort_zero_dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_nan1
 tests/third_party/cupy/sorting_tests/test_sort.py::TestSort::test_nan2

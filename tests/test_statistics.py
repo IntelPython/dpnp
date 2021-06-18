@@ -30,3 +30,44 @@ def test_max(axis):
     dpnp_res = dpnp.max(ia, axis=axis)
 
     numpy.testing.assert_allclose(dpnp_res, np_res)
+
+@pytest.mark.parametrize("array",
+                         [[2, 0, 6, 2],
+                          [2, 0, 6, 2, 5, 6, 7, 8],
+                          [],
+                          [2, 1, numpy.nan, 5, 3],
+                          [-1, numpy.nan, 1, numpy.inf],
+                          [3, 6, 0, 1],
+                          [3, 6, 0, 1, 8],
+                          [3, 2, 9, 6, numpy.nan],
+                          [numpy.nan, numpy.nan, numpy.inf, numpy.nan],
+                          [[2, 0], [6, 2]],
+                          [[2, 0, 6, 2], [5, 6, 7, 8]],
+                          [[[2, 0], [6, 2]], [[5, 6], [7, 8]]],
+                          [[-1, numpy.nan], [1, numpy.inf]],
+                          [[numpy.nan, numpy.nan], [numpy.inf, numpy.nan]]],
+                         ids=['[2, 0, 6, 2]',
+                              '[2, 0, 6, 2, 5, 6, 7, 8]',
+                              '[]',
+                              '[2, 1, np.nan, 5, 3]',
+                              '[-1, np.nan, 1, np.inf]',
+                              '[3, 6, 0, 1]',
+                              '[3, 6, 0, 1, 8]',
+                              '[3, 2, 9, 6, np.nan]',
+                              '[np.nan, np.nan, np.inf, np.nan]',
+                              '[[2, 0], [6, 2]]',
+                              '[[2, 0, 6, 2], [5, 6, 7, 8]]',
+                              '[[[2, 0], [6, 2]], [[5, 6], [7, 8]]]',
+                              '[[-1, np.nan], [1, np.inf]]',
+                              '[[np.nan, np.nan], [np.inf, np.nan]]'])
+def test_nanvar(array):
+    a = numpy.array(array)
+    ia = dpnp.array(a)
+    for ddof in range(a.ndim):
+        expected = numpy.nanvar(a, ddof=ddof)
+        result = dpnp.nanvar(ia, ddof=ddof)
+        numpy.testing.assert_array_equal(expected, result)
+
+    expected = numpy.nanvar(a, axis=None, ddof=0)
+    result = dpnp.nanvar(ia, axis=None, ddof=0)
+    numpy.testing.assert_array_equal(expected, result)

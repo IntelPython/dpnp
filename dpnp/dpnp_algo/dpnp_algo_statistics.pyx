@@ -48,6 +48,7 @@ __all__ += [
     "dpnp_mean",
     "dpnp_median",
     "dpnp_min",
+    "dpnp_nanvar",
     "dpnp_std",
     "dpnp_var",
 ]
@@ -55,6 +56,7 @@ __all__ += [
 
 # C function pointer to the C library template functions
 ctypedef void(*fptr_custom_cov_1in_1out_t)(void * , void * , size_t, size_t)
+ctypedef void(*fptr_custom_nanvar_t)(void * , void * , void * , size_t)
 ctypedef void(*fptr_custom_std_var_1in_1out_t)(void * , void * , size_t * , size_t, size_t * , size_t, size_t)
 
 # C function pointer to the C library template functions
@@ -395,6 +397,25 @@ cpdef dparray dpnp_min(dparray input, axis):
                 output_shape[ind] = shape_axis
                 ind += 1
     return _dpnp_min(input, axis_, output_shape)
+
+
+cpdef dparray dpnp_nanvar(dparray arr, ddof):
+    cdef dparray mask_arr = dpnp.isnan(arr)
+    n = sum(mask_arr)
+    res_size = arr.size - n
+
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_NANVAR, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    cdef dparray without_nan_arr = dparray((res_size, ), dtype=result_type)
+
+    cdef fptr_custom_nanvar_t func = <fptr_custom_nanvar_t > kernel_data.ptr
+
+    func(arr.get_data(), mask_arr.get_data(), without_nan_arr.get_data(), arr.size)
+
+    return call_fptr_custom_std_var_1in_1out(DPNP_FN_VAR, without_nan_arr, ddof)
 
 
 cpdef dparray dpnp_std(dparray a, size_t ddof):

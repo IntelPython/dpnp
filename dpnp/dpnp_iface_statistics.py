@@ -58,6 +58,7 @@ __all__ = [
     'mean',
     'median',
     'min',
+    'nanvar',
     'std',
     'var',
 ]
@@ -494,6 +495,44 @@ def min(input, axis=None, out=None, keepdims=numpy._NoValue, initial=numpy._NoVa
             return result
 
     return call_origin(numpy.min, input, axis, out, keepdims, initial, where)
+
+
+def nanvar(arr, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue):
+    """
+    Compute the variance along the specified axis, while ignoring NaNs.
+
+    For full documentation refer to :obj:`numpy.nanvar`.
+
+    Limitations
+    -----------
+    Input array is supported as :obj:`dpnp.ndarray`.
+    Prameters ``axis`` is supported only with default value ``None``.
+    Prameters ``dtype`` is supported only with default value ``None``.
+    Prameters ``out`` is supported only with default value ``None``.
+    Prameters ``keepdims`` is supported only with default value ``numpy._NoValue``.
+    Otherwise the function will be executed sequentially on CPU.
+    """
+    if not use_origin_backend(arr):
+        if not isinstance(arr, dparray):
+            pass
+        elif axis is not None:
+            pass
+        elif dtype is not None:
+            pass
+        elif out is not None:
+            pass
+        elif keepdims is not numpy._NoValue:
+            pass
+        else:
+            result = dpnp_nanvar(arr, ddof)
+
+            # scalar returned
+            if result.shape == (1,):
+                return result.dtype.type(result[0])
+
+            return result
+
+    return call_origin(numpy.nanvar, arr, axis=axis, dtype=dtype, out=out, ddof=ddof, keepdims=keepdims)
 
 
 def std(a, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue):
