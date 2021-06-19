@@ -40,7 +40,6 @@ it contains:
 """
 
 
-
 import numpy
 
 from dpnp.dpnp_algo import *
