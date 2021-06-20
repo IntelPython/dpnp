@@ -195,16 +195,13 @@ def matmul(in_array1, in_array2, out=None, **kwargs):
             """
             cost_size = 262144  # 2D array shape(512, 512)
 
-        dparray1_size = in_array1.size
-        dparray2_size = in_array2.size
-
         if not isinstance(in_array1, dparray):
             pass
         elif not isinstance(in_array2, dparray):
             pass
         elif out is not None and not out_is_dparray:
             pass
-        elif (dparray1_size < cost_size) or (dparray2_size < cost_size):
+        elif (in_array1.size < cost_size) or (in_array2.size < cost_size):
             pass
         else:
             return dpnp_matmul(in_array1, in_array2, out=out)
