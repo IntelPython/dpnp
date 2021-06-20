@@ -108,37 +108,37 @@ jobs:
       . ./0.env.sh
       pytest -s
 
-- job: ubuntu2004_tests_external
-  displayName: Ubuntu 20.04 External Tests
-  pool:
-    vmImage: 'ubuntu-20.04'
-  strategy:
-    matrix:
-      Python37:
-        python.version: '3.7'
-      Python38:
-        python.version: '3.8'
-      Python39:
-        python.version: '3.9'
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '$(python.version)'
-    displayName: 'Use Python $(python.version)'
-  - bash: |
-      echo ========================= install OneAPI =================================
-      ./scripts/install_system_deps.sh
-      
-      echo ========================= Conda ENV ======================================
-      conda create -q -y -n dpnp$(python.version) python=$(python.version) numpy=1.19 conda-build cython pytest hypothesis
-      . /usr/share/miniconda/etc/profile.d/conda.sh
-      conda activate dpnp$(python.version)
-
-      echo ========================= build DPNP =====================================
-      ./0.build.sh
-      echo ========================= run tests ======================================
-      . ./0.env.sh
-      python -m tests_external.numpy.runtests
+#- job: ubuntu2004_tests_external
+#  displayName: Ubuntu 20.04 External Tests
+#  pool:
+#    vmImage: 'ubuntu-20.04'
+#  strategy:
+#    matrix:
+#      Python37:
+#        python.version: '3.7'
+#      Python38:
+#        python.version: '3.8'
+#      Python39:
+#        python.version: '3.9'
+#  steps:
+#  - task: UsePythonVersion@0
+#    inputs:
+#      versionSpec: '$(python.version)'
+#    displayName: 'Use Python $(python.version)'
+#  - bash: |
+#      echo ========================= install OneAPI =================================
+#      ./scripts/install_system_deps.sh
+#      
+#      echo ========================= Conda ENV ======================================
+#      conda create -q -y -n dpnp$(python.version) python=$(python.version) numpy=1.19 conda-build cython pytest hypothesis
+#      . /usr/share/miniconda/etc/profile.d/conda.sh
+#      conda activate dpnp$(python.version)
+#
+#      echo ========================= build DPNP =====================================
+#      ./0.build.sh
+#      echo ========================= run tests ======================================
+#      . ./0.env.sh
+#      python -m tests_external.numpy.runtests
 
 # test python ./setup.py bdist_wheel command with no dpctl
 - job: bdist_wheel_dpnp_local_lin
