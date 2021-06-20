@@ -185,25 +185,24 @@ def matmul(in_array1, in_array2, out=None, **kwargs):
     out_is_dparray = isinstance(out, dparray)
 
     if not use_origin_backend(in_array1) and not kwargs:
-        """
-        Cost model checks
-        """
-        cost_size = 4096  # 2D array shape(64, 64)
-        if ((in_array1.dtype == numpy.float64) or (in_array1.dtype == numpy.float32)):
-            """
-            Floating point types are handled via original math library better than SYCL math library
-            """
-            cost_size = 262144  # 2D array shape(512, 512)
-
         if not isinstance(in_array1, dparray):
             pass
         elif not isinstance(in_array2, dparray):
             pass
         elif out is not None and not out_is_dparray:
             pass
-        elif (in_array1.size < cost_size) or (in_array2.size < cost_size):
-            pass
         else:
-            return dpnp_matmul(in_array1, in_array2, out=out)
+            """
+            Cost model checks
+            """
+            cost_size = 4096  # 2D array shape(64, 64)
+            if ((in_array1.dtype == numpy.float64) or (in_array1.dtype == numpy.float32)):
+                """
+                Floating point types are handled via original math library better than SYCL math library
+                """
+                cost_size = 262144  # 2D array shape(512, 512)
+
+            if (dparray1_size > cost_size) and (dparray2_size > cost_size):
+                return dpnp_matmul(in_array1, in_array2, out=out)
 
     return call_origin(numpy.matmul, in_array1, in_array2, out=out, **kwargs)
