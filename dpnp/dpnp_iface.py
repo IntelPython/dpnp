@@ -180,16 +180,12 @@ def matmul(in_array1, in_array2, out=None, **kwargs):
 
     """
 
-    is_dparray1 = isinstance(in_array1, dparray)
-    is_dparray2 = isinstance(in_array2, dparray)
-    out_is_dparray = isinstance(out, dparray)
-
     if not use_origin_backend(in_array1) and not kwargs:
         if not isinstance(in_array1, dparray):
             pass
         elif not isinstance(in_array2, dparray):
             pass
-        elif out is not None and not out_is_dparray:
+        elif out is not None and not isinstance(out, dparray):
             pass
         else:
             """
