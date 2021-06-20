@@ -191,7 +191,11 @@ def matmul(in_array1, in_array2, out=None, **kwargs):
             """
             Cost model checks
             """
+
+            dparray1_size = in_array1.size
+            dparray2_size = in_array2.size
             cost_size = 4096  # 2D array shape(64, 64)
+
             if ((in_array1.dtype == numpy.float64) or (in_array1.dtype == numpy.float32)):
                 """
                 Floating point types are handled via original math library better than SYCL math library
