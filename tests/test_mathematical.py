@@ -27,7 +27,7 @@ def test_diff(array):
 
 
 @pytest.mark.parametrize("data",
-                         [[[1+1j, -2j], [3-3j, 4j]]],
+                         [[[1 + 1j, -2j], [3 - 3j, 4j]]],
                          ids=['[[1+1j, -2j], [3-3j, 4j]]'])
 def test_multiply_complex(data):
     a = numpy.array(data)
@@ -104,6 +104,9 @@ class TestMathematical:
 
     def test_fmod(self, dtype, lhs, rhs):
         self._test_mathematical('fmod', dtype, lhs, rhs)
+
+    def test_floor_divide(self, dtype, lhs, rhs):
+        self._test_mathematical('floor_divide', dtype, lhs, rhs)
 
     def test_hypot(self, dtype, lhs, rhs):
         self._test_mathematical('hypot', dtype, lhs, rhs)

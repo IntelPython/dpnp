@@ -27,8 +27,8 @@
 #ifndef BACKEND_UTILS_H // Cython compatibility
 #define BACKEND_UTILS_H
 
-#include <cassert>
 #include <algorithm>
+#include <cassert>
 #include <iostream>
 #include <iterator>
 

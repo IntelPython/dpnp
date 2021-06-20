@@ -80,6 +80,7 @@ __all__ += [
 ctypedef void(*fptr_custom_elemwise_absolute_1in_1out_t)(void * , void * , size_t)
 ctypedef void(*fptr_1in_2out_t)(void * , void * , void * , size_t)
 ctypedef void(*ftpr_custom_trapz_2in_1out_with_2size_t)(void *, void * , void * , double, size_t, size_t)
+ctypedef void(*ftpr_custom_around_1in_1out_t)(const void * , void * , const size_t, const int)
 
 
 cpdef dparray dpnp_absolute(dparray input):
@@ -111,16 +112,19 @@ cpdef dparray dpnp_arctan2(object x1_obj, object x2_obj, object dtype=None, dpar
     return call_fptr_2in_1out(DPNP_FN_ARCTAN2, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
-cpdef dpnp_around(dparray a, decimals, out):
-    cdef dparray result
+cpdef dpnp_around(dparray x1, int decimals):
 
-    if out is None:
-        result = dparray(a.shape, dtype=a.dtype)
-    else:
-        result = out
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
 
-    for i in range(result.size):
-        result[i] = round(a[i], decimals)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_AROUND, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+
+    cdef dparray result = dparray(x1.shape, dtype=result_type)
+
+    cdef ftpr_custom_around_1in_1out_t func = <ftpr_custom_around_1in_1out_t > kernel_data.ptr
+
+    func(x1.get_data(), result.get_data(), x1.size, decimals)
 
     return result
 

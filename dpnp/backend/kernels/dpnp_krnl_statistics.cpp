@@ -447,6 +447,36 @@ void dpnp_min_c(void* array1_in, void* result1, const size_t* shape, size_t ndim
     return;
 }
 
+template <typename _DataType>
+void dpnp_nanvar_c(void* array1_in, void* mask_arr1, void* result1, size_t arr_size)
+{
+    _DataType* array1 = reinterpret_cast<_DataType*>(array1_in);
+    bool* mask_arr = reinterpret_cast<bool*>(mask_arr1);
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    if ((array1 == nullptr) || (mask_arr == nullptr) || (result == nullptr))
+    {
+        return;
+    }
+
+    if (arr_size == 0)
+    {
+        return;
+    }
+
+    size_t ind = 0;
+    for (size_t i = 0; i < arr_size; ++i)
+    {
+        if (!mask_arr[i])
+        {
+            result[ind] = array1[i];
+            ind += 1;
+        }
+    }
+
+    return;
+}
+
 template <typename _DataType, typename _ResultType>
 void dpnp_std_c(
     void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof)
@@ -559,6 +589,11 @@ void func_map_init_statistics(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_MIN][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_min_c<long>};
     fmap[DPNPFuncName::DPNP_FN_MIN][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_min_c<float>};
     fmap[DPNPFuncName::DPNP_FN_MIN][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_min_c<double>};
+
+    fmap[DPNPFuncName::DPNP_FN_NANVAR][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_nanvar_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_NANVAR][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_nanvar_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_NANVAR][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_nanvar_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_NANVAR][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_nanvar_c<double>};
 
     fmap[DPNPFuncName::DPNP_FN_STD][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_std_c<int, double>};
     fmap[DPNPFuncName::DPNP_FN_STD][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_std_c<long, double>};

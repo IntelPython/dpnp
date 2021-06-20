@@ -40,7 +40,6 @@ it contains:
 """
 
 
-
 import numpy
 
 from dpnp.dpnp_algo import *
@@ -53,6 +52,7 @@ import dpnp
 __all__ = [
     'argsort',
     'partition',
+    'searchsorted',
     'sort'
 ]
 
@@ -133,6 +133,39 @@ def partition(arr, kth, axis=-1, kind='introselect', order=None):
             return dpnp_partition(arr, kth, axis, kind, order)
 
     return call_origin(numpy.partition, arr, kth, axis, kind, order)
+
+
+def searchsorted(arr, v, side='left', sorter=None):
+    """
+    Find indices where elements should be inserted to maintain order.
+    For full documentation refer to :obj:`numpy.searchsorted`.
+
+    Limitations
+    -----------
+    Input arrays is supported as :obj:`dpnp.ndarray`.
+    Input array is supported only sorted.
+    Input side is supported only values ``left``, ``right``.
+    Parameters ``sorter`` is supported only with default values.
+    """
+    if not use_origin_backend():
+        if not isinstance(arr, dparray):
+            pass
+        elif dpnp.sort(arr) != arr:
+            pass
+        elif not isinstance(v, dparray):
+            pass
+        elif arr.ndim != 1:
+            pass
+        elif arr.dtype != v.dtype:
+            pass
+        elif side not in ['left', 'right']:
+            pass
+        elif sorter is not None:
+            pass
+        else:
+            return dpnp_searchsorted(arr, v, side=side)
+
+        return call_origin(numpy.searchsorted, arr, v, side=side, sorter=sorter)
 
 
 def sort(x1, **kwargs):
