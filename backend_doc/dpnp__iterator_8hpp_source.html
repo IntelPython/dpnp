@@ -489,8 +489,8 @@ $(document).ready(function(){initNavTree('dpnp__iterator_8hpp_source.html',''); 
 <div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;            {</div>
 <div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;                <span class="keywordflow">if</span> (std::find(axes.begin(), axes.end(), iit) == axes.end())</div>
 <div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;                {</div>
-<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;                    <span class="keyword">const</span> size_type output_xyz_id = <a class="code" href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#gad37eb9ce0ad29590cc931a9b6cd538e2">get_xyz_id_by_id_inkernel</a>(output_global_id, output_shape_strides,</div>
-<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;                                                                              output_shape_size, oit);</div>
+<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;                    <span class="keyword">const</span> size_type output_xyz_id =</div>
+<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;                        <a class="code" href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#gad37eb9ce0ad29590cc931a9b6cd538e2">get_xyz_id_by_id_inkernel</a>(output_global_id, output_shape_strides, output_shape_size, oit);</div>
 <div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;                    input_global_id += (output_xyz_id * input_shape_strides[iit]);</div>
 <div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;                    ++oit;</div>
 <div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;                }</div>
@@ -506,8 +506,8 @@ $(document).ready(function(){initNavTree('dpnp__iterator_8hpp_source.html',''); 
 <div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;                size_type* broadcast_axes_end = broadcast_axes + broadcast_axes_size;</div>
 <div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;                <span class="keywordflow">if</span> (std::find(broadcast_axes, broadcast_axes_end, orit) == broadcast_axes_end)</div>
 <div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;                {</div>
-<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;                    <span class="keyword">const</span> size_type output_xyz_id = <a class="code" href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#gad37eb9ce0ad29590cc931a9b6cd538e2">get_xyz_id_by_id_inkernel</a>(output_global_id, output_shape_strides,</div>
-<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;                                                                              output_shape_size, orit);</div>
+<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;                    <span class="keyword">const</span> size_type output_xyz_id =</div>
+<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;                        <a class="code" href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#gad37eb9ce0ad29590cc931a9b6cd538e2">get_xyz_id_by_id_inkernel</a>(output_global_id, output_shape_strides, output_shape_size, orit);</div>
 <div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;                    input_global_id += (output_xyz_id * input_shape_strides[irit]);</div>
 <div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;                }</div>
 <div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;            }</div>
