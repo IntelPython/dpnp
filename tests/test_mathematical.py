@@ -27,7 +27,7 @@ def test_diff(array):
 
 
 @pytest.mark.parametrize("data",
-                         [[[1+1j, -2j], [3-3j, 4j]]],
+                         [[[1 + 1j, -2j], [3 - 3j, 4j]]],
                          ids=['[[1+1j, -2j], [3-3j, 4j]]'])
 def test_multiply_complex(data):
     a = numpy.array(data)
