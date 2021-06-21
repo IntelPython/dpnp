@@ -72,6 +72,8 @@ def call_origin(function, *args, **kwargs):
     Call fallback function for unsupported cases
     """
 
+    # print(f"DPNP call_origin(): Fallback called")
+
     kwargs_out = kwargs.get("out", None)
     if (kwargs_out is not None):
         kwargs["out"] = dpnp.asnumpy(kwargs_out) if isinstance(kwargs_out, dparray) else kwargs_out
@@ -436,6 +438,12 @@ cpdef cpp_bool use_origin_backend(input1=None, size_t compute_size=0):
 
 cdef class dpnp_descriptor:
     def __init__(self, obj):
+        """ Initialze variables """
+        self.descriptor = None
+        self.dpnp_descriptor_data_size = 0
+        self.dpnp_descriptor_is_scalar = True
+
+        """ Accure main data storage """
         self.descriptor = getattr(obj, "__array_interface__", None)
         if self.descriptor is None:
             return
@@ -443,36 +451,42 @@ cdef class dpnp_descriptor:
         if self.descriptor["version"] != 3:
             return
 
-        # array size calculation
+        """ array size calculation """
         cdef Py_ssize_t shape_it = 0
         self.dpnp_descriptor_data_size = 1
         for shape_it in self.shape:
+            # TODO need to use common procedure from utils to calculate array size by shape
             if shape_it < 0:
                 raise ValueError(f"{ERROR_PREFIX} dpnp_descriptor::__init__() invalid value {shape_it} in 'shape'")
             self.dpnp_descriptor_data_size *= shape_it
 
-        # set scalar propery
+        """ set scalar propery """
         self.dpnp_descriptor_is_scalar = False
 
     @property
-    def shape(self):
+    def is_valid(self):
         if self.descriptor is None:
-            return None
-        return self.descriptor["shape"]
+            return False
+        return True
+
+    @property
+    def shape(self):
+        if self.is_valid:
+            return self.descriptor["shape"]
+        return None
 
     @property
     def size(self):
-        if self.descriptor is None:
-            return None
-        return self.dpnp_descriptor_data_size
+        if self.is_valid:
+            return self.dpnp_descriptor_data_size
+        return 0
 
     @property
     def dtype(self):
-        if self.descriptor is None:
-            return None
-
-        type_str = self.descriptor["typestr"]
-        return dpnp.dtype(type_str)
+        if self.is_valid:
+            type_str = self.descriptor["typestr"]
+            return dpnp.dtype(type_str)
+        return None
 
     @property
     def is_scalar(self):
@@ -480,20 +494,17 @@ cdef class dpnp_descriptor:
 
     @property
     def data(self):
-        if self.descriptor is None:
-            return None
-
-        data_tupple = self.descriptor["data"]
-        return data_tupple[0]
+        if self.is_valid:
+            data_tuple = self.descriptor["data"]
+            return data_tuple[0]
+        return None
 
     cdef void * get_data(self):
         cdef long val = self.data
         return < void * > val
 
     def __bool__(self):
-        if self.descriptor is None:
-            return False
-        return True
+        return self.is_valid
 
     def __str__(self):
         return str(self.descriptor)
