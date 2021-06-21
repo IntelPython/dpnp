@@ -161,6 +161,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_WALD
         DPNP_FN_RNG_WEIBULL
         DPNP_FN_RNG_ZIPF
+        DPNP_FN_SEARCHSORTED
         DPNP_FN_SIGN
         DPNP_FN_SIN
         DPNP_FN_SINH
@@ -222,9 +223,9 @@ cdef extern from "dpnp_iface.hpp":
 
 # C function pointer to the C library template functions
 ctypedef void(*fptr_1out_t)(void *, size_t)
-ctypedef void(*fptr_1in_1out_t)(void *, void *, size_t)
-ctypedef void(*fptr_2in_1out_t)(void *, const void *, const size_t, const long *, const size_t,
-                                    const void *, const size_t, const long *, const size_t, const long *)
+ctypedef void(*fptr_1in_1out_t)(void * , void * , size_t)
+ctypedef void(*fptr_2in_1out_t)(void *, const void * , const size_t, const long * , const size_t,
+                                const void * , const size_t, const long * , const size_t, const long * )
 ctypedef void(*fptr_blas_gemm_2in_1out_t)(void * , void * , void * , size_t, size_t, size_t)
 ctypedef void(*dpnp_reduction_c_t)(void * , const void * , const size_t*, const size_t, const long*, const size_t, const void * , const long*)
 

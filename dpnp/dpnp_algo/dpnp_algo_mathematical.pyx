@@ -80,7 +80,7 @@ __all__ += [
 ctypedef void(*fptr_custom_elemwise_absolute_1in_1out_t)(void * , void * , size_t)
 ctypedef void(*fptr_1in_2out_t)(void * , void * , void * , size_t)
 ctypedef void(*ftpr_custom_trapz_2in_1out_with_2size_t)(void *, void * , void * , double, size_t, size_t)
-ctypedef void(*ftpr_custom_around_1in_1out_t)(const void *, void *, const size_t, const int)
+ctypedef void(*ftpr_custom_around_1in_1out_t)(const void * , void * , const size_t, const int)
 
 
 cpdef dparray dpnp_absolute(dparray input):

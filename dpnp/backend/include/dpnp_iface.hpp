@@ -469,6 +469,21 @@ INP_DLLEXPORT void dpnp_argsort_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of searchsorted function
+ *
+ * @param [out] result      Output array.
+ * @param [in]  array       Input array with data.
+ * @param [in]  v           Input values to insert into array.
+ * @param [in]  side        Param for choosing a case of searching for elements.
+ * @param [in]  arr_size    Number of elements in input arrays.
+ * @param [in]  v_size      Number of elements in input values arrays.
+ */
+template <typename _DataType, typename _IndexingType>
+INP_DLLEXPORT void dpnp_searchsorted_c(
+    void* result, const void* array, const void* v, bool side, const size_t arr_size, const size_t v_size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of sort function
  *
  * @param [in]  array   Input array with data.
@@ -710,10 +725,7 @@ INP_DLLEXPORT void dpnp_argmin_c(void* array, void* result, size_t size);
  * @param [in]  decimals     Number of decimal places to round. Support only with default value 0.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_around_c(const void* input_in,
-                                  void* result_out,
-                                  const size_t input_size,
-                                  const int decimals);
+INP_DLLEXPORT void dpnp_around_c(const void* input_in, void* result_out, const size_t input_size, const int decimals);
 
 /**
  * @ingroup BACKEND_API

@@ -141,12 +141,12 @@ def test_geomspace(type, num, endpoint):
 
 
 @pytest.mark.parametrize("n",
-                        [0, 1, 4],
-                        ids=['0', '1', '4'])
+                         [0, 1, 4],
+                         ids=['0', '1', '4'])
 @pytest.mark.parametrize("type",
-                        [numpy.float64, numpy.float32, numpy.int64,
-                        numpy.int32, numpy.bool, numpy.complex128, None],
-                        ids=['float64', 'float32', 'int64', 'int32', 'bool', 'complex128', 'None'])
+                         [numpy.float64, numpy.float32, numpy.int64,
+                          numpy.int32, numpy.bool, numpy.complex128, None],
+                         ids=['float64', 'float32', 'int64', 'int32', 'bool', 'complex128', 'None'])
 def test_identity(n, type):
     expected = numpy.identity(n, dtype=type)
     result = dpnp.identity(n, dtype=type)
