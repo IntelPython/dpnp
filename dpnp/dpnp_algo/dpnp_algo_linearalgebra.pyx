@@ -45,7 +45,7 @@ __all__ += [
 
 
 # C function pointer to the C library template functions
-ctypedef void(*fptr_2in_1out_shapes_t)(void * , void * , void * , size_t * , size_t * , size_t * , size_t)
+ctypedef void(*fptr_2in_1out_shapes_t)(void *, void * , void * , size_t * , size_t * , size_t * , size_t)
 
 
 cpdef dparray dpnp_dot(dparray in_array1, dparray in_array2):
@@ -85,14 +85,14 @@ cpdef dparray dpnp_dot(dparray in_array1, dparray in_array2):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DOT, param1_type, param2_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray((1,), dtype=result_type)
 
     cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(), in_array1.get_data(), in_array1.size, shape1.data(), shape1.size(),
-                 in_array2.get_data(), in_array2.size, shape2.data(), shape2.size(), NULL)
+         in_array2.get_data(), in_array2.size, shape2.data(), shape2.size(), NULL)
 
     return result
 
@@ -185,7 +185,7 @@ cpdef dparray dpnp_kron(dparray in_array1, dparray in_array2):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_KRON, param1_type, param2_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
     cdef dparray result = dparray(result_shape, dtype=result_type)
 

@@ -213,11 +213,18 @@ def add(x1, x2, dtype=None, out=None, where=True, **kwargs):
     return call_origin(numpy.add, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
-def around(a, decimals=0, out=None):
+def around(x1, decimals=0, out=None):
     """
     Evenly round to the given number of decimals.
 
     For full documentation refer to :obj:`numpy.around`.
+
+    Limitations
+    -----------
+    Parameters ``x1`` is supported as :obj:`dpnp.ndarray`.
+    Parameters ``decimals`` and ``out`` are supported with their default values.
+    Otherwise the functions will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
@@ -235,13 +242,17 @@ def around(a, decimals=0, out=None):
 
     """
 
-    if not use_origin_backend(a):
-        if not isinstance(a, dparray):
+    if not use_origin_backend(x1):
+        if not isinstance(x1, dparray):
+            pass
+        elif out is not None:
+            pass
+        elif decimals != 0:
             pass
         else:
-            return dpnp_around(a, decimals, out)
+            return dpnp_around(x1, decimals)
 
-    return call_origin(numpy.around, a, decimals, out)
+    return call_origin(numpy.around, x1, decimals=decimals, out=out)
 
 
 def ceil(x1, **kwargs):
@@ -670,7 +681,7 @@ def floor(x1, **kwargs):
     return call_origin(numpy.floor, x1, **kwargs)
 
 
-def floor_divide(x1, x2, **kwargs):
+def floor_divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
     """
     Compute the largest integer smaller or equal to the division of the inputs.
 
@@ -678,7 +689,8 @@ def floor_divide(x1, x2, **kwargs):
 
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
+        Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
+        Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
         Keyword arguments ``kwargs`` are currently unsupported.
         Otherwise the functions will be executed sequentially on CPU.
         Input array data types are limited by supported DPNP :ref:`Data types`.
@@ -699,13 +711,40 @@ def floor_divide(x1, x2, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-    is_x2_dparray = isinstance(x2, dparray)
+    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
+    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
-    if not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs:
-        return dpnp_floor_divide(x1, x2)
+    if not use_origin_backend(x1) and not kwargs:
+        if not x1_is_dparray and not x1_is_scalar:
+            pass
+        elif not x2_is_dparray and not x2_is_scalar:
+            pass
+        elif x1_is_scalar and x2_is_scalar:
+            pass
+        elif x1_is_dparray and x1.ndim == 0:
+            pass
+        elif x2_is_dparray and x2.ndim == 0:
+            pass
+        elif x2_is_scalar and x2 == 0:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.size != x2.size:
+            pass
+        elif x1_is_dparray and x2_is_dparray and x1.shape != x2.shape:
+            pass
+        elif out is not None and not isinstance(out, dparray):
+            pass
+        elif dtype is not None:
+            pass
+        elif out is not None:
+            pass
+        elif not where:
+            pass
+        elif x1_is_scalar and x2.ndim > 1:
+            pass
+        else:
+            return dpnp_floor_divide(x1, x2, out=out, where=where, dtype=dtype)
 
-    return call_origin(numpy.floor_divide, x1, x2, **kwargs)
+    return call_origin(numpy.floor_divide, x1, x2, out=out, where=where, dtype=dtype, **kwargs)
 
 
 def fmax(*args, **kwargs):
@@ -778,7 +817,7 @@ def fmod(x1, x2, dtype=None, out=None, where=True, **kwargs):
     >>> [x for x in result]
     [0.0, -1.0, 0.0, 1.0, -0.5]
 
-    """    
+    """
     x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
     x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
@@ -1262,7 +1301,7 @@ def power(x1, x2, dtype=None, out=None, where=True, **kwargs):
     >>> [x for x in result]
     [1, 4, 9, 16, 25]
 
-    """    
+    """
     x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
     x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 

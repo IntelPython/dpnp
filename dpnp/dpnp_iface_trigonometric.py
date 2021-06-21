@@ -881,7 +881,7 @@ def radians(x1):
     return dpnp_radians(x1)
 
 
-def sin(x1):
+def sin(x1, out=None, **kwargs):
     """
     Trigonometric sine, element-wise.
 
@@ -889,7 +889,10 @@ def sin(x1):
 
     Limitations
     -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
+    Parameters ``x1`` is supported as :obj:`dpnp.ndarray`.
+    Parameter ``out`` is supported as default value ``None``.
+    Keyword arguments ``kwargs`` are currently unsupported.
+    Otherwise the functions will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -908,14 +911,15 @@ def sin(x1):
     [0.0, 1.0, 1.2246467991473532e-16]
 
     """
+    if not use_origin_backend(x1) and not kwargs:
+        if not isinstance(x1, dparray):
+            pass
+        elif out is not None and not isinstance(out, dparray):
+            pass
+        else:
+            return dpnp_sin(x1, out=out)
 
-    if (use_origin_backend(x1)):
-        return numpy.sin(x1)
-
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP sin(): Unsupported x1={type(x1)}")
-
-    return dpnp_sin(x1)
+    return call_origin(numpy.sin, x1, out=out, **kwargs)
 
 
 def sinh(x1):

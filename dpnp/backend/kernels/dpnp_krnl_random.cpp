@@ -600,7 +600,7 @@ void dpnp_rng_negative_binomial_c(void* result, const double a, const double p, 
 template <typename _DataType>
 void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _DataType nonc, const size_t size)
 {
-    if (!size)
+    if (!size || !result)
     {
         return;
     }
@@ -614,8 +614,6 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
     {
         _DataType shape, loc;
         size_t i;
-        cl::sycl::event event_out;
-        cl::sycl::vector_class<cl::sycl::event> no_deps;
 
         if (df > 1)
         {
@@ -624,23 +622,22 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             shape = 0.5 * (df - 1.0);
             /* res has chi^2 with (df - 1) */
             mkl_rng::gamma<_DataType> gamma_distribution(shape, d_zero, d_two);
-            event_out = mkl_rng::generate(gamma_distribution, DPNP_RNG_ENGINE, size, result1);
-            event_out.wait();
+            auto event_gamma_distr = mkl_rng::generate(gamma_distribution, DPNP_RNG_ENGINE, size, result1);
 
             nvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
 
             loc = sqrt(nonc);
 
             mkl_rng::gaussian<_DataType> gaussian_distribution(loc, d_one);
-            event_out = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, nvec);
-            event_out.wait();
+            auto event_gaussian_distr = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, nvec);
 
             /* squaring could result in an overflow */
-            event_out = mkl_vm::sqr(DPNP_QUEUE, size, nvec, nvec, no_deps, mkl_vm::mode::ha);
-            event_out.wait();
-            event_out = mkl_vm::add(DPNP_QUEUE, size, result1, nvec, result1, no_deps, mkl_vm::mode::ha);
+            auto event_sqr_out =
+                mkl_vm::sqr(DPNP_QUEUE, size, nvec, nvec, {event_gamma_distr, event_gaussian_distr}, mkl_vm::mode::ha);
+            auto event_add_out =
+                mkl_vm::add(DPNP_QUEUE, size, result1, nvec, result1, {event_sqr_out}, mkl_vm::mode::ha);
             dpnp_memory_free_c(nvec);
-            event_out.wait();
+            event_add_out.wait();
         }
         else if (df < 1)
         {
@@ -651,7 +648,7 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             lambda = 0.5 * nonc;
 
             mkl_rng::poisson<int> poisson_distribution(lambda);
-            event_out = mkl_rng::generate(poisson_distribution, DPNP_RNG_ENGINE, size, pvec);
+            auto event_out = mkl_rng::generate(poisson_distribution, DPNP_RNG_ENGINE, size, pvec);
             event_out.wait();
 
             shape = 0.5 * df;
@@ -713,9 +710,8 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             /* noncentral_chisquare(1, nonc) ~ (Z + sqrt(nonc))**2 for df == 1 */
             loc = sqrt(nonc);
             mkl_rng::gaussian<_DataType> gaussian_distribution(loc, d_one);
-            event_out = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, result1);
-            event_out.wait();
-            event_out = mkl_vm::sqr(DPNP_QUEUE, size, result1, result1, no_deps, mkl_vm::mode::ha);
+            auto event_gaussian_distr = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, result1);
+            auto event_out = mkl_vm::sqr(DPNP_QUEUE, size, result1, result1, {event_gaussian_distr}, mkl_vm::mode::ha);
             event_out.wait();
         }
     }
@@ -1505,18 +1501,21 @@ void dpnp_rng_weibull_c(void* result, const double alpha, const size_t size)
     {
         return;
     }
-    _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    // set displacement a
-    const _DataType a = (_DataType(0.0));
+    if (alpha == 0)
+    {
+        dpnp_zeros_c<_DataType>(result, size);
+    }
+    else
+    {
+        _DataType* result1 = reinterpret_cast<_DataType*>(result);
+        const _DataType a = (_DataType(0.0));
+        const _DataType beta = (_DataType(1.0));
 
-    // set beta
-    const _DataType beta = (_DataType(1.0));
-
-    mkl_rng::weibull<_DataType> distribution(alpha, a, beta);
-    // perform generation
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
+        mkl_rng::weibull<_DataType> distribution(alpha, a, beta);
+        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+        event_out.wait();
+    }
 }
 
 template <typename _DataType>
