@@ -139,13 +139,13 @@ def replace_kwarg_value(f, arg_name, in_values, out_value):
 # setting some dummy attrubutes to dpnp
 unsupported_classes = [
     'byte', 'bytes_', 'cdouble', 'character', 'clongdouble', 'complex_',
-    'complexfloating', 'datetime64', 'flexible', 'float16', 'floating',
+    'complexfloating', 'datetime64', 'flexible', 'floating',
     'generic', 'half', 'inexact', 'int_', 'int16', 'int8', 'intc', 'integer',
-    'longcomplex', 'longlong', 'matrix', 'memmap', 'nditer', 'nextafter',
+    'longlong', 'matrix', 'memmap', 'nditer', 'nextafter',
     'number', 'object_', 'short', 'signedinteger', 'single', 'stack',
     'timedelta64', 'ubyte', 'uint', 'uint16', 'uint32', 'uint64', 'uint8',
     'uintc', 'ulonglong', 'unsignedinteger', 'ushort', 'vectorize',
-    'VisibleDeprecationWarning', 'void',
+    'VisibleDeprecationWarning'
 ]
 for klass in unsupported_classes:
     setattr(dpnp, klass, DummyClass)
@@ -227,7 +227,6 @@ dpnp.zeros = replace_kwarg_value(dpnp.zeros, 'dtype', [
 # setting some dummy attrubutes to dpnp
 dpnp.add.reduce = dummy_func
 dpnp.allclose = dummy_func
-dpnp.complex64 = DummyClass
 dpnp.csingle = dpnp.complex64
 dpnp.double = dpnp.float64
 dpnp.identity = dummy_func

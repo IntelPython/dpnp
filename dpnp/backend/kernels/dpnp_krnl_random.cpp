@@ -632,8 +632,10 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             auto event_gaussian_distr = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, nvec);
 
             /* squaring could result in an overflow */
-            auto event_sqr_out = mkl_vm::sqr(DPNP_QUEUE, size, nvec, nvec, {event_gamma_distr, event_gaussian_distr}, mkl_vm::mode::ha);
-            auto event_add_out = mkl_vm::add(DPNP_QUEUE, size, result1, nvec, result1, {event_sqr_out}, mkl_vm::mode::ha);
+            auto event_sqr_out =
+                mkl_vm::sqr(DPNP_QUEUE, size, nvec, nvec, {event_gamma_distr, event_gaussian_distr}, mkl_vm::mode::ha);
+            auto event_add_out =
+                mkl_vm::add(DPNP_QUEUE, size, result1, nvec, result1, {event_sqr_out}, mkl_vm::mode::ha);
             dpnp_memory_free_c(nvec);
             event_add_out.wait();
         }

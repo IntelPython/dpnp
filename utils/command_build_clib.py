@@ -64,6 +64,7 @@ _project_compiler = "dpcpp"
 _project_linker = "dpcpp"
 _project_cmplr_flag_sycl_devel = ["-fsycl-device-code-split=per_kernel"]
 _project_cmplr_flag_sycl = ["-fsycl"]
+_project_cmplr_flag_stdcpp_static = ["-static-libstdc++", "-static-libgcc"]
 _project_cmplr_flag_compatibility = ["-Wl,--enable-new-dtags"]
 _project_cmplr_flag_lib = ["-shared"]
 _project_cmplr_flag_release_build = ["-O3", "-DNDEBUG", "-fPIC"]
@@ -112,6 +113,7 @@ if IS_WIN:
     _project_compiler = "dpcpp"
     _project_linker = "lld-link"
     _project_cmplr_flag_sycl = []
+    _project_cmplr_flag_stdcpp_static = []
     _project_cmplr_flag_compatibility = []
     _project_cmplr_flag_lib = ["/DLL"]
     _project_cmplr_macro += [("_WIN", "1")]
@@ -150,7 +152,7 @@ elif IS_WIN:
 """
 Final set of arguments for extentions
 """
-_project_extra_link_args = _project_cmplr_flag_compatibility + \
+_project_extra_link_args = _project_cmplr_flag_compatibility + _project_cmplr_flag_stdcpp_static + \
     ["-Wl,-rpath," + x for x in _project_rpath] + _sdl_ldflags
 _project_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 _project_backend_dir = [os.path.join(_project_dir, "dpnp", "backend", "include"),
