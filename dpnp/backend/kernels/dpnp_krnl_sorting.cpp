@@ -175,11 +175,12 @@ void dpnp_partition_c(
     dpnp_memory_free_c(shape);
 }
 
-template<typename _DataType, typename _IndexingType>
+template <typename _DataType, typename _IndexingType>
 class dpnp_searchsorted_c_kernel;
 
-template<typename _DataType, typename _IndexingType>
-void dpnp_searchsorted_c(void* result1, const void* array1_in, const void* v1_in, bool side, const size_t arr_size, const size_t v_size)
+template <typename _DataType, typename _IndexingType>
+void dpnp_searchsorted_c(
+    void* result1, const void* array1_in, const void* v1_in, bool side, const size_t arr_size, const size_t v_size)
 {
     const _DataType* arr = reinterpret_cast<const _DataType*>(array1_in);
     const _DataType* v = reinterpret_cast<const _DataType*>(v1_in);
@@ -209,7 +210,7 @@ void dpnp_searchsorted_c(void* result1, const void* array1_in, const void* v1_in
         {
             if (side)
             {
-                if (j == arr_size-1)
+                if (j == arr_size - 1)
                 {
                     if (v[i] == arr[j])
                     {
@@ -225,7 +226,7 @@ void dpnp_searchsorted_c(void* result1, const void* array1_in, const void* v1_in
                 }
                 else
                 {
-                    if ((arr[j-1] < v[i]) && (v[i] <= arr[j]))
+                    if ((arr[j - 1] < v[i]) && (v[i] <= arr[j]))
                     {
                         result[i] = j;
                     }
@@ -235,7 +236,7 @@ void dpnp_searchsorted_c(void* result1, const void* array1_in, const void* v1_in
             {
                 if (j == arr_size - 1)
                 {
-                    if ((arr[j-1] <= v[i]) && (v[i] < arr[j]))
+                    if ((arr[j - 1] <= v[i]) && (v[i] < arr[j]))
                     {
                         result[i] = arr_size - 1;
                     }
@@ -256,7 +257,7 @@ void dpnp_searchsorted_c(void* result1, const void* array1_in, const void* v1_in
                 }
                 else
                 {
-                    if ((arr[j-1] <= v[i]) && (v[i] < arr[j]))
+                    if ((arr[j - 1] <= v[i]) && (v[i] < arr[j]))
                     {
                         result[i] = j;
                     }

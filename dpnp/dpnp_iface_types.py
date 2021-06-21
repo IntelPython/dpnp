@@ -40,8 +40,10 @@ __all__ = [
     "bool",
     "bool_",
     "complex128",
+    "complex64",
     "dtype",
     "float",
+    "float16",
     "float32",
     "float64",
     "int",
@@ -49,21 +51,26 @@ __all__ = [
     "int64",
     "integer",
     "isscalar",
+    "longcomplex",
     "nan",
-    "newaxis"
+    "newaxis",
+    "void"
 ]
 
 bool = numpy.bool
 bool_ = numpy.bool_
 complex128 = numpy.complex128
+complex64 = numpy.complex64
 dtype = numpy.dtype
-float = numpy.float
+float16 = numpy.float16
 float32 = numpy.float32
 float64 = numpy.float64
-int = numpy.int
+float = numpy.float
 int32 = numpy.int32
 int64 = numpy.int64
 integer = numpy.integer
+int = numpy.int
+longcomplex = numpy.longcomplex
 
 
 def isscalar(obj):
@@ -78,3 +85,4 @@ def isscalar(obj):
 
 nan = numpy.nan
 newaxis = None
+void = numpy.void
