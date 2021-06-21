@@ -37,10 +37,7 @@ template <typename _KernelNameSpecialization>
 class dpnp_around_c_kernel;
 
 template <typename _DataType>
-void dpnp_around_c(const void* input_in,
-                   void* result_out,
-                   const size_t input_size,
-                   const int decimals)
+void dpnp_around_c(const void* input_in, void* result_out, const size_t input_size, const int decimals)
 {
     (void)decimals;
 
@@ -53,7 +50,7 @@ void dpnp_around_c(const void* input_in,
     _DataType* input = reinterpret_cast<_DataType*>(const_cast<void*>(input_in));
     _DataType* result = reinterpret_cast<_DataType*>(result_out);
 
-    if constexpr(std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
+    if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
     {
         event = oneapi::mkl::vm::rint(DPNP_QUEUE, input_size, input, result);
     }
@@ -68,8 +65,7 @@ void dpnp_around_c(const void* input_in,
         };
 
         auto kernel_func = [&](cl::sycl::handler& cgh) {
-            cgh.parallel_for<class dpnp_around_c_kernel<_DataType>>(
-                gws, kernel_parallel_for_func);
+            cgh.parallel_for<class dpnp_around_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
         };
 
         event = DPNP_QUEUE.submit(kernel_func);
@@ -238,8 +234,8 @@ void dpnp_floor_divide_c(void* result_out,
     _DataType_input2* input2_data = reinterpret_cast<_DataType_input2*>(const_cast<void*>(input2_in));
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
 
-    std::vector<size_t> result_shape = get_result_shape(input1_shape, input1_shape_ndim,
-                                                            input2_shape, input2_shape_ndim); 
+    std::vector<size_t> result_shape =
+        get_result_shape(input1_shape, input1_shape_ndim, input2_shape, input2_shape_ndim);
 
     DPNPC_id<_DataType_input1>* input1_it;
     const size_t input1_it_size_in_bytes = sizeof(DPNPC_id<_DataType_input1>);
@@ -254,11 +250,10 @@ void dpnp_floor_divide_c(void* result_out,
     new (input2_it) DPNPC_id<_DataType_input2>(input2_data, input2_shape, input2_shape_ndim);
 
     input2_it->broadcast_to_shape(result_shape);
-    
+
     const size_t result_size = input1_it->get_output_size();
 
-
-    cl::sycl::range<1> gws(result_size); 
+    cl::sycl::range<1> gws(result_size);
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
         const size_t i = global_id[0]; /* for (size_t i = 0; i < result_size; ++i) */
         const _DataType_output input1_elem = (*input1_it)[i];
@@ -276,9 +271,8 @@ void dpnp_floor_divide_c(void* result_out,
 
     if (input1_size == input2_size)
     {
-        if constexpr ((std::is_same<_DataType_input1, double>::value ||
-                        std::is_same<_DataType_input1, float>::value) &&
-                        std::is_same<_DataType_input2, _DataType_input1>::value)
+        if constexpr ((std::is_same<_DataType_input1, double>::value || std::is_same<_DataType_input1, float>::value) &&
+                      std::is_same<_DataType_input2, _DataType_input1>::value)
         {
             event = oneapi::mkl::vm::div(DPNP_QUEUE, input1_size, input1_data, input2_data, result);
             event.wait();
@@ -298,7 +292,6 @@ void dpnp_floor_divide_c(void* result_out,
 
     input1_it->~DPNPC_id();
     input2_it->~DPNPC_id();
-
 }
 
 template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2>

@@ -713,7 +713,7 @@ def floor_divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
 
     x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
     x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
-    
+
     if not use_origin_backend(x1) and not kwargs:
         if not x1_is_dparray and not x1_is_scalar:
             pass
@@ -817,7 +817,7 @@ def fmod(x1, x2, dtype=None, out=None, where=True, **kwargs):
     >>> [x for x in result]
     [0.0, -1.0, 0.0, 1.0, -0.5]
 
-    """    
+    """
     x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
     x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
@@ -1299,7 +1299,7 @@ def power(x1, x2, dtype=None, out=None, where=True, **kwargs):
     >>> [x for x in result]
     [1, 4, 9, 16, 25]
 
-    """    
+    """
     x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
     x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 

@@ -160,6 +160,7 @@ def bitwise_or(x1, x2, dtype=None, out=None, where=True, **kwargs):
     """
     return _check_nd_call(numpy.bitwise_or, dpnp_bitwise_or, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
+
 def bitwise_xor(x1, x2, dtype=None, out=None, where=True, **kwargs):
     """
     Compute the bit-wise XOR of two arrays element-wise.
