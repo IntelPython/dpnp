@@ -210,6 +210,7 @@
     <span class="s2">&quot;asnumpy&quot;</span><span class="p">,</span>
     <span class="s2">&quot;dpnp_queue_initialize&quot;</span><span class="p">,</span>
     <span class="s2">&quot;dpnp_queue_is_cpu&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_dpnp_descriptor&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_include&quot;</span><span class="p">,</span>
     <span class="s2">&quot;matmul&quot;</span>
 <span class="p">]</span>
@@ -286,6 +287,32 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">get_dpnp_descriptor</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return True:</span>
+<span class="sd">      never</span>
+<span class="sd">    Return DPNP internal data discriptor object if:</span>
+<span class="sd">      1. We can proceed with input data object with DPNP</span>
+<span class="sd">      2. We want to handle input data object</span>
+<span class="sd">    Return False if:</span>
+<span class="sd">      1. We do not want to work with input data object</span>
+<span class="sd">      2. We can not handle with input data object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># TODO need to allow &quot;import dpnp&quot; with no build procedure</span>
+    <span class="c1"># if no_modules_load_doc_build();</span>
+    <span class="c1">#    return False</span>
+
+    <span class="k">if</span> <span class="n">use_origin_backend</span><span class="p">():</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">dpnp_desc</span> <span class="o">=</span> <span class="n">dpnp_descriptor</span><span class="p">(</span><span class="n">ext_obj</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dpnp_desc</span><span class="o">.</span><span class="n">is_valid</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_desc</span>
+
+    <span class="k">return</span> <span class="kc">False</span>
 
 
 <div class="viewcode-block" id="get_include"><a class="viewcode-back" href="../../reference/generated/dpnp.get_include.html#dpnp.get_include">[docs]</a><span class="k">def</span> <span class="nf">get_include</span><span class="p">():</span>
