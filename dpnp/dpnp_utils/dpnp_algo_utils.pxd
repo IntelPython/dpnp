@@ -130,6 +130,17 @@ cpdef nd2dp_array(arr)
 Convert ndarray to dparray
 """
 
+cdef class dpnp_descriptor:
+    """array DPNP descriptor"""
+
+    cdef public:  # TODO remove "public" as python accessible attribute
+        dict descriptor
+        Py_ssize_t dpnp_descriptor_data_size
+        cpp_bool dpnp_descriptor_is_scalar
+
+    cdef void * get_data(self)
+
+
 cdef dparray_shape_type get_common_shape(dparray_shape_type input1_shape, dparray_shape_type input2_shape)
 """
 Calculate common shape from input shapes
