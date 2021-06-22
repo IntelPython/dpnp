@@ -198,7 +198,9 @@
 
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_algo.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>  <span class="c1"># TODO need to investigate why dpnp.dpnp_algo can not be used</span>
 <span class="kn">from</span> <span class="nn">dpnp.dparray</span> <span class="kn">import</span> <span class="n">dparray</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c1"># full module name because dpnp_iface_counting loaded from cython too early</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils.dpnp_algo_utils</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">&#39;count_nonzero&#39;</span>
