@@ -44,7 +44,9 @@ import numpy
 
 from dpnp.dpnp_algo.dpnp_algo import *  # TODO need to investigate why dpnp.dpnp_algo can not be used
 from dpnp.dparray import dparray
-from dpnp.dpnp_utils import *
+
+# full module name because dpnp_iface_counting loaded from cython too early
+from dpnp.dpnp_utils.dpnp_algo_utils import *
 
 __all__ = [
     'count_nonzero'
