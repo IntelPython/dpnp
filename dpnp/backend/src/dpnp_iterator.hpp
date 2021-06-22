@@ -489,8 +489,8 @@ private:
             {
                 if (std::find(axes, axes + axes_size, iit) == axes + axes_size)
                 {
-                    const size_type output_xyz_id = get_xyz_id_by_id_inkernel(output_global_id, output_shape_strides,
-                                                                              output_shape_size, oit);
+                    const size_type output_xyz_id =
+                        get_xyz_id_by_id_inkernel(output_global_id, output_shape_strides, output_shape_size, oit);
                     input_global_id += (output_xyz_id * input_shape_strides[iit]);
                     ++oit;
                 }
@@ -506,8 +506,8 @@ private:
                 size_type* broadcast_axes_end = broadcast_axes + broadcast_axes_size;
                 if (std::find(broadcast_axes, broadcast_axes_end, orit) == broadcast_axes_end)
                 {
-                    const size_type output_xyz_id = get_xyz_id_by_id_inkernel(output_global_id, output_shape_strides,
-                                                                              output_shape_size, orit);
+                    const size_type output_xyz_id =
+                        get_xyz_id_by_id_inkernel(output_global_id, output_shape_strides, output_shape_size, orit);
                     input_global_id += (output_xyz_id * input_shape_strides[irit]);
                 }
             }

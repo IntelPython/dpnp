@@ -56,6 +56,7 @@ __all__ = [
     "asnumpy",
     "dpnp_queue_initialize",
     "dpnp_queue_is_cpu",
+    "get_dpnp_descriptor",
     "get_include",
     "matmul"
 ]
@@ -134,6 +135,32 @@ def asnumpy(input, order='C'):
     return numpy.asarray(input, order=order)
 
 
+def get_dpnp_descriptor(ext_obj):
+    """
+    Return True:
+      never
+    Return DPNP internal data discriptor object if:
+      1. We can proceed with input data object with DPNP
+      2. We want to handle input data object
+    Return False if:
+      1. We do not want to work with input data object
+      2. We can not handle with input data object
+    """
+
+    # TODO need to allow "import dpnp" with no build procedure
+    # if no_modules_load_doc_build();
+    #    return False
+
+    if use_origin_backend():
+        return False
+
+    dpnp_desc = dpnp_descriptor(ext_obj)
+    if dpnp_desc.is_valid:
+        return dpnp_desc
+
+    return False
+
+
 def get_include():
     """
     Return the directory that contains the DPNP C++ backend \\*.h header files.
@@ -144,7 +171,7 @@ def get_include():
     return dpnp_path
 
 
-def matmul(in_array1, in_array2, out=None):
+def matmul(in_array1, in_array2, out=None, **kwargs):
     """
     Matrix product of two arrays.
 
@@ -154,7 +181,7 @@ def matmul(in_array1, in_array2, out=None):
     -----------
     Input arrays are supported as :obj:`dpnp.ndarray`.
     Otherwise the function will be executed sequentially on CPU.
-    Parameter ``out`` is supported only with default value ``None``.
+    Parameter ``out`` is supported as :obj:`dpnp.ndarray` and as default value ``None``.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -180,33 +207,29 @@ def matmul(in_array1, in_array2, out=None):
 
     """
 
-    is_dparray1 = isinstance(in_array1, dparray)
-    is_dparray2 = isinstance(in_array2, dparray)
-
-    if (not use_origin_backend(in_array1) and is_dparray1 and is_dparray2):
-
-        if out is not None:
-            checker_throw_value_error("matmul", "out", type(out), None)
-
-        """
-        Cost model checks
-        """
-        cost_size = 4096  # 2D array shape(64, 64)
-        if ((in_array1.dtype == numpy.float64) or (in_array1.dtype == numpy.float32)):
+    if not use_origin_backend(in_array1) and not kwargs:
+        if not isinstance(in_array1, dparray):
+            pass
+        elif not isinstance(in_array2, dparray):
+            pass
+        elif out is not None and not isinstance(out, dparray):
+            pass
+        else:
             """
-            Floating point types are handled via original math library better than SYCL math library
+            Cost model checks
             """
-            cost_size = 262144  # 2D array shape(512, 512)
 
-        dparray1_size = in_array1.size
-        dparray2_size = in_array2.size
+            dparray1_size = in_array1.size
+            dparray2_size = in_array2.size
+            cost_size = 4096  # 2D array shape(64, 64)
 
-        if (dparray1_size > cost_size) and (dparray2_size > cost_size):
-            # print(f"dparray1_size={dparray1_size}")
-            return dpnp_matmul(in_array1, in_array2)
+            if ((in_array1.dtype == numpy.float64) or (in_array1.dtype == numpy.float32)):
+                """
+                Floating point types are handled via original math library better than SYCL math library
+                """
+                cost_size = 262144  # 2D array shape(512, 512)
 
-    input1 = asnumpy(in_array1) if is_dparray1 else in_array1
-    input2 = asnumpy(in_array2) if is_dparray2 else in_array2
+            if (dparray1_size > cost_size) and (dparray2_size > cost_size):
+                return dpnp_matmul(in_array1, in_array2, out=out)
 
-    # TODO need to return dparray instead ndarray
-    return numpy.matmul(input1, input2, out=out)
+    return call_origin(numpy.matmul, in_array1, in_array2, out=out, **kwargs)
