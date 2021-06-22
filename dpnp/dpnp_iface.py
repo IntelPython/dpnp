@@ -56,6 +56,7 @@ __all__ = [
     "asnumpy",
     "dpnp_queue_initialize",
     "dpnp_queue_is_cpu",
+    "get_dpnp_descriptor",
     "get_include",
     "matmul"
 ]
@@ -132,6 +133,32 @@ def asnumpy(input, order='C'):
     """
 
     return numpy.asarray(input, order=order)
+
+
+def get_dpnp_descriptor(ext_obj):
+    """
+    Return True:
+      never
+    Return DPNP internal data discriptor object if:
+      1. We can proceed with input data object with DPNP
+      2. We want to handle input data object
+    Return False if:
+      1. We do not want to work with input data object
+      2. We can not handle with input data object
+    """
+
+    # TODO need to allow "import dpnp" with no build procedure
+    # if no_modules_load_doc_build();
+    #    return False
+
+    if use_origin_backend():
+        return False
+
+    dpnp_desc = dpnp_descriptor(ext_obj)
+    if dpnp_desc.is_valid:
+        return dpnp_desc
+
+    return False
 
 
 def get_include():

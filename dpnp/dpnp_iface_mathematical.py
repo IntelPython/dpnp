@@ -1040,11 +1040,10 @@ def modf(x, **kwargs):
 
 
     """
-    if not use_origin_backend(x) and not kwargs:
-        if not isinstance(x, dparray):
-            pass
-        else:
-            return dpnp_modf(x)
+
+    dpnp_desc = dpnp.get_dpnp_descriptor(x)
+    if dpnp_desc and not kwargs:
+        return dpnp_modf(dpnp_desc)
 
     return call_origin(numpy.modf, x, **kwargs)
 
