@@ -55,6 +55,7 @@ __all__ = [
     "einsum_path",
     "inner",
     "kron",
+    "matmul",
     "outer",
     "tensordot",
     "vdot"
@@ -218,6 +219,70 @@ def kron(a, b):
             return dpnp_kron(a, b)
 
     return call_origin(numpy.kron, a, b)
+
+
+def matmul(in_array1, in_array2, out=None, **kwargs):
+    """
+    Matrix product of two arrays.
+
+    For full documentation refer to :obj:`numpy.matmul`.
+
+    Limitations
+    -----------
+    Input arrays are supported as :obj:`dpnp.ndarray`.
+    Otherwise the function will be executed sequentially on CPU.
+    Parameter ``out`` is supported as :obj:`dpnp.ndarray` and as default value ``None``.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    See Also
+    --------
+    :obj:`dpnp.vdot` : Complex-conjugating dot product.
+    :obj:`dpnp.tensordot` : Sum products over arbitrary axes.
+    :obj:`dpnp.einsum` : Einstein summation convention.
+    :obj:`dpnp.dot` : Alternative matrix product with
+                      different broadcasting rules.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.ones([9, 5, 7, 4])
+    >>> c = np.ones([9, 5, 4, 3])
+    >>> np.matmul(a, c).shape
+    (9, 5, 7, 3)
+    >>> a = np.array([[1, 0], [0, 1]])
+    >>> b = np.array([[4, 1], [2, 2]])
+    >>> np.matmul(a, b)
+    array([[4, 1],
+           [2, 2]])
+
+    """
+
+    if not use_origin_backend(in_array1) and not kwargs:
+        if not isinstance(in_array1, dparray):
+            pass
+        elif not isinstance(in_array2, dparray):
+            pass
+        elif out is not None and not isinstance(out, dparray):
+            pass
+        else:
+            """
+            Cost model checks
+            """
+
+            dparray1_size = in_array1.size
+            dparray2_size = in_array2.size
+            cost_size = 4096  # 2D array shape(64, 64)
+
+            if ((in_array1.dtype == numpy.float64) or (in_array1.dtype == numpy.float32)):
+                """
+                Floating point types are handled via original math library better than SYCL math library
+                """
+                cost_size = 262144  # 2D array shape(512, 512)
+
+            if (dparray1_size > cost_size) and (dparray2_size > cost_size):
+                return dpnp_matmul(in_array1, in_array2, out=out)
+
+    return call_origin(numpy.matmul, in_array1, in_array2, out=out, **kwargs)
 
 
 def outer(x1, x2, **kwargs):
