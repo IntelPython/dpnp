@@ -476,6 +476,12 @@ cdef class dpnp_descriptor:
         return None
 
     @property
+    def ndim(self):
+        if self.is_valid:
+            return len(self.shape)
+        return 0
+
+    @property
     def size(self):
         if self.is_valid:
             return self.dpnp_descriptor_data_size
