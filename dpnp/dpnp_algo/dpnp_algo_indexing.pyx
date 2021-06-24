@@ -32,11 +32,7 @@ and the rest of the library
 
 """
 
-
-import numpy
-from dpnp.dpnp_utils cimport *
-from dpnp.dpnp_iface_counting import count_nonzero
-
+# NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
     "dpnp_choose",
@@ -169,7 +165,7 @@ cpdef tuple dpnp_nonzero(dparray in_array1):
     res_count = in_array1.ndim
 
     # have to go through array one extra time to count size of result arrays
-    res_size = count_nonzero(in_array1)
+    res_size = dpnp.count_nonzero(in_array1)
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(in_array1.dtype)
 
@@ -185,7 +181,7 @@ cpdef tuple dpnp_nonzero(dparray in_array1):
 
         res_list.append(res_arr)
 
-    result = _object_to_tuple(res_list)
+    result = utils._object_to_tuple(res_list)
 
     return result
 

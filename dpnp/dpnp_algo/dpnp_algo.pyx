@@ -33,6 +33,7 @@ and the rest of the library
 """
 
 from libc.time cimport time, time_t
+import dpnp
 import dpnp.config as config
 import numpy
 
@@ -111,7 +112,7 @@ cpdef dparray dpnp_array(obj, dtype=None):
     if not cpython.PySequence_Check(obj):
         raise TypeError(f"DPNP array(): Unsupported non-sequence obj={type(obj)}")
 
-    obj_shape, elem_dtype = get_shape_dtype(obj)
+    obj_shape, elem_dtype = utils.get_shape_dtype(obj)
     if dtype is not None:
         """ Set type from parameter. result might be empty array """
         result = dparray(obj_shape, dtype=dtype)
@@ -122,7 +123,7 @@ cpdef dparray dpnp_array(obj, dtype=None):
         else:
             result = dparray(obj_shape, dtype=elem_dtype)
 
-    copy_values_to_dparray(result, obj)
+    utils.copy_values_to_dparray(result, obj)
 
     return result
 
@@ -241,9 +242,9 @@ cpdef dparray dpnp_matmul(dparray in_array1, dparray in_array2, dparray out=None
 
     if out is not None:
         if out.dtype != result_type:
-            checker_throw_value_error('matmul', 'out.dtype', out.dtype, result_type)
+            utils.checker_throw_value_error('matmul', 'out.dtype', out.dtype, result_type)
         if out.shape != shape_result:
-            checker_throw_value_error('matmul', 'out.shape', out.shape, shape_result)
+            utils.checker_throw_value_error('matmul', 'out.shape', out.shape, shape_result)
         result = out
     else:
         result = dparray(shape_result, dtype=result_type)
@@ -302,7 +303,7 @@ cpdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype):
     elif dtype in [numpy.bool, numpy.bool_, 'bool', '?']:
         return DPNP_FT_BOOL
     else:
-        checker_throw_type_error("dpnp_dtype_to_DPNPFuncType", dtype)
+        utils.checker_throw_type_error("dpnp_dtype_to_DPNPFuncType", dtype)
 
 cpdef dpnp_DPNPFuncType_to_dtype(size_t type):
     """
@@ -322,7 +323,7 @@ cpdef dpnp_DPNPFuncType_to_dtype(size_t type):
     elif type == <size_t > DPNP_FT_BOOL:
         return numpy.bool
     else:
-        checker_throw_type_error("dpnp_DPNPFuncType_to_dtype", type)
+        utils.checker_throw_type_error("dpnp_DPNPFuncType_to_dtype", type)
 
 
 cdef dparray call_fptr_1out(DPNPFuncName fptr_name, result_shape, result_dtype):
@@ -373,23 +374,23 @@ cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, object x1_obj, object x2
 
     cdef dparray x1_dparray, x2_dparray
 
-    common_type = find_common_type(x1_obj, x2_obj)
+    common_type = utils.find_common_type(x1_obj, x2_obj)
 
     if x1_obj_is_dparray:
         x1_dparray = x1_obj
     else:
         x1_dparray = dparray((1,), dtype=common_type)
-        copy_values_to_dparray(x1_dparray, (x1_obj,))
+        utils.copy_values_to_dparray(x1_dparray, (x1_obj,))
 
     if x2_obj_is_dparray:
         x2_dparray = x2_obj
     else:
         x2_dparray = dparray((1,), dtype=common_type)
-        copy_values_to_dparray(x2_dparray, (x2_obj,))
+        utils.copy_values_to_dparray(x2_dparray, (x2_obj,))
 
     x1_shape = x1_dparray.shape
     x2_shape = x2_dparray.shape
-    result_shape = get_common_shape(x1_shape, x2_shape)
+    result_shape = utils.get_common_shape(x1_shape, x2_shape)
 
     # Convert string type names (dparray.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType x1_c_type = dpnp_dtype_to_DPNPFuncType(x1_dparray.dtype)
@@ -401,7 +402,7 @@ cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, object x1_obj, object x2
     # TODO: apply parameters out and dtype after reafactoring fmap (required 4th level nesting)
 
     # Create result array
-    cdef dparray result = create_output_array(result_shape, kernel_data.return_type, out)
+    cdef dparray result = utils.create_output_array(result_shape, kernel_data.return_type, out)
 
     """ Call FPTR function """
     cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
@@ -411,7 +412,7 @@ cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, object x1_obj, object x2
     return result
 
 # this is replacement for "call_fptr_2in_1out". original function must be deleted after transotion.
-cdef dparray call_fptr_2in_1out_new(DPNPFuncName fptr_name, dpnp_descriptor x1_obj, dpnp_descriptor x2_obj,
+cdef dparray call_fptr_2in_1out_new(DPNPFuncName fptr_name, utils.dpnp_descriptor x1_obj, utils.dpnp_descriptor x2_obj,
                                     object dtype=None, dparray out=None, object where=True):
     # Convert string type names (dparray.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType x1_c_type = dpnp_dtype_to_DPNPFuncType(x1_obj.dtype)
@@ -423,8 +424,8 @@ cdef dparray call_fptr_2in_1out_new(DPNPFuncName fptr_name, dpnp_descriptor x1_o
     # Create result array
     cdef dparray_shape_type x1_shape = x1_obj.shape
     cdef dparray_shape_type x2_shape = x2_obj.shape
-    cdef dparray_shape_type result_shape = get_common_shape(x1_shape, x2_shape)
-    cdef dparray result = create_output_array(result_shape, kernel_data.return_type, out)
+    cdef dparray_shape_type result_shape = utils.get_common_shape(x1_shape, x2_shape)
+    cdef dparray result = utils.create_output_array(result_shape, kernel_data.return_type, out)
 
     """ Call FPTR function """
     cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr

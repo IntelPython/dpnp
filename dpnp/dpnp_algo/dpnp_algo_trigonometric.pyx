@@ -32,9 +32,7 @@ and the rest of the library
 
 """
 
-
-from dpnp.dpnp_utils cimport *
-
+# NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
     'dpnp_arccos',
@@ -156,9 +154,9 @@ cpdef dparray dpnp_sin(dparray x1, dparray out=None):
 
     if out is not None:
         if out.dtype != result_type:
-            checker_throw_value_error('sin', 'out.dtype', out.dtype, result_type)
+            utils.checker_throw_value_error('sin', 'out.dtype', out.dtype, result_type)
         if out.shape != shape_result:
-            checker_throw_value_error('sin', 'out.shape', out.shape, shape_result)
+            utils.checker_throw_value_error('sin', 'out.shape', out.shape, shape_result)
         result = out
     else:
         result = dparray(shape_result, dtype=result_type)

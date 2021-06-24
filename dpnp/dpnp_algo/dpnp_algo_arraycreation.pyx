@@ -32,13 +32,7 @@ and the rest of the library
 
 """
 
-
-import dpnp
-import numpy
-
-from dpnp.dpnp_utils cimport *
-from dpnp.dpnp_algo cimport *
-
+# NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
     "dpnp_copy",

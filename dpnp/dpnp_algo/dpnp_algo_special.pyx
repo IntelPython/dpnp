@@ -32,9 +32,7 @@ and the rest of the library
 
 """
 
-
-from dpnp.dpnp_utils cimport *
-
+# NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
     'dpnp_erf',
