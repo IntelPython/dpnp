@@ -90,6 +90,8 @@ void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const si
             result[k * (data_size * data_size) + t] = in_a[t];
         }
     }
+
+    dpnp_memory_free_c(in_a);
 }
 
 template <typename _DataType>
