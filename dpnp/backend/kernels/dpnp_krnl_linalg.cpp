@@ -44,19 +44,14 @@ void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const si
 
     size_t iters = size / (data_size * data_size);
 
+    // math lib func overrides input
+    _DataType* in_a = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(data_size * data_size * sizeof(_DataType)));
+
     for (size_t k = 0; k < iters; ++k)
     {
-        _DataType matrix[data_size * data_size];
-        _DataType result_[data_size * data_size];
-
-        for (size_t t = 0; t < data_size * data_size; ++t)
-        {
-            matrix[t] = in_array[k * (data_size * data_size) + t];
-        }
-
         for (size_t it = 0; it < data_size * data_size; ++it)
         {
-            result_[it] = matrix[it];
+            in_a[it] = in_array[k * (data_size * data_size) + it];
         }
 
         const std::int64_t n = data_size;
@@ -68,7 +63,7 @@ void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const si
 
         _DataType* scratchpad = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(_DataType)));
 
-        event = mkl_lapack::potrf(DPNP_QUEUE, oneapi::mkl::uplo::upper, n, result_, lda, scratchpad, scratchpad_size);
+        event = mkl_lapack::potrf(DPNP_QUEUE, oneapi::mkl::uplo::upper, n, in_a, lda, scratchpad, scratchpad_size);
 
         event.wait();
 
@@ -83,7 +78,7 @@ void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const si
                 }
                 if (arg)
                 {
-                    result_[i * data_size + j] = 0;
+                    in_a[i * data_size + j] = 0;
                 }
             }
         }
@@ -92,7 +87,7 @@ void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const si
 
         for (size_t t = 0; t < data_size * data_size; ++t)
         {
-            result[k * (data_size * data_size) + t] = result_[t];
+            result[k * (data_size * data_size) + t] = in_a[t];
         }
     }
 }
