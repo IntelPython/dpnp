@@ -64,7 +64,9 @@ cpdef dparray dpnp_dot(dparray in_array1, dparray in_array2):
 
     # scalar
     if dim1 == 0 or dim2 == 0:
-        return dpnp_multiply(in_array1, in_array2)
+        x1_desc = dpnp.get_dpnp_descriptor(in_array1)
+        x2_desc = dpnp.get_dpnp_descriptor(in_array2)
+        return dpnp_multiply(x1_desc, x2_desc)
 
     cdef size_t size1 = 0
     cdef size_t size2 = 0
