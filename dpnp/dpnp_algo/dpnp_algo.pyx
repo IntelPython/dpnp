@@ -409,3 +409,26 @@ cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, object x1_obj, object x2
          x2_dparray.get_data(), x2_dparray.size, x2_shape.data(), x2_shape.size(), NULL)
 
     return result
+
+# this is replacement for "call_fptr_2in_1out". original function must be deleted after transotion.
+cdef dparray call_fptr_2in_1out_new(DPNPFuncName fptr_name, dpnp_descriptor x1_obj, dpnp_descriptor x2_obj,
+                                    object dtype=None, dparray out=None, object where=True):
+    # Convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType x1_c_type = dpnp_dtype_to_DPNPFuncType(x1_obj.dtype)
+    cdef DPNPFuncType x2_c_type = dpnp_dtype_to_DPNPFuncType(x2_obj.dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, x1_c_type, x2_c_type)
+
+    # Create result array
+    cdef dparray_shape_type x1_shape = x1_obj.shape
+    cdef dparray_shape_type x2_shape = x2_obj.shape
+    cdef dparray_shape_type result_shape = get_common_shape(x1_shape, x2_shape)
+    cdef dparray result = create_output_array(result_shape, kernel_data.return_type, out)
+
+    """ Call FPTR function """
+    cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
+    func(result.get_data(), x1_obj.get_data(), x1_obj.size, x1_shape.data(), x1_shape.size(),
+         x2_obj.get_data(), x2_obj.size, x2_shape.data(), x2_shape.size(), NULL)
+
+    return result

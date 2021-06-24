@@ -277,7 +277,7 @@ cpdef tuple dpnp_modf(dpnp_descriptor x1):
 
 
 cpdef dparray dpnp_multiply(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
-    return call_fptr_2in_1out(DPNP_FN_MULTIPLY, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
+    return call_fptr_2in_1out_new(DPNP_FN_MULTIPLY, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
 cpdef dparray dpnp_nancumprod(dparray x1):
