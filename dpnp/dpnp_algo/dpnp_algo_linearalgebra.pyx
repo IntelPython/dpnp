@@ -32,9 +32,7 @@ and the rest of the library
 
 """
 
-from dpnp.dpnp_utils cimport *
-cimport numpy
-
+# NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
     "dpnp_dot",
@@ -78,7 +76,7 @@ cpdef dparray dpnp_dot(dparray in_array1, dparray in_array2):
     # vector
     # test: pytest tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_dot_vec1 -v -s
     if size1 != size2:
-        raise checker_throw_runtime_error("dpnp_dot", "input vectors must be of equal size")
+        utils.checker_throw_runtime_error("dpnp_dot", "input vectors must be of equal size")
 
     # convert string type names (dparray.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(in_array1.dtype)

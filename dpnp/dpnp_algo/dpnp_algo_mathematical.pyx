@@ -32,11 +32,7 @@ and the rest of the library
 
 """
 
-from dpnp.dpnp_utils cimport *
-import dpnp
-import numpy
-cimport numpy
-
+# NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
     "dpnp_absolute",
@@ -257,7 +253,7 @@ cpdef dparray dpnp_minimum(object x1_obj, object x2_obj, object dtype=None, dpar
     return call_fptr_2in_1out(DPNP_FN_MINIMUM, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
-cpdef tuple dpnp_modf(dpnp_descriptor x1):
+cpdef tuple dpnp_modf(utils.dpnp_descriptor x1):
     """ Convert string type names (dparray.dtype) to C enum DPNPFuncType """
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
 
@@ -355,16 +351,16 @@ cpdef dparray dpnp_prod(dparray input, object axis=None, object dtype=None, dpar
     cdef dparray_shape_type input_shape = input.shape
     cdef DPNPFuncType input_c_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
-    cdef dparray_shape_type axis_shape = _object_to_tuple(axis)
+    cdef dparray_shape_type axis_shape = utils._object_to_tuple(axis)
 
-    cdef dparray_shape_type result_shape = get_reduction_output_shape(input_shape, axis, keepdims)
-    cdef DPNPFuncType result_c_type = get_output_c_type(DPNP_FN_PROD, input_c_type, out, dtype)
+    cdef dparray_shape_type result_shape = utils.get_reduction_output_shape(input_shape, axis, keepdims)
+    cdef DPNPFuncType result_c_type = utils.get_output_c_type(DPNP_FN_PROD, input_c_type, out, dtype)
 
     """ select kernel """
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PROD, input_c_type, result_c_type)
 
     """ Create result array """
-    cdef dparray result = create_output_array(result_shape, result_c_type, out)
+    cdef dparray result = utils.create_output_array(result_shape, result_c_type, out)
     cdef dpnp_reduction_c_t func = <dpnp_reduction_c_t > kernel_data.ptr
 
     """ Call FPTR interface function """
@@ -390,16 +386,16 @@ cpdef dparray dpnp_sum(dparray input, object axis=None, object dtype=None, dparr
     cdef dparray_shape_type input_shape = input.shape
     cdef DPNPFuncType input_c_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
-    cdef dparray_shape_type axis_shape = _object_to_tuple(axis)
+    cdef dparray_shape_type axis_shape = utils._object_to_tuple(axis)
 
-    cdef dparray_shape_type result_shape = get_reduction_output_shape(input_shape, axis, keepdims)
-    cdef DPNPFuncType result_c_type = get_output_c_type(DPNP_FN_SUM, input_c_type, out, dtype)
+    cdef dparray_shape_type result_shape = utils.get_reduction_output_shape(input_shape, axis, keepdims)
+    cdef DPNPFuncType result_c_type = utils.get_output_c_type(DPNP_FN_SUM, input_c_type, out, dtype)
 
     """ select kernel """
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_SUM, input_c_type, result_c_type)
 
     """ Create result array """
-    cdef dparray result = create_output_array(result_shape, result_c_type, out)
+    cdef dparray result = utils.create_output_array(result_shape, result_c_type, out)
     cdef dpnp_reduction_c_t func = <dpnp_reduction_c_t > kernel_data.ptr
 
     """ Call FPTR interface function """

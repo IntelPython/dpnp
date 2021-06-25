@@ -32,9 +32,7 @@ and the rest of the library
 
 """
 
-
-from dpnp.dpnp_utils cimport *
-
+# NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
     "dpnp_atleast_2d",
@@ -98,7 +96,7 @@ cpdef dpnp_copyto(dparray dst, dparray src, where=True):
 
 
 cpdef dparray dpnp_expand_dims(dparray in_array, axis):
-    axis_tuple = _object_to_tuple(axis)
+    axis_tuple = utils._object_to_tuple(axis)
     result_ndim = len(axis_tuple) + in_array.ndim
 
     if len(axis_tuple) == 0:
@@ -106,13 +104,13 @@ cpdef dparray dpnp_expand_dims(dparray in_array, axis):
     else:
         axis_ndim = max(-min(0, min(axis_tuple)), max(0, max(axis_tuple))) + 1
 
-    axis_norm = _object_to_tuple(normalize_axis(axis_tuple, result_ndim))
+    axis_norm = utils._object_to_tuple(utils.normalize_axis(axis_tuple, result_ndim))
 
     if axis_ndim - len(axis_norm) > in_array.ndim:
-        checker_throw_axis_error("dpnp_expand_dims", "axis", axis, axis_ndim)
+        utils.checker_throw_axis_error("dpnp_expand_dims", "axis", axis, axis_ndim)
 
     if len(axis_norm) > len(set(axis_norm)):
-        checker_throw_value_error("dpnp_expand_dims", "axis", axis, "no repeated axis")
+        utils.checker_throw_value_error("dpnp_expand_dims", "axis", axis, "no repeated axis")
 
     shape_list = []
     axis_idx = 0
@@ -123,7 +121,7 @@ cpdef dparray dpnp_expand_dims(dparray in_array, axis):
             shape_list.append(in_array.shape[axis_idx])
             axis_idx = axis_idx + 1
 
-    shape = _object_to_tuple(shape_list)
+    shape = utils._object_to_tuple(shape_list)
     cdef dparray result = dpnp.copy(in_array).reshape(shape)
 
     return result
@@ -195,15 +193,15 @@ cpdef dparray dpnp_squeeze(dparray in_array, axis):
             if in_array.shape[i] != 1:
                 shape_list.append(in_array.shape[i])
     else:
-        axis_norm = _object_to_tuple(normalize_axis(_object_to_tuple(axis), in_array.ndim))
+        axis_norm = utils._object_to_tuple(utils.normalize_axis(utils._object_to_tuple(axis), in_array.ndim))
         for i in range(in_array.ndim):
             if i in axis_norm:
                 if in_array.shape[i] != 1:
-                    checker_throw_value_error("dpnp_squeeze", "axis", axis, "axis has size not equal to one")
+                    utils.checker_throw_value_error("dpnp_squeeze", "axis", axis, "axis has size not equal to one")
             else:
                 shape_list.append(in_array.shape[i])
 
-    shape = _object_to_tuple(shape_list)
+    shape = utils._object_to_tuple(shape_list)
     cdef dparray result = dpnp.copy(in_array).reshape(shape)
 
     return result
