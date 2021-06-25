@@ -50,8 +50,7 @@ __all__ = [
     "dpnp_init_val",
     "dpnp_matmul",
     "dpnp_queue_initialize",
-    "dpnp_queue_is_cpu",
-    "dpnp_remainder"
+    "dpnp_queue_is_cpu"
 ]
 
 
