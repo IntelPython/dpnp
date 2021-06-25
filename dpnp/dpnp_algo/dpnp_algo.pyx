@@ -48,7 +48,6 @@ __all__ = [
     "dpnp_astype",
     "dpnp_flatten",
     "dpnp_init_val",
-    "dpnp_matmul",
     "dpnp_queue_initialize",
     "dpnp_queue_is_cpu"
 ]
@@ -170,90 +169,6 @@ cpdef dparray dpnp_init_val(shape, dtype, value):
 
     cdef fptr_dpnp_initval_t func = <fptr_dpnp_initval_t > kernel_data.ptr
     func(result.get_data(), val_arr.get_data(), result.size)
-
-    return result
-
-
-cpdef dparray dpnp_matmul(dparray in_array1, dparray in_array2, dparray out=None):
-
-    cdef vector[Py_ssize_t] shape_result
-
-    cdef vector[Py_ssize_t] shape1 = in_array1.shape
-    cdef vector[Py_ssize_t] shape2 = in_array2.shape
-
-    cdef size_t size_m = 0
-    cdef size_t size_n = 0
-    cdef size_t size_k = 0
-
-    # Calling this function on an empty container causes undefined behavior.
-    if not shape1.empty():
-        size_m = shape1.front()
-    if not shape2.empty():
-        size_n = shape2.back()
-    if not shape1.empty():
-        size_k = shape1.back()
-
-    cdef size_t ndim_max = max(in_array1.ndim, in_array2.ndim)
-
-    if in_array1.ndim < ndim_max or ndim_max == 1:
-        """
-        shape1(2,), shape2(2,4)
-        test: pytest tests/test_matmul.py::test_matmul[shape_pair4-types0] -v -s
-        or
-        shape1(2,), shape2(2,)
-        test: pytest tests/test_matmul.py::test_matmul[shape_pair8-types0] -v -s
-        """
-        size_m = 1
-
-    if in_array2.ndim < ndim_max or ndim_max == 1:
-        """
-        shape1(5,2), shape2(2,)
-        test: pytest tests/test_matmul.py::test_matmul[shape_pair6-types0] -v -s
-        or
-        shape1(3,), shape2(3,)
-        test: pytest tests/test_matmul.py::test_matmul[shape_pair8-types0] -v -s
-        """
-        size_n = 1
-
-    if ndim_max > 2:
-        """
-        shape1(5, 3, 2) * shape2(5, 2, 4) -> result(5, 3, 4)
-        test: pytest tests/test_matmul.py::test_matmul[shape_pair10-types0] -v -s
-        """
-        shape_result = shape1[:-1] + [shape2.back()]
-    else:
-        """
-        shape1(5,2) * shape2(2,3) -> result(5,3)
-        test: pytest tests/test_matmul.py::test_matmul[shape_pair0-types0] -v -s
-        """
-        shape_result = shape1[:-1] + shape2[1:]
-
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(in_array1.dtype)
-    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(in_array2.dtype)
-
-    # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MATMUL, param1_type, param2_type)
-
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-
-    cdef dparray result
-
-    if out is not None:
-        if out.dtype != result_type:
-            utils.checker_throw_value_error('matmul', 'out.dtype', out.dtype, result_type)
-        if out.shape != shape_result:
-            utils.checker_throw_value_error('matmul', 'out.shape', out.shape, shape_result)
-        result = out
-    else:
-        result = dparray(shape_result, dtype=result_type)
-
-    if result.size == 0:
-        return result
-
-    cdef fptr_blas_gemm_2in_1out_t func = <fptr_blas_gemm_2in_1out_t > kernel_data.ptr
-    # call FPTR function
-    func(in_array1.get_data(), in_array2.get_data(), result.get_data(), size_m, size_n, size_k)
 
     return result
 
