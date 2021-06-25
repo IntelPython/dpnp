@@ -150,8 +150,6 @@ def searchsorted(arr, v, side='left', sorter=None):
     if not use_origin_backend():
         if not isinstance(arr, dparray):
             pass
-        elif dpnp.sort(arr) != arr:
-            pass
         elif not isinstance(v, dparray):
             pass
         elif arr.ndim != 1:
@@ -161,6 +159,10 @@ def searchsorted(arr, v, side='left', sorter=None):
         elif side not in ['left', 'right']:
             pass
         elif sorter is not None:
+            pass
+        elif arr.size < 2:
+            pass
+        elif dpnp.sort(arr) != arr:
             pass
         else:
             return dpnp_searchsorted(arr, v, side=side)
