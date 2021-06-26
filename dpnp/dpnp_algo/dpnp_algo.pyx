@@ -248,10 +248,8 @@ cdef dparray call_fptr_1out(DPNPFuncName fptr_name, result_shape, result_dtype):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, dtype_in, dtype_in)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-
     # Create result array with type given by FPTR data
-    cdef dparray result = dparray(result_shape, dtype=result_type)
+    cdef dparray result = utils.create_output_array(result_shape, kernel_data.return_type, None)
 
     cdef fptr_1out_t func = <fptr_1out_t > kernel_data.ptr
     # Call FPTR function
@@ -268,9 +266,8 @@ cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shap
     """ get the FPTR data structure """
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     """ Create result array with type given by FPTR data """
-    cdef dparray result = dparray(result_shape, dtype=result_type)
+    cdef dparray result = utils.create_output_array(result_shape, kernel_data.return_type, None)
 
     cdef fptr_1in_1out_t func = <fptr_1in_1out_t > kernel_data.ptr
     """ Call FPTR function """
