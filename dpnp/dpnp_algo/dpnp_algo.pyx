@@ -240,7 +240,7 @@ cpdef dpnp_DPNPFuncType_to_dtype(size_t type):
         utils.checker_throw_type_error("dpnp_DPNPFuncType_to_dtype", type)
 
 
-cdef dparray call_fptr_1out(DPNPFuncName fptr_name, result_shape, result_dtype):
+cdef dparray call_fptr_1out(DPNPFuncName fptr_name, dparray_shape_type result_shape, result_dtype):
 
     # Convert string type names (dparray.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType dtype_in = dpnp_dtype_to_DPNPFuncType(result_dtype)

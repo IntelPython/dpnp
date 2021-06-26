@@ -259,11 +259,11 @@ cpdef list dpnp_meshgrid(xi, copy, sparse, indexing):
 
 
 cpdef dparray dpnp_ones(result_shape, result_dtype):
-    return call_fptr_1out(DPNP_FN_ONES, result_shape, result_dtype)
+    return call_fptr_1out(DPNP_FN_ONES, utils._object_to_tuple(result_shape), result_dtype)
 
 
 cpdef dparray dpnp_ones_like(result_shape, result_dtype):
-    return call_fptr_1out(DPNP_FN_ONES_LIKE, result_shape, result_dtype)
+    return call_fptr_1out(DPNP_FN_ONES_LIKE, utils._object_to_tuple(result_shape), result_dtype)
 
 
 cpdef dparray dpnp_trace(arr, offset=0, axis1=0, axis2=1, dtype=None, out=None):
@@ -369,8 +369,8 @@ cpdef dparray dpnp_vander(dparray x1, int N, int increasing):
 
 
 cpdef dparray dpnp_zeros(result_shape, result_dtype):
-    return call_fptr_1out(DPNP_FN_ZEROS, result_shape, result_dtype)
+    return call_fptr_1out(DPNP_FN_ZEROS, utils._object_to_tuple(result_shape), result_dtype)
 
 
 cpdef dparray dpnp_zeros_like(result_shape, result_dtype):
-    return call_fptr_1out(DPNP_FN_ZEROS_LIKE, result_shape, result_dtype)
+    return call_fptr_1out(DPNP_FN_ZEROS_LIKE, utils._object_to_tuple(result_shape), result_dtype)
