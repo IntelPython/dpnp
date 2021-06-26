@@ -276,55 +276,8 @@ cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shap
     return result
 
 
-cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, object x1_obj, object x2_obj,
+cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, utils.dpnp_descriptor x1_obj, utils.dpnp_descriptor x2_obj,
                                 object dtype=None, dparray out=None, object where=True):
-    cdef dparray_shape_type x1_shape, x2_shape, result_shape
-
-    cdef bint x1_obj_is_dparray = isinstance(x1_obj, dparray)
-    cdef bint x2_obj_is_dparray = isinstance(x2_obj, dparray)
-
-    cdef dparray x1_dparray, x2_dparray
-
-    common_type = utils.find_common_type(x1_obj, x2_obj)
-
-    if x1_obj_is_dparray:
-        x1_dparray = x1_obj
-    else:
-        x1_dparray = dparray((1,), dtype=common_type)
-        utils.copy_values_to_dparray(x1_dparray, (x1_obj,))
-
-    if x2_obj_is_dparray:
-        x2_dparray = x2_obj
-    else:
-        x2_dparray = dparray((1,), dtype=common_type)
-        utils.copy_values_to_dparray(x2_dparray, (x2_obj,))
-
-    x1_shape = x1_dparray.shape
-    x2_shape = x2_dparray.shape
-    result_shape = utils.get_common_shape(x1_shape, x2_shape)
-
-    # Convert string type names (dparray.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType x1_c_type = dpnp_dtype_to_DPNPFuncType(x1_dparray.dtype)
-    cdef DPNPFuncType x2_c_type = dpnp_dtype_to_DPNPFuncType(x2_dparray.dtype)
-
-    # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, x1_c_type, x2_c_type)
-
-    # TODO: apply parameters out and dtype after reafactoring fmap (required 4th level nesting)
-
-    # Create result array
-    cdef dparray result = utils.create_output_array(result_shape, kernel_data.return_type, out)
-
-    """ Call FPTR function """
-    cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
-    func(result.get_data(), x1_dparray.get_data(), x1_dparray.size, x1_shape.data(), x1_shape.size(),
-         x2_dparray.get_data(), x2_dparray.size, x2_shape.data(), x2_shape.size(), NULL)
-
-    return result
-
-# this is replacement for "call_fptr_2in_1out". original function must be deleted after transotion.
-cdef dparray call_fptr_2in_1out_new(DPNPFuncName fptr_name, utils.dpnp_descriptor x1_obj, utils.dpnp_descriptor x2_obj,
-                                    object dtype=None, dparray out=None, object where=True):
     # Convert string type names (dparray.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType x1_c_type = dpnp_dtype_to_DPNPFuncType(x1_obj.dtype)
     cdef DPNPFuncType x2_c_type = dpnp_dtype_to_DPNPFuncType(x2_obj.dtype)
