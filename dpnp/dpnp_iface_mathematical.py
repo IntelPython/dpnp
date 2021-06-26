@@ -404,14 +404,13 @@ def cross(x1, x2, axisa=-1, axisb=-1, axisc=-1, axis=None):
 
     """
 
-    if not use_origin_backend(x1):
-        if not isinstance(x1, dparray):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+
+    if x1_desc and x2_desc:
+        if x1_desc.size != 3 or x2_desc.size != 3:
             pass
-        elif not isinstance(x2, dparray):
-            pass
-        elif x1.size != 3 or x2.size != 3:
-            pass
-        elif x1.shape != (3,) or x2.shape != (3,):
+        elif x1_desc.shape != (3,) or x2_desc.shape != (3,):
             pass
         elif axisa != -1:
             pass
@@ -422,7 +421,7 @@ def cross(x1, x2, axisa=-1, axisb=-1, axisc=-1, axis=None):
         elif axis is not None:
             pass
         else:
-            return dpnp_cross(x1, x2)
+            return dpnp_cross(x1_desc, x2_desc)
 
     return call_origin(numpy.cross, x1, x2, axisa, axisb, axisc, axis)
 
@@ -1497,23 +1496,26 @@ def subtract(x1, x2, dtype=None, out=None, where=True, **kwargs):
     [2, -4]
 
     """
-    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
-    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
-    if not use_origin_backend(x1) and not kwargs:
-        if not x1_is_dparray and not x1_is_scalar:
+    x1_is_scalar = dpnp.isscalar(x1)
+    x2_is_scalar = dpnp.isscalar(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+
+    if x1_desc and x2_desc and not kwargs:
+        if not x1_desc and not x1_is_scalar:
             pass
-        elif not x2_is_dparray and not x2_is_scalar:
+        elif not x2_desc and not x2_is_scalar:
             pass
         elif x1_is_scalar and x2_is_scalar:
             pass
-        elif x1_is_dparray and x1.ndim == 0:
+        elif x1_desc and x1_desc.ndim == 0:
             pass
-        elif x1_is_dparray and x1.dtype == numpy.bool:
+        elif x1_desc and x1_desc.dtype == numpy.bool:
             pass
-        elif x2_is_dparray and x2.ndim == 0:
+        elif x2_desc and x2_desc.ndim == 0:
             pass
-        elif x2_is_dparray and x2.dtype == numpy.bool:
+        elif x2_desc and x2_desc.dtype == numpy.bool:
             pass
         elif dtype is not None:
             pass
@@ -1522,7 +1524,7 @@ def subtract(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_subtract(x1, x2, dtype=dtype, out=out, where=where)
+            return dpnp_subtract(x1_desc, x2_desc, dtype=dtype, out=out, where=where)
 
     return call_origin(numpy.subtract, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
