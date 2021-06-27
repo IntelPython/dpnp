@@ -113,7 +113,7 @@ def arccos(x1):
     if x1_desc:
         return dpnp_arccos(x1_desc)
 
-    return numpy.arccos(x1)
+    return call_origin(numpy.arccos, x1, **kwargs)
 
 
 def arccosh(x1):
@@ -150,7 +150,7 @@ def arccosh(x1):
     if x1_desc:
         return dpnp_arccosh(x1_desc)
 
-    return numpy.arccosh(x1)
+    return call_origin(numpy.arccosh, x1, **kwargs)
 
 
 def arcsin(x1):
@@ -188,7 +188,7 @@ def arcsin(x1):
     if x1_desc:
         return dpnp_arcsin(x1_desc)
 
-    return numpy.arcsin(x1)
+    return call_origin(numpy.arcsin, x1, **kwargs)
 
 
 def arcsinh(x1):
@@ -217,7 +217,7 @@ def arcsinh(x1):
     if x1_desc:
         return dpnp_arcsinh(x1_desc)
 
-    return numpy.arcsinh(x1)
+    return call_origin(numpy.arcsinh, x1, **kwargs)
 
 
 def arctan(x1):
@@ -251,7 +251,7 @@ def arctan(x1):
     if x1_desc:
         return dpnp_arctan(x1_desc)
 
-    return numpy.arctan(x1)
+    return call_origin(numpy.arctan, x1, **kwargs)
 
 
 def arctanh(x1):
@@ -279,7 +279,7 @@ def arctanh(x1):
     if x1_desc:
         return dpnp_arctanh(x1_desc)
 
-    return numpy.arctanh(x1)
+    return call_origin(numpy.arctanh, x1, **kwargs)
 
 
 def cbrt(x1):
@@ -307,7 +307,7 @@ def cbrt(x1):
     if x1_desc:
         return dpnp_cbrt(x1_desc)
 
-    return numpy.cbrt(x1)
+    return call_origin(numpy.cbrt, x1, **kwargs)
 
 
 def arctan2(x1, x2, dtype=None, out=None, where=True, **kwargs):
@@ -397,7 +397,7 @@ def cos(x1):
     if x1_desc:
         return dpnp_cos(x1_desc)
 
-    return numpy.cos(x1)
+    return call_origin(numpy.cos, x1, **kwargs)
 
 
 def cosh(x1):
@@ -425,7 +425,7 @@ def cosh(x1):
     if x1_desc:
         return dpnp_cosh(x1_desc)
 
-    return numpy.cosh(x1)
+    return call_origin(numpy.cosh, x1, **kwargs)
 
 
 def deg2rad(x1):
@@ -476,7 +476,7 @@ def degrees(x1):
     if x1_desc:
         return dpnp_degrees(x1_desc)
 
-    return numpy.degrees(x1)
+    return call_origin(numpy.degrees, x1, **kwargs)
 
 
 def exp(x1):
@@ -1062,7 +1062,7 @@ def unwrap(x1):
     """
 
     if (use_origin_backend(x1)):
-        return numpy.unwrap(x1)
+        return call_origin(numpy.unwrap, x1, **kwargs)
 
     if not isinstance(x1, dparray):
         raise TypeError(f"DPNP unwrap(): Unsupported x1={type(x1)}")
