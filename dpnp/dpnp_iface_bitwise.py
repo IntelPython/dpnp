@@ -227,11 +227,10 @@ def invert(x, **kwargs):
     -14
 
     """
-    if not use_origin_backend(x) and not kwargs:
-        if not isinstance(x, dparray):
-            pass
-        else:
-            return dpnp_invert(x)
+
+    x1_desc = dpnp.get_dpnp_descriptor(x)
+    if x1_desc and not kwargs:
+        return dpnp_invert(x1_desc)
 
     return call_origin(numpy.invert, x, **kwargs)
 

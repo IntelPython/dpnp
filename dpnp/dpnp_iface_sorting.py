@@ -90,9 +90,8 @@ def argsort(in_array1, axis=-1, kind=None, order=None):
 
     """
 
-    is_dparray1 = isinstance(in_array1, dparray)
-
-    if (not use_origin_backend(in_array1) and is_dparray1):
+    x1_desc = dpnp.get_dpnp_descriptor(in_array1)
+    if x1_desc:
         if axis != -1:
             checker_throw_value_error("argsort", "axis", axis, -1)
         if kind is not None:
@@ -100,7 +99,7 @@ def argsort(in_array1, axis=-1, kind=None, order=None):
         if order is not None:
             checker_throw_value_error("argsort", "order", type(order), None)
 
-        return dpnp_argsort(in_array1)
+        return dpnp_argsort(x1_desc)
 
     return numpy.argsort(in_array1, axis, kind, order)
 
@@ -200,12 +199,12 @@ def sort(x1, **kwargs):
     [1, 1, 3, 4]
 
     """
-    if not use_origin_backend(x1) and not kwargs:
-        if not isinstance(x1, dparray):
-            pass
-        elif x1.ndim != 1:
+
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        if x1_desc.ndim != 1:
             pass
         else:
-            return dpnp_sort(x1)
+            return dpnp_sort(x1_desc)
 
     return call_origin(numpy.sort, x1, **kwargs)

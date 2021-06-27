@@ -39,5 +39,5 @@ __all__ += [
 ]
 
 
-cpdef dparray dpnp_erf(dparray x1):
+cpdef dparray dpnp_erf(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_ERF, x1, x1.shape)

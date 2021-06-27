@@ -126,11 +126,11 @@ cpdef dpnp_around(dparray x1, int decimals):
     return result
 
 
-cpdef dparray dpnp_ceil(dparray x1):
+cpdef dparray dpnp_ceil(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_CEIL, x1, x1.shape)
 
 
-cpdef dparray dpnp_conjugate(dparray x1):
+cpdef dparray dpnp_conjugate(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_CONJIGUATE, x1, x1.shape)
 
 
@@ -142,7 +142,7 @@ cpdef dparray dpnp_cross(object x1_obj, object x2_obj, object dtype=None, dparra
     return call_fptr_2in_1out(DPNP_FN_CROSS, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
-cpdef dparray dpnp_cumprod(dparray x1):
+cpdef dparray dpnp_cumprod(utils.dpnp_descriptor x1):
     # instead of x1.shape, (x1.size, ) is passed to the function
     # due to the following:
     # >>> import numpy
@@ -154,7 +154,7 @@ cpdef dparray dpnp_cumprod(dparray x1):
     return call_fptr_1in_1out(DPNP_FN_CUMPROD, x1, (x1.size,))
 
 
-cpdef dparray dpnp_cumsum(dparray x1):
+cpdef dparray dpnp_cumsum(utils.dpnp_descriptor x1):
     # instead of x1.shape, (x1.size, ) is passed to the function
     # due to the following:
     # >>> import numpy
@@ -197,7 +197,7 @@ cpdef dparray dpnp_divide(object x1_obj, object x2_obj, object dtype=None, dparr
     return call_fptr_2in_1out(DPNP_FN_DIVIDE, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
-cpdef dparray dpnp_ediff1d(dparray x1):
+cpdef dparray dpnp_ediff1d(utils.dpnp_descriptor x1):
 
     if x1.size <= 1:
         return dpnp.empty(0, dtype=x1.dtype)
@@ -205,11 +205,11 @@ cpdef dparray dpnp_ediff1d(dparray x1):
     return call_fptr_1in_1out(DPNP_FN_EDIFF1D, x1, (x1.size - 1,))
 
 
-cpdef dparray dpnp_fabs(dparray x1):
+cpdef dparray dpnp_fabs(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_FABS, x1, x1.shape)
 
 
-cpdef dparray dpnp_floor(dparray x1):
+cpdef dparray dpnp_floor(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_FLOOR, x1, x1.shape)
 
 
@@ -285,7 +285,8 @@ cpdef dparray dpnp_nancumprod(dparray x1):
         if dpnp.isnan(cur_x1[i]):
             cur_x1._setitem_scalar(i, 1)
 
-    return dpnp_cumprod(cur_x1)
+    x1_desc = dpnp.get_dpnp_descriptor(cur_x1)
+    return dpnp_cumprod(x1_desc)
 
 
 cpdef dparray dpnp_nancumsum(dparray x1):
@@ -296,7 +297,8 @@ cpdef dparray dpnp_nancumsum(dparray x1):
         if dpnp.isnan(cur_x1[i]):
             cur_x1._setitem_scalar(i, 0)
 
-    return dpnp_cumsum(cur_x1)
+    x1_desc = dpnp.get_dpnp_descriptor(cur_x1)
+    return dpnp_cumsum(x1_desc)
 
 
 cpdef dpnp_nanprod(dparray x1):
@@ -330,8 +332,8 @@ cpdef dpnp_nansum(dparray x1):
     return x1.dtype.type(sum_result[0])
 
 
-cpdef dparray dpnp_negative(dparray array1):
-    return call_fptr_1in_1out(DPNP_FN_NEGATIVE, array1, array1.shape)
+cpdef dparray dpnp_negative(dpnp_descriptor x1):
+    return call_fptr_1in_1out(DPNP_FN_NEGATIVE, x1, x1.shape)
 
 
 cpdef dparray dpnp_power(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
@@ -374,7 +376,7 @@ cpdef dparray dpnp_remainder(object x1_obj, object x2_obj, object dtype=None, dp
     return call_fptr_2in_1out(DPNP_FN_REMAINDER, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
-cpdef dparray dpnp_sign(dparray x1):
+cpdef dparray dpnp_sign(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_SIGN, x1, x1.shape)
 
 
@@ -421,5 +423,5 @@ cpdef dpnp_trapz(dparray y1, dparray x1, double dx):
     return result[0]
 
 
-cpdef dparray dpnp_trunc(dparray x1):
+cpdef dparray dpnp_trunc(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_TRUNC, x1, x1.shape)
