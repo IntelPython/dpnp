@@ -352,8 +352,9 @@ def copy(a, order='C', subok=False):
 
     """
 
-    if not use_origin_backend(a):
-        return dpnp_copy(a, order, subok)
+    x1_desc = dpnp.get_dpnp_descriptor(a)
+    if x1_desc:
+        return dpnp_copy(x1_desc, order, subok)
 
     return call_origin(numpy.copy, a, order, subok)
 

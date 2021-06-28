@@ -29,11 +29,7 @@ from libcpp cimport bool as cpp_bool
 from libcpp.vector cimport vector
 
 from dpnp.dparray cimport dparray, dparray_shape_type
-from dpnp.dpnp_algo cimport(DPNPFuncType,
-                            DPNPFuncName,
-                            get_dpnp_function_ptr,
-                            dpnp_dtype_to_DPNPFuncType,
-                            dpnp_DPNPFuncType_to_dtype)
+from dpnp.dpnp_algo.dpnp_algo cimport DPNPFuncType, DPNPFuncName
 
 
 cpdef checker_throw_runtime_error(function_name, message)

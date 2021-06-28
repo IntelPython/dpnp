@@ -64,83 +64,83 @@ __all__ += [
 ]
 
 
-cpdef dparray dpnp_arccos(dparray x1):
+cpdef dparray dpnp_arccos(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_ARCCOS, x1, x1.shape)
 
 
-cpdef dparray dpnp_arccosh(dparray x1):
+cpdef dparray dpnp_arccosh(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_ARCCOSH, x1, x1.shape)
 
 
-cpdef dparray dpnp_arcsin(dparray x1):
+cpdef dparray dpnp_arcsin(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_ARCSIN, x1, x1.shape)
 
 
-cpdef dparray dpnp_arcsinh(dparray x1):
+cpdef dparray dpnp_arcsinh(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_ARCSINH, x1, x1.shape)
 
 
-cpdef dparray dpnp_arctan(dparray x1):
+cpdef dparray dpnp_arctan(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_ARCTAN, x1, x1.shape)
 
 
-cpdef dparray dpnp_arctanh(dparray x1):
+cpdef dparray dpnp_arctanh(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_ARCTANH, x1, x1.shape)
 
 
-cpdef dparray dpnp_cbrt(dparray x1):
+cpdef dparray dpnp_cbrt(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_CBRT, x1, x1.shape)
 
 
-cpdef dparray dpnp_cos(dparray x1):
+cpdef dparray dpnp_cos(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_COS, x1, x1.shape)
 
 
-cpdef dparray dpnp_cosh(dparray x1):
+cpdef dparray dpnp_cosh(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_COSH, x1, x1.shape)
 
 
-cpdef dparray dpnp_degrees(dparray x1):
+cpdef dparray dpnp_degrees(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_DEGREES, x1, x1.shape)
 
 
-cpdef dparray dpnp_exp(dparray x1):
+cpdef dparray dpnp_exp(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_EXP, x1, x1.shape)
 
 
-cpdef dparray dpnp_exp2(dparray x1):
+cpdef dparray dpnp_exp2(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_EXP2, x1, x1.shape)
 
 
-cpdef dparray dpnp_expm1(dparray x1):
+cpdef dparray dpnp_expm1(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_EXPM1, x1, x1.shape)
 
 
-cpdef dparray dpnp_log(dparray x1):
+cpdef dparray dpnp_log(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_LOG, x1, x1.shape)
 
 
-cpdef dparray dpnp_log10(dparray x1):
+cpdef dparray dpnp_log10(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_LOG10, x1, x1.shape)
 
 
-cpdef dparray dpnp_log1p(dparray x1):
+cpdef dparray dpnp_log1p(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_LOG1P, x1, x1.shape)
 
 
-cpdef dparray dpnp_log2(dparray x1):
+cpdef dparray dpnp_log2(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_LOG2, x1, x1.shape)
 
 
-cpdef dparray dpnp_recip(dparray x1):
+cpdef dparray dpnp_recip(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_RECIP, x1, x1.shape)
 
 
-cpdef dparray dpnp_radians(dparray x1):
+cpdef dparray dpnp_radians(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_RADIANS, x1, x1.shape)
 
 
-cpdef dparray dpnp_sin(dparray x1, dparray out=None):
+cpdef dparray dpnp_sin(utils.dpnp_descriptor x1, dparray out=None):
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
 
@@ -168,23 +168,23 @@ cpdef dparray dpnp_sin(dparray x1, dparray out=None):
     return result
 
 
-cpdef dparray dpnp_sinh(dparray x1):
+cpdef dparray dpnp_sinh(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_SINH, x1, x1.shape)
 
 
-cpdef dparray dpnp_sqrt(dparray x1):
+cpdef dparray dpnp_sqrt(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_SQRT, x1, x1.shape)
 
 
-cpdef dparray dpnp_square(dparray x1):
+cpdef dparray dpnp_square(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_SQUARE, x1, x1.shape)
 
 
-cpdef dparray dpnp_tan(dparray x1):
+cpdef dparray dpnp_tan(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_TAN, x1, x1.shape)
 
 
-cpdef dparray dpnp_tanh(dparray x1):
+cpdef dparray dpnp_tanh(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_TANH, x1, x1.shape)
 
 

@@ -286,10 +286,9 @@ def ceil(x1, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
-        return dpnp_ceil(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        return dpnp_ceil(x1_desc)
 
     return call_origin(numpy.ceil, x1, **kwargs)
 
@@ -316,10 +315,9 @@ def conjugate(x1, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
-        return dpnp_conjugate(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        return dpnp_conjugate(x1_desc)
 
     return call_origin(numpy.conjugate, x1, **kwargs)
 
@@ -453,11 +451,9 @@ def cumprod(x1, **kwargs):
 
     """
 
-    if not use_origin_backend(x1) and not kwargs:
-        if not isinstance(x1, dparray):
-            pass
-        else:
-            return dpnp_cumprod(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        return dpnp_cumprod(x1_desc)
 
     return call_origin(numpy.cumprod, x1, **kwargs)
 
@@ -489,11 +485,9 @@ def cumsum(x1, **kwargs):
 
     """
 
-    if not use_origin_backend(x1) and not kwargs:
-        if not isinstance(x1, dparray):
-            pass
-        else:
-            return dpnp_cumsum(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        return dpnp_cumsum(x1_desc)
 
     return call_origin(numpy.cumsum, x1, **kwargs)
 
@@ -610,8 +604,14 @@ def ediff1d(x1, to_end=None, to_begin=None):
 
     """
 
-    if not use_origin_backend(x1) and isinstance(x1, dparray):
-        return dpnp_ediff1d(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if to_begin is not None:
+            pass
+        elif to_end is not None:
+            pass
+        else:
+            return dpnp_ediff1d(x1_desc)
 
     return call_origin(numpy.ediff1d, x1, to_end=to_end, to_begin=to_begin)
 
@@ -640,10 +640,9 @@ def fabs(x1, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray):
-        return dpnp_fabs(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_fabs(x1_desc)
 
     return call_origin(numpy.fabs, x1, **kwargs)
 
@@ -681,10 +680,9 @@ def floor(x1, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
-        return dpnp_floor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        return dpnp_floor(x1_desc)
 
     return call_origin(numpy.floor, x1, **kwargs)
 
@@ -1280,10 +1278,9 @@ def negative(x1, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
-        return dpnp_negative(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        return dpnp_negative(x1_desc)
 
     return call_origin(numpy.negative, x1, **kwargs)
 
@@ -1466,10 +1463,9 @@ def sign(x1, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
-        return dpnp_sign(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        return dpnp_sign(x1_desc)
 
     return call_origin(numpy.sign, x1, **kwargs)
 
@@ -1661,9 +1657,8 @@ def trunc(x1, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
-        return dpnp_trunc(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        return dpnp_trunc(x1_desc)
 
     return call_origin(numpy.trunc, x1, **kwargs)

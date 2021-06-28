@@ -34,13 +34,14 @@ This module contains differnt helpers and utilities
 from libcpp cimport bool as cpp_bool
 from libcpp.complex cimport complex as cpp_complex
 
-import dpnp
-import dpnp.config as config
-import numpy
-
 cimport cpython
 cimport cython
 cimport numpy
+from dpnp.dpnp_algo cimport dpnp_DPNPFuncType_to_dtype, dpnp_dtype_to_DPNPFuncType, get_dpnp_function_ptr
+
+import dpnp
+import dpnp.config as config
+import numpy
 
 
 """

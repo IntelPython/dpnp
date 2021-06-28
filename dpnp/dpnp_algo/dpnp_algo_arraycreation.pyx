@@ -62,7 +62,7 @@ ctypedef void(*custom_indexing_1out_func_ptr_t)(void * , const size_t , const si
 ctypedef void(*fptr_dpnp_trace_t)(const void *, void * , const size_t * , const size_t)
 
 
-cpdef dparray dpnp_copy(dparray x1, order, subok):
+cpdef dparray dpnp_copy(utils.dpnp_descriptor x1, order, subok):
     return call_fptr_1in_1out(DPNP_FN_COPY, x1, x1.shape)
 
 

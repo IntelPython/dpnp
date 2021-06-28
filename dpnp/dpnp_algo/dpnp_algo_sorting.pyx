@@ -46,8 +46,8 @@ ctypedef void(*fptr_dpnp_partition_t)(void * , void * , void * , const size_t , 
 ctypedef void(*fptr_dpnp_searchsorted_t)(void * , const void * , const void * , bool , const size_t , const size_t )
 
 
-cpdef dparray dpnp_argsort(dparray in_array1):
-    return call_fptr_1in_1out(DPNP_FN_ARGSORT, in_array1, in_array1.shape)
+cpdef dparray dpnp_argsort(utils.dpnp_descriptor x1):
+    return call_fptr_1in_1out(DPNP_FN_ARGSORT, x1, x1.shape)
 
 
 cpdef dparray dpnp_partition(dparray arr, int kth, axis=-1, kind='introselect', order=None):
@@ -86,5 +86,5 @@ cpdef dparray dpnp_searchsorted(dparray arr, dparray v, side='left'):
     return result
 
 
-cpdef dparray dpnp_sort(dparray in_array1):
-    return call_fptr_1in_1out(DPNP_FN_SORT, in_array1, in_array1.shape)
+cpdef dparray dpnp_sort(utils.dpnp_descriptor x1):
+    return call_fptr_1in_1out(DPNP_FN_SORT, x1, x1.shape)
