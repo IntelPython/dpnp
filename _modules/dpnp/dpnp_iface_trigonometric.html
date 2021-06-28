@@ -263,13 +263,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_arccos</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPNP arccos(): Unsupported x1=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_arccos</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arccos</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="arccosh"><a class="viewcode-back" href="../../reference/generated/dpnp.arccosh.html#dpnp.arccosh">[docs]</a><span class="k">def</span> <span class="nf">arccosh</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
@@ -302,13 +300,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arccosh</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_arccosh</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPNP arccosh(): Unsupported x1=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_arccosh</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arccosh</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="arcsin"><a class="viewcode-back" href="../../reference/generated/dpnp.arcsin.html#dpnp.arcsin">[docs]</a><span class="k">def</span> <span class="nf">arcsin</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
@@ -342,13 +338,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_arcsin</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPNP arcsin(): Unsupported x1=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_arcsin</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arcsin</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="arcsinh"><a class="viewcode-back" href="../../reference/generated/dpnp.arcsinh.html#dpnp.arcsinh">[docs]</a><span class="k">def</span> <span class="nf">arcsinh</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
@@ -373,13 +367,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arcsinh</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_arcsinh</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPNP arcsinh(): Unsupported x1=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_arcsinh</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arcsinh</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="arctan"><a class="viewcode-back" href="../../reference/generated/dpnp.arctan.html#dpnp.arctan">[docs]</a><span class="k">def</span> <span class="nf">arctan</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
@@ -409,13 +401,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_arctan</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPNP arctan(): Unsupported x1=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_arctan</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arctan</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="arctanh"><a class="viewcode-back" href="../../reference/generated/dpnp.arctanh.html#dpnp.arctanh">[docs]</a><span class="k">def</span> <span class="nf">arctanh</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
@@ -439,13 +429,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arctanh</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_arctanh</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPNP arctanh(): Unsupported x1=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_arctanh</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arctanh</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="cbrt"><a class="viewcode-back" href="../../reference/generated/dpnp.cbrt.html#dpnp.cbrt">[docs]</a><span class="k">def</span> <span class="nf">cbrt</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
@@ -469,13 +457,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">cbrt</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_cbrt</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPNP cbrt(): Unsupported x1=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_cbrt</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">cbrt</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="arctan2"><a class="viewcode-back" href="../../reference/generated/dpnp.arctan2.html#dpnp.arctan2">[docs]</a><span class="k">def</span> <span class="nf">arctan2</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -561,13 +547,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_cos</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPNP cos(): Unsupported x1=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_cos</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">cos</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="cosh"><a class="viewcode-back" href="../../reference/generated/dpnp.cosh.html#dpnp.cosh">[docs]</a><span class="k">def</span> <span class="nf">cosh</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
@@ -591,13 +575,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_cosh</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPNP cosh(): Unsupported x1=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_cosh</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">cosh</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="deg2rad"><a class="viewcode-back" href="../../reference/generated/dpnp.deg2rad.html#dpnp.deg2rad">[docs]</a><span class="k">def</span> <span class="nf">deg2rad</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
@@ -616,9 +598,6 @@
 <span class="sd">    This function works exactly the same as :obj:`dpnp.radians`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">radians</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span></div>
 
@@ -647,13 +626,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_degrees</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPNP degrees(): Unsupported x1=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_degrees</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">degrees</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="exp"><a class="viewcode-back" href="../../reference/generated/dpnp.exp.html#dpnp.exp">[docs]</a><span class="k">def</span> <span class="nf">exp</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
@@ -681,11 +658,10 @@
 <span class="sd">    [1.0, 2.718281828, 7.389056099]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_exp</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_exp</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">exp</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span></div>
 
@@ -716,13 +692,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">exp2</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_exp2</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPNP exp2(): Unsupported x1=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_exp2</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">exp2</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="expm1"><a class="viewcode-back" href="../../reference/generated/dpnp.expm1.html#dpnp.expm1">[docs]</a><span class="k">def</span> <span class="nf">expm1</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
@@ -748,13 +722,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_expm1</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPNP expm1(): Unsupported x1=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_expm1</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">expm1</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="hypot"><a class="viewcode-back" href="../../reference/generated/dpnp.hypot.html#dpnp.hypot">[docs]</a><span class="k">def</span> <span class="nf">hypot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -841,11 +813,10 @@
 <span class="sd">    [0.0, 1.0, 2.0, -inf]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_log</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_log</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">log</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span></div>
 
@@ -871,13 +842,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_log10</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPNP log10(): Unsupported x1=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_log10</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">log10</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="log1p"><a class="viewcode-back" href="../../reference/generated/dpnp.log1p.html#dpnp.log1p">[docs]</a><span class="k">def</span> <span class="nf">log1p</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
@@ -905,13 +874,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_log1p</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPNP log1p(): Unsupported x1=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_log1p</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">log1p</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="log2"><a class="viewcode-back" href="../../reference/generated/dpnp.log2.html#dpnp.log2">[docs]</a><span class="k">def</span> <span class="nf">log2</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
@@ -943,16 +910,14 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_log2</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPNP log2(): Unsupported x1=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_log2</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">log2</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="reciprocal"><a class="viewcode-back" href="../../reference/generated/dpnp.reciprocal.html#dpnp.reciprocal">[docs]</a><span class="k">def</span> <span class="nf">reciprocal</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="reciprocal"><a class="viewcode-back" href="../../reference/generated/dpnp.reciprocal.html#dpnp.reciprocal">[docs]</a><span class="k">def</span> <span class="nf">reciprocal</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the reciprocal of the argument, element-wise.</span>
 
@@ -974,13 +939,12 @@
 <span class="sd">    [1.0, 0.5, 0.3003003]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_recip</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">reciprocal</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_recip</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">reciprocal</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="rad2deg"><a class="viewcode-back" href="../../reference/generated/dpnp.rad2deg.html#dpnp.rad2deg">[docs]</a><span class="k">def</span> <span class="nf">rad2deg</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
@@ -999,12 +963,6 @@
 <span class="sd">    This function works exactly the same as :obj:`dpnp.degrees`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPNP rad2deg(): Unsupported x1=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">degrees</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span></div>
 
@@ -1032,13 +990,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_radians</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPNP radians(): Unsupported x1=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_radians</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">radians</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="sin"><a class="viewcode-back" href="../../reference/generated/dpnp.sin.html#dpnp.sin">[docs]</a><span class="k">def</span> <span class="nf">sin</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1071,13 +1027,10 @@
 <span class="sd">    [0.0, 1.0, 1.2246467991473532e-16]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_sin</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_sin</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sin</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -1104,13 +1057,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sinh</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_sinh</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPNP sinh(): Unsupported x1=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_sinh</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sinh</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="sqrt"><a class="viewcode-back" href="../../reference/generated/dpnp.sqrt.html#dpnp.sqrt">[docs]</a><span class="k">def</span> <span class="nf">sqrt</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
@@ -1135,13 +1086,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_sqrt</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_sqrt</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">sqrt</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="square"><a class="viewcode-back" href="../../reference/generated/dpnp.square.html#dpnp.square">[docs]</a><span class="k">def</span> <span class="nf">square</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
@@ -1172,13 +1121,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_square</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPNP square(): Unsupported x1=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_square</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">square</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="tan"><a class="viewcode-back" href="../../reference/generated/dpnp.tan.html#dpnp.tan">[docs]</a><span class="k">def</span> <span class="nf">tan</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
@@ -1203,13 +1150,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_tan</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPNP tan(): Unsupported x1=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_tan</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">tan</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="tanh"><a class="viewcode-back" href="../../reference/generated/dpnp.tanh.html#dpnp.tanh">[docs]</a><span class="k">def</span> <span class="nf">tanh</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
@@ -1234,13 +1179,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_tanh</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPNP tanh(): Unsupported x1=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_tanh</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">tanh</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="unwrap"><a class="viewcode-back" href="../../reference/generated/dpnp.unwrap.html#dpnp.unwrap">[docs]</a><span class="k">def</span> <span class="nf">unwrap</span><span class="p">(</span><span class="n">x1</span><span class="p">):</span>
@@ -1273,7 +1216,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">unwrap</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">unwrap</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dparray</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DPNP unwrap(): Unsupported x1=</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
