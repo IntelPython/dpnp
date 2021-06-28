@@ -43,7 +43,7 @@ int main(int, char**)
     const size_t iters = 300;
 
     clock_t start, end;
-    double cpu_time_used, sum_cpu_time_used = 0.0;
+    double dev_time_used, sum_dev_time_used = 0.0;
 
     dpnp_queue_initialize_c(QueueOptions::CPU_SELECTOR);
 
@@ -61,13 +61,13 @@ int main(int, char**)
         start = clock();
         dpnp_rng_normal_c<double>(result, loc, scale, size);
         end = clock();
-        sum_cpu_time_used += ((double) (end - start)) / CLOCKS_PER_SEC;
+        sum_dev_time_used += ((double) (end - start)) / CLOCKS_PER_SEC;
     }
 
     dpnp_memory_free_c(result);
 
-    cpu_time_used = sum_cpu_time_used / iters;
-    std::cout << cpu_time_used << std::endl;
+    dev_time_used = sum_dev_time_used / iters;
+    std::cout << dev_time_used << std::endl;
 
     return 0;
 }
