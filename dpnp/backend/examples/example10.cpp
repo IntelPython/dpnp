@@ -48,7 +48,6 @@ int main(int, char**)
     dpnp_queue_initialize_c(QueueOptions::CPU_SELECTOR);
 
     double* result = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    double* exper_results = (double*)dpnp_memory_alloc_c(iters * sizeof(double));
 
     size_t seed = 10;
     double loc = 0.0;
