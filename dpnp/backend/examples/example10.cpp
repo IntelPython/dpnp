@@ -27,7 +27,7 @@
  * Example 10.
  *
  * Possible compile line:
- * clang++ -g -fPIC examples/example10.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example10
+ * dpcpp -fPIC examples/example10.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example10
  *
  */
 
@@ -39,13 +39,13 @@
 
 int main(int, char**)
 {
-    const size_t size = 1000000;
+    const size_t size = 100000000;
     const size_t iters = 300;
 
     clock_t start, end;
     double dev_time_used, sum_dev_time_used = 0.0;
 
-    dpnp_queue_initialize_c(QueueOptions::CPU_SELECTOR);
+    dpnp_queue_initialize_c(QueueOptions::GPU_SELECTOR);
 
     double* result = (double*)dpnp_memory_alloc_c(size * sizeof(double));
 
@@ -53,15 +53,18 @@ int main(int, char**)
     double loc = 0.0;
     double scale = 1.0;
 
+    dpnp_rng_srand_c(seed);
+
     std::cout << "Normal distr. params:\nloc is " << loc << ", scale is " << scale << std::endl;
 
     for (size_t i = 0; i < iters; ++i)
     {
-        dpnp_rng_srand_c(seed);
         start = clock();
         dpnp_rng_normal_c<double>(result, loc, scale, size);
         end = clock();
         sum_dev_time_used += ((double) (end - start)) / CLOCKS_PER_SEC;
+        // TODO: cumulative addition error
+        // div error
     }
 
     dpnp_memory_free_c(result);
