@@ -27,35 +27,29 @@
  * Example 10.
  *
  * Possible compile line:
- * dpcpp -fPIC examples/example10.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example10
- *
+ * clang++ -fPIC -fsycl dpnp/backend/examples/example10.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example10 -lmkl_sycl -lmkl_intel_ilp64 -lmkl_core
  */
 
 #include <iostream>
 #include <time.h>
 
+#include <CL/sycl.hpp>
+#include <oneapi/mkl.hpp>
+
 #include <dpnp_iface.hpp>
 
 
-int main(int, char**)
+void test_dpnp_random_normal(const size_t size, const size_t iters, const size_t seed, const double loc, const double scale)
 {
-    const size_t size = 100000000;
-    const size_t iters = 300;
-
     clock_t start, end;
-    double dev_time_used, sum_dev_time_used = 0.0;
+    double dev_time_used = 0.0;
+    double sum_dev_time_used = 0.0;
 
     dpnp_queue_initialize_c(QueueOptions::GPU_SELECTOR);
 
     double* result = (double*)dpnp_memory_alloc_c(size * sizeof(double));
 
-    size_t seed = 10;
-    double loc = 0.0;
-    double scale = 1.0;
-
-    dpnp_rng_srand_c(seed);
-
-    std::cout << "Normal distr. params:\nloc is " << loc << ", scale is " << scale << std::endl;
+    dpnp_rng_srand_c(seed); // TODO: will move
 
     for (size_t i = 0; i < iters; ++i)
     {
@@ -70,7 +64,65 @@ int main(int, char**)
     dpnp_memory_free_c(result);
 
     dev_time_used = sum_dev_time_used / iters;
+    std::cout << "DPNPC random normal: " << dev_time_used << std::endl;
+
+    return;
+}
+
+// TODO: name check
+void test_mkl_random_normal(const size_t size, const size_t iters, const size_t seed, const double loc, const double scale)
+{
+    clock_t start, end;
+    double dev_time_used = 0.0;
+    double sum_dev_time_used = 0.0;
+
+    cl::sycl::queue queue{cl::sycl::gpu_selector()};
+
+    double* result = reinterpret_cast<double*>(malloc_shared(size * sizeof(double), queue));
+    if (result == nullptr)
+    {
+        throw std::runtime_error("Error: out of memory.");
+    }
+
+    oneapi::mkl::rng::mt19937 rng_engine(queue, seed);
+    oneapi::mkl::rng::gaussian<double> distribution(loc, scale);
+
+    for (size_t i = 0; i < iters; ++i)
+    {
+        start = clock();
+
+        auto event_out = oneapi::mkl::rng::generate(distribution, rng_engine, size, result);
+        event_out.wait();
+
+        end = clock();
+
+        sum_dev_time_used += ((double) (end - start)) / CLOCKS_PER_SEC;
+        // TODO: cumulative addition error
+        // div error
+    }
+    free(result, queue);
+
+    std::cout << "MKL time: ";
+    dev_time_used = sum_dev_time_used / iters;
     std::cout << dev_time_used << std::endl;
+
+    return;
+}
+
+
+int main(int, char**)
+{
+    const size_t size = 100000000;
+    const size_t iters = 30;
+
+    const size_t seed = 10;
+    const double loc = 0.0;
+    const double scale = 1.0;
+
+    std::cout << "Normal distr. params:\nloc is " << loc << ", scale is " << scale << std::endl;
+
+    test_dpnp_random_normal(size, iters, seed, loc, scale);
+    test_mkl_random_normal(size, iters, seed, loc, scale);
 
     return 0;
 }
