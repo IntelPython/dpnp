@@ -30,6 +30,7 @@
  * to calculate eigenvalues and eigenvectors of a symmetric matrix
  *
  * Possible compile line:
+ * . /opt/intel/oneapi/setvars.sh
  * g++ -g dpnp/backend/examples/example7.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example7
  *
  */
