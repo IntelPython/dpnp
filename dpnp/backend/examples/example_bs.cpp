@@ -30,8 +30,7 @@
  * to calculate black scholes algorithm like in Python version
  *
  * Possible compile line:
- * clang++ -g -fPIC dpnp/backend/examples/example_bs.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example_bs
- *
+ * g++ -g dpnp/backend/examples/example_bs.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example_bs
  */
 
 #include <cmath>

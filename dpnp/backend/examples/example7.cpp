@@ -30,7 +30,7 @@
  * to calculate eigenvalues and eigenvectors of a symmetric matrix
  *
  * Possible compile line:
- * clang++ -g -fPIC examples/example7.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example7
+ * g++ -g dpnp/backend/examples/example7.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example7
  *
  */
 

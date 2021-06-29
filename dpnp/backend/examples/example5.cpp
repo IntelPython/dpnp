@@ -23,6 +23,16 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+/**
+ * Example 5.
+ *
+ * This example shows simple usage of the DPNP C++ Backend RNG library
+ *
+ * Possible compile line:
+ * g++ -g dpnp/backend/examples/example5.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example5
+ *
+ */
+
 #include <iostream>
 
 #include <dpnp_iface.hpp>
