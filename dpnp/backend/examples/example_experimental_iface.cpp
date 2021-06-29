@@ -29,6 +29,7 @@
  * This example shows how to get a runtime pointer from DPNP C++ Backend library
  *
  * Possible compile line:
+ * . /opt/intel/oneapi/setvars.sh
  * g++ -g dpnp/backend/examples/example_experimental_iface.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example_experimental_iface
  */
 
