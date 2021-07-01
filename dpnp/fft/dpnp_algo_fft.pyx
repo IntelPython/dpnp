@@ -33,9 +33,8 @@ and the rest of the library
 """
 
 
-import dpnp
 from dpnp.dpnp_algo cimport *
-from dpnp.dpnp_utils cimport *
+cimport dpnp.dpnp_utils as utils
 
 
 __all__ = [
@@ -45,12 +44,12 @@ __all__ = [
 ctypedef void(*fptr_dpnp_fft_fft_t)(void *, void * , long * , long * , size_t, long, long, size_t)
 
 
-cpdef dparray dpnp_fft(dparray input, size_t input_boundarie, size_t output_boundarie, long axis, size_t inverse):
+cpdef dparray dpnp_fft(utils.dpnp_descriptor input, size_t input_boundarie, size_t output_boundarie, long axis, size_t inverse):
 
     cdef dparray_shape_type input_shape = input.shape
     cdef dparray_shape_type output_shape = input_shape
 
-    cdef long axis_norm = normalize_axis((axis,), input_shape.size())[0]
+    cdef long axis_norm = utils.normalize_axis((axis,), input_shape.size())[0]
     output_shape[axis_norm] = output_boundarie
 
     # convert string type names (dparray.dtype) to C enum DPNPFuncType
