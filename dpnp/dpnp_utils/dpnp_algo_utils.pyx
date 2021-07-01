@@ -31,17 +31,16 @@ This module contains differnt helpers and utilities
 
 """
 
+import numpy
+import dpnp.config as config
+import dpnp
+from dpnp.dpnp_algo cimport dpnp_DPNPFuncType_to_dtype, dpnp_dtype_to_DPNPFuncType, get_dpnp_function_ptr
 from libcpp cimport bool as cpp_bool
 from libcpp.complex cimport complex as cpp_complex
 
 cimport cpython
 cimport cython
 cimport numpy
-from dpnp.dpnp_algo cimport dpnp_DPNPFuncType_to_dtype, dpnp_dtype_to_DPNPFuncType, get_dpnp_function_ptr
-
-import dpnp
-import dpnp.config as config
-import numpy
 
 
 """
@@ -477,6 +476,12 @@ cdef class dpnp_descriptor:
         return None
 
     @property
+    def strides(self):
+        if self.is_valid:
+            return self.descriptor["strides"]
+        return None
+
+    @property
     def ndim(self):
         if self.is_valid:
             return len(self.shape)
@@ -505,6 +510,30 @@ cdef class dpnp_descriptor:
             data_tuple = self.descriptor["data"]
             return data_tuple[0]
         return None
+
+    @property
+    def descr(self):
+        if self.is_valid:
+            return self.descriptor["descr"]
+        return None
+
+    @property
+    def __array_interface__(self):
+        # print(f"====dpnp_descriptor::__array_interface__====self.descriptor={ < size_t > self.descriptor}")
+        if self.descriptor is None:
+            return None
+
+        # TODO need to think about feature compatibility
+        interface_dict = {
+            "data": self.descriptor["data"],
+            "strides": self.descriptor["strides"],
+            "descr": self.descriptor["descr"],
+            "typestr": self.descriptor["typestr"],
+            "shape": self.descriptor["shape"],
+            "version": self.descriptor["version"]
+        }
+
+        return interface_dict
 
     cdef void * get_data(self):
         cdef long val = self.data
