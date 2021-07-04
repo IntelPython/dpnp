@@ -271,8 +271,8 @@ cpdef dparray dpnp_not_equal(object input1, object input2)
 """
 Linear algebra
 """
-cpdef dparray dpnp_dot(dparray in_array1, dparray in_array2)
-cpdef dparray dpnp_matmul(dparray in_array1, dparray in_array2)
+cpdef dparray dpnp_dot(dpnp_descriptor in_array1, dpnp_descriptor in_array2)
+cpdef dparray dpnp_matmul(dpnp_descriptor in_array1, dpnp_descriptor in_array2, dparray out=*)
 
 
 """

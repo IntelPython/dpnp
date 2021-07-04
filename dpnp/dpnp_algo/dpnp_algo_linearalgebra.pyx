@@ -47,7 +47,7 @@ __all__ += [
 ctypedef void(*fptr_2in_1out_shapes_t)(void *, void * , void * , size_t * , size_t * , size_t * , size_t)
 
 
-cpdef dparray dpnp_dot(dparray in_array1, dparray in_array2):
+cpdef dparray dpnp_dot(dpnp_descriptor in_array1, dpnp_descriptor in_array2):
 
     cdef dparray_shape_type shape1, shape2
 
@@ -98,7 +98,7 @@ cpdef dparray dpnp_dot(dparray in_array1, dparray in_array2):
     return result
 
 
-cpdef dparray dpnp_inner(dparray array1, dparray array2):
+cpdef dparray dpnp_inner(dpnp_descriptor array1, dpnp_descriptor array2):
     result_type = numpy.promote_types(array1.dtype, array1.dtype)
 
     assert(len(array1.shape) == len(array2.shape))
@@ -158,7 +158,7 @@ cpdef dparray dpnp_inner(dparray array1, dparray array2):
     return result
 
 
-cpdef dparray dpnp_kron(dparray in_array1, dparray in_array2):
+cpdef dparray dpnp_kron(dpnp_descriptor in_array1, dpnp_descriptor in_array2):
     cdef size_t ndim = max(in_array1.ndim, in_array2.ndim)
 
     cdef dparray_shape_type in_array1_shape
@@ -197,12 +197,12 @@ cpdef dparray dpnp_kron(dparray in_array1, dparray in_array2):
     return result
 
 
-cpdef dparray dpnp_matmul(dparray in_array1, dparray in_array2, dparray out=None):
+cpdef dparray dpnp_matmul(dpnp_descriptor in_array1, dpnp_descriptor in_array2, dparray out=None):
 
-    cdef vector[Py_ssize_t] shape_result
+    cdef dparray_shape_type shape_result
 
-    cdef vector[Py_ssize_t] shape1 = in_array1.shape
-    cdef vector[Py_ssize_t] shape2 = in_array2.shape
+    cdef dparray_shape_type shape1 = in_array1.shape
+    cdef dparray_shape_type shape2 = in_array2.shape
 
     cdef size_t size_m = 0
     cdef size_t size_n = 0
@@ -281,7 +281,7 @@ cpdef dparray dpnp_matmul(dparray in_array1, dparray in_array2, dparray out=None
     return result
 
 
-cpdef dparray dpnp_outer(dparray array1, dparray array2):
+cpdef dparray dpnp_outer(dpnp_descriptor array1, dpnp_descriptor array2):
     cdef dparray_shape_type result_shape = (array1.size, array2.size)
     result_type = numpy.promote_types(array1.dtype, array1.dtype)
 
