@@ -48,6 +48,9 @@ import numpy
 # full module name because dpnp_iface_counting loaded from cython too early
 from dpnp.dpnp_utils.dpnp_algo_utils import *
 
+import dpnp
+import numpy
+
 __all__ = [
     'count_nonzero'
 ]
@@ -83,11 +86,8 @@ def count_nonzero(x1, axis=None, *, keepdims=False):
         elif keepdims is not False:
             pass
         else:
-            result = dpnp_count_nonzero(x1)
-
-            # scalar returned
-            if result.shape == (1,):
-                return result.dtype.type(result[0])
+            result_obj = dpnp_count_nonzero(x1)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
 

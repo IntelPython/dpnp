@@ -54,6 +54,7 @@ from dpnp.random import *
 __all__ = [
     "array_equal",
     "asnumpy",
+    "convert_single_elem_array_to_scalar",
     "dpnp_queue_initialize",
     "dpnp_queue_is_cpu",
     "get_dpnp_descriptor",
@@ -133,6 +134,16 @@ def asnumpy(input, order='C'):
 
     return numpy.asarray(input, order=order)
 
+
+def convert_single_elem_array_to_scalar(obj):
+    """
+    Convert array with single element to scalar
+    """
+
+    if obj.shape == (1,): # TODO handle shapes like (1,1,1,1)
+        return obj.dtype.type(obj[0])
+
+    return obj
 
 def get_dpnp_descriptor(ext_obj):
     """
