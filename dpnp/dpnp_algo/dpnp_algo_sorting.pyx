@@ -50,7 +50,9 @@ cpdef dparray dpnp_argsort(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_ARGSORT, x1, x1.shape)
 
 
-cpdef dparray dpnp_partition(dparray arr, int kth, axis=-1, kind='introselect', order=None):
+cpdef dparray dpnp_partition(utils.dpnp_descriptor arr, int kth, axis=-1, kind='introselect', order=None):
+    cdef dparray_shape_type shape1 = arr.shape
+
     cdef size_t kth_ = kth if kth >= 0 else (arr.ndim + kth)
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
 
@@ -62,12 +64,12 @@ cpdef dparray dpnp_partition(dparray arr, int kth, axis=-1, kind='introselect', 
 
     cdef fptr_dpnp_partition_t func = <fptr_dpnp_partition_t > kernel_data.ptr
 
-    func(arr.get_data(), arr2.get_data(), result.get_data(), kth_, < size_t * > arr._dparray_shape.data(), arr.ndim)
+    func(arr.get_data(), arr2.get_data(), result.get_data(), kth_, < size_t * > shape1.data(), arr.ndim)
 
     return result
 
 
-cpdef dparray dpnp_searchsorted(dparray arr, dparray v, side='left'):
+cpdef dparray dpnp_searchsorted(utils.dpnp_descriptor arr, utils.dpnp_descriptor v, side='left'):
     if side is 'left':
         side_ = True
     else:
