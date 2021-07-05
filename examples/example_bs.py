@@ -68,7 +68,7 @@ def black_scholes(price, strike, t, rate, vol, call, put):
 
     z = T * sig_sig_two
     c = 0.25 * z
-    y = 1./np.sqrt(z)
+    y = 1. / np.sqrt(z)
 
     w1 = (a - b + c) * y
     w2 = (a - b - c) * y
@@ -78,7 +78,7 @@ def black_scholes(price, strike, t, rate, vol, call, put):
 
     Se = np.exp(b) * S
 
-    r =  P * d1 - Se * d2
+    r = P * d1 - Se * d2
     call[:] = r  # temporary `r` is necessary for faster `put` computation
     put[:] = r - P + Se
 
@@ -89,7 +89,7 @@ strike = np.random.uniform(SL, SH, SIZE)
 t = np.random.uniform(TL, TH, SIZE)
 
 call = np.zeros(SIZE, dtype=DTYPE)
-put  = -np.ones(SIZE, dtype=DTYPE)
+put = -np.ones(SIZE, dtype=DTYPE)
 
 black_scholes(price, strike, t, RISK_FREE, VOLATILITY, call, put)
 print(call[:10])

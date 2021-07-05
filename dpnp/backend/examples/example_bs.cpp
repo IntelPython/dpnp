@@ -83,10 +83,8 @@ void black_scholes(double* price,
     dpnp_memory_free_c(mr);
     double* z = (double*)dpnp_memory_alloc_c(size * sizeof(double));
     // z = T * vol_vol_twos
-    dpnp_multiply_c<double, double, double>(z,
-                                            T, size, &size, ndim,
-                                            vol_vol_two, scalar_size, &scalar_size, ndim,
-                                            NULL);
+    dpnp_multiply_c<double, double, double>(
+        z, T, size, &size, ndim, vol_vol_two, scalar_size, &scalar_size, ndim, NULL);
     dpnp_memory_free_c(vol_vol_two);
 
     double* c = (double*)dpnp_memory_alloc_c(size * sizeof(double));
@@ -131,17 +129,13 @@ void black_scholes(double* price,
     dpnp_memory_free_c(w1);
     double* halfs_mul_erf_w1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
     // halfs_mul_erf_w1 = halfs * erf_w1
-    dpnp_multiply_c<double, double, double>(halfs_mul_erf_w1,
-                                            half, scalar_size, &scalar_size, ndim,
-                                            erf_w1, size, &size, ndim,
-                                            NULL);
+    dpnp_multiply_c<double, double, double>(
+        halfs_mul_erf_w1, half, scalar_size, &scalar_size, ndim, erf_w1, size, &size, ndim, NULL);
     dpnp_memory_free_c(erf_w1);
     double* d1 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
     // d1 = halfs + halfs_mul_erf_w1
-    dpnp_add_c<double, double, double>(d1,
-                                       half, scalar_size, &scalar_size, ndim,
-                                       halfs_mul_erf_w1, size, &size, ndim,
-                                       NULL);
+    dpnp_add_c<double, double, double>(
+        d1, half, scalar_size, &scalar_size, ndim, halfs_mul_erf_w1, size, &size, ndim, NULL);
     dpnp_memory_free_c(halfs_mul_erf_w1);
 
     double* erf_w2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
@@ -149,17 +143,13 @@ void black_scholes(double* price,
     dpnp_memory_free_c(w2);
     double* halfs_mul_erf_w2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
     // halfs_mul_erf_w2 = halfs * erf_w2
-    dpnp_multiply_c<double, double, double>(halfs_mul_erf_w2, 
-                                            half, scalar_size, &scalar_size, ndim,
-                                            erf_w2, size, &size, ndim,
-                                            NULL);
+    dpnp_multiply_c<double, double, double>(
+        halfs_mul_erf_w2, half, scalar_size, &scalar_size, ndim, erf_w2, size, &size, ndim, NULL);
     dpnp_memory_free_c(erf_w2);
     double* d2 = (double*)dpnp_memory_alloc_c(size * sizeof(double));
     // d2 = halfs + halfs_mul_erf_w2
-    dpnp_add_c<double, double, double>(d2,
-                                       half, scalar_size, &scalar_size, ndim,
-                                       halfs_mul_erf_w2, size, &size, ndim,
-                                       NULL);
+    dpnp_add_c<double, double, double>(
+        d2, half, scalar_size, &scalar_size, ndim, halfs_mul_erf_w2, size, &size, ndim, NULL);
     dpnp_memory_free_c(halfs_mul_erf_w2);
     dpnp_memory_free_c(half);
 
@@ -231,8 +221,8 @@ int main(int, char**)
     double* call = (double*)dpnp_memory_alloc_c(SIZE * sizeof(double));
     double* put = (double*)dpnp_memory_alloc_c(SIZE * sizeof(double));
 
-    dpnp_full_c<double>(zero, call, SIZE);            // np.full(SIZE, 0., dtype=DTYPE)
-    dpnp_full_c<double>(mone, put, SIZE);             // np.full(SIZE, -1., dtype=DTYPE)
+    dpnp_full_c<double>(zero, call, SIZE); // np.full(SIZE, 0., dtype=DTYPE)
+    dpnp_full_c<double>(mone, put, SIZE);  // np.full(SIZE, -1., dtype=DTYPE)
 
     dpnp_memory_free_c(mone);
     dpnp_memory_free_c(zero);
