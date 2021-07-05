@@ -415,9 +415,21 @@ void dpnp_qr_c(void* array1_in, void* result1, void* result2, void* result3, siz
     _ComputeDT* geqrf_scratchpad =
         reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(geqrf_scratchpad_size * sizeof(_ComputeDT)));
 
-    event = mkl_lapack::geqrf(DPNP_QUEUE, size_m, size_n, in_a, lda, tau, geqrf_scratchpad, geqrf_scratchpad_size);
+    cl::sycl::vector_class<cl::sycl::event> depends(1);
+    if (is_verbose_mode())
+    {
+        set_barrier_event(DPNP_QUEUE, depends);
+    }
+
+    event = mkl_lapack::geqrf(DPNP_QUEUE, size_m, size_n, in_a, lda, tau, geqrf_scratchpad, geqrf_scratchpad_size, depends);
 
     event.wait();
+
+    if (is_verbose_mode())
+    {
+        verbose_print("oneapi::mkl::lapack::geqrf", depends.front(), event);
+    }
+
     dpnp_memory_free_c(geqrf_scratchpad);
 
     // R
@@ -444,10 +456,22 @@ void dpnp_qr_c(void* array1_in, void* result1, void* result2, void* result3, siz
     _ComputeDT* orgqr_scratchpad =
         reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(orgqr_scratchpad_size * sizeof(_ComputeDT)));
 
+    depends.clear();
+    if (is_verbose_mode())
+    {
+        set_barrier_event(DPNP_QUEUE, depends);
+    }
+
     event =
-        mkl_lapack::orgqr(DPNP_QUEUE, size_m, size_m, nrefl, in_a, lda, tau, orgqr_scratchpad, orgqr_scratchpad_size);
+        mkl_lapack::orgqr(DPNP_QUEUE, size_m, size_m, nrefl, in_a, lda, tau, orgqr_scratchpad, orgqr_scratchpad_size, depends);
 
     event.wait();
+
+    if (is_verbose_mode())
+    {
+        verbose_print("oneapi::mkl::lapack::orgqr", depends.front(), event);
+    }
+
     dpnp_memory_free_c(orgqr_scratchpad);
 
     for (size_t i = 0; i < size_m; ++i)

@@ -229,3 +229,42 @@ size_t dpnp_queue_is_cpu_c()
 {
     return backend_sycl::backend_sycl_is_cpu();
 }
+
+bool _is_verbose_mode = false;
+bool _is_verbose_mode_init = false;
+
+bool is_verbose_mode()
+{
+    if(!_is_verbose_mode_init)
+    {
+        _is_verbose_mode = false;
+        const char* env_var = std::getenv("DPNP_VERBOSE");
+        if (env_var and env_var == std::string("1"))
+        {
+            _is_verbose_mode = true;
+        }
+        _is_verbose_mode_init = true;
+    }
+    return _is_verbose_mode;
+}
+
+class barrierKernelClass;
+
+void set_barrier_event(cl::sycl::queue queue, sycl::vector_class<sycl::event> & depends)
+{
+    cl::sycl::event barrier_event = queue.single_task<barrierKernelClass>(depends, [=] {});
+    depends.clear();
+    depends.push_back(barrier_event);
+}
+
+void verbose_print(std::string header, cl::sycl::event first_event, cl::sycl::event last_event)
+{
+    auto first_event_end = first_event.get_profiling_info<sycl::info::event_profiling::command_end>();
+    auto last_event_end = last_event.get_profiling_info<sycl::info::event_profiling::command_end>();
+    std::cout << "DPNP_VERBOSE "
+              << header
+              << " Time: "
+              << (last_event_end - first_event_end)/1.0e6
+              << " ms"
+              << std::endl;
+}
