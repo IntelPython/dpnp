@@ -40,11 +40,12 @@ it contains:
 """
 
 
-import numpy
-
 from dpnp.dpnp_algo import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
+
+import dpnp
+import numpy
 
 
 __all__ = [
@@ -101,11 +102,8 @@ def argmax(in_array1, axis=None, out=None):
         if out is not None:
             checker_throw_value_error("argmax", "out", type(out), None)
 
-        result = dpnp_argmax(in_array1)
-
-        # scalar returned
-        if result.shape == (1,):
-            return result.dtype.type(result[0])
+        result_obj = dpnp_argmax(in_array1)
+        result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
         return result
 
@@ -160,11 +158,8 @@ def argmin(in_array1, axis=None, out=None):
         if out is not None:
             checker_throw_value_error("argmin", "out", type(out), None)
 
-        result = dpnp_argmin(in_array1)
-
-        # scalar returned
-        if result.shape == (1,):
-            return result.dtype.type(result[0])
+        result_obj = dpnp_argmin(in_array1)
+        result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
         return result
 

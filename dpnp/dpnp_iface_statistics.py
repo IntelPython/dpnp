@@ -162,13 +162,10 @@ def average(a, axis=None, weights=None, returned=False):
         elif returned:
             pass
         else:
-            array_avg = dpnp_average(a)
+            result_obj = dpnp_average(a)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
-            # scalar returned
-            if array_avg.shape == (1,):
-                return array_avg.dtype.type(array_avg[0])
-
-            return array_avg
+            return result
 
     return call_origin(numpy.average, a, axis, weights, returned)
 
@@ -335,11 +332,8 @@ def max(input, axis=None, out=None, keepdims=numpy._NoValue, initial=numpy._NoVa
         elif where is not numpy._NoValue:
             pass
         else:
-            result = dpnp_max(input, axis=axis)
-
-            # scalar returned
-            if result.shape == (1,):
-                return result.dtype.type(result[0])
+            result_obj = dpnp_max(input, axis=axis)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
 
@@ -386,11 +380,8 @@ def mean(a, axis=None, **kwargs):
         elif a.size == 0:
             pass
         else:
-            result = dpnp_mean(a, axis=axis)
-
-            # scalar returned
-            if result.shape == (1,):
-                return result.dtype.type(result[0])
+            result_obj = dpnp_mean(a, axis=axis)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
 
@@ -439,11 +430,8 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
         elif keepdims:
             pass
         else:
-            result = dpnp_median(a)
-
-            # scalar returned
-            if result.shape == (1,):
-                return result.dtype.type(result[0])
+            result_obj = dpnp_median(a)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
 
@@ -486,11 +474,8 @@ def min(input, axis=None, out=None, keepdims=numpy._NoValue, initial=numpy._NoVa
         elif where is not numpy._NoValue:
             pass
         else:
-            result = dpnp_min(input, axis=axis)
-
-            # scalar returned
-            if result.shape == (1,):
-                return result.dtype.type(result[0])
+            result_obj = dpnp_min(input, axis=axis)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
 
@@ -524,11 +509,8 @@ def nanvar(arr, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue
         elif keepdims is not numpy._NoValue:
             pass
         else:
-            result = dpnp_nanvar(arr, ddof)
-
-            # scalar returned
-            if result.shape == (1,):
-                return result.dtype.type(result[0])
+            result_obj = dpnp_nanvar(arr, ddof)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
 
@@ -586,9 +568,8 @@ def std(a, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue):
         elif keepdims is not numpy._NoValue:
             pass
         else:
-            result = dpnp_std(a, ddof)
-            if result.shape == (1,):
-                return result.dtype.type(result[0])
+            result_obj = dpnp_std(a, ddof)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
 
@@ -646,9 +627,8 @@ def var(a, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue):
         elif keepdims is not numpy._NoValue:
             pass
         else:
-            result = dpnp_var(a, ddof)
-            if result.shape == (1,):
-                return result.dtype.type(result[0])
+            result_obj = dpnp_var(a, ddof)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
 

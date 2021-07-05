@@ -146,11 +146,8 @@ def det(input):
 
     if not use_origin_backend(input) and is_input_dparray:
         if input.shape[-1] == input.shape[-2]:
-            result = dpnp_det(input)
-
-            # scalar returned
-            if result.shape == (1,):
-                return result.dtype.type(result[0])
+            result_obj = dpnp_det(input)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
 
@@ -301,11 +298,8 @@ def matrix_rank(input, tol=None, hermitian=False):
         if hermitian is not False:
             checker_throw_value_error("matrix_rank", "hermitian", hermitian, False)
 
-        result = dpnp_matrix_rank(input)
-
-        # scalar returned
-        if result.shape == (1,):
-            return result.dtype.type(result[0])
+        result_obj = dpnp_matrix_rank(input)
+        result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
         return result
 
@@ -392,11 +386,8 @@ def norm(input, ord=None, axis=None, keepdims=False):
         elif ord not in [None, 0, 3, 'fro', 'f']:
             pass
         else:
-            result = dpnp_norm(input, ord=ord, axis=axis)
-
-            # scalar returned
-            if result.shape == (1,) and axis is None:
-                return result.dtype.type(result[0])
+            result_obj = dpnp_norm(input, ord=ord, axis=axis)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
 
