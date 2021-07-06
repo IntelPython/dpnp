@@ -761,7 +761,7 @@ def not_equal(x1, x2):
     x2_desc = dpnp.get_dpnp_descriptor(x2)
     is_x1_scalar = dpnp.isscalar(x1)
     is_x2_scalar = dpnp.isscalar(x2)
-    if 0 and (x1_desc and x2_desc and (x1_desc or is_x1_scalar)) and (not use_origin_backend(x2) and (x2_desc or is_x2_scalar)) and not(is_x1_scalar and is_x2_scalar):
+    if 0 and (x1_desc and x2_desc and (x1_desc or is_x1_scalar)) and (x2_desc or is_x2_scalar) and not(is_x1_scalar and is_x2_scalar):
         if is_x1_scalar:
             result = dpnp_not_equal(x2_desc, x1_desc)
         else:
