@@ -135,15 +135,16 @@ def asnumpy(input, order='C'):
     return numpy.asarray(input, order=order)
 
 
-def convert_single_elem_array_to_scalar(obj):
+def convert_single_elem_array_to_scalar(obj, keepdims=False):
     """
     Convert array with single element to scalar
     """
 
-    if obj.shape == (1,): # TODO handle shapes like (1,1,1,1)
+    if (obj.ndim > 0) and (obj.size == 1) and (keepdims is False):
         return obj.dtype.type(obj[0])
 
     return obj
+
 
 def get_dpnp_descriptor(ext_obj):
     """
