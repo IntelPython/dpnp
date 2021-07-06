@@ -323,8 +323,8 @@ cpdef dparray dpnp_sort(dpnp_descriptor array1)
 """
 Searching functions
 """
-cpdef dparray dpnp_argmax(dparray array1)
-cpdef dparray dpnp_argmin(dparray array1)
+cpdef dparray dpnp_argmax(dpnp_descriptor array1)
+cpdef dparray dpnp_argmin(dpnp_descriptor array1)
 
 """
 Trigonometric functions
