@@ -40,12 +40,12 @@ it contains:
 """
 
 
-import numpy
-
 from dpnp.dpnp_algo import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
+
 import dpnp
+import numpy
 
 
 __all__ = [
@@ -91,15 +91,6 @@ __all__ = [
     "true_divide",
     "trunc"
 ]
-
-
-def convert_result_scalar(result, keepdims):
-    # one element array result should be converted into scalar
-    # TODO empty shape must be converted into scalar (it is not in test system)
-    if (len(result.shape) > 0) and (result.size == 1) and (keepdims is False):
-        return result.dtype.type(result[0])
-    else:
-        return result
 
 
 def abs(*args, **kwargs):
@@ -1377,8 +1368,10 @@ def prod(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, wher
         elif where is not True:
             pass
         else:
-            result = dpnp_prod(x1, axis, dtype, out, keepdims, initial, where)
-            return convert_result_scalar(result, keepdims)
+            result_obj = dpnp_prod(x1, axis, dtype, out, keepdims, initial, where)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj, keepdims) 
+
+            return result
 
     return call_origin(numpy.prod, x1, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)
 
@@ -1555,8 +1548,10 @@ def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, where
         elif where is not True:
             pass
         else:
-            result = dpnp_sum(x1, axis, dtype, out, keepdims, initial, where)
-            return convert_result_scalar(result, keepdims)
+            result_obj = dpnp_sum(x1, axis, dtype, out, keepdims, initial, where)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj, keepdims)
+
+            return result
 
     return call_origin(numpy.sum, x1, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)
 
