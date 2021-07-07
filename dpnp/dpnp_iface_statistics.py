@@ -123,7 +123,7 @@ def amin(input, axis=None, out=None):
     return min(input, axis=axis, out=out)
 
 
-def average(a, axis=None, weights=None, returned=False):
+def average(x1, axis=None, weights=None, returned=False):
     """
     Compute the weighted average along the specified axis.
 
@@ -152,22 +152,22 @@ def average(a, axis=None, weights=None, returned=False):
     2.5
 
     """
-    if not use_origin_backend(a):
-        if not isinstance(a, dparray):
-            pass
-        elif axis is not None:
+
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if axis is not None:
             pass
         elif weights is not None:
             pass
         elif returned:
             pass
         else:
-            result_obj = dpnp_average(a)
+            result_obj = dpnp_average(x1_desc)
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
 
-    return call_origin(numpy.average, a, axis, weights, returned)
+    return call_origin(numpy.average, x1, axis, weights, returned)
 
 
 def correlate(a, v, mode='valid'):
