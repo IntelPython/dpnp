@@ -82,7 +82,7 @@ cdef dparray call_fptr_custom_std_var_1in_1out(DPNPFuncName fptr_name, dparray a
     return result
 
 
-cpdef dpnp_average(dparray x1):
+cpdef dpnp_average(utils.dpnp_descriptor x1):
     array_sum = dpnp_sum(x1)
 
     """ Numpy interface inconsistency """

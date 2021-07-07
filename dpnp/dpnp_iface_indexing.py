@@ -42,12 +42,12 @@ it contains:
 
 import collections
 
-import numpy
-
 from dpnp.dpnp_algo import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
+
 import dpnp
+import numpy
 
 
 __all__ = [
