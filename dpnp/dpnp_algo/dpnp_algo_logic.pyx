@@ -36,6 +36,7 @@ and the rest of the library
 
 __all__ += [
     "dpnp_all",
+    "dpnp_allclose",
     "dpnp_any",
     "dpnp_equal",
     "dpnp_greater",
@@ -55,6 +56,7 @@ __all__ += [
 
 
 ctypedef void(*custom_logic_1in_1out_func_ptr_t)(void * , void * , const size_t)
+ctypedef void(*custom_allclose_1in_1out_func_ptr_t)(void * , void * , void *, const size_t, double, double)
 
 
 cpdef dparray dpnp_all(dpnp_descriptor array1):
@@ -67,6 +69,21 @@ cpdef dparray dpnp_all(dpnp_descriptor array1):
     cdef custom_logic_1in_1out_func_ptr_t func = <custom_logic_1in_1out_func_ptr_t > kernel_data.ptr
 
     func(array1.get_data(), result.get_data(), array1.size)
+
+    return result
+
+
+cpdef dparray dpnp_allclose(dpnp_descriptor array1, dpnp_descriptor array2, double rtol, double atol):
+    cdef dparray result = dparray((1,), dtype=numpy.bool)
+
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(array2.dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ALLCLOSE, param1_type, param2_type)
+
+    cdef custom_allclose_1in_1out_func_ptr_t func = <custom_allclose_1in_1out_func_ptr_t > kernel_data.ptr
+
+    func(array1.get_data(), array2.get_data(), result.get_data(), array1.size, rtol, atol)
 
     return result
 

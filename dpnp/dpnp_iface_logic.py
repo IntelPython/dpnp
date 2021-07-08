@@ -50,6 +50,7 @@ from dpnp.dpnp_utils import *
 
 __all__ = [
     "all",
+    "allclose",
     "any",
     "equal",
     "greater",
@@ -120,6 +121,42 @@ def all(x1, axis=None, out=None, keepdims=False):
             return result[0]
 
     return call_origin(numpy.all, x1, axis, out, keepdims)
+
+
+def allclose(x1, x2, rtol=1.e-5, atol=1.e-8, **kwargs):
+    """
+    Returns True if two arrays are element-wise equal within a tolerance.
+
+    For full documentation refer to :obj:`numpy.allclose`.
+
+    Limitations
+    -----------
+    Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
+    Keyword arguments ``kwargs`` are currently unsupported.
+    Otherwise the functions will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.allclose([1e10,1e-7], [1.00001e10,1e-8])
+    >>> False
+
+    """
+
+    rtol_is_scalar = dpnp.isscalar(rtol)
+    atol_is_scalar = dpnp.isscalar(atol)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+
+    if x1_desc and x2_desc and not kwargs:
+        if not rtol_is_scalar or not atol_is_scalar:
+            pass
+        else:
+            result = dpnp_allclose(x1_desc, x2_desc, rtol=rtol, atol=atol)
+            return result[0]
+
+    return call_origin(numpy.allclose, x1, x2, rtol=rtol, atol=atol, **kwargs)
 
 
 def any(x1, axis=None, out=None, keepdims=False):
