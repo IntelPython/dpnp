@@ -75,10 +75,6 @@ ctypedef void(*fptr_dpnp_initval_t)(void * , void * , size_t)
 
 
 cpdef dparray dpnp_arange(start, stop, step, dtype):
-
-    if step is not 1:
-        raise ValueError("DPNP dpnp_arange(): `step` is not supported")
-
     obj_len = int(numpy.ceil((stop - start) / step))
     if obj_len < 0:
         raise ValueError(f"DPNP dpnp_arange(): Negative array size (start={start},stop={stop},step={step})")
