@@ -371,7 +371,7 @@ def arctan2(x1, x2, dtype=None, out=None, where=True, **kwargs):
     return call_origin(numpy.arctan2, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
-def cos(x1):
+def cos(x1, out=None, **kwargs):
     """
     Trigonometric cosine, element-wise.
 
@@ -395,9 +395,9 @@ def cos(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_cos(x1_desc)
+        return dpnp_cos(x1_desc, out=out)
 
-    return call_origin(numpy.cos, x1, **kwargs)
+    return call_origin(numpy.cos, x1, out=out, **kwargs)
 
 
 def cosh(x1):
@@ -479,7 +479,7 @@ def degrees(x1):
     return call_origin(numpy.degrees, x1, **kwargs)
 
 
-def exp(x1):
+def exp(x1, out=None, **kwargs):
     """
     Trigonometric exponent, element-wise.
 
@@ -507,9 +507,9 @@ def exp(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_exp(x1_desc)
+        return dpnp_exp(x1_desc, out=out)
 
-    return call_origin(numpy.exp, x1)
+    return call_origin(numpy.exp, x1, out=out, **kwargs)
 
 
 def exp2(x1):
@@ -630,7 +630,7 @@ def hypot(x1, x2, dtype=None, out=None, where=True, **kwargs):
     return call_origin(numpy.hypot, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
-def log(x1):
+def log(x1, out=None, **kwargs):
     """
     Trigonometric logarithm, element-wise.
 
@@ -662,9 +662,9 @@ def log(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_log(x1_desc)
+        return dpnp_log(x1_desc, out=out)
 
-    return call_origin(numpy.log, x1)
+    return call_origin(numpy.log, x1, out=out, **kwargs)
 
 
 def log10(x1):

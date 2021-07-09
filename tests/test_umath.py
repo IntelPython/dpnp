@@ -87,3 +87,51 @@ def test_sin():
     expected = numpy.sin(np_array, out=out)
 
     numpy.testing.assert_array_equal(expected, result)
+
+
+def test_cos():
+    array_data = numpy.arange(10)
+    out = numpy.empty(10, dtype=numpy.float64)
+
+    # DPNP
+    dp_array = dpnp.array(array_data, dtype=dpnp.float64)
+    dp_out = dpnp.array(out, dtype=dpnp.float64)
+    result = dpnp.cos(dp_array, out=dp_out)
+
+    # original
+    np_array = numpy.array(array_data, dtype=numpy.float64)
+    expected = numpy.cos(np_array, out=out)
+
+    numpy.testing.assert_array_equal(expected, result)
+
+
+def test_log():
+    array_data = numpy.arange(10)
+    out = numpy.empty(10, dtype=numpy.float64)
+
+    # DPNP
+    dp_array = dpnp.array(array_data, dtype=dpnp.float64)
+    dp_out = dpnp.array(out, dtype=dpnp.float64)
+    result = dpnp.log(dp_array, out=dp_out)
+
+    # original
+    np_array = numpy.array(array_data, dtype=numpy.float64)
+    expected = numpy.log(np_array, out=out)
+
+    numpy.testing.assert_array_equal(expected, result)
+
+
+def test_exp():
+    array_data = numpy.arange(10)
+    out = numpy.empty(10, dtype=numpy.float64)
+
+    # DPNP
+    dp_array = dpnp.array(array_data, dtype=dpnp.float64)
+    dp_out = dpnp.array(out, dtype=dpnp.float64)
+    result = dpnp.exp(dp_array, out=dp_out)
+
+    # original
+    np_array = numpy.array(array_data, dtype=numpy.float64)
+    expected = numpy.exp(np_array, out=out)
+
+    numpy.testing.assert_array_equal(expected, result)
