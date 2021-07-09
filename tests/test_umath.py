@@ -230,3 +230,4 @@ class TestExp:
 
         with pytest.raises(ValueError):
             dpnp.exp(dp_array, out=dp_out)
+
