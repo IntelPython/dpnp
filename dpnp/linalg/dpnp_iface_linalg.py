@@ -93,8 +93,6 @@ def cholesky(input):
             pass
         elif input.shape[-1] != input.shape[-2]:
             pass
-        elif input.ndim < 3:
-            pass
         else:
             return dpnp_cholesky(input)
 
