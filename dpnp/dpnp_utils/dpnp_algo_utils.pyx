@@ -355,11 +355,12 @@ cpdef nd2dp_array(arr):
     return result
 
 
-cpdef dparray_shape_type normalize_axis(dparray_shape_type axis, size_t shape_size_inp):
+cpdef dparray_shape_type normalize_axis(object axis_obj, size_t shape_size_inp):
     """
     Conversion of the transformation shape axis [-1, 0, 1] into [2, 0, 1] where numbers are `id`s of array shape axis
     """
 
+    cdef dparray_shape_type axis = _object_to_tuple(axis_obj)  # axis_obj might be a scalar
     cdef ssize_t shape_size = shape_size_inp  # convert type for comparison with axis id
 
     cdef size_t axis_size = axis.size()
