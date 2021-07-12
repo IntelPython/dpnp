@@ -1244,7 +1244,7 @@ void dpnp_rng_uniform_c(void* result, const long low, const long high, const siz
 template <typename _DataType>
 void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _DataType kappa, const size_t size)
 {
-    if (!size)
+    if (!size || !result)
     {
         return;
     }
@@ -1314,20 +1314,23 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
     dpnp_memory_free_c(Uvec);
 
     mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
-    auto event_out = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
-    event_out.wait();
+    auto uniform_distr_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
 
-    // TODO
-    // kernel
-    for (size_t i = 0; i < size; i++)
-    {
-        _DataType mod, resi;
+    cl::sycl::range<1> gws(size);
 
-        resi = (Vvec[i] < 0.5) ? mu - result1[i] : mu + result1[i];
-        mod = fabs(resi);
-        mod = (fmod(mod + M_PI, 2 * M_PI) - M_PI);
-        result1[i] = (resi < 0) ? -mod : mod;
-    }
+    auto paral_kernel_acceptance = [&](cl::sycl::handler& cgh) {
+        cgh.depends_on({uniform_distr_event});
+        cgh.parallel_for(gws, [=](cl::sycl::id<1> global_id) {
+            size_t i = global_id[0];
+            double mod, resi;
+            resi = (Vvec[i] < 0.5) ? mu - result1[i] : mu + result1[i];
+            mod = cl::sycl::fabs(resi);
+            mod = (cl::sycl::fmod(mod + M_PI, 2 * M_PI) - M_PI);
+            result1[i] = (resi < 0) ? -mod : mod;
+        });
+    };
+    auto acceptance_event = DPNP_QUEUE.submit(paral_kernel_acceptance);
+    acceptance_event.wait();
 
     dpnp_memory_free_c(Vvec);
     return;
@@ -1336,7 +1339,7 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
 template <typename _DataType>
 void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _DataType kappa, const size_t size)
 {
-    if (!size)
+    if (!size || !result)
     {
         return;
     }
@@ -1391,20 +1394,22 @@ void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _Da
     dpnp_memory_free_c(Uvec);
 
     mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
-    auto event_out = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
-    event_out.wait();
+    auto uniform_distr_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
 
-    // TODO
-    // kernel
-    for (size_t i = 0; i < size; i++)
-    {
-        double mod, resi;
-
-        resi = (Vvec[i] < 0.5) ? mu - result1[i] : mu + result1[i];
-        mod = fabs(resi);
-        mod = (fmod(mod + M_PI, 2 * M_PI) - M_PI);
-        result1[i] = (resi < 0) ? -mod : mod;
-    }
+    cl::sycl::range<1> gws(size);
+    auto paral_kernel_acceptance = [&](cl::sycl::handler& cgh) {
+        cgh.depends_on({uniform_distr_event});
+        cgh.parallel_for(gws, [=](cl::sycl::id<1> global_id) {
+            size_t i = global_id[0];
+            double mod, resi;
+            resi = (Vvec[i] < 0.5) ? mu - result1[i] : mu + result1[i];
+            mod = cl::sycl::fabs(resi);
+            mod = (cl::sycl::fmod(mod + M_PI, 2 * M_PI) - M_PI);
+            result1[i] = (resi < 0) ? -mod : mod;
+        });
+    };
+    auto acceptance_event = DPNP_QUEUE.submit(paral_kernel_acceptance);
+    acceptance_event.wait();
 
     dpnp_memory_free_c(Vvec);
     return;
@@ -1423,7 +1428,6 @@ void dpnp_rng_vonmises_c(void* result, const _DataType mu, const _DataType kappa
         dpnp_rng_vonmises_large_kappa_c<_DataType>(result, mu, kappa, size);
     else
         dpnp_rng_vonmises_small_kappa_c<_DataType>(result, mu, kappa, size);
-    // TODO case when kappa < kappa < 1e-8 (very small)
 }
 
 template <typename _KernelNameSpecialization>
