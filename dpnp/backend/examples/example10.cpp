@@ -27,7 +27,7 @@
  * Example 10.
  *
  * Possible compile line:
- * clang++ -fPIC -fsycl dpnp/backend/examples/example10.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example10 -lmkl_sycl -lmkl_intel_ilp64 -lmkl_core
+ * clang++ -fsycl dpnp/backend/examples/example10.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example10 -lmkl_sycl -lmkl_intel_ilp64 -lmkl_core
  */
 
 #include <iostream>
@@ -38,8 +38,8 @@
 
 #include <dpnp_iface.hpp>
 
-
-void test_dpnp_random_normal(const size_t size, const size_t iters, const size_t seed, const double loc, const double scale)
+void test_dpnp_random_normal(
+    const size_t size, const size_t iters, const size_t seed, const double loc, const double scale)
 {
     clock_t start, end;
     double dev_time_used = 0.0;
@@ -56,7 +56,7 @@ void test_dpnp_random_normal(const size_t size, const size_t iters, const size_t
         start = clock();
         dpnp_rng_normal_c<double>(result, loc, scale, size);
         end = clock();
-        sum_dev_time_used += ((double) (end - start)) / CLOCKS_PER_SEC;
+        sum_dev_time_used += ((double)(end - start)) / CLOCKS_PER_SEC;
         // TODO: cumulative addition error
         // div error
     }
@@ -70,7 +70,8 @@ void test_dpnp_random_normal(const size_t size, const size_t iters, const size_t
 }
 
 // TODO: name check
-void test_mkl_random_normal(const size_t size, const size_t iters, const size_t seed, const double loc, const double scale)
+void test_mkl_random_normal(
+    const size_t size, const size_t iters, const size_t seed, const double loc, const double scale)
 {
     clock_t start, end;
     double dev_time_used = 0.0;
@@ -96,7 +97,7 @@ void test_mkl_random_normal(const size_t size, const size_t iters, const size_t 
 
         end = clock();
 
-        sum_dev_time_used += ((double) (end - start)) / CLOCKS_PER_SEC;
+        sum_dev_time_used += ((double)(end - start)) / CLOCKS_PER_SEC;
         // TODO: cumulative addition error
         // div error
     }
@@ -108,7 +109,6 @@ void test_mkl_random_normal(const size_t size, const size_t iters, const size_t 
 
     return;
 }
-
 
 int main(int, char**)
 {
