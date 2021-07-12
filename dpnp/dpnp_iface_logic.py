@@ -153,7 +153,7 @@ def allclose(x1, x2, rtol=1.e-5, atol=1.e-8, **kwargs):
         if not rtol_is_scalar or not atol_is_scalar:
             pass
         else:
-            result = dpnp_allclose(x1_desc, x2_desc, rtol=rtol, atol=atol)
+            result = dpnp_allclose(x1_desc, x2_desc, rtol, atol)
             return result[0]
 
     return call_origin(numpy.allclose, x1, x2, rtol=rtol, atol=atol, **kwargs)

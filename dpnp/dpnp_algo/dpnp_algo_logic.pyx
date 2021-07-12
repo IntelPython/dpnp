@@ -73,7 +73,7 @@ cpdef dparray dpnp_all(dpnp_descriptor array1):
     return result
 
 
-cpdef dparray dpnp_allclose(dpnp_descriptor array1, dpnp_descriptor array2, double rtol, double atol):
+cpdef dparray dpnp_allclose(dpnp_descriptor array1, dpnp_descriptor array2, double rtol_val, double atol_val):
     cdef dparray result = dparray((1,), dtype=numpy.bool)
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
@@ -83,7 +83,7 @@ cpdef dparray dpnp_allclose(dpnp_descriptor array1, dpnp_descriptor array2, doub
 
     cdef custom_allclose_1in_1out_func_ptr_t func = <custom_allclose_1in_1out_func_ptr_t > kernel_data.ptr
 
-    func(array1.get_data(), array2.get_data(), result.get_data(), array1.size, rtol, atol)
+    func(array1.get_data(), array2.get_data(), result.get_data(), array1.size, rtol_val, atol_val)
 
     return result
 

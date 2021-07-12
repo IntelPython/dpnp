@@ -124,8 +124,8 @@ INP_DLLEXPORT void dpnp_all_c(const void* array, void* result, const size_t size
  * @param [in]  array2_in      Second input array.
  * @param [out] result1        Output array.
  * @param [in]  size           Number of input elements in `array`.
- * @param [in]  rtol           The relative tolerance parameter.
- * @param [in]  atol           The absolute tolerance parameter .
+ * @param [in]  rtol_val       The relative tolerance parameter.
+ * @param [in]  atol_val       The absolute tolerance parameter.
  */
 template <typename _DataType1, typename _DataType2, typename _ResultType>
 INP_DLLEXPORT void dpnp_allclose_c(const void* array1_in, const void* array2_in, void* result1, const size_t size, double rtol, double atol);

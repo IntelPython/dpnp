@@ -75,18 +75,16 @@ template <typename _DataType1, typename _DataType2, typename _ResultType>
 class dpnp_allclose_c_kernel;
 
 template <typename _DataType1, typename _DataType2, typename _ResultType>
-void dpnp_allclose_c(const void* array1_in, const void* array2_in, void* result1, const size_t size, double rtol, double atol)
+void dpnp_allclose_c(const void* array1_in, const void* array2_in, void* result1, const size_t size, double rtol_val, double atol_val)
 {
-    cl::sycl::event event;
-
-    const _DataType1* array1 = reinterpret_cast<const _DataType1*>(array1_in);
-    const _DataType2* array2 = reinterpret_cast<const _DataType2*>(array2_in);
-    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
-
     if (!array1_in || !result1)
     {
         return;
     }
+
+    const _DataType1* array1 = reinterpret_cast<const _DataType1*>(array1_in);
+    const _DataType2* array2 = reinterpret_cast<const _DataType2*>(array2_in);
+    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
 
     result[0] = true;
 
@@ -95,19 +93,16 @@ void dpnp_allclose_c(const void* array1_in, const void* array2_in, void* result1
         return;
     }
 
-    int* close = (int*)dpnp_memory_alloc_c(size * sizeof(int));
-    int* sumclose = (int*)dpnp_memory_alloc_c(sizeof(int));
+    cl::sycl::event event;
 
     cl::sycl::range<1> gws(size);
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
         size_t i = global_id[0];
 
-        if (std::abs(array1[i] - array2[i]) <= (atol + rtol * std::abs(array2[i]))){
-            close[i] = 1;
-        }
-        else
-        {
-            close[i] = 0;
+        if (std::abs(array1[i] - array2[i]) > (atol_val + rtol_val * std::abs(array2[i]))){
+            
+            result[0]= false;
+
         }
 
     };
@@ -119,23 +114,6 @@ void dpnp_allclose_c(const void* array1_in, const void* array2_in, void* result1
     event = DPNP_QUEUE.submit(kernel_func);
 
     event.wait();
-
-    dpnp_sum_c<int, int>(sumclose, close, &size, 1, NULL, 0, NULL, NULL);
-
-    dpnp_memory_free_c(close);
-
-
-    if (sumclose[0] == (int)size){
-
-        result[0] = true;
-
-    }
-    else
-    {
-        result[0] = false;
-    }
-
-    dpnp_memory_free_c(sumclose);
 
 }
 
