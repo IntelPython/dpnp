@@ -255,24 +255,24 @@ cpdef dparray dpnp_right_shift(object x1_obj, object x2_obj, object dtype=*, dpa
 """
 Logic functions
 """
-cpdef dparray dpnp_equal(dparray array1, input2)
-cpdef dparray dpnp_greater(dparray input1, input2)
-cpdef dparray dpnp_greater_equal(dparray input1, input2)
-cpdef dparray dpnp_isclose(dparray input1, input2, double rtol=*, double atol=*, cpp_bool equal_nan=*)
-cpdef dparray dpnp_less(dparray input1, input2)
-cpdef dparray dpnp_less_equal(dparray input1, input2)
-cpdef dparray dpnp_logical_and(dparray input1, dparray input2)
-cpdef dparray dpnp_logical_not(dparray input1)
-cpdef dparray dpnp_logical_or(dparray input1, dparray input2)
-cpdef dparray dpnp_logical_xor(dparray input1, dparray input2)
-cpdef dparray dpnp_not_equal(dparray input1, input2)
+cpdef dparray dpnp_equal(object array1, object input2)
+cpdef dparray dpnp_greater(object input1, object input2)
+cpdef dparray dpnp_greater_equal(object input1, object input2)
+cpdef dparray dpnp_isclose(object input1, object input2, double rtol=*, double atol=*, cpp_bool equal_nan=*)
+cpdef dparray dpnp_less(object input1, object input2)
+cpdef dparray dpnp_less_equal(object input1, object input2)
+cpdef dparray dpnp_logical_and(object input1, object input2)
+cpdef dparray dpnp_logical_not(object input1)
+cpdef dparray dpnp_logical_or(object input1, object input2)
+cpdef dparray dpnp_logical_xor(object input1, object input2)
+cpdef dparray dpnp_not_equal(object input1, object input2)
 
 
 """
 Linear algebra
 """
-cpdef dparray dpnp_dot(dparray in_array1, dparray in_array2)
-cpdef dparray dpnp_matmul(dparray in_array1, dparray in_array2)
+cpdef dparray dpnp_dot(dpnp_descriptor in_array1, dpnp_descriptor in_array2)
+cpdef dparray dpnp_matmul(dpnp_descriptor in_array1, dpnp_descriptor in_array2, dparray out=*)
 
 
 """
@@ -302,8 +302,8 @@ cpdef dparray dpnp_subtract(object x1_obj, object x2_obj, object dtype=*, dparra
 """
 Array manipulation routines
 """
-cpdef dparray dpnp_repeat(dparray array1, repeats, axes=*)
-cpdef dparray dpnp_transpose(dparray array1, axes=*)
+cpdef dparray dpnp_repeat(dpnp_descriptor array1, repeats, axes=*)
+cpdef dparray dpnp_transpose(dpnp_descriptor array1, axes=*)
 
 
 """
@@ -323,8 +323,8 @@ cpdef dparray dpnp_sort(dpnp_descriptor array1)
 """
 Searching functions
 """
-cpdef dparray dpnp_argmax(dparray array1)
-cpdef dparray dpnp_argmin(dparray array1)
+cpdef dparray dpnp_argmax(dpnp_descriptor array1)
+cpdef dparray dpnp_argmin(dpnp_descriptor array1)
 
 """
 Trigonometric functions

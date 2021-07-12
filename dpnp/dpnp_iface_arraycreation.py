@@ -121,13 +121,22 @@ def arange(start, stop=None, step=1, dtype=None):
     if not use_origin_backend():
         if not isinstance(start, int):
             pass
-        elif not isinstance(stop, int) or stop is not None:
+        elif (stop is not None) and (not isinstance(stop, int)):
             pass
-        elif not isinstance(step, int) or step is not None:
+        elif (step is not None) and (not isinstance(step, int)):
+            pass
+        # TODO: modify native implementation to accept negative values
+        elif (step is not None) and (step < 0):
+            pass
+        elif (start is not None) and (start < 0):
+            pass
+        elif (start is not None) and (stop is not None) and (start > stop):
+            pass
+        elif (dtype is not None) and (dtype not in [dpnp.int32, dpnp.int64, dpnp.float32, dpnp.float64]):
             pass
         else:
             if dtype is None:
-                dtype = numpy.float64
+                dtype = numpy.int64
 
             if stop is None:
                 stop = start

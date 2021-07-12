@@ -77,7 +77,7 @@ Return:
 cpdef tuple _object_to_tuple(object obj)
 cdef int _normalize_order(order, cpp_bool allow_k=*) except? 0
 
-cpdef dparray_shape_type normalize_axis(dparray_shape_type axis, size_t shape_size)
+cpdef dparray_shape_type normalize_axis(object axis, size_t shape_size)
 """
 Conversion of the transformation shape axis [-1, 0, 1] into [2, 0, 1] where numbers are `id`s of array shape axis
 """

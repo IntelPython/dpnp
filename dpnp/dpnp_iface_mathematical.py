@@ -40,12 +40,12 @@ it contains:
 """
 
 
-import numpy
-
 from dpnp.dpnp_algo import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
+
 import dpnp
+import numpy
 
 
 __all__ = [
@@ -91,15 +91,6 @@ __all__ = [
     "true_divide",
     "trunc"
 ]
-
-
-def convert_result_scalar(result, keepdims):
-    # one element array result should be converted into scalar
-    # TODO empty shape must be converted into scalar (it is not in test system)
-    if (len(result.shape) > 0) and (result.size == 1) and (keepdims is False):
-        return result.dtype.type(result[0])
-    else:
-        return result
 
 
 def abs(*args, **kwargs):
@@ -151,12 +142,14 @@ def absolute(x1, **kwargs):
 
     """
 
-    is_input_dparray = isinstance(x1, dparray)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        if not x1_desc.ndim:
+            pass
+        else:
+            result = dpnp_absolute(x1_desc)
 
-    if not use_origin_backend(x1) and is_input_dparray and x1.ndim != 0 and not kwargs:
-        result = dpnp_absolute(x1)
-
-        return result
+            return result
 
     return call_origin(numpy.absolute, x1, **kwargs)
 
@@ -245,15 +238,14 @@ def around(x1, decimals=0, out=None):
 
     """
 
-    if not use_origin_backend(x1):
-        if not isinstance(x1, dparray):
-            pass
-        elif out is not None:
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if out is not None:
             pass
         elif decimals != 0:
             pass
         else:
-            return dpnp_around(x1, decimals)
+            return dpnp_around(x1_desc, decimals)
 
     return call_origin(numpy.around, x1, decimals=decimals, out=out)
 
@@ -492,7 +484,7 @@ def cumsum(x1, **kwargs):
     return call_origin(numpy.cumsum, x1, **kwargs)
 
 
-def diff(input, n=1, axis=-1, prepend=None, append=None):
+def diff(x1, n=1, axis=-1, prepend=None, append=None):
     """
     Calculate the n-th discrete difference along the given axis.
 
@@ -505,10 +497,9 @@ def diff(input, n=1, axis=-1, prepend=None, append=None):
     Otherwise the function will be executed sequentially on CPU.
     """
 
-    if not use_origin_backend(input):
-        if not isinstance(input, dparray):
-            pass
-        elif not isinstance(n, int):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if not isinstance(n, int):
             pass
         elif n < 1:
             pass
@@ -519,9 +510,9 @@ def diff(input, n=1, axis=-1, prepend=None, append=None):
         elif append is not None:
             pass
         else:
-            return dpnp_diff(input, n)
+            return dpnp_diff(x1, n)
 
-    return call_origin(numpy.diff, input, n, axis, prepend, append)
+    return call_origin(numpy.diff, x1, n, axis, prepend, append)
 
 
 def divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
@@ -857,7 +848,7 @@ def fmod(x1, x2, dtype=None, out=None, where=True, **kwargs):
     return call_origin(numpy.fmod, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
-def gradient(y1, *varargs, **kwargs):
+def gradient(x1, *varargs, **kwargs):
     """
     Return the gradient of an array.
 
@@ -883,20 +874,20 @@ def gradient(y1, *varargs, **kwargs):
     [0.5, 0.75, 1.25, 1.75, 2.25, 2.5]
 
     """
-    if not use_origin_backend(y1) and not kwargs:
-        if not isinstance(y1, dparray):
-            pass
-        elif len(varargs) > 1:
+
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        if len(varargs) > 1:
             pass
         elif len(varargs) == 1 and not isinstance(varargs[0], int):
             pass
         else:
             if len(varargs) == 0:
-                return dpnp_gradient(y1)
+                return dpnp_gradient(x1)
 
-            return dpnp_gradient(y1, varargs[0])
+            return dpnp_gradient(x1, varargs[0])
 
-    return call_origin(numpy.gradient, y1, *varargs, **kwargs)
+    return call_origin(numpy.gradient, x1, *varargs, **kwargs)
 
 
 def maximum(x1, x2, dtype=None, out=None, where=True, **kwargs):
@@ -1145,11 +1136,9 @@ def nancumprod(x1, **kwargs):
 
     """
 
-    if not use_origin_backend(x1) and not kwargs:
-        if not isinstance(x1, dparray):
-            pass
-        else:
-            return dpnp_nancumprod(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        return dpnp_nancumprod(x1_desc)
 
     return call_origin(numpy.nancumprod, x1, **kwargs)
 
@@ -1183,11 +1172,9 @@ def nancumsum(x1, **kwargs):
 
     """
 
-    if not use_origin_backend(x1) and not kwargs:
-        if not isinstance(x1, dparray):
-            pass
-        else:
-            return dpnp_nancumsum(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        return dpnp_nancumsum(x1_desc)
 
     return call_origin(numpy.nancumsum, x1, **kwargs)
 
@@ -1215,9 +1202,8 @@ def nanprod(x1, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
         return dpnp_nanprod(x1)
 
     return call_origin(numpy.nanprod, x1, **kwargs)
@@ -1246,9 +1232,8 @@ def nansum(x1, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
         return dpnp_nansum(x1)
 
     return call_origin(numpy.nansum, x1, **kwargs)
@@ -1369,16 +1354,17 @@ def prod(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, wher
 
     """
 
-    if not use_origin_backend(x1):
-        if not isinstance(x1, dparray):
-            pass
-        elif out is not None and not isinstance(out, dparray):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if out is not None and not isinstance(out, dparray):
             pass
         elif where is not True:
             pass
         else:
-            result = dpnp_prod(x1, axis, dtype, out, keepdims, initial, where)
-            return convert_result_scalar(result, keepdims)
+            result_obj = dpnp_prod(x1_desc, axis, dtype, out, keepdims, initial, where)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj, keepdims)
+
+            return result
 
     return call_origin(numpy.prod, x1, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)
 
@@ -1547,21 +1533,22 @@ def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, where
 
     """
 
-    if not use_origin_backend(x1):
-        if not isinstance(x1, dparray):
-            pass
-        elif out is not None and not isinstance(out, dparray):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if out is not None and not isinstance(out, dparray):
             pass
         elif where is not True:
             pass
         else:
-            result = dpnp_sum(x1, axis, dtype, out, keepdims, initial, where)
-            return convert_result_scalar(result, keepdims)
+            result_obj = dpnp_sum(x1_desc, axis, dtype, out, keepdims, initial, where)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj, keepdims)
+
+            return result
 
     return call_origin(numpy.sum, x1, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)
 
 
-def trapz(y, x=None, dx=1.0, **kwargs):
+def trapz(y, x=None, dx=1.0, axis=-1):
     """
     Integrate along the given axis using the composite trapezoidal rule.
 
@@ -1588,25 +1575,23 @@ def trapz(y, x=None, dx=1.0, **kwargs):
 
     """
 
-    if not use_origin_backend(y):
-
-        if not isinstance(y, dparray):
+    y_desc = dpnp.get_dpnp_descriptor(y)
+    if y_desc:
+        if not isinstance(x, dparray) and x is not None:
             pass
-        elif not isinstance(x, dparray) and x is not None:
+        elif x is not None and y_desc.size != x.size:
             pass
-        elif x is not None and y.size != x.size:
+        elif x is not None and y_desc.shape != x.shape:
             pass
-        elif x is not None and y.shape != x.shape:
-            pass
-        elif y.ndim > 1:
+        elif y_desc.ndim > 1:
             pass
         else:
             if x is None:
-                x = dpnp.empty(0, dtype=y.dtype)
+                x = dpnp.empty(0, dtype=y_desc.dtype)
 
-            return dpnp_trapz(y, x, dx)
+            return dpnp_trapz(y_desc, x, dx)
 
-    return call_origin(numpy.trapz, y, x=x, dx=dx, **kwargs)
+    return call_origin(numpy.trapz, y, x, dx, axis)
 
 
 def true_divide(*args, **kwargs):

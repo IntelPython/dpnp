@@ -57,7 +57,7 @@ __all__ += [
 ctypedef void(*custom_logic_1in_1out_func_ptr_t)(void * , void * , const size_t)
 
 
-cpdef dparray dpnp_all(dparray array1):
+cpdef dparray dpnp_all(dpnp_descriptor array1):
     cdef dparray result = dparray((1,), dtype=numpy.bool)
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
@@ -71,7 +71,7 @@ cpdef dparray dpnp_all(dparray array1):
     return result
 
 
-cpdef dparray dpnp_any(dparray array1):
+cpdef dparray dpnp_any(dpnp_descriptor array1):
     cdef dparray result = dparray((1,), dtype=numpy.bool)
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
@@ -85,7 +85,7 @@ cpdef dparray dpnp_any(dparray array1):
     return result
 
 
-cpdef dparray dpnp_equal(dparray array1, input2):
+cpdef dparray dpnp_equal(object array1, object input2):
     cdef dparray result = dparray(array1.shape, dtype=numpy.bool)
 
     if isinstance(input2, int):
@@ -98,7 +98,7 @@ cpdef dparray dpnp_equal(dparray array1, input2):
     return result
 
 
-cpdef dparray dpnp_greater(dparray input1, input2):
+cpdef dparray dpnp_greater(object input1, object input2):
     input2_is_scalar = dpnp.isscalar(input2)
 
     cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
@@ -113,7 +113,7 @@ cpdef dparray dpnp_greater(dparray input1, input2):
     return result
 
 
-cpdef dparray dpnp_greater_equal(dparray input1, input2):
+cpdef dparray dpnp_greater_equal(object input1, object input2):
     input2_is_scalar = dpnp.isscalar(input2)
 
     cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
@@ -128,7 +128,7 @@ cpdef dparray dpnp_greater_equal(dparray input1, input2):
     return result
 
 
-cpdef dparray dpnp_isclose(dparray input1, input2, double rtol=1e-05, double atol=1e-08, cpp_bool equal_nan=False):
+cpdef dparray dpnp_isclose(object input1, object input2, double rtol=1e-05, double atol=1e-08, cpp_bool equal_nan=False):
     cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
 
     if isinstance(input2, int):
@@ -141,7 +141,7 @@ cpdef dparray dpnp_isclose(dparray input1, input2, double rtol=1e-05, double ato
     return result
 
 
-cpdef dparray dpnp_isfinite(dparray input1):
+cpdef dparray dpnp_isfinite(object input1):
     cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
 
     for i in range(result.size):
@@ -150,7 +150,7 @@ cpdef dparray dpnp_isfinite(dparray input1):
     return result
 
 
-cpdef dparray dpnp_isinf(dparray input1):
+cpdef dparray dpnp_isinf(object input1):
     cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
 
     for i in range(result.size):
@@ -159,7 +159,7 @@ cpdef dparray dpnp_isinf(dparray input1):
     return result
 
 
-cpdef dparray dpnp_isnan(dparray input1):
+cpdef dparray dpnp_isnan(object input1):
     cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
 
     for i in range(result.size):
@@ -168,7 +168,7 @@ cpdef dparray dpnp_isnan(dparray input1):
     return result
 
 
-cpdef dparray dpnp_less(dparray input1, input2):
+cpdef dparray dpnp_less(object input1, object input2):
     input2_is_scalar = dpnp.isscalar(input2)
 
     cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
@@ -183,7 +183,7 @@ cpdef dparray dpnp_less(dparray input1, input2):
     return result
 
 
-cpdef dparray dpnp_less_equal(dparray input1, input2):
+cpdef dparray dpnp_less_equal(object input1, object input2):
     input2_is_scalar = dpnp.isscalar(input2)
 
     cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
@@ -198,7 +198,7 @@ cpdef dparray dpnp_less_equal(dparray input1, input2):
     return result
 
 
-cpdef dparray dpnp_logical_and(dparray input1, dparray input2):
+cpdef dparray dpnp_logical_and(object input1, object input2):
     cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
 
     for i in range(result.size):
@@ -207,7 +207,7 @@ cpdef dparray dpnp_logical_and(dparray input1, dparray input2):
     return result
 
 
-cpdef dparray dpnp_logical_not(dparray input1):
+cpdef dparray dpnp_logical_not(object input1):
     cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
 
     for i in range(result.size):
@@ -216,7 +216,7 @@ cpdef dparray dpnp_logical_not(dparray input1):
     return result
 
 
-cpdef dparray dpnp_logical_or(dparray input1, dparray input2):
+cpdef dparray dpnp_logical_or(object input1, object input2):
     cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
 
     for i in range(result.size):
@@ -225,7 +225,7 @@ cpdef dparray dpnp_logical_or(dparray input1, dparray input2):
     return result
 
 
-cpdef dparray dpnp_logical_xor(dparray input1, dparray input2):
+cpdef dparray dpnp_logical_xor(object input1, object input2):
     cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
 
     for i in range(result.size):
@@ -234,7 +234,7 @@ cpdef dparray dpnp_logical_xor(dparray input1, dparray input2):
     return result
 
 
-cpdef dparray dpnp_not_equal(dparray input1, input2):
+cpdef dparray dpnp_not_equal(object input1, object input2):
     input2_is_scalar = dpnp.isscalar(input2)
 
     cdef dparray result = dparray(input1.shape, dtype=numpy.bool)

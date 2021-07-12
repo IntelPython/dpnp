@@ -82,7 +82,7 @@ cpdef dparray dpnp_atleast_3d(dparray arr):
         return arr
 
 
-cpdef dpnp_copyto(dparray dst, dparray src, where=True):
+cpdef dpnp_copyto(utils.dpnp_descriptor dst, utils.dpnp_descriptor src, where=True):
     # Convert string type names (dparray.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType dst_type = dpnp_dtype_to_DPNPFuncType(dst.dtype)
     cdef DPNPFuncType src_type = dpnp_dtype_to_DPNPFuncType(src.dtype)
@@ -127,7 +127,7 @@ cpdef dparray dpnp_expand_dims(dparray in_array, axis):
     return result
 
 
-cpdef dparray dpnp_repeat(dparray array1, repeats, axes=None):
+cpdef dparray dpnp_repeat(utils.dpnp_descriptor array1, repeats, axes=None):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_REPEAT, param1_type, param1_type)
@@ -142,7 +142,7 @@ cpdef dparray dpnp_repeat(dparray array1, repeats, axes=None):
     return result
 
 
-cpdef dparray dpnp_transpose(dparray array1, axes=None):
+cpdef dparray dpnp_transpose(utils.dpnp_descriptor array1, axes=None):
     cdef dparray_shape_type input_shape = array1.shape
     cdef size_t input_shape_size = array1.ndim
     cdef dparray_shape_type result_shape = dparray_shape_type(input_shape_size, 1)
@@ -186,7 +186,7 @@ cpdef dparray dpnp_transpose(dparray array1, axes=None):
     return result
 
 
-cpdef dparray dpnp_squeeze(dparray in_array, axis):
+cpdef dparray dpnp_squeeze(object in_array, axis):
     shape_list = []
     if axis is None:
         for i in range(in_array.ndim):

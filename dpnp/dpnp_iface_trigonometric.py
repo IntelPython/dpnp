@@ -1061,10 +1061,8 @@ def unwrap(x1):
 
     """
 
-    if (use_origin_backend(x1)):
-        return call_origin(numpy.unwrap, x1, **kwargs)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_unwrap(x1_desc)
 
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP unwrap(): Unsupported x1={type(x1)}")
-
-    return dpnp_unwrap(x1)
+    return call_origin(numpy.unwrap, x1, **kwargs)

@@ -40,13 +40,12 @@ it contains:
 """
 
 
-import numpy
-
 from dpnp.dpnp_algo import *
-from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 import dpnp
 import dpnp.config as config
+
+import numpy
 
 
 __all__ = [
@@ -92,19 +91,15 @@ def dot(x1, x2, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-    is_x2_dparray = isinstance(x2, dparray)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    if x1_desc and x2_desc and not kwargs:
+        dim1 = x1_desc.ndim
+        dim2 = x2_desc.ndim
 
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
-        dim1 = x1.ndim
-        dim2 = x2.ndim
-
-        if not (dim1 >= 2 and dim2 == 1) and not (dim1 >= 2 and dim2 >= 2) and (x1.dtype == x2.dtype):
-            result = dpnp_dot(x1, x2)
-
-            # scalar returned
-            if result.shape == (1,):
-                return result.dtype.type(result[0])
+        if not (dim1 >= 2 and dim2 == 1) and not (dim1 >= 2 and dim2 >= 2) and (x1_desc.dtype == x2_desc.dtype):
+            result_obj = dpnp_dot(x1_desc, x2_desc)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
 
@@ -186,16 +181,15 @@ def inner(x1, x2, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-    is_x2_dparray = isinstance(x2, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
-        return dpnp_inner(x1, x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    if 0 and x1_desc and x2_desc and not kwargs:
+        return dpnp_inner(x1_desc, x2_desc)
 
     return call_origin(numpy.inner, x1, x2, **kwargs)
 
 
-def kron(a, b):
+def kron(x1, x2):
     """
     Returns the kronecker product of two arrays.
 
@@ -205,23 +199,15 @@ def kron(a, b):
 
     """
 
-    if not use_origin_backend(a):
-        if dpnp.isscalar(a):
-            a = dpnp.array(a)
-        if dpnp.isscalar(b):
-            b = dpnp.array(b)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    if x1_desc and x2_desc:
+        return dpnp_kron(x1_desc, x2_desc)
 
-        if not isinstance(a, dparray):
-            pass
-        elif not isinstance(b, dparray):
-            pass
-        else:
-            return dpnp_kron(a, b)
-
-    return call_origin(numpy.kron, a, b)
+    return call_origin(numpy.kron, x1, x2)
 
 
-def matmul(in_array1, in_array2, out=None, **kwargs):
+def matmul(x1, x2, out=None, **kwargs):
     """
     Matrix product of two arrays.
 
@@ -257,32 +243,42 @@ def matmul(in_array1, in_array2, out=None, **kwargs):
 
     """
 
-    if not use_origin_backend(in_array1) and not kwargs:
-        if not isinstance(in_array1, dparray):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    out_desc = dpnp.get_dpnp_descriptor(x2)
+    if x1_desc and x2_desc and out_desc and not kwargs:
+        if x1_desc.size != x2_desc.size:
             pass
-        elif not isinstance(in_array2, dparray):
+        elif not x1_desc.ndim:
             pass
-        elif out is not None and not isinstance(out, dparray):
+        elif not x2_desc.ndim:
+            pass
+        elif not x1_desc.size:
+            pass
+        elif not x2_desc.size:
             pass
         else:
-            """
-            Cost model checks
-            """
-
-            dparray1_size = in_array1.size
-            dparray2_size = in_array2.size
-            cost_size = 4096  # 2D array shape(64, 64)
-
-            if ((in_array1.dtype == numpy.float64) or (in_array1.dtype == numpy.float32)):
+            if 0:
                 """
-                Floating point types are handled via original math library better than SYCL math library
+                Cost model checks
                 """
-                cost_size = 262144  # 2D array shape(512, 512)
 
-            if (dparray1_size > cost_size) and (dparray2_size > cost_size):
-                return dpnp_matmul(in_array1, in_array2, out=out)
+                dparray1_size = x1_desc.size
+                dparray2_size = x2_desc.size
+                cost_size = 4096  # 2D array shape(64, 64)
 
-    return call_origin(numpy.matmul, in_array1, in_array2, out=out, **kwargs)
+                if ((x1_desc.dtype == numpy.float64) or (x1_desc.dtype == numpy.float32)):
+                    """
+                    Floating point types are handled via original math library better than SYCL math library
+                    """
+                    cost_size = 262144  # 2D array shape(512, 512)
+
+                if (dparray1_size > cost_size) and (dparray2_size > cost_size):
+                    return dpnp_matmul(x1_desc, x2_desc, out)
+            else:
+                return dpnp_matmul(x1_desc, x2_desc, out)
+
+    return call_origin(numpy.matmul, x1, x2, out=out, **kwargs)
 
 
 def outer(x1, x2, **kwargs):
@@ -314,11 +310,10 @@ def outer(x1, x2, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-    is_x2_dparray = isinstance(x2, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
-        return dpnp_outer(x1, x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    if 0 and x1_desc and x2_desc and not kwargs:
+        return dpnp_outer(x1_desc, x2_desc)
 
     return call_origin(numpy.outer, x1, x2, **kwargs)
 
@@ -353,11 +348,10 @@ def tensordot(x1, x2, axes=2):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-    is_x2_dparray = isinstance(x2, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and (axes == 1)):
-        return dpnp_tensordot(x1, x2)  # dpnp_matmul
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    if x1_desc and x2_desc and (axes == 1):
+        return dpnp_tensordot_not_implemented(x1_desc, x2_desc)  # dpnp_matmul
 
     return call_origin(numpy.tensordot, x1, x2, axes)
 

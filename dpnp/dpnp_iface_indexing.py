@@ -42,12 +42,12 @@ it contains:
 
 import collections
 
-import numpy
-
 from dpnp.dpnp_algo import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
+
 import dpnp
+import numpy
 
 
 __all__ = [
@@ -386,7 +386,7 @@ def place(arr, mask, vals):
     return call_origin(numpy.place, arr, mask, vals)
 
 
-def put(input, ind, v, mode='raise'):
+def put(x1, ind, v, mode='raise'):
     """
     Replaces specified elements of an array with given values.
     For full documentation refer to :obj:`numpy.put`.
@@ -397,22 +397,21 @@ def put(input, ind, v, mode='raise'):
     Not supported parameter mode.
     """
 
-    if not use_origin_backend(input):
-        if not isinstance(input, dparray):
-            pass
-        elif mode != 'raise':
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if mode != 'raise':
             pass
         elif type(ind) != type(v):
             pass
-        elif numpy.max(ind) >= input.size or numpy.min(ind) + input.size < 0:
+        elif numpy.max(ind) >= x1_desc.size or numpy.min(ind) + x1_desc.size < 0:
             pass
         else:
-            return dpnp_put(input, ind, v)
+            return dpnp_put(x1_desc, ind, v)
 
-    return call_origin(numpy.put, input, ind, v, mode)
+    return call_origin(numpy.put, x1, ind, v, mode)
 
 
-def put_along_axis(arr, indices, values, axis):
+def put_along_axis(x1, indices, values, axis):
     """
     Put values into the destination array by matching 1d index and data slices.
     For full documentation refer to :obj:`numpy.put_along_axis`.
@@ -422,62 +421,25 @@ def put_along_axis(arr, indices, values, axis):
     :obj:`take_along_axis` : Take values from the input array by matching 1d index and data slices.
     """
 
-    if not use_origin_backend(arr):
-        if not isinstance(arr, dparray):
-            pass
-        elif not isinstance(indices, dparray):
-            pass
-        elif arr.ndim != indices.ndim:
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    indices_desc = dpnp.get_dpnp_descriptor(indices)
+    values_desc = dpnp.get_dpnp_descriptor(values)
+    if x1_desc and indices_desc and values_desc:
+        if x1_desc.ndim != indices_desc.ndim:
             pass
         elif not isinstance(axis, int):
             pass
-        elif axis >= arr.ndim:
+        elif axis >= x1_desc.ndim:
             pass
-        elif not isinstance(values, (dparray, tuple, list)) and not dpnp.isscalar(values):
+        elif indices_desc.size != values_desc.size:
             pass
-        elif not dpnp.isscalar(values) and ((isinstance(values, dparray) and indices.size != values.size) or
-                                            ((isinstance(values, (tuple, list)) and indices.size != len(values)))):
-            pass
-        elif arr.ndim == indices.ndim:
-            val_list = []
-            for i in list(indices.shape)[:-1]:
-                if i == 1:
-                    val_list.append(True)
-                else:
-                    val_list.append(False)
-            if not all(val_list):
-                pass
-            else:
-                if dpnp.isscalar(values):
-                    values_size = 1
-                    values_ = dparray(values_size, dtype=arr.dtype)
-                    values_[0] = values
-                elif isinstance(values, dparray):
-                    values_ = values
-                else:
-                    values_size = len(values)
-                    values_ = dparray(values_size, dtype=arr.dtype)
-                    for i in range(values_size):
-                        values_[i] = values[i]
-                return dpnp_put_along_axis(arr, indices, values_, axis)
         else:
-            if dpnp.isscalar(values):
-                values_size = 1
-                values_ = dparray(values_size, dtype=arr.dtype)
-                values_[0] = values
-            elif isinstance(values, dparray):
-                values_ = values
-            else:
-                values_size = len(values)
-                values_ = dparray(values_size, dtype=arr.dtype)
-                for i in range(values_size):
-                    values_[i] = values[i]
-            return dpnp_put_along_axis(arr, indices, values_, axis)
+            return dpnp_put_along_axis(x1_desc, indices_desc, values_desc, axis)
 
-    return call_origin(numpy.put_along_axis, arr, indices, values, axis)
+    return call_origin(numpy.put_along_axis, x1, indices, values, axis)
 
 
-def putmask(arr, mask, values):
+def putmask(x1, mask, values):
     """
     Changes elements of an array based on conditional and input values.
     For full documentation refer to :obj:`numpy.putmask`.
@@ -487,17 +449,13 @@ def putmask(arr, mask, values):
     Input arrays ``arr``, ``mask`` and ``values``  are supported as :obj:`dpnp.ndarray`.
     """
 
-    if not use_origin_backend(arr):
-        if not isinstance(arr, dparray):
-            pass
-        elif not isinstance(mask, dparray):
-            pass
-        elif not isinstance(values, dparray):
-            pass
-        else:
-            return dpnp_putmask(arr, mask, values)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    mask_desc = dpnp.get_dpnp_descriptor(mask)
+    values_desc = dpnp.get_dpnp_descriptor(values)
+    if x1_desc and mask_desc and values_desc:
+        return dpnp_putmask(x1, mask, values)
 
-    return call_origin(numpy.putmask, arr, mask, values)
+    return call_origin(numpy.putmask, x1, mask, values)
 
 
 def select(condlist, choicelist, default=0):
@@ -510,6 +468,7 @@ def select(condlist, choicelist, default=0):
     Arrays of input lists are supported as :obj:`dpnp.ndarray`.
     Parameter ``default`` are supported only with default values.
     """
+
     if not use_origin_backend():
         if not isinstance(condlist, list):
             pass
@@ -537,7 +496,7 @@ def select(condlist, choicelist, default=0):
     return call_origin(numpy.select, condlist, choicelist, default)
 
 
-def take(input, indices, axis=None, out=None, mode='raise'):
+def take(x1, indices, axis=None, out=None, mode='raise'):
     """
     Take elements from an array.
     For full documentation refer to :obj:`numpy.take`.
@@ -554,24 +513,22 @@ def take(input, indices, axis=None, out=None, mode='raise'):
     :obj:`take_along_axis` : Take elements by matching the array and the index arrays.
     """
 
-    if not use_origin_backend(input):
-        if not isinstance(input, dparray):
-            pass
-        elif not isinstance(indices, dparray):
-            pass
-        elif axis is not None:
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    indices_desc = dpnp.get_dpnp_descriptor(indices)
+    if x1_desc and indices_desc:
+        if axis is not None:
             pass
         elif out is not None:
             pass
         elif mode != 'raise':
             pass
         else:
-            return dpnp_take(input, indices)
+            return dpnp_take(x1_desc, indices_desc)
 
-    return call_origin(numpy.take, input, indices, axis, out, mode)
+    return call_origin(numpy.take, x1, indices, axis, out, mode)
 
 
-def take_along_axis(arr, indices, axis):
+def take_along_axis(x1, indices, axis):
     """
     Take values from the input array by matching 1d index and data slices.
     For full documentation refer to :obj:`numpy.take_along_axis`.
@@ -582,20 +539,18 @@ def take_along_axis(arr, indices, axis):
     :obj:`put_along_axis` : Put values into the destination array by matching 1d index and data slices.
     """
 
-    if not use_origin_backend(arr):
-        if not isinstance(arr, dparray):
-            pass
-        elif not isinstance(indices, dparray):
-            pass
-        elif arr.ndim != indices.ndim:
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    indices_desc = dpnp.get_dpnp_descriptor(indices)
+    if x1_desc and indices_desc:
+        if x1_desc.ndim != indices_desc.ndim:
             pass
         elif not isinstance(axis, int):
             pass
-        elif axis >= arr.ndim:
+        elif axis >= x1_desc.ndim:
             pass
-        elif arr.ndim == indices.ndim:
+        elif x1_desc.ndim == indices_desc.ndim:
             val_list = []
-            for i in list(indices.shape)[:-1]:
+            for i in list(indices_desc.shape)[:-1]:
                 if i == 1:
                     val_list.append(True)
                 else:
@@ -603,11 +558,11 @@ def take_along_axis(arr, indices, axis):
             if not all(val_list):
                 pass
             else:
-                return dpnp_take_along_axis(arr, indices, axis)
+                return dpnp_take_along_axis(x1, indices, axis)
         else:
-            return dpnp_take_along_axis(arr, indices, axis)
+            return dpnp_take_along_axis(x1, indices, axis)
 
-    return call_origin(numpy.take_along_axis, arr, indices, axis)
+    return call_origin(numpy.take_along_axis, x1, indices, axis)
 
 
 def tril_indices(n, k=0, m=None):
@@ -644,7 +599,7 @@ def tril_indices(n, k=0, m=None):
     return call_origin(numpy.tril_indices, n, k, m)
 
 
-def tril_indices_from(arr, k=0):
+def tril_indices_from(x1, k=0):
     """
     Return the indices for the lower-triangle of arr.
     See `tril_indices` for full details.
@@ -659,13 +614,12 @@ def tril_indices_from(arr, k=0):
         Diagonal offset (see `tril` for details).
     """
 
-    is_arr_dparray = isinstance(arr, dparray)
-
-    if (not use_origin_backend(arr) and is_arr_dparray):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
         if isinstance(k, int):
-            return dpnp_tril_indices_from(arr, k)
+            return dpnp_tril_indices_from(x1_desc, k)
 
-    return call_origin(numpy.tril_indices_from, arr, k)
+    return call_origin(numpy.tril_indices_from, x1, k)
 
 
 def triu_indices(n, k=0, m=None):
@@ -702,7 +656,7 @@ def triu_indices(n, k=0, m=None):
     return call_origin(numpy.triu_indices, n, k, m)
 
 
-def triu_indices_from(arr, k=0):
+def triu_indices_from(x1, k=0):
     """
     Return the indices for the lower-triangle of arr.
     See `tril_indices` for full details.
@@ -717,10 +671,9 @@ def triu_indices_from(arr, k=0):
         Diagonal offset (see `tril` for details).
     """
 
-    is_arr_dparray = isinstance(arr, dparray)
-
-    if (not use_origin_backend(arr) and is_arr_dparray):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
         if isinstance(k, int):
-            return dpnp_triu_indices_from(arr, k)
+            return dpnp_triu_indices_from(x1_desc, k)
 
-    return call_origin(numpy.triu_indices_from, arr, k)
+    return call_origin(numpy.triu_indices_from, x1, k)
