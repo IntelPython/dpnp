@@ -28,6 +28,8 @@
 from libcpp.vector cimport vector
 from libcpp cimport bool as cpp_bool
 from dpnp.dparray cimport dparray, dparray_shape_type
+from dpnp.dpnp_utils.dpnp_algo_utils cimport dpnp_descriptor
+
 
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
     cdef enum DPNPFuncName "DPNPFuncName":
@@ -46,6 +48,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_ARGMAX
         DPNP_FN_ARGMIN
         DPNP_FN_ARGSORT
+        DPNP_FN_AROUND
         DPNP_FN_ASTYPE
         DPNP_FN_BITWISE_AND
         DPNP_FN_BITWISE_OR
@@ -107,6 +110,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_MINIMUM
         DPNP_FN_MODF
         DPNP_FN_MULTIPLY
+        DPNP_FN_NANVAR
         DPNP_FN_NEGATIVE
         DPNP_FN_NONZERO
         DPNP_FN_ONES
@@ -158,6 +162,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_RNG_WALD
         DPNP_FN_RNG_WEIBULL
         DPNP_FN_RNG_ZIPF
+        DPNP_FN_SEARCHSORTED
         DPNP_FN_SIGN
         DPNP_FN_SIN
         DPNP_FN_SINH
@@ -219,17 +224,11 @@ cdef extern from "dpnp_iface.hpp":
 
 # C function pointer to the C library template functions
 ctypedef void(*fptr_1out_t)(void *, size_t)
-ctypedef void(*fptr_1in_1out_t)(void *, void *, size_t)
-ctypedef void(*fptr_2in_1out_t)(void *, const void *, const size_t, const long *, const size_t,
-                                    const void *, const size_t, const long *, const size_t, const long *)
+ctypedef void(*fptr_1in_1out_t)(void * , void * , size_t)
+ctypedef void(*fptr_2in_1out_t)(void *, const void * , const size_t, const long * , const size_t,
+                                const void * , const size_t, const long * , const size_t, const long * )
 ctypedef void(*fptr_blas_gemm_2in_1out_t)(void * , void * , void * , size_t, size_t, size_t)
 ctypedef void(*dpnp_reduction_c_t)(void * , const void * , const size_t*, const size_t, const long*, const size_t, const void * , const long*)
-
-cdef dparray call_fptr_1out(DPNPFuncName fptr_name, result_shape, result_dtype)
-cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, dparray x1, dparray_shape_type result_shape)
-cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, object x1_obj, object x2_obj,
-                                object dtype=*, dparray out=*, object where=*)
-
 
 cpdef dparray dpnp_astype(dparray array1, dtype_target)
 cpdef dparray dpnp_flatten(dparray array1)
@@ -248,7 +247,7 @@ Bitwise functions
 cpdef dparray dpnp_bitwise_and(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
 cpdef dparray dpnp_bitwise_or(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
 cpdef dparray dpnp_bitwise_xor(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dparray dpnp_invert(dparray arr)
+cpdef dparray dpnp_invert(dpnp_descriptor x1)
 cpdef dparray dpnp_left_shift(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
 cpdef dparray dpnp_right_shift(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
 
@@ -256,24 +255,24 @@ cpdef dparray dpnp_right_shift(object x1_obj, object x2_obj, object dtype=*, dpa
 """
 Logic functions
 """
-cpdef dparray dpnp_equal(dparray array1, input2)
-cpdef dparray dpnp_greater(dparray input1, input2)
-cpdef dparray dpnp_greater_equal(dparray input1, input2)
-cpdef dparray dpnp_isclose(dparray input1, input2, double rtol=*, double atol=*, cpp_bool equal_nan=*)
-cpdef dparray dpnp_less(dparray input1, input2)
-cpdef dparray dpnp_less_equal(dparray input1, input2)
-cpdef dparray dpnp_logical_and(dparray input1, dparray input2)
-cpdef dparray dpnp_logical_not(dparray input1)
-cpdef dparray dpnp_logical_or(dparray input1, dparray input2)
-cpdef dparray dpnp_logical_xor(dparray input1, dparray input2)
-cpdef dparray dpnp_not_equal(dparray input1, input2)
+cpdef dparray dpnp_equal(object array1, object input2)
+cpdef dparray dpnp_greater(object input1, object input2)
+cpdef dparray dpnp_greater_equal(object input1, object input2)
+cpdef dparray dpnp_isclose(object input1, object input2, double rtol=*, double atol=*, cpp_bool equal_nan=*)
+cpdef dparray dpnp_less(object input1, object input2)
+cpdef dparray dpnp_less_equal(object input1, object input2)
+cpdef dparray dpnp_logical_and(object input1, object input2)
+cpdef dparray dpnp_logical_not(object input1)
+cpdef dparray dpnp_logical_or(object input1, object input2)
+cpdef dparray dpnp_logical_xor(object input1, object input2)
+cpdef dparray dpnp_not_equal(object input1, object input2)
 
 
 """
 Linear algebra
 """
-cpdef dparray dpnp_dot(dparray in_array1, dparray in_array2)
-cpdef dparray dpnp_matmul(dparray in_array1, dparray in_array2)
+cpdef dparray dpnp_dot(dpnp_descriptor in_array1, dpnp_descriptor in_array2)
+cpdef dparray dpnp_matmul(dpnp_descriptor in_array1, dpnp_descriptor in_array2, dparray out=*)
 
 
 """
@@ -289,24 +288,22 @@ Mathematical functions
 """
 cpdef dparray dpnp_add(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
 cpdef dparray dpnp_arctan2(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dparray dpnp_cos(dparray array1)
 cpdef dparray dpnp_divide(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
 cpdef dparray dpnp_hypot(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
 cpdef dparray dpnp_maximum(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
 cpdef dparray dpnp_minimum(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
 cpdef dparray dpnp_multiply(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dparray dpnp_negative(dparray array1)
+cpdef dparray dpnp_negative(dpnp_descriptor array1)
 cpdef dparray dpnp_power(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
 cpdef dparray dpnp_remainder(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dparray dpnp_sin(dparray array1)
 cpdef dparray dpnp_subtract(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
 
 
 """
 Array manipulation routines
 """
-cpdef dparray dpnp_repeat(dparray array1, repeats, axes=*)
-cpdef dparray dpnp_transpose(dparray array1, axes=*)
+cpdef dparray dpnp_repeat(dpnp_descriptor array1, repeats, axes=*)
+cpdef dparray dpnp_transpose(dpnp_descriptor array1, axes=*)
 
 
 """
@@ -320,40 +317,40 @@ cpdef dparray dpnp_min(dparray a, axis)
 """
 Sorting functions
 """
-cpdef dparray dpnp_argsort(dparray array1)
-cpdef dparray dpnp_sort(dparray array1)
+cpdef dparray dpnp_argsort(dpnp_descriptor array1)
+cpdef dparray dpnp_sort(dpnp_descriptor array1)
 
 """
 Searching functions
 """
-cpdef dparray dpnp_argmax(dparray array1)
-cpdef dparray dpnp_argmin(dparray array1)
+cpdef dparray dpnp_argmax(dpnp_descriptor array1)
+cpdef dparray dpnp_argmin(dpnp_descriptor array1)
 
 """
 Trigonometric functions
 """
-cpdef dparray dpnp_arccos(dparray array1)
-cpdef dparray dpnp_arccosh(dparray array1)
-cpdef dparray dpnp_arcsin(dparray array1)
-cpdef dparray dpnp_arcsinh(dparray array1)
-cpdef dparray dpnp_arctan(dparray array1)
-cpdef dparray dpnp_arctanh(dparray array1)
-cpdef dparray dpnp_cbrt(dparray array1)
-cpdef dparray dpnp_cos(dparray array1)
-cpdef dparray dpnp_cosh(dparray array1)
-cpdef dparray dpnp_degrees(dparray array1)
-cpdef dparray dpnp_exp(dparray array1)
-cpdef dparray dpnp_exp2(dparray array1)
-cpdef dparray dpnp_expm1(dparray array1)
-cpdef dparray dpnp_log(dparray array1)
-cpdef dparray dpnp_log10(dparray array1)
-cpdef dparray dpnp_log1p(dparray array1)
-cpdef dparray dpnp_log2(dparray array1)
-cpdef dparray dpnp_radians(dparray array1)
-cpdef dparray dpnp_recip(dparray array1)
-cpdef dparray dpnp_sin(dparray array1)
-cpdef dparray dpnp_sinh(dparray array1)
-cpdef dparray dpnp_sqrt(dparray array1)
-cpdef dparray dpnp_square(dparray array1)
-cpdef dparray dpnp_tan(dparray array1)
-cpdef dparray dpnp_tanh(dparray array1)
+cpdef dparray dpnp_arccos(dpnp_descriptor array1)
+cpdef dparray dpnp_arccosh(dpnp_descriptor array1)
+cpdef dparray dpnp_arcsin(dpnp_descriptor array1)
+cpdef dparray dpnp_arcsinh(dpnp_descriptor array1)
+cpdef dparray dpnp_arctan(dpnp_descriptor array1)
+cpdef dparray dpnp_arctanh(dpnp_descriptor array1)
+cpdef dparray dpnp_cbrt(dpnp_descriptor array1)
+cpdef dparray dpnp_cos(dpnp_descriptor array1)
+cpdef dparray dpnp_cosh(dpnp_descriptor array1)
+cpdef dparray dpnp_degrees(dpnp_descriptor array1)
+cpdef dparray dpnp_exp(dpnp_descriptor array1)
+cpdef dparray dpnp_exp2(dpnp_descriptor array1)
+cpdef dparray dpnp_expm1(dpnp_descriptor array1)
+cpdef dparray dpnp_log(dpnp_descriptor array1)
+cpdef dparray dpnp_log10(dpnp_descriptor array1)
+cpdef dparray dpnp_log1p(dpnp_descriptor array1)
+cpdef dparray dpnp_log2(dpnp_descriptor array1)
+cpdef dparray dpnp_radians(dpnp_descriptor array1)
+cpdef dparray dpnp_recip(dpnp_descriptor array1)
+cpdef dparray dpnp_sin(dpnp_descriptor array1, dparray out=*)
+cpdef dparray dpnp_sinh(dpnp_descriptor array1)
+cpdef dparray dpnp_sqrt(dpnp_descriptor array1)
+cpdef dparray dpnp_square(dpnp_descriptor array1)
+cpdef dparray dpnp_tan(dpnp_descriptor array1)
+cpdef dparray dpnp_tanh(dpnp_descriptor array1)

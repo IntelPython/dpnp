@@ -31,12 +31,12 @@ This module contains differnt helpers and utilities
 
 """
 
+import numpy
+import dpnp.config as config
+import dpnp
+from dpnp.dpnp_algo cimport dpnp_DPNPFuncType_to_dtype, dpnp_dtype_to_DPNPFuncType, get_dpnp_function_ptr
 from libcpp cimport bool as cpp_bool
 from libcpp.complex cimport complex as cpp_complex
-
-import dpnp
-import dpnp.config as config
-import numpy
 
 cimport cpython
 cimport cython
@@ -54,6 +54,7 @@ __all__ = [
     "checker_throw_type_error",
     "checker_throw_value_error",
     "dp2nd_array",
+    "dpnp_descriptor",
     "get_axis_indeces",
     "get_axis_offsets",
     "_get_linear_index",
@@ -70,6 +71,8 @@ def call_origin(function, *args, **kwargs):
     """
     Call fallback function for unsupported cases
     """
+
+    # print(f"DPNP call_origin(): Fallback called")
 
     kwargs_out = kwargs.get("out", None)
     if (kwargs_out is not None):
@@ -352,11 +355,12 @@ cpdef nd2dp_array(arr):
     return result
 
 
-cpdef dparray_shape_type normalize_axis(dparray_shape_type axis, size_t shape_size_inp):
+cpdef dparray_shape_type normalize_axis(object axis_obj, size_t shape_size_inp):
     """
     Conversion of the transformation shape axis [-1, 0, 1] into [2, 0, 1] where numbers are `id`s of array shape axis
     """
 
+    cdef dparray_shape_type axis = _object_to_tuple(axis_obj)  # axis_obj might be a scalar
     cdef ssize_t shape_size = shape_size_inp  # convert type for comparison with axis id
 
     cdef size_t axis_size = axis.size()
@@ -431,3 +435,113 @@ cpdef cpp_bool use_origin_backend(input1=None, size_t compute_size=0):
         return True
 
     return False
+
+
+cdef class dpnp_descriptor:
+    def __init__(self, obj):
+        """ Initialze variables """
+        self.descriptor = None
+        self.dpnp_descriptor_data_size = 0
+        self.dpnp_descriptor_is_scalar = True
+
+        """ Accure main data storage """
+        self.descriptor = getattr(obj, "__array_interface__", None)
+        if self.descriptor is None:
+            return
+
+        if self.descriptor["version"] != 3:
+            return
+
+        """ array size calculation """
+        cdef Py_ssize_t shape_it = 0
+        self.dpnp_descriptor_data_size = 1
+        for shape_it in self.shape:
+            # TODO need to use common procedure from utils to calculate array size by shape
+            if shape_it < 0:
+                raise ValueError(f"{ERROR_PREFIX} dpnp_descriptor::__init__() invalid value {shape_it} in 'shape'")
+            self.dpnp_descriptor_data_size *= shape_it
+
+        """ set scalar propery """
+        self.dpnp_descriptor_is_scalar = False
+
+    @property
+    def is_valid(self):
+        if self.descriptor is None:
+            return False
+        return True
+
+    @property
+    def shape(self):
+        if self.is_valid:
+            return self.descriptor["shape"]
+        return None
+
+    @property
+    def strides(self):
+        if self.is_valid:
+            return self.descriptor["strides"]
+        return None
+
+    @property
+    def ndim(self):
+        if self.is_valid:
+            return len(self.shape)
+        return 0
+
+    @property
+    def size(self):
+        if self.is_valid:
+            return self.dpnp_descriptor_data_size
+        return 0
+
+    @property
+    def dtype(self):
+        if self.is_valid:
+            type_str = self.descriptor["typestr"]
+            return dpnp.dtype(type_str)
+        return None
+
+    @property
+    def is_scalar(self):
+        return self.dpnp_descriptor_is_scalar
+
+    @property
+    def data(self):
+        if self.is_valid:
+            data_tuple = self.descriptor["data"]
+            return data_tuple[0]
+        return None
+
+    @property
+    def descr(self):
+        if self.is_valid:
+            return self.descriptor["descr"]
+        return None
+
+    @property
+    def __array_interface__(self):
+        # print(f"====dpnp_descriptor::__array_interface__====self.descriptor={ < size_t > self.descriptor}")
+        if self.descriptor is None:
+            return None
+
+        # TODO need to think about feature compatibility
+        interface_dict = {
+            "data": self.descriptor["data"],
+            "strides": self.descriptor["strides"],
+            "descr": self.descriptor["descr"],
+            "typestr": self.descriptor["typestr"],
+            "shape": self.descriptor["shape"],
+            "version": self.descriptor["version"]
+        }
+
+        return interface_dict
+
+    cdef void * get_data(self):
+        cdef long val = self.data
+        return < void * > val
+
+    def __bool__(self):
+        return self.is_valid
+
+    def __str__(self):
+        return str(self.descriptor)

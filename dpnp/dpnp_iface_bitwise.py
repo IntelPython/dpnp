@@ -61,23 +61,26 @@ __all__ = [
 
 def _check_nd_call(origin_func, dpnp_func, x1, x2, dtype=None, out=None, where=True, **kwargs):
     """Choose function to call based on input and call chosen fucntion."""
-    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
-    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
-    if not use_origin_backend(x1) and not kwargs:
-        if not x1_is_dparray and not x1_is_scalar:
+    x1_is_scalar = dpnp.isscalar(x1)
+    x2_is_scalar = dpnp.isscalar(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+
+    if x1_desc and x2_desc and not kwargs:
+        if not x1_desc and not x1_is_scalar:
             pass
-        elif not x2_is_dparray and not x2_is_scalar:
+        elif not x2_desc and not x2_is_scalar:
             pass
         elif x1_is_scalar and x2_is_scalar:
             pass
-        elif x1_is_dparray and x1.ndim == 0:
+        elif x1_desc and x1_desc.ndim == 0:
             pass
-        elif x2_is_dparray and x2.ndim == 0:
+        elif x2_desc and x2_desc.ndim == 0:
             pass
-        elif x1_is_dparray and x2_is_dparray and x1.size != x2.size:
+        elif x1_desc and x2_desc and x1_desc.size != x2_desc.size:
             pass
-        elif x1_is_dparray and x2_is_dparray and x1.shape != x2.shape:
+        elif x1_desc and x2_desc and x1_desc.shape != x2_desc.shape:
             pass
         elif out is not None and not isinstance(out, dparray):
             pass
@@ -88,7 +91,7 @@ def _check_nd_call(origin_func, dpnp_func, x1, x2, dtype=None, out=None, where=T
         elif not where:
             pass
         else:
-            return dpnp_func(x1, x2, dtype=dtype, out=out, where=where)
+            return dpnp_func(x1_desc, x2_desc, dtype=dtype, out=out, where=where)
 
     return call_origin(origin_func, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -160,6 +163,7 @@ def bitwise_or(x1, x2, dtype=None, out=None, where=True, **kwargs):
     """
     return _check_nd_call(numpy.bitwise_or, dpnp_bitwise_or, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
+
 def bitwise_xor(x1, x2, dtype=None, out=None, where=True, **kwargs):
     """
     Compute the bit-wise XOR of two arrays element-wise.
@@ -223,11 +227,10 @@ def invert(x, **kwargs):
     -14
 
     """
-    if not use_origin_backend(x) and not kwargs:
-        if not isinstance(x, dparray):
-            pass
-        else:
-            return dpnp_invert(x)
+
+    x1_desc = dpnp.get_dpnp_descriptor(x)
+    if x1_desc and not kwargs:
+        return dpnp_invert(x1_desc)
 
     return call_origin(numpy.invert, x, **kwargs)
 

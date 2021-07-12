@@ -41,13 +41,14 @@ it contains:
 
 
 import collections.abc
-import numpy
 
 from dpnp.dpnp_algo import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
-import dpnp
 from dpnp.dpnp_iface_arraycreation import array
+
+import dpnp
+import numpy
 
 
 __all__ = [
@@ -67,7 +68,7 @@ __all__ = [
 ]
 
 
-def asfarray(a, dtype=numpy.float64):
+def asfarray(x1, dtype=numpy.float64):
     """
     Return an array converted to a float type.
 
@@ -79,18 +80,19 @@ def asfarray(a, dtype=numpy.float64):
 
     """
 
-    if not use_origin_backend(a):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
         # behavior of original function: int types replaced with float64
         if numpy.issubdtype(dtype, numpy.integer):
             dtype = numpy.float64
 
         # if type is the same then same object should be returned
-        if isinstance(a, dpnp.ndarray) and a.dtype == dtype:
-            return a
+        if x1_desc.dtype == dtype:
+            return x1
 
-        return array(a, dtype=dtype)
+        return array(x1, dtype=dtype)
 
-    return call_origin(numpy.asfarray, a, dtype)
+    return call_origin(numpy.asfarray, x1, dtype)
 
 
 def atleast_1d(*arys):
@@ -188,32 +190,31 @@ def copyto(dst, src, casting='same_kind', where=True):
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     """
-    if not use_origin_backend(dst):
-        if not isinstance(dst, dparray):
+
+    dst_desc = dpnp.get_dpnp_descriptor(dst)
+    src_desc = dpnp.get_dpnp_descriptor(src)
+    if dst_desc and src_desc:
+        if casting != 'same_kind':
             pass
-        elif not isinstance(src, dparray):
+        elif (dst_desc.dtype == dpnp.bool and  # due to 'same_kind' casting
+              src_desc.dtype in [dpnp.int32, dpnp.int64, dpnp.float32, dpnp.float64, dpnp.complex128]):
             pass
-        elif casting != 'same_kind':
+        elif (dst_desc.dtype in [dpnp.int32, dpnp.int64] and  # due to 'same_kind' casting
+              src_desc.dtype in [dpnp.float32, dpnp.float64, dpnp.complex128]):
             pass
-        elif (dst.dtype == dpnp.bool and  # due to 'same_kind' casting
-              src.dtype in [dpnp.int32, dpnp.int64, dpnp.float32, dpnp.float64, dpnp.complex128]):
-            pass
-        elif (dst.dtype in [dpnp.int32, dpnp.int64] and  # due to 'same_kind' casting
-              src.dtype in [dpnp.float32, dpnp.float64, dpnp.complex128]):
-            pass
-        elif dst.dtype in [dpnp.float32, dpnp.float64] and src.dtype == dpnp.complex128:  # due to 'same_kind' casting
+        elif dst_desc.dtype in [dpnp.float32, dpnp.float64] and src_desc.dtype == dpnp.complex128:  # due to 'same_kind' casting
             pass
         elif where is not True:
             pass
-        elif dst.shape != src.shape:
+        elif dst_desc.shape != src_desc.shape:
             pass
         else:
-            return dpnp_copyto(dst, src, where=where)
+            return dpnp_copyto(dst_desc, src_desc, where=where)
 
     return call_origin(numpy.copyto, dst, src, casting, where)
 
 
-def expand_dims(a, axis):
+def expand_dims(x1, axis):
     """
     Expand the shape of an array.
 
@@ -271,13 +272,11 @@ def expand_dims(a, axis):
 
     """
 
-    if not use_origin_backend(a):
-        if not isinstance(a, dpnp.ndarray):
-            pass
-        else:
-            return dpnp_expand_dims(a, axis)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_expand_dims(x1, axis)
 
-    return call_origin(numpy.expand_dims, a, axis)
+    return call_origin(numpy.expand_dims, x1, axis)
 
 
 def moveaxis(x1, source, destination):
@@ -309,45 +308,33 @@ def moveaxis(x1, source, destination):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.swapaxes(x1, source, destination)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        source_norm = normalize_axis(source, x1_desc.ndim)
+        destination_norm = normalize_axis(destination, x1_desc.ndim)
 
-    if (not isinstance(x1, dparray)):
-        return numpy.swapaxes(x1, source, destination)
+        if len(source_norm) != len(destination_norm):
+            pass
+        else:
+            # 'do nothing' pattern for transpose() with no elements in 'source'
+            input_permute = []
+            for i in range(x1_desc.ndim):
+                if i not in source_norm:
+                    input_permute.append(i)
 
-    if not isinstance(source, collections.abc.Sequence):  # assume scalar
-        source = (source,)
+            # insert moving axes into proper positions
+            for destination_id, source_id in sorted(zip(destination_norm, source_norm)):
+                # if destination_id in input_permute:
+                # pytest tests/third_party/cupy/manipulation_tests/test_transpose.py::TestTranspose::test_moveaxis_invalid5_3
+                # checker_throw_value_error("swapaxes", "source_id exists", source_id, input_permute)
+                input_permute.insert(destination_id, source_id)
 
-    if not isinstance(destination, collections.abc.Sequence):  # assume scalar
-        destination = (destination,)
+            return transpose(x1_desc, axes=input_permute)
 
-    source_norm = normalize_axis(source, x1.ndim)
-    destination_norm = normalize_axis(destination, x1.ndim)
-
-    if len(source_norm) != len(destination_norm):
-        checker_throw_axis_error(
-            "swapaxes",
-            "source_norm.size() != destination_norm.size()",
-            source_norm,
-            destination_norm)
-
-    # 'do nothing' pattern for transpose() with no elements in 'source'
-    input_permute = []
-    for i in range(x1.ndim):
-        if i not in source_norm:
-            input_permute.append(i)
-
-    # insert moving axes into proper positions
-    for destination_id, source_id in sorted(zip(destination_norm, source_norm)):
-        # if destination_id in input_permute:
-        # pytest tests/third_party/cupy/manipulation_tests/test_transpose.py::TestTranspose::test_moveaxis_invalid5_3
-        # checker_throw_value_error("swapaxes", "source_id exists", source_id, input_permute)
-        input_permute.insert(destination_id, source_id)
-
-    return transpose(x1, axes=input_permute)
+    return call_origin(numpy.moveaxis, x1, source, destination)
 
 
-def ravel(a, order='C'):
+def ravel(x1, order='C'):
     """
     Return a contiguous flattened array.
 
@@ -369,12 +356,11 @@ def ravel(a, order='C'):
 
     """
 
-    if not use_origin_backend(a) and isinstance(a, dparray):
-        return a.ravel(order=order)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_flatten(x1)
 
-    result = numpy.rollaxis(dp2nd_array(a), order=order)
-
-    return nd2dp_array(result)
+    return call_origin(numpy.ravel, x1, order=order)
 
 
 def repeat(x1, repeats, axis=None):
@@ -403,23 +389,22 @@ def repeat(x1, repeats, axis=None):
 
     """
 
-    if not use_origin_backend(x1):
-        if not isinstance(x1, dparray):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if axis is not None and axis != 0:
             pass
-        elif axis is not None and axis != 0:
-            pass
-        elif x1.ndim >= 2:
+        elif x1_desc.ndim >= 2:
             pass
         elif not dpnp.isscalar(repeats) and len(repeats) > 1:
             pass
         else:
             repeat_val = repeats if dpnp.isscalar(repeats) else repeats[0]
-            return dpnp_repeat(x1, repeat_val, axis)
+            return dpnp_repeat(x1_desc, repeat_val, axis)
 
     return call_origin(numpy.repeat, x1, repeats, axis)
 
 
-def rollaxis(a, axis, start=0):
+def rollaxis(x1, axis, start=0):
     """
     Roll the specified axis backwards, until it lies in a given position.
 
@@ -452,25 +437,22 @@ def rollaxis(a, axis, start=0):
 
     """
 
-    if not use_origin_backend(a):
-        if not isinstance(a, dparray):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if not isinstance(axis, int):
             pass
-        elif not isinstance(axis, int):
-            pass
-        elif start < -a.ndim or start > a.ndim:
+        elif start < -x1_desc.ndim or start > x1_desc.ndim:
             pass
         else:
-            start_norm = start + a.ndim if start < 0 else start
+            start_norm = start + x1_desc.ndim if start < 0 else start
             destination = start_norm - 1 if start_norm > axis else start_norm
 
-            return dpnp.moveaxis(a, axis, destination)
+            return dpnp.moveaxis(x1_desc, axis, destination)
 
-    result = numpy.rollaxis(dp2nd_array(a), axis, start)
-
-    return nd2dp_array(result)
+    return call_origin(numpy.rollaxis, x1, axis, start)
 
 
-def squeeze(a, axis=None):
+def squeeze(x1, axis=None):
     """
     Remove single-dimensional entries from the shape of an array.
 
@@ -504,13 +486,11 @@ def squeeze(a, axis=None):
 
     """
 
-    if not use_origin_backend(a):
-        if not isinstance(a, dpnp.ndarray):
-            pass
-        else:
-            return dpnp_squeeze(a, axis)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_squeeze(x1, axis)
 
-    return call_origin(numpy.squeeze, a, axis)
+    return call_origin(numpy.squeeze, x1, axis)
 
 
 def swapaxes(x1, axis1, axis2):
@@ -539,24 +519,21 @@ def swapaxes(x1, axis1, axis2):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.swapaxes(x1, axis1, axis2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if axis1 >= x1_desc.ndim:
+            pass
+        elif axis2 >= x1_desc.ndim:
+            pass
+        else:
+            # 'do nothing' pattern for transpose()
+            input_permute = [i for i in range(x1.ndim)]
+            # swap axes
+            input_permute[axis1], input_permute[axis2] = input_permute[axis2], input_permute[axis1]
 
-    if (not isinstance(x1, dparray)):
-        return numpy.swapaxes(x1, axis1, axis2)
+            return transpose(x1_desc, axes=input_permute)
 
-    if not (axis1 < x1.ndim):
-        checker_throw_value_error("swapaxes", "axis1", axis1, x1.ndim - 1)
-
-    if not (axis2 < x1.ndim):
-        checker_throw_value_error("swapaxes", "axis2", axis2, x1.ndim - 1)
-
-    # 'do nothing' pattern for transpose()
-    input_permute = [i for i in range(x1.ndim)]
-    # swap axes
-    input_permute[axis1], input_permute[axis2] = input_permute[axis2], input_permute[axis1]
-
-    return transpose(x1, axes=input_permute)
+    return call_origin(numpy.swapaxes, x1, axis1, axis2)
 
 
 def transpose(x1, axes=None):
@@ -593,17 +570,17 @@ def transpose(x1, axes=None):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.transpose(x1, axes=axes)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if axes is not None:
+            if not any(axes):
+                """
+                pytest tests/third_party/cupy/manipulation_tests/test_transpose.py
+                """
+                axes = None
 
-    if (not isinstance(x1, dparray)):
-        return numpy.transpose(x1, axes=axes)
+        result = dpnp_transpose(x1_desc, axes)
 
-    if (axes is not None):
-        if (not any(axes)):
-            """
-            pytest tests/third_party/cupy/manipulation_tests/test_transpose.py
-            """
-            axes = None
+        return result
 
-    return dpnp_transpose(x1, axes=axes)
+    return call_origin(numpy.transpose, x1, axes=axes)

@@ -32,14 +32,12 @@ and the rest of the library
 
 """
 
-
-from dpnp.dpnp_utils cimport *
-
+# NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
     'dpnp_erf',
 ]
 
 
-cpdef dparray dpnp_erf(dparray x1):
+cpdef dparray dpnp_erf(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_ERF, x1, x1.shape)

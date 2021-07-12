@@ -32,13 +32,7 @@ and the rest of the library
 
 """
 
-
-import dpnp
-import numpy
-
-from dpnp.dpnp_utils cimport *
-from dpnp.dpnp_algo cimport *
-
+# NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
     "dpnp_copy",
@@ -63,12 +57,12 @@ __all__ += [
 
 
 ctypedef void(*custom_1in_1out_func_ptr_t)(void *, void * , const int , size_t * , size_t * , const size_t, const size_t)
-ctypedef void(*ftpr_custom_vander_1in_1out_t)(void *, void *, size_t, size_t, int)
+ctypedef void(*ftpr_custom_vander_1in_1out_t)(void * , void * , size_t, size_t, int)
 ctypedef void(*custom_indexing_1out_func_ptr_t)(void * , const size_t , const size_t , const int)
 ctypedef void(*fptr_dpnp_trace_t)(const void *, void * , const size_t * , const size_t)
 
 
-cpdef dparray dpnp_copy(dparray x1, order, subok):
+cpdef dparray dpnp_copy(utils.dpnp_descriptor x1, order, subok):
     return call_fptr_1in_1out(DPNP_FN_COPY, x1, x1.shape)
 
 
@@ -265,11 +259,11 @@ cpdef list dpnp_meshgrid(xi, copy, sparse, indexing):
 
 
 cpdef dparray dpnp_ones(result_shape, result_dtype):
-    return call_fptr_1out(DPNP_FN_ONES, result_shape, result_dtype)
+    return call_fptr_1out(DPNP_FN_ONES, utils._object_to_tuple(result_shape), result_dtype)
 
 
 cpdef dparray dpnp_ones_like(result_shape, result_dtype):
-    return call_fptr_1out(DPNP_FN_ONES_LIKE, result_shape, result_dtype)
+    return call_fptr_1out(DPNP_FN_ONES_LIKE, utils._object_to_tuple(result_shape), result_dtype)
 
 
 cpdef dparray dpnp_trace(arr, offset=0, axis1=0, axis2=1, dtype=None, out=None):
@@ -375,8 +369,8 @@ cpdef dparray dpnp_vander(dparray x1, int N, int increasing):
 
 
 cpdef dparray dpnp_zeros(result_shape, result_dtype):
-    return call_fptr_1out(DPNP_FN_ZEROS, result_shape, result_dtype)
+    return call_fptr_1out(DPNP_FN_ZEROS, utils._object_to_tuple(result_shape), result_dtype)
 
 
 cpdef dparray dpnp_zeros_like(result_shape, result_dtype):
-    return call_fptr_1out(DPNP_FN_ZEROS_LIKE, result_shape, result_dtype)
+    return call_fptr_1out(DPNP_FN_ZEROS_LIKE, utils._object_to_tuple(result_shape), result_dtype)

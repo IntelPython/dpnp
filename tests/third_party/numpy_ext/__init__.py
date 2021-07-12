@@ -33,6 +33,7 @@ to run specific test case:
 >>> python -m tests.third_party.numpy_ext core/tests/test_umath.py::TestHypot::test_simple
 """
 
+import dpnp
 from tests_external.numpy import runtests
 
 

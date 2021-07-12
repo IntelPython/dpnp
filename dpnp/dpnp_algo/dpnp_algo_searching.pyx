@@ -32,11 +32,7 @@ and the rest of the library
 
 """
 
-from libcpp.string cimport string
-import cython
-import numpy
-
-from dpnp.dpnp_utils cimport *
+# NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
     "dpnp_argmax",
@@ -48,9 +44,9 @@ __all__ += [
 ctypedef void(*custom_search_1in_1out_func_ptr_t)(void * , void * , size_t)
 
 
-cpdef dparray dpnp_argmax(dparray in_array1):
+cpdef dparray dpnp_argmax(utils.dpnp_descriptor in_array1):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(in_array1.dtype)
-    cdef DPNPFuncType output_type = dpnp_dtype_to_DPNPFuncType(numpy.int64)
+    cdef DPNPFuncType output_type = dpnp_dtype_to_DPNPFuncType(dpnp.int64)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ARGMAX, param1_type, output_type)
 
@@ -64,9 +60,9 @@ cpdef dparray dpnp_argmax(dparray in_array1):
     return result
 
 
-cpdef dparray dpnp_argmin(dparray in_array1):
+cpdef dparray dpnp_argmin(utils.dpnp_descriptor in_array1):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(in_array1.dtype)
-    cdef DPNPFuncType output_type = dpnp_dtype_to_DPNPFuncType(numpy.int64)
+    cdef DPNPFuncType output_type = dpnp_dtype_to_DPNPFuncType(dpnp.int64)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ARGMIN, param1_type, output_type)
 
