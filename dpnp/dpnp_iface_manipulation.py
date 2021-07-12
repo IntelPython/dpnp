@@ -58,13 +58,16 @@ __all__ = [
     "atleast_3d",
     "copyto",
     "expand_dims",
+    "hstack",
     "moveaxis",
     "ravel",
     "repeat",
     "rollaxis",
     "squeeze",
+    "stack",
     "swapaxes",
-    "transpose"
+    "transpose",
+    "vstack"
 ]
 
 
@@ -277,6 +280,17 @@ def expand_dims(x1, axis):
         return dpnp_expand_dims(x1, axis)
 
     return call_origin(numpy.expand_dims, x1, axis)
+
+
+def hstack(tup):
+    """
+    Stack arrays in sequence horizontally (column wise).
+
+    For full documentation refer to :obj:`numpy.hstack`.
+
+    """
+
+    return call_origin(numpy.hstack, tup)
 
 
 def moveaxis(x1, source, destination):
@@ -493,6 +507,17 @@ def squeeze(x1, axis=None):
     return call_origin(numpy.squeeze, x1, axis)
 
 
+def stack(arrays, axis=0, out=None):
+    """
+    Join a sequence of arrays along a new axis.
+
+    For full documentation refer to :obj:`numpy.stack`.
+
+    """
+
+    return call_origin(numpy.stack, arrays, axis, out)
+
+
 def swapaxes(x1, axis1, axis2):
     """
     Interchange two axes of an array.
@@ -584,3 +609,14 @@ def transpose(x1, axes=None):
         return result
 
     return call_origin(numpy.transpose, x1, axes=axes)
+
+
+def vstack(tup):
+    """
+    Stack arrays in sequence vertically (row wise).
+
+    For full documentation refer to :obj:`numpy.vstack`.
+
+    """
+
+    return call_origin(numpy.vstack, tup)
