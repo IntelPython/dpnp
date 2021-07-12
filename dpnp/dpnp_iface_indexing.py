@@ -72,7 +72,7 @@ __all__ = [
 ]
 
 
-def choose(input, choices, out=None, mode='raise'):
+def choose(x1, choices, out=None, mode='raise'):
     """
     Construct an array from an index array and a set of arrays to choose from.
 
@@ -82,8 +82,8 @@ def choose(input, choices, out=None, mode='raise'):
     --------
     :obj:`take_along_axis` : Preferable if choices is an array.
     """
-    if not use_origin_backend(input):
-        if not isinstance(input, list) and not isinstance(input, dparray):
+    if not use_origin_backend(x1):
+        if not isinstance(x1, list) and not isinstance(x1, dparray):
             pass
         elif not isinstance(choices, list):
             pass
@@ -101,7 +101,7 @@ def choose(input, choices, out=None, mode='raise'):
                 pass
             else:
                 val = True
-                len_ = len(input)
+                len_ = len(x1)
                 size_ = choices[0].size
                 for i in range(len(choices)):
                     if choices[i].size != size_ or choices[i].size != len_:
@@ -112,17 +112,17 @@ def choose(input, choices, out=None, mode='raise'):
                 else:
                     val = True
                     for i in range(len_):
-                        if input[i] >= size_:
+                        if x1[i] >= size_:
                             val = False
                             break
                     if not val:
                         pass
                     else:
-                        return dpnp_choose(input, choices)
+                        return dpnp_choose(x1, choices)
         else:
-            return dpnp_choose(input, choices)
+            return dpnp_choose(x1, choices)
 
-    return call_origin(numpy.choose, input, choices, out, mode)
+    return call_origin(numpy.choose, x1, choices, out, mode)
 
 
 def diag_indices(n, ndim=2):
@@ -187,7 +187,7 @@ def diag_indices(n, ndim=2):
     return call_origin(numpy.diag_indices, n, ndim)
 
 
-def diag_indices_from(arr):
+def diag_indices_from(x1):
     """
     Return the indices to access the main diagonal of an n-dimensional array.
 
@@ -200,26 +200,24 @@ def diag_indices_from(arr):
 
     """
 
-    is_a_dparray = isinstance(arr, dparray)
-
-    if (not use_origin_backend(arr) and is_a_dparray):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
         # original limitation
-        if not arr.ndim >= 2:
-            checker_throw_value_error("diag_indices_from", "arr.ndim", arr.ndim, "at least 2-d")
+        if not x1_desc.ndim >= 2:
+            pass
 
         # original limitation
         # For more than d=2, the strided formula is only valid for arrays with
         # all dimensions equal, so we check first.
-        if not numpy.alltrue(numpy.diff(arr.shape) == 0):  # TODO: replace alltrue and diff funcs with dpnp own ones
-            checker_throw_value_error("diag_indices_from", "arr.shape", arr.shape,
-                                      "All dimensions of input must be of equal length")
+        elif not numpy.alltrue(numpy.diff(x1_desc.shape) == 0):  # TODO: replace alltrue and diff funcs with dpnp own ones
+            pass
+        else:
+            return dpnp_diag_indices(x1_desc.shape[0], x1_desc.ndim)
 
-        return dpnp_diag_indices(arr.shape[0], arr.ndim)
-
-    return call_origin(numpy.diag_indices_from, arr)
+    return call_origin(numpy.diag_indices_from, x1)
 
 
-def diagonal(input, offset=0, axis1=0, axis2=1):
+def diagonal(x1, offset=0, axis1=0, axis2=1):
     """
     Return specified diagonals.
 
@@ -232,10 +230,9 @@ def diagonal(input, offset=0, axis1=0, axis2=1):
     Otherwise the function will be executed sequentially on CPU.
     """
 
-    if not use_origin_backend(input):
-        if not isinstance(input, dparray):
-            pass
-        elif not isinstance(offset, int):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if not isinstance(offset, int):
             pass
         elif offset < 0:
             pass
@@ -244,12 +241,12 @@ def diagonal(input, offset=0, axis1=0, axis2=1):
         elif axis2 != 1:
             pass
         else:
-            return dpnp_diagonal(input, offset)
+            return dpnp_diagonal(x1_desc, offset)
 
-    return call_origin(numpy.diagonal, input, offset, axis1, axis2)
+    return call_origin(numpy.diagonal, x1, offset, axis1, axis2)
 
 
-def fill_diagonal(input, val, wrap=False):
+def fill_diagonal(x1, val, wrap=False):
     """
     Fill the main diagonal of the given array of any dimensionality.
 
@@ -265,17 +262,16 @@ def fill_diagonal(input, val, wrap=False):
     :obj:`dpnp.diag_indices_from` : Return the indices to access the main diagonal of an n-dimensional array.
     """
 
-    if not use_origin_backend(input):
-        if not isinstance(input, dparray):
-            pass
-        elif not dpnp.isscalar(val):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if not dpnp.isscalar(val):
             pass
         elif wrap:
             pass
         else:
-            return dpnp_fill_diagonal(input, val)
+            return dpnp_fill_diagonal(x1_desc, val)
 
-    return call_origin(numpy.fill_diagonal, input, val, wrap)
+    return call_origin(numpy.fill_diagonal, x1, val, wrap)
 
 
 def indices(dimensions, dtype=int, sparse=False):
@@ -304,7 +300,7 @@ def indices(dimensions, dtype=int, sparse=False):
     return call_origin(numpy.indices, dimensions, dtype, sparse)
 
 
-def nonzero(a):
+def nonzero(x1):
     """
     Return the indices of the elements that are non-zero.
 
@@ -347,15 +343,14 @@ def nonzero(a):
 
     """
 
-    is_a_dparray = isinstance(a, dparray)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_nonzero(x1)
 
-    if (not use_origin_backend(a) and is_a_dparray):
-        return dpnp_nonzero(a)
-
-    return call_origin(numpy.nonzero, a)
+    return call_origin(numpy.nonzero, x1)
 
 
-def place(arr, mask, vals):
+def place(x1, mask, vals):
     """
     Change elements of an array based on conditional and input values.
     For full documentation refer to :obj:`numpy.place`.
@@ -366,24 +361,13 @@ def place(arr, mask, vals):
     Parameter ``vals`` is supported as 1-D sequence.
     """
 
-    if not use_origin_backend(arr):
-        if not isinstance(arr, dparray):
-            pass
-        elif not isinstance(mask, dparray):
-            pass
-        elif not isinstance(vals, dparray):
-            if not isinstance(vals, collections.Sequence):
-                pass
-            else:
-                vals_len = len(vals)
-                vals_arr = dparray(vals_len, dtype=arr.dtype)
-                for i in range(vals_len):
-                    vals_arr[i] = vals[i]
-                return dpnp_place(arr, mask, vals_arr)
-        else:
-            return dpnp_place(arr, mask, vals)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    mask_desc = dpnp.get_dpnp_descriptor(mask)
+    vals_desc = dpnp.get_dpnp_descriptor(vals)
+    if x1_desc and mask_desc and vals_desc:
+        return dpnp_place(x1_desc, mask, vals_desc)
 
-    return call_origin(numpy.place, arr, mask, vals)
+    return call_origin(numpy.place, x1, mask, vals)
 
 
 def put(x1, ind, v, mode='raise'):
