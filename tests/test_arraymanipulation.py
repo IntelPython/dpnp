@@ -34,24 +34,24 @@ class TestHstack:
         numpy.testing.assert_array_equal(res, desired)
 
     def test_1D_array(self):
-        a = array([1])
-        b = array([2])
-        res = hstack([a, b])
-        desired = array([1, 2])
+        a = dpnp.array([1])
+        b = dpnp.array([2])
+        res = dpnp.hstack([a, b])
+        desired = dpnp.array([1, 2])
         numpy.testing.assert_array_equal(res, desired)
 
     def test_2D_array(self):
-        a = array([[1], [2]])
-        b = array([[1], [2]])
-        res = hstack([a, b])
-        desired = array([[1, 1], [2, 2]])
-        assert_array_equal(res, desired)
+        a = dpnp.array([[1], [2]])
+        b = dpnp.array([[1], [2]])
+        res = dpnp.hstack([a, b])
+        desired = dpnp.array([[1, 1], [2, 2]])
+        numpy.testing.assert_array_equal(res, desired)
 
     def test_generator(self):
         with assert_warns(FutureWarning):
-            hstack((numpy.arange(3) for _ in range(2)))
+            dpnp.hstack((numpy.arange(3) for _ in range(2)))
         with assert_warns(FutureWarning):
-            hstack(map(lambda x: x, numpy.ones((3, 2))))
+            dpnp.hstack(map(lambda x: x, numpy.ones((3, 2))))
 
 
 class TestVstack:
@@ -62,33 +62,33 @@ class TestVstack:
         numpy.testing.assert_raises(ValueError, vstack, ())
 
     def test_0D_array(self):
-        a = array(1)
-        b = array(2)
-        res = vstack([a, b])
-        desired = array([[1], [2]])
-        #numpy.testing.assert_array_equal(res, desired)
+        a = dpnp.array(1)
+        b = dpnp.array(2)
+        res = dpnp.vstack([a, b])
+        desired = dpnp.array([[1], [2]])
+        numpy.testing.assert_array_equal(res, desired)
 
     def test_1D_array(self):
-        a = array([1])
-        b = array([2])
-        res = vstack([a, b])
-        desired = array([[1], [2]])
+        a = dpnp.array([1])
+        b = dpnp.array([2])
+        res = dpnp.vstack([a, b])
+        desired = dpnp.array([[1], [2]])
         numpy.testing.assert_array_equal(res, desired)
 
     def test_2D_array(self):
-        a = array([[1], [2]])
-        b = array([[1], [2]])
-        res = vstack([a, b])
-        desired = array([[1], [2], [1], [2]])
+        a = dpnp.array([[1], [2]])
+        b = dpnp.array([[1], [2]])
+        res = dpnp.vstack([a, b])
+        desired = dpnp.array([[1], [2], [1], [2]])
         numpy.testing.assert_array_equal(res, desired)
 
     def test_2D_array2(self):
-        a = array([1, 2])
-        b = array([1, 2])
-        res = vstack([a, b])
-        desired = array([[1, 2], [1, 2]])
+        a = dpnp.array([1, 2])
+        b = dpnp.array([1, 2])
+        res = dpnp.vstack([a, b])
+        desired = dpnp.array([[1, 2], [1, 2]])
         assert_array_equal(res, desired)
 
     def test_generator(self):
         with assert_warns(FutureWarning):
-            vstack((numpy.arange(3) for _ in range(2)))
+            dpnp.vstack((numpy.arange(3) for _ in range(2)))
