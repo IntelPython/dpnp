@@ -19,10 +19,10 @@ def test_asfarray(type, input):
 
 class TestHstack:
     def test_non_iterable(self):
-        numpy.testing.assert_raises(TypeError, hstack, 1)
+        numpy.testing.assert_raises(TypeError, dpnp.hstack, 1)
 
     def test_empty_input(self):
-        numpy.testing.assert_raises(ValueError, hstack, ())
+        numpy.testing.assert_raises(ValueError, dpnp.hstack, ())
 
     def test_0D_array(self):
         b = dpnp.array(2)
