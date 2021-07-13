@@ -54,10 +54,10 @@ class TestHstack:
 
 class TestVstack:
     def test_non_iterable(self):
-        numpy.testing.assert_raises(TypeError, vstack, 1)
+        numpy.testing.assert_raises(TypeError, dpnp.vstack, 1)
 
     def test_empty_input(self):
-        numpy.testing.assert_raises(ValueError, vstack, ())
+        numpy.testing.assert_raises(ValueError, dpnp.vstack, ())
 
     def test_0D_array(self):
         a = dpnp.array(1)
