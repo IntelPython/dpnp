@@ -3,8 +3,6 @@ import pytest
 import dpnp
 import numpy
 
-from dpnp import (array, arange, vstack, hstack, stack)
-from numpy.testing import (assert_raises, assert_array_equal, assert_warns)
 
 @pytest.mark.parametrize("type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
@@ -48,9 +46,9 @@ class TestHstack:
         numpy.testing.assert_array_equal(res, desired)
 
     def test_generator(self):
-        with assert_warns(FutureWarning):
+        with numpy.testing.assert_warns(FutureWarning):
             dpnp.hstack((numpy.arange(3) for _ in range(2)))
-        with assert_warns(FutureWarning):
+        with numpy.testing.assert_warns(FutureWarning):
             dpnp.hstack(map(lambda x: x, numpy.ones((3, 2))))
 
 
@@ -87,8 +85,8 @@ class TestVstack:
         b = dpnp.array([1, 2])
         res = dpnp.vstack([a, b])
         desired = dpnp.array([[1, 2], [1, 2]])
-        assert_array_equal(res, desired)
+        numpy.testing.assert_array_equal(res, desired)
 
     def test_generator(self):
-        with assert_warns(FutureWarning):
+        with numpy.testing.assert_warns(FutureWarning):
             dpnp.vstack((numpy.arange(3) for _ in range(2)))
