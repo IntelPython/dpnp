@@ -290,7 +290,15 @@ def hstack(tup):
 
     """
 
-    return call_origin(numpy.hstack, tup)
+    # TODO:
+    # `call_origin` cannot convert sequence of dparray to sequence of
+    # nparrays
+    tup_new = []
+    for tp in tup:
+        tpx = dpnp.asnumpy(tp) if isinstance(tp, dparray) else tp
+        tup_new.append(tpx)
+
+    return call_origin(numpy.hstack, tup_new)
 
 
 def moveaxis(x1, source, destination):
@@ -619,4 +627,12 @@ def vstack(tup):
 
     """
 
-    return call_origin(numpy.vstack, tup)
+    # TODO:
+    # `call_origin` cannot convert sequence of dparray to sequence of
+    # nparray
+    tup_new = []
+    for tp in tup:
+        tpx = dpnp.asnumpy(tp) if isinstance(tp, dparray) else tp
+        tup_new.append(tpx)
+
+    return call_origin(numpy.vstack, tup_new)

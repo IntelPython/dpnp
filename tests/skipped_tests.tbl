@@ -1,3 +1,5 @@
+tests/test_arraymanipulation.py::TestVstack::test_generator
+tests/test_arraymanipulation.py::TestHstack::test_generator
 tests/test_linalg.py::test_cond[-1-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
 tests/test_linalg.py::test_cond[1-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
 tests/test_linalg.py::test_cond[-2-[[1, 0, -1], [0, 1, 0], [1, 0, 1]]]
