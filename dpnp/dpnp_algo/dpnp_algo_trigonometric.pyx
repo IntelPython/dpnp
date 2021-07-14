@@ -72,16 +72,16 @@ cpdef dparray dpnp_arccosh(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_ARCCOSH, x1, x1.shape)
 
 
-cpdef dparray dpnp_arcsin(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_ARCSIN, x1, x1.shape)
+cpdef dparray dpnp_arcsin(utils.dpnp_descriptor x1, dparray out):
+    return call_fptr_1in_1out(DPNP_FN_ARCSIN, x1, x1.shape, out=out, func_name='arcsin')
 
 
 cpdef dparray dpnp_arcsinh(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_ARCSINH, x1, x1.shape)
 
 
-cpdef dparray dpnp_arctan(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_ARCTAN, x1, x1.shape)
+cpdef dparray dpnp_arctan(utils.dpnp_descriptor x1, dparray out):
+    return call_fptr_1in_1out(DPNP_FN_ARCTAN, x1, x1.shape, out=out, func_name='arctan')
 
 
 cpdef dparray dpnp_arctanh(utils.dpnp_descriptor x1):
@@ -156,8 +156,8 @@ cpdef dparray dpnp_square(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_SQUARE, x1, x1.shape)
 
 
-cpdef dparray dpnp_tan(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_TAN, x1, x1.shape)
+cpdef dparray dpnp_tan(utils.dpnp_descriptor x1, dparray out):
+    return call_fptr_1in_1out(DPNP_FN_TAN, x1, x1.shape, out=out, func_name='tan')
 
 
 cpdef dparray dpnp_tanh(utils.dpnp_descriptor x1):
