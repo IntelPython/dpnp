@@ -283,7 +283,7 @@ cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, utils.dpnp_descriptor x1
 
     func(x1.get_data(), result.get_data(), x1.size)
 
-    return resultlt
+    return result
 
 
 cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, utils.dpnp_descriptor x1_obj, utils.dpnp_descriptor x2_obj,
