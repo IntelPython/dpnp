@@ -258,22 +258,32 @@ cdef dparray call_fptr_1out(DPNPFuncName fptr_name, dparray_shape_type result_sh
     return result
 
 
-cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, utils.dpnp_descriptor x1, dparray_shape_type result_shape):
+cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, utils.dpnp_descriptor x1, dparray_shape_type result_shape, dparray out=None, func_name=None):
 
     """ Convert string type names (dparray.dtype) to C enum DPNPFuncType """
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
 
     """ get the FPTR data structure """
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, param1_type, param1_type)
+    
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
 
-    """ Create result array with type given by FPTR data """
-    cdef dparray result = utils.create_output_array(result_shape, kernel_data.return_type, None)
+    cdef dparray result
+
+    if out is not None:
+        if out.dtype != result_type:
+            utils.checker_throw_value_error(func_name, 'out.dtype', out.dtype, result_type)
+        if out.shape != result_shape:
+            utils.checker_throw_value_error(func_name, 'out.shape', out.shape, result_shape)
+        result = out
+    else:
+        result = utils.create_output_array(result_shape, kernel_data.return_type, None)
 
     cdef fptr_1in_1out_t func = <fptr_1in_1out_t > kernel_data.ptr
-    """ Call FPTR function """
+
     func(x1.get_data(), result.get_data(), x1.size)
 
-    return result
+    return resultlt
 
 
 cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, utils.dpnp_descriptor x1_obj, utils.dpnp_descriptor x2_obj,
