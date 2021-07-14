@@ -250,7 +250,7 @@ def around(x1, decimals=0, out=None):
     return call_origin(numpy.around, x1, decimals=decimals, out=out)
 
 
-def ceil(x1, **kwargs):
+def ceil(x1, out=None, **kwargs):
     """
     Compute  the ceiling of the input, element-wise.
 
@@ -280,9 +280,9 @@ def ceil(x1, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and not kwargs:
-        return dpnp_ceil(x1_desc)
+        return dpnp_ceil(x1_desc, out)
 
-    return call_origin(numpy.ceil, x1, **kwargs)
+    return call_origin(numpy.ceil, x1, out=out, **kwargs)
 
 
 def conjugate(x1, **kwargs):
@@ -638,7 +638,7 @@ def fabs(x1, **kwargs):
     return call_origin(numpy.fabs, x1, **kwargs)
 
 
-def floor(x1, **kwargs):
+def floor(x1, out=None, **kwargs):
     """
     Round a number to the nearest integer toward minus infinity.
 
@@ -673,9 +673,9 @@ def floor(x1, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and not kwargs:
-        return dpnp_floor(x1_desc)
+        return dpnp_floor(x1_desc, out)
 
-    return call_origin(numpy.floor, x1, **kwargs)
+    return call_origin(numpy.floor, x1, out=out, **kwargs)
 
 
 def floor_divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
@@ -1614,7 +1614,7 @@ def true_divide(*args, **kwargs):
     return dpnp.divide(*args, **kwargs)
 
 
-def trunc(x1, **kwargs):
+def trunc(x1, out=None, **kwargs):
     """
     Compute the truncated value of the input, element-wise.
 
@@ -1644,6 +1644,6 @@ def trunc(x1, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and not kwargs:
-        return dpnp_trunc(x1_desc)
+        return dpnp_trunc(x1_desc, out)
 
-    return call_origin(numpy.trunc, x1, **kwargs)
+    return call_origin(numpy.trunc, x1, out=out, **kwargs)

@@ -126,8 +126,8 @@ cpdef dpnp_around(utils.dpnp_descriptor x1, int decimals):
     return result
 
 
-cpdef dparray dpnp_ceil(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_CEIL, x1, x1.shape)
+cpdef dparray dpnp_ceil(utils.dpnp_descriptor x1, dparray out):
+    return call_fptr_1in_1out(DPNP_FN_CEIL, x1, x1.shape, out=out, func_name='ceil')
 
 
 cpdef dparray dpnp_conjugate(utils.dpnp_descriptor x1):
@@ -209,8 +209,8 @@ cpdef dparray dpnp_fabs(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_FABS, x1, x1.shape)
 
 
-cpdef dparray dpnp_floor(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_FLOOR, x1, x1.shape)
+cpdef dparray dpnp_floor(utils.dpnp_descriptor x1, dparray out):
+    return call_fptr_1in_1out(DPNP_FN_FLOOR, x1, x1.shape, out=out, func_name='floor')
 
 
 cpdef dparray dpnp_floor_divide(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
@@ -426,5 +426,5 @@ cpdef dpnp_trapz(utils.dpnp_descriptor y1, dparray x1, double dx):
     return result[0]
 
 
-cpdef dparray dpnp_trunc(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_TRUNC, x1, x1.shape)
+cpdef dparray dpnp_trunc(utils.dpnp_descriptor x1, dparray out):
+    return call_fptr_1in_1out(DPNP_FN_TRUNC, x1, x1.shape, out=out, func_name='trunc')
