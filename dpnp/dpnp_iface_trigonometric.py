@@ -395,7 +395,7 @@ def cos(x1, out=None, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_cos(x1_desc, out=out)
+        return dpnp_cos(x1_desc, out)
 
     return call_origin(numpy.cos, x1, out=out, **kwargs)
 
@@ -507,7 +507,7 @@ def exp(x1, out=None, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_exp(x1_desc, out=out)
+        return dpnp_exp(x1_desc, out)
 
     return call_origin(numpy.exp, x1, out=out, **kwargs)
 
@@ -662,7 +662,7 @@ def log(x1, out=None, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_log(x1_desc, out=out)
+        return dpnp_log(x1_desc, out)
 
     return call_origin(numpy.log, x1, out=out, **kwargs)
 
@@ -876,7 +876,7 @@ def sin(x1, out=None, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_sin(x1_desc, out=out)
+        return dpnp_sin(x1_desc, out)
 
     return call_origin(numpy.sin, x1, out=out, **kwargs)
 

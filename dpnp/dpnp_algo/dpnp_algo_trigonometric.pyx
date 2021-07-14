@@ -92,7 +92,7 @@ cpdef dparray dpnp_cbrt(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_CBRT, x1, x1.shape)
 
 
-cpdef dparray dpnp_cos(utils.dpnp_descriptor x1, dparray out=None):
+cpdef dparray dpnp_cos(utils.dpnp_descriptor x1, dparray out):
     return call_fptr_1in_1out(DPNP_FN_COS, x1, x1.shape, out=out, func_name='cos')
 
 
@@ -104,7 +104,7 @@ cpdef dparray dpnp_degrees(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_DEGREES, x1, x1.shape)
 
 
-cpdef dparray dpnp_exp(utils.dpnp_descriptor x1, dparray out=None):
+cpdef dparray dpnp_exp(utils.dpnp_descriptor x1, dparray out):
     return call_fptr_1in_1out(DPNP_FN_EXP, x1, x1.shape, out=out, func_name='exp')
 
 
@@ -116,7 +116,7 @@ cpdef dparray dpnp_expm1(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_EXPM1, x1, x1.shape)
 
 
-cpdef dparray dpnp_log(utils.dpnp_descriptor x1, dparray out=None):
+cpdef dparray dpnp_log(utils.dpnp_descriptor x1, dparray out):
     return call_fptr_1in_1out(DPNP_FN_LOG, x1, x1.shape, out=out, func_name='log')
 
 
@@ -140,7 +140,7 @@ cpdef dparray dpnp_radians(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_RADIANS, x1, x1.shape)
 
 
-cpdef dparray dpnp_sin(utils.dpnp_descriptor x1, dparray out=None):
+cpdef dparray dpnp_sin(utils.dpnp_descriptor x1, dparray out):
     return call_fptr_1in_1out(DPNP_FN_SIN, x1, x1.shape, out=out, func_name='sin')
 
 
