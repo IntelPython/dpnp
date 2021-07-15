@@ -92,8 +92,8 @@ cpdef dparray dpnp_cbrt(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_CBRT, x1, x1.shape)
 
 
-cpdef dparray dpnp_cos(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_COS, x1, x1.shape)
+cpdef dparray dpnp_cos(utils.dpnp_descriptor x1, dparray out):
+    return call_fptr_1in_1out(DPNP_FN_COS, x1, x1.shape, out=out, func_name='cos')
 
 
 cpdef dparray dpnp_cosh(utils.dpnp_descriptor x1):
@@ -104,8 +104,8 @@ cpdef dparray dpnp_degrees(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_DEGREES, x1, x1.shape)
 
 
-cpdef dparray dpnp_exp(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_EXP, x1, x1.shape)
+cpdef dparray dpnp_exp(utils.dpnp_descriptor x1, dparray out):
+    return call_fptr_1in_1out(DPNP_FN_EXP, x1, x1.shape, out=out, func_name='exp')
 
 
 cpdef dparray dpnp_exp2(utils.dpnp_descriptor x1):
@@ -116,8 +116,8 @@ cpdef dparray dpnp_expm1(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_EXPM1, x1, x1.shape)
 
 
-cpdef dparray dpnp_log(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_LOG, x1, x1.shape)
+cpdef dparray dpnp_log(utils.dpnp_descriptor x1, dparray out):
+    return call_fptr_1in_1out(DPNP_FN_LOG, x1, x1.shape, out=out, func_name='log')
 
 
 cpdef dparray dpnp_log10(utils.dpnp_descriptor x1):
@@ -140,32 +140,8 @@ cpdef dparray dpnp_radians(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_RADIANS, x1, x1.shape)
 
 
-cpdef dparray dpnp_sin(utils.dpnp_descriptor x1, dparray out=None):
-
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_SIN, param1_type, param1_type)
-
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-
-    shape_result = x1.shape
-
-    cdef dparray result
-
-    if out is not None:
-        if out.dtype != result_type:
-            utils.checker_throw_value_error('sin', 'out.dtype', out.dtype, result_type)
-        if out.shape != shape_result:
-            utils.checker_throw_value_error('sin', 'out.shape', out.shape, shape_result)
-        result = out
-    else:
-        result = dparray(shape_result, dtype=result_type)
-
-    cdef fptr_1in_1out_t func = <fptr_1in_1out_t > kernel_data.ptr
-
-    func(x1.get_data(), result.get_data(), x1.size)
-
-    return result
+cpdef dparray dpnp_sin(utils.dpnp_descriptor x1, dparray out):
+    return call_fptr_1in_1out(DPNP_FN_SIN, x1, x1.shape, out=out, func_name='sin')
 
 
 cpdef dparray dpnp_sinh(utils.dpnp_descriptor x1):
