@@ -294,7 +294,7 @@ cpdef dparray dpnp_maximum(object x1_obj, object x2_obj, object dtype=*, dparray
 cpdef dparray dpnp_minimum(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
 cpdef dparray dpnp_multiply(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
 cpdef dparray dpnp_negative(dpnp_descriptor array1)
-cpdef dparray dpnp_power(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
+cpdef dparray dpnp_power(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*, dparray out=*, object where=*)
 cpdef dparray dpnp_remainder(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
 cpdef dparray dpnp_subtract(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
 

@@ -1322,8 +1322,6 @@ def power(x1, x2, dtype=None, out=None, where=True, **kwargs):
             pass
         elif dtype is not None:
             pass
-        elif out is not None:
-            pass
         elif not where:
             pass
         else:
