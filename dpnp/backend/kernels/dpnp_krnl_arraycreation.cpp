@@ -240,18 +240,18 @@ void dpnp_trace_c(const void* array1_in, void* result1, const size_t* shape_, co
     auto memcpy_event = DPNP_QUEUE.memcpy(shape, shape_, ndim * sizeof(size_t));
 
     cl::sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](auto index) {
+        size_t i = index[0];
+        result[i] = 0;
+        for (size_t j = 0; j < shape[ndim - 1]; ++j)
+        {
+            result[i] += array_in[i * shape[ndim - 1] + j];
+        }
+    };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
         cgh.depends_on({memcpy_event});
-        cgh.parallel_for<class dpnp_trace_c_kernel<_DataType, _ResultType>>(gws, [=](auto index)
-        {
-            size_t i = index[0];
-            result[i] = 0;
-            for (size_t j = 0; j < shape[ndim - 1]; ++j)
-            {
-                result[i] += array_in[i * shape[ndim - 1] + j];
-            }
-        });
+        cgh.parallel_for<class dpnp_trace_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
     };
 
     auto event = DPNP_QUEUE.submit(kernel_func);
