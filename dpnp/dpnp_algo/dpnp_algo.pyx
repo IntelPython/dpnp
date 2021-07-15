@@ -270,17 +270,18 @@ cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, utils.dpnp_descriptor x1
 
     cdef dparray result
 
-    if out is not None:
+    if out is None:
+        """ Create result array with type given by FPTR data """
+        result = utils.create_output_array(result_shape, kernel_data.return_type, None)
+    else:
         if out.dtype != result_type:
             utils.checker_throw_value_error(func_name, 'out.dtype', out.dtype, result_type)
         if out.shape != result_shape:
             utils.checker_throw_value_error(func_name, 'out.shape', out.shape, result_shape)
         result = out
-    else:
-        result = utils.create_output_array(result_shape, kernel_data.return_type, None)
 
     cdef fptr_1in_1out_t func = <fptr_1in_1out_t > kernel_data.ptr
-
+    """ Call FPTR function """
     func(x1.get_data(), result.get_data(), x1.size)
 
     return result
