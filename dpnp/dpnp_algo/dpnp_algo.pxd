@@ -287,7 +287,7 @@ cpdef dparray dpnp_init_val(shape, dtype, value)
 Mathematical functions
 """
 cpdef dparray dpnp_add(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dparray dpnp_arctan2(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
+cpdef dparray dpnp_arctan2(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*, dparray out=*, object where=*)
 cpdef dparray dpnp_divide(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
 cpdef dparray dpnp_hypot(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
 cpdef dparray dpnp_maximum(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
