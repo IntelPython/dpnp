@@ -106,37 +106,7 @@ cpdef dparray dpnp_add(object x1_obj, object x2_obj, object dtype=None, dparray 
 
 
 cpdef dparray dpnp_arctan2(utils.dpnp_descriptor x1_obj, utils.dpnp_descriptor x2_obj, object dtype=None, dparray out=None, object where=True):
-
-    # Convert string type names (dparray.dtype) to C enum DPNPFuncType
-    cdef DPNPFuncType x1_c_type = dpnp_dtype_to_DPNPFuncType(x1_obj.dtype)
-    cdef DPNPFuncType x2_c_type = dpnp_dtype_to_DPNPFuncType(x2_obj.dtype)
-
-    # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ARCTAN2, x1_c_type, x2_c_type)
-
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-
-    # Create result array
-    cdef dparray_shape_type x1_shape = x1_obj.shape
-    cdef dparray_shape_type x2_shape = x2_obj.shape
-    cdef dparray_shape_type result_shape = utils.get_common_shape(x1_shape, x2_shape)
-    cdef dparray result
-
-    if out is not None:
-        if out.dtype != result_type:
-            utils.checker_throw_value_error('arctan2', 'out.dtype', out.dtype, result_type)
-        if out.shape != result_shape:
-            utils.checker_throw_value_error('arctan2', 'out.shape', out.shape, result_shape)
-        result = out
-    else:
-        result = utils.create_output_array(result_shape, kernel_data.return_type, None)
-
-    """ Call FPTR function """
-    cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
-    func(result.get_data(), x1_obj.get_data(), x1_obj.size, x1_shape.data(), x1_shape.size(),
-         x2_obj.get_data(), x2_obj.size, x2_shape.data(), x2_shape.size(), NULL)
-
-    return result
+    return call_fptr_2in_1out(DPNP_FN_ARCTAN2, x1_obj, x2_obj, dtype=dtype, out=out, where=where, func_name="arctan2")
 
 
 cpdef dpnp_around(utils.dpnp_descriptor x1, int decimals):
