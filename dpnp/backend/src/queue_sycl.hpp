@@ -46,6 +46,8 @@
 
 #include "dpnp_pstl.hpp" // this header must be included after <mkl.hpp>
 
+#include "verbose.hpp"
+
 namespace mkl_rng = oneapi::mkl::rng;
 
 #define DPNP_QUEUE      backend_sycl::get_queue()

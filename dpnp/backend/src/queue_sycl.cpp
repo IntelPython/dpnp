@@ -170,7 +170,15 @@ void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
         dev = get_default_sycl_device();
     }
 
-    queue = new cl::sycl::queue(dev, exception_handler);
+    if (is_verbose_mode())
+    {
+        cl::sycl::property_list properties{sycl::property::queue::enable_profiling()};
+        queue = new cl::sycl::queue(dev, exception_handler, properties);
+    }
+    else
+    {
+        queue = new cl::sycl::queue(dev, exception_handler);
+    }
 
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> time_queue_init = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
