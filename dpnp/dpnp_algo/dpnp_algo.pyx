@@ -277,14 +277,14 @@ cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, utils.dpnp_descriptor x1
         result = out
 
     cdef fptr_1in_1out_t func = <fptr_1in_1out_t > kernel_data.ptr
-    """ Call FPTR function """
+
     func(x1.get_data(), result.get_data(), x1.size)
 
     return result
 
 
 cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, utils.dpnp_descriptor x1_obj, utils.dpnp_descriptor x2_obj,
-                                object dtype=None, dparray out=None, object where=True):
+                                object dtype=None, dparray out=None, object where=True, func_name=None):
     # Convert string type names (dparray.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType x1_c_type = dpnp_dtype_to_DPNPFuncType(x1_obj.dtype)
     cdef DPNPFuncType x2_c_type = dpnp_dtype_to_DPNPFuncType(x2_obj.dtype)
@@ -292,11 +292,23 @@ cdef dparray call_fptr_2in_1out(DPNPFuncName fptr_name, utils.dpnp_descriptor x1
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, x1_c_type, x2_c_type)
 
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+
     # Create result array
     cdef dparray_shape_type x1_shape = x1_obj.shape
     cdef dparray_shape_type x2_shape = x2_obj.shape
     cdef dparray_shape_type result_shape = utils.get_common_shape(x1_shape, x2_shape)
-    cdef dparray result = utils.create_output_array(result_shape, kernel_data.return_type, out)
+    cdef dparray result
+
+    if out is None:
+        """ Create result array with type given by FPTR data """
+        result = utils.create_output_array(result_shape, kernel_data.return_type, None)
+    else:
+        if out.dtype != result_type:
+            utils.checker_throw_value_error(func_name, 'out.dtype', out.dtype, result_type)
+        if out.shape != result_shape:
+            utils.checker_throw_value_error(func_name, 'out.shape', out.shape, result_shape)
+        result = out
 
     """ Call FPTR function """
     cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
