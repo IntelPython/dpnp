@@ -91,8 +91,8 @@ class TestSin:
         numpy.testing.assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("dtype",
-                            [numpy.float32, numpy.int64, numpy.int32],
-                            ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
+                             [numpy.float32, numpy.int64, numpy.int32],
+                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
     def test_invalid_dtype(self, dtype):
 
         dp_array = dpnp.arange(10, dtype=dpnp.float64)
@@ -102,8 +102,8 @@ class TestSin:
             dpnp.sin(dp_array, out=dp_out)
 
     @pytest.mark.parametrize("shape",
-                            [(0,), (15, ), (2,2)],
-                            ids=['(0,)', '(15, )', '(2,2)'])
+                             [(0,), (15, ), (2, 2)],
+                             ids=['(0,)', '(15, )', '(2,2)'])
     def test_invalid_shape(self, shape):
 
         dp_array = dpnp.arange(10, dtype=dpnp.float64)
@@ -111,6 +111,7 @@ class TestSin:
 
         with pytest.raises(ValueError):
             dpnp.sin(dp_array, out=dp_out)
+
 
 class TestCos:
 
@@ -130,8 +131,8 @@ class TestCos:
         numpy.testing.assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("dtype",
-                            [numpy.float32, numpy.int64, numpy.int32],
-                            ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
+                             [numpy.float32, numpy.int64, numpy.int32],
+                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
     def test_invalid_dtype(self, dtype):
 
         dp_array = dpnp.arange(10, dtype=dpnp.float64)
@@ -141,8 +142,8 @@ class TestCos:
             dpnp.cos(dp_array, out=dp_out)
 
     @pytest.mark.parametrize("shape",
-                            [(0,), (15, ), (2,2)],
-                            ids=['(0,)', '(15, )', '(2,2)'])
+                             [(0,), (15, ), (2, 2)],
+                             ids=['(0,)', '(15, )', '(2,2)'])
     def test_invalid_shape(self, shape):
 
         dp_array = dpnp.arange(10, dtype=dpnp.float64)
@@ -170,8 +171,8 @@ class TestsLog:
         numpy.testing.assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("dtype",
-                            [numpy.float32, numpy.int64, numpy.int32],
-                            ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
+                             [numpy.float32, numpy.int64, numpy.int32],
+                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
     def test_invalid_dtype(self, dtype):
 
         dp_array = dpnp.arange(10, dtype=dpnp.float64)
@@ -181,8 +182,8 @@ class TestsLog:
             dpnp.log(dp_array, out=dp_out)
 
     @pytest.mark.parametrize("shape",
-                            [(0,), (15, ), (2,2)],
-                            ids=['(0,)', '(15, )', '(2,2)'])
+                             [(0,), (15, ), (2, 2)],
+                             ids=['(0,)', '(15, )', '(2,2)'])
     def test_invalid_shape(self, shape):
 
         dp_array = dpnp.arange(10, dtype=dpnp.float64)
@@ -210,8 +211,8 @@ class TestExp:
         numpy.testing.assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("dtype",
-                            [numpy.float32, numpy.int64, numpy.int32],
-                            ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
+                             [numpy.float32, numpy.int64, numpy.int32],
+                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
     def test_invalid_dtype(self, dtype):
 
         dp_array = dpnp.arange(10, dtype=dpnp.float64)
@@ -221,8 +222,8 @@ class TestExp:
             dpnp.exp(dp_array, out=dp_out)
 
     @pytest.mark.parametrize("shape",
-                            [(0,), (15, ), (2,2)],
-                            ids=['(0,)', '(15, )', '(2,2)'])
+                             [(0,), (15, ), (2, 2)],
+                             ids=['(0,)', '(15, )', '(2,2)'])
     def test_invalid_shape(self, shape):
 
         dp_array = dpnp.arange(10, dtype=dpnp.float64)
@@ -250,8 +251,8 @@ class TestArcsin:
         numpy.testing.assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("dtype",
-                            [numpy.float32, numpy.int64, numpy.int32],
-                            ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
+                             [numpy.float32, numpy.int64, numpy.int32],
+                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
     def test_invalid_dtype(self, dtype):
 
         dp_array = dpnp.arange(10, dtype=dpnp.float64)
@@ -261,8 +262,8 @@ class TestArcsin:
             dpnp.arcsin(dp_array, out=dp_out)
 
     @pytest.mark.parametrize("shape",
-                            [(0,), (15, ), (2,2)],
-                            ids=['(0,)', '(15, )', '(2,2)'])
+                             [(0,), (15, ), (2, 2)],
+                             ids=['(0,)', '(15, )', '(2,2)'])
     def test_invalid_shape(self, shape):
 
         dp_array = dpnp.arange(10, dtype=dpnp.float64)
@@ -290,8 +291,8 @@ class TestArctan:
         numpy.testing.assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("dtype",
-                            [numpy.float32, numpy.int64, numpy.int32],
-                            ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
+                             [numpy.float32, numpy.int64, numpy.int32],
+                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
     def test_invalid_dtype(self, dtype):
 
         dp_array = dpnp.arange(10, dtype=dpnp.float64)
@@ -301,8 +302,8 @@ class TestArctan:
             dpnp.arctan(dp_array, out=dp_out)
 
     @pytest.mark.parametrize("shape",
-                            [(0,), (15, ), (2,2)],
-                            ids=['(0,)', '(15, )', '(2,2)'])
+                             [(0,), (15, ), (2, 2)],
+                             ids=['(0,)', '(15, )', '(2,2)'])
     def test_invalid_shape(self, shape):
 
         dp_array = dpnp.arange(10, dtype=dpnp.float64)
@@ -330,8 +331,8 @@ class TestTan:
         numpy.testing.assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("dtype",
-                            [numpy.float32, numpy.int64, numpy.int32],
-                            ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
+                             [numpy.float32, numpy.int64, numpy.int32],
+                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
     def test_invalid_dtype(self, dtype):
 
         dp_array = dpnp.arange(10, dtype=dpnp.float64)
@@ -341,8 +342,8 @@ class TestTan:
             dpnp.tan(dp_array, out=dp_out)
 
     @pytest.mark.parametrize("shape",
-                            [(0,), (15, ), (2,2)],
-                            ids=['(0,)', '(15, )', '(2,2)'])
+                             [(0,), (15, ), (2, 2)],
+                             ids=['(0,)', '(15, )', '(2,2)'])
     def test_invalid_shape(self, shape):
 
         dp_array = dpnp.arange(10, dtype=dpnp.float64)
@@ -370,8 +371,8 @@ class TestArctan2:
         numpy.testing.assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("dtype",
-                            [numpy.float32, numpy.int64, numpy.int32],
-                            ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
+                             [numpy.float32, numpy.int64, numpy.int32],
+                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
     def test_invalid_dtype(self, dtype):
 
         dp_array = dpnp.arange(10, dtype=dpnp.float64)
@@ -381,8 +382,8 @@ class TestArctan2:
             dpnp.arctan2(dp_array, dp_array, out=dp_out)
 
     @pytest.mark.parametrize("shape",
-                            [(0,), (15, ), (2,2)],
-                            ids=['(0,)', '(15, )', '(2,2)'])
+                             [(0,), (15, ), (2, 2)],
+                             ids=['(0,)', '(15, )', '(2,2)'])
     def test_invalid_shape(self, shape):
 
         dp_array = dpnp.arange(10, dtype=dpnp.float64)
