@@ -153,7 +153,7 @@ def arccosh(x1):
     return call_origin(numpy.arccosh, x1, **kwargs)
 
 
-def arcsin(x1):
+def arcsin(x1, out=None, **kwargs):
     """
     Inverse sine, element-wise.
 
@@ -162,6 +162,7 @@ def arcsin(x1):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
+    Keyword arguments ``kwargs`` are currently unsupported.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -186,9 +187,9 @@ def arcsin(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_arcsin(x1_desc)
+        return dpnp_arcsin(x1_desc, out)
 
-    return call_origin(numpy.arcsin, x1, **kwargs)
+    return call_origin(numpy.arcsin, x1, out=out, **kwargs)
 
 
 def arcsinh(x1):
@@ -220,7 +221,7 @@ def arcsinh(x1):
     return call_origin(numpy.arcsinh, x1, **kwargs)
 
 
-def arctan(x1):
+def arctan(x1, out=None, **kwargs):
     """
     Trigonometric inverse tangent, element-wise.
 
@@ -229,6 +230,7 @@ def arctan(x1):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
+    Keyword arguments ``kwargs`` are currently unsupported.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -249,9 +251,9 @@ def arctan(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_arctan(x1_desc)
+        return dpnp_arctan(x1_desc, out)
 
-    return call_origin(numpy.arctan, x1, **kwargs)
+    return call_origin(numpy.arctan, x1, out=out, **kwargs)
 
 
 def arctanh(x1):
@@ -360,8 +362,6 @@ def arctan2(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif out is not None and not isinstance(out, dparray):
             pass
         elif dtype is not None:
-            pass
-        elif out is not None:
             pass
         elif not where:
             pass
@@ -974,7 +974,7 @@ def square(x1):
     return call_origin(numpy.square, x1, **kwargs)
 
 
-def tan(x1):
+def tan(x1, out=None, **kwargs):
     """
     Compute tangent element-wise.
 
@@ -983,6 +983,7 @@ def tan(x1):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
+    Keyword arguments ``kwargs`` are currently unsupported.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
@@ -998,9 +999,9 @@ def tan(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_tan(x1_desc)
+        return dpnp_tan(x1_desc, out)
 
-    return call_origin(numpy.tan, x1, **kwargs)
+    return call_origin(numpy.tan, x1, out=out, **kwargs)
 
 
 def tanh(x1):

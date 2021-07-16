@@ -230,3 +230,163 @@ class TestExp:
 
         with pytest.raises(ValueError):
             dpnp.exp(dp_array, out=dp_out)
+
+
+class TestArcsin:
+
+    def test_arcsin(self):
+        array_data = numpy.arange(10)
+        out = numpy.empty(10, dtype=numpy.float64)
+
+        # DPNP
+        dp_array = dpnp.array(array_data, dtype=dpnp.float64)
+        dp_out = dpnp.array(out, dtype=dpnp.float64)
+        result = dpnp.arcsin(dp_array, out=dp_out)
+
+        # original
+        np_array = numpy.array(array_data, dtype=numpy.float64)
+        expected = numpy.arcsin(np_array, out=out)
+
+        numpy.testing.assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dtype",
+                            [numpy.float32, numpy.int64, numpy.int32],
+                            ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
+    def test_invalid_dtype(self, dtype):
+
+        dp_array = dpnp.arange(10, dtype=dpnp.float64)
+        dp_out = dpnp.empty(10, dtype=dtype)
+
+        with pytest.raises(ValueError):
+            dpnp.arcsin(dp_array, out=dp_out)
+
+    @pytest.mark.parametrize("shape",
+                            [(0,), (15, ), (2,2)],
+                            ids=['(0,)', '(15, )', '(2,2)'])
+    def test_invalid_shape(self, shape):
+
+        dp_array = dpnp.arange(10, dtype=dpnp.float64)
+        dp_out = dpnp.empty(shape, dtype=dpnp.float64)
+
+        with pytest.raises(ValueError):
+            dpnp.arcsin(dp_array, out=dp_out)
+
+
+class TestArctan:
+
+    def test_arctan(self):
+        array_data = numpy.arange(10)
+        out = numpy.empty(10, dtype=numpy.float64)
+
+        # DPNP
+        dp_array = dpnp.array(array_data, dtype=dpnp.float64)
+        dp_out = dpnp.array(out, dtype=dpnp.float64)
+        result = dpnp.arctan(dp_array, out=dp_out)
+
+        # original
+        np_array = numpy.array(array_data, dtype=numpy.float64)
+        expected = numpy.arctan(np_array, out=out)
+
+        numpy.testing.assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dtype",
+                            [numpy.float32, numpy.int64, numpy.int32],
+                            ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
+    def test_invalid_dtype(self, dtype):
+
+        dp_array = dpnp.arange(10, dtype=dpnp.float64)
+        dp_out = dpnp.empty(10, dtype=dtype)
+
+        with pytest.raises(ValueError):
+            dpnp.arctan(dp_array, out=dp_out)
+
+    @pytest.mark.parametrize("shape",
+                            [(0,), (15, ), (2,2)],
+                            ids=['(0,)', '(15, )', '(2,2)'])
+    def test_invalid_shape(self, shape):
+
+        dp_array = dpnp.arange(10, dtype=dpnp.float64)
+        dp_out = dpnp.empty(shape, dtype=dpnp.float64)
+
+        with pytest.raises(ValueError):
+            dpnp.arctan(dp_array, out=dp_out)
+
+
+class TestTan:
+
+    def test_tan(self):
+        array_data = numpy.arange(10)
+        out = numpy.empty(10, dtype=numpy.float64)
+
+        # DPNP
+        dp_array = dpnp.array(array_data, dtype=dpnp.float64)
+        dp_out = dpnp.array(out, dtype=dpnp.float64)
+        result = dpnp.tan(dp_array, out=dp_out)
+
+        # original
+        np_array = numpy.array(array_data, dtype=numpy.float64)
+        expected = numpy.tan(np_array, out=out)
+
+        numpy.testing.assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dtype",
+                            [numpy.float32, numpy.int64, numpy.int32],
+                            ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
+    def test_invalid_dtype(self, dtype):
+
+        dp_array = dpnp.arange(10, dtype=dpnp.float64)
+        dp_out = dpnp.empty(10, dtype=dtype)
+
+        with pytest.raises(ValueError):
+            dpnp.tan(dp_array, out=dp_out)
+
+    @pytest.mark.parametrize("shape",
+                            [(0,), (15, ), (2,2)],
+                            ids=['(0,)', '(15, )', '(2,2)'])
+    def test_invalid_shape(self, shape):
+
+        dp_array = dpnp.arange(10, dtype=dpnp.float64)
+        dp_out = dpnp.empty(shape, dtype=dpnp.float64)
+
+        with pytest.raises(ValueError):
+            dpnp.tan(dp_array, out=dp_out)
+
+
+class TestArctan2:
+
+    def test_arctan2(self):
+        array_data = numpy.arange(10)
+        out = numpy.empty(10, dtype=numpy.float64)
+
+        # DPNP
+        dp_array = dpnp.array(array_data, dtype=dpnp.float64)
+        dp_out = dpnp.array(out, dtype=dpnp.float64)
+        result = dpnp.arctan2(dp_array, dp_array, out=dp_out)
+
+        # original
+        np_array = numpy.array(array_data, dtype=numpy.float64)
+        expected = numpy.arctan2(np_array, np_array, out=out)
+
+        numpy.testing.assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dtype",
+                            [numpy.float32, numpy.int64, numpy.int32],
+                            ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
+    def test_invalid_dtype(self, dtype):
+
+        dp_array = dpnp.arange(10, dtype=dpnp.float64)
+        dp_out = dpnp.empty(10, dtype=dtype)
+
+        with pytest.raises(ValueError):
+            dpnp.arctan2(dp_array, dp_array, out=dp_out)
+
+    @pytest.mark.parametrize("shape",
+                            [(0,), (15, ), (2,2)],
+                            ids=['(0,)', '(15, )', '(2,2)'])
+    def test_invalid_shape(self, shape):
+
+        dp_array = dpnp.arange(10, dtype=dpnp.float64)
+        dp_out = dpnp.empty(shape, dtype=dpnp.float64)
+
+        with pytest.raises(ValueError):
+            dpnp.arctan2(dp_array, dp_array, out=dp_out)

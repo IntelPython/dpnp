@@ -105,8 +105,8 @@ cpdef dparray dpnp_add(object x1_obj, object x2_obj, object dtype=None, dparray 
     return call_fptr_2in_1out(DPNP_FN_ADD, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
-cpdef dparray dpnp_arctan2(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
-    return call_fptr_2in_1out(DPNP_FN_ARCTAN2, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
+cpdef dparray dpnp_arctan2(utils.dpnp_descriptor x1_obj, utils.dpnp_descriptor x2_obj, object dtype=None, dparray out=None, object where=True):
+    return call_fptr_2in_1out(DPNP_FN_ARCTAN2, x1_obj, x2_obj, dtype=dtype, out=out, where=where, func_name="arctan2")
 
 
 cpdef dpnp_around(utils.dpnp_descriptor x1, int decimals):
