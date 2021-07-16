@@ -261,7 +261,7 @@ cdef dparray call_fptr_1in_1out(DPNPFuncName fptr_name, utils.dpnp_descriptor x1
 
     """ get the FPTR data structure """
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, param1_type, param1_type)
-    
+
     result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
 
     cdef dparray result
