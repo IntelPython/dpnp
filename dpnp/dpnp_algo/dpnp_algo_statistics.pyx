@@ -84,7 +84,7 @@ cdef dparray call_fptr_custom_std_var_1in_1out(DPNPFuncName fptr_name, utils.dpn
 
 
 cpdef dpnp_average(utils.dpnp_descriptor x1):
-    array_sum = dpnp_sum(x1)
+    array_sum = dpnp_sum(x1).get_pyobj()
 
     """ Numpy interface inconsistency """
     return_type = numpy.float32 if (x1.dtype == numpy.float32) else numpy.float64

@@ -130,6 +130,7 @@ cdef class dpnp_descriptor:
     """array DPNP descriptor"""
 
     cdef public:  # TODO remove "public" as python accessible attribute
+        object origin_pyobj
         dict descriptor
         Py_ssize_t dpnp_descriptor_data_size
         cpp_bool dpnp_descriptor_is_scalar
@@ -158,4 +159,9 @@ Calculate output array type by 'out' and 'dtype' cast parameters
 cdef dparray create_output_array(dparray_shape_type output_shape, DPNPFuncType c_type, object requested_out)
 """
 Create output array based on shape, type and 'out' parameters
+"""
+
+cdef dpnp_descriptor create_output_descriptor(dparray_shape_type output_shape, DPNPFuncType c_type, object requested_out)
+"""
+Same as "create_output_array" but output is "dpnp_descriptor"
 """
