@@ -418,7 +418,8 @@ void dpnp_qr_c(void* array1_in, void* result1, void* result2, void* result3, siz
     cl::sycl::vector_class<cl::sycl::event> depends(1);
     set_barrier_event(DPNP_QUEUE, depends);
 
-    event = mkl_lapack::geqrf(DPNP_QUEUE, size_m, size_n, in_a, lda, tau, geqrf_scratchpad, geqrf_scratchpad_size, depends);
+    event =
+        mkl_lapack::geqrf(DPNP_QUEUE, size_m, size_n, in_a, lda, tau, geqrf_scratchpad, geqrf_scratchpad_size, depends);
 
     event.wait();
 
@@ -453,8 +454,8 @@ void dpnp_qr_c(void* array1_in, void* result1, void* result2, void* result3, siz
     depends.clear();
     set_barrier_event(DPNP_QUEUE, depends);
 
-    event =
-        mkl_lapack::orgqr(DPNP_QUEUE, size_m, size_m, nrefl, in_a, lda, tau, orgqr_scratchpad, orgqr_scratchpad_size, depends);
+    event = mkl_lapack::orgqr(
+        DPNP_QUEUE, size_m, size_m, nrefl, in_a, lda, tau, orgqr_scratchpad, orgqr_scratchpad_size, depends);
 
     event.wait();
 
