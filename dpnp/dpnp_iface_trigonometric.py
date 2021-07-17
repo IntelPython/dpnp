@@ -109,13 +109,11 @@ def arccos(x1):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.arccos(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_arccos(x1_desc)
 
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP arccos(): Unsupported x1={type(x1)}")
-
-    return dpnp_arccos(x1)
+    return call_origin(numpy.arccos, x1, **kwargs)
 
 
 def arccosh(x1):
@@ -148,16 +146,14 @@ def arccosh(x1):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.arccosh(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_arccosh(x1_desc)
 
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP arccosh(): Unsupported x1={type(x1)}")
-
-    return dpnp_arccosh(x1)
+    return call_origin(numpy.arccosh, x1, **kwargs)
 
 
-def arcsin(x1):
+def arcsin(x1, out=None, **kwargs):
     """
     Inverse sine, element-wise.
 
@@ -166,6 +162,7 @@ def arcsin(x1):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
+    Keyword arguments ``kwargs`` are currently unsupported.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -188,13 +185,11 @@ def arcsin(x1):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.arcsin(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_arcsin(x1_desc, out)
 
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP arcsin(): Unsupported x1={type(x1)}")
-
-    return dpnp_arcsin(x1)
+    return call_origin(numpy.arcsin, x1, out=out, **kwargs)
 
 
 def arcsinh(x1):
@@ -219,16 +214,14 @@ def arcsinh(x1):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.arcsinh(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_arcsinh(x1_desc)
 
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP arcsinh(): Unsupported x1={type(x1)}")
-
-    return dpnp_arcsinh(x1)
+    return call_origin(numpy.arcsinh, x1, **kwargs)
 
 
-def arctan(x1):
+def arctan(x1, out=None, **kwargs):
     """
     Trigonometric inverse tangent, element-wise.
 
@@ -237,6 +230,7 @@ def arctan(x1):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
+    Keyword arguments ``kwargs`` are currently unsupported.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -255,13 +249,11 @@ def arctan(x1):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.arctan(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_arctan(x1_desc, out)
 
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP arctan(): Unsupported x1={type(x1)}")
-
-    return dpnp_arctan(x1)
+    return call_origin(numpy.arctan, x1, out=out, **kwargs)
 
 
 def arctanh(x1):
@@ -285,13 +277,11 @@ def arctanh(x1):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.arctanh(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_arctanh(x1_desc)
 
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP arctanh(): Unsupported x1={type(x1)}")
-
-    return dpnp_arctanh(x1)
+    return call_origin(numpy.arctanh, x1, **kwargs)
 
 
 def cbrt(x1):
@@ -315,13 +305,11 @@ def cbrt(x1):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.cbrt(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_cbrt(x1_desc)
 
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP cbrt(): Unsupported x1={type(x1)}")
-
-    return dpnp_cbrt(x1)
+    return call_origin(numpy.cbrt, x1, **kwargs)
 
 
 def arctan2(x1, x2, dtype=None, out=None, where=True, **kwargs):
@@ -354,35 +342,36 @@ def arctan2(x1, x2, dtype=None, out=None, where=True, **kwargs):
     [1.57079633, -1.57079633]
 
     """
-    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
-    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
-    if not use_origin_backend(x1) and not kwargs:
-        if not x1_is_dparray and not x1_is_scalar:
+    x1_is_scalar = dpnp.isscalar(x1)
+    x2_is_scalar = dpnp.isscalar(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+
+    if x1_desc and x2_desc and not kwargs:
+        if not x1_desc and not x1_is_scalar:
             pass
-        elif not x2_is_dparray and not x2_is_scalar:
+        elif not x2_desc and not x2_is_scalar:
             pass
         elif x1_is_scalar and x2_is_scalar:
             pass
-        elif x1_is_dparray and x1.ndim == 0:
+        elif x1_desc and x1_desc.ndim == 0:
             pass
-        elif x2_is_dparray and x2.ndim == 0:
+        elif x2_desc and x2_desc.ndim == 0:
             pass
         elif out is not None and not isinstance(out, dparray):
             pass
         elif dtype is not None:
             pass
-        elif out is not None:
-            pass
         elif not where:
             pass
         else:
-            return dpnp_arctan2(x1, x2, dtype=dtype, out=out, where=where)
+            return dpnp_arctan2(x1_desc, x2_desc, dtype=dtype, out=out, where=where)
 
     return call_origin(numpy.arctan2, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
-def cos(x1):
+def cos(x1, out=None, **kwargs):
     """
     Trigonometric cosine, element-wise.
 
@@ -404,13 +393,11 @@ def cos(x1):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.cos(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_cos(x1_desc, out)
 
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP cos(): Unsupported x1={type(x1)}")
-
-    return dpnp_cos(x1)
+    return call_origin(numpy.cos, x1, out=out, **kwargs)
 
 
 def cosh(x1):
@@ -434,13 +421,11 @@ def cosh(x1):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.cosh(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_cosh(x1_desc)
 
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP cosh(): Unsupported x1={type(x1)}")
-
-    return dpnp_cosh(x1)
+    return call_origin(numpy.cosh, x1, **kwargs)
 
 
 def deg2rad(x1):
@@ -459,9 +444,6 @@ def deg2rad(x1):
     This function works exactly the same as :obj:`dpnp.radians`.
 
     """
-
-    if (use_origin_backend(x1)):
-        return numpy.radians(x1)
 
     return radians(x1)
 
@@ -490,16 +472,14 @@ def degrees(x1):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.degrees(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_degrees(x1_desc)
 
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP degrees(): Unsupported x1={type(x1)}")
-
-    return dpnp_degrees(x1)
+    return call_origin(numpy.degrees, x1, **kwargs)
 
 
-def exp(x1):
+def exp(x1, out=None, **kwargs):
     """
     Trigonometric exponent, element-wise.
 
@@ -524,13 +504,12 @@ def exp(x1):
     [1.0, 2.718281828, 7.389056099]
 
     """
-    if not use_origin_backend(x1):
-        if not isinstance(x1, dparray):
-            pass
-        else:
-            return dpnp_exp(x1)
 
-    return call_origin(numpy.exp, x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_exp(x1_desc, out)
+
+    return call_origin(numpy.exp, x1, out=out, **kwargs)
 
 
 def exp2(x1):
@@ -559,13 +538,11 @@ def exp2(x1):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.exp2(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_exp2(x1_desc)
 
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP exp2(): Unsupported x1={type(x1)}")
-
-    return dpnp_exp2(x1)
+    return call_origin(numpy.exp2, x1)
 
 
 def expm1(x1):
@@ -591,13 +568,11 @@ def expm1(x1):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.expm1(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_expm1(x1_desc)
 
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP expm1(): Unsupported x1={type(x1)}")
-
-    return dpnp_expm1(x1)
+    return call_origin(numpy.expm1, x1)
 
 
 def hypot(x1, x2, dtype=None, out=None, where=True, **kwargs):
@@ -624,19 +599,22 @@ def hypot(x1, x2, dtype=None, out=None, where=True, **kwargs):
     [5.0, 5.0, 5.0]
 
     """
-    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
-    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
-    if not use_origin_backend(x1) and not kwargs:
-        if not x1_is_dparray and not x1_is_scalar:
+    x1_is_scalar = dpnp.isscalar(x1)
+    x2_is_scalar = dpnp.isscalar(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+
+    if x1_desc and x2_desc and not kwargs:
+        if not x1_desc and not x1_is_scalar:
             pass
-        elif not x2_is_dparray and not x2_is_scalar:
+        elif not x2_desc and not x2_is_scalar:
             pass
         elif x1_is_scalar and x2_is_scalar:
             pass
-        elif x1_is_dparray and x1.ndim == 0:
+        elif x1_desc and x1_desc.ndim == 0:
             pass
-        elif x2_is_dparray and x2.ndim == 0:
+        elif x2_desc and x2_desc.ndim == 0:
             pass
         elif out is not None and not isinstance(out, dparray):
             pass
@@ -647,12 +625,12 @@ def hypot(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_hypot(x1, x2, dtype=dtype, out=out, where=where)
+            return dpnp_hypot(x1_desc, x2_desc, dtype=dtype, out=out, where=where)
 
     return call_origin(numpy.hypot, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
-def log(x1):
+def log(x1, out=None, **kwargs):
     """
     Trigonometric logarithm, element-wise.
 
@@ -681,13 +659,12 @@ def log(x1):
     [0.0, 1.0, 2.0, -inf]
 
     """
-    if not use_origin_backend(x1):
-        if not isinstance(x1, dparray):
-            pass
-        else:
-            return dpnp_log(x1)
 
-    return call_origin(numpy.log, x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_log(x1_desc, out)
+
+    return call_origin(numpy.log, x1, out=out, **kwargs)
 
 
 def log10(x1):
@@ -711,13 +688,11 @@ def log10(x1):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.log10(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_log10(x1_desc)
 
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP log10(): Unsupported x1={type(x1)}")
-
-    return dpnp_log10(x1)
+    return call_origin(numpy.log10, x1)
 
 
 def log1p(x1):
@@ -745,13 +720,11 @@ def log1p(x1):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.log1p(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_log1p(x1_desc)
 
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP log1p(): Unsupported x1={type(x1)}")
-
-    return dpnp_log1p(x1)
+    return call_origin(numpy.log1p, x1)
 
 
 def log2(x1):
@@ -783,16 +756,14 @@ def log2(x1):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.log2(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_log2(x1_desc)
 
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP log2(): Unsupported x1={type(x1)}")
-
-    return dpnp_log2(x1)
+    return call_origin(numpy.log2, x1)
 
 
-def reciprocal(x, **kwargs):
+def reciprocal(x1, **kwargs):
     """
     Return the reciprocal of the argument, element-wise.
 
@@ -814,13 +785,12 @@ def reciprocal(x, **kwargs):
     [1.0, 0.5, 0.3003003]
 
     """
-    if not use_origin_backend(x) and not kwargs:
-        if not isinstance(x, dparray):
-            pass
-        else:
-            return dpnp_recip(x)
 
-    return call_origin(numpy.reciprocal, x, **kwargs)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        return dpnp_recip(x1_desc)
+
+    return call_origin(numpy.reciprocal, x1, **kwargs)
 
 
 def rad2deg(x1):
@@ -839,12 +809,6 @@ def rad2deg(x1):
     This function works exactly the same as :obj:`dpnp.degrees`.
 
     """
-
-    if (use_origin_backend(x1)):
-        return numpy.degrees(x1)
-
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP rad2deg(): Unsupported x1={type(x1)}")
 
     return degrees(x1)
 
@@ -872,13 +836,11 @@ def radians(x1):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.radians(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_radians(x1_desc)
 
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP radians(): Unsupported x1={type(x1)}")
-
-    return dpnp_radians(x1)
+    return call_origin(numpy.radians, x1, **kwargs)
 
 
 def sin(x1, out=None, **kwargs):
@@ -911,13 +873,10 @@ def sin(x1, out=None, **kwargs):
     [0.0, 1.0, 1.2246467991473532e-16]
 
     """
-    if not use_origin_backend(x1) and not kwargs:
-        if not isinstance(x1, dparray):
-            pass
-        elif out is not None and not isinstance(out, dparray):
-            pass
-        else:
-            return dpnp_sin(x1, out=out)
+
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_sin(x1_desc, out)
 
     return call_origin(numpy.sin, x1, out=out, **kwargs)
 
@@ -944,13 +903,11 @@ def sinh(x1):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.sinh(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_sinh(x1_desc)
 
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP sinh(): Unsupported x1={type(x1)}")
-
-    return dpnp_sinh(x1)
+    return call_origin(numpy.sinh, x1, **kwargs)
 
 
 def sqrt(x1):
@@ -975,13 +932,11 @@ def sqrt(x1):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.sqrt(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_sqrt(x1_desc)
 
-    if not isinstance(x1, dparray):
-        return numpy.sqrt(x1)
-
-    return dpnp_sqrt(x1)
+    return call_origin(numpy.sqrt, x1, **kwargs)
 
 
 def square(x1):
@@ -1012,16 +967,14 @@ def square(x1):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.square(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_square(x1_desc)
 
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP square(): Unsupported x1={type(x1)}")
-
-    return dpnp_square(x1)
+    return call_origin(numpy.square, x1, **kwargs)
 
 
-def tan(x1):
+def tan(x1, out=None, **kwargs):
     """
     Compute tangent element-wise.
 
@@ -1030,6 +983,7 @@ def tan(x1):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
+    Keyword arguments ``kwargs`` are currently unsupported.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
@@ -1043,13 +997,11 @@ def tan(x1):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.tan(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_tan(x1_desc, out)
 
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP tan(): Unsupported x1={type(x1)}")
-
-    return dpnp_tan(x1)
+    return call_origin(numpy.tan, x1, out=out, **kwargs)
 
 
 def tanh(x1):
@@ -1074,13 +1026,11 @@ def tanh(x1):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.tanh(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_tanh(x1_desc)
 
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP tanh(): Unsupported x1={type(x1)}")
-
-    return dpnp_tanh(x1)
+    return call_origin(numpy.tanh, x1, **kwargs)
 
 
 def unwrap(x1):
@@ -1112,10 +1062,8 @@ def unwrap(x1):
 
     """
 
-    if (use_origin_backend(x1)):
-        return numpy.unwrap(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_unwrap(x1_desc)
 
-    if not isinstance(x1, dparray):
-        raise TypeError(f"DPNP unwrap(): Unsupported x1={type(x1)}")
-
-    return dpnp_unwrap(x1)
+    return call_origin(numpy.unwrap, x1, **kwargs)

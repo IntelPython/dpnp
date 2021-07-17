@@ -243,25 +243,13 @@ class dpnp_trace_c_kernel;
 template <typename _DataType, typename _ResultType>
 void dpnp_trace_c(const void* array1_in, void* result1, const size_t* shape_, const size_t ndim)
 {
-    cl::sycl::event event;
-
-    if ((array1_in == nullptr) || (result1 == nullptr))
+    if ((array1_in == nullptr) || (result1 == nullptr) || (shape_ == nullptr) || (ndim == 0))
     {
         return;
     }
 
     const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
     _ResultType* result = reinterpret_cast<_ResultType*>(result1);
-
-    if (shape_ == nullptr)
-    {
-        return;
-    }
-
-    if (ndim == 0)
-    {
-        return;
-    }
 
     size_t size = 1;
     for (size_t i = 0; i < ndim - 1; ++i)
@@ -278,8 +266,8 @@ void dpnp_trace_c(const void* array1_in, void* result1, const size_t* shape_, co
     auto memcpy_event = DPNP_QUEUE.memcpy(shape, shape_, ndim * sizeof(size_t));
 
     cl::sycl::range<1> gws(size);
-    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
-        size_t i = global_id[0];
+    auto kernel_parallel_for_func = [=](auto index) {
+        size_t i = index[0];
         result[i] = 0;
         for (size_t j = 0; j < shape[ndim - 1]; ++j)
         {
@@ -292,8 +280,7 @@ void dpnp_trace_c(const void* array1_in, void* result1, const size_t* shape_, co
         cgh.parallel_for<class dpnp_trace_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
     };
 
-    event = DPNP_QUEUE.submit(kernel_func);
-
+    auto event = DPNP_QUEUE.submit(kernel_func);
     event.wait();
 
     dpnp_memory_free_c(shape);

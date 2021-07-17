@@ -123,7 +123,7 @@ def amin(input, axis=None, out=None):
     return min(input, axis=axis, out=out)
 
 
-def average(a, axis=None, weights=None, returned=False):
+def average(x1, axis=None, weights=None, returned=False):
     """
     Compute the weighted average along the specified axis.
 
@@ -152,28 +152,25 @@ def average(a, axis=None, weights=None, returned=False):
     2.5
 
     """
-    if not use_origin_backend(a):
-        if not isinstance(a, dparray):
-            pass
-        elif axis is not None:
+
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if axis is not None:
             pass
         elif weights is not None:
             pass
         elif returned:
             pass
         else:
-            array_avg = dpnp_average(a)
+            result_obj = dpnp_average(x1_desc)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
-            # scalar returned
-            if array_avg.shape == (1,):
-                return array_avg.dtype.type(array_avg[0])
+            return result
 
-            return array_avg
-
-    return call_origin(numpy.average, a, axis, weights, returned)
+    return call_origin(numpy.average, x1, axis, weights, returned)
 
 
-def correlate(a, v, mode='valid'):
+def correlate(x1, x2, mode='valid'):
     """
     Cross-correlation of two 1-dimensional sequences.
 
@@ -200,24 +197,23 @@ def correlate(a, v, mode='valid'):
     [3.5]
 
     """
-    if not use_origin_backend(a):
-        if not isinstance(a, dparray):
+
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    if x1_desc and x2_desc:
+        if x1_desc.size != x2_desc.size or x1_desc.size == 0:
             pass
-        elif not isinstance(v, dparray):
-            pass
-        elif a.size != v.size or a.size == 0:
-            pass
-        elif a.shape != v.shape:
+        elif x1_desc.shape != x2_desc.shape:
             pass
         elif mode != 'valid':
             pass
         else:
-            return dpnp_correlate(a, v)
+            return dpnp_correlate(x1_desc, x2_desc)
 
-    return call_origin(numpy.correlate, a, v, mode=mode)
+    return call_origin(numpy.correlate, x1, x2, mode=mode)
 
 
-def cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None):
+def cov(x1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=None):
     """
     Estimate a covariance matrix, given data and weights.
 
@@ -254,10 +250,10 @@ def cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=N
     [1.0, -1.0, -1.0, 1.0]
 
     """
-    if not use_origin_backend(m):
-        if not isinstance(m, dparray):
-            pass
-        elif m.ndim > 2:
+
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if x1_desc.ndim > 2:
             pass
         elif y is not None:
             pass
@@ -272,12 +268,12 @@ def cov(m, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=N
         elif aweights is not None:
             pass
         else:
-            return dpnp_cov(m)
+            return dpnp_cov(x1)
 
-    return call_origin(numpy.cov, m, y, rowvar, bias, ddof, fweights, aweights)
+    return call_origin(numpy.cov, x1, y, rowvar, bias, ddof, fweights, aweights)
 
 
-def max(input, axis=None, out=None, keepdims=numpy._NoValue, initial=numpy._NoValue, where=numpy._NoValue):
+def max(x1, axis=None, out=None, keepdims=False, initial=None, where=True):
     """
     Return the maximum of an array or maximum along an axis.
 
@@ -301,7 +297,8 @@ def max(input, axis=None, out=None, keepdims=numpy._NoValue, initial=numpy._NoVa
 
     """
 
-    if not use_origin_backend(input):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
         # Negative values in 'shape' are not allowed in dparray
         # 306-322 check on negative and duplicate axis
         isaxis = True
@@ -322,31 +319,26 @@ def max(input, axis=None, out=None, keepdims=numpy._NoValue, initial=numpy._NoVa
                                     isaxis = False
                                     break
 
-        if not isinstance(input, dparray):
-            pass
-        elif not isaxis:
+        if not isaxis:
             pass
         elif out is not None:
             pass
-        elif keepdims is not numpy._NoValue:
+        elif keepdims:
             pass
-        elif initial is not numpy._NoValue:
+        elif initial is not None:
             pass
-        elif where is not numpy._NoValue:
+        elif where is not True:
             pass
         else:
-            result = dpnp_max(input, axis=axis)
-
-            # scalar returned
-            if result.shape == (1,):
-                return result.dtype.type(result[0])
+            result_obj = dpnp_max(x1, axis=axis)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
 
-    return call_origin(numpy.max, input, axis, out, keepdims, initial, where)
+    return call_origin(numpy.max, x1, axis, out, keepdims, initial, where)
 
 
-def mean(a, axis=None, **kwargs):
+def mean(x1, axis=None, **kwargs):
     """
     Compute the arithmetic mean along the specified axis.
 
@@ -380,24 +372,21 @@ def mean(a, axis=None, **kwargs):
     2.5
 
     """
-    if not use_origin_backend(a) and not kwargs:
-        if not isinstance(a, dparray):
-            pass
-        elif a.size == 0:
+
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        if x1_desc.size == 0:
             pass
         else:
-            result = dpnp_mean(a, axis=axis)
-
-            # scalar returned
-            if result.shape == (1,):
-                return result.dtype.type(result[0])
+            result_obj = dpnp_mean(x1, axis=axis)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
 
-    return call_origin(numpy.mean, a, axis=axis, **kwargs)
+    return call_origin(numpy.mean, x1, axis=axis, **kwargs)
 
 
-def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
+def median(x1, axis=None, out=None, overwrite_input=False, keepdims=False):
     """
     Compute the median along the specified axis.
 
@@ -427,10 +416,10 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
     3.5
 
     """
-    if not use_origin_backend(a):
-        if not isinstance(a, dparray):
-            pass
-        elif axis is not None:
+
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if axis is not None:
             pass
         elif out is not None:
             pass
@@ -439,18 +428,15 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
         elif keepdims:
             pass
         else:
-            result = dpnp_median(a)
-
-            # scalar returned
-            if result.shape == (1,):
-                return result.dtype.type(result[0])
+            result_obj = dpnp_median(x1_desc)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
 
-    return call_origin(numpy.median, a, axis, out, overwrite_input, keepdims)
+    return call_origin(numpy.median, x1, axis, out, overwrite_input, keepdims)
 
 
-def min(input, axis=None, out=None, keepdims=numpy._NoValue, initial=numpy._NoValue, where=numpy._NoValue):
+def min(x1, axis=None, out=None, keepdims=False, initial=None, where=True):
     """
     Return the minimum along a given axis.
 
@@ -474,30 +460,26 @@ def min(input, axis=None, out=None, keepdims=numpy._NoValue, initial=numpy._NoVa
 
     """
 
-    if not use_origin_backend(input):
-        if not isinstance(input, dparray):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if out is not None:
             pass
-        elif out is not None:
+        elif keepdims:
             pass
-        elif keepdims is not numpy._NoValue:
+        elif initial is not None:
             pass
-        elif initial is not numpy._NoValue:
-            pass
-        elif where is not numpy._NoValue:
+        elif where is not True:
             pass
         else:
-            result = dpnp_min(input, axis=axis)
-
-            # scalar returned
-            if result.shape == (1,):
-                return result.dtype.type(result[0])
+            result_obj = dpnp_min(x1, axis=axis)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
 
-    return call_origin(numpy.min, input, axis, out, keepdims, initial, where)
+    return call_origin(numpy.min, x1, axis, out, keepdims, initial, where)
 
 
-def nanvar(arr, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue):
+def nanvar(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
     """
     Compute the variance along the specified axis, while ignoring NaNs.
 
@@ -512,30 +494,27 @@ def nanvar(arr, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue
     Prameters ``keepdims`` is supported only with default value ``numpy._NoValue``.
     Otherwise the function will be executed sequentially on CPU.
     """
-    if not use_origin_backend(arr):
-        if not isinstance(arr, dparray):
-            pass
-        elif axis is not None:
+
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if axis is not None:
             pass
         elif dtype is not None:
             pass
         elif out is not None:
             pass
-        elif keepdims is not numpy._NoValue:
+        elif keepdims:
             pass
         else:
-            result = dpnp_nanvar(arr, ddof)
-
-            # scalar returned
-            if result.shape == (1,):
-                return result.dtype.type(result[0])
+            result_obj = dpnp_nanvar(x1_desc, ddof)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
 
-    return call_origin(numpy.nanvar, arr, axis=axis, dtype=dtype, out=out, ddof=ddof, keepdims=keepdims)
+    return call_origin(numpy.nanvar, x1, axis=axis, dtype=dtype, out=out, ddof=ddof, keepdims=keepdims)
 
 
-def std(a, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue):
+def std(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
     """
     Compute the standard deviation along the specified axis.
 
@@ -572,10 +551,9 @@ def std(a, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue):
 
     """
 
-    if not use_origin_backend(a):
-        if not isinstance(a, dparray):
-            pass
-        elif a.size == 0:
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if x1_desc.size == 0:
             pass
         elif axis is not None:
             pass
@@ -583,19 +561,18 @@ def std(a, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue):
             pass
         elif out is not None:
             pass
-        elif keepdims is not numpy._NoValue:
+        elif keepdims:
             pass
         else:
-            result = dpnp_std(a, ddof)
-            if result.shape == (1,):
-                return result.dtype.type(result[0])
+            result_obj = dpnp_std(x1_desc, ddof)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
 
-    return call_origin(numpy.std, a, axis, dtype, out, ddof, keepdims)
+    return call_origin(numpy.std, x1, axis, dtype, out, ddof, keepdims)
 
 
-def var(a, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue):
+def var(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
     """
     Compute the variance along the specified axis.
 
@@ -632,10 +609,9 @@ def var(a, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue):
 
     """
 
-    if not use_origin_backend(a):
-        if not isinstance(a, dparray):
-            pass
-        elif a.size == 0:
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if x1_desc.size == 0:
             pass
         elif axis is not None:
             pass
@@ -643,13 +619,12 @@ def var(a, axis=None, dtype=None, out=None, ddof=0, keepdims=numpy._NoValue):
             pass
         elif out is not None:
             pass
-        elif keepdims is not numpy._NoValue:
+        elif keepdims:
             pass
         else:
-            result = dpnp_var(a, ddof)
-            if result.shape == (1,):
-                return result.dtype.type(result[0])
+            result_obj = dpnp_var(x1_desc, ddof)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
 
-    return call_origin(numpy.var, a, axis, dtype, out, ddof, keepdims)
+    return call_origin(numpy.var, x1, axis, dtype, out, ddof, keepdims)

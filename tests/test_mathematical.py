@@ -409,3 +409,168 @@ class TestGradient:
         result = inp.gradient(iy1, dx)
         expected = numpy.gradient(y1, dx)
         numpy.testing.assert_array_equal(expected, result)
+
+
+class TestCeil:
+
+    def test_ceil(self):
+        array_data = numpy.arange(10)
+        out = numpy.empty(10, dtype=numpy.float64)
+
+        # DPNP
+        dp_array = inp.array(array_data, dtype=inp.float64)
+        dp_out = inp.array(out, dtype=inp.float64)
+        result = inp.ceil(dp_array, out=dp_out)
+
+        # original
+        np_array = numpy.array(array_data, dtype=numpy.float64)
+        expected = numpy.ceil(np_array, out=out)
+
+        numpy.testing.assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dtype",
+                             [numpy.float32, numpy.int64, numpy.int32],
+                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
+    def test_invalid_dtype(self, dtype):
+
+        dp_array = inp.arange(10, dtype=inp.float64)
+        dp_out = inp.empty(10, dtype=dtype)
+
+        with pytest.raises(ValueError):
+            inp.ceil(dp_array, out=dp_out)
+
+    @pytest.mark.parametrize("shape",
+                             [(0,), (15, ), (2, 2)],
+                             ids=['(0,)', '(15, )', '(2,2)'])
+    def test_invalid_shape(self, shape):
+
+        dp_array = inp.arange(10, dtype=inp.float64)
+        dp_out = inp.empty(shape, dtype=inp.float64)
+
+        with pytest.raises(ValueError):
+            inp.ceil(dp_array, out=dp_out)
+
+
+class TestFloor:
+
+    def test_floor(self):
+        array_data = numpy.arange(10)
+        out = numpy.empty(10, dtype=numpy.float64)
+
+        # DPNP
+        dp_array = inp.array(array_data, dtype=inp.float64)
+        dp_out = inp.array(out, dtype=inp.float64)
+        result = inp.floor(dp_array, out=dp_out)
+
+        # original
+        np_array = numpy.array(array_data, dtype=numpy.float64)
+        expected = numpy.floor(np_array, out=out)
+
+        numpy.testing.assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dtype",
+                             [numpy.float32, numpy.int64, numpy.int32],
+                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
+    def test_invalid_dtype(self, dtype):
+
+        dp_array = inp.arange(10, dtype=inp.float64)
+        dp_out = inp.empty(10, dtype=dtype)
+
+        with pytest.raises(ValueError):
+            inp.floor(dp_array, out=dp_out)
+
+    @pytest.mark.parametrize("shape",
+                             [(0,), (15, ), (2, 2)],
+                             ids=['(0,)', '(15, )', '(2,2)'])
+    def test_invalid_shape(self, shape):
+
+        dp_array = inp.arange(10, dtype=inp.float64)
+        dp_out = inp.empty(shape, dtype=inp.float64)
+
+        with pytest.raises(ValueError):
+            inp.floor(dp_array, out=dp_out)
+
+
+class TestTrunc:
+
+    def test_trunc(self):
+        array_data = numpy.arange(10)
+        out = numpy.empty(10, dtype=numpy.float64)
+
+        # DPNP
+        dp_array = inp.array(array_data, dtype=inp.float64)
+        dp_out = inp.array(out, dtype=inp.float64)
+        result = inp.trunc(dp_array, out=dp_out)
+
+        # original
+        np_array = numpy.array(array_data, dtype=numpy.float64)
+        expected = numpy.trunc(np_array, out=out)
+
+        numpy.testing.assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dtype",
+                             [numpy.float32, numpy.int64, numpy.int32],
+                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
+    def test_invalid_dtype(self, dtype):
+
+        dp_array = inp.arange(10, dtype=inp.float64)
+        dp_out = inp.empty(10, dtype=dtype)
+
+        with pytest.raises(ValueError):
+            inp.trunc(dp_array, out=dp_out)
+
+    @pytest.mark.parametrize("shape",
+                             [(0,), (15, ), (2, 2)],
+                             ids=['(0,)', '(15, )', '(2,2)'])
+    def test_invalid_shape(self, shape):
+
+        dp_array = inp.arange(10, dtype=inp.float64)
+        dp_out = inp.empty(shape, dtype=inp.float64)
+
+        with pytest.raises(ValueError):
+            inp.trunc(dp_array, out=dp_out)
+
+
+class TestPower:
+
+    def test_power(self):
+        array1_data = numpy.arange(10)
+        array2_data = numpy.arange(5, 15)
+        out = numpy.empty(10, dtype=numpy.float64)
+
+        # DPNP
+        dp_array1 = inp.array(array1_data, dtype=inp.float64)
+        dp_array2 = inp.array(array2_data, dtype=inp.float64)
+        dp_out = inp.array(out, dtype=inp.float64)
+        result = inp.power(dp_array1, dp_array2, out=dp_out)
+
+        # original
+        np_array1 = numpy.array(array1_data, dtype=numpy.float64)
+        np_array2 = numpy.array(array2_data, dtype=numpy.float64)
+        expected = numpy.power(np_array1, np_array2, out=out)
+
+        numpy.testing.assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dtype",
+                             [numpy.float32, numpy.int64, numpy.int32],
+                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
+    def test_invalid_dtype(self, dtype):
+
+        dp_array1 = inp.arange(10, dtype=inp.float64)
+        dp_array2 = inp.arange(5, 15, dtype=inp.float64)
+        dp_out = inp.empty(10, dtype=dtype)
+
+        with pytest.raises(ValueError):
+            inp.power(dp_array1, dp_array2, out=dp_out)
+
+    @pytest.mark.parametrize("shape",
+                             [(0,), (15, ), (2, 2)],
+                             ids=['(0,)', '(15, )', '(2,2)'])
+    def test_invalid_shape(self, shape):
+
+        dp_array1 = inp.arange(10, dtype=inp.float64)
+        dp_array2 = inp.arange(5, 15, dtype=inp.float64)
+        dp_out = inp.empty(shape, dtype=inp.float64)
+
+        with pytest.raises(ValueError):
+            inp.power(dp_array1, dp_array2, out=dp_out)

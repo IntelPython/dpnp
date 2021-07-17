@@ -40,20 +40,23 @@ it contains:
 """
 
 
-import numpy
-
 from dpnp.dpnp_algo import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 
+import dpnp
+import numpy
+
 
 __all__ = [
     'argmax',
-    'argmin'
+    'argmin',
+    'searchsorted',
+    'where'
 ]
 
 
-def argmax(in_array1, axis=None, out=None):
+def argmax(x1, axis=None, out=None):
     """
     Returns the indices of the maximum values along an axis.
 
@@ -93,26 +96,22 @@ def argmax(in_array1, axis=None, out=None):
 
     """
 
-    is_dparray1 = isinstance(in_array1, dparray)
-
-    if (not use_origin_backend(in_array1) and is_dparray1):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
         if axis is not None:
-            checker_throw_value_error("argmax", "axis", type(axis), None)
-        if out is not None:
-            checker_throw_value_error("argmax", "out", type(out), None)
+            pass
+        elif out is not None:
+            pass
+        else:
+            result_obj = dpnp_argmax(x1_desc)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
-        result = dpnp_argmax(in_array1)
+            return result
 
-        # scalar returned
-        if result.shape == (1,):
-            return result.dtype.type(result[0])
-
-        return result
-
-    return numpy.argmax(in_array1, axis, out)
+    return call_origin(numpy.argmax, x1, axis, out)
 
 
-def argmin(in_array1, axis=None, out=None):
+def argmin(x1, axis=None, out=None):
     """
     Returns the indices of the minimum values along an axis.
 
@@ -152,20 +151,38 @@ def argmin(in_array1, axis=None, out=None):
 
     """
 
-    is_dparray1 = isinstance(in_array1, dparray)
-
-    if (not use_origin_backend(in_array1) and is_dparray1):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
         if axis is not None:
-            checker_throw_value_error("argmin", "axis", type(axis), None)
-        if out is not None:
-            checker_throw_value_error("argmin", "out", type(out), None)
+            pass
+        elif out is not None:
+            pass
+        else:
+            result_obj = dpnp_argmin(x1_desc)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
-        result = dpnp_argmin(in_array1)
+            return result
 
-        # scalar returned
-        if result.shape == (1,):
-            return result.dtype.type(result[0])
+    return call_origin(numpy.argmin, x1, axis, out)
 
-        return result
 
-    return numpy.argmin(in_array1, axis, out)
+def searchsorted(a, v, side='left', sorter=None):
+    """
+    Find indices where elements should be inserted to maintain order.
+
+    For full documentation refer to :obj:`numpy.searchsorted`.
+
+    """
+
+    return call_origin(numpy.where, a, v, side, sorter)
+
+
+def where(condition, x=None, y=None):
+    """
+    Find indices where elements should be inserted to maintain order.
+
+    For full documentation refer to :obj:`numpy.searchsorted`.
+
+    """
+
+    return call_origin(numpy.where, condition, x, y)

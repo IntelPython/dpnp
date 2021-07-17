@@ -37,6 +37,28 @@ def test_all(type, shape):
         dpnp_res = ia.all()
         numpy.testing.assert_allclose(dpnp_res, np_res)
 
+@pytest.mark.parametrize("type",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=['float64', 'float32', 'int64', 'int32'])
+def test_allclose(type):
+
+    a = numpy.random.rand(10)
+    b = a + numpy.random.rand(10) * 1e-8
+
+    dpnp_a = dpnp.array(a, dtype=type)
+    dpnp_b = dpnp.array(b, dtype=type)
+
+    np_res = numpy.allclose(a, b)
+    dpnp_res = dpnp.allclose(dpnp_a, dpnp_b)
+    numpy.testing.assert_allclose(dpnp_res, np_res)
+
+    a[0] = numpy.inf
+
+    dpnp_a = dpnp.array(a)
+
+    np_res = numpy.allclose(a, b)
+    dpnp_res = dpnp.allclose(dpnp_a, dpnp_b)
+    numpy.testing.assert_allclose(dpnp_res, np_res)
 
 @pytest.mark.parametrize("type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.bool, numpy.bool_],

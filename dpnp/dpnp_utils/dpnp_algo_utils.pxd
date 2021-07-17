@@ -29,11 +29,7 @@ from libcpp cimport bool as cpp_bool
 from libcpp.vector cimport vector
 
 from dpnp.dparray cimport dparray, dparray_shape_type
-from dpnp.dpnp_algo cimport(DPNPFuncType,
-                            DPNPFuncName,
-                            get_dpnp_function_ptr,
-                            dpnp_dtype_to_DPNPFuncType,
-                            dpnp_DPNPFuncType_to_dtype)
+from dpnp.dpnp_algo.dpnp_algo cimport DPNPFuncType, DPNPFuncName
 
 
 cpdef checker_throw_runtime_error(function_name, message)
@@ -81,7 +77,7 @@ Return:
 cpdef tuple _object_to_tuple(object obj)
 cdef int _normalize_order(order, cpp_bool allow_k=*) except? 0
 
-cpdef dparray_shape_type normalize_axis(dparray_shape_type axis, size_t shape_size)
+cpdef dparray_shape_type normalize_axis(object axis, size_t shape_size)
 """
 Conversion of the transformation shape axis [-1, 0, 1] into [2, 0, 1] where numbers are `id`s of array shape axis
 """

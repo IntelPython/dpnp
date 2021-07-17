@@ -23,7 +23,16 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-// clang++ -g -fPIC examples/example8.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example8
+/**
+ * Example 9.
+ *
+ * TODO explanation of the example
+ *
+ * Possible compile line:
+ * . /opt/intel/oneapi/setvars.sh
+ * g++ -g dpnp/backend/examples/example8.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example8
+ *
+ */
 #include <iostream>
 
 #include "dpnp_iface.hpp"

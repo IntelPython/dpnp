@@ -39,12 +39,14 @@
 #define BACKEND_PSTL_H
 
 #pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-local-typedef"
-#pragma clang diagnostic ignored "-Wunknown-pragmas"
-#pragma clang diagnostic ignored "-Wsign-compare"
-#pragma clang diagnostic ignored "-Wunused-variable"
-#pragma clang diagnostic ignored "-Wunused-parameter"
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#pragma clang diagnostic ignored "-Wreorder-ctor"
 #pragma clang diagnostic ignored "-Wshadow"
+#pragma clang diagnostic ignored "-Wsign-compare"
+#pragma clang diagnostic ignored "-Wunknown-pragmas"
+#pragma clang diagnostic ignored "-Wunused-local-typedef"
+#pragma clang diagnostic ignored "-Wunused-parameter"
+#pragma clang diagnostic ignored "-Wunused-variable"
 
 #include <oneapi/dpl/algorithm>
 #include <oneapi/dpl/execution>

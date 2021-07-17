@@ -44,19 +44,14 @@ void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const si
 
     size_t iters = size / (data_size * data_size);
 
+    // math lib func overrides input
+    _DataType* in_a = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(data_size * data_size * sizeof(_DataType)));
+
     for (size_t k = 0; k < iters; ++k)
     {
-        _DataType matrix[data_size * data_size];
-        _DataType result_[data_size * data_size];
-
-        for (size_t t = 0; t < data_size * data_size; ++t)
-        {
-            matrix[t] = in_array[k * (data_size * data_size) + t];
-        }
-
         for (size_t it = 0; it < data_size * data_size; ++it)
         {
-            result_[it] = matrix[it];
+            in_a[it] = in_array[k * (data_size * data_size) + it];
         }
 
         const std::int64_t n = data_size;
@@ -68,7 +63,7 @@ void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const si
 
         _DataType* scratchpad = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(_DataType)));
 
-        event = mkl_lapack::potrf(DPNP_QUEUE, oneapi::mkl::uplo::upper, n, result_, lda, scratchpad, scratchpad_size);
+        event = mkl_lapack::potrf(DPNP_QUEUE, oneapi::mkl::uplo::upper, n, in_a, lda, scratchpad, scratchpad_size);
 
         event.wait();
 
@@ -83,7 +78,7 @@ void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const si
                 }
                 if (arg)
                 {
-                    result_[i * data_size + j] = 0;
+                    in_a[i * data_size + j] = 0;
                 }
             }
         }
@@ -92,9 +87,11 @@ void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const si
 
         for (size_t t = 0; t < data_size * data_size; ++t)
         {
-            result[k * (data_size * data_size) + t] = result_[t];
+            result[k * (data_size * data_size) + t] = in_a[t];
         }
     }
+
+    dpnp_memory_free_c(in_a);
 }
 
 template <typename _DataType>
@@ -418,9 +415,15 @@ void dpnp_qr_c(void* array1_in, void* result1, void* result2, void* result3, siz
     _ComputeDT* geqrf_scratchpad =
         reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(geqrf_scratchpad_size * sizeof(_ComputeDT)));
 
-    event = mkl_lapack::geqrf(DPNP_QUEUE, size_m, size_n, in_a, lda, tau, geqrf_scratchpad, geqrf_scratchpad_size);
+    cl::sycl::vector_class<cl::sycl::event> depends(1);
+    set_barrier_event(DPNP_QUEUE, depends);
+
+    event = mkl_lapack::geqrf(DPNP_QUEUE, size_m, size_n, in_a, lda, tau, geqrf_scratchpad, geqrf_scratchpad_size, depends);
 
     event.wait();
+
+    verbose_print("oneapi::mkl::lapack::geqrf", depends.front(), event);
+
     dpnp_memory_free_c(geqrf_scratchpad);
 
     // R
@@ -447,10 +450,16 @@ void dpnp_qr_c(void* array1_in, void* result1, void* result2, void* result3, siz
     _ComputeDT* orgqr_scratchpad =
         reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(orgqr_scratchpad_size * sizeof(_ComputeDT)));
 
+    depends.clear();
+    set_barrier_event(DPNP_QUEUE, depends);
+
     event =
-        mkl_lapack::orgqr(DPNP_QUEUE, size_m, size_m, nrefl, in_a, lda, tau, orgqr_scratchpad, orgqr_scratchpad_size);
+        mkl_lapack::orgqr(DPNP_QUEUE, size_m, size_m, nrefl, in_a, lda, tau, orgqr_scratchpad, orgqr_scratchpad_size, depends);
 
     event.wait();
+
+    verbose_print("oneapi::mkl::lapack::orgqr", depends.front(), event);
+
     dpnp_memory_free_c(orgqr_scratchpad);
 
     for (size_t i = 0; i < size_m; ++i)

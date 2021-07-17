@@ -32,9 +32,7 @@ and the rest of the library
 
 """
 
-
-from dpnp.dpnp_utils cimport *
-
+# NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
     "dpnp_bitwise_and",
@@ -58,7 +56,7 @@ cpdef dparray dpnp_bitwise_xor(object x1_obj, object x2_obj, object dtype=None, 
     return call_fptr_2in_1out(DPNP_FN_BITWISE_XOR, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
-cpdef dparray dpnp_invert(dparray arr):
+cpdef dparray dpnp_invert(dpnp_descriptor arr):
     return call_fptr_1in_1out(DPNP_FN_INVERT, arr, arr.shape)
 
 
