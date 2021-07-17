@@ -375,6 +375,10 @@ Functions</h2></td></tr>
 <tr class="memitem:gaf3ec875066d5775cc587a463763c8d3d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaf3ec875066d5775cc587a463763c8d3d">dpnp_all_c</a> (const void *array, void *result, const size_t size)</td></tr>
 <tr class="memdesc:gaf3ec875066d5775cc587a463763c8d3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether all array elements along a given axis evaluate to True.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gaf3ec875066d5775cc587a463763c8d3d">More...</a><br /></td></tr>
 <tr class="separator:gaf3ec875066d5775cc587a463763c8d3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9e77e2253740e3e751840046c7c7b75d"><td class="memTemplParams" colspan="2">template&lt;typename _DataType1 , typename _DataType2 , typename _ResultType &gt; </td></tr>
+<tr class="memitem:ga9e77e2253740e3e751840046c7c7b75d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga9e77e2253740e3e751840046c7c7b75d">dpnp_allclose_c</a> (const void *array1_in, const void *array2_in, void *result1, const size_t size, double rtol, double atol)</td></tr>
+<tr class="memdesc:ga9e77e2253740e3e751840046c7c7b75d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether all array elements along a given axis evaluate to True.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga9e77e2253740e3e751840046c7c7b75d">More...</a><br /></td></tr>
+<tr class="separator:ga9e77e2253740e3e751840046c7c7b75d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9956e863601302bb6c3e24c764aa90ae"><td class="memTemplParams" colspan="2">template&lt;typename _DataType , typename _ResultType &gt; </td></tr>
 <tr class="memitem:ga9956e863601302bb6c3e24c764aa90ae"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga9956e863601302bb6c3e24c764aa90ae">dpnp_any_c</a> (const void *array, void *result, const size_t size)</td></tr>
 <tr class="memdesc:ga9956e863601302bb6c3e24c764aa90ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Test whether any array element along a given axis evaluates to True.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga9956e863601302bb6c3e24c764aa90ae">More...</a><br /></td></tr>
@@ -922,6 +926,73 @@ template&lt;typename _DataType , typename _ResultType &gt; </div>
     <tr><td class="paramdir">[in]</td><td class="paramname">array</td><td>Input array. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of input elements in <code>array</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga9e77e2253740e3e751840046c7c7b75d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga9e77e2253740e3e751840046c7c7b75d">&#9670;&nbsp;</a></span>dpnp_allclose_c()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename _DataType1 , typename _DataType2 , typename _ResultType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void dpnp_allclose_c </td>
+          <td>(</td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>array1_in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>array2_in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>result1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>rtol</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>atol</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Test whether all array elements along a given axis evaluate to True. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">array1_in</td><td>First input array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">array2_in</td><td>Second input array. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result1</td><td>Output array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of input elements in <code>array</code>. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rtol_val</td><td>The relative tolerance parameter. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">atol_val</td><td>The absolute tolerance parameter. </td></tr>
   </table>
   </dd>
 </dl>
