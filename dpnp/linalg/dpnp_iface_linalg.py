@@ -392,8 +392,7 @@ def norm(input, ord=None, axis=None, keepdims=False):
     return call_origin(numpy.linalg.norm, input, ord, axis, keepdims)
 
 
-#linalg.qr(a, mode='reduced')
-def qr(a, mode='complete'):
+def qr(x1, mode='reduced'):
     """
     Compute the qr factorization of a matrix.
 
@@ -409,15 +408,18 @@ def qr(a, mode='complete'):
 
     """
 
-    if not use_origin_backend(a):
-        if not isinstance(a, dparray):
+    if not use_origin_backend(x1):
+        if not isinstance(x1, dparray):
             pass
-        elif not mode == 'complete':
+        elif mode != 'reduced':
             pass
         else:
-            return dpnp_qr(a, mode)
+            # I see something wrong with it. it is couse SIGSEGV in 1 of 10 test times
+            res_q, res_r = dpnp_qr(x1, mode)
 
-    return call_origin(numpy.linalg.qr, a, mode)
+            return (res_q, res_r)
+
+    return call_origin(numpy.linalg.qr, x1, mode)
 
 
 def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
