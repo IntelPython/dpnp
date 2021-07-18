@@ -238,8 +238,8 @@ cpdef dparray dpnp_flatten(dparray array1)
 """
 Internal functions
 """
-cpdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype)
-cpdef dpnp_DPNPFuncType_to_dtype(size_t type)
+cdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype)
+cdef dpnp_DPNPFuncType_to_dtype(size_t type)
 
 
 """
