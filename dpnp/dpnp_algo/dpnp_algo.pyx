@@ -198,7 +198,7 @@ cpdef dpnp_queue_is_cpu():
 """
 Internal functions
 """
-cpdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype):
+cdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype):
 
     if dtype in [numpy.float64, 'float64']:
         return DPNP_FT_DOUBLE
@@ -215,7 +215,7 @@ cpdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype):
     else:
         utils.checker_throw_type_error("dpnp_dtype_to_DPNPFuncType", dtype)
 
-cpdef dpnp_DPNPFuncType_to_dtype(size_t type):
+cdef dpnp_DPNPFuncType_to_dtype(size_t type):
     """
     Type 'size_t' used instead 'DPNPFuncType' because Cython has lack of Enum support (0.29)
     TODO needs to use DPNPFuncType here
