@@ -331,7 +331,7 @@ cpdef dpnp_nansum(object x1):
     # return dpnp_sum(result)
 
     result_desc = dpnp.get_dpnp_descriptor(result)  # TODO remove it later
-    sum_result = dpnp_sum(result_desc)
+    sum_result = dpnp_sum(result_desc).get_pyobj()
     return x1.dtype.type(sum_result[0])
 
 
@@ -387,7 +387,7 @@ cpdef dparray dpnp_subtract(object x1_obj, object x2_obj, object dtype=None, dpa
     return call_fptr_2in_1out(DPNP_FN_SUBTRACT, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
-cpdef dparray dpnp_sum(utils.dpnp_descriptor input, object axis=None, object dtype=None, dparray out=None, cpp_bool keepdims=False, object initial=None, object where=True):
+cpdef utils.dpnp_descriptor dpnp_sum(utils.dpnp_descriptor input, object axis=None, object dtype=None, dparray out=None, cpp_bool keepdims=False, object initial=None, object where=True):
 
     cdef dparray_shape_type input_shape = input.shape
     cdef DPNPFuncType input_c_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
@@ -401,10 +401,10 @@ cpdef dparray dpnp_sum(utils.dpnp_descriptor input, object axis=None, object dty
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_SUM, input_c_type, result_c_type)
 
     """ Create result array """
-    cdef dparray result = utils.create_output_array(result_shape, result_c_type, out)
-    cdef dpnp_reduction_c_t func = <dpnp_reduction_c_t > kernel_data.ptr
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, result_c_type, out)
 
     """ Call FPTR interface function """
+    cdef dpnp_reduction_c_t func = <dpnp_reduction_c_t > kernel_data.ptr
     func(result.get_data(), input.get_data(), < size_t * >input_shape.data(), input_shape.size(), axis_shape.data(), axis_shape.size(), NULL, NULL)
 
     return result

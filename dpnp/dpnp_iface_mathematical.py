@@ -1538,7 +1538,7 @@ def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, where
         elif where is not True:
             pass
         else:
-            result_obj = dpnp_sum(x1_desc, axis, dtype, out, keepdims, initial, where)
+            result_obj = dpnp_sum(x1_desc, axis, dtype, out, keepdims, initial, where).get_pyobj()
             result = dpnp.convert_single_elem_array_to_scalar(result_obj, keepdims)
 
             return result

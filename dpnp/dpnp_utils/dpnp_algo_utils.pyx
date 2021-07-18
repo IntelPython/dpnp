@@ -342,6 +342,13 @@ cdef dparray create_output_array(dparray_shape_type output_shape, DPNPFuncType c
 
     return result
 
+cdef dpnp_descriptor create_output_descriptor(dparray_shape_type output_shape, DPNPFuncType c_type, object requested_out):
+    result = create_output_array(output_shape, c_type, requested_out)
+
+    cdef dpnp_descriptor result_desc = dpnp_descriptor(result)
+
+    return result_desc
+
 
 cpdef nd2dp_array(arr):
     """Convert ndarray to dparray"""
@@ -440,6 +447,7 @@ cpdef cpp_bool use_origin_backend(input1=None, size_t compute_size=0):
 cdef class dpnp_descriptor:
     def __init__(self, obj):
         """ Initialze variables """
+        self.origin_pyobj = None
         self.descriptor = None
         self.dpnp_descriptor_data_size = 0
         self.dpnp_descriptor_is_scalar = True
@@ -452,6 +460,8 @@ cdef class dpnp_descriptor:
         if self.descriptor["version"] != 3:
             return
 
+        self.origin_pyobj = obj
+
         """ array size calculation """
         cdef Py_ssize_t shape_it = 0
         self.dpnp_descriptor_data_size = 1
@@ -461,7 +471,7 @@ cdef class dpnp_descriptor:
                 raise ValueError(f"{ERROR_PREFIX} dpnp_descriptor::__init__() invalid value {shape_it} in 'shape'")
             self.dpnp_descriptor_data_size *= shape_it
 
-        """ set scalar propery """
+        """ set scalar property """
         self.dpnp_descriptor_is_scalar = False
 
     @property
@@ -535,6 +545,9 @@ cdef class dpnp_descriptor:
         }
 
         return interface_dict
+
+    def get_pyobj(self):
+        return self.origin_pyobj
 
     cdef void * get_data(self):
         cdef long val = self.data
