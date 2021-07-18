@@ -42,7 +42,6 @@ it contains:
 import math
 
 from dpnp.dpnp_algo import *
-from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 import dpnp
 
@@ -82,7 +81,7 @@ def erf(in_array1):
     if x1_desc:
         return dpnp_erf(x1_desc)
 
-    result = dparray(in_array1.shape, dtype=in_array1.dtype)
+    result = create_output_descriptor_py(in_array1.shape, in_array1.dtype, None).get_pyobj()
     for i in range(result.size):
         result[i] = math.erf(in_array1[i])
 
