@@ -53,6 +53,7 @@ __all__ = [
     "checker_throw_runtime_error",
     "checker_throw_type_error",
     "checker_throw_value_error",
+    "create_output_descriptor_py",
     "dp2nd_array",
     "dpnp_descriptor",
     "get_axis_indeces",
@@ -133,6 +134,12 @@ cpdef checker_throw_value_error(function_name, param_name, param, expected):
     err_msg = f"{ERROR_PREFIX} in function {function_name}() paramenter '{param_name}'"
     err_msg += f" expected `{expected}`, but '{param}' provided"
     raise ValueError(err_msg)
+
+
+cpdef dpnp_descriptor create_output_descriptor_py(dparray_shape_type output_shape, object d_type, object requested_out):
+    cdef DPNPFuncType c_type = dpnp_dtype_to_DPNPFuncType(d_type)
+
+    return create_output_descriptor(output_shape, c_type, requested_out)
 
 
 cpdef dp2nd_array(arr):
