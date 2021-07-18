@@ -31,7 +31,7 @@ bool _is_verbose_mode_init = false;
 
 bool is_verbose_mode()
 {
-    if(!_is_verbose_mode_init)
+    if (!_is_verbose_mode_init)
     {
         _is_verbose_mode = false;
         const char* env_var = std::getenv("DPNP_VERBOSE");
@@ -46,7 +46,7 @@ bool is_verbose_mode()
 
 class barrierKernelClass;
 
-void set_barrier_event(cl::sycl::queue queue, sycl::vector_class<sycl::event> & depends)
+void set_barrier_event(cl::sycl::queue queue, sycl::vector_class<sycl::event>& depends)
 {
     if (is_verbose_mode())
     {
@@ -62,11 +62,7 @@ void verbose_print(std::string header, cl::sycl::event first_event, cl::sycl::ev
     {
         auto first_event_end = first_event.get_profiling_info<sycl::info::event_profiling::command_end>();
         auto last_event_end = last_event.get_profiling_info<sycl::info::event_profiling::command_end>();
-        std::cout << "DPNP_VERBOSE "
-                  << header
-                  << " Time: "
-                  << (last_event_end - first_event_end)/1.0e9
-                  << " s"
+        std::cout << "DPNP_VERBOSE " << header << " Time: " << (last_event_end - first_event_end) / 1.0e9 << " s"
                   << std::endl;
     }
 }

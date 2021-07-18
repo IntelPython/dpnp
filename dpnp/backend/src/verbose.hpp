@@ -30,7 +30,7 @@
 #include <CL/sycl.hpp>
 
 bool is_verbose_mode();
-void set_barrier_event(cl::sycl::queue queue, sycl::vector_class<sycl::event> & depends);
+void set_barrier_event(cl::sycl::queue queue, sycl::vector_class<sycl::event>& depends);
 void verbose_print(std::string header, cl::sycl::event first_event, cl::sycl::event last_event);
 
 #endif // VERBOSE_H

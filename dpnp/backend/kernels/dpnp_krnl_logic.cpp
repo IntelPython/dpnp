@@ -75,7 +75,8 @@ template <typename _DataType1, typename _DataType2, typename _ResultType>
 class dpnp_allclose_c_kernel;
 
 template <typename _DataType1, typename _DataType2, typename _ResultType>
-void dpnp_allclose_c(const void* array1_in, const void* array2_in, void* result1, const size_t size, double rtol_val, double atol_val)
+void dpnp_allclose_c(
+    const void* array1_in, const void* array2_in, void* result1, const size_t size, double rtol_val, double atol_val)
 {
     if (!array1_in || !result1)
     {
@@ -99,22 +100,20 @@ void dpnp_allclose_c(const void* array1_in, const void* array2_in, void* result1
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
         size_t i = global_id[0];
 
-        if (std::abs(array1[i] - array2[i]) > (atol_val + rtol_val * std::abs(array2[i]))){
-            
-            result[0]= false;
-
+        if (std::abs(array1[i] - array2[i]) > (atol_val + rtol_val * std::abs(array2[i])))
+        {
+            result[0] = false;
         }
-
     };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
-        cgh.parallel_for<class dpnp_allclose_c_kernel<_DataType1, _DataType2, _ResultType>>(gws, kernel_parallel_for_func);
+        cgh.parallel_for<class dpnp_allclose_c_kernel<_DataType1, _DataType2, _ResultType>>(gws,
+                                                                                            kernel_parallel_for_func);
     };
 
     event = DPNP_QUEUE.submit(kernel_func);
 
     event.wait();
-
 }
 
 template <typename _DataType, typename _ResultType>
