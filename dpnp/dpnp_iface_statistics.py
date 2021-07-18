@@ -43,7 +43,6 @@ it contains:
 import numpy
 
 from dpnp.dpnp_algo import *
-from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 import dpnp
 
@@ -299,7 +298,7 @@ def max(x1, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        # Negative values in 'shape' are not allowed in dparray
+        # Negative values in 'shape' are not allowed in input array
         # 306-322 check on negative and duplicate axis
         isaxis = True
         if axis is not None:
