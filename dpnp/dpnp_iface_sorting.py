@@ -92,15 +92,15 @@ def argsort(in_array1, axis=-1, kind=None, order=None):
     x1_desc = dpnp.get_dpnp_descriptor(in_array1)
     if x1_desc:
         if axis != -1:
-            checker_throw_value_error("argsort", "axis", axis, -1)
-        if kind is not None:
-            checker_throw_value_error("argsort", "kind", type(kind), None)
-        if order is not None:
-            checker_throw_value_error("argsort", "order", type(order), None)
+            pass
+        elif kind is not None:
+            pass
+        elif order is not None:
+            pass
+        else:
+            return dpnp_argsort(x1_desc).get_pyobj()
 
-        return dpnp_argsort(x1_desc)
-
-    return numpy.argsort(in_array1, axis, kind, order)
+    return call_origin(numpy.argsort, in_array1, axis, kind, order)
 
 
 def partition(x1, kth, axis=-1, kind='introselect', order=None):
@@ -201,6 +201,6 @@ def sort(x1, **kwargs):
         if x1_desc.ndim != 1:
             pass
         else:
-            return dpnp_sort(x1_desc)
+            return dpnp_sort(x1_desc).get_pyobj()
 
     return call_origin(numpy.sort, x1, **kwargs)
