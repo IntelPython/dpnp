@@ -204,7 +204,7 @@ def add(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_add(x1_desc, x2_desc, dtype=dtype, out=out, where=where)
+            return dpnp_add(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
 
     return call_origin(numpy.add, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -280,7 +280,7 @@ def ceil(x1, out=None, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and not kwargs:
-        return dpnp_ceil(x1_desc, out)
+        return dpnp_ceil(x1_desc, out).get_pyobj()
 
     return call_origin(numpy.ceil, x1, out=out, **kwargs)
 
@@ -445,7 +445,7 @@ def cumprod(x1, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and not kwargs:
-        return dpnp_cumprod(x1_desc)
+        return dpnp_cumprod(x1_desc).get_pyobj()
 
     return call_origin(numpy.cumprod, x1, **kwargs)
 
@@ -479,7 +479,7 @@ def cumsum(x1, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and not kwargs:
-        return dpnp_cumsum(x1_desc)
+        return dpnp_cumsum(x1_desc).get_pyobj()
 
     return call_origin(numpy.cumsum, x1, **kwargs)
 
@@ -561,7 +561,7 @@ def divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_divide(x1_desc, x2_desc, dtype=dtype, out=out, where=where)
+            return dpnp_divide(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
 
     return call_origin(numpy.divide, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -602,7 +602,7 @@ def ediff1d(x1, to_end=None, to_begin=None):
         elif to_end is not None:
             pass
         else:
-            return dpnp_ediff1d(x1_desc)
+            return dpnp_ediff1d(x1_desc).get_pyobj()
 
     return call_origin(numpy.ediff1d, x1, to_end=to_end, to_begin=to_begin)
 
@@ -673,7 +673,7 @@ def floor(x1, out=None, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and not kwargs:
-        return dpnp_floor(x1_desc, out)
+        return dpnp_floor(x1_desc, out).get_pyobj()
 
     return call_origin(numpy.floor, x1, out=out, **kwargs)
 
@@ -843,7 +843,7 @@ def fmod(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_fmod(x1_desc, x2_desc, dtype=dtype, out=out, where=where)
+            return dpnp_fmod(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
 
     return call_origin(numpy.fmod, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -942,7 +942,7 @@ def maximum(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_maximum(x1_desc, x2_desc, dtype=dtype, out=out, where=where)
+            return dpnp_maximum(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
 
     return call_origin(numpy.maximum, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -999,7 +999,7 @@ def minimum(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_minimum(x1_desc, x2_desc, dtype=dtype, out=out, where=where)
+            return dpnp_minimum(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
 
     return call_origin(numpy.minimum, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -1101,7 +1101,7 @@ def multiply(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_multiply(x1_desc, x2_desc, dtype=dtype, out=out, where=where)
+            return dpnp_multiply(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
 
     return call_origin(numpy.multiply, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -1265,7 +1265,7 @@ def negative(x1, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and not kwargs:
-        return dpnp_negative(x1_desc)
+        return dpnp_negative(x1_desc).get_pyobj()
 
     return call_origin(numpy.negative, x1, **kwargs)
 
@@ -1325,7 +1325,7 @@ def power(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_power(x1_desc, x2_desc, dtype=dtype, out=out, where=where)
+            return dpnp_power(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
 
     return call_origin(numpy.power, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -1405,7 +1405,7 @@ def remainder(x1, x2, **kwargs):
         elif x1_desc.shape != x2_desc.shape:
             pass
         else:
-            return dpnp_remainder(x1_desc, x2_desc)
+            return dpnp_remainder(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.remainder, x1, x2, **kwargs)
 
@@ -1504,7 +1504,7 @@ def subtract(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_subtract(x1_desc, x2_desc, dtype=dtype, out=out, where=where)
+            return dpnp_subtract(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
 
     return call_origin(numpy.subtract, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -1642,6 +1642,6 @@ def trunc(x1, out=None, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and not kwargs:
-        return dpnp_trunc(x1_desc, out)
+        return dpnp_trunc(x1_desc, out).get_pyobj()
 
     return call_origin(numpy.trunc, x1, out=out, **kwargs)

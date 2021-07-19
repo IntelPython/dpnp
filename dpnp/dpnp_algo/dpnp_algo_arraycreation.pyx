@@ -62,11 +62,13 @@ ctypedef void(*custom_indexing_1out_func_ptr_t)(void * , const size_t , const si
 ctypedef void(*fptr_dpnp_trace_t)(const void *, void * , const size_t * , const size_t)
 
 
-cpdef dparray dpnp_copy(utils.dpnp_descriptor x1, order, subok):
+cpdef utils.dpnp_descriptor dpnp_copy(utils.dpnp_descriptor x1, order, subok):
     return call_fptr_1in_1out(DPNP_FN_COPY, x1, x1.shape)
 
 
-cpdef dparray dpnp_diag(dparray v, int k):
+cpdef utils.dpnp_descriptor dpnp_diag(utils.dpnp_descriptor v, int k):
+    cdef dparray_shape_type input_shape = v.shape
+
     if v.ndim == 1:
         n = v.shape[0] + abs(k)
 
@@ -78,7 +80,8 @@ cpdef dparray dpnp_diag(dparray v, int k):
 
         shape_result = (n, )
 
-    cdef dparray result = dpnp.zeros(shape_result, dtype=v.dtype)
+    result_obj = dpnp.zeros(shape_result, dtype=v.dtype) # TODO need to call dpnp_zero instead 
+    cdef utils.dpnp_descriptor result = dpnp_descriptor(result_obj)
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(v.dtype)
 
@@ -87,8 +90,9 @@ cpdef dparray dpnp_diag(dparray v, int k):
     result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
 
     cdef custom_1in_1out_func_ptr_t func = <custom_1in_1out_func_ptr_t > kernel_data.ptr
+    cdef dparray_shape_type result_shape = result.shape
 
-    func(v.get_data(), result.get_data(), k, < size_t * > v._dparray_shape.data(), < size_t * > result._dparray_shape.data(), v.ndim, result.ndim)
+    func(v.get_data(), result.get_data(), k, < size_t * > input_shape.data(), < size_t * > result_shape.data(), v.ndim, result.ndim)
 
     return result
 
@@ -258,11 +262,11 @@ cpdef list dpnp_meshgrid(xi, copy, sparse, indexing):
     return result
 
 
-cpdef dparray dpnp_ones(result_shape, result_dtype):
+cpdef utils.dpnp_descriptor dpnp_ones(result_shape, result_dtype):
     return call_fptr_1out(DPNP_FN_ONES, utils._object_to_tuple(result_shape), result_dtype)
 
 
-cpdef dparray dpnp_ones_like(result_shape, result_dtype):
+cpdef utils.dpnp_descriptor dpnp_ones_like(result_shape, result_dtype):
     return call_fptr_1out(DPNP_FN_ONES_LIKE, utils._object_to_tuple(result_shape), result_dtype)
 
 
@@ -368,9 +372,9 @@ cpdef dparray dpnp_vander(dparray x1, int N, int increasing):
     return result
 
 
-cpdef dparray dpnp_zeros(result_shape, result_dtype):
+cpdef utils.dpnp_descriptor dpnp_zeros(result_shape, result_dtype):
     return call_fptr_1out(DPNP_FN_ZEROS, utils._object_to_tuple(result_shape), result_dtype)
 
 
-cpdef dparray dpnp_zeros_like(result_shape, result_dtype):
+cpdef utils.dpnp_descriptor dpnp_zeros_like(result_shape, result_dtype):
     return call_fptr_1out(DPNP_FN_ZEROS_LIKE, utils._object_to_tuple(result_shape), result_dtype)
