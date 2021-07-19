@@ -200,7 +200,7 @@ cpdef utils.dpnp_descriptor dpnp_divide(object x1_obj, object x2_obj, object dty
 cpdef utils.dpnp_descriptor dpnp_ediff1d(utils.dpnp_descriptor x1):
 
     if x1.size <= 1:
-        return utils.dpnp_descriptor(dpnp.empty(0, dtype=x1.dtype)) # TODO need to call dpnp_empty instead
+        return utils.dpnp_descriptor(dpnp.empty(0, dtype=x1.dtype))  # TODO need to call dpnp_empty instead
 
     return call_fptr_1in_1out(DPNP_FN_EDIFF1D, x1, (x1.size - 1,))
 

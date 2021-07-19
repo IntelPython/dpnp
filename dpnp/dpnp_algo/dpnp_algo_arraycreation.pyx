@@ -80,7 +80,7 @@ cpdef utils.dpnp_descriptor dpnp_diag(utils.dpnp_descriptor v, int k):
 
         shape_result = (n, )
 
-    result_obj = dpnp.zeros(shape_result, dtype=v.dtype) # TODO need to call dpnp_zero instead 
+    result_obj = dpnp.zeros(shape_result, dtype=v.dtype)  # TODO need to call dpnp_zero instead
     cdef utils.dpnp_descriptor result = dpnp_descriptor(result_obj)
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(v.dtype)

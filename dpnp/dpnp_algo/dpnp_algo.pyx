@@ -320,7 +320,7 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out(DPNPFuncName fptr_name,
             utils.checker_throw_value_error(func_name, 'out.dtype', out.dtype, result_type)
         if out.shape != result_shape:
             utils.checker_throw_value_error(func_name, 'out.shape', out.shape, result_shape)
-        
+
         result = dpnp_descriptor(out)
 
     """ Call FPTR function """
