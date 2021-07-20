@@ -55,11 +55,11 @@ __all__ += [
 ]
 
 
-ctypedef void(*custom_logic_1in_1out_func_ptr_t)(void * , void * , const size_t)
-ctypedef void(*custom_allclose_1in_1out_func_ptr_t)(void * , void * , void *, const size_t, double, double)
+ctypedef void(*custom_logic_1in_1out_func_ptr_t)(void *, void * , const size_t)
+ctypedef void(*custom_allclose_1in_1out_func_ptr_t)(void * , void * , void * , const size_t, double, double)
 
 
-cpdef dparray dpnp_all(dpnp_descriptor array1):
+cpdef dparray dpnp_all(utils.dpnp_descriptor array1):
     cdef dparray result = dparray((1,), dtype=numpy.bool)
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
@@ -73,7 +73,7 @@ cpdef dparray dpnp_all(dpnp_descriptor array1):
     return result
 
 
-cpdef dparray dpnp_allclose(dpnp_descriptor array1, dpnp_descriptor array2, double rtol_val, double atol_val):
+cpdef dparray dpnp_allclose(utils.dpnp_descriptor array1, utils.dpnp_descriptor array2, double rtol_val, double atol_val):
     cdef dparray result = dparray((1,), dtype=numpy.bool)
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
@@ -88,7 +88,7 @@ cpdef dparray dpnp_allclose(dpnp_descriptor array1, dpnp_descriptor array2, doub
     return result
 
 
-cpdef dparray dpnp_any(dpnp_descriptor array1):
+cpdef dparray dpnp_any(utils.dpnp_descriptor array1):
     cdef dparray result = dparray((1,), dtype=numpy.bool)
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
@@ -102,45 +102,32 @@ cpdef dparray dpnp_any(dpnp_descriptor array1):
     return result
 
 
-cpdef dparray dpnp_equal(object array1, object input2):
-    cdef dparray result = dparray(array1.shape, dtype=numpy.bool)
-
-    if isinstance(input2, int):
-        for i in range(result.size):
-            result[i] = numpy.bool(array1[i] == input2)
-    else:
-        for i in range(result.size):
-            result[i] = numpy.bool(array1[i] == input2[i])
+cpdef utils.dpnp_descriptor dpnp_equal(utils.dpnp_descriptor array1, utils.dpnp_descriptor input2):
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(array1.shape,
+                                                                             dpnp.bool,
+                                                                             None)
+    for i in range(result.size):
+        result.get_pyobj()[i] = dpnp.bool(array1.get_pyobj()[i] == input2.get_pyobj()[i])
 
     return result
 
 
-cpdef dparray dpnp_greater(object input1, object input2):
-    input2_is_scalar = dpnp.isscalar(input2)
-
-    cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
-
-    if input2_is_scalar:
-        for i in range(result.size):
-            result[i] = dpnp.bool(input1[i] > input2)
-    else:
-        for i in range(result.size):
-            result[i] = dpnp.bool(input1[i] > input2[i])
+cpdef utils.dpnp_descriptor dpnp_greater(utils.dpnp_descriptor input1, utils.dpnp_descriptor input2):
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
+                                                                             dpnp.bool,
+                                                                             None)
+    for i in range(result.size):
+        result.get_pyobj()[i] = dpnp.bool(input1.get_pyobj()[i] > input2.get_pyobj()[i])
 
     return result
 
 
-cpdef dparray dpnp_greater_equal(object input1, object input2):
-    input2_is_scalar = dpnp.isscalar(input2)
-
-    cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
-
-    if input2_is_scalar:
-        for i in range(result.size):
-            result[i] = dpnp.bool(input1[i] >= input2)
-    else:
-        for i in range(result.size):
-            result[i] = dpnp.bool(input1[i] >= input2[i])
+cpdef utils.dpnp_descriptor dpnp_greater_equal(utils.dpnp_descriptor input1, utils.dpnp_descriptor input2):
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
+                                                                             dpnp.bool,
+                                                                             None)
+    for i in range(result.size):
+        result.get_pyobj()[i] = dpnp.bool(input1.get_pyobj()[i] >= input2.get_pyobj()[i])
 
     return result
 
@@ -185,32 +172,22 @@ cpdef dparray dpnp_isnan(object input1):
     return result
 
 
-cpdef dparray dpnp_less(object input1, object input2):
-    input2_is_scalar = dpnp.isscalar(input2)
-
-    cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
-
-    if input2_is_scalar:
-        for i in range(result.size):
-            result[i] = dpnp.bool(input1[i] < input2)
-    else:
-        for i in range(result.size):
-            result[i] = dpnp.bool(input1[i] < input2[i])
+cpdef utils.dpnp_descriptor dpnp_less(utils.dpnp_descriptor input1, utils.dpnp_descriptor input2):
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
+                                                                             dpnp.bool,
+                                                                             None)
+    for i in range(result.size):
+        result.get_pyobj()[i] = dpnp.bool(input1.get_pyobj()[i] < input2.get_pyobj()[i])
 
     return result
 
 
-cpdef dparray dpnp_less_equal(object input1, object input2):
-    input2_is_scalar = dpnp.isscalar(input2)
-
-    cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
-
-    if input2_is_scalar:
-        for i in range(result.size):
-            result[i] = dpnp.bool(input1[i] <= input2)
-    else:
-        for i in range(result.size):
-            result[i] = dpnp.bool(input1[i] <= input2[i])
+cpdef utils.dpnp_descriptor dpnp_less_equal(utils.dpnp_descriptor input1, utils.dpnp_descriptor input2):
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
+                                                                             dpnp.bool,
+                                                                             None)
+    for i in range(result.size):
+        result.get_pyobj()[i] = dpnp.bool(input1.get_pyobj()[i] <= input2.get_pyobj()[i])
 
     return result
 
@@ -251,16 +228,11 @@ cpdef dparray dpnp_logical_xor(object input1, object input2):
     return result
 
 
-cpdef dparray dpnp_not_equal(object input1, object input2):
-    input2_is_scalar = dpnp.isscalar(input2)
-
-    cdef dparray result = dparray(input1.shape, dtype=numpy.bool)
-
-    if input2_is_scalar:
-        for i in range(result.size):
-            result[i] = dpnp.bool(input1[i] != input2)
-    else:
-        for i in range(result.size):
-            result[i] = dpnp.bool(input1[i] != input2[i])
+cpdef utils.dpnp_descriptor dpnp_not_equal(utils.dpnp_descriptor input1, utils.dpnp_descriptor input2):
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape,
+                                                                             dpnp.bool,
+                                                                             None)
+    for i in range(result.size):
+        result.get_pyobj()[i] = dpnp.bool(input1.get_pyobj()[i] != input2.get_pyobj()[i])
 
     return result

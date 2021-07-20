@@ -246,7 +246,7 @@ def equal(x1, x2):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     x2_desc = dpnp.get_dpnp_descriptor(x2)
-    if 0 and x1_desc and x2_desc:
+    if x1_desc and x2_desc:
         if x1_desc.size != x2_desc.size:
             pass
         elif x1_desc.dtype != x2_desc.dtype:
@@ -254,7 +254,7 @@ def equal(x1, x2):
         elif x1_desc.shape != x2_desc.shape:
             pass
         else:
-            return dpnp_equal(x1_desc, x2_desc)
+            return dpnp_equal(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.equal, x1, x2)
 
@@ -292,8 +292,13 @@ def greater(x1, x2):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     x2_desc = dpnp.get_dpnp_descriptor(x2)
-    if 0 and x1_desc and x2_desc:
-        return dpnp_greater(x1_desc, x2_desc)
+    if x1_desc and x2_desc:
+        if x1_desc.size < 2:
+            pass
+        elif x2_desc.size < 2:
+            pass
+        else:
+            return dpnp_greater(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.greater, x1, x2)
 
@@ -331,8 +336,13 @@ def greater_equal(x1, x2):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     x2_desc = dpnp.get_dpnp_descriptor(x2)
-    if 0 and x1_desc and x2_desc:
-        return dpnp_greater_equal(x1_desc, x2_desc)
+    if x1_desc and x2_desc:
+        if x1_desc.size < 2:
+            pass
+        elif x2_desc.size < 2:
+            pass
+        else:
+            return dpnp_greater_equal(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.greater_equal, x1, x2)
 
@@ -547,9 +557,15 @@ def less(x1, x2):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     x2_desc = dpnp.get_dpnp_descriptor(x2)
-    if 0 and x1_desc and x2_desc:
-        return dpnp_less(x1_desc, x2_desc)
+    if x1_desc and x2_desc:
+        if x1_desc.size < 2:
+            pass
+        elif x2_desc.size < 2:
+            pass
+        else:
+            return dpnp_less(x1_desc, x2_desc).get_pyobj()
 
+    print("=========call_origin(numpy.less==========")
     return call_origin(numpy.less, x1, x2)
 
 
@@ -586,8 +602,13 @@ def less_equal(x1, x2):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     x2_desc = dpnp.get_dpnp_descriptor(x2)
-    if 0 and x1_desc and x2_desc:
-        return dpnp_less_equal(x1_desc, x2_desc)
+    if x1_desc and x2_desc:
+        if x1_desc.size < 2:
+            pass
+        elif x2_desc.size < 2:
+            pass
+        else:
+            return dpnp_less_equal(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.less_equal, x1, x2)
 
@@ -795,14 +816,14 @@ def not_equal(x1, x2):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     x2_desc = dpnp.get_dpnp_descriptor(x2)
-    is_x1_scalar = dpnp.isscalar(x1)
-    is_x2_scalar = dpnp.isscalar(x2)
-    if 0 and (x1_desc and x2_desc and (x1_desc or is_x1_scalar)) and (x2_desc or is_x2_scalar) and not(is_x1_scalar and is_x2_scalar):
-        if is_x1_scalar:
-            result = dpnp_not_equal(x2_desc, x1_desc)
+    if x1_desc and x2_desc:
+        if x1_desc.size < 2:
+            pass
+        elif x2_desc.size < 2:
+            pass
         else:
-            result = dpnp_not_equal(x1_desc, x2_desc)
+            result = dpnp_not_equal(x1_desc, x2_desc).get_pyobj()
 
-        return result
+            return result
 
     return call_origin(numpy.not_equal, x1, x2)

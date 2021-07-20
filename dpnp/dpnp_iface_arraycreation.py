@@ -145,7 +145,7 @@ def arange(start, stop=None, step=1, dtype=None):
             if step is None:
                 step = 1
 
-            return dpnp_arange(start, stop, step, dtype)
+            return dpnp_arange(start, stop, step, dtype).get_pyobj()
 
     return call_origin(numpy.arange, start, stop=stop, step=step, dtype=dtype)
 
@@ -193,7 +193,10 @@ def array(obj, dtype=None, copy=True, order='C', subok=False, ndmin=0):
 
     """
 
+    # print("=======================")
+    # print(f"x1={obj}")
     if (use_origin_backend(obj)):
+        # print("=========numpy.array==============")
         return numpy.array(obj, dtype=dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)
 
     # if not isinstance(obj, collections.abc.Sequence):
@@ -214,7 +217,27 @@ def array(obj, dtype=None, copy=True, order='C', subok=False, ndmin=0):
     if ndmin != 0:
         checker_throw_value_error("array", "ndmin", ndmin, 0)
 
+    # print("=========dpnp_array==============")
     return dpnp_array(obj, dtype)
+
+
+# def array(x1, dtype=None, copy=True, order='C', subok=False, ndmin=0):
+#     print("=======================")
+#     print(f"x1={x1}")
+#     x1_desc = dpnp.get_dpnp_descriptor(x1)
+#     if x1_desc:
+#         if subok is not False:
+#             pass
+#         elif copy is not True:
+#             pass
+#         elif order != 'C':
+#             pass
+#         elif ndmin != 0:
+#             pass
+#         else:
+#             return dpnp_array(x1, dtype)
+
+#     return call_origin(numpy.array, x1, dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)
 
 
 def asanyarray(a, dtype=None, order='C'):

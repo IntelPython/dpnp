@@ -73,7 +73,7 @@ def call_origin(function, *args, **kwargs):
     Call fallback function for unsupported cases
     """
 
-    # print(f"DPNP call_origin(): Fallback called")
+    # print(f"DPNP call_origin(): Fallback called. \n\t function={function}, \n\t args={args}, \n\t kwargs={kwargs}")
 
     kwargs_out = kwargs.get("out", None)
     if (kwargs_out is not None):
