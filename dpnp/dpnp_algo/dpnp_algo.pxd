@@ -256,17 +256,17 @@ cpdef dpnp_descriptor dpnp_right_shift(object x1_obj, object x2_obj, object dtyp
 """
 Logic functions
 """
-cpdef dparray dpnp_equal(object array1, object input2)
-cpdef dparray dpnp_greater(object input1, object input2)
-cpdef dparray dpnp_greater_equal(object input1, object input2)
+cpdef dpnp_descriptor dpnp_equal(dpnp_descriptor array1, dpnp_descriptor input2)
+cpdef dpnp_descriptor dpnp_greater(dpnp_descriptor input1, dpnp_descriptor input2)
+cpdef dpnp_descriptor dpnp_greater_equal(dpnp_descriptor input1, dpnp_descriptor input2)
 cpdef dparray dpnp_isclose(object input1, object input2, double rtol=*, double atol=*, cpp_bool equal_nan=*)
-cpdef dparray dpnp_less(object input1, object input2)
-cpdef dparray dpnp_less_equal(object input1, object input2)
+cpdef dpnp_descriptor dpnp_less(dpnp_descriptor input1, dpnp_descriptor input2)
+cpdef dpnp_descriptor dpnp_less_equal(dpnp_descriptor input1, dpnp_descriptor input2)
 cpdef dparray dpnp_logical_and(object input1, object input2)
 cpdef dparray dpnp_logical_not(object input1)
 cpdef dparray dpnp_logical_or(object input1, object input2)
 cpdef dparray dpnp_logical_xor(object input1, object input2)
-cpdef dparray dpnp_not_equal(object input1, object input2)
+cpdef dpnp_descriptor dpnp_not_equal(dpnp_descriptor input1, dpnp_descriptor input2)
 
 
 """
@@ -279,8 +279,8 @@ cpdef dparray dpnp_matmul(dpnp_descriptor in_array1, dpnp_descriptor in_array2, 
 """
 Array creation routines
 """
-cpdef dparray dpnp_arange(start, stop, step, dtype)
-cpdef dparray dpnp_array(obj, dtype=*)
+cpdef dpnp_descriptor dpnp_arange(start, stop, step, dtype)
+cpdef dparray dpnp_array(object obj, object dtype=*)
 cpdef dparray dpnp_init_val(shape, dtype, value)
 
 

@@ -35,6 +35,7 @@ and the rest of the library
 from libc.time cimport time, time_t
 import dpnp
 import dpnp.config as config
+import dpnp.dpnp_utils as utils_py
 import numpy
 
 cimport cpython
@@ -74,16 +75,17 @@ ctypedef void(*fptr_dpnp_flatten_t)(const void * , void * , const size_t)
 ctypedef void(*fptr_dpnp_initval_t)(void * , void * , size_t)
 
 
-cpdef dparray dpnp_arange(start, stop, step, dtype):
+cpdef utils.dpnp_descriptor dpnp_arange(start, stop, step, dtype):
     obj_len = int(numpy.ceil((stop - start) / step))
     if obj_len < 0:
         raise ValueError(f"DPNP dpnp_arange(): Negative array size (start={start},stop={stop},step={step})")
 
+    cdef tuple obj_shape = utils._object_to_tuple(obj_len)
+
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ARANGE, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-    cdef dparray result = dparray(obj_len, dtype=result_type)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(obj_shape, kernel_data.return_type, None)
 
     # for i in range(result.size):
     #     result[i] = start + i
@@ -94,7 +96,7 @@ cpdef dparray dpnp_arange(start, stop, step, dtype):
     return result
 
 
-cpdef dparray dpnp_array(obj, dtype=None):
+cpdef dparray dpnp_array(object obj, object dtype=None):
     cdef dparray result
     cdef elem_dtype
     cdef dparray_shape_type obj_shape
