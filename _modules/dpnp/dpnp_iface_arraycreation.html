@@ -299,7 +299,7 @@
             <span class="k">if</span> <span class="n">step</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">step</span> <span class="o">=</span> <span class="mi">1</span>
 
-            <span class="k">return</span> <span class="n">dpnp_arange</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpnp_arange</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span></div>
 
@@ -347,7 +347,10 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="c1"># print(&quot;=======================&quot;)</span>
+    <span class="c1"># print(f&quot;x1={obj}&quot;)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="n">obj</span><span class="p">)):</span>
+        <span class="c1"># print(&quot;=========numpy.array==============&quot;)</span>
         <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="n">ndmin</span><span class="p">)</span>
 
     <span class="c1"># if not isinstance(obj, collections.abc.Sequence):</span>
@@ -368,7 +371,27 @@
     <span class="k">if</span> <span class="n">ndmin</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="s2">&quot;ndmin&quot;</span><span class="p">,</span> <span class="n">ndmin</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
+    <span class="c1"># print(&quot;=========dpnp_array==============&quot;)</span>
     <span class="k">return</span> <span class="n">dpnp_array</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span></div>
+
+
+<span class="c1"># def array(x1, dtype=None, copy=True, order=&#39;C&#39;, subok=False, ndmin=0):</span>
+<span class="c1">#     print(&quot;=======================&quot;)</span>
+<span class="c1">#     print(f&quot;x1={x1}&quot;)</span>
+<span class="c1">#     x1_desc = dpnp.get_dpnp_descriptor(x1)</span>
+<span class="c1">#     if x1_desc:</span>
+<span class="c1">#         if subok is not False:</span>
+<span class="c1">#             pass</span>
+<span class="c1">#         elif copy is not True:</span>
+<span class="c1">#             pass</span>
+<span class="c1">#         elif order != &#39;C&#39;:</span>
+<span class="c1">#             pass</span>
+<span class="c1">#         elif ndmin != 0:</span>
+<span class="c1">#             pass</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             return dpnp_array(x1, dtype)</span>
+
+<span class="c1">#     return call_origin(numpy.array, x1, dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)</span>
 
 
 <div class="viewcode-block" id="asanyarray"><a class="viewcode-back" href="../../reference/generated/dpnp.asanyarray.html#dpnp.asanyarray">[docs]</a><span class="k">def</span> <span class="nf">asanyarray</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
