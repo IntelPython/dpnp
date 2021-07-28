@@ -67,6 +67,7 @@ __all__ = [
     "stack",
     "swapaxes",
     "transpose",
+    "unique",
     "vstack"
 ]
 
@@ -617,6 +618,25 @@ def transpose(x1, axes=None):
         return result
 
     return call_origin(numpy.transpose, x1, axes=axes)
+
+
+def unique(x1, **kwargs):
+    """
+    Find the unique elements of an array.
+
+    For full documentation refer to :obj:`numpy.unique`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 1, 2, 2, 3, 3])
+    >>> res = np.unique(x)
+    >>> [i for i in res]
+    [1, 2, 3]
+
+    """
+
+    return call_origin(numpy.unique, x1, **kwargs)
 
 
 def vstack(tup):

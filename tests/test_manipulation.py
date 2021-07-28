@@ -32,3 +32,21 @@ def test_repeat(arr):
     expected = numpy.repeat(a, 2)
     result = dpnp.repeat(dpnp_a, 2)
     numpy.testing.assert_array_equal(expected, result)
+
+
+@pytest.mark.parametrize("array",
+                         [[1, 2, 3],
+                          [1, 2, 2, 1, 2, 4],
+                          [2, 2, 2, 2],
+                          []],
+                         ids=['[1, 2, 3]',
+                              '[1, 2, 2, 1, 2, 4]',
+                              '[2, 2, 2, 2]',
+                              '[]'])
+def test_unique(array):
+    a = numpy.array(array)
+    ia = dpnp.array(a)
+
+    expected = numpy.unique(a)
+    result = dpnp.unique(ia)
+    numpy.testing.assert_array_equal(expected, result)
