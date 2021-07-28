@@ -51,6 +51,7 @@ __all__ = [
     'amax',
     'amin',
     'average',
+    'bincount',
     'correlate',
     'cov',
     'max',
@@ -59,7 +60,7 @@ __all__ = [
     'min',
     'nanvar',
     'std',
-    'var',
+    'var'
 ]
 
 
@@ -167,6 +168,28 @@ def average(x1, axis=None, weights=None, returned=False):
             return result
 
     return call_origin(numpy.average, x1, axis, weights, returned)
+
+
+def bincount(x1, weights=None, minlength=0):
+    """
+    Count number of occurrences of each value in array of non-negative ints.
+
+    For full documentation refer to :obj:`numpy.bincount`.
+
+    See Also
+    --------
+    :obj:`dpnp.unique` : Find the unique elements of an array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.bincount(np.arange(5))
+    >>> [i for i in x]
+    [1, 1, 1, 1, 1]
+
+    """
+
+    return call_origin(numpy.bincount, x1, weights=weights, minlength=minlength)
 
 
 def correlate(x1, x2, mode='valid'):

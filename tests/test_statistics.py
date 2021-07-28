@@ -72,3 +72,42 @@ def test_nanvar(array):
     expected = numpy.nanvar(a, axis=None, ddof=0)
     result = dpnp.nanvar(ia, axis=None, ddof=0)
     numpy.testing.assert_array_equal(expected, result)
+
+
+class TestBincount:
+
+    @pytest.mark.parametrize("array",
+                             [[1, 2, 3],
+                              [1, 2, 2, 1, 2, 4],
+                              [2, 2, 2, 2]],
+                             ids=['[1, 2, 3]',
+                                  '[1, 2, 2, 1, 2, 4]',
+                                  '[2, 2, 2, 2]'])
+    @pytest.mark.parametrize("minlength",
+                             [0, 1, 3, 5],
+                             ids=['0', '1', '3', '5'])
+    def test_bincount_minlength(self, array, minlength):
+        a = numpy.array(array)
+        ia = dpnp.array(a)
+
+        expected = numpy.bincount(a, minlength=minlength)
+        result = dpnp.bincount(ia, minlength=minlength)
+        numpy.testing.assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("array",
+                             [[1, 2, 2, 1, 2, 4]],
+                             ids=['[1, 2, 2, 1, 2, 4]'])
+    @pytest.mark.parametrize("weights",
+                             [None,
+                              [0.3, 0.5, 0.2, 0.7, 1., -0.6],
+                              [2, 2, 2, 2, 2, 2]],
+                             ids=['None',
+                                  '[0.3, 0.5, 0.2, 0.7, 1., -0.6]',
+                                  '[2, 2, 2, 2, 2, 2]'])
+    def test_bincount_weights(self, array, weights):
+        a = numpy.array(array)
+        ia = dpnp.array(a)
+
+        expected = numpy.bincount(a, weights=weights)
+        result = dpnp.bincount(ia, weights=weights)
+        numpy.testing.assert_array_equal(expected, result)
