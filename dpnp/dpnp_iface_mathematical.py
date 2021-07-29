@@ -56,6 +56,7 @@ __all__ = [
     "ceil",
     "conj",
     "conjugate",
+    "convolve",
     "copysign",
     "cross",
     "cumprod",
@@ -315,6 +316,23 @@ def conjugate(x1, **kwargs):
 
 
 conj = conjugate
+
+
+def convolve(a, v, mode='full'):
+    """
+    Returns the discrete, linear convolution of two one-dimensional sequences.
+
+    For full documentation refer to :obj:`numpy.convolve`.
+
+    Examples
+    --------
+    >>> ca = dpnp.convolve([1, 2, 3], [0, 1, 0.5])
+    >>> print(ca)
+    [0. , 1. , 2.5, 4. , 1.5]
+
+    """
+
+    return call_origin(numpy.convolve, a=a, v=v, mode=mode)
 
 
 def copysign(x1, x2, dtype=None, out=None, where=True, **kwargs):
