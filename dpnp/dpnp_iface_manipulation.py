@@ -631,7 +631,7 @@ def unique(x1, **kwargs):
     >>> import dpnp as np
     >>> x = np.array([1, 1, 2, 2, 3, 3])
     >>> res = np.unique(x)
-    >>> [i for i in res]
+    >>> print(res)
     [1, 2, 3]
 
     """

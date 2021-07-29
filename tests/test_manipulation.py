@@ -44,9 +44,9 @@ def test_repeat(arr):
                               '[2, 2, 2, 2]',
                               '[]'])
 def test_unique(array):
-    a = numpy.array(array)
-    ia = dpnp.array(a)
+    np_a = numpy.array(array)
+    dpnp_a = dpnp.array(array)
 
-    expected = numpy.unique(a)
-    result = dpnp.unique(ia)
+    expected = numpy.unique(np_a)
+    result = dpnp.unique(dpnp_a)
     numpy.testing.assert_array_equal(expected, result)
