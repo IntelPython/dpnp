@@ -9,7 +9,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.cov &mdash; dpnp 0.6.2 documentation</title>
+  <title>dpnp.bincount &mdash; dpnp 0.6.2 documentation</title>
   
 
   
@@ -38,8 +38,8 @@
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.correlate" href="dpnp.correlate.html" />
-    <link rel="prev" title="dpnp.bincount" href="dpnp.bincount.html" /> 
+    <link rel="next" title="dpnp.cov" href="dpnp.cov.html" />
+    <link rel="prev" title="dpnp.nanvar" href="dpnp.nanvar.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -107,8 +107,8 @@
 <li class="toctree-l3 current"><a class="reference internal" href="../statistics.html">Statistical Functions</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../statistics.html#order-statistics">Order statistics</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../statistics.html#means-and-variances">Means and variances</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../statistics.html#histograms">Histograms</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../statistics.html#correlations">Correlations</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../statistics.html#histograms">Histograms</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../statistics.html#correlations">Correlations</a></li>
 </ul>
 </li>
 </ul>
@@ -172,13 +172,13 @@
         
           <li><a href="../statistics.html">Statistical Functions</a> &raquo;</li>
         
-      <li>dpnp.cov</li>
+      <li>dpnp.bincount</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.cov.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.bincount.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -191,41 +191,25 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <section id="dpnp-cov">
-<h1>dpnp.cov<a class="headerlink" href="#dpnp-cov" title="Permalink to this headline">¶</a></h1>
+  <section id="dpnp-bincount">
+<h1>dpnp.bincount<a class="headerlink" href="#dpnp-bincount" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="dpnp.cov">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">cov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rowvar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fweights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aweights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_statistics.html#cov"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.cov" title="Permalink to this definition">¶</a></dt>
-<dd><p>Estimate a covariance matrix, given data and weights.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.cov.html#numpy.cov" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.cov</span></code></a>.</p>
-<p class="rubric">Limitations</p>
-<p>Input array <code class="docutils literal notranslate"><span class="pre">m</span></code> is supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
-Dimension of input array <code class="docutils literal notranslate"><span class="pre">m</span></code> is limited by <code class="docutils literal notranslate"><span class="pre">m.ndim</span> <span class="pre">&gt;</span> <span class="pre">2</span></code>.
-Size and shape of input arrays are supported to be equal.
-Prameters <code class="docutils literal notranslate"><span class="pre">y</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
-Prameters <code class="docutils literal notranslate"><span class="pre">rowvar</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">True</span></code>.
-Prameters <code class="docutils literal notranslate"><span class="pre">bias</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">False</span></code>.
-Prameters <code class="docutils literal notranslate"><span class="pre">ddof</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
-Prameters <code class="docutils literal notranslate"><span class="pre">fweights</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
-Prameters <code class="docutils literal notranslate"><span class="pre">aweights</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">None</span></code>.
-Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
+<dt class="sig sig-object py" id="dpnp.bincount">
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">bincount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minlength</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_statistics.html#bincount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.bincount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Count number of occurrences of each value in array of non-negative ints.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.bincount.html#numpy.bincount" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.bincount</span></code></a>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.corrcoef</span></code> normalized covariance matrix.</p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.unique.html#dpnp.unique" title="dpnp.unique"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.unique</span></code></a></dt><dd><p>Find the unique elements of an array.</p>
+</dd>
+</dl>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">shape</span>
-<span class="go">(2, 3)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
-<span class="go">[0, 1, 2, 2, 1, 0]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span><span class="o">.</span><span class="n">shape</span>
-<span class="go">(2, 2)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">out</span><span class="p">]</span>
-<span class="go">[1.0, -1.0, -1.0, 1.0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+<span class="go">[1, 1, 1, 1, 1]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -240,10 +224,10 @@ Input array data types are limited by supported DPNP <a class="reference interna
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="dpnp.correlate.html" class="btn btn-neutral float-right" title="dpnp.correlate" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.cov.html" class="btn btn-neutral float-right" title="dpnp.cov" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.bincount.html" class="btn btn-neutral float-left" title="dpnp.bincount" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.nanvar.html" class="btn btn-neutral float-left" title="dpnp.nanvar" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
