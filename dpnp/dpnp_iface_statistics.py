@@ -60,7 +60,7 @@ __all__ = [
     'min',
     'nanvar',
     'std',
-    'var'
+    'var',
 ]
 
 
@@ -183,8 +183,8 @@ def bincount(x1, weights=None, minlength=0):
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.bincount(np.arange(5))
-    >>> [i for i in x]
+    >>> res = np.bincount(np.arange(5))
+    >>> print(res)
     [1, 1, 1, 1, 1]
 
     """

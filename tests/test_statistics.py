@@ -87,11 +87,11 @@ class TestBincount:
                              [0, 1, 3, 5],
                              ids=['0', '1', '3', '5'])
     def test_bincount_minlength(self, array, minlength):
-        a = numpy.array(array)
-        ia = dpnp.array(a)
+        np_a = numpy.array(array)
+        dpnp_a = dpnp.array(array)
 
-        expected = numpy.bincount(a, minlength=minlength)
-        result = dpnp.bincount(ia, minlength=minlength)
+        expected = numpy.bincount(np_a, minlength=minlength)
+        result = dpnp.bincount(dpnp_a, minlength=minlength)
         numpy.testing.assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("array",
@@ -105,9 +105,9 @@ class TestBincount:
                                   '[0.3, 0.5, 0.2, 0.7, 1., -0.6]',
                                   '[2, 2, 2, 2, 2, 2]'])
     def test_bincount_weights(self, array, weights):
-        a = numpy.array(array)
-        ia = dpnp.array(a)
+        np_a = numpy.array(array)
+        dpnp_a = dpnp.array(array)
 
-        expected = numpy.bincount(a, weights=weights)
-        result = dpnp.bincount(ia, weights=weights)
+        expected = numpy.bincount(np_a, weights=weights)
+        result = dpnp.bincount(dpnp_a, weights=weights)
         numpy.testing.assert_array_equal(expected, result)
