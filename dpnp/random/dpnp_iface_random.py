@@ -1289,7 +1289,7 @@ def sample(size):
     return call_origin(numpy.random.sample, size)
 
 
-def shuffle(x):
+def shuffle(x1):
     """
     Modify a sequence in-place by shuffling its contents.
 
@@ -1303,13 +1303,15 @@ def shuffle(x):
 
     """
 
-    if not use_origin_backend(seed):
-        if not isinstance(x, dparray):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if not dpnp.is_type_supported(x1_desc.dtype):
             pass
         else:
-            return dpnp_rng_shuffle(x)
+            result = dpnp_rng_shuffle(x1_desc).get_pyobj()
+            return result
 
-    return call_origin(numpy.random.shuffle, x)
+    return call_origin(numpy.random.shuffle, x1)
 
 
 def seed(seed=None):

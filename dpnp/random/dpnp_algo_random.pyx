@@ -37,7 +37,9 @@ import dpnp.config as config
 
 from dpnp.dpnp_algo cimport *
 from dpnp.dparray cimport dparray
-from dpnp.dpnp_utils cimport *
+
+cimport dpnp.dpnp_utils as utils
+
 import numpy
 cimport numpy
 
@@ -832,7 +834,7 @@ cpdef dparray dpnp_rng_rayleigh(double scale, size):
     return result
 
 
-cpdef dparray dpnp_rng_shuffle(dparray x1):
+cpdef utils.dpnp_descriptor dpnp_rng_shuffle(utils.dpnp_descriptor x1):
     """
     Modify a sequence in-place by shuffling its contents.
 
@@ -842,7 +844,7 @@ cpdef dparray dpnp_rng_shuffle(dparray x1):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype.type)
     cdef size_t itemsize = x1.dtype.itemsize
     cdef size_t ndim = x1.ndim
-    cdef size_t high_dim_size = len(x1)
+    cdef size_t high_dim_size = len(x1.get_pyobj())
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_SHUFFLE, param1_type, param1_type)
