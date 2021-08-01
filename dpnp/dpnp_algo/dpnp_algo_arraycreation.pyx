@@ -271,25 +271,28 @@ cpdef utils.dpnp_descriptor dpnp_ones_like(result_shape, result_dtype):
     return call_fptr_1out(DPNP_FN_ONES_LIKE, utils._object_to_tuple(result_shape), result_dtype)
 
 
-cpdef dparray dpnp_trace(arr, offset=0, axis1=0, axis2=1, dtype=None, out=None):
+cpdef utils.dpnp_descriptor dpnp_trace(utils.dpnp_descriptor arr, offset=0, axis1=0, axis2=1, dtype=None, out=None):
     if dtype is None:
         dtype_ = arr.dtype
     else:
         dtype_ = dtype
 
     cdef dparray diagonal_arr = dpnp.diagonal(arr, offset, axis1, axis2)
+    cdef size_t diagonal_ndim = diagonal_arr.ndim
+    cdef dparray_shape_type diagonal_shape = diagonal_arr.shape
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
     cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(dtype_)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRACE, param1_type, param2_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-    cdef dparray result = dparray(diagonal_arr.shape[:-1], dtype=result_type)
+    # ceate result array with type given by FPTR data
+    cdef dparray_shape_type result_shape = diagonal_shape[:-1]
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_dpnp_trace_t func = <fptr_dpnp_trace_t > kernel_data.ptr
 
-    func(diagonal_arr.get_data(), result.get_data(), < size_t * > diagonal_arr._dparray_shape.data(), diagonal_arr.ndim)
+    func(diagonal_arr.get_data(), result.get_data(), < size_t * > diagonal_shape.data(), diagonal_ndim)
 
     return result
 

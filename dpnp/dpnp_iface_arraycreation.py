@@ -1131,7 +1131,7 @@ def trace(x1, offset=0, axis1=0, axis2=1, dtype=None, out=None):
         elif out is not None:
             pass
         else:
-            return dpnp_trace(x1, offset, axis1, axis2, dtype, out) #.get_pyobj()
+            return dpnp_trace(x1_desc, offset, axis1, axis2, dtype, out).get_pyobj()
 
     return call_origin(numpy.trace, x1, offset, axis1, axis2, dtype, out)
 
