@@ -625,7 +625,6 @@ def fromstring(string, **kwargs):
     return call_origin(numpy.fromstring, string, **kwargs)
 
 
-# numpy.full(shape, fill_value, dtype=None, order='C')
 def full(shape, fill_value, dtype=None, order='C'):
     """
     Return a new array of given shape and type, filled with `fill_value`.
@@ -656,9 +655,9 @@ def full(shape, fill_value, dtype=None, order='C'):
             pass
         else:
             if dtype is None:
-                dtype = numpy.array(fill_value).dtype.type
+                dtype = numpy.array(fill_value).dtype.type  #TODO simplify
 
-            return dpnp_full(shape, fill_value, dtype)
+            return dpnp_full(shape, fill_value, dtype).get_pyobj()
 
     return call_origin(numpy.full, shape, fill_value, dtype, order)
 
