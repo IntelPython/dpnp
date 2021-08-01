@@ -154,6 +154,9 @@ cpdef dparray dpnp_flatten(dparray array_):
 
 
 cpdef dparray dpnp_init_val(shape, dtype, value):
+    """
+    same as dpnp_full(). TODO remove code dumplication
+    """
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_INITVAL, param1_type, param1_type)
