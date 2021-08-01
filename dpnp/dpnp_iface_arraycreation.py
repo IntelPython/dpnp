@@ -655,7 +655,7 @@ def full(shape, fill_value, dtype=None, order='C'):
             pass
         else:
             if dtype is None:
-                dtype = numpy.array(fill_value).dtype.type  #TODO simplify
+                dtype = numpy.array(fill_value).dtype.type  # TODO simplify
 
             return dpnp_full(shape, fill_value, dtype).get_pyobj()
 
