@@ -215,49 +215,42 @@ template <typename _DataType, typename _ResultType>
 class dpnp_trace_c_kernel;
 
 template <typename _DataType, typename _ResultType>
-void dpnp_trace_c(const void* array1_in, void* result1, const size_t* shape_, const size_t ndim)
+void dpnp_trace_c(const void* array1_in, void* result_in, const size_t* shape_, const size_t ndim)
 {
-    if ((array1_in == nullptr) || (result1 == nullptr) || (shape_ == nullptr) || (ndim == 0))
+    if (!array1_in || !result_in || !shape_ || !ndim)
     {
         return;
     }
 
-    const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
-    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
+    const _DataType* input = reinterpret_cast<const _DataType*>(array1_in);
+    _ResultType* result = reinterpret_cast<_ResultType*>(result_in);
+    const size_t last_dim = shape_[ndim - 1];
 
-    size_t size = 1;
-    for (size_t i = 0; i < ndim - 1; ++i)
-    {
-        size *= shape_[i];
-    }
-
-    if (size == 0)
+    const size_t size = std::accumulate(shape_, shape_ + (ndim - 1), 1, std::multiplies<size_t>());
+    if (!size)
     {
         return;
     }
-
-    size_t* shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
-    auto memcpy_event = DPNP_QUEUE.memcpy(shape, shape_, ndim * sizeof(size_t));
 
     cl::sycl::range<1> gws(size);
     auto kernel_parallel_for_func = [=](auto index) {
         size_t i = index[0];
-        result[i] = 0;
-        for (size_t j = 0; j < shape[ndim - 1]; ++j)
+        _ResultType acc = _ResultType(0);
+
+        for (size_t j = 0; j < last_dim; ++j)
         {
-            result[i] += array_in[i * shape[ndim - 1] + j];
+            acc += input[i * last_dim + j];
         }
+
+        result[i] = acc;
     };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
-        cgh.depends_on({memcpy_event});
         cgh.parallel_for<class dpnp_trace_c_kernel<_DataType, _ResultType>>(gws, kernel_parallel_for_func);
     };
 
     auto event = DPNP_QUEUE.submit(kernel_func);
     event.wait();
-
-    dpnp_memory_free_c(shape);
 }
 
 template <typename _DataType>
