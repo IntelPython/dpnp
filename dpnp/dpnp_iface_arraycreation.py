@@ -1106,7 +1106,7 @@ def ones_like(x1, dtype=None, order='C', subok=False, shape=None):
     return call_origin(numpy.ones_like, x1, dtype, order, subok, shape)
 
 
-def trace(arr, offset=0, axis1=0, axis2=1, dtype=None, out=None):
+def trace(x1, offset=0, axis1=0, axis2=1, dtype=None, out=None):
     """
        Return the sum along diagonals of the array.
 
@@ -1117,23 +1117,23 @@ def trace(arr, offset=0, axis1=0, axis2=1, dtype=None, out=None):
        Input array is supported as :obj:`dpnp.ndarray`.
        Parameters ``axis1``, ``axis2``, ``out`` and ``dtype`` are supported only with default values.
        """
-    if not use_origin_backend():
-        if not isinstance(arr, dparray):
+
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if x1_desc.size == 0:
             pass
-        elif arr.size == 0:
-            pass
-        elif arr.ndim < 2:
+        elif x1_desc.ndim < 2:
             pass
         elif axis1 != 0:
             pass
         elif axis2 != 1:
             pass
-        elif out is not None and (not isinstance(out, dparray) or (isinstance(out, dparray) and out.shape != arr.shape)):
+        elif out is not None:
             pass
         else:
-            return dpnp_trace(arr, offset, axis1, axis2, dtype, out)
+            return dpnp_trace(x1, offset, axis1, axis2, dtype, out) #.get_pyobj()
 
-    return call_origin(numpy.trace, arr, offset, axis1, axis2, dtype, out)
+    return call_origin(numpy.trace, x1, offset, axis1, axis2, dtype, out)
 
 
 def tri(N, M=None, k=0, dtype=numpy.float, **kwargs):
@@ -1176,7 +1176,7 @@ def tri(N, M=None, k=0, dtype=numpy.float, **kwargs):
     return call_origin(numpy.tri, N, M, k, dtype, **kwargs)
 
 
-def tril(m, k=0):
+def tril(x1, k=0):
     """
     Lower triangle of an array.
 
@@ -1195,16 +1195,17 @@ def tril(m, k=0):
 
     """
 
-    if not use_origin_backend(m):
-        if not isinstance(m, dparray):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if not isinstance(k, int):
             pass
         else:
-            return dpnp_tril(m, k)
+            return dpnp_tril(x1_desc, k).get_pyobj()
 
-    return call_origin(numpy.tril, m, k)
+    return call_origin(numpy.tril, x1, k)
 
 
-def triu(m, k=0):
+def triu(x1, k=0):
     """
     Upper triangle of an array.
 
@@ -1224,15 +1225,14 @@ def triu(m, k=0):
 
     """
 
-    if not use_origin_backend(m):
-        if not isinstance(m, dparray):
-            pass
-        elif not isinstance(k, int):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if not isinstance(k, int):
             pass
         else:
-            return dpnp_triu(m, k)
+            return dpnp_triu(x1_desc, k).get_pyobj()
 
-    return call_origin(numpy.triu, m, k)
+    return call_origin(numpy.triu, x1, k)
 
 
 def vander(x1, N=None, increasing=False):
@@ -1263,15 +1263,16 @@ def vander(x1, N=None, increasing=False):
            [  1,   3,   9,  27],
            [  1,   5,  25, 125]])
     """
-    if (not use_origin_backend(x1)):
-        if not isinstance(x1, dparray):
-            pass
-        elif x1.ndim != 1:
+
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if x1.ndim != 1:
             pass
         else:
             if N is None:
                 N = x1.size
-            return dpnp_vander(x1, N, increasing)
+
+            return dpnp_vander(x1_desc, N, increasing).get_pyobj()
 
     return call_origin(numpy.vander, x1, N=N, increasing=increasing)
 
