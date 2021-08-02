@@ -208,6 +208,7 @@
     <span class="s1">&#39;bincount&#39;</span><span class="p">,</span>
     <span class="s1">&#39;correlate&#39;</span><span class="p">,</span>
     <span class="s1">&#39;cov&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;histogram&#39;</span><span class="p">,</span>
     <span class="s1">&#39;max&#39;</span><span class="p">,</span>
     <span class="s1">&#39;mean&#39;</span><span class="p">,</span>
     <span class="s1">&#39;median&#39;</span><span class="p">,</span>
@@ -447,6 +448,33 @@
             <span class="k">return</span> <span class="n">dpnp_cov</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">cov</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">rowvar</span><span class="p">,</span> <span class="n">bias</span><span class="p">,</span> <span class="n">ddof</span><span class="p">,</span> <span class="n">fweights</span><span class="p">,</span> <span class="n">aweights</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="histogram"><a class="viewcode-back" href="../../reference/generated/dpnp.histogram.html#dpnp.histogram">[docs]</a><span class="k">def</span> <span class="nf">histogram</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">normed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the histogram of a dataset.</span>
+<span class="sd">    For full documentation refer to :obj:`numpy.histogram`.</span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp</span>
+<span class="sd">    &gt;&gt;&gt; dpnp.histogram([1, 2, 1], bins=[0, 1, 2, 3])</span>
+<span class="sd">    (array([0, 2, 1]), array([0, 1, 2, 3]))</span>
+<span class="sd">    &gt;&gt;&gt; dpnp.histogram(dpnp.arange(4), bins=dpnp.arange(5), density=True)</span>
+<span class="sd">    (array([0.25, 0.25, 0.25, 0.25]), array([0, 1, 2, 3, 4]))</span>
+<span class="sd">    &gt;&gt;&gt; dpnp.histogram([[1, 2, 1], [1, 0, 1]], bins=[0,1,2,3])</span>
+<span class="sd">    (array([1, 4, 1]), array([0, 1, 2, 3]))</span>
+<span class="sd">    &gt;&gt;&gt; a = dpnp.arange(5)</span>
+<span class="sd">    &gt;&gt;&gt; hist, bin_edges = dpnp.histogram(a, density=True)</span>
+<span class="sd">    &gt;&gt;&gt; hist</span>
+<span class="sd">    array([0.5, 0. , 0.5, 0. , 0. , 0.5, 0. , 0.5, 0. , 0.5])</span>
+<span class="sd">    &gt;&gt;&gt; hist.sum()</span>
+<span class="sd">    2.4999999999999996</span>
+<span class="sd">    &gt;&gt;&gt; res = dpnp.sum(hist * dpnp.diff(bin_edges))</span>
+<span class="sd">    &gt;&gt;&gt; print(res)</span>
+<span class="sd">    1.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">histogram</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="nb">range</span><span class="p">,</span> <span class="n">normed</span><span class="o">=</span><span class="n">normed</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="n">density</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="max"><a class="viewcode-back" href="../../reference/generated/dpnp.max.html#dpnp.max">[docs]</a><span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>

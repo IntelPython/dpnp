@@ -210,6 +210,7 @@
     <span class="s2">&quot;ceil&quot;</span><span class="p">,</span>
     <span class="s2">&quot;conj&quot;</span><span class="p">,</span>
     <span class="s2">&quot;conjugate&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;convolve&quot;</span><span class="p">,</span>
     <span class="s2">&quot;copysign&quot;</span><span class="p">,</span>
     <span class="s2">&quot;cross&quot;</span><span class="p">,</span>
     <span class="s2">&quot;cumprod&quot;</span><span class="p">,</span>
@@ -469,6 +470,23 @@
 
 
 <span class="n">conj</span> <span class="o">=</span> <span class="n">conjugate</span>
+
+
+<div class="viewcode-block" id="convolve"><a class="viewcode-back" href="../../reference/generated/dpnp.convolve.html#dpnp.convolve">[docs]</a><span class="k">def</span> <span class="nf">convolve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;full&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the discrete, linear convolution of two one-dimensional sequences.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.convolve`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; ca = dpnp.convolve([1, 2, 3], [0, 1, 0.5])</span>
+<span class="sd">    &gt;&gt;&gt; print(ca)</span>
+<span class="sd">    [0. , 1. , 2.5, 4. , 1.5]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">convolve</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="copysign"><a class="viewcode-back" href="../../reference/generated/dpnp.copysign.html#dpnp.copysign">[docs]</a><span class="k">def</span> <span class="nf">copysign</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>

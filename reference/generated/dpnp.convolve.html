@@ -9,7 +9,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dpnp.correlate &mdash; dpnp 0.6.2 documentation</title>
+  <title>dpnp.convolve &mdash; dpnp 0.6.2 documentation</title>
   
 
   
@@ -38,8 +38,8 @@
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Special Functions" href="../special.html" />
-    <link rel="prev" title="dpnp.cov" href="dpnp.cov.html" /> 
+    <link rel="next" title="dpnp.cbrt" href="dpnp.cbrt.html" />
+    <link rel="prev" title="dpnp.conj" href="dpnp.conj.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -99,18 +99,24 @@
 <li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear Algebra</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical Functions</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../math.html">Mathematical Functions</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../math.html#trigonometric-functions">Trigonometric functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../math.html#hyperbolic-functions">Hyperbolic functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../math.html#rounding">Rounding</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../math.html#sums-products-differences">Sums, products, differences</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../math.html#exponents-and-logarithms">Exponents and logarithms</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../math.html#other-special-functions">Other special functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../math.html#floating-point-routines">Floating point routines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../math.html#arithmetic-operations">Arithmetic operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../math.html#handling-complex-numbers">Handling complex numbers</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../math.html#miscellaneous">Miscellaneous</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../pad.html">Padding</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../polynomials.html">Polynomials</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../sorting.html">Sorting, Searching, and Counting</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../statistics.html">Statistical Functions</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../statistics.html#order-statistics">Order statistics</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../statistics.html#means-and-variances">Means and variances</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../statistics.html#histograms">Histograms</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../statistics.html#correlations">Correlations</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistical Functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
@@ -170,15 +176,15 @@
         
           <li><a href="../routines.html">Routines</a> &raquo;</li>
         
-          <li><a href="../statistics.html">Statistical Functions</a> &raquo;</li>
+          <li><a href="../math.html">Mathematical Functions</a> &raquo;</li>
         
-      <li>dpnp.correlate</li>
+      <li>dpnp.convolve</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../../_sources/reference/generated/dpnp.correlate.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/reference/generated/dpnp.convolve.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -191,31 +197,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <section id="dpnp-correlate">
-<h1>dpnp.correlate<a class="headerlink" href="#dpnp-correlate" title="Permalink to this headline">¶</a></h1>
+  <section id="dpnp-convolve">
+<h1>dpnp.convolve<a class="headerlink" href="#dpnp-convolve" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="dpnp.correlate">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">correlate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'valid'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_statistics.html#correlate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.correlate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Cross-correlation of two 1-dimensional sequences.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.correlate.html#numpy.correlate" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.correlate</span></code></a>.</p>
-<p class="rubric">Limitations</p>
-<p>Input arrays are supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
-Size and shape of input arrays are supported to be equal.
-Prameters <code class="docutils literal notranslate"><span class="pre">mode</span></code> is supported only with default value <code class="docutils literal notranslate"><span class="pre">&quot;valid</span></code>.
-Otherwise the function will be executed sequentially on CPU.
-Input array data types are limited by supported DPNP <a class="reference internal" href="../difference.html#data-types"><span class="std std-ref">Data types</span></a>.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference internal" href="dpnp.convolve.html#dpnp.convolve" title="dpnp.convolve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.convolve</span></code></a></dt><dd><p>Discrete, linear convolution of two one-dimensional sequences.</p>
-</dd>
-</dl>
-</div>
+<dt class="sig sig-object py" id="dpnp.convolve">
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">convolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'full'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_mathematical.html#convolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.convolve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the discrete, linear convolution of two one-dimensional sequences.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.convolve.html#numpy.convolve" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.convolve</span></code></a>.</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">correlate</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
-<span class="go">[3.5]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ca</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">convolve</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ca</span><span class="p">)</span>
+<span class="go">[0. , 1. , 2.5, 4. , 1.5]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -230,10 +222,10 @@ Input array data types are limited by supported DPNP <a class="reference interna
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../special.html" class="btn btn-neutral float-right" title="Special Functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="dpnp.cbrt.html" class="btn btn-neutral float-right" title="dpnp.cbrt" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="dpnp.cov.html" class="btn btn-neutral float-left" title="dpnp.cov" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="dpnp.conj.html" class="btn btn-neutral float-left" title="dpnp.conj" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
