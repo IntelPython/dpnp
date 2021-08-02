@@ -56,6 +56,7 @@ __all__ = [
     "atleast_1d",
     "atleast_2d",
     "atleast_3d",
+    "concatenate",
     "copyto",
     "expand_dims",
     "hstack",
@@ -176,6 +177,43 @@ def atleast_3d(*arys):
             return result
 
     return call_origin(numpy.atleast_3d, *arys)
+
+
+def concatenate(arrs, axis=0, out=None, dtype=None, casting="same_kind"):
+    """
+    Join a sequence of arrays along an existing axis.
+
+    For full documentation refer to :obj:`numpy.concatenate`.
+
+    Examples
+    --------
+    >>> import dpnp
+    >>> a = dpnp.array([[1, 2], [3, 4]])
+    >>> b = dpnp.array([[5, 6]])
+    >>> res = dpnp.concatenate((a, b), axis=0)
+    >>> print(res)
+    [[1 2]
+     [3 4]
+     [5 6]]
+    >>> res = dpnp.concatenate((a, b.T), axis=1)
+    >>> print(res)
+    [[1 2 5]
+     [3 4 6]]
+    >>> res = dpnp.concatenate((a, b), axis=None)
+    >>> print(res)
+    [1 2 3 4 5 6]
+
+    """
+
+    # TODO:
+    # `call_origin` cannot convert sequence of dparray to sequence of
+    # ndarrays
+    arrs_new = []
+    for arr in arrs:
+        arrx = dpnp.asnumpy(arr) if isinstance(arr, dparray) else arr
+        arrs_new.append(arrx)
+
+    return call_origin(numpy.concatenate, arrs_new, axis=axis, out=out, dtype=dtype, casting=casting)
 
 
 def copyto(dst, src, casting='same_kind', where=True):
