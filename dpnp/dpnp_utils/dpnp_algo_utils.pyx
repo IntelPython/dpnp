@@ -336,6 +336,10 @@ cdef DPNPFuncType get_output_c_type(DPNPFuncName funcID,
 
 
 cdef dparray create_output_array(dparray_shape_type output_shape, DPNPFuncType c_type, object requested_out):
+    """
+    TODO This function needs to be deleted. Replace with create_output_descriptor()
+    """
+
     cdef dparray result
 
     if requested_out is None:
@@ -349,10 +353,24 @@ cdef dparray create_output_array(dparray_shape_type output_shape, DPNPFuncType c
 
     return result
 
-cdef dpnp_descriptor create_output_descriptor(dparray_shape_type output_shape, DPNPFuncType c_type, object requested_out):
-    result = create_output_array(output_shape, c_type, requested_out)
+cdef dpnp_descriptor create_output_descriptor(dparray_shape_type output_shape,
+                                              DPNPFuncType c_type,
+                                              dpnp_descriptor requested_out):
+    cdef dpnp_descriptor result_desc
 
-    cdef dpnp_descriptor result_desc = dpnp_descriptor(result)
+    if requested_out is None:
+        """ Create DPNP array """
+        result = dparray(output_shape, dtype=dpnp_DPNPFuncType_to_dtype( < size_t > c_type))
+        result_desc = dpnp_descriptor(result)
+    else:
+        """ Based on 'out' parameter """
+        if (output_shape != requested_out.shape):
+            checker_throw_value_error("create_output_array", "out.shape", requested_out.shape, output_shape)
+
+        if isinstance(requested_out, dpnp_descriptor):
+            result_desc = requested_out
+        else:
+            result_desc = dpnp_descriptor(requested_out)
 
     return result_desc
 

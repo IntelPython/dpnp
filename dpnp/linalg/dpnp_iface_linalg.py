@@ -239,26 +239,14 @@ def matrix_power(input, count):
 
     """
 
-    is_input_dparray = isinstance(input, dparray)
-
-    if not use_origin_backend(input) and is_input_dparray and count > 0:
+    if not use_origin_backend():
         result = input
         for id in range(count - 1):
             result = dpnp.matmul(result, input)
 
         return result
 
-    input1 = dpnp.asnumpy(input) if is_input_dparray else input
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.linalg.matrix_power(input1, count)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return call_origin(numpy.linalg.matrix_power, input, count)
 
 
 def matrix_rank(input, tol=None, hermitian=False):
