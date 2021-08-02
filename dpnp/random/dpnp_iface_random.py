@@ -768,7 +768,7 @@ def negative_binomial(n, p, size=None):
         elif n <= 0:
             pass
         else:
-            return dpnp_rng_negative_binomial(n, p, size)
+            return dpnp_rng_negative_binomial(n, p, size).get_pyobj()
 
     return call_origin(numpy.random.negative_binomial, n, p, size)
 
@@ -804,7 +804,7 @@ def normal(loc=0.0, scale=1.0, size=None):
         elif scale < 0:
             pass
         else:
-            return dpnp_rng_normal(loc, scale, size)
+            return dpnp_rng_normal(loc, scale, size).get_pyobj()
 
     return call_origin(numpy.random.normal, loc, scale, size)
 
@@ -952,7 +952,7 @@ def poisson(lam=1.0, size=None):
         elif lam < 0:
             pass
         else:
-            return dpnp_rng_poisson(lam, size)
+            return dpnp_rng_poisson(lam, size).get_pyobj()
 
     return call_origin(numpy.random.poisson, lam, size)
 
@@ -1074,7 +1074,7 @@ def randint(low, high=None, size=None, dtype=int):
         else:
             low = int(low)
             high = int(high)
-            return dpnp_rng_uniform(low, high, size, _dtype)
+            return dpnp_rng_uniform(low, high, size, _dtype).get_pyobj()
 
     return call_origin(numpy.random.randint, low, high, size, dtype)
 
@@ -1258,7 +1258,7 @@ def rayleigh(scale=1.0, size=None):
         elif scale < 0:
             pass
         else:
-            return dpnp_rng_rayleigh(scale, size)
+            return dpnp_rng_rayleigh(scale, size).get_pyobj()
 
     return call_origin(numpy.random.rayleigh, scale, size)
 
@@ -1425,7 +1425,7 @@ def standard_gamma(shape, size=None):
         elif shape < 0:
             pass
         else:
-            return dpnp_rng_standard_gamma(shape, size)
+            return dpnp_rng_standard_gamma(shape, size).get_pyobj()
 
     return call_origin(numpy.random.standard_gamma, shape, size)
 
@@ -1567,7 +1567,7 @@ def uniform(low=0.0, high=1.0, size=None):
         else:
             if low > high:
                 low, high = high, low
-            return dpnp_rng_uniform(low, high, size, dtype=numpy.float64)
+            return dpnp_rng_uniform(low, high, size, dtype=numpy.float64).get_pyobj()
 
     return call_origin(numpy.random.uniform, low, high, size)
 
