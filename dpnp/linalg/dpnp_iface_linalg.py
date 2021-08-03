@@ -239,7 +239,7 @@ def matrix_power(input, count):
 
     """
 
-    if not use_origin_backend():
+    if not use_origin_backend() and count > 0:
         result = input
         for id in range(count - 1):
             result = dpnp.matmul(result, input)
