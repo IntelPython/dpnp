@@ -197,7 +197,7 @@ cpdef dparray dpnp_kron(dpnp_descriptor in_array1, dpnp_descriptor in_array2):
     return result
 
 
-cpdef dparray dpnp_matmul(dpnp_descriptor in_array1, dpnp_descriptor in_array2, dparray out=None):
+cpdef utils.dpnp_descriptor dpnp_matmul(utils.dpnp_descriptor in_array1, utils.dpnp_descriptor in_array2, utils.dpnp_descriptor out=None):
 
     cdef dparray_shape_type shape_result
 
@@ -258,19 +258,8 @@ cpdef dparray dpnp_matmul(dpnp_descriptor in_array1, dpnp_descriptor in_array2, 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MATMUL, param1_type, param2_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-
-    cdef dparray result
-
-    if out is not None:
-        if out.dtype != result_type:
-            utils.checker_throw_value_error('matmul', 'out.dtype', out.dtype, result_type)
-        if out.shape != shape_result:
-            utils.checker_throw_value_error('matmul', 'out.shape', out.shape, shape_result)
-        result = out
-    else:
-        result = dparray(shape_result, dtype=result_type)
-
+    # ceate result array with type given by FPTR data
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(shape_result, kernel_data.return_type, out)
     if result.size == 0:
         return result
 

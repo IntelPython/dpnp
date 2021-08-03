@@ -341,7 +341,13 @@ cpdef utils.dpnp_descriptor dpnp_power(utils.dpnp_descriptor x1_obj, utils.dpnp_
     return call_fptr_2in_1out(DPNP_FN_POWER, x1_obj, x2_obj, dtype=dtype, out=out, where=where, func_name="power")
 
 
-cpdef dparray dpnp_prod(utils.dpnp_descriptor input, object axis=None, object dtype=None, dparray out=None, cpp_bool keepdims=False, object initial=None, object where=True):
+cpdef utils.dpnp_descriptor dpnp_prod(utils.dpnp_descriptor input,
+                                      object axis=None,
+                                      object dtype=None,
+                                      utils.dpnp_descriptor out=None,
+                                      cpp_bool keepdims=False,
+                                      object initial=None,
+                                      object where=True):
     """
     input:float64   : outout:float64   : name:prod
     input:float32   : outout:float32   : name:prod
@@ -364,7 +370,7 @@ cpdef dparray dpnp_prod(utils.dpnp_descriptor input, object axis=None, object dt
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PROD, input_c_type, result_c_type)
 
     """ Create result array """
-    cdef dparray result = utils.create_output_array(result_shape, result_c_type, out)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, result_c_type, out)
     cdef dpnp_reduction_c_t func = <dpnp_reduction_c_t > kernel_data.ptr
 
     """ Call FPTR interface function """
@@ -385,7 +391,13 @@ cpdef utils.dpnp_descriptor dpnp_subtract(object x1_obj, object x2_obj, object d
     return call_fptr_2in_1out(DPNP_FN_SUBTRACT, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
-cpdef utils.dpnp_descriptor dpnp_sum(utils.dpnp_descriptor input, object axis=None, object dtype=None, dparray out=None, cpp_bool keepdims=False, object initial=None, object where=True):
+cpdef utils.dpnp_descriptor dpnp_sum(utils.dpnp_descriptor input,
+                                     object axis=None,
+                                     object dtype=None,
+                                     utils.dpnp_descriptor out=None,
+                                     cpp_bool keepdims=False,
+                                     object initial=None,
+                                     object where=True):
 
     cdef dparray_shape_type input_shape = input.shape
     cdef DPNPFuncType input_c_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
