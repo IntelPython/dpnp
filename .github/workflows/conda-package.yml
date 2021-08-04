@@ -1,0 +1,42 @@
+name: Conda package
+
+on: push
+
+env:
+  PACKAGE_NAME: dpctl
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download package
+        run: |
+          pwd
+          wget https://conda.anaconda.org/intel/linux-64/dpnp-0.6.2-py38h86f26c8_18.tar.bz2
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: dpnp ${{ runner.os }}
+          path: /usr/share/miniconda/conda-bld/linux-64/dpnp-*.tar.bz2
+
+  upload:
+    needs: build
+    if: ${{ github.ref == 'refs/heads/master' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: dpnp ${{ runner.os }}
+
+      - name: Install anaconda-client
+        run: conda install anaconda-client
+      - name: Add conda to system path
+        run: echo $CONDA/bin >> $GITHUB_PATH
+
+      - name: Upload
+        env:
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+        run: |
+          conda install anaconda-client
+          anaconda --token $ANACONDA_TOKEN upload --user dppy --label dev dpnp-*.tar.bz2
