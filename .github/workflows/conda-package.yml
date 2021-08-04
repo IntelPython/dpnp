@@ -30,7 +30,9 @@ jobs:
                                intel-oneapi-dpcpp-cpp-compiler
       - name: Checkout repo
         uses: actions/checkout@v2
-      # https://github.com/marketplace/actions/setup-miniconda
+        with:
+          fetch-depth: 0
+          # https://github.com/marketplace/actions/setup-miniconda
 #       - name: Setup miniconda
 #         uses: conda-incubator/setup-miniconda@v2
 #         with:
