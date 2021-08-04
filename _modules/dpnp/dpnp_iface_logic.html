@@ -270,8 +270,10 @@
         <span class="k">elif</span> <span class="n">keepdims</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_all</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">result_obj</span> <span class="o">=</span> <span class="n">dpnp_all</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">convert_single_elem_array_to_scalar</span><span class="p">(</span><span class="n">result_obj</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">result</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">all</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">)</span></div>
 
@@ -306,8 +308,10 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">rtol_is_scalar</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">atol_is_scalar</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_allclose</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">result_obj</span> <span class="o">=</span> <span class="n">dpnp_allclose</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">convert_single_elem_array_to_scalar</span><span class="p">(</span><span class="n">result_obj</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">result</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">allclose</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -360,8 +364,10 @@
         <span class="k">elif</span> <span class="n">keepdims</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_any</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">result_obj</span> <span class="o">=</span> <span class="n">dpnp_any</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">convert_single_elem_array_to_scalar</span><span class="p">(</span><span class="n">result_obj</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">result</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">any</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">)</span></div>
 
@@ -531,8 +537,9 @@
 
     <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
     <span class="n">x2_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
-    <span class="k">if</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">x2_desc</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_isclose</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="p">,</span> <span class="n">equal_nan</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">x2_desc</span><span class="p">:</span>
+        <span class="n">result_obj</span> <span class="o">=</span> <span class="n">dpnp_isclose</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="p">,</span> <span class="n">equal_nan</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result_obj</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">isclose</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="n">equal_nan</span><span class="p">)</span></div>
 
@@ -582,7 +589,7 @@
         <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_isfinite</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpnp_isfinite</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">isfinite</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -627,7 +634,7 @@
         <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_isinf</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpnp_isinf</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">isinf</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -673,7 +680,7 @@
         <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_isnan</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpnp_isnan</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">isnan</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -719,7 +726,6 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dpnp_less</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=========call_origin(numpy.less==========&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">less</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span></div>
 
 
@@ -801,11 +807,11 @@
 
     <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
     <span class="n">x2_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
-    <span class="k">if</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">x2_desc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">x2_desc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_logical_and</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpnp_logical_and</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">logical_and</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -841,11 +847,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
-    <span class="k">if</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_logical_not</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpnp_logical_not</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">logical_not</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -884,11 +890,11 @@
 
     <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
     <span class="n">x2_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
-    <span class="k">if</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">x2_desc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">x2_desc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_logical_or</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpnp_logical_or</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">logical_or</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -927,11 +933,11 @@
 
     <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
     <span class="n">x2_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>
-    <span class="k">if</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">x2_desc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">x2_desc</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_logical_xor</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpnp_logical_xor</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">logical_xor</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
