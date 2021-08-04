@@ -7,18 +7,60 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Build
+    runs-on: ubuntu-20.04
     steps:
-      - name: Download package
+      - name: Install Intel repository
         run: |
-          pwd
-          wget https://conda.anaconda.org/intel/linux-64/dpnp-0.6.2-py38h86f26c8_18.tar.bz2
+          wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
+          sudo apt-get update
+      - name: Update libstdc++-dev
+        run: |
+          sudo apt remove -y gcc-7 g++-7 gcc-8 g++-8 gcc-10 g++-10
+          sudo apt remove -y libstdc++-10-dev
+          sudo apt autoremove
+          sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
+      - name: Install Intel OneAPI
+        run: |
+          sudo apt-get install intel-oneapi-mkl                \
+                               intel-oneapi-mkl-devel          \
+                               intel-oneapi-dpcpp-cpp-compiler
+      - name: Checkout repo
+        uses: actions/checkout@v2
+      # https://github.com/marketplace/actions/setup-miniconda
+#       - name: Setup miniconda
+#         uses: conda-incubator/setup-miniconda@v2
+#         with:
+#           activate-environment: dpnp
+#           python-version: 3.8
+#           auto-activate-base: false
+
+      - name: Add conda to system path
+        run: echo $CONDA/bin >> $GITHUB_PATH
+      - name: Install conda-build
+        run: conda install conda-build
+      - name: Build conda package
+        run: |
+          . /opt/intel/oneapi/setvars.sh
+          . ./scripts/install_cmake_lin.sh
+          CHANNELS="-c dppy/label/dev -c intel -c defaults --override-channels"
+          VERSIONS="--python 3.8"
+          TEST="--no-test"
+          conda build \
+            $TEST \
+            $VERSIONS \
+            $CHANNELS \
+            conda-recipe
+
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: dpnp ${{ runner.os }}
-          # path: /usr/share/miniconda/conda-bld/linux-64/dpnp-*.tar.bz2
-          path: dpnp-*.tar.bz2
+          path: /usr/share/miniconda/conda-bld/linux-64/dpnp-*.tar.bz2
+          # path: dpnp-*.tar.bz2
 
   upload:
     needs: build
