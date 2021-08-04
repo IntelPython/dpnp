@@ -22,7 +22,8 @@ jobs:
 
   upload:
     needs: build
-    if: ${{ github.ref == 'refs/heads/master' }}
+    # if: ${{ github.ref == 'refs/heads/master' }}
+    if: ${{ github.ref == 'refs/heads/spokhode/ci/conda-package' }}
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact
