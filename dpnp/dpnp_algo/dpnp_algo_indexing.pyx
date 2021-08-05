@@ -83,7 +83,9 @@ cpdef tuple dpnp_diag_indices(n, ndim):
     return tuple(result)
 
 
-cpdef dparray dpnp_diagonal(dparray input, offset=0):
+cpdef dparray dpnp_diagonal(dpnp_descriptor input, offset=0):
+    cdef dparray_shape_type input_shape = input.shape
+
     n = min(input.shape[0], input.shape[1])
     res_shape = [None] * (input.ndim - 1)
 
@@ -109,12 +111,13 @@ cpdef dparray dpnp_diagonal(dparray input, offset=0):
 
     cdef custom_indexing_2in_1out_func_ptr_t_ func = <custom_indexing_2in_1out_func_ptr_t_ > kernel_data.ptr
 
-    func(input.get_data(), result.get_data(), offset, < size_t * > input._dparray_shape.data(), < size_t * > result._dparray_shape.data(), res_ndim)
+    func(input.get_data(), result.get_data(), offset, < size_t * > input_shape.data(), < size_t * > result._dparray_shape.data(), res_ndim)
 
     return result
 
 
-cpdef dpnp_fill_diagonal(dparray input, val):
+cpdef dpnp_fill_diagonal(dpnp_descriptor input, val):
+    cdef dparray_shape_type input_shape = input.shape
     val_arr = dparray(1, dtype=input.dtype)
     val_arr[0] = val
 
@@ -124,7 +127,7 @@ cpdef dpnp_fill_diagonal(dparray input, val):
 
     cdef custom_indexing_2in_func_ptr_t func = <custom_indexing_2in_func_ptr_t > kernel_data.ptr
 
-    func(input.get_data(), val_arr.get_data(), < size_t * > input._dparray_shape.data(), input.ndim)
+    func(input.get_data(), val_arr.get_data(), < size_t * > input_shape.data(), input.ndim)
 
 
 cpdef dparray dpnp_indices(dimensions):
@@ -162,6 +165,7 @@ cpdef dparray dpnp_indices(dimensions):
 
 
 cpdef tuple dpnp_nonzero(dparray in_array1):
+    cdef dparray_shape_type shape_arr = in_array1.shape
     res_count = in_array1.ndim
 
     # have to go through array one extra time to count size of result arrays
@@ -177,7 +181,7 @@ cpdef tuple dpnp_nonzero(dparray in_array1):
     for j in range(res_count):
         res_arr = dparray((res_size, ), dtype=dpnp.int64)
 
-        func(in_array1.get_data(), res_arr.get_data(), < size_t * > in_array1._dparray_shape.data(), in_array1.ndim, j)
+        func(in_array1.get_data(), res_arr.get_data(), < size_t * > shape_arr.data(), in_array1.ndim, j)
 
         res_list.append(res_arr)
 
@@ -186,7 +190,7 @@ cpdef tuple dpnp_nonzero(dparray in_array1):
     return result
 
 
-cpdef dpnp_place(dparray arr, dparray mask, dparray vals):
+cpdef dpnp_place(dpnp_descriptor arr, object mask, dpnp_descriptor vals):
     mask_ = dparray(mask.size, dtype=dpnp.int64)
     for i in range(mask.size):
         if mask[i]:

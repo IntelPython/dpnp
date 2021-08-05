@@ -84,7 +84,7 @@ cdef dparray call_fptr_custom_std_var_1in_1out(DPNPFuncName fptr_name, utils.dpn
 
 
 cpdef dpnp_average(utils.dpnp_descriptor x1):
-    array_sum = dpnp_sum(x1)
+    array_sum = dpnp_sum(x1).get_pyobj()
 
     """ Numpy interface inconsistency """
     return_type = numpy.float32 if (x1.dtype == numpy.float32) else numpy.float64
@@ -138,6 +138,7 @@ cpdef dparray dpnp_cov(dparray array1):
 
 
 cpdef dparray _dpnp_max(dparray input, _axis_, output_shape):
+    cdef dparray_shape_type input_shape = input.shape
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MAX, param1_type, param1_type)
@@ -157,7 +158,7 @@ cpdef dparray _dpnp_max(dparray input, _axis_, output_shape):
             axis_.push_back(shape_it)
         axis_size = len(axis)
 
-    func(input.get_data(), result.get_data(), < size_t * > input._dparray_shape.data(), input.ndim, < size_t * > axis_.data(), axis_size)
+    func(input.get_data(), result.get_data(), < size_t * > input_shape.data(), input.ndim, < size_t * > axis_.data(), axis_size)
 
     dpnp_array = dpnp.array(result, dtype=input.dtype)
     dpnp_result_array = dpnp_array.reshape(output_shape)
@@ -194,6 +195,7 @@ cpdef dparray dpnp_max(dparray input, axis):
 
 
 cpdef dparray _dpnp_mean(dparray input):
+    cdef dparray_shape_type input_shape = input.shape
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MEAN, param1_type, param1_type)
@@ -207,7 +209,7 @@ cpdef dparray _dpnp_mean(dparray input):
     cdef dparray_shape_type axis
     cdef Py_ssize_t axis_size = 0
 
-    func(input.get_data(), result.get_data(), < size_t * > input._dparray_shape.data(), input.ndim, < size_t * > axis.data(), axis_size)
+    func(input.get_data(), result.get_data(), < size_t * > input_shape.data(), input.ndim, < size_t * > axis.data(), axis_size)
 
     return result
 
@@ -336,6 +338,7 @@ cpdef dparray dpnp_median(utils.dpnp_descriptor array1):
 
 
 cpdef dparray _dpnp_min(dparray input, _axis_, output_shape):
+    cdef dparray_shape_type input_shape = input.shape
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MIN, param1_type, param1_type)
@@ -357,7 +360,7 @@ cpdef dparray _dpnp_min(dparray input, _axis_, output_shape):
             axis_.push_back(shape_it)
         axis_size = len(axis)
 
-    func(input.get_data(), result.get_data(), < size_t * > input._dparray_shape.data(), input.ndim, < size_t * > axis_.data(), axis_size)
+    func(input.get_data(), result.get_data(), < size_t * > input_shape.data(), input.ndim, < size_t * > axis_.data(), axis_size)
 
     dpnp_array = dpnp.array(result, dtype=input.dtype)
     dpnp_result_array = dpnp_array.reshape(output_shape)

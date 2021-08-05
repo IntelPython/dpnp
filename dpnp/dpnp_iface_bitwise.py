@@ -91,7 +91,7 @@ def _check_nd_call(origin_func, dpnp_func, x1, x2, dtype=None, out=None, where=T
         elif not where:
             pass
         else:
-            return dpnp_func(x1_desc, x2_desc, dtype=dtype, out=out, where=where)
+            return dpnp_func(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
 
     return call_origin(origin_func, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -230,7 +230,7 @@ def invert(x, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x)
     if x1_desc and not kwargs:
-        return dpnp_invert(x1_desc)
+        return dpnp_invert(x1_desc).get_pyobj()
 
     return call_origin(numpy.invert, x, **kwargs)
 

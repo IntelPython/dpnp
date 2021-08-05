@@ -111,7 +111,7 @@ def arccos(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_arccos(x1_desc)
+        return dpnp_arccos(x1_desc).get_pyobj()
 
     return call_origin(numpy.arccos, x1, **kwargs)
 
@@ -148,12 +148,12 @@ def arccosh(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_arccosh(x1_desc)
+        return dpnp_arccosh(x1_desc).get_pyobj()
 
     return call_origin(numpy.arccosh, x1, **kwargs)
 
 
-def arcsin(x1):
+def arcsin(x1, out=None, **kwargs):
     """
     Inverse sine, element-wise.
 
@@ -162,6 +162,7 @@ def arcsin(x1):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
+    Keyword arguments ``kwargs`` are currently unsupported.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -186,9 +187,9 @@ def arcsin(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_arcsin(x1_desc)
+        return dpnp_arcsin(x1_desc, out).get_pyobj()
 
-    return call_origin(numpy.arcsin, x1, **kwargs)
+    return call_origin(numpy.arcsin, x1, out=out, **kwargs)
 
 
 def arcsinh(x1):
@@ -215,12 +216,12 @@ def arcsinh(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_arcsinh(x1_desc)
+        return dpnp_arcsinh(x1_desc).get_pyobj()
 
     return call_origin(numpy.arcsinh, x1, **kwargs)
 
 
-def arctan(x1):
+def arctan(x1, out=None, **kwargs):
     """
     Trigonometric inverse tangent, element-wise.
 
@@ -229,6 +230,7 @@ def arctan(x1):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
+    Keyword arguments ``kwargs`` are currently unsupported.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     See Also
@@ -249,9 +251,9 @@ def arctan(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_arctan(x1_desc)
+        return dpnp_arctan(x1_desc, out).get_pyobj()
 
-    return call_origin(numpy.arctan, x1, **kwargs)
+    return call_origin(numpy.arctan, x1, out=out, **kwargs)
 
 
 def arctanh(x1):
@@ -277,7 +279,7 @@ def arctanh(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_arctanh(x1_desc)
+        return dpnp_arctanh(x1_desc).get_pyobj()
 
     return call_origin(numpy.arctanh, x1, **kwargs)
 
@@ -305,7 +307,7 @@ def cbrt(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_cbrt(x1_desc)
+        return dpnp_cbrt(x1_desc).get_pyobj()
 
     return call_origin(numpy.cbrt, x1, **kwargs)
 
@@ -361,17 +363,15 @@ def arctan2(x1, x2, dtype=None, out=None, where=True, **kwargs):
             pass
         elif dtype is not None:
             pass
-        elif out is not None:
-            pass
         elif not where:
             pass
         else:
-            return dpnp_arctan2(x1_desc, x2_desc, dtype=dtype, out=out, where=where)
+            return dpnp_arctan2(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
 
     return call_origin(numpy.arctan2, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
-def cos(x1):
+def cos(x1, out=None, **kwargs):
     """
     Trigonometric cosine, element-wise.
 
@@ -395,9 +395,9 @@ def cos(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_cos(x1_desc)
+        return dpnp_cos(x1_desc, out).get_pyobj()
 
-    return call_origin(numpy.cos, x1, **kwargs)
+    return call_origin(numpy.cos, x1, out=out, **kwargs)
 
 
 def cosh(x1):
@@ -423,7 +423,7 @@ def cosh(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_cosh(x1_desc)
+        return dpnp_cosh(x1_desc).get_pyobj()
 
     return call_origin(numpy.cosh, x1, **kwargs)
 
@@ -474,12 +474,12 @@ def degrees(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_degrees(x1_desc)
+        return dpnp_degrees(x1_desc).get_pyobj()
 
     return call_origin(numpy.degrees, x1, **kwargs)
 
 
-def exp(x1):
+def exp(x1, out=None, **kwargs):
     """
     Trigonometric exponent, element-wise.
 
@@ -507,9 +507,9 @@ def exp(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_exp(x1_desc)
+        return dpnp_exp(x1_desc, out).get_pyobj()
 
-    return call_origin(numpy.exp, x1)
+    return call_origin(numpy.exp, x1, out=out, **kwargs)
 
 
 def exp2(x1):
@@ -540,7 +540,7 @@ def exp2(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_exp2(x1_desc)
+        return dpnp_exp2(x1_desc).get_pyobj()
 
     return call_origin(numpy.exp2, x1)
 
@@ -570,7 +570,7 @@ def expm1(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_expm1(x1_desc)
+        return dpnp_expm1(x1_desc).get_pyobj()
 
     return call_origin(numpy.expm1, x1)
 
@@ -625,12 +625,12 @@ def hypot(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_hypot(x1_desc, x2_desc, dtype=dtype, out=out, where=where)
+            return dpnp_hypot(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
 
     return call_origin(numpy.hypot, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
-def log(x1):
+def log(x1, out=None, **kwargs):
     """
     Trigonometric logarithm, element-wise.
 
@@ -662,9 +662,9 @@ def log(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_log(x1_desc)
+        return dpnp_log(x1_desc, out).get_pyobj()
 
-    return call_origin(numpy.log, x1)
+    return call_origin(numpy.log, x1, out=out, **kwargs)
 
 
 def log10(x1):
@@ -690,7 +690,7 @@ def log10(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_log10(x1_desc)
+        return dpnp_log10(x1_desc).get_pyobj()
 
     return call_origin(numpy.log10, x1)
 
@@ -722,7 +722,7 @@ def log1p(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_log1p(x1_desc)
+        return dpnp_log1p(x1_desc).get_pyobj()
 
     return call_origin(numpy.log1p, x1)
 
@@ -758,7 +758,7 @@ def log2(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_log2(x1_desc)
+        return dpnp_log2(x1_desc).get_pyobj()
 
     return call_origin(numpy.log2, x1)
 
@@ -788,7 +788,7 @@ def reciprocal(x1, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and not kwargs:
-        return dpnp_recip(x1_desc)
+        return dpnp_recip(x1_desc).get_pyobj()
 
     return call_origin(numpy.reciprocal, x1, **kwargs)
 
@@ -838,7 +838,7 @@ def radians(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_radians(x1_desc)
+        return dpnp_radians(x1_desc).get_pyobj()
 
     return call_origin(numpy.radians, x1, **kwargs)
 
@@ -876,7 +876,7 @@ def sin(x1, out=None, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_sin(x1_desc, out=out)
+        return dpnp_sin(x1_desc, out).get_pyobj()
 
     return call_origin(numpy.sin, x1, out=out, **kwargs)
 
@@ -905,7 +905,7 @@ def sinh(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_sinh(x1_desc)
+        return dpnp_sinh(x1_desc).get_pyobj()
 
     return call_origin(numpy.sinh, x1, **kwargs)
 
@@ -934,9 +934,9 @@ def sqrt(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_sqrt(x1_desc)
+        return dpnp_sqrt(x1_desc).get_pyobj()
 
-    return call_origin(numpy.sqrt, x1, **kwargs)
+    return call_origin(numpy.sqrt, x1)
 
 
 def square(x1):
@@ -969,12 +969,12 @@ def square(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_square(x1_desc)
+        return dpnp_square(x1_desc).get_pyobj()
 
     return call_origin(numpy.square, x1, **kwargs)
 
 
-def tan(x1):
+def tan(x1, out=None, **kwargs):
     """
     Compute tangent element-wise.
 
@@ -983,6 +983,7 @@ def tan(x1):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
+    Keyword arguments ``kwargs`` are currently unsupported.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
@@ -998,9 +999,9 @@ def tan(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_tan(x1_desc)
+        return dpnp_tan(x1_desc, out).get_pyobj()
 
-    return call_origin(numpy.tan, x1, **kwargs)
+    return call_origin(numpy.tan, x1, out=out, **kwargs)
 
 
 def tanh(x1):
@@ -1027,7 +1028,7 @@ def tanh(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_tanh(x1_desc)
+        return dpnp_tanh(x1_desc).get_pyobj()
 
     return call_origin(numpy.tanh, x1, **kwargs)
 
@@ -1063,6 +1064,6 @@ def unwrap(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_unwrap(x1_desc)
+        return dpnp_unwrap(x1_desc).get_pyobj()
 
     return call_origin(numpy.unwrap, x1, **kwargs)

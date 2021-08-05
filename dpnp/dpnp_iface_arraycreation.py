@@ -145,7 +145,7 @@ def arange(start, stop=None, step=1, dtype=None):
             if step is None:
                 step = 1
 
-            return dpnp_arange(start, stop, step, dtype)
+            return dpnp_arange(start, stop, step, dtype).get_pyobj()
 
     return call_origin(numpy.arange, start, stop=stop, step=step, dtype=dtype)
 
@@ -193,7 +193,10 @@ def array(obj, dtype=None, copy=True, order='C', subok=False, ndmin=0):
 
     """
 
+    # print("=======================")
+    # print(f"x1={obj}")
     if (use_origin_backend(obj)):
+        # print("=========numpy.array==============")
         return numpy.array(obj, dtype=dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)
 
     # if not isinstance(obj, collections.abc.Sequence):
@@ -214,7 +217,27 @@ def array(obj, dtype=None, copy=True, order='C', subok=False, ndmin=0):
     if ndmin != 0:
         checker_throw_value_error("array", "ndmin", ndmin, 0)
 
+    # print("=========dpnp_array==============")
     return dpnp_array(obj, dtype)
+
+
+# def array(x1, dtype=None, copy=True, order='C', subok=False, ndmin=0):
+#     print("=======================")
+#     print(f"x1={x1}")
+#     x1_desc = dpnp.get_dpnp_descriptor(x1)
+#     if x1_desc:
+#         if subok is not False:
+#             pass
+#         elif copy is not True:
+#             pass
+#         elif order != 'C':
+#             pass
+#         elif ndmin != 0:
+#             pass
+#         else:
+#             return dpnp_array(x1, dtype)
+
+#     return call_origin(numpy.array, x1, dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)
 
 
 def asanyarray(a, dtype=None, order='C'):
@@ -336,7 +359,7 @@ def ascontiguousarray(a, dtype=None):
 
 
 # numpy.copy(a, order='K', subok=False)
-def copy(a, order='C', subok=False):
+def copy(x1, order='C', subok=False):
     """
     Return an array copy of the given object.
 
@@ -361,14 +384,14 @@ def copy(a, order='C', subok=False):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(a)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_copy(x1_desc, order, subok)
+        return dpnp_copy(x1_desc, order, subok).get_pyobj()
 
-    return call_origin(numpy.copy, a, order, subok)
+    return call_origin(numpy.copy, x1, order, subok)
 
 
-def diag(v, k=0):
+def diag(x1, k=0):
     """
     Extract a diagonal or construct a diagonal array.
 
@@ -397,20 +420,19 @@ def diag(v, k=0):
 
     """
 
-    if not use_origin_backend(v):
-        if not isinstance(v, dparray):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if not isinstance(k, int):
             pass
-        elif not isinstance(k, int):
-            pass
-        elif v.ndim != 1 and v.ndim != 2:
+        elif x1_desc.ndim != 1 and x1_desc.ndim != 2:
             pass
         else:
-            return dpnp_diag(v, k)
+            return dpnp_diag(x1_desc, k).get_pyobj()
 
-    return call_origin(numpy.diag, v, k)
+    return call_origin(numpy.diag, x1, k)
 
 
-def diagflat(v, k=0):
+def diagflat(x1, k=0):
     """
     Create a two-dimensional array with the flattened input as a diagonal.
 
@@ -432,13 +454,14 @@ def diagflat(v, k=0):
 
     """
 
-    if not use_origin_backend(v):
-        if not isinstance(v, dparray):
-            pass
-        else:
-            return dpnp_diag(v.ravel(), k)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        input_ravel = dpnp.ravel(x1)
+        input_ravel_desc = dpnp.get_dpnp_descriptor(input_ravel)
 
-    return call_origin(numpy.diagflat, v, k)
+        return dpnp_diag(input_ravel_desc, k).get_pyobj()
+
+    return call_origin(numpy.diagflat, x1, k)
 
 
 # numpy.empty(shape, dtype=float, order='C')
@@ -602,7 +625,6 @@ def fromstring(string, **kwargs):
     return call_origin(numpy.fromstring, string, **kwargs)
 
 
-# numpy.full(shape, fill_value, dtype=None, order='C')
 def full(shape, fill_value, dtype=None, order='C'):
     """
     Return a new array of given shape and type, filled with `fill_value`.
@@ -633,9 +655,9 @@ def full(shape, fill_value, dtype=None, order='C'):
             pass
         else:
             if dtype is None:
-                dtype = numpy.array(fill_value).dtype.type
+                dtype = numpy.array(fill_value).dtype.type  # TODO simplify
 
-            return dpnp_full(shape, fill_value, dtype)
+            return dpnp_full(shape, fill_value, dtype).get_pyobj()
 
     return call_origin(numpy.full, shape, fill_value, dtype, order)
 
@@ -1030,13 +1052,13 @@ def ones(shape, dtype=None, order='C'):
 
     if (not use_origin_backend()):
         if order not in ('C', 'c', None):
-            checker_throw_value_error("ones", "order", order, 'C')
+            pass
+        else:
+            _dtype = dtype if dtype is not None else dpnp.float64
 
-        _dtype = dtype if dtype is not None else dpnp.float64
+            return dpnp_ones(shape, _dtype).get_pyobj()
 
-        return dpnp_ones(shape, _dtype)
-
-    return numpy.ones(shape, dtype=dtype, order=order)
+    return call_origin(numpy.ones, shape, dtype=dtype, order=order)
 
 
 # numpy.ones_like(a, dtype=None, order='K', subok=True, shape=None)
@@ -1069,21 +1091,22 @@ def ones_like(x1, dtype=None, order='C', subok=False, shape=None):
 
     """
 
-    if (not use_origin_backend()):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
         if order not in ('C', 'c', None):
-            checker_throw_value_error("ones_like", "order", order, 'C')
-        if subok is not False:
-            checker_throw_value_error("ones_like", "subok", subok, False)
+            pass
+        elif subok is not False:
+            pass
+        else:
+            _shape = shape if shape is not None else x1_desc.shape
+            _dtype = dtype if dtype is not None else x1_desc.dtype
 
-        _shape = shape if shape is not None else x1.shape
-        _dtype = dtype if dtype is not None else x1.dtype
+            return dpnp_ones_like(_shape, _dtype).get_pyobj()
 
-        return dpnp_ones_like(_shape, _dtype)
-
-    return numpy.ones_like(x1, dtype, order, subok, shape)
+    return call_origin(numpy.ones_like, x1, dtype, order, subok, shape)
 
 
-def trace(arr, offset=0, axis1=0, axis2=1, dtype=None, out=None):
+def trace(x1, offset=0, axis1=0, axis2=1, dtype=None, out=None):
     """
        Return the sum along diagonals of the array.
 
@@ -1094,23 +1117,23 @@ def trace(arr, offset=0, axis1=0, axis2=1, dtype=None, out=None):
        Input array is supported as :obj:`dpnp.ndarray`.
        Parameters ``axis1``, ``axis2``, ``out`` and ``dtype`` are supported only with default values.
        """
-    if not use_origin_backend():
-        if not isinstance(arr, dparray):
+
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if x1_desc.size == 0:
             pass
-        elif arr.size == 0:
-            pass
-        elif arr.ndim < 2:
+        elif x1_desc.ndim < 2:
             pass
         elif axis1 != 0:
             pass
         elif axis2 != 1:
             pass
-        elif out is not None and (not isinstance(out, dparray) or (isinstance(out, dparray) and out.shape != arr.shape)):
+        elif out is not None:
             pass
         else:
-            return dpnp_trace(arr, offset, axis1, axis2, dtype, out)
+            return dpnp_trace(x1_desc, offset, axis1, axis2, dtype, out).get_pyobj()
 
-    return call_origin(numpy.trace, arr, offset, axis1, axis2, dtype, out)
+    return call_origin(numpy.trace, x1, offset, axis1, axis2, dtype, out)
 
 
 def tri(N, M=None, k=0, dtype=numpy.float, **kwargs):
@@ -1153,7 +1176,7 @@ def tri(N, M=None, k=0, dtype=numpy.float, **kwargs):
     return call_origin(numpy.tri, N, M, k, dtype, **kwargs)
 
 
-def tril(m, k=0):
+def tril(x1, k=0):
     """
     Lower triangle of an array.
 
@@ -1172,16 +1195,17 @@ def tril(m, k=0):
 
     """
 
-    if not use_origin_backend(m):
-        if not isinstance(m, dparray):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if not isinstance(k, int):
             pass
         else:
-            return dpnp_tril(m, k)
+            return dpnp_tril(x1_desc, k).get_pyobj()
 
-    return call_origin(numpy.tril, m, k)
+    return call_origin(numpy.tril, x1, k)
 
 
-def triu(m, k=0):
+def triu(x1, k=0):
     """
     Upper triangle of an array.
 
@@ -1201,15 +1225,14 @@ def triu(m, k=0):
 
     """
 
-    if not use_origin_backend(m):
-        if not isinstance(m, dparray):
-            pass
-        elif not isinstance(k, int):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if not isinstance(k, int):
             pass
         else:
-            return dpnp_triu(m, k)
+            return dpnp_triu(x1_desc, k).get_pyobj()
 
-    return call_origin(numpy.triu, m, k)
+    return call_origin(numpy.triu, x1, k)
 
 
 def vander(x1, N=None, increasing=False):
@@ -1240,15 +1263,16 @@ def vander(x1, N=None, increasing=False):
            [  1,   3,   9,  27],
            [  1,   5,  25, 125]])
     """
-    if (not use_origin_backend(x1)):
-        if not isinstance(x1, dparray):
-            pass
-        elif x1.ndim != 1:
+
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if x1.ndim != 1:
             pass
         else:
             if N is None:
                 N = x1.size
-            return dpnp_vander(x1, N, increasing)
+
+            return dpnp_vander(x1_desc, N, increasing).get_pyobj()
 
     return call_origin(numpy.vander, x1, N=N, increasing=increasing)
 
@@ -1285,13 +1309,14 @@ def zeros(shape, dtype=None, order='C'):
 
     if (not use_origin_backend()):
         if order not in ('C', 'c', None):
-            checker_throw_value_error("zeros", "order", order, 'C')
+            pass
+        else:
+            _dtype = dtype if dtype is not None else dpnp.float64
+            result = dpnp_zeros(shape, _dtype).get_pyobj()
 
-        _dtype = dtype if dtype is not None else dpnp.float64
+            return result
 
-        return dpnp_zeros(shape, _dtype)
-
-    return numpy.zeros(shape, dtype=dtype, order=order)
+    return call_origin(numpy.zeros, shape, dtype=dtype, order=order)
 
 
 # numpy.zeros_like(a, dtype=None, order='K', subok=True, shape=None)
@@ -1324,15 +1349,17 @@ def zeros_like(x1, dtype=None, order='C', subok=False, shape=None):
 
     """
 
-    if (not use_origin_backend()):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
         if order not in ('C', 'c', None):
-            checker_throw_value_error("zeros_like", "order", order, 'C')
-        if subok is not False:
-            checker_throw_value_error("zeros_like", "subok", subok, False)
+            pass
+        elif subok is not False:
+            pass
+        else:
+            _shape = shape if shape is not None else x1_desc.shape
+            _dtype = dtype if dtype is not None else x1_desc.dtype
+            result = dpnp_zeros_like(_shape, _dtype).get_pyobj()
 
-        _shape = shape if shape is not None else x1.shape
-        _dtype = dtype if dtype is not None else x1.dtype
+            return result
 
-        return dpnp_zeros_like(_shape, _dtype)
-
-    return numpy.zeros_like(x1, dtype, order, subok, shape)
+    return call_origin(numpy.zeros_like, x1, dtype, order, subok, shape)

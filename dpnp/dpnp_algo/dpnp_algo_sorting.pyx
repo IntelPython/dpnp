@@ -46,7 +46,7 @@ ctypedef void(*fptr_dpnp_partition_t)(void * , void * , void * , const size_t , 
 ctypedef void(*fptr_dpnp_searchsorted_t)(void * , const void * , const void * , bool , const size_t , const size_t )
 
 
-cpdef dparray dpnp_argsort(utils.dpnp_descriptor x1):
+cpdef utils.dpnp_descriptor dpnp_argsort(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_ARGSORT, x1, x1.shape)
 
 
@@ -59,7 +59,8 @@ cpdef dparray dpnp_partition(utils.dpnp_descriptor arr, int kth, axis=-1, kind='
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PARTITION, param1_type, param1_type)
 
     result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-    cdef dparray arr2 = dpnp.copy(arr)
+    arr2_copy = dpnp.copy(arr)
+    cdef utils.dpnp_descriptor arr2 = dpnp.get_dpnp_descriptor(arr2_copy)
     cdef dparray result = dparray(arr.shape, dtype=result_type)
 
     cdef fptr_dpnp_partition_t func = <fptr_dpnp_partition_t > kernel_data.ptr
@@ -88,5 +89,5 @@ cpdef dparray dpnp_searchsorted(utils.dpnp_descriptor arr, utils.dpnp_descriptor
     return result
 
 
-cpdef dparray dpnp_sort(utils.dpnp_descriptor x1):
+cpdef utils.dpnp_descriptor dpnp_sort(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_SORT, x1, x1.shape)

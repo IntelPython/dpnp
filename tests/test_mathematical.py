@@ -1,8 +1,36 @@
 import pytest
 
-import dpnp as inp
+import dpnp
 
 import numpy
+
+
+class TestConvolve:
+    def test_object(self):
+        d = [1.] * 100
+        k = [1.] * 3
+        numpy.testing.assert_array_almost_equal(dpnp.convolve(d, k)[2:-2], dpnp.full(98, 3))
+
+    def test_no_overwrite(self):
+        d = dpnp.ones(100)
+        k = dpnp.ones(3)
+        dpnp.convolve(d, k)
+        numpy.testing.assert_array_equal(d, dpnp.ones(100))
+        numpy.testing.assert_array_equal(k, dpnp.ones(3))
+
+    def test_mode(self):
+        d = dpnp.ones(100)
+        k = dpnp.ones(3)
+        default_mode = dpnp.convolve(d, k, mode='full')
+        full_mode = dpnp.convolve(d, k, mode='f')
+        numpy.testing.assert_array_equal(full_mode, default_mode)
+        # integer mode
+        with numpy.testing.assert_raises(ValueError):
+            dpnp.convolve(d, k, mode=-1)
+        numpy.testing.assert_array_equal(dpnp.convolve(d, k, mode=2), full_mode)
+        # illegal arguments
+        with numpy.testing.assert_raises(TypeError):
+            dpnp.convolve(d, k, mode=None)
 
 
 @pytest.mark.parametrize("array",
@@ -19,10 +47,10 @@ import numpy
                               '[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]'
                               ])
 def test_diff(array):
-    a = numpy.array(array)
-    ia = inp.array(a)
-    expected = numpy.diff(a)
-    result = inp.diff(ia)
+    np_a = numpy.array(array)
+    dpnp_a = dpnp.array(array)
+    expected = numpy.diff(np_a)
+    result = dpnp.diff(dpnp_a)
     numpy.testing.assert_allclose(expected, result)
 
 
@@ -30,19 +58,19 @@ def test_diff(array):
                          [[[1 + 1j, -2j], [3 - 3j, 4j]]],
                          ids=['[[1+1j, -2j], [3-3j, 4j]]'])
 def test_multiply_complex(data):
-    a = numpy.array(data)
-    ia = inp.array(data)
+    np_a = numpy.array(data)
+    dpnp_a = dpnp.array(data)
 
-    result = inp.multiply(ia, ia)
-    expected = numpy.multiply(a, a)
+    result = dpnp.multiply(dpnp_a, dpnp_a)
+    expected = numpy.multiply(np_a, np_a)
     numpy.testing.assert_array_equal(result, expected)
 
-    result = inp.multiply(ia, 0.5j)
-    expected = numpy.multiply(a, 0.5j)
+    result = dpnp.multiply(dpnp_a, 0.5j)
+    expected = numpy.multiply(np_a, 0.5j)
     numpy.testing.assert_array_equal(result, expected)
 
-    result = inp.multiply(0.5j, ia)
-    expected = numpy.multiply(0.5j, a)
+    result = dpnp.multiply(0.5j, dpnp_a)
+    expected = numpy.multiply(0.5j, np_a)
     numpy.testing.assert_array_equal(result, expected)
 
 
@@ -56,14 +84,14 @@ def test_multiply_complex(data):
                          [[[1, 2], [3, 4]]],
                          ids=['[[1, 2], [3, 4]]'])
 def test_multiply_dtype(dtype1, dtype2, data):
-    a = numpy.array(data, dtype=dtype1)
-    ia = inp.array(data, dtype=dtype1)
+    np_a = numpy.array(data, dtype=dtype1)
+    dpnp_a = dpnp.array(data, dtype=dtype1)
 
-    b = numpy.array(data, dtype=dtype2)
-    ib = inp.array(data, dtype=dtype2)
+    np_b = numpy.array(data, dtype=dtype2)
+    dpnp_b = dpnp.array(data, dtype=dtype2)
 
-    result = numpy.multiply(ia, ib)
-    expected = numpy.multiply(a, b)
+    result = numpy.multiply(dpnp_a, dpnp_b)
+    expected = numpy.multiply(np_a, np_b)
     numpy.testing.assert_array_equal(result, expected)
 
 
@@ -80,9 +108,9 @@ class TestMathematical:
         return xp.array(data, dtype=dtype)
 
     def _test_mathematical(self, name, dtype, lhs, rhs):
-        a = self.array_or_scalar(inp, lhs, dtype=dtype)
-        b = self.array_or_scalar(inp, rhs, dtype=dtype)
-        result = getattr(inp, name)(a, b)
+        a = self.array_or_scalar(dpnp, lhs, dtype=dtype)
+        b = self.array_or_scalar(dpnp, rhs, dtype=dtype)
+        result = getattr(dpnp, name)(a, b)
 
         a = self.array_or_scalar(numpy, lhs, dtype=dtype)
         b = self.array_or_scalar(numpy, rhs, dtype=dtype)
@@ -148,16 +176,16 @@ class TestMathematical:
                               '[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]',
                               '[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]'])
 def test_multiply_scalar(array, val, data_type, val_type):
-    a = numpy.array(array, dtype=data_type)
-    ia = inp.array(a)
+    np_a = numpy.array(array, dtype=data_type)
+    dpnp_a = dpnp.array(array, dtype=data_type)
     val_ = val_type(val)
 
-    result = inp.multiply(a, val_)
-    expected = numpy.multiply(ia, val_)
+    result = dpnp.multiply(np_a, val_)
+    expected = numpy.multiply(dpnp_a, val_)
     numpy.testing.assert_array_equal(result, expected)
 
-    result = inp.multiply(val_, a)
-    expected = numpy.multiply(val_, ia)
+    result = dpnp.multiply(val_, np_a)
+    expected = numpy.multiply(val_, dpnp_a)
     numpy.testing.assert_array_equal(result, expected)
 
 
@@ -168,11 +196,11 @@ def test_multiply_scalar(array, val, data_type, val_type):
                          [numpy.float32, numpy.float64],
                          ids=['numpy.float32', 'numpy.float64'])
 def test_multiply_scalar2(shape, dtype):
-    a = numpy.ones(shape, dtype=dtype)
-    ia = inp.ones(shape, dtype=dtype)
+    np_a = numpy.ones(shape, dtype=dtype)
+    dpnp_a = dpnp.ones(shape, dtype=dtype)
 
-    result = 0.5 * ia
-    expected = 0.5 * a
+    result = 0.5 * dpnp_a
+    expected = 0.5 * np_a
     numpy.testing.assert_array_equal(result, expected)
 
 
@@ -180,11 +208,11 @@ def test_multiply_scalar2(shape, dtype):
                                    [1, 2, numpy.nan, 4, 5],
                                    [[1, 2, numpy.nan], [3, -4, -5]]])
 def test_nancumprod(array):
-    a = numpy.array(array)
-    ia = inp.array(a)
+    np_a = numpy.array(array)
+    dpnp_a = dpnp.array(np_a)
 
-    result = inp.nancumprod(ia)
-    expected = numpy.nancumprod(a)
+    result = dpnp.nancumprod(dpnp_a)
+    expected = numpy.nancumprod(np_a)
     numpy.testing.assert_array_equal(expected, result)
 
 
@@ -192,11 +220,11 @@ def test_nancumprod(array):
                                    [1, 2, numpy.nan, 4, 5],
                                    [[1, 2, numpy.nan], [3, -4, -5]]])
 def test_nancumsum(array):
-    a = numpy.array(array)
-    ia = inp.array(a)
+    np_a = numpy.array(array)
+    dpnp_a = dpnp.array(np_a)
 
-    result = inp.nancumsum(ia)
-    expected = numpy.nancumsum(a)
+    result = dpnp.nancumsum(dpnp_a)
+    expected = numpy.nancumsum(np_a)
     numpy.testing.assert_array_equal(expected, result)
 
 
@@ -207,11 +235,11 @@ def test_nancumsum(array):
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['numpy.float64', 'numpy.float32', 'numpy.int64', 'numpy.int32'])
 def test_negative(data, dtype):
-    a = numpy.array(data, dtype=dtype)
-    ia = inp.array(data, dtype=dtype)
+    np_a = numpy.array(data, dtype=dtype)
+    dpnp_a = dpnp.array(data, dtype=dtype)
 
-    result = inp.negative(ia)
-    expected = numpy.negative(a)
+    result = dpnp.negative(dpnp_a)
+    expected = numpy.negative(np_a)
     numpy.testing.assert_array_equal(result, expected)
 
 
@@ -236,11 +264,11 @@ def test_negative(data, dtype):
                               '[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]',
                               '[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]'])
 def test_power(array, val, data_type, val_type):
-    a = numpy.array(array, dtype=data_type)
-    ia = inp.array(a)
+    np_a = numpy.array(array, dtype=data_type)
+    dpnp_a = dpnp.array(array, dtype=data_type)
     val_ = val_type(val)
-    result = inp.power(ia, val_)
-    expected = numpy.power(ia, val_)
+    result = dpnp.power(dpnp_a, val_)
+    expected = numpy.power(np_a, val_)
     numpy.testing.assert_array_equal(expected, result)
 
 
@@ -252,21 +280,21 @@ class TestEdiff1d:
                                        [1],
                                        [[1, 2, 3], [5, 2, 8], [7, 3, 4]], ])
     def test_ediff1d_int(self, array, data_type):
-        a = numpy.array(array, dtype=data_type)
-        ia = inp.array(a)
+        np_a = numpy.array(array, dtype=data_type)
+        dpnp_a = dpnp.array(array, dtype=data_type)
 
-        result = inp.ediff1d(ia)
-        expected = numpy.ediff1d(a)
+        result = dpnp.ediff1d(dpnp_a)
+        expected = numpy.ediff1d(np_a)
         numpy.testing.assert_array_equal(expected, result)
 
     def test_ediff1d_args(self):
-        a = numpy.array([1, 2, 4, 7, 0])
+        np_a = numpy.array([1, 2, 4, 7, 0])
 
         to_begin = numpy.array([-20, -30])
         to_end = numpy.array([20, 15])
 
-        result = inp.ediff1d(a, to_end=to_end, to_begin=to_begin)
-        expected = numpy.ediff1d(a, to_end=to_end, to_begin=to_begin)
+        result = dpnp.ediff1d(np_a, to_end=to_end, to_begin=to_begin)
+        expected = numpy.ediff1d(np_a, to_end=to_end, to_begin=to_begin)
         numpy.testing.assert_array_equal(expected, result)
 
 
@@ -279,11 +307,11 @@ class TestTrapz:
                                        [],
                                        [1]])
     def test_trapz_default(self, array, data_type):
-        a = numpy.array(array, dtype=data_type)
-        ia = inp.array(a)
+        np_a = numpy.array(array, dtype=data_type)
+        dpnp_a = dpnp.array(array, dtype=data_type)
 
-        result = inp.trapz(ia)
-        expected = numpy.trapz(a)
+        result = dpnp.trapz(dpnp_a)
+        expected = numpy.trapz(np_a)
         numpy.testing.assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("data_type_y",
@@ -294,34 +322,34 @@ class TestTrapz:
                                          [1., 2.5, 6., 7.]])
     @pytest.mark.parametrize("x_array", [[2, 5, 6, 9]])
     def test_trapz_with_x_params(self, y_array, x_array, data_type_y, data_type_x):
-        y = numpy.array(y_array, dtype=data_type_y)
-        iy = inp.array(y_array, dtype=data_type_y)
+        np_y = numpy.array(y_array, dtype=data_type_y)
+        dpnp_y = dpnp.array(y_array, dtype=data_type_y)
 
-        x = numpy.array(x_array, dtype=data_type_x)
-        ix = inp.array(x_array, dtype=data_type_x)
+        np_x = numpy.array(x_array, dtype=data_type_x)
+        dpnp_x = dpnp.array(x_array, dtype=data_type_x)
 
-        result = inp.trapz(iy, x=ix)
-        expected = numpy.trapz(y, x=x)
+        result = dpnp.trapz(dpnp_y, x=dpnp_x)
+        expected = numpy.trapz(np_y, x=np_x)
         numpy.testing.assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("array", [[1, 2, 3], [4, 5, 6]])
     def test_trapz_with_x_param_2ndim(self, array):
-        a = numpy.array(array)
-        ia = inp.array(a)
+        np_a = numpy.array(array)
+        dpnp_a = dpnp.array(array)
 
-        result = inp.trapz(ia, x=ia)
-        expected = numpy.trapz(a, x=a)
+        result = dpnp.trapz(dpnp_a, x=dpnp_a)
+        expected = numpy.trapz(np_a, x=np_a)
         numpy.testing.assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("y_array", [[1, 2, 4, 5],
                                          [1., 2.5, 6., 7., ]])
     @pytest.mark.parametrize("dx", [2, 3, 4])
     def test_trapz_with_dx_params(self, y_array, dx):
-        y = numpy.array(y_array)
-        iy = inp.array(y)
+        np_y = numpy.array(y_array)
+        dpnp_y = dpnp.array(y_array)
 
-        result = inp.trapz(iy, dx=dx)
-        expected = numpy.trapz(y, dx=dx)
+        result = dpnp.trapz(dpnp_y, dx=dx)
+        expected = numpy.trapz(np_y, dx=dx)
         numpy.testing.assert_array_equal(expected, result)
 
 
@@ -348,14 +376,14 @@ class TestCross:
                                   '[1., 5., 2.]',
                                   '[6, 4, 3]'])
     def test_cross_3x3(self, x1, x2, axisa, axisb, axisc, axis):
-        x1_ = numpy.array(x1)
-        ix1_ = inp.array(x1_)
+        np_x1 = numpy.array(x1)
+        dpnp_x1 = dpnp.array(x1)
 
-        x2_ = numpy.array(x2)
-        ix2_ = inp.array(x2_)
+        np_x2 = numpy.array(x2)
+        dpnp_x2 = dpnp.array(x2)
 
-        result = inp.cross(ix1_, ix2_, axisa, axisb, axisc, axis)
-        expected = numpy.cross(x1_, x2_, axisa, axisb, axisc, axis)
+        result = dpnp.cross(dpnp_x1, dpnp_x2, axisa, axisb, axisc, axis)
+        expected = numpy.cross(np_x1, np_x2, axisa, axisb, axisc, axis)
         numpy.testing.assert_array_equal(expected, result)
 
 
@@ -365,11 +393,11 @@ class TestGradient:
                                        [3., 4., 7.5, 9.],
                                        [2, 6, 8, 10]])
     def test_gradient_y1(self, array):
-        y1 = numpy.array(array)
-        iy1 = inp.array(y1)
+        np_y = numpy.array(array)
+        dpnp_y = dpnp.array(array)
 
-        result = inp.gradient(iy1)
-        expected = numpy.gradient(y1)
+        result = dpnp.gradient(dpnp_y)
+        expected = numpy.gradient(np_y)
         numpy.testing.assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("array", [[2, 3, 6, 8, 4, 9],
@@ -377,11 +405,11 @@ class TestGradient:
                                        [2, 6, 8, 10]])
     @pytest.mark.parametrize("dx", [2, 3.5])
     def test_gradient_y1_dx(self, array, dx):
-        y1 = numpy.array(array)
-        iy1 = inp.array(y1)
+        np_y = numpy.array(array)
+        dpnp_y = dpnp.array(array)
 
-        result = inp.gradient(iy1, dx)
-        expected = numpy.gradient(y1, dx)
+        result = dpnp.gradient(dpnp_y, dx)
+        expected = numpy.gradient(np_y, dx)
         numpy.testing.assert_array_equal(expected, result)
 
 
@@ -391,11 +419,11 @@ class TestGradient:
                                        [3., 4., 7.5, 9.],
                                        [2, 6, 8, 10]])
     def test_gradient_y1(self, array):
-        y1 = numpy.array(array)
-        iy1 = inp.array(y1)
+        np_y = numpy.array(array)
+        dpnp_y = dpnp.array(array)
 
-        result = inp.gradient(iy1)
-        expected = numpy.gradient(y1)
+        result = dpnp.gradient(dpnp_y)
+        expected = numpy.gradient(np_y)
         numpy.testing.assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("array", [[2, 3, 6, 8, 4, 9],
@@ -403,9 +431,174 @@ class TestGradient:
                                        [2, 6, 8, 10]])
     @pytest.mark.parametrize("dx", [2, 3.5])
     def test_gradient_y1_dx(self, array, dx):
-        y1 = numpy.array(array)
-        iy1 = inp.array(y1)
+        np_y = numpy.array(array)
+        dpnp_y = dpnp.array(array)
 
-        result = inp.gradient(iy1, dx)
-        expected = numpy.gradient(y1, dx)
+        result = dpnp.gradient(dpnp_y, dx)
+        expected = numpy.gradient(np_y, dx)
         numpy.testing.assert_array_equal(expected, result)
+
+
+class TestCeil:
+
+    def test_ceil(self):
+        array_data = numpy.arange(10)
+        out = numpy.empty(10, dtype=numpy.float64)
+
+        # DPNP
+        dp_array = dpnp.array(array_data, dtype=dpnp.float64)
+        dp_out = dpnp.array(out, dtype=dpnp.float64)
+        result = dpnp.ceil(dp_array, out=dp_out)
+
+        # original
+        np_array = numpy.array(array_data, dtype=numpy.float64)
+        expected = numpy.ceil(np_array, out=out)
+
+        numpy.testing.assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dtype",
+                             [numpy.float32, numpy.int64, numpy.int32],
+                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
+    def test_invalid_dtype(self, dtype):
+
+        dp_array = dpnp.arange(10, dtype=dpnp.float64)
+        dp_out = dpnp.empty(10, dtype=dtype)
+
+        with pytest.raises(ValueError):
+            dpnp.ceil(dp_array, out=dp_out)
+
+    @pytest.mark.parametrize("shape",
+                             [(0,), (15, ), (2, 2)],
+                             ids=['(0,)', '(15, )', '(2,2)'])
+    def test_invalid_shape(self, shape):
+
+        dp_array = dpnp.arange(10, dtype=dpnp.float64)
+        dp_out = dpnp.empty(shape, dtype=dpnp.float64)
+
+        with pytest.raises(ValueError):
+            dpnp.ceil(dp_array, out=dp_out)
+
+
+class TestFloor:
+
+    def test_floor(self):
+        array_data = numpy.arange(10)
+        out = numpy.empty(10, dtype=numpy.float64)
+
+        # DPNP
+        dp_array = dpnp.array(array_data, dtype=dpnp.float64)
+        dp_out = dpnp.array(out, dtype=dpnp.float64)
+        result = dpnp.floor(dp_array, out=dp_out)
+
+        # original
+        np_array = numpy.array(array_data, dtype=numpy.float64)
+        expected = numpy.floor(np_array, out=out)
+
+        numpy.testing.assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dtype",
+                             [numpy.float32, numpy.int64, numpy.int32],
+                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
+    def test_invalid_dtype(self, dtype):
+
+        dp_array = dpnp.arange(10, dtype=dpnp.float64)
+        dp_out = dpnp.empty(10, dtype=dtype)
+
+        with pytest.raises(ValueError):
+            dpnp.floor(dp_array, out=dp_out)
+
+    @pytest.mark.parametrize("shape",
+                             [(0,), (15, ), (2, 2)],
+                             ids=['(0,)', '(15, )', '(2,2)'])
+    def test_invalid_shape(self, shape):
+
+        dp_array = dpnp.arange(10, dtype=dpnp.float64)
+        dp_out = dpnp.empty(shape, dtype=dpnp.float64)
+
+        with pytest.raises(ValueError):
+            dpnp.floor(dp_array, out=dp_out)
+
+
+class TestTrunc:
+
+    def test_trunc(self):
+        array_data = numpy.arange(10)
+        out = numpy.empty(10, dtype=numpy.float64)
+
+        # DPNP
+        dp_array = dpnp.array(array_data, dtype=dpnp.float64)
+        dp_out = dpnp.array(out, dtype=dpnp.float64)
+        result = dpnp.trunc(dp_array, out=dp_out)
+
+        # original
+        np_array = numpy.array(array_data, dtype=numpy.float64)
+        expected = numpy.trunc(np_array, out=out)
+
+        numpy.testing.assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dtype",
+                             [numpy.float32, numpy.int64, numpy.int32],
+                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
+    def test_invalid_dtype(self, dtype):
+
+        dp_array = dpnp.arange(10, dtype=dpnp.float64)
+        dp_out = dpnp.empty(10, dtype=dtype)
+
+        with pytest.raises(ValueError):
+            dpnp.trunc(dp_array, out=dp_out)
+
+    @pytest.mark.parametrize("shape",
+                             [(0,), (15, ), (2, 2)],
+                             ids=['(0,)', '(15, )', '(2,2)'])
+    def test_invalid_shape(self, shape):
+
+        dp_array = dpnp.arange(10, dtype=dpnp.float64)
+        dp_out = dpnp.empty(shape, dtype=dpnp.float64)
+
+        with pytest.raises(ValueError):
+            dpnp.trunc(dp_array, out=dp_out)
+
+
+class TestPower:
+
+    def test_power(self):
+        array1_data = numpy.arange(10)
+        array2_data = numpy.arange(5, 15)
+        out = numpy.empty(10, dtype=numpy.float64)
+
+        # DPNP
+        dp_array1 = dpnp.array(array1_data, dtype=dpnp.float64)
+        dp_array2 = dpnp.array(array2_data, dtype=dpnp.float64)
+        dp_out = dpnp.array(out, dtype=dpnp.float64)
+        result = dpnp.power(dp_array1, dp_array2, out=dp_out)
+
+        # original
+        np_array1 = numpy.array(array1_data, dtype=numpy.float64)
+        np_array2 = numpy.array(array2_data, dtype=numpy.float64)
+        expected = numpy.power(np_array1, np_array2, out=out)
+
+        numpy.testing.assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dtype",
+                             [numpy.float32, numpy.int64, numpy.int32],
+                             ids=['numpy.float32', 'numpy.int64', 'numpy.int32'])
+    def test_invalid_dtype(self, dtype):
+
+        dp_array1 = dpnp.arange(10, dtype=dpnp.float64)
+        dp_array2 = dpnp.arange(5, 15, dtype=dpnp.float64)
+        dp_out = dpnp.empty(10, dtype=dtype)
+
+        with pytest.raises(ValueError):
+            dpnp.power(dp_array1, dp_array2, out=dp_out)
+
+    @pytest.mark.parametrize("shape",
+                             [(0,), (15, ), (2, 2)],
+                             ids=['(0,)', '(15, )', '(2,2)'])
+    def test_invalid_shape(self, shape):
+
+        dp_array1 = dpnp.arange(10, dtype=dpnp.float64)
+        dp_array2 = dpnp.arange(5, 15, dtype=dpnp.float64)
+        dp_out = dpnp.empty(shape, dtype=dpnp.float64)
+
+        with pytest.raises(ValueError):
+            dpnp.power(dp_array1, dp_array2, out=dp_out)

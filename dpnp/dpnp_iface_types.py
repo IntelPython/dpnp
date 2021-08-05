@@ -51,6 +51,7 @@ __all__ = [
     "int64",
     "integer",
     "isscalar",
+    "is_type_supported",
     "longcomplex",
     "nan",
     "newaxis",
@@ -86,3 +87,14 @@ def isscalar(obj):
 nan = numpy.nan
 newaxis = None
 void = numpy.void
+
+
+def is_type_supported(obj_type):
+    """
+    Return True if type is supported by DPNP python level.
+    """
+
+    if obj_type == float64 or obj_type == float32 or obj_type == int64 or obj_type == int32:
+        return True
+
+    return False

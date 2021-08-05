@@ -101,12 +101,12 @@ cpdef dparray dpnp_absolute(utils.dpnp_descriptor input):
     return result
 
 
-cpdef dparray dpnp_add(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+cpdef utils.dpnp_descriptor dpnp_add(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
     return call_fptr_2in_1out(DPNP_FN_ADD, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
-cpdef dparray dpnp_arctan2(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
-    return call_fptr_2in_1out(DPNP_FN_ARCTAN2, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
+cpdef utils.dpnp_descriptor dpnp_arctan2(utils.dpnp_descriptor x1_obj, utils.dpnp_descriptor x2_obj, object dtype=None, dparray out=None, object where=True):
+    return call_fptr_2in_1out(DPNP_FN_ARCTAN2, x1_obj, x2_obj, dtype=dtype, out=out, where=where, func_name="arctan2")
 
 
 cpdef dpnp_around(utils.dpnp_descriptor x1, int decimals):
@@ -126,23 +126,23 @@ cpdef dpnp_around(utils.dpnp_descriptor x1, int decimals):
     return result
 
 
-cpdef dparray dpnp_ceil(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_CEIL, x1, x1.shape)
+cpdef utils.dpnp_descriptor dpnp_ceil(utils.dpnp_descriptor x1, dparray out):
+    return call_fptr_1in_1out(DPNP_FN_CEIL, x1, x1.shape, out=out, func_name='ceil')
 
 
-cpdef dparray dpnp_conjugate(utils.dpnp_descriptor x1):
+cpdef utils.dpnp_descriptor dpnp_conjugate(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_CONJIGUATE, x1, x1.shape)
 
 
-cpdef dparray dpnp_copysign(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+cpdef utils.dpnp_descriptor dpnp_copysign(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
     return call_fptr_2in_1out(DPNP_FN_COPYSIGN, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
-cpdef dparray dpnp_cross(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+cpdef utils.dpnp_descriptor dpnp_cross(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
     return call_fptr_2in_1out(DPNP_FN_CROSS, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
-cpdef dparray dpnp_cumprod(utils.dpnp_descriptor x1):
+cpdef utils.dpnp_descriptor dpnp_cumprod(utils.dpnp_descriptor x1):
     # instead of x1.shape, (x1.size, ) is passed to the function
     # due to the following:
     # >>> import numpy
@@ -154,7 +154,7 @@ cpdef dparray dpnp_cumprod(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_CUMPROD, x1, (x1.size,))
 
 
-cpdef dparray dpnp_cumsum(utils.dpnp_descriptor x1):
+cpdef utils.dpnp_descriptor dpnp_cumsum(utils.dpnp_descriptor x1):
     # instead of x1.shape, (x1.size, ) is passed to the function
     # due to the following:
     # >>> import numpy
@@ -193,31 +193,31 @@ cpdef dparray dpnp_diff(object input, int n):
         return dpnp.array([], dtype=input.dtype)
 
 
-cpdef dparray dpnp_divide(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+cpdef utils.dpnp_descriptor dpnp_divide(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
     return call_fptr_2in_1out(DPNP_FN_DIVIDE, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
-cpdef dparray dpnp_ediff1d(utils.dpnp_descriptor x1):
+cpdef utils.dpnp_descriptor dpnp_ediff1d(utils.dpnp_descriptor x1):
 
     if x1.size <= 1:
-        return dpnp.empty(0, dtype=x1.dtype)
+        return utils.dpnp_descriptor(dpnp.empty(0, dtype=x1.dtype))  # TODO need to call dpnp_empty instead
 
     return call_fptr_1in_1out(DPNP_FN_EDIFF1D, x1, (x1.size - 1,))
 
 
-cpdef dparray dpnp_fabs(utils.dpnp_descriptor x1):
+cpdef utils.dpnp_descriptor dpnp_fabs(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_FABS, x1, x1.shape)
 
 
-cpdef dparray dpnp_floor(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_FLOOR, x1, x1.shape)
+cpdef utils.dpnp_descriptor dpnp_floor(utils.dpnp_descriptor x1, dparray out):
+    return call_fptr_1in_1out(DPNP_FN_FLOOR, x1, x1.shape, out=out, func_name='floor')
 
 
-cpdef dparray dpnp_floor_divide(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+cpdef utils.dpnp_descriptor dpnp_floor_divide(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
     return call_fptr_2in_1out(DPNP_FN_FLOOR_DIVIDE, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
-cpdef dparray dpnp_fmod(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+cpdef utils.dpnp_descriptor dpnp_fmod(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
     return call_fptr_2in_1out(DPNP_FN_FMOD, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
@@ -242,15 +242,15 @@ cpdef dparray dpnp_gradient(object y1, int dx=1):
     return result
 
 
-cpdef dparray dpnp_hypot(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+cpdef utils.dpnp_descriptor dpnp_hypot(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
     return call_fptr_2in_1out(DPNP_FN_HYPOT, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
-cpdef dparray dpnp_maximum(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+cpdef utils.dpnp_descriptor dpnp_maximum(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
     return call_fptr_2in_1out(DPNP_FN_MAXIMUM, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
-cpdef dparray dpnp_minimum(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+cpdef utils.dpnp_descriptor dpnp_minimum(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
     return call_fptr_2in_1out(DPNP_FN_MINIMUM, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
@@ -273,12 +273,11 @@ cpdef tuple dpnp_modf(utils.dpnp_descriptor x1):
     return result1, result2
 
 
-cpdef dparray dpnp_multiply(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+cpdef utils.dpnp_descriptor dpnp_multiply(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
     return call_fptr_2in_1out(DPNP_FN_MULTIPLY, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
-cpdef dparray dpnp_nancumprod(utils.dpnp_descriptor x1):
-
+cpdef utils.dpnp_descriptor dpnp_nancumprod(utils.dpnp_descriptor x1):
     cur_x1 = dpnp.copy(x1)
 
     for i in range(cur_x1.size):
@@ -289,8 +288,7 @@ cpdef dparray dpnp_nancumprod(utils.dpnp_descriptor x1):
     return dpnp_cumprod(x1_desc)
 
 
-cpdef dparray dpnp_nancumsum(utils.dpnp_descriptor x1):
-
+cpdef utils.dpnp_descriptor dpnp_nancumsum(utils.dpnp_descriptor x1):
     cur_x1 = dpnp.copy(x1)
 
     for i in range(cur_x1.size):
@@ -331,19 +329,25 @@ cpdef dpnp_nansum(object x1):
     # return dpnp_sum(result)
 
     result_desc = dpnp.get_dpnp_descriptor(result)  # TODO remove it later
-    sum_result = dpnp_sum(result_desc)
+    sum_result = dpnp_sum(result_desc).get_pyobj()
     return x1.dtype.type(sum_result[0])
 
 
-cpdef dparray dpnp_negative(dpnp_descriptor x1):
+cpdef utils.dpnp_descriptor dpnp_negative(dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_NEGATIVE, x1, x1.shape)
 
 
-cpdef dparray dpnp_power(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
-    return call_fptr_2in_1out(DPNP_FN_POWER, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
+cpdef utils.dpnp_descriptor dpnp_power(utils.dpnp_descriptor x1_obj, utils.dpnp_descriptor x2_obj, object dtype=None, dparray out=None, object where=True):
+    return call_fptr_2in_1out(DPNP_FN_POWER, x1_obj, x2_obj, dtype=dtype, out=out, where=where, func_name="power")
 
 
-cpdef dparray dpnp_prod(utils.dpnp_descriptor input, object axis=None, object dtype=None, dparray out=None, cpp_bool keepdims=False, object initial=None, object where=True):
+cpdef utils.dpnp_descriptor dpnp_prod(utils.dpnp_descriptor input,
+                                      object axis=None,
+                                      object dtype=None,
+                                      utils.dpnp_descriptor out=None,
+                                      cpp_bool keepdims=False,
+                                      object initial=None,
+                                      object where=True):
     """
     input:float64   : outout:float64   : name:prod
     input:float32   : outout:float32   : name:prod
@@ -366,7 +370,7 @@ cpdef dparray dpnp_prod(utils.dpnp_descriptor input, object axis=None, object dt
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PROD, input_c_type, result_c_type)
 
     """ Create result array """
-    cdef dparray result = utils.create_output_array(result_shape, result_c_type, out)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, result_c_type, out)
     cdef dpnp_reduction_c_t func = <dpnp_reduction_c_t > kernel_data.ptr
 
     """ Call FPTR interface function """
@@ -375,19 +379,25 @@ cpdef dparray dpnp_prod(utils.dpnp_descriptor input, object axis=None, object dt
     return result
 
 
-cpdef dparray dpnp_remainder(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+cpdef utils.dpnp_descriptor dpnp_remainder(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
     return call_fptr_2in_1out(DPNP_FN_REMAINDER, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
-cpdef dparray dpnp_sign(utils.dpnp_descriptor x1):
+cpdef utils.dpnp_descriptor dpnp_sign(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_SIGN, x1, x1.shape)
 
 
-cpdef dparray dpnp_subtract(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
+cpdef utils.dpnp_descriptor dpnp_subtract(object x1_obj, object x2_obj, object dtype=None, dparray out=None, object where=True):
     return call_fptr_2in_1out(DPNP_FN_SUBTRACT, x1_obj, x2_obj, dtype=dtype, out=out, where=where)
 
 
-cpdef dparray dpnp_sum(utils.dpnp_descriptor input, object axis=None, object dtype=None, dparray out=None, cpp_bool keepdims=False, object initial=None, object where=True):
+cpdef utils.dpnp_descriptor dpnp_sum(utils.dpnp_descriptor input,
+                                     object axis=None,
+                                     object dtype=None,
+                                     utils.dpnp_descriptor out=None,
+                                     cpp_bool keepdims=False,
+                                     object initial=None,
+                                     object where=True):
 
     cdef dparray_shape_type input_shape = input.shape
     cdef DPNPFuncType input_c_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
@@ -401,10 +411,10 @@ cpdef dparray dpnp_sum(utils.dpnp_descriptor input, object axis=None, object dty
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_SUM, input_c_type, result_c_type)
 
     """ Create result array """
-    cdef dparray result = utils.create_output_array(result_shape, result_c_type, out)
-    cdef dpnp_reduction_c_t func = <dpnp_reduction_c_t > kernel_data.ptr
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, result_c_type, out)
 
     """ Call FPTR interface function """
+    cdef dpnp_reduction_c_t func = <dpnp_reduction_c_t > kernel_data.ptr
     func(result.get_data(), input.get_data(), < size_t * >input_shape.data(), input_shape.size(), axis_shape.data(), axis_shape.size(), NULL, NULL)
 
     return result
@@ -426,5 +436,5 @@ cpdef dpnp_trapz(utils.dpnp_descriptor y1, dparray x1, double dx):
     return result[0]
 
 
-cpdef dparray dpnp_trunc(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_TRUNC, x1, x1.shape)
+cpdef utils.dpnp_descriptor dpnp_trunc(utils.dpnp_descriptor x1, dparray out):
+    return call_fptr_1in_1out(DPNP_FN_TRUNC, x1, x1.shape, out=out, func_name='trunc')

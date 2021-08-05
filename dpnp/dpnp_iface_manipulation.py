@@ -56,15 +56,20 @@ __all__ = [
     "atleast_1d",
     "atleast_2d",
     "atleast_3d",
+    "concatenate",
     "copyto",
     "expand_dims",
+    "hstack",
     "moveaxis",
     "ravel",
     "repeat",
     "rollaxis",
     "squeeze",
+    "stack",
     "swapaxes",
-    "transpose"
+    "transpose",
+    "unique",
+    "vstack"
 ]
 
 
@@ -174,6 +179,43 @@ def atleast_3d(*arys):
     return call_origin(numpy.atleast_3d, *arys)
 
 
+def concatenate(arrs, axis=0, out=None, dtype=None, casting="same_kind"):
+    """
+    Join a sequence of arrays along an existing axis.
+
+    For full documentation refer to :obj:`numpy.concatenate`.
+
+    Examples
+    --------
+    >>> import dpnp
+    >>> a = dpnp.array([[1, 2], [3, 4]])
+    >>> b = dpnp.array([[5, 6]])
+    >>> res = dpnp.concatenate((a, b), axis=0)
+    >>> print(res)
+    [[1 2]
+     [3 4]
+     [5 6]]
+    >>> res = dpnp.concatenate((a, b.T), axis=1)
+    >>> print(res)
+    [[1 2 5]
+     [3 4 6]]
+    >>> res = dpnp.concatenate((a, b), axis=None)
+    >>> print(res)
+    [1 2 3 4 5 6]
+
+    """
+
+    # TODO:
+    # `call_origin` cannot convert sequence of dparray to sequence of
+    # ndarrays
+    arrs_new = []
+    for arr in arrs:
+        arrx = dpnp.asnumpy(arr) if isinstance(arr, dparray) else arr
+        arrs_new.append(arrx)
+
+    return call_origin(numpy.concatenate, arrs_new, axis=axis, out=out, dtype=dtype, casting=casting)
+
+
 def copyto(dst, src, casting='same_kind', where=True):
     """
     Copies values from one array to another, broadcasting as necessary.
@@ -277,6 +319,25 @@ def expand_dims(x1, axis):
         return dpnp_expand_dims(x1, axis)
 
     return call_origin(numpy.expand_dims, x1, axis)
+
+
+def hstack(tup):
+    """
+    Stack arrays in sequence horizontally (column wise).
+
+    For full documentation refer to :obj:`numpy.hstack`.
+
+    """
+
+    # TODO:
+    # `call_origin` cannot convert sequence of dparray to sequence of
+    # nparrays
+    tup_new = []
+    for tp in tup:
+        tpx = dpnp.asnumpy(tp) if isinstance(tp, dparray) else tp
+        tup_new.append(tpx)
+
+    return call_origin(numpy.hstack, tup_new)
 
 
 def moveaxis(x1, source, destination):
@@ -493,6 +554,17 @@ def squeeze(x1, axis=None):
     return call_origin(numpy.squeeze, x1, axis)
 
 
+def stack(arrays, axis=0, out=None):
+    """
+    Join a sequence of arrays along a new axis.
+
+    For full documentation refer to :obj:`numpy.stack`.
+
+    """
+
+    return call_origin(numpy.stack, arrays, axis, out)
+
+
 def swapaxes(x1, axis1, axis2):
     """
     Interchange two axes of an array.
@@ -584,3 +656,41 @@ def transpose(x1, axes=None):
         return result
 
     return call_origin(numpy.transpose, x1, axes=axes)
+
+
+def unique(x1, **kwargs):
+    """
+    Find the unique elements of an array.
+
+    For full documentation refer to :obj:`numpy.unique`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 1, 2, 2, 3, 3])
+    >>> res = np.unique(x)
+    >>> print(res)
+    [1, 2, 3]
+
+    """
+
+    return call_origin(numpy.unique, x1, **kwargs)
+
+
+def vstack(tup):
+    """
+    Stack arrays in sequence vertically (row wise).
+
+    For full documentation refer to :obj:`numpy.vstack`.
+
+    """
+
+    # TODO:
+    # `call_origin` cannot convert sequence of dparray to sequence of
+    # nparray
+    tup_new = []
+    for tp in tup:
+        tpx = dpnp.asnumpy(tp) if isinstance(tp, dparray) else tp
+        tup_new.append(tpx)
+
+    return call_origin(numpy.vstack, tup_new)

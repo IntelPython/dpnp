@@ -53,6 +53,7 @@ __all__ = [
     "checker_throw_runtime_error",
     "checker_throw_type_error",
     "checker_throw_value_error",
+    "create_output_descriptor_py",
     "dp2nd_array",
     "dpnp_descriptor",
     "get_axis_indeces",
@@ -72,7 +73,7 @@ def call_origin(function, *args, **kwargs):
     Call fallback function for unsupported cases
     """
 
-    # print(f"DPNP call_origin(): Fallback called")
+    # print(f"DPNP call_origin(): Fallback called. \n\t function={function}, \n\t args={args}, \n\t kwargs={kwargs}")
 
     kwargs_out = kwargs.get("out", None)
     if (kwargs_out is not None):
@@ -133,6 +134,12 @@ cpdef checker_throw_value_error(function_name, param_name, param, expected):
     err_msg = f"{ERROR_PREFIX} in function {function_name}() paramenter '{param_name}'"
     err_msg += f" expected `{expected}`, but '{param}' provided"
     raise ValueError(err_msg)
+
+
+cpdef dpnp_descriptor create_output_descriptor_py(dparray_shape_type output_shape, object d_type, object requested_out):
+    cdef DPNPFuncType c_type = dpnp_dtype_to_DPNPFuncType(d_type)
+
+    return create_output_descriptor(output_shape, c_type, requested_out)
 
 
 cpdef dp2nd_array(arr):
@@ -329,6 +336,10 @@ cdef DPNPFuncType get_output_c_type(DPNPFuncName funcID,
 
 
 cdef dparray create_output_array(dparray_shape_type output_shape, DPNPFuncType c_type, object requested_out):
+    """
+    TODO This function needs to be deleted. Replace with create_output_descriptor()
+    """
+
     cdef dparray result
 
     if requested_out is None:
@@ -341,6 +352,27 @@ cdef dparray create_output_array(dparray_shape_type output_shape, DPNPFuncType c
         result = requested_out
 
     return result
+
+cdef dpnp_descriptor create_output_descriptor(dparray_shape_type output_shape,
+                                              DPNPFuncType c_type,
+                                              dpnp_descriptor requested_out):
+    cdef dpnp_descriptor result_desc
+
+    if requested_out is None:
+        """ Create DPNP array """
+        result = dparray(output_shape, dtype=dpnp_DPNPFuncType_to_dtype( < size_t > c_type))
+        result_desc = dpnp_descriptor(result)
+    else:
+        """ Based on 'out' parameter """
+        if (output_shape != requested_out.shape):
+            checker_throw_value_error("create_output_array", "out.shape", requested_out.shape, output_shape)
+
+        if isinstance(requested_out, dpnp_descriptor):
+            result_desc = requested_out
+        else:
+            result_desc = dpnp_descriptor(requested_out)
+
+    return result_desc
 
 
 cpdef nd2dp_array(arr):
@@ -440,6 +472,7 @@ cpdef cpp_bool use_origin_backend(input1=None, size_t compute_size=0):
 cdef class dpnp_descriptor:
     def __init__(self, obj):
         """ Initialze variables """
+        self.origin_pyobj = None
         self.descriptor = None
         self.dpnp_descriptor_data_size = 0
         self.dpnp_descriptor_is_scalar = True
@@ -452,6 +485,8 @@ cdef class dpnp_descriptor:
         if self.descriptor["version"] != 3:
             return
 
+        self.origin_pyobj = obj
+
         """ array size calculation """
         cdef Py_ssize_t shape_it = 0
         self.dpnp_descriptor_data_size = 1
@@ -461,7 +496,7 @@ cdef class dpnp_descriptor:
                 raise ValueError(f"{ERROR_PREFIX} dpnp_descriptor::__init__() invalid value {shape_it} in 'shape'")
             self.dpnp_descriptor_data_size *= shape_it
 
-        """ set scalar propery """
+        """ set scalar property """
         self.dpnp_descriptor_is_scalar = False
 
     @property
@@ -535,6 +570,9 @@ cdef class dpnp_descriptor:
         }
 
         return interface_dict
+
+    def get_pyobj(self):
+        return self.origin_pyobj
 
     cdef void * get_data(self):
         cdef long val = self.data

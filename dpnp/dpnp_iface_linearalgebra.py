@@ -245,8 +245,7 @@ def matmul(x1, x2, out=None, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     x2_desc = dpnp.get_dpnp_descriptor(x2)
-    out_desc = dpnp.get_dpnp_descriptor(x2)
-    if x1_desc and x2_desc and out_desc and not kwargs:
+    if x1_desc and x2_desc and not kwargs:
         if x1_desc.size != x2_desc.size:
             pass
         elif not x1_desc.ndim:
@@ -276,7 +275,8 @@ def matmul(x1, x2, out=None, **kwargs):
                 if (dparray1_size > cost_size) and (dparray2_size > cost_size):
                     return dpnp_matmul(x1_desc, x2_desc, out)
             else:
-                return dpnp_matmul(x1_desc, x2_desc, out)
+                out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+                return dpnp_matmul(x1_desc, x2_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.matmul, x1, x2, out=out, **kwargs)
 

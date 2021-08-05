@@ -88,13 +88,17 @@ def cholesky(input):
         matrix object if `input` is a matrix object.
     """
 
-    if not use_origin_backend(input):
-        if not isinstance(input, dparray):
-            pass
-        elif input.shape[-1] != input.shape[-2]:
+    x1_desc = dpnp.get_dpnp_descriptor(input)
+    if x1_desc:
+        if x1_desc.shape[-1] != x1_desc.shape[-2]:
             pass
         else:
-            return dpnp_cholesky(input)
+            if input.dtype == dpnp.int32 or input.dtype == dpnp.int64:
+                # TODO memory copy. needs to move into DPNPC
+                input_ = dpnp.get_dpnp_descriptor(input.astype(dpnp.float64))
+            else:
+                input_ = x1_desc
+            return dpnp_cholesky(input_).get_pyobj()
 
     return call_origin(numpy.linalg.cholesky, input)
 
@@ -140,11 +144,11 @@ def det(input):
     det : (...) array_like
         Determinant of `input`.
     """
-    is_input_dparray = isinstance(input, dparray)
 
-    if not use_origin_backend(input) and is_input_dparray:
-        if input.shape[-1] == input.shape[-2]:
-            result_obj = dpnp_det(input)
+    x1_desc = dpnp.get_dpnp_descriptor(input)
+    if x1_desc:
+        if x1_desc.shape[-1] == x1_desc.shape[-2]:
+            result_obj = dpnp_det(x1_desc).get_pyobj()
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
@@ -188,11 +192,10 @@ def eigvals(input):
         real for real matrices.
     """
 
-    is_input_dparray = isinstance(input, dparray)
-
-    if (not use_origin_backend(input) and is_input_dparray):
-        if (input.size > 0):
-            return dpnp_eigvals(input)
+    x1_desc = dpnp.get_dpnp_descriptor(input)
+    if x1_desc:
+        if x1_desc.size > 0:
+            return dpnp_eigvals(x1_desc).get_pyobj()
 
     return call_origin(numpy.linalg.eigvals, input)
 
@@ -239,26 +242,14 @@ def matrix_power(input, count):
 
     """
 
-    is_input_dparray = isinstance(input, dparray)
-
-    if not use_origin_backend(input) and is_input_dparray and count > 0:
+    if not use_origin_backend() and count > 0:
         result = input
         for id in range(count - 1):
             result = dpnp.matmul(result, input)
 
         return result
 
-    input1 = dpnp.asnumpy(input) if is_input_dparray else input
-
-    # TODO need to put dparray memory into NumPy call
-    result_numpy = numpy.linalg.matrix_power(input1, count)
-    result = result_numpy
-    if isinstance(result, numpy.ndarray):
-        result = dparray(result_numpy.shape, dtype=result_numpy.dtype)
-        for i in range(result.size):
-            result._setitem_scalar(i, result_numpy.item(i))
-
-    return result
+    return call_origin(numpy.linalg.matrix_power, input, count)
 
 
 def matrix_rank(input, tol=None, hermitian=False):
@@ -288,18 +279,17 @@ def matrix_rank(input, tol=None, hermitian=False):
 
     """
 
-    is_input_dparray = isinstance(input, dparray)
-
-    if not use_origin_backend(input) and is_input_dparray:
+    x1_desc = dpnp.get_dpnp_descriptor(input)
+    if x1_desc:
         if tol is not None:
-            checker_throw_value_error("matrix_rank", "tol", type(tol), None)
-        if hermitian is not False:
-            checker_throw_value_error("matrix_rank", "hermitian", hermitian, False)
-
-        result_obj = dpnp_matrix_rank(input)
-        result = dpnp.convert_single_elem_array_to_scalar(result_obj)
-
-        return result
+            pass
+        elif hermitian:
+            pass
+        else:
+            result_obj = dpnp_matrix_rank(x1_desc).get_pyobj()
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+    
+            return result
 
     return call_origin(numpy.linalg.matrix_rank, input, tol, hermitian)
 
@@ -392,8 +382,7 @@ def norm(input, ord=None, axis=None, keepdims=False):
     return call_origin(numpy.linalg.norm, input, ord, axis, keepdims)
 
 
-#linalg.qr(a, mode='reduced')
-def qr(a, mode='complete'):
+def qr(x1, mode='reduced'):
     """
     Compute the qr factorization of a matrix.
 
@@ -409,15 +398,18 @@ def qr(a, mode='complete'):
 
     """
 
-    if not use_origin_backend(a):
-        if not isinstance(a, dparray):
+    if not use_origin_backend(x1):
+        if not isinstance(x1, dparray):
             pass
-        elif not mode == 'complete':
+        elif mode != 'reduced':
             pass
         else:
-            return dpnp_qr(a, mode)
+            # I see something wrong with it. it is couse SIGSEGV in 1 of 10 test times
+            res_q, res_r = dpnp_qr(x1, mode)
 
-    return call_origin(numpy.linalg.qr, a, mode)
+            return (res_q, res_r)
+
+    return call_origin(numpy.linalg.qr, x1, mode)
 
 
 def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
