@@ -64,7 +64,7 @@ int main(int, char**)
         array[size * i + i] = i + 1;
     }
 
-    dpnp_lapack_eig_c<float, float>(array, result1, result2, size);
+    dpnp_eig_c<float, float>(array, result1, result2, size);
 
     std::cout << "eigen values" << std::endl;
     for (size_t i = 0; i < size; ++i)
