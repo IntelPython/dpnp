@@ -227,7 +227,7 @@ cpdef dparray dpnp_norm(dparray input, ord=None, axis=None):
 
             input = input.ravel(order='K')
             sqnorm = dpnp.dot(input, input)
-            ret = dpnp.sqrt(sqnorm)
+            ret = dpnp.sqrt([sqnorm])
             return dpnp.array([ret], dtype=res_type)
 
     len_axis = 1 if axis is None else len(axis_)
