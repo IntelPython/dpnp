@@ -42,22 +42,18 @@ template <typename _KernelNameSpecialization1, typename _KernelNameSpecializatio
 class dpnp_fft_fft_c_kernel;
 
 template <typename _DataType_input, typename _DataType_output>
-void dpnp_fft_fft_c(const void* array1_in,
-                    void* result1,
-                    const long* input_shape,
-                    const long* output_shape,
-                    size_t shape_size,
-                    long axis,
-                    long input_boundarie,
-                    size_t inverse)
+void dpnp_fft_fft_kernel_func_c(const void* array1_in,
+                                void* result1,
+                                const long* input_shape,
+                                const long* output_shape,
+                                size_t shape_size,
+                                const size_t result_size,
+                                long axis,
+                                long input_boundarie,
+                                size_t inverse)
 {
-    const size_t result_size = std::accumulate(output_shape, output_shape + shape_size, 1, std::multiplies<size_t>());
-    if (!(result_size && shape_size))
-    {
-        return;
-    }
-
     cl::sycl::event event;
+
     const double kernel_pi = inverse ? -M_PI : M_PI;
 
     const _DataType_input* array_1 = reinterpret_cast<const _DataType_input*>(array1_in);
@@ -138,21 +134,52 @@ void dpnp_fft_fft_c(const void* array1_in,
     };
 
     event = DPNP_QUEUE.submit(kernel_func);
-
-#if 0 // keep this code
-    oneapi::mkl::dft::descriptor<mkl_dft::precision::DOUBLE, mkl_dft::domain::COMPLEX> desc(result_size);
-    desc.set_value(mkl_dft::config_param::FORWARD_SCALE, static_cast<double>(result_size));
-    desc.set_value(mkl_dft::config_param::PLACEMENT, DFTI_NOT_INPLACE); // enum value from math library C interface
-    desc.commit(DPNP_QUEUE);
-
-    event = mkl_dft::compute_forward(desc, array_1, result);
-#endif
-
     event.wait();
 
     dpnp_memory_free_c(input_shape_offsets);
     dpnp_memory_free_c(output_shape_offsets);
     dpnp_memory_free_c(axis_iterator);
+
+    return;
+}
+
+template <typename _DataType_input, typename _DataType_output>
+void dpnp_fft_fft_c(const void* array1_in,
+                    void* result1,
+                    const long* input_shape,
+                    const long* output_shape,
+                    size_t shape_size,
+                    long axis,
+                    long input_boundarie,
+                    size_t inverse)
+{
+    const size_t result_size = std::accumulate(output_shape, output_shape + shape_size, 1, std::multiplies<size_t>());
+    if (!(result_size && shape_size))
+    {
+        return;
+    }
+
+    if constexpr (std::is_same<_DataType_input, std::complex<double>>::value &&
+                  std::is_same<_DataType_output, std::complex<double>>::value)
+    {
+        cl::sycl::event event;
+        _DataType_input* array_1 = reinterpret_cast<_DataType_input*>(const_cast<void*>(array1_in));
+        _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
+
+        oneapi::mkl::dft::descriptor<mkl_dft::precision::DOUBLE, mkl_dft::domain::COMPLEX> desc(result_size);
+        desc.set_value(mkl_dft::config_param::BACKWARD_SCALE, (1.0 / result_size));
+        desc.set_value(mkl_dft::config_param::PLACEMENT, DFTI_NOT_INPLACE); // enum value from math library C interface
+        // instead of mkl_dft::config_value::NOT_INPLACE
+        desc.commit(DPNP_QUEUE);
+
+        event = mkl_dft::compute_forward(desc, array_1, result);
+        event.wait();
+    }
+    else
+    {
+        dpnp_fft_fft_kernel_func_c<_DataType_input, _DataType_output>(
+            array1_in, result1, input_shape, output_shape, shape_size, result_size, axis, input_boundarie, inverse);
+    }
 
     return;
 }
