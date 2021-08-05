@@ -5,8 +5,8 @@ import dpnp
 import numpy
 
 @pytest.mark.parametrize("type",
-                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32, numpy.complex64, numpy.complex128],
-                         ids=['float64', 'float32', 'int64', 'int32', 'complex64', 'complex128'])
+                         [numpy.complex128, numpy.complex64, numpy.float32, numpy.float64, numpy.int32, numpy.int64],
+                         ids=['complex128', 'complex64', 'float32', 'float64', 'int32', 'int64'])
 def test_fft(type):
     # 1 dim array
     data = numpy.arange(100, dtype=type)
