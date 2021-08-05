@@ -27,8 +27,11 @@
 
 from libcpp.vector cimport vector
 from libcpp cimport bool as cpp_bool
-from dpnp.dparray cimport dparray, dparray_shape_type
+from dpnp.dparray cimport dparray
 from dpnp.dpnp_utils.dpnp_algo_utils cimport dpnp_descriptor
+
+
+ctypedef vector.vector[long] shape_type_c
 
 
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import

@@ -65,7 +65,7 @@ cpdef dparray dpnp_atleast_2d(dparray arr):
 
 cpdef dparray dpnp_atleast_3d(dparray arr):
     cdef size_t arr_ndim = arr.ndim
-    cdef dparray_shape_type arr_shape = arr.shape
+    cdef shape_type_c arr_shape = arr.shape
     cdef long arr_size = arr.size
     if arr_ndim == 1:
         result = dparray((1, 1, arr_size), dtype=arr.dtype)
@@ -143,11 +143,11 @@ cpdef dparray dpnp_repeat(utils.dpnp_descriptor array1, repeats, axes=None):
 
 
 cpdef dparray dpnp_transpose(utils.dpnp_descriptor array1, axes=None):
-    cdef dparray_shape_type input_shape = array1.shape
+    cdef shape_type_c input_shape = array1.shape
     cdef size_t input_shape_size = array1.ndim
-    cdef dparray_shape_type result_shape = dparray_shape_type(input_shape_size, 1)
+    cdef shape_type_c result_shape = shape_type_c(input_shape_size, 1)
 
-    cdef dparray_shape_type permute_axes
+    cdef shape_type_c permute_axes
     if axes is None:
         """
         template to do transpose a tensor

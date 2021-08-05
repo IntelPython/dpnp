@@ -50,8 +50,8 @@ cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
                                      long axis,
                                      size_t inverse):
 
-    cdef dparray_shape_type input_shape = input.shape
-    cdef dparray_shape_type output_shape = input_shape
+    cdef shape_type_c input_shape = input.shape
+    cdef shape_type_c output_shape = input_shape
 
     cdef long axis_norm = utils.normalize_axis((axis,), input_shape.size())[0]
     output_shape[axis_norm] = output_boundarie
