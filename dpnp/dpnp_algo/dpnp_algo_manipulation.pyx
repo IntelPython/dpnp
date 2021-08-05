@@ -95,7 +95,7 @@ cpdef dpnp_copyto(utils.dpnp_descriptor dst, utils.dpnp_descriptor src, where=Tr
     func(dst.get_data(), src.get_data(), dst.size)
 
 
-cpdef dparray dpnp_expand_dims(dparray in_array, axis):
+cpdef utils.dpnp_descriptor dpnp_expand_dims(utils.dpnp_descriptor in_array, axis):
     axis_tuple = utils._object_to_tuple(axis)
     result_ndim = len(axis_tuple) + in_array.ndim
 
@@ -112,17 +112,16 @@ cpdef dparray dpnp_expand_dims(dparray in_array, axis):
     if len(axis_norm) > len(set(axis_norm)):
         utils.checker_throw_value_error("dpnp_expand_dims", "axis", axis, "no repeated axis")
 
-    shape_list = []
+    cdef dparray_shape_type shape_list
     axis_idx = 0
     for i in range(result_ndim):
         if i in axis_norm:
-            shape_list.append(1)
+            shape_list.push_back(1)
         else:
-            shape_list.append(in_array.shape[axis_idx])
+            shape_list.push_back(in_array.shape[axis_idx])
             axis_idx = axis_idx + 1
 
-    shape = utils._object_to_tuple(shape_list)
-    cdef dparray result = dpnp.copy(in_array).reshape(shape)
+    cdef utils.dpnp_descriptor result = dpnp.get_dpnp_descriptor(dpnp_copy(in_array).get_pyobj().reshape(shape_list))
 
     return result
 
@@ -186,12 +185,12 @@ cpdef dparray dpnp_transpose(utils.dpnp_descriptor array1, axes=None):
     return result
 
 
-cpdef dparray dpnp_squeeze(object in_array, axis):
-    shape_list = []
+cpdef utils.dpnp_descriptor dpnp_squeeze(utils.dpnp_descriptor in_array, axis):
+    cdef dparray_shape_type shape_list
     if axis is None:
         for i in range(in_array.ndim):
             if in_array.shape[i] != 1:
-                shape_list.append(in_array.shape[i])
+                shape_list.push_back(in_array.shape[i])
     else:
         axis_norm = utils._object_to_tuple(utils.normalize_axis(utils._object_to_tuple(axis), in_array.ndim))
         for i in range(in_array.ndim):
@@ -199,9 +198,8 @@ cpdef dparray dpnp_squeeze(object in_array, axis):
                 if in_array.shape[i] != 1:
                     utils.checker_throw_value_error("dpnp_squeeze", "axis", axis, "axis has size not equal to one")
             else:
-                shape_list.append(in_array.shape[i])
+                shape_list.push_back(in_array.shape[i])
 
-    shape = utils._object_to_tuple(shape_list)
-    cdef dparray result = dpnp.copy(in_array).reshape(shape)
+    cdef utils.dpnp_descriptor result = dpnp.get_dpnp_descriptor(dpnp_copy(in_array).get_pyobj().reshape(shape_list))
 
     return result

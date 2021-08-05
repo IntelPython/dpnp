@@ -316,7 +316,7 @@ def expand_dims(x1, axis):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_expand_dims(x1, axis)
+        return dpnp_expand_dims(x1_desc, axis).get_pyobj()
 
     return call_origin(numpy.expand_dims, x1, axis)
 
@@ -549,7 +549,7 @@ def squeeze(x1, axis=None):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_squeeze(x1, axis)
+        return dpnp_squeeze(x1_desc, axis).get_pyobj()
 
     return call_origin(numpy.squeeze, x1, axis)
 
