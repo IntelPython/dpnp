@@ -116,8 +116,10 @@ def all(x1, axis=None, out=None, keepdims=False):
         elif keepdims is not False:
             pass
         else:
-            result = dpnp_all(x1_desc)
-            return result[0]
+            result_obj = dpnp_all(x1_desc).get_pyobj()
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+
+            return result
 
     return call_origin(numpy.all, x1, axis, out, keepdims)
 
@@ -152,8 +154,10 @@ def allclose(x1, x2, rtol=1.e-5, atol=1.e-8, **kwargs):
         if not rtol_is_scalar or not atol_is_scalar:
             pass
         else:
-            result = dpnp_allclose(x1_desc, x2_desc, rtol, atol)
-            return result[0]
+            result_obj = dpnp_allclose(x1_desc, x2_desc, rtol, atol).get_pyobj()
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+
+            return result
 
     return call_origin(numpy.allclose, x1, x2, rtol=rtol, atol=atol, **kwargs)
 
@@ -206,8 +210,10 @@ def any(x1, axis=None, out=None, keepdims=False):
         elif keepdims is not False:
             pass
         else:
-            result = dpnp_any(x1_desc)
-            return result[0]
+            result_obj = dpnp_any(x1_desc).get_pyobj()
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+
+            return result
 
     return call_origin(numpy.any, x1, axis, out, keepdims)
 
@@ -377,8 +383,9 @@ def isclose(x1, x2, rtol=1e-05, atol=1e-08, equal_nan=False):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     x2_desc = dpnp.get_dpnp_descriptor(x2)
-    if 0 and x1_desc and x2_desc:
-        return dpnp_isclose(x1_desc, x2_desc, rtol, atol, equal_nan)
+    if x1_desc and x2_desc:
+        result_obj = dpnp_isclose(x1_desc, x2_desc, rtol, atol, equal_nan).get_pyobj()
+        return result_obj
 
     return call_origin(numpy.isclose, x1, x2, rtol=rtol, atol=atol, equal_nan=equal_nan)
 
@@ -428,7 +435,7 @@ def isfinite(x1, out=None, **kwargs):
         if out is not None:
             pass
         else:
-            return dpnp_isfinite(x1_desc)
+            return dpnp_isfinite(x1_desc).get_pyobj()
 
     return call_origin(numpy.isfinite, x1, out, **kwargs)
 
@@ -473,7 +480,7 @@ def isinf(x1, out=None, **kwargs):
         if out is not None:
             pass
         else:
-            return dpnp_isinf(x1_desc)
+            return dpnp_isinf(x1_desc).get_pyobj()
 
     return call_origin(numpy.isinf, x1, out, **kwargs)
 
@@ -519,7 +526,7 @@ def isnan(x1, out=None, **kwargs):
         if out is not None:
             pass
         else:
-            return dpnp_isnan(x1_desc)
+            return dpnp_isnan(x1_desc).get_pyobj()
 
     return call_origin(numpy.isnan, x1, out, **kwargs)
 
@@ -565,7 +572,6 @@ def less(x1, x2):
         else:
             return dpnp_less(x1_desc, x2_desc).get_pyobj()
 
-    print("=========call_origin(numpy.less==========")
     return call_origin(numpy.less, x1, x2)
 
 
@@ -647,11 +653,11 @@ def logical_and(x1, x2, out=None, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     x2_desc = dpnp.get_dpnp_descriptor(x2)
-    if 0 and x1_desc and x2_desc and not kwargs:
+    if x1_desc and x2_desc and not kwargs:
         if out is not None:
             pass
         else:
-            return dpnp_logical_and(x1_desc, x2_desc)
+            return dpnp_logical_and(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.logical_and, x1, x2, out, **kwargs)
 
@@ -687,11 +693,11 @@ def logical_not(x1, out=None, **kwargs):
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
-    if 0 and x1_desc and not kwargs:
+    if x1_desc and not kwargs:
         if out is not None:
             pass
         else:
-            return dpnp_logical_not(x1_desc)
+            return dpnp_logical_not(x1_desc).get_pyobj()
 
     return call_origin(numpy.logical_not, x1, out, **kwargs)
 
@@ -730,11 +736,11 @@ def logical_or(x1, x2, out=None, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     x2_desc = dpnp.get_dpnp_descriptor(x2)
-    if 0 and x1_desc and x2_desc and not kwargs:
+    if x1_desc and x2_desc and not kwargs:
         if out is not None:
             pass
         else:
-            return dpnp_logical_or(x1_desc, x2_desc)
+            return dpnp_logical_or(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.logical_or, x1, x2, out, **kwargs)
 
@@ -773,11 +779,11 @@ def logical_xor(x1, x2, out=None, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     x2_desc = dpnp.get_dpnp_descriptor(x2)
-    if 0 and x1_desc and x2_desc and not kwargs:
+    if x1_desc and x2_desc and not kwargs:
         if out is not None:
             pass
         else:
-            return dpnp_logical_xor(x1_desc, x2_desc)
+            return dpnp_logical_xor(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.logical_xor, x1, x2, out, **kwargs)
 
