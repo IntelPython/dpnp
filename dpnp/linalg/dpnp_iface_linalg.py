@@ -288,7 +288,7 @@ def matrix_rank(input, tol=None, hermitian=False):
         else:
             result_obj = dpnp_matrix_rank(x1_desc).get_pyobj()
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
-    
+
             return result
 
     return call_origin(numpy.linalg.matrix_rank, input, tol, hermitian)
