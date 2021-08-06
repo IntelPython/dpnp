@@ -262,8 +262,8 @@ def matmul(x1, x2, out=None, **kwargs):
                 Cost model checks
                 """
 
-                dparray1_size = x1_desc.size
-                dparray2_size = x2_desc.size
+                array1_size = x1_desc.size
+                array2_size = x2_desc.size
                 cost_size = 4096  # 2D array shape(64, 64)
 
                 if ((x1_desc.dtype == numpy.float64) or (x1_desc.dtype == numpy.float32)):
@@ -272,7 +272,7 @@ def matmul(x1, x2, out=None, **kwargs):
                     """
                     cost_size = 262144  # 2D array shape(512, 512)
 
-                if (dparray1_size > cost_size) and (dparray2_size > cost_size):
+                if (array1_size > cost_size) and (array2_size > cost_size):
                     return dpnp_matmul(x1_desc, x2_desc, out)
             else:
                 out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
