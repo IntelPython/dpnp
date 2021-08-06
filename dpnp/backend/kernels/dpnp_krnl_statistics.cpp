@@ -653,6 +653,17 @@ template <typename _DataType, typename _ResultType>
 void dpnp_var_c(
     void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof)
 {
+    size_t size = 1;
+    for (size_t i = 0; i < ndim; ++i)
+    {
+        size *= shape[i];
+    }
+
+    if (!size)
+    {
+        return;
+    }
+
     cl::sycl::event event;
     _DataType* array1 = reinterpret_cast<_DataType*>(array1_in);
     _ResultType* result = reinterpret_cast<_ResultType*>(result1);
@@ -660,12 +671,6 @@ void dpnp_var_c(
     _ResultType* mean = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(1 * sizeof(_ResultType)));
     dpnp_mean_c<_DataType, _ResultType>(array1, mean, shape, ndim, axis, naxis);
     _ResultType mean_val = mean[0];
-
-    size_t size = 1;
-    for (size_t i = 0; i < ndim; ++i)
-    {
-        size *= shape[i];
-    }
 
     _ResultType* squared_deviations = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(size * sizeof(_ResultType)));
 
