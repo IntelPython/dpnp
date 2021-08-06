@@ -513,7 +513,7 @@
 
 
 <span class="c1"># numpy.copy(a, order=&#39;K&#39;, subok=False)</span>
-<div class="viewcode-block" id="copy"><a class="viewcode-back" href="../../reference/generated/dpnp.copy.html#dpnp.copy">[docs]</a><span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="copy"><a class="viewcode-back" href="../../reference/generated/dpnp.copy.html#dpnp.copy">[docs]</a><span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return an array copy of the given object.</span>
 
@@ -540,7 +540,12 @@
 
     <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_copy</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">order</span> <span class="o">!=</span> <span class="s1">&#39;K&#39;</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">subok</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dpnp_copy</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">copy</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="p">)</span></div>
 
@@ -845,16 +850,16 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">()):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;full_like&quot;</span><span class="p">,</span> <span class="s2">&quot;order&quot;</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
-            <span class="n">checker_throw_value_error</span><span class="p">(</span><span class="s2">&quot;full_like&quot;</span><span class="p">,</span> <span class="s2">&quot;subok&quot;</span><span class="p">,</span> <span class="n">subok</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-
-        <span class="n">_shape</span> <span class="o">=</span> <span class="n">shape</span> <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span>
-        <span class="n">_dtype</span> <span class="o">=</span> <span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span>
-
-        <span class="k">return</span> <span class="n">dpnp_full_like</span><span class="p">(</span><span class="n">_shape</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">,</span> <span class="n">_dtype</span><span class="p">)</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_shape</span> <span class="o">=</span> <span class="n">shape</span> <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x1</span><span class="o">.</span><span class="n">shape</span>
+            <span class="n">_dtype</span> <span class="o">=</span> <span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">x1</span><span class="o">.</span><span class="n">dtype</span>
+    
+            <span class="k">return</span> <span class="n">dpnp_full_like</span><span class="p">(</span><span class="n">_shape</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">,</span> <span class="n">_dtype</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span></div>
 

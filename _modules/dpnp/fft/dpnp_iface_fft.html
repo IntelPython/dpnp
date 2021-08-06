@@ -197,7 +197,6 @@
 <span class="kn">import</span> <span class="nn">dpnp</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 
-<span class="kn">from</span> <span class="nn">dpnp.dparray</span> <span class="kn">import</span> <span class="n">dparray</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.fft.dpnp_algo_fft</span> <span class="kn">import</span> <span class="o">*</span>
 
@@ -259,7 +258,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">output_boundarie</span> <span class="o">=</span> <span class="n">input_boundarie</span>
 
-            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">input_boundarie</span><span class="p">,</span> <span class="n">output_boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">input_boundarie</span><span class="p">,</span> <span class="n">output_boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
@@ -377,7 +376,7 @@
         <span class="k">if</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">pass</span>                 <span class="c1"># let fallback to handle exception</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">input_boundarie</span><span class="p">,</span> <span class="n">output_boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">input_boundarie</span><span class="p">,</span> <span class="n">output_boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span></div>
 
@@ -417,7 +416,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">output_boundarie</span> <span class="o">=</span> <span class="n">input_boundarie</span>
 
-            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">input_boundarie</span><span class="p">,</span> <span class="n">output_boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">input_boundarie</span><span class="p">,</span> <span class="n">output_boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">hfft</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
@@ -457,7 +456,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">output_boundarie</span> <span class="o">=</span> <span class="n">input_boundarie</span>
 
-            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">input_boundarie</span><span class="p">,</span> <span class="n">output_boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">input_boundarie</span><span class="p">,</span> <span class="n">output_boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifft</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
@@ -512,7 +511,7 @@
         <span class="k">if</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">pass</span>                 <span class="c1"># let fallback to handle exception</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">input_boundarie</span><span class="p">,</span> <span class="n">output_boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">input_boundarie</span><span class="p">,</span> <span class="n">output_boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifftshift</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">axes</span><span class="p">)</span></div>
 
@@ -601,7 +600,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">output_boundarie</span> <span class="o">=</span> <span class="n">input_boundarie</span>
 
-            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">input_boundarie</span><span class="p">,</span> <span class="n">output_boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">input_boundarie</span><span class="p">,</span> <span class="n">output_boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ihfft</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
@@ -641,12 +640,12 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">output_boundarie</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">input_boundarie</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
 
-            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">input_boundarie</span><span class="p">,</span> <span class="n">output_boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">input_boundarie</span><span class="p">,</span> <span class="n">output_boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
             <span class="c1"># TODO tmp = utils.create_output_array(result_shape, result_c_type, out)</span>
-            <span class="n">tmp</span> <span class="o">=</span> <span class="n">dparray</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
-                <span class="n">tmp</span><span class="p">[</span><span class="n">it</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">it</span><span class="p">]</span><span class="o">.</span><span class="n">real</span>
-            <span class="k">return</span> <span class="n">tmp</span>
+            <span class="c1"># tmp = dparray(result.shape, dtype=dpnp.float64)</span>
+            <span class="c1"># for it in range(tmp.size):</span>
+            <span class="c1">#     tmp[it] = result[it].real</span>
+            <span class="k">return</span> <span class="n">result</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
@@ -761,7 +760,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">output_boundarie</span> <span class="o">=</span> <span class="n">input_boundarie</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># rfft specific requirenment</span>
 
-            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">input_boundarie</span><span class="p">,</span> <span class="n">output_boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpnp_fft</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">input_boundarie</span><span class="p">,</span> <span class="n">output_boundarie</span><span class="p">,</span> <span class="n">axis_param</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
