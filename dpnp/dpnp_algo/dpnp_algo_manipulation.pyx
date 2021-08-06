@@ -112,7 +112,7 @@ cpdef utils.dpnp_descriptor dpnp_expand_dims(utils.dpnp_descriptor in_array, axi
     if len(axis_norm) > len(set(axis_norm)):
         utils.checker_throw_value_error("dpnp_expand_dims", "axis", axis, "no repeated axis")
 
-    cdef dparray_shape_type shape_list
+    cdef shape_type_c shape_list
     axis_idx = 0
     for i in range(result_ndim):
         if i in axis_norm:
@@ -186,7 +186,7 @@ cpdef dparray dpnp_transpose(utils.dpnp_descriptor array1, axes=None):
 
 
 cpdef utils.dpnp_descriptor dpnp_squeeze(utils.dpnp_descriptor in_array, axis):
-    cdef dparray_shape_type shape_list
+    cdef shape_type_c shape_list
     if axis is None:
         for i in range(in_array.ndim):
             if in_array.shape[i] != 1:
