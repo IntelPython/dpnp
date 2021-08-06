@@ -259,13 +259,14 @@ Logic functions
 cpdef dpnp_descriptor dpnp_equal(dpnp_descriptor array1, dpnp_descriptor input2)
 cpdef dpnp_descriptor dpnp_greater(dpnp_descriptor input1, dpnp_descriptor input2)
 cpdef dpnp_descriptor dpnp_greater_equal(dpnp_descriptor input1, dpnp_descriptor input2)
-cpdef dparray dpnp_isclose(object input1, object input2, double rtol=*, double atol=*, cpp_bool equal_nan=*)
+cpdef dpnp_descriptor dpnp_isclose(dpnp_descriptor input1, dpnp_descriptor input2,
+                                   double rtol=*, double atol=*, cpp_bool equal_nan=*)
 cpdef dpnp_descriptor dpnp_less(dpnp_descriptor input1, dpnp_descriptor input2)
 cpdef dpnp_descriptor dpnp_less_equal(dpnp_descriptor input1, dpnp_descriptor input2)
-cpdef dparray dpnp_logical_and(object input1, object input2)
-cpdef dparray dpnp_logical_not(object input1)
-cpdef dparray dpnp_logical_or(object input1, object input2)
-cpdef dparray dpnp_logical_xor(object input1, object input2)
+cpdef dpnp_descriptor dpnp_logical_and(dpnp_descriptor input1, dpnp_descriptor input2)
+cpdef dpnp_descriptor dpnp_logical_not(dpnp_descriptor input1)
+cpdef dpnp_descriptor dpnp_logical_or(dpnp_descriptor input1, dpnp_descriptor input2)
+cpdef dpnp_descriptor dpnp_logical_xor(dpnp_descriptor input1, dpnp_descriptor input2)
 cpdef dpnp_descriptor dpnp_not_equal(dpnp_descriptor input1, dpnp_descriptor input2)
 
 
@@ -273,7 +274,7 @@ cpdef dpnp_descriptor dpnp_not_equal(dpnp_descriptor input1, dpnp_descriptor inp
 Linear algebra
 """
 cpdef dparray dpnp_dot(dpnp_descriptor in_array1, dpnp_descriptor in_array2)
-cpdef dparray dpnp_matmul(dpnp_descriptor in_array1, dpnp_descriptor in_array2, dparray out=*)
+cpdef dpnp_descriptor dpnp_matmul(dpnp_descriptor in_array1, dpnp_descriptor in_array2, dpnp_descriptor out=*)
 
 
 """
@@ -283,6 +284,7 @@ cpdef dpnp_descriptor dpnp_arange(start, stop, step, dtype)
 cpdef dparray dpnp_array(object obj, object dtype=*)
 cpdef dparray dpnp_init_val(shape, dtype, value)
 cpdef dpnp_descriptor dpnp_full(result_shape, value_in, result_dtype)  # same as dpnp_init_val
+cpdef dpnp_descriptor dpnp_copy(dpnp_descriptor x1)
 
 """
 Mathematical functions

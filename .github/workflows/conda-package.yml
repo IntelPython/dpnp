@@ -1,0 +1,78 @@
+name: Conda package
+
+on: push
+
+env:
+  PACKAGE_NAME: dpctl
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Install Intel repository
+        run: |
+          wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+          sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
+          sudo apt-get update
+      - name: Update libstdc++-dev
+        run: |
+          sudo apt remove -y gcc-7 g++-7 gcc-8 g++-8 gcc-10 g++-10
+          sudo apt remove -y libstdc++-10-dev
+          sudo apt autoremove
+          sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
+      - name: Install Intel OneAPI
+        run: |
+          sudo apt-get install intel-oneapi-mkl                \
+                               intel-oneapi-mkl-devel          \
+                               intel-oneapi-dpcpp-cpp-compiler
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Add conda to system path
+        run: echo $CONDA/bin >> $GITHUB_PATH
+      - name: Install conda-build
+        run: conda install conda-build
+      - name: Build conda package
+        run: |
+          . /opt/intel/oneapi/setvars.sh
+          . ./scripts/install_cmake_lin.sh
+          CHANNELS="-c dppy/label/dev -c intel -c defaults --override-channels"
+          VERSIONS="--python 3.8"
+          TEST="--no-test"
+          conda build \
+            $TEST \
+            $VERSIONS \
+            $CHANNELS \
+            conda-recipe
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: dpnp ${{ runner.os }}
+          path: /usr/share/miniconda/conda-bld/linux-64/dpnp-*.tar.bz2
+
+  upload:
+    needs: build
+    if: ${{ github.ref == 'refs/heads/master' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: dpnp ${{ runner.os }}
+
+      - name: Install anaconda-client
+        run: conda install anaconda-client
+      - name: Add conda to system path
+        run: echo $CONDA/bin >> $GITHUB_PATH
+
+      - name: Upload
+        env:
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+        run: |
+          conda install anaconda-client
+          anaconda --token $ANACONDA_TOKEN upload --user dppy --label dev dpnp-*.tar.bz2

@@ -1372,12 +1372,11 @@ def prod(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, wher
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        if out is not None and not isinstance(out, dparray):
-            pass
-        elif where is not True:
+        if where is not True:
             pass
         else:
-            result_obj = dpnp_prod(x1_desc, axis, dtype, out, keepdims, initial, where)
+            out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+            result_obj = dpnp_prod(x1_desc, axis, dtype, out_desc, keepdims, initial, where).get_pyobj()
             result = dpnp.convert_single_elem_array_to_scalar(result_obj, keepdims)
 
             return result
@@ -1499,7 +1498,6 @@ def subtract(x1, x2, dtype=None, out=None, where=True, **kwargs):
     x2_is_scalar = dpnp.isscalar(x2)
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     x2_desc = dpnp.get_dpnp_descriptor(x2)
-
     if x1_desc and x2_desc and not kwargs:
         if not x1_desc and not x1_is_scalar:
             pass
@@ -1522,7 +1520,8 @@ def subtract(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_subtract(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
+            out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+            return dpnp_subtract(x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where).get_pyobj()
 
     return call_origin(numpy.subtract, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -1551,12 +1550,11 @@ def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, where
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        if out is not None and not isinstance(out, dparray):
-            pass
-        elif where is not True:
+        if where is not True:
             pass
         else:
-            result_obj = dpnp_sum(x1_desc, axis, dtype, out, keepdims, initial, where).get_pyobj()
+            out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+            result_obj = dpnp_sum(x1_desc, axis, dtype, out_desc, keepdims, initial, where).get_pyobj()
             result = dpnp.convert_single_elem_array_to_scalar(result_obj, keepdims)
 
             return result
