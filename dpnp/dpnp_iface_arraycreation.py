@@ -359,7 +359,7 @@ def ascontiguousarray(a, dtype=None):
 
 
 # numpy.copy(a, order='K', subok=False)
-def copy(x1, order='C', subok=False):
+def copy(x1, order='K', subok=False):
     """
     Return an array copy of the given object.
 
@@ -386,7 +386,12 @@ def copy(x1, order='C', subok=False):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_copy(x1_desc, order, subok).get_pyobj()
+        if order != 'K':
+            pass
+        elif subok:
+            pass
+        else:
+            return dpnp_copy(x1_desc).get_pyobj()
 
     return call_origin(numpy.copy, x1, order, subok)
 
@@ -691,16 +696,16 @@ def full_like(x1, fill_value, dtype=None, order='C', subok=False, shape=None):
 
     """
 
-    if (not use_origin_backend()):
+    if not use_origin_backend():
         if order not in ('C', 'c', None):
-            checker_throw_value_error("full_like", "order", order, 'C')
-        if subok is not False:
-            checker_throw_value_error("full_like", "subok", subok, False)
-
-        _shape = shape if shape is not None else x1.shape
-        _dtype = dtype if dtype is not None else x1.dtype
-
-        return dpnp_full_like(_shape, fill_value, _dtype)
+            pass
+        elif subok is not False:
+            pass
+        else:
+            _shape = shape if shape is not None else x1.shape
+            _dtype = dtype if dtype is not None else x1.dtype
+    
+            return dpnp_full_like(_shape, fill_value, _dtype).get_pyobj()
 
     return numpy.full_like(x1, fill_value, dtype, order, subok, shape)
 
