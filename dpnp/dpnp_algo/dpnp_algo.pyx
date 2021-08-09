@@ -99,7 +99,7 @@ cpdef utils.dpnp_descriptor dpnp_arange(start, stop, step, dtype):
 cpdef dparray dpnp_array(object obj, object dtype=None):
     cdef dparray result
     cdef elem_dtype
-    cdef dparray_shape_type obj_shape
+    cdef shape_type_c obj_shape
 
     # convert scalar to tuple
     if dpnp.isscalar(obj):
@@ -242,7 +242,7 @@ cdef dpnp_DPNPFuncType_to_dtype(size_t type):
 
 
 cdef utils.dpnp_descriptor call_fptr_1out(DPNPFuncName fptr_name,
-                                          dparray_shape_type result_shape,
+                                          shape_type_c result_shape,
                                           result_dtype):
 
     # Convert type to C enum DPNPFuncType
@@ -263,7 +263,7 @@ cdef utils.dpnp_descriptor call_fptr_1out(DPNPFuncName fptr_name,
 
 cdef utils.dpnp_descriptor call_fptr_1in_1out(DPNPFuncName fptr_name,
                                               utils.dpnp_descriptor x1,
-                                              dparray_shape_type result_shape,
+                                              shape_type_c result_shape,
                                               dparray out=None,
                                               func_name=None):
 
@@ -312,9 +312,9 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out(DPNPFuncName fptr_name,
     result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
 
     # Create result array
-    cdef dparray_shape_type x1_shape = x1_obj.shape
-    cdef dparray_shape_type x2_shape = x2_obj.shape
-    cdef dparray_shape_type result_shape = utils.get_common_shape(x1_shape, x2_shape)
+    cdef shape_type_c x1_shape = x1_obj.shape
+    cdef shape_type_c x2_shape = x2_obj.shape
+    cdef shape_type_c result_shape = utils.get_common_shape(x1_shape, x2_shape)
     cdef utils.dpnp_descriptor result
 
     if out is None:
