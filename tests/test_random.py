@@ -962,32 +962,26 @@ class TestPermutationsTestShuffle:
         assert_array_equal(actual_x, desired_x)
 
     @pytest.mark.parametrize("conv", [lambda x: dpnp.array([]),
-                                      lambda x: x,
                                       lambda x: dpnp.asarray(x).astype(dpnp.int8),
                                       lambda x: dpnp.asarray(x).astype(dpnp.float32),
                                       lambda x: dpnp.asarray(x).astype(dpnp.complex64),
                                       lambda x: dpnp.asarray(x).astype(object),
-                                      lambda x: [(i, i) for i in x],
                                       lambda x: dpnp.asarray([[i, i] for i in x]),
                                       lambda x: dpnp.vstack([x, x]).T,
-                                      # gh-11442
                                       lambda x: (dpnp.asarray([(i, i) for i in x], [
                                                               ("a", int), ("b", int)]).view(dpnp.recarray)),
-                                      # gh-4270
                                       lambda x: dpnp.asarray([(i, i) for i in x],
                                                              [("a", object), ("b", dpnp.int32)])],
-                             ids=[' lambda x: dpnp.array([])',
-                                  ' lambda x: x',
-                                  ' lambda x: dpnp.asarray(x).astype(dpnp.int8)',
-                                  ' lambda x: dpnp.asarray(x).astype(dpnp.float32)',
-                                  ' lambda x: dpnp.asarray(x).astype(dpnp.complex64)',
-                                  ' lambda x: dpnp.asarray(x).astype(object)',
-                                  ' lambda x: [(i, i) for i in x]',
-                                  ' lambda x: dpnp.asarray([[i, i] for i in x])',
-                                  ' lambda x: dpnp.vstack([x, x]).T',
-                                  ' lambda x: (dpnp.asarray([(i, i) for i in x], ['\
+                             ids=['lambda x: dpnp.array([])',
+                                  'lambda x: dpnp.asarray(x).astype(dpnp.int8)',
+                                  'lambda x: dpnp.asarray(x).astype(dpnp.float32)',
+                                  'lambda x: dpnp.asarray(x).astype(dpnp.complex64)',
+                                  'lambda x: dpnp.asarray(x).astype(object)',
+                                  'lambda x: dpnp.asarray([[i, i] for i in x])',
+                                  'lambda x: dpnp.vstack([x, x]).T',
+                                  'lambda x: (dpnp.asarray([(i, i) for i in x], ['\
                                   '("a", int), ("b", int)]).view(dpnp.recarray))',
-                                  ' lambda x: dpnp.asarray([(i, i) for i in x], [("a", object), ("b", dpnp.int32)])]'
+                                  'lambda x: dpnp.asarray([(i, i) for i in x], [("a", object), ("b", dpnp.int32)])]'
                                   ]
                              )
     def test_shuffle1(self, conv):
@@ -1018,33 +1012,10 @@ class TestPermutationsTestShuffle:
         desired = conv(desired_1d)
         assert_array_equal(actual, desired)
 
-    @pytest.mark.parametrize("conv", [lambda x: numpy.array([]),
-                                      lambda x: x,
-                                      lambda x: numpy.asarray(x).astype(numpy.int8),
-                                      lambda x: numpy.asarray(x).astype(numpy.float32),
-                                      lambda x: numpy.asarray(x).astype(numpy.complex64),
-                                      lambda x: numpy.asarray(x).astype(object),
-                                      lambda x: [(i, i) for i in x],
-                                      lambda x: numpy.asarray([[i, i] for i in x]),
-                                      lambda x: numpy.vstack([x, x]).T,
-                                      # gh-11442
-                                      lambda x: (numpy.asarray([(i, i) for i in x], [
-                                                               ("a", int), ("b", int)]).view(numpy.recarray)),
-                                      # gh-4270
-                                      lambda x: numpy.asarray([(i, i) for i in x],
-                                                              [("a", object), ("b", numpy.int32)])],
-                             ids=[' lambda x: numpy.array([])',
-                                  ' lambda x: x',
-                                  ' lambda x: numpy.asarray(x).astype(numpy.int8)',
-                                  ' lambda x: numpy.asarray(x).astype(numpy.float32)',
-                                  ' lambda x: numpy.asarray(x).astype(numpy.complex64)',
-                                  ' lambda x: numpy.asarray(x).astype(object)',
-                                  ' lambda x: [(i, i) for i in x]',
-                                  ' lambda x: numpy.asarray([[i, i] for i in x])',
-                                  ' lambda x: numpy.vstack([x, x]).T',
-                                  ' lambda x: (numpy.asarray([(i, i) for i in x], [ '\
-                                  '("a", int), ("b", int)]).view(numpy.recarray))',
-                                  ' lambda x: numpy.asarray([(i, i) for i in x], [("a", object), ("b", numpy.int32)])]'
+    @pytest.mark.parametrize("conv", [lambda x: x,
+                                      lambda x: [(i, i) for i in x]],
+                             ids=['lambda x: x',
+                                  'lambda x: [(i, i) for i in x]',
                                   ]
                              )
     def test_shuffle1_fallback(self, conv):
