@@ -105,6 +105,18 @@ def call_origin(function, *args, **kwargs):
 
         for i in range(result.size):
             result._setitem_scalar(i, result_origin.item(i))
+    elif isinstance(result, tuple):
+        # convert tuple(ndarray) to tuple(dparray)
+        result_list = []
+        for res_origin in result:
+            res = res_origin
+            if isinstance(res_origin, numpy.ndarray):
+                res = dparray(res_origin.shape, dtype=res_origin.dtype)
+                for i in range(res.size):
+                    res._setitem_scalar(i, res_origin.item(i))
+            result_list.append(res)
+
+        result = tuple(result_list)
 
     return result
 
