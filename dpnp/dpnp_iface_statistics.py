@@ -547,9 +547,7 @@ def nanvar(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        if x1.size == 0:
-            pass
-        elif axis is not None:
+        if axis is not None:
             pass
         elif dtype is not None:
             pass
