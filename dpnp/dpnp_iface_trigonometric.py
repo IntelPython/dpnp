@@ -936,7 +936,7 @@ def sqrt(x1):
     if x1_desc:
         return dpnp_sqrt(x1_desc).get_pyobj()
 
-    return call_origin(numpy.sqrt, x1, **kwargs)
+    return call_origin(numpy.sqrt, x1)
 
 
 def square(x1):

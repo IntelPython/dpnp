@@ -81,7 +81,7 @@ ctypedef void(*ftpr_custom_around_1in_1out_t)(const void * , void * , const size
 
 
 cpdef dparray dpnp_absolute(utils.dpnp_descriptor input):
-    cdef dparray_shape_type input_shape = input.shape
+    cdef shape_type_c input_shape = input.shape
     cdef size_t input_shape_size = input.ndim
 
     # convert string type names (dparray.dtype) to C enum DPNPFuncType
@@ -278,7 +278,7 @@ cpdef utils.dpnp_descriptor dpnp_multiply(object x1_obj, object x2_obj, object d
 
 
 cpdef utils.dpnp_descriptor dpnp_nancumprod(utils.dpnp_descriptor x1):
-    cur_x1 = dpnp.copy(x1)
+    cur_x1 = dpnp_copy(x1).get_pyobj()
 
     for i in range(cur_x1.size):
         if dpnp.isnan(cur_x1[i]):
@@ -289,7 +289,7 @@ cpdef utils.dpnp_descriptor dpnp_nancumprod(utils.dpnp_descriptor x1):
 
 
 cpdef utils.dpnp_descriptor dpnp_nancumsum(utils.dpnp_descriptor x1):
-    cur_x1 = dpnp.copy(x1)
+    cur_x1 = dpnp_copy(x1).get_pyobj()
 
     for i in range(cur_x1.size):
         if dpnp.isnan(cur_x1[i]):
@@ -358,12 +358,12 @@ cpdef utils.dpnp_descriptor dpnp_prod(utils.dpnp_descriptor input,
     input:complex128: outout:complex128: name:prod
     """
 
-    cdef dparray_shape_type input_shape = input.shape
+    cdef shape_type_c input_shape = input.shape
     cdef DPNPFuncType input_c_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
-    cdef dparray_shape_type axis_shape = utils._object_to_tuple(axis)
+    cdef shape_type_c axis_shape = utils._object_to_tuple(axis)
 
-    cdef dparray_shape_type result_shape = utils.get_reduction_output_shape(input_shape, axis, keepdims)
+    cdef shape_type_c result_shape = utils.get_reduction_output_shape(input_shape, axis, keepdims)
     cdef DPNPFuncType result_c_type = utils.get_output_c_type(DPNP_FN_PROD, input_c_type, out, dtype)
 
     """ select kernel """
@@ -399,12 +399,12 @@ cpdef utils.dpnp_descriptor dpnp_sum(utils.dpnp_descriptor input,
                                      object initial=None,
                                      object where=True):
 
-    cdef dparray_shape_type input_shape = input.shape
+    cdef shape_type_c input_shape = input.shape
     cdef DPNPFuncType input_c_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
-    cdef dparray_shape_type axis_shape = utils._object_to_tuple(axis)
+    cdef shape_type_c axis_shape = utils._object_to_tuple(axis)
 
-    cdef dparray_shape_type result_shape = utils.get_reduction_output_shape(input_shape, axis, keepdims)
+    cdef shape_type_c result_shape = utils.get_reduction_output_shape(input_shape, axis, keepdims)
     cdef DPNPFuncType result_c_type = utils.get_output_c_type(DPNP_FN_SUM, input_c_type, out, dtype)
 
     """ select kernel """

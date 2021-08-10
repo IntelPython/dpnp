@@ -40,16 +40,10 @@ it contains:
 """
 
 
+import dpnp
+import numpy
+
 from dpnp.dpnp_algo.dpnp_algo import *  # TODO need to investigate why dpnp.dpnp_algo can not be used
-
-import dpnp
-import numpy
-
-# full module name because dpnp_iface_counting loaded from cython too early
-from dpnp.dpnp_utils.dpnp_algo_utils import *
-
-import dpnp
-import numpy
 
 __all__ = [
     'count_nonzero'
@@ -86,7 +80,7 @@ def count_nonzero(x1, axis=None, *, keepdims=False):
         elif keepdims is not False:
             pass
         else:
-            result_obj = dpnp_count_nonzero(x1)
+            result_obj = dpnp_count_nonzero(x1_desc).get_pyobj()
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result

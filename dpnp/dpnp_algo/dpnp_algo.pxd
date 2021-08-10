@@ -27,8 +27,11 @@
 
 from libcpp.vector cimport vector
 from libcpp cimport bool as cpp_bool
-from dpnp.dparray cimport dparray, dparray_shape_type
+from dpnp.dparray cimport dparray
 from dpnp.dpnp_utils.dpnp_algo_utils cimport dpnp_descriptor
+
+
+ctypedef vector.vector[long] shape_type_c
 
 
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
@@ -284,6 +287,7 @@ cpdef dpnp_descriptor dpnp_arange(start, stop, step, dtype)
 cpdef dparray dpnp_array(object obj, object dtype=*)
 cpdef dparray dpnp_init_val(shape, dtype, value)
 cpdef dpnp_descriptor dpnp_full(result_shape, value_in, result_dtype)  # same as dpnp_init_val
+cpdef dpnp_descriptor dpnp_copy(dpnp_descriptor x1)
 
 """
 Mathematical functions

@@ -49,7 +49,7 @@ ctypedef void(*fptr_2in_1out_shapes_t)(void *, void * , void * , size_t * , size
 
 cpdef dparray dpnp_dot(dpnp_descriptor in_array1, dpnp_descriptor in_array2):
 
-    cdef dparray_shape_type shape1, shape2
+    cdef shape_type_c shape1, shape2
 
     shape1 = in_array1.shape
     shape2 = in_array2.shape
@@ -103,17 +103,17 @@ cpdef dparray dpnp_inner(dpnp_descriptor array1, dpnp_descriptor array2):
 
     assert(len(array1.shape) == len(array2.shape))
 
-    cdef dparray_shape_type array1_no_last_axes = array1.shape[:-1]
-    cdef dparray_shape_type array2_no_last_axes = array2.shape[:-1]
+    cdef shape_type_c array1_no_last_axes = array1.shape[:-1]
+    cdef shape_type_c array2_no_last_axes = array2.shape[:-1]
 
-    cdef dparray_shape_type result_shape = array1_no_last_axes
+    cdef shape_type_c result_shape = array1_no_last_axes
     result_shape.insert(result_shape.end(), array2_no_last_axes.begin(), array2_no_last_axes.end())
 
     cdef dparray result = dparray(result_shape, dtype=result_type)
 
     # calculate input arrays offsets
-    cdef dparray_shape_type array1_offsets = [1] * len(array1.shape)
-    cdef dparray_shape_type array2_offsets = [1] * len(array2.shape)
+    cdef shape_type_c array1_offsets = [1] * len(array1.shape)
+    cdef shape_type_c array2_offsets = [1] * len(array2.shape)
     cdef size_t acc1 = 1
     cdef size_t acc2 = 1
     for axis in range(len(array1.shape) - 1, -1, -1):
@@ -122,13 +122,13 @@ cpdef dparray dpnp_inner(dpnp_descriptor array1, dpnp_descriptor array2):
         acc1 *= array1.shape[axis]
         acc2 *= array2.shape[axis]
 
-    cdef dparray_shape_type result_shape_offsets = [1] * len(result.shape)
+    cdef shape_type_c result_shape_offsets = [1] * len(result.shape)
     acc = 1
     for i in range(len(result.shape) - 1, -1, -1):
         result_shape_offsets[i] = acc
         acc *= result.shape[i]
 
-    cdef dparray_shape_type xyz
+    cdef shape_type_c xyz
     cdef size_t array1_lin_index_base
     cdef size_t array2_lin_index_base
     cdef size_t axis2
@@ -161,21 +161,21 @@ cpdef dparray dpnp_inner(dpnp_descriptor array1, dpnp_descriptor array2):
 cpdef dparray dpnp_kron(dpnp_descriptor in_array1, dpnp_descriptor in_array2):
     cdef size_t ndim = max(in_array1.ndim, in_array2.ndim)
 
-    cdef dparray_shape_type in_array1_shape
+    cdef shape_type_c in_array1_shape
     if in_array1.ndim < ndim:
         for i in range(ndim - in_array1.ndim):
             in_array1_shape.push_back(1)
     for i in range(in_array1.ndim):
         in_array1_shape.push_back(in_array1.shape[i])
 
-    cdef dparray_shape_type in_array2_shape
+    cdef shape_type_c in_array2_shape
     if in_array2.ndim < ndim:
         for i in range(ndim - in_array2.ndim):
             in_array2_shape.push_back(1)
     for i in range(in_array2.ndim):
         in_array2_shape.push_back(in_array2.shape[i])
 
-    cdef dparray_shape_type result_shape
+    cdef shape_type_c result_shape
     for i in range(ndim):
         result_shape.push_back(in_array1_shape[i] * in_array2_shape[i])
 
@@ -199,10 +199,10 @@ cpdef dparray dpnp_kron(dpnp_descriptor in_array1, dpnp_descriptor in_array2):
 
 cpdef utils.dpnp_descriptor dpnp_matmul(utils.dpnp_descriptor in_array1, utils.dpnp_descriptor in_array2, utils.dpnp_descriptor out=None):
 
-    cdef dparray_shape_type shape_result
+    cdef shape_type_c shape_result
 
-    cdef dparray_shape_type shape1 = in_array1.shape
-    cdef dparray_shape_type shape2 = in_array2.shape
+    cdef shape_type_c shape1 = in_array1.shape
+    cdef shape_type_c shape2 = in_array2.shape
 
     cdef size_t size_m = 0
     cdef size_t size_n = 0
@@ -271,7 +271,7 @@ cpdef utils.dpnp_descriptor dpnp_matmul(utils.dpnp_descriptor in_array1, utils.d
 
 
 cpdef dparray dpnp_outer(dpnp_descriptor array1, dpnp_descriptor array2):
-    cdef dparray_shape_type result_shape = (array1.size, array2.size)
+    cdef shape_type_c result_shape = (array1.size, array2.size)
     result_type = numpy.promote_types(array1.dtype, array1.dtype)
 
     cdef dparray result = dparray(result_shape, dtype=result_type)

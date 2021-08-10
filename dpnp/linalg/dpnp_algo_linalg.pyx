@@ -35,7 +35,7 @@ and the rest of the library
 import dpnp
 cimport dpnp.dpnp_utils as utils
 from dpnp.dpnp_algo cimport *
-from dpnp.dparray cimport dparray, dparray_shape_type
+from dpnp.dparray cimport dparray
 import numpy
 cimport numpy
 
@@ -104,7 +104,7 @@ cpdef dparray dpnp_cond(dparray input, p):
 
 
 cpdef utils.dpnp_descriptor dpnp_det(utils.dpnp_descriptor input):
-    cdef dparray_shape_type input_shape = input.shape
+    cdef shape_type_c input_shape = input.shape
     cdef size_t n = input.shape[-1]
     cdef size_t size_out = 1
     if input.ndim != 2:
@@ -112,7 +112,7 @@ cpdef utils.dpnp_descriptor dpnp_det(utils.dpnp_descriptor input):
         for i in range(len(output_shape)):
             size_out *= output_shape[i]
 
-    cdef dparray_shape_type result_shape = (size_out,)
+    cdef shape_type_c result_shape = (size_out,)
     if size_out > 1:
         result_shape = output_shape
 
@@ -131,7 +131,7 @@ cpdef utils.dpnp_descriptor dpnp_det(utils.dpnp_descriptor input):
 
 
 cpdef tuple dpnp_eig(dparray x1):
-    cdef dparray_shape_type x1_shape = x1.shape
+    cdef shape_type_c x1_shape = x1.shape
 
     cdef size_t size = 0 if x1_shape.empty() else x1_shape.front()
 
@@ -151,7 +151,7 @@ cpdef tuple dpnp_eig(dparray x1):
 
 
 cpdef utils.dpnp_descriptor dpnp_eigvals(utils.dpnp_descriptor input):
-    cdef dparray_shape_type input_shape = input.shape
+    cdef shape_type_c input_shape = input.shape
 
     cdef size_t size = 0 if input_shape.empty() else input_shape.front()
 
@@ -170,7 +170,7 @@ cpdef utils.dpnp_descriptor dpnp_eigvals(utils.dpnp_descriptor input):
 
 cpdef dparray dpnp_inv(dparray input_):
     cdef dparray input = input_.astype(dpnp.float64)
-    cdef dparray_shape_type input_shape = input.shape
+    cdef shape_type_c input_shape = input.shape
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
@@ -187,7 +187,7 @@ cpdef dparray dpnp_inv(dparray input_):
 
 
 cpdef utils.dpnp_descriptor dpnp_matrix_rank(utils.dpnp_descriptor input):
-    cdef dparray_shape_type input_shape = input.shape
+    cdef shape_type_c input_shape = input.shape
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MATRIX_RANK, param1_type, param1_type)
@@ -204,7 +204,7 @@ cpdef utils.dpnp_descriptor dpnp_matrix_rank(utils.dpnp_descriptor input):
 
 cpdef dparray dpnp_norm(dparray input, ord=None, axis=None):
     cdef long size_input = input.size
-    cdef dparray_shape_type shape_input = input.shape
+    cdef shape_type_c shape_input = input.shape
 
     if input.dtype == numpy.float32:
         res_type = numpy.float32
@@ -227,7 +227,7 @@ cpdef dparray dpnp_norm(dparray input, ord=None, axis=None):
 
             input = input.ravel(order='K')
             sqnorm = dpnp.dot(input, input)
-            ret = dpnp.sqrt(sqnorm)
+            ret = dpnp.sqrt([sqnorm])
             return dpnp.array([ret], dtype=res_type)
 
     len_axis = 1 if axis is None else len(axis_)
