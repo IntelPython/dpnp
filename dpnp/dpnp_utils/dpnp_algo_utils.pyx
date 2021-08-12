@@ -349,37 +349,27 @@ cdef DPNPFuncType get_output_c_type(DPNPFuncName funcID,
     checker_throw_value_error("get_output_c_type", "dtype and out", requested_dtype, requested_out)
 
 
-cdef dparray create_output_array(shape_type_c output_shape, DPNPFuncType c_type, object requested_out):
-    """
-    TODO This function needs to be deleted. Replace with create_output_descriptor()
-    """
-
-    cdef dparray result
-
-    if requested_out is None:
-        """ Create DPNP array """
-        result = dparray(output_shape, dtype=dpnp_DPNPFuncType_to_dtype( < size_t > c_type))
-    else:
-        """ Based on 'out' parameter """
-        if (output_shape != requested_out.shape):
-            checker_throw_value_error("create_output_array", "out.shape", requested_out.shape, output_shape)
-        result = requested_out
-
-    return result
-
 cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
                                               DPNPFuncType c_type,
                                               dpnp_descriptor requested_out):
     cdef dpnp_descriptor result_desc
 
     if requested_out is None:
-        """ Create DPNP array """
-        result = dparray(output_shape, dtype=dpnp_DPNPFuncType_to_dtype( < size_t > c_type))
+        result = None
+        result_dtype = dpnp_DPNPFuncType_to_dtype( < size_t > c_type)
+        if config.__DPNP_OUTPUT_NUMPY__:
+            """ Create NumPy ndarray """
+            # TODO need to use "buffer=" parameter to use SYCL aware memory
+            result = numpy.ndarray(output_shape, dtype=result_dtype)
+        else:
+            """ Create DPNP array """
+            result = dparray(output_shape, dtype=result_dtype)
+
         result_desc = dpnp_descriptor(result)
     else:
         """ Based on 'out' parameter """
         if (output_shape != requested_out.shape):
-            checker_throw_value_error("create_output_array", "out.shape", requested_out.shape, output_shape)
+            checker_throw_value_error("create_output_descriptor", "out.shape", requested_out.shape, output_shape)
 
         if isinstance(requested_out, dpnp_descriptor):
             result_desc = requested_out
