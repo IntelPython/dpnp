@@ -272,10 +272,11 @@ def test_svd(type, shape):
         tol = 1e-12
 
     # check decomposition
-    dpnp_diag_s = numpy.zeros(shape, dtype=dpnp_s.dtype)
+    dpnp_diag_s = inp.zeros(shape, dtype=dpnp_s.dtype)
     for i in range(len(dpnp_s)):
         dpnp_diag_s[i, i] = dpnp_s[i]
-    numpy.testing.assert_allclose(ia, numpy.dot(dpnp_u, numpy.dot(dpnp_diag_s, dpnp_vt)), rtol=tol, atol=tol)
+
+    numpy.testing.assert_allclose(ia, inp.dot(dpnp_u, inp.dot(dpnp_diag_s, dpnp_vt)), rtol=tol, atol=tol)
 
     # compare singular values
     numpy.testing.assert_allclose(dpnp_s, np_s, rtol=tol, atol=tol)
