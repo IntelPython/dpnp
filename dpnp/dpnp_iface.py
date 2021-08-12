@@ -45,7 +45,6 @@ import numpy
 import collections
 
 from dpnp.dpnp_algo import *
-from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 from dpnp.fft import *
 from dpnp.linalg import *

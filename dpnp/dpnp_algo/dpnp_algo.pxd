@@ -27,8 +27,11 @@
 
 from libcpp.vector cimport vector
 from libcpp cimport bool as cpp_bool
-from dpnp.dparray cimport dparray, dparray_shape_type
+from dpnp.dparray cimport dparray
 from dpnp.dpnp_utils.dpnp_algo_utils cimport dpnp_descriptor
+
+
+ctypedef vector.vector[long] shape_type_c
 
 
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
@@ -196,6 +199,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncType":  # need this na
         DPNP_FT_LONG
         DPNP_FT_FLOAT
         DPNP_FT_DOUBLE
+        DPNP_FT_CMPLX64
         DPNP_FT_CMPLX128
         DPNP_FT_BOOL
 
@@ -259,13 +263,14 @@ Logic functions
 cpdef dpnp_descriptor dpnp_equal(dpnp_descriptor array1, dpnp_descriptor input2)
 cpdef dpnp_descriptor dpnp_greater(dpnp_descriptor input1, dpnp_descriptor input2)
 cpdef dpnp_descriptor dpnp_greater_equal(dpnp_descriptor input1, dpnp_descriptor input2)
-cpdef dparray dpnp_isclose(object input1, object input2, double rtol=*, double atol=*, cpp_bool equal_nan=*)
+cpdef dpnp_descriptor dpnp_isclose(dpnp_descriptor input1, dpnp_descriptor input2,
+                                   double rtol=*, double atol=*, cpp_bool equal_nan=*)
 cpdef dpnp_descriptor dpnp_less(dpnp_descriptor input1, dpnp_descriptor input2)
 cpdef dpnp_descriptor dpnp_less_equal(dpnp_descriptor input1, dpnp_descriptor input2)
-cpdef dparray dpnp_logical_and(object input1, object input2)
-cpdef dparray dpnp_logical_not(object input1)
-cpdef dparray dpnp_logical_or(object input1, object input2)
-cpdef dparray dpnp_logical_xor(object input1, object input2)
+cpdef dpnp_descriptor dpnp_logical_and(dpnp_descriptor input1, dpnp_descriptor input2)
+cpdef dpnp_descriptor dpnp_logical_not(dpnp_descriptor input1)
+cpdef dpnp_descriptor dpnp_logical_or(dpnp_descriptor input1, dpnp_descriptor input2)
+cpdef dpnp_descriptor dpnp_logical_xor(dpnp_descriptor input1, dpnp_descriptor input2)
 cpdef dpnp_descriptor dpnp_not_equal(dpnp_descriptor input1, dpnp_descriptor input2)
 
 
@@ -283,6 +288,7 @@ cpdef dpnp_descriptor dpnp_arange(start, stop, step, dtype)
 cpdef dparray dpnp_array(object obj, object dtype=*)
 cpdef dparray dpnp_init_val(shape, dtype, value)
 cpdef dpnp_descriptor dpnp_full(result_shape, value_in, result_dtype)  # same as dpnp_init_val
+cpdef dpnp_descriptor dpnp_copy(dpnp_descriptor x1)
 
 """
 Mathematical functions
