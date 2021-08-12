@@ -60,6 +60,7 @@ const DPNPFuncType eft_INT = DPNPFuncType::DPNP_FT_INT;
 const DPNPFuncType eft_LNG = DPNPFuncType::DPNP_FT_LONG;
 const DPNPFuncType eft_FLT = DPNPFuncType::DPNP_FT_FLOAT;
 const DPNPFuncType eft_DBL = DPNPFuncType::DPNP_FT_DOUBLE;
+const DPNPFuncType eft_C64 = DPNPFuncType::DPNP_FT_CMPLX64;
 const DPNPFuncType eft_C128 = DPNPFuncType::DPNP_FT_CMPLX128;
 const DPNPFuncType eft_BLN = DPNPFuncType::DPNP_FT_BOOL;
 
