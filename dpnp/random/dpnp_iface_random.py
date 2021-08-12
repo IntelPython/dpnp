@@ -39,7 +39,6 @@ import dpnp
 import numpy
 
 from dpnp.dpnp_algo import *
-from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 from dpnp.random.dpnp_algo_random import *
 
@@ -1298,7 +1297,6 @@ def shuffle(x1):
 
     Limitations
     -----------
-    Parameter ``x`` is supported as a ``dpnp.dparray``.
     Otherwise, the function will use :obj:`numpy.random.shuffle` on the backend
     and will be executed on fallback backend.
 
