@@ -199,6 +199,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncType":  # need this na
         DPNP_FT_LONG
         DPNP_FT_FLOAT
         DPNP_FT_DOUBLE
+        DPNP_FT_CMPLX64
         DPNP_FT_CMPLX128
         DPNP_FT_BOOL
 

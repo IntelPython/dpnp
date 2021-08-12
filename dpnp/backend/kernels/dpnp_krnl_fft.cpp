@@ -107,6 +107,13 @@ void dpnp_fft_fft_c(const void* array1_in,
                     in_real = *dbl_ptr;
                     in_imag = *(dbl_ptr + 1);
                 }
+                else if constexpr (std::is_same<_DataType_input, std::complex<float>>::value)
+                {
+                    const _DataType_input* cmplx_ptr = array_1 + input_it;
+                    const float* dbl_ptr = reinterpret_cast<const float*>(cmplx_ptr);
+                    in_real = *dbl_ptr;
+                    in_imag = *(dbl_ptr + 1);
+                }
                 else
                 {
                     in_real = array_1[input_it];
@@ -167,6 +174,8 @@ void func_map_init_fft_func(func_map_t& fmap)
                                                              (void*)dpnp_fft_fft_c<float, std::complex<double>>};
     fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_DBL][eft_DBL] = {eft_C128,
                                                              (void*)dpnp_fft_fft_c<double, std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_C64][eft_C64] = {
+        eft_C128, (void*)dpnp_fft_fft_c<std::complex<float>, std::complex<double>>};
     fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_C128][eft_C128] = {
         eft_C128, (void*)dpnp_fft_fft_c<std::complex<double>, std::complex<double>>};
     return;
