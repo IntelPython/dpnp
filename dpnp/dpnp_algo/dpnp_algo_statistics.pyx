@@ -58,7 +58,7 @@ ctypedef void(*custom_statistic_1in_1out_func_ptr_t)(void *, void * , size_t * ,
 
 
 cdef dparray call_fptr_custom_std_var_1in_1out(DPNPFuncName fptr_name, utils.dpnp_descriptor x1, ddof):
-    cdef dparray_shape_type x1_shape = x1.shape
+    cdef shape_type_c x1_shape = x1.shape
 
     """ Convert string type names (dparray.dtype) to C enum DPNPFuncType """
     cdef DPNPFuncType param_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
@@ -73,7 +73,7 @@ cdef dparray call_fptr_custom_std_var_1in_1out(DPNPFuncName fptr_name, utils.dpn
     cdef fptr_custom_std_var_1in_1out_t func = <fptr_custom_std_var_1in_1out_t > kernel_data.ptr
 
     # stub for interface support
-    cdef dparray_shape_type axis
+    cdef shape_type_c axis
     cdef Py_ssize_t axis_size = 0
 
     """ Call FPTR function """
@@ -96,8 +96,8 @@ cpdef dparray dpnp_correlate(utils.dpnp_descriptor x1, utils.dpnp_descriptor x2)
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
     cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(x2.dtype)
 
-    cdef dparray_shape_type x1_shape = x1.shape
-    cdef dparray_shape_type x2_shape = x2.shape
+    cdef shape_type_c x1_shape = x1.shape
+    cdef shape_type_c x2_shape = x2.shape
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_CORRELATE, param1_type, param2_type)
 
@@ -114,7 +114,7 @@ cpdef dparray dpnp_correlate(utils.dpnp_descriptor x1, utils.dpnp_descriptor x2)
 
 
 cpdef dparray dpnp_cov(dparray array1):
-    cdef dparray_shape_type input_shape = array1.shape
+    cdef shape_type_c input_shape = array1.shape
 
     if array1.ndim == 1:
         input_shape.insert(input_shape.begin(), 1)
@@ -138,7 +138,7 @@ cpdef dparray dpnp_cov(dparray array1):
 
 
 cpdef dparray _dpnp_max(dparray input, _axis_, output_shape):
-    cdef dparray_shape_type input_shape = input.shape
+    cdef shape_type_c input_shape = input.shape
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MAX, param1_type, param1_type)
@@ -147,9 +147,9 @@ cpdef dparray _dpnp_max(dparray input, _axis_, output_shape):
     cdef dparray result = dparray(output_shape, dtype=result_type)
 
     cdef custom_statistic_1in_1out_func_ptr_t func = <custom_statistic_1in_1out_func_ptr_t > kernel_data.ptr
-    cdef dparray_shape_type axis
+    cdef shape_type_c axis
     cdef Py_ssize_t axis_size = 0
-    cdef dparray_shape_type axis_ = axis
+    cdef shape_type_c axis_ = axis
 
     if _axis_ is not None:
         axis = _axis_
@@ -166,7 +166,7 @@ cpdef dparray _dpnp_max(dparray input, _axis_, output_shape):
 
 
 cpdef dparray dpnp_max(dparray input, axis):
-    cdef dparray_shape_type shape_input = input.shape
+    cdef shape_type_c shape_input = input.shape
     if axis is None:
         axis_ = axis
         output_shape = 1
@@ -195,7 +195,7 @@ cpdef dparray dpnp_max(dparray input, axis):
 
 
 cpdef dparray _dpnp_mean(dparray input):
-    cdef dparray_shape_type input_shape = input.shape
+    cdef shape_type_c input_shape = input.shape
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MEAN, param1_type, param1_type)
@@ -206,7 +206,7 @@ cpdef dparray _dpnp_mean(dparray input):
     cdef custom_statistic_1in_1out_func_ptr_t func = <custom_statistic_1in_1out_func_ptr_t > kernel_data.ptr
 
     # stub for interface support
-    cdef dparray_shape_type axis
+    cdef shape_type_c axis
     cdef Py_ssize_t axis_size = 0
 
     func(input.get_data(), result.get_data(), < size_t * > input_shape.data(), input.ndim, < size_t * > axis.data(), axis_size)
@@ -219,7 +219,7 @@ cpdef dparray dpnp_mean(dparray input, axis):
         return _dpnp_mean(input)
 
     cdef long size_input = input.size
-    cdef dparray_shape_type shape_input = input.shape
+    cdef shape_type_c shape_input = input.shape
 
     if input.dtype == dpnp.float32:
         res_type = dpnp.float32
@@ -318,7 +318,7 @@ cpdef dparray dpnp_mean(dparray input, axis):
 
 
 cpdef dparray dpnp_median(utils.dpnp_descriptor array1):
-    cdef dparray_shape_type x1_shape = array1.shape
+    cdef shape_type_c x1_shape = array1.shape
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MEDIAN, param1_type, param1_type)
@@ -329,7 +329,7 @@ cpdef dparray dpnp_median(utils.dpnp_descriptor array1):
     cdef custom_statistic_1in_1out_func_ptr_t func = <custom_statistic_1in_1out_func_ptr_t > kernel_data.ptr
 
     # stub for interface support
-    cdef dparray_shape_type axis
+    cdef shape_type_c axis
     cdef Py_ssize_t axis_size = 0
 
     func(array1.get_data(), result.get_data(), < size_t * > x1_shape.data(), array1.ndim, < size_t * > axis.data(), axis_size)
@@ -338,7 +338,7 @@ cpdef dparray dpnp_median(utils.dpnp_descriptor array1):
 
 
 cpdef dparray _dpnp_min(dparray input, _axis_, output_shape):
-    cdef dparray_shape_type input_shape = input.shape
+    cdef shape_type_c input_shape = input.shape
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MIN, param1_type, param1_type)
@@ -347,9 +347,9 @@ cpdef dparray _dpnp_min(dparray input, _axis_, output_shape):
     cdef dparray result = dparray(output_shape, dtype=result_type)
 
     cdef custom_statistic_1in_1out_func_ptr_t func = <custom_statistic_1in_1out_func_ptr_t > kernel_data.ptr
-    cdef dparray_shape_type axis
+    cdef shape_type_c axis
     cdef Py_ssize_t axis_size = 0
-    cdef dparray_shape_type axis_ = axis
+    cdef shape_type_c axis_ = axis
 
     if _axis_ is not None:
         axis = _axis_
@@ -368,7 +368,7 @@ cpdef dparray _dpnp_min(dparray input, _axis_, output_shape):
 
 
 cpdef dparray dpnp_min(dparray input, axis):
-    cdef dparray_shape_type shape_input = input.shape
+    cdef shape_type_c shape_input = input.shape
     if axis is None:
         axis_ = axis
         output_shape = 1

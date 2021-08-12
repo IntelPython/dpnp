@@ -39,7 +39,6 @@ import dpnp
 import numpy
 
 from dpnp.dpnp_algo import *
-from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 from dpnp.random.dpnp_algo_random import *
 
@@ -1290,7 +1289,7 @@ def sample(size):
     return call_origin(numpy.random.sample, size)
 
 
-def shuffle(x):
+def shuffle(x1):
     """
     Modify a sequence in-place by shuffling its contents.
 
@@ -1298,19 +1297,20 @@ def shuffle(x):
 
     Limitations
     -----------
-    Parameter ``x`` is supported as a ``dpnp.dparray``.
     Otherwise, the function will use :obj:`numpy.random.shuffle` on the backend
     and will be executed on fallback backend.
 
     """
 
-    if not use_origin_backend(seed):
-        if not isinstance(x, dparray):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if not dpnp.is_type_supported(x1_desc.dtype):
             pass
         else:
-            return dpnp_rng_shuffle(x)
+            result = dpnp_rng_shuffle(x1_desc).get_pyobj()
+            return result
 
-    return call_origin(numpy.random.shuffle, x)
+    return call_origin(numpy.random.shuffle, x1)
 
 
 def seed(seed=None):

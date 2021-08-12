@@ -44,7 +44,6 @@ import numpy
 import dpnp
 
 from dpnp.dpnp_algo import *
-from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 
 __all__ = [
@@ -359,7 +358,7 @@ def ascontiguousarray(a, dtype=None):
 
 
 # numpy.copy(a, order='K', subok=False)
-def copy(x1, order='C', subok=False):
+def copy(x1, order='K', subok=False):
     """
     Return an array copy of the given object.
 
@@ -386,7 +385,12 @@ def copy(x1, order='C', subok=False):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_copy(x1_desc, order, subok).get_pyobj()
+        if order != 'K':
+            pass
+        elif subok:
+            pass
+        else:
+            return dpnp_copy(x1_desc).get_pyobj()
 
     return call_origin(numpy.copy, x1, order, subok)
 
@@ -464,7 +468,6 @@ def diagflat(x1, k=0):
     return call_origin(numpy.diagflat, x1, k)
 
 
-# numpy.empty(shape, dtype=float, order='C')
 def empty(shape, dtype=numpy.float64, order='C'):
     """
     Return a new array of given shape and type, without initializing entries.
@@ -493,14 +496,14 @@ def empty(shape, dtype=numpy.float64, order='C'):
 
     if (not use_origin_backend()):
         if order not in ('C', 'c', None):
-            checker_throw_value_error("empty", "order", order, 'C')
+            pass
+        else:
+            result = create_output_descriptor_py(_object_to_tuple(shape), dtype, None).get_pyobj()
+            return result
 
-        return dparray(shape, dtype)
-
-    return numpy.empty(shape, dtype, order)
+    return call_origin(numpy.empty, shape, dtype, order)
 
 
-# numpy.empty_like(prototype, dtype=None, order='K', subok=True, shape=None)
 def empty_like(prototype, dtype=None, order='C', subok=False, shape=None):
     """
     Return a new array with the same shape and type as a given array.
@@ -531,16 +534,17 @@ def empty_like(prototype, dtype=None, order='C', subok=False, shape=None):
 
     if (not use_origin_backend()):
         if order not in ('C', 'c', None):
-            checker_throw_value_error("empty_like", "order", order, 'C')
-        if subok is not False:
-            checker_throw_value_error("empty_like", "subok", subok, False)
+            pass
+        elif subok is not False:
+            pass
+        else:
+            _shape = shape if shape is not None else prototype.shape
+            _dtype = dtype if dtype is not None else prototype.dtype.type
 
-        _shape = shape if shape is not None else prototype.shape
-        _dtype = dtype if dtype is not None else prototype.dtype.type
+            result = create_output_descriptor_py(_object_to_tuple(_shape), _dtype, None).get_pyobj()
+            return result
 
-        return dparray(_shape, _dtype)
-
-    return numpy.empty_like(prototype, dtype, order, subok, shape)
+    return call_origin(numpy.empty_like, prototype, dtype, order, subok, shape)
 
 
 def frombuffer(buffer, **kwargs):
@@ -691,16 +695,16 @@ def full_like(x1, fill_value, dtype=None, order='C', subok=False, shape=None):
 
     """
 
-    if (not use_origin_backend()):
+    if not use_origin_backend():
         if order not in ('C', 'c', None):
-            checker_throw_value_error("full_like", "order", order, 'C')
-        if subok is not False:
-            checker_throw_value_error("full_like", "subok", subok, False)
-
-        _shape = shape if shape is not None else x1.shape
-        _dtype = dtype if dtype is not None else x1.dtype
-
-        return dpnp_full_like(_shape, fill_value, _dtype)
+            pass
+        elif subok is not False:
+            pass
+        else:
+            _shape = shape if shape is not None else x1.shape
+            _dtype = dtype if dtype is not None else x1.dtype
+    
+            return dpnp_full_like(_shape, fill_value, _dtype).get_pyobj()
 
     return numpy.full_like(x1, fill_value, dtype, order, subok, shape)
 

@@ -794,7 +794,9 @@ cdef class dparray:
             pass
         elif order is not 'K':
             pass
-        elif self.dtype == numpy.complex128:
+        elif self.dtype == numpy.complex128 or dtype == numpy.complex128:
+            pass
+        elif self.dtype == numpy.complex64 or dtype == numpy.complex64:
             pass
         else:
             return dpnp_astype(self, dtype)
