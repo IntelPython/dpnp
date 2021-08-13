@@ -1,3 +1,5 @@
+tests/test_arraymanipulation.py::TestHstack::test_generator
+tests/test_arraymanipulation.py::TestVstack::test_generator
 tests/test_linalg.py::test_cond[-1-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
 tests/test_linalg.py::test_cond[1-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
 tests/test_linalg.py::test_cond[-2-[[1, 0, -1], [0, 1, 0], [1, 0, 1]]]
@@ -10,21 +12,9 @@ tests/test_linalg.py::test_cond[None-[[1, 0, -1], [0, 1, 0], [1, 0, 1]]]
 tests/test_linalg.py::test_cond[None-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
 tests/test_linalg.py::test_cond[-numpy.inf-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
 tests/test_linalg.py::test_cond[numpy.inf-[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]
-tests/test_linalg.py::test_qr[(5,3)-float32]
-tests/test_linalg.py::test_qr[(5,3)-float64]
-tests/test_linalg.py::test_qr[(5,3)-int32]
-tests/test_linalg.py::test_qr[(5,3)-int64]
-tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[ lambda x: (dpnp.asarray([(i, i) for i in x], [("a", int), ("b", int)]).view(dpnp.recarray))]
-tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[ lambda x: dpnp.asarray([(i, i) for i in x], [("a", object), ("b", dpnp.int32)])]]
-tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[ lambda x: dpnp.asarray(x).astype(dpnp.complex64)]
-tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[ lambda x: dpnp.asarray(x).astype(dpnp.int8)]
-tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[ lambda x: dpnp.vstack([x, x]).T]
-tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[ lambda x: [(i, i) for i in x]]
-tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[ lambda x: x]
-tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-float32-1]
-tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-float64-1]
-tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-int32-1]
-tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-int64-1]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: (dpnp.asarray([(i, i) for i in x], [("a", int), ("b", int)]).view(dpnp.recarray))]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray([(i, i) for i in x], [("a", object), ("b", dpnp.int32)])]]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray(x).astype(dpnp.int8)]
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_and
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_or
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_bitwise_xor
@@ -241,6 +231,8 @@ tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy=True, indexing='ij', sparse=True}::test_meshgrid1
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy=True, indexing='ij', sparse=True}::test_meshgrid2
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_7_{copy=True, indexing='ij', sparse=True}::test_meshgrid3
+tests/third_party/cupy/creation_tests/test_ranges.py::TestMgrid::test_mgrid3
+tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid3
 tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid4
 tests/third_party/cupy/creation_tests/test_ranges.py::TestOgrid::test_ogrid5
 tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_linspace_array_start_stop
@@ -437,10 +429,7 @@ tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_multidim_
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_tensordot_zero_dim
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_dot_with_out_f_contiguous
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_transposed_multidim_vdot
-tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_array_scalar
-tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_finite
 tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_infinite
-tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_infinite_equal_nan
 tests/third_party/cupy/logic_tests/test_comparison.py::TestAllclose::test_allclose_min_int
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_broadcast_not_allowed
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_diff_dtypes_is_equal
@@ -448,7 +437,6 @@ tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_arra
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_diff_length
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_is_equal
 tests/third_party/cupy/logic_tests/test_comparison.py::TestArrayEqual::test_array_equal_not_equal
-tests/third_party/cupy/logic_tests/test_comparison.py::TestComparisonOperator::test_binary_npscalar_array
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_0_{shapes=[(), ()]}::test_broadcast
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_0_{shapes=[(), ()]}::test_broadcast_arrays
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_10_{shapes=[(0, 1, 1, 0, 3), (5, 2, 0, 1, 0, 0, 3), (2, 1, 0, 0, 0, 3)]}::test_broadcast
@@ -556,18 +544,6 @@ tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_4_{reps
 tests/third_party/cupy/manipulation_tests/test_tiling.py::TestTile_param_5_{reps=(2, 3, 4, 5)}::test_array_tile
 tests/third_party/cupy/manipulation_tests/test_transpose.py::TestTranspose::test_moveaxis_invalid5_2
 tests/third_party/cupy/manipulation_tests/test_transpose.py::TestTranspose::test_moveaxis_invalid5_3
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1273_{arg1=array([-3, -2, -1,  1,  2,  3], dtype=int32), arg2=0, dtype=float64, name='fmod', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_1353_{arg1=array([-3, -2, -1,  1,  2,  3]), arg2=0, dtype=float64, name='fmod', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_279_{arg1=array([[1., 2., 3.],       [4., 5., 6.]], dtype=float32), arg2=array([[0., 1., 2.],       [3., 4., 5.]], dtype=float32), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_287_{arg1=array([[1., 2., 3.],       [4., 5., 6.]], dtype=float32), arg2=array([[0., 1., 2.],       [3., 4., 5.]]), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_295_{arg1=array([[1., 2., 3.],       [4., 5., 6.]], dtype=float32), arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_303_{arg1=array([[1., 2., 3.],       [4., 5., 6.]], dtype=float32), arg2=array([[0, 1, 2],       [3, 4, 5]]), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_359_{arg1=array([[1., 2., 3.],       [4., 5., 6.]]), arg2=array([[0., 1., 2.],       [3., 4., 5.]], dtype=float32), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_367_{arg1=array([[1., 2., 3.],       [4., 5., 6.]]), arg2=array([[0., 1., 2.],       [3., 4., 5.]]), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_375_{arg1=array([[1., 2., 3.],       [4., 5., 6.]]), arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_383_{arg1=array([[1., 2., 3.],       [4., 5., 6.]]), arg2=array([[0, 1, 2],       [3, 4, 5]]), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_439_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int32), arg2=array([[0., 1., 2.],       [3., 4., 5.]], dtype=float32), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_447_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int32), arg2=array([[0., 1., 2.],       [3., 4., 5.]]), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_455_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int32), arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_457_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int32), arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), dtype=float64, name='fmod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_459_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int32), arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), dtype=float64, name='remainder', use_dtype=False}::test_binary
@@ -576,9 +552,6 @@ tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_para
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_465_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int32), arg2=array([[0, 1, 2],       [3, 4, 5]]), dtype=float64, name='fmod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_467_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int32), arg2=array([[0, 1, 2],       [3, 4, 5]]), dtype=float64, name='remainder', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_469_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int32), arg2=array([[0, 1, 2],       [3, 4, 5]]), dtype=float64, name='mod', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_473_{arg1=array([[1, 2, 3],       [4, 5, 6]], dtype=int32), arg2=0, dtype=float64, name='fmod', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_519_{arg1=array([[1, 2, 3],       [4, 5, 6]]), arg2=array([[0., 1., 2.],       [3., 4., 5.]], dtype=float32), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_527_{arg1=array([[1, 2, 3],       [4, 5, 6]]), arg2=array([[0., 1., 2.],       [3., 4., 5.]]), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_535_{arg1=array([[1, 2, 3],       [4, 5, 6]]), arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), dtype=float64, name='floor_divide', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_537_{arg1=array([[1, 2, 3],       [4, 5, 6]]), arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), dtype=float64, name='fmod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_539_{arg1=array([[1, 2, 3],       [4, 5, 6]]), arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), dtype=float64, name='remainder', use_dtype=False}::test_binary
@@ -587,13 +560,6 @@ tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_para
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_545_{arg1=array([[1, 2, 3],       [4, 5, 6]]), arg2=array([[0, 1, 2],       [3, 4, 5]]), dtype=float64, name='fmod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_547_{arg1=array([[1, 2, 3],       [4, 5, 6]]), arg2=array([[0, 1, 2],       [3, 4, 5]]), dtype=float64, name='remainder', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_549_{arg1=array([[1, 2, 3],       [4, 5, 6]]), arg2=array([[0, 1, 2],       [3, 4, 5]]), dtype=float64, name='mod', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_553_{arg1=array([[1, 2, 3],       [4, 5, 6]]), arg2=0, dtype=float64, name='fmod', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_617_{arg1=0, arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), dtype=float64, name='fmod', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_625_{arg1=0, arg2=array([[0, 1, 2],       [3, 4, 5]]), dtype=float64, name='fmod', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_777_{arg1=2, arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), dtype=float64, name='fmod', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_785_{arg1=2, arg2=array([[0, 1, 2],       [3, 4, 5]]), dtype=float64, name='fmod', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_937_{arg1=-2, arg2=array([[0, 1, 2],       [3, 4, 5]], dtype=int32), dtype=float64, name='fmod', use_dtype=False}::test_binary
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticBinary2_param_945_{arg1=-2, arg2=array([[0, 1, 2],       [3, 4, 5]]), dtype=float64, name='fmod', use_dtype=False}::test_binary
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticModf::test_modf
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_0_{name='reciprocal', nargs=1}::test_raises_with_numpy_input
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticRaisesWithNumpyInput_param_10_{name='remainder', nargs=2}::test_raises_with_numpy_input
@@ -895,29 +861,13 @@ tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargm
 tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_zero_size_axis1
 tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_0_{array=array(0)}::test_nonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_1_{array=array(1)}::test_nonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_axis0
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_axis2
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_axis_large
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_zero_size
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_zero_size_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_axis0
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_axis2
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_axis_large
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_zero_size
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_zero_size_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_external_argmax_axis_large
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_external_argmin_axis_large
 tests/third_party/cupy/sorting_tests/test_search.py::TestWhereCond_param_0_{cond_shape=(2, 3, 4)}::test_where_cond
 tests/third_party/cupy/sorting_tests/test_search.py::TestWhereCond_param_1_{cond_shape=(4,)}::test_where_cond
 tests/third_party/cupy/sorting_tests/test_search.py::TestWhereCond_param_2_{cond_shape=(2, 3, 4)}::test_where_cond
 tests/third_party/cupy/sorting_tests/test_search.py::TestWhereCond_param_3_{cond_shape=(3, 4)}::test_where_cond
 tests/third_party/cupy/sorting_tests/test_search.py::TestWhereError::test_one_argument
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereTwoArrays_param_0_{cond_shape=(2, 3, 4), x_shape=(2, 3, 4), y_shape=(2, 3, 4)}::test_where_two_arrays
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereTwoArrays_param_1_{cond_shape=(4,), x_shape=(2, 3, 4), y_shape=(2, 3, 4)}::test_where_two_arrays
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereTwoArrays_param_2_{cond_shape=(2, 3, 4), x_shape=(2, 3, 4), y_shape=(3, 4)}::test_where_two_arrays
-tests/third_party/cupy/sorting_tests/test_search.py::TestWhereTwoArrays_param_3_{cond_shape=(3, 4), x_shape=(2, 3, 4), y_shape=(4,)}::test_where_two_arrays
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_0_{external=False}::test_argpartition_axis
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_0_{external=False}::test_argpartition_invalid_axis1
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_0_{external=False}::test_argpartition_invalid_axis2
@@ -948,28 +898,10 @@ tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_1_{ext
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_1_{external=True}::test_argpartition_one_dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_1_{external=True}::test_argpartition_sequence_kth
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgpartition_param_1_{external=True}::test_argpartition_zero_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_0_{external=False}::test_argsort_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_0_{external=False}::test_argsort_invalid_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_0_{external=False}::test_argsort_invalid_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_0_{external=False}::test_argsort_invalid_negative_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_0_{external=False}::test_argsort_invalid_negative_axis2
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_0_{external=False}::test_argsort_multi_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_0_{external=False}::test_argsort_negative_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_0_{external=False}::test_argsort_none_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_0_{external=False}::test_argsort_zero_dim_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_0_{external=False}::test_argsort_zero_dim_invalid_axis
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_0_{external=False}::test_nan1
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_0_{external=False}::test_nan2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_1_{external=True}::test_argsort_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_1_{external=True}::test_argsort_invalid_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_1_{external=True}::test_argsort_invalid_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_1_{external=True}::test_argsort_invalid_negative_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_1_{external=True}::test_argsort_invalid_negative_axis2
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_1_{external=True}::test_argsort_multi_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_1_{external=True}::test_argsort_negative_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_1_{external=True}::test_argsort_none_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_1_{external=True}::test_argsort_zero_dim_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_1_{external=True}::test_argsort_zero_dim_invalid_axis
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_1_{external=True}::test_nan1
 tests/third_party/cupy/sorting_tests/test_sort.py::TestArgsort_param_1_{external=True}::test_nan2
 tests/third_party/cupy/sorting_tests/test_sort.py::TestLexsort::test_F_order
@@ -999,12 +931,10 @@ tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{extern
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_zero_dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_multi_dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_negative_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_non_contiguous
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_one_dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_zero_dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_multi_dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_negative_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_non_contiguous
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_one_dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_zero_dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestSort_complex::test_sort_complex_1dim

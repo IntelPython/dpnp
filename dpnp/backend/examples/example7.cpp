@@ -30,7 +30,8 @@
  * to calculate eigenvalues and eigenvectors of a symmetric matrix
  *
  * Possible compile line:
- * clang++ -g -fPIC examples/example7.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example7
+ * . /opt/intel/oneapi/setvars.sh
+ * g++ -g dpnp/backend/examples/example7.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example7
  *
  */
 
@@ -63,7 +64,7 @@ int main(int, char**)
         array[size * i + i] = i + 1;
     }
 
-    dpnp_lapack_eig_c<float, float>(array, result1, result2, size);
+    dpnp_eig_c<float, float>(array, result1, result2, size);
 
     std::cout << "eigen values" << std::endl;
     for (size_t i = 0; i < size; ++i)

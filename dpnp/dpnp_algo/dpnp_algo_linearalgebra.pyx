@@ -32,14 +32,13 @@ and the rest of the library
 
 """
 
-from dpnp.dpnp_utils cimport *
-cimport numpy
-
+# NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
     "dpnp_dot",
     "dpnp_inner",
     "dpnp_kron",
+    "dpnp_matmul",
     "dpnp_outer"
 ]
 
@@ -48,9 +47,9 @@ __all__ += [
 ctypedef void(*fptr_2in_1out_shapes_t)(void *, void * , void * , size_t * , size_t * , size_t * , size_t)
 
 
-cpdef dparray dpnp_dot(dparray in_array1, dparray in_array2):
+cpdef dparray dpnp_dot(dpnp_descriptor in_array1, dpnp_descriptor in_array2):
 
-    cdef dparray_shape_type shape1, shape2
+    cdef shape_type_c shape1, shape2
 
     shape1 = in_array1.shape
     shape2 = in_array2.shape
@@ -64,7 +63,9 @@ cpdef dparray dpnp_dot(dparray in_array1, dparray in_array2):
 
     # scalar
     if dim1 == 0 or dim2 == 0:
-        return dpnp_multiply(in_array1, in_array2)
+        x1_desc = dpnp.get_dpnp_descriptor(in_array1)
+        x2_desc = dpnp.get_dpnp_descriptor(in_array2)
+        return dpnp_multiply(x1_desc, x2_desc).get_pyobj()
 
     cdef size_t size1 = 0
     cdef size_t size2 = 0
@@ -76,7 +77,7 @@ cpdef dparray dpnp_dot(dparray in_array1, dparray in_array2):
     # vector
     # test: pytest tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_dot_vec1 -v -s
     if size1 != size2:
-        raise checker_throw_runtime_error("dpnp_dot", "input vectors must be of equal size")
+        utils.checker_throw_runtime_error("dpnp_dot", "input vectors must be of equal size")
 
     # convert string type names (dparray.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(in_array1.dtype)
@@ -97,22 +98,22 @@ cpdef dparray dpnp_dot(dparray in_array1, dparray in_array2):
     return result
 
 
-cpdef dparray dpnp_inner(dparray array1, dparray array2):
+cpdef dparray dpnp_inner(dpnp_descriptor array1, dpnp_descriptor array2):
     result_type = numpy.promote_types(array1.dtype, array1.dtype)
 
     assert(len(array1.shape) == len(array2.shape))
 
-    cdef dparray_shape_type array1_no_last_axes = array1.shape[:-1]
-    cdef dparray_shape_type array2_no_last_axes = array2.shape[:-1]
+    cdef shape_type_c array1_no_last_axes = array1.shape[:-1]
+    cdef shape_type_c array2_no_last_axes = array2.shape[:-1]
 
-    cdef dparray_shape_type result_shape = array1_no_last_axes
+    cdef shape_type_c result_shape = array1_no_last_axes
     result_shape.insert(result_shape.end(), array2_no_last_axes.begin(), array2_no_last_axes.end())
 
     cdef dparray result = dparray(result_shape, dtype=result_type)
 
     # calculate input arrays offsets
-    cdef dparray_shape_type array1_offsets = [1] * len(array1.shape)
-    cdef dparray_shape_type array2_offsets = [1] * len(array2.shape)
+    cdef shape_type_c array1_offsets = [1] * len(array1.shape)
+    cdef shape_type_c array2_offsets = [1] * len(array2.shape)
     cdef size_t acc1 = 1
     cdef size_t acc2 = 1
     for axis in range(len(array1.shape) - 1, -1, -1):
@@ -121,13 +122,13 @@ cpdef dparray dpnp_inner(dparray array1, dparray array2):
         acc1 *= array1.shape[axis]
         acc2 *= array2.shape[axis]
 
-    cdef dparray_shape_type result_shape_offsets = [1] * len(result.shape)
+    cdef shape_type_c result_shape_offsets = [1] * len(result.shape)
     acc = 1
     for i in range(len(result.shape) - 1, -1, -1):
         result_shape_offsets[i] = acc
         acc *= result.shape[i]
 
-    cdef dparray_shape_type xyz
+    cdef shape_type_c xyz
     cdef size_t array1_lin_index_base
     cdef size_t array2_lin_index_base
     cdef size_t axis2
@@ -157,24 +158,24 @@ cpdef dparray dpnp_inner(dparray array1, dparray array2):
     return result
 
 
-cpdef dparray dpnp_kron(dparray in_array1, dparray in_array2):
+cpdef dparray dpnp_kron(dpnp_descriptor in_array1, dpnp_descriptor in_array2):
     cdef size_t ndim = max(in_array1.ndim, in_array2.ndim)
 
-    cdef dparray_shape_type in_array1_shape
+    cdef shape_type_c in_array1_shape
     if in_array1.ndim < ndim:
         for i in range(ndim - in_array1.ndim):
             in_array1_shape.push_back(1)
     for i in range(in_array1.ndim):
         in_array1_shape.push_back(in_array1.shape[i])
 
-    cdef dparray_shape_type in_array2_shape
+    cdef shape_type_c in_array2_shape
     if in_array2.ndim < ndim:
         for i in range(ndim - in_array2.ndim):
             in_array2_shape.push_back(1)
     for i in range(in_array2.ndim):
         in_array2_shape.push_back(in_array2.shape[i])
 
-    cdef dparray_shape_type result_shape
+    cdef shape_type_c result_shape
     for i in range(ndim):
         result_shape.push_back(in_array1_shape[i] * in_array2_shape[i])
 
@@ -196,8 +197,81 @@ cpdef dparray dpnp_kron(dparray in_array1, dparray in_array2):
     return result
 
 
-cpdef dparray dpnp_outer(dparray array1, dparray array2):
-    cdef dparray_shape_type result_shape = (array1.size, array2.size)
+cpdef utils.dpnp_descriptor dpnp_matmul(utils.dpnp_descriptor in_array1, utils.dpnp_descriptor in_array2, utils.dpnp_descriptor out=None):
+
+    cdef shape_type_c shape_result
+
+    cdef shape_type_c shape1 = in_array1.shape
+    cdef shape_type_c shape2 = in_array2.shape
+
+    cdef size_t size_m = 0
+    cdef size_t size_n = 0
+    cdef size_t size_k = 0
+
+    # Calling this function on an empty container causes undefined behavior.
+    if not shape1.empty():
+        size_m = shape1.front()
+    if not shape2.empty():
+        size_n = shape2.back()
+    if not shape1.empty():
+        size_k = shape1.back()
+
+    cdef size_t ndim_max = max(in_array1.ndim, in_array2.ndim)
+
+    if in_array1.ndim < ndim_max or ndim_max == 1:
+        """
+        shape1(2,), shape2(2,4)
+        test: pytest tests/test_matmul.py::test_matmul[shape_pair4-types0] -v -s
+        or
+        shape1(2,), shape2(2,)
+        test: pytest tests/test_matmul.py::test_matmul[shape_pair8-types0] -v -s
+        """
+        size_m = 1
+
+    if in_array2.ndim < ndim_max or ndim_max == 1:
+        """
+        shape1(5,2), shape2(2,)
+        test: pytest tests/test_matmul.py::test_matmul[shape_pair6-types0] -v -s
+        or
+        shape1(3,), shape2(3,)
+        test: pytest tests/test_matmul.py::test_matmul[shape_pair8-types0] -v -s
+        """
+        size_n = 1
+
+    if ndim_max > 2:
+        """
+        shape1(5, 3, 2) * shape2(5, 2, 4) -> result(5, 3, 4)
+        test: pytest tests/test_matmul.py::test_matmul[shape_pair10-types0] -v -s
+        """
+        shape_result = shape1[:-1] + [shape2.back()]
+    else:
+        """
+        shape1(5,2) * shape2(2,3) -> result(5,3)
+        test: pytest tests/test_matmul.py::test_matmul[shape_pair0-types0] -v -s
+        """
+        shape_result = shape1[:-1] + shape2[1:]
+
+    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(in_array1.dtype)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(in_array2.dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MATMUL, param1_type, param2_type)
+
+    # ceate result array with type given by FPTR data
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(shape_result, kernel_data.return_type, out)
+    if result.size == 0:
+        return result
+
+    cdef fptr_blas_gemm_2in_1out_t func = <fptr_blas_gemm_2in_1out_t > kernel_data.ptr
+    # call FPTR function
+    func(in_array1.get_data(), in_array2.get_data(), result.get_data(), size_m, size_n, size_k)
+
+    return result
+
+
+cpdef dparray dpnp_outer(dpnp_descriptor array1, dpnp_descriptor array2):
+    cdef shape_type_c result_shape = (array1.size, array2.size)
     result_type = numpy.promote_types(array1.dtype, array1.dtype)
 
     cdef dparray result = dparray(result_shape, dtype=result_type)

@@ -32,10 +32,7 @@ and the rest of the library
 
 """
 
-
-import numpy
-from dpnp.dpnp_utils cimport *
-
+# NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
     "dpnp_argsort",
@@ -49,28 +46,31 @@ ctypedef void(*fptr_dpnp_partition_t)(void * , void * , void * , const size_t , 
 ctypedef void(*fptr_dpnp_searchsorted_t)(void * , const void * , const void * , bool , const size_t , const size_t )
 
 
-cpdef dparray dpnp_argsort(dparray in_array1):
-    return call_fptr_1in_1out(DPNP_FN_ARGSORT, in_array1, in_array1.shape)
+cpdef utils.dpnp_descriptor dpnp_argsort(utils.dpnp_descriptor x1):
+    return call_fptr_1in_1out(DPNP_FN_ARGSORT, x1, x1.shape)
 
 
-cpdef dparray dpnp_partition(dparray arr, int kth, axis=-1, kind='introselect', order=None):
+cpdef dparray dpnp_partition(utils.dpnp_descriptor arr, int kth, axis=-1, kind='introselect', order=None):
+    cdef shape_type_c shape1 = arr.shape
+
     cdef size_t kth_ = kth if kth >= 0 else (arr.ndim + kth)
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PARTITION, param1_type, param1_type)
 
     result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-    cdef dparray arr2 = dpnp.copy(arr)
+    cdef utils.dpnp_descriptor arr2 = dpnp_copy(arr)
+
     cdef dparray result = dparray(arr.shape, dtype=result_type)
 
     cdef fptr_dpnp_partition_t func = <fptr_dpnp_partition_t > kernel_data.ptr
 
-    func(arr.get_data(), arr2.get_data(), result.get_data(), kth_, < size_t * > arr._dparray_shape.data(), arr.ndim)
+    func(arr.get_data(), arr2.get_data(), result.get_data(), kth_, < size_t * > shape1.data(), arr.ndim)
 
     return result
 
 
-cpdef dparray dpnp_searchsorted(dparray arr, dparray v, side='left'):
+cpdef dparray dpnp_searchsorted(utils.dpnp_descriptor arr, utils.dpnp_descriptor v, side='left'):
     if side is 'left':
         side_ = True
     else:
@@ -89,5 +89,5 @@ cpdef dparray dpnp_searchsorted(dparray arr, dparray v, side='left'):
     return result
 
 
-cpdef dparray dpnp_sort(dparray in_array1):
-    return call_fptr_1in_1out(DPNP_FN_SORT, in_array1, in_array1.shape)
+cpdef utils.dpnp_descriptor dpnp_sort(utils.dpnp_descriptor x1):
+    return call_fptr_1in_1out(DPNP_FN_SORT, x1, x1.shape)

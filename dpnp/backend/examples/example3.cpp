@@ -30,7 +30,8 @@
  * to calculate cos of input vector elements
  *
  * Possible compile line:
- * clang++ -g -fPIC examples/example3.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example3
+ * . /opt/intel/oneapi/setvars.sh
+ * g++ -g dpnp/backend/examples/example3.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example3
  *
  */
 
