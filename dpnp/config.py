@@ -37,3 +37,8 @@ __DPNP_QUEUE_GPU__ = int(os.getenv('DPNP_QUEUE_GPU', 0))
 '''
 Explicitly use GPU for SYCL queue
 '''
+
+__DPNP_OUTPUT_NUMPY__ = int(os.getenv('DPNP_OUTPUT_NUMPY', 0))
+'''
+Explicitly use NumPy.ndarray as return type for creation functions
+'''
