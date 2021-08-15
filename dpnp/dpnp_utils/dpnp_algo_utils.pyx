@@ -163,7 +163,9 @@ cpdef checker_throw_value_error(function_name, param_name, param, expected):
 
 
 cpdef dpnp_descriptor create_output_descriptor_py(shape_type_c output_shape, object d_type, object requested_out):
-    cdef DPNPFuncType c_type = dpnp_dtype_to_DPNPFuncType(d_type)
+    py_type = dpnp.default_float_type() if d_type is None else d_type
+    
+    cdef DPNPFuncType c_type = dpnp_dtype_to_DPNPFuncType(py_type)
 
     return create_output_descriptor(output_shape, c_type, requested_out)
 
