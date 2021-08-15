@@ -41,6 +41,7 @@ __all__ = [
     "bool_",
     "complex128",
     "complex64",
+    "default_float_type",
     "dtype",
     "float",
     "float16",
@@ -73,6 +74,8 @@ integer = numpy.integer
 int = numpy.int
 longcomplex = numpy.longcomplex
 
+def default_float_type():
+    return float64
 
 def isscalar(obj):
     """
