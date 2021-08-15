@@ -218,8 +218,6 @@ cpdef object dpnp_logspace(start, stop, num, endpoint, base, dtype, axis):
 
 
 cpdef list dpnp_meshgrid(xi, copy, sparse, indexing):
-    cdef dparray res_item
-
     input_count = len(xi)
 
     # simple case
@@ -253,14 +251,15 @@ cpdef list dpnp_meshgrid(xi, copy, sparse, indexing):
 
     shape = tuple(shape_list)
 
+    cdef utils.dpnp_descriptor res_item
     result = []
     for i in range(input_count):
-        res_item = utils_py.create_output_descriptor_py(shape, xi[i].dtype, None).get_pyobj()
+        res_item = utils_py.create_output_descriptor_py(shape, xi[i].dtype, None)
 
         for j in range(res_item.size):
-            res_item[j] = xi[i][(j // steps[i]) % xi[i].size]
+            res_item.get_pyobj()[j] = xi[i][(j // steps[i]) % xi[i].size]
 
-        result.append(res_item)
+        result.append(res_item.get_pyobj())
 
     return result
 

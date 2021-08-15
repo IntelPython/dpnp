@@ -249,12 +249,32 @@ cdef dpnp_DPNPFuncType_to_dtype(size_t type)
 """
 Bitwise functions
 """
-cpdef dpnp_descriptor dpnp_bitwise_and(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dpnp_descriptor dpnp_bitwise_or(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dpnp_descriptor dpnp_bitwise_xor(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
+cpdef dpnp_descriptor dpnp_bitwise_and(dpnp_descriptor x1_obj,
+                                       dpnp_descriptor x2_obj,
+                                       object dtype=*,
+                                       dpnp_descriptor out=*,
+                                       object where=*)
+cpdef dpnp_descriptor dpnp_bitwise_or(dpnp_descriptor x1_obj,
+                                      dpnp_descriptor x2_obj,
+                                      object dtype=*,
+                                      dpnp_descriptor out=*,
+                                      object where=*)
+cpdef dpnp_descriptor dpnp_bitwise_xor(dpnp_descriptor x1_obj,
+                                       dpnp_descriptor x2_obj,
+                                       object dtype=*,
+                                       dpnp_descriptor out=*,
+                                       object where=*)
 cpdef dpnp_descriptor dpnp_invert(dpnp_descriptor x1)
-cpdef dpnp_descriptor dpnp_left_shift(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dpnp_descriptor dpnp_right_shift(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
+cpdef dpnp_descriptor dpnp_left_shift(dpnp_descriptor x1_obj,
+                                      dpnp_descriptor x2_obj,
+                                      object dtype=*,
+                                      dpnp_descriptor out=*,
+                                      object where=*)
+cpdef dpnp_descriptor dpnp_right_shift(dpnp_descriptor x1_obj,
+                                       dpnp_descriptor x2_obj,
+                                       object dtype=*,
+                                       dpnp_descriptor out=*,
+                                       object where=*)
 
 
 """
@@ -293,17 +313,27 @@ cpdef dpnp_descriptor dpnp_copy(dpnp_descriptor x1)
 """
 Mathematical functions
 """
-cpdef dpnp_descriptor dpnp_add(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dpnp_descriptor dpnp_arctan2(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dpnp_descriptor dpnp_divide(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dpnp_descriptor dpnp_hypot(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dpnp_descriptor dpnp_maximum(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dpnp_descriptor dpnp_minimum(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dpnp_descriptor dpnp_multiply(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
+cpdef dpnp_descriptor dpnp_add(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
+                               dpnp_descriptor out=*, object where=*)
+cpdef dpnp_descriptor dpnp_arctan2(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
+                                   dpnp_descriptor out=*, object where=*)
+cpdef dpnp_descriptor dpnp_divide(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
+                                  dpnp_descriptor out=*, object where=*)
+cpdef dpnp_descriptor dpnp_hypot(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
+                                 dpnp_descriptor out=*, object where=*)
+cpdef dpnp_descriptor dpnp_maximum(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
+                                   dpnp_descriptor out=*, object where=*)
+cpdef dpnp_descriptor dpnp_minimum(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
+                                   dpnp_descriptor out=*, object where=*)
+cpdef dpnp_descriptor dpnp_multiply(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
+                                    dpnp_descriptor out=*, object where=*)
 cpdef dpnp_descriptor dpnp_negative(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_power(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dpnp_descriptor dpnp_remainder(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
-cpdef dpnp_descriptor dpnp_subtract(object x1_obj, object x2_obj, object dtype=*, dparray out=*, object where=*)
+cpdef dpnp_descriptor dpnp_power(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
+                                 dpnp_descriptor out=*, object where=*)
+cpdef dpnp_descriptor dpnp_remainder(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
+                                     dpnp_descriptor out=*, object where=*)
+cpdef dpnp_descriptor dpnp_subtract(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj, object dtype=*,
+                                    dpnp_descriptor out=*, object where=*)
 
 
 """

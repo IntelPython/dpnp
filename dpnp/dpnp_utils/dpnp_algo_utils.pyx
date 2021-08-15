@@ -56,6 +56,7 @@ except ImportError:
     """
     config.__DPNP_DPCTL_AVAILABLE__ = False
 
+config.__DPNP_DPCTL_AVAILABLE__ = False
 
 """
 Python import functions
