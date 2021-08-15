@@ -42,6 +42,20 @@ cimport cpython
 cimport cython
 cimport numpy
 
+try:
+    """
+    Detect DPCtl availability to use data container
+    """
+    import dpctl.tensor as dpctl
+
+    config.__DPNP_DPCTL_AVAILABLE__ = True
+
+except ImportError:
+    """
+    No DPCtl data container available
+    """
+    config.__DPNP_DPCTL_AVAILABLE__ = False
+
 
 """
 Python import functions
@@ -361,6 +375,9 @@ cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
             """ Create NumPy ndarray """
             # TODO need to use "buffer=" parameter to use SYCL aware memory
             result = numpy.ndarray(output_shape, dtype=result_dtype)
+        elif config.__DPNP_DPCTL_AVAILABLE__:
+            """ Create DPCTL array """
+            result = dpctl.usm_ndarray(output_shape, dtype=numpy.dtype(result_dtype).name)
         else:
             """ Create DPNP array """
             result = dparray(output_shape, dtype=result_dtype)
@@ -481,13 +498,17 @@ cdef class dpnp_descriptor:
         self.dpnp_descriptor_data_size = 0
         self.dpnp_descriptor_is_scalar = True
 
-        """ Accure main data storage """
-        self.descriptor = getattr(obj, "__array_interface__", None)
+        """ Accure DPCTL data container storage """
+        self.descriptor = getattr(obj, "__sycl_usm_array_interface__", None)
         if self.descriptor is None:
-            return
 
-        if self.descriptor["version"] != 3:
-            return
+            """ Accure main data storage """
+            self.descriptor = getattr(obj, "__array_interface__", None)
+            if self.descriptor is None:
+                return
+
+            if self.descriptor["version"] != 3:
+                return
 
         self.origin_pyobj = obj
 
