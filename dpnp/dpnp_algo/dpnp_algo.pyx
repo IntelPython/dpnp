@@ -302,7 +302,7 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out(DPNPFuncName fptr_name,
                                               utils.dpnp_descriptor x1_obj,
                                               utils.dpnp_descriptor x2_obj,
                                               object dtype=None,
-                                              dparray out=None,
+                                              utils.dpnp_descriptor out=None,
                                               object where=True,
                                               func_name=None):
 
@@ -330,11 +330,19 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out(DPNPFuncName fptr_name,
         if out.shape != result_shape:
             utils.checker_throw_value_error(func_name, 'out.shape', out.shape, result_shape)
 
-        result = dpnp_descriptor(out)
+        result = out
 
     """ Call FPTR function """
     cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
-    func(result.get_data(), x1_obj.get_data(), x1_obj.size, x1_shape.data(), x1_shape.size(),
-         x2_obj.get_data(), x2_obj.size, x2_shape.data(), x2_shape.size(), NULL)
+    func(result.get_data(),
+         x1_obj.get_data(),
+         x1_obj.size,
+         x1_shape.data(),
+         x1_shape.size(),
+         x2_obj.get_data(),
+         x2_obj.size,
+         x2_shape.data(),
+         x2_shape.size(),
+         NULL)
 
     return result

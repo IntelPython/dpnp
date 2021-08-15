@@ -359,14 +359,13 @@ def arctan2(x1, x2, dtype=None, out=None, where=True, **kwargs):
             pass
         elif x2_desc and x2_desc.ndim == 0:
             pass
-        elif out is not None and not isinstance(out, dparray):
-            pass
         elif dtype is not None:
             pass
         elif not where:
             pass
         else:
-            return dpnp_arctan2(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
+            out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+            return dpnp_arctan2(x1_desc, x2_desc, dtype, out_desc, where).get_pyobj()
 
     return call_origin(numpy.arctan2, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
