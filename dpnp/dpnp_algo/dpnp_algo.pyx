@@ -205,11 +205,11 @@ Internal functions
 """
 cdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype):
 
-    if dtype in [numpy.float64, 'float64']:
+    if dtype in [numpy.float64, numpy.float, 'float64', 'float', 'f8']:
         return DPNP_FT_DOUBLE
     elif dtype in [numpy.float32, 'float32', 'f4']:
         return DPNP_FT_FLOAT
-    elif dtype in [numpy.int64, 'int64', 'int', int]:
+    elif dtype in [numpy.int64, numpy.int, 'int64', 'int', int]:
         return DPNP_FT_LONG
     elif dtype in [numpy.int32, 'int32']:
         return DPNP_FT_INT
