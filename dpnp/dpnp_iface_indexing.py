@@ -241,7 +241,7 @@ def diagonal(x1, offset=0, axis1=0, axis2=1):
         elif axis2 != 1:
             pass
         else:
-            return dpnp_diagonal(x1_desc, offset)
+            return dpnp_diagonal(x1_desc, offset).get_pyobj()
 
     return call_origin(numpy.diagonal, x1, offset, axis1, axis2)
 

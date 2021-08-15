@@ -742,9 +742,9 @@ def geomspace(start, stop, num=50, endpoint=True, dtype=None, axis=0):
 
     if not use_origin_backend():
         if axis != 0:
-            checker_throw_value_error("linspace", "axis", axis, 0)
-
-        return dpnp_geomspace(start, stop, num, endpoint, dtype, axis)
+            pass
+        else:
+            return dpnp_geomspace(start, stop, num, endpoint, dtype, axis).get_pyobj()
 
     return call_origin(numpy.geomspace, start, stop, num, endpoint, dtype, axis)
 
@@ -778,7 +778,7 @@ def identity(n, dtype=None, *, like=None):
         else:
             if dtype is None:
                 dtype = dpnp.float64
-            return dpnp_identity(n, dtype)
+            return dpnp_identity(n, dtype).get_pyobj()
 
     return call_origin(numpy.identity, n, dtype=dtype, like=like)
 
@@ -1175,7 +1175,7 @@ def tri(N, M=None, k=0, dtype=numpy.float, **kwargs):
         elif not isinstance(k, int):
             pass
         else:
-            return dpnp_tri(N, M, k, dtype)
+            return dpnp_tri(N, M, k, dtype).get_pyobj()
 
     return call_origin(numpy.tri, N, M, k, dtype, **kwargs)
 

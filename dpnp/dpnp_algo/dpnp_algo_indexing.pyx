@@ -83,7 +83,7 @@ cpdef tuple dpnp_diag_indices(n, ndim):
     return tuple(result)
 
 
-cpdef dparray dpnp_diagonal(dpnp_descriptor input, offset=0):
+cpdef utils.dpnp_descriptor dpnp_diagonal(dpnp_descriptor input, offset=0):
     cdef shape_type_c input_shape = input.shape
 
     n = min(input.shape[0], input.shape[1])
@@ -100,18 +100,23 @@ cpdef dparray dpnp_diagonal(dpnp_descriptor input, offset=0):
     else:
         res_shape[-1] = n + offset
 
+    cdef shape_type_c result_shape = res_shape
     res_ndim = len(res_shape)
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DIAGONAL, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-    cdef dparray result = dparray(res_shape, dtype=result_type)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef custom_indexing_2in_1out_func_ptr_t_ func = <custom_indexing_2in_1out_func_ptr_t_ > kernel_data.ptr
 
-    func(input.get_data(), result.get_data(), offset, < size_t * > input_shape.data(), < size_t * > result._dparray_shape.data(), res_ndim)
+    func(input.get_data(),
+         result.get_data(),
+         offset,
+         < size_t * > input_shape.data(),
+         < size_t * > result_shape.data(),
+         res_ndim)
 
     return result
 
