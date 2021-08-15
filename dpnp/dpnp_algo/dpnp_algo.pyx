@@ -268,7 +268,7 @@ cdef utils.dpnp_descriptor call_fptr_1out(DPNPFuncName fptr_name,
 cdef utils.dpnp_descriptor call_fptr_1in_1out(DPNPFuncName fptr_name,
                                               utils.dpnp_descriptor x1,
                                               shape_type_c result_shape,
-                                              dparray out=None,
+                                              utils.dpnp_descriptor out=None,
                                               func_name=None):
 
     """ Convert type (x1.dtype) to C enum DPNPFuncType """
@@ -289,7 +289,8 @@ cdef utils.dpnp_descriptor call_fptr_1in_1out(DPNPFuncName fptr_name,
             utils.checker_throw_value_error(func_name, 'out.dtype', out.dtype, result_type)
         if out.shape != result_shape:
             utils.checker_throw_value_error(func_name, 'out.shape', out.shape, result_shape)
-        result = dpnp_descriptor(out)
+
+        result = out
 
     cdef fptr_1in_1out_t func = <fptr_1in_1out_t > kernel_data.ptr
 
