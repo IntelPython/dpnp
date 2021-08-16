@@ -256,7 +256,7 @@
         <span class="k">elif</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">result_obj</span> <span class="o">=</span> <span class="n">dpnp_argmax</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+            <span class="n">result_obj</span> <span class="o">=</span> <span class="n">dpnp_argmax</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">convert_single_elem_array_to_scalar</span><span class="p">(</span><span class="n">result_obj</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="n">result</span>
@@ -311,7 +311,7 @@
         <span class="k">elif</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">result_obj</span> <span class="o">=</span> <span class="n">dpnp_argmin</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+            <span class="n">result_obj</span> <span class="o">=</span> <span class="n">dpnp_argmin</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">convert_single_elem_array_to_scalar</span><span class="p">(</span><span class="n">result_obj</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="n">result</span>

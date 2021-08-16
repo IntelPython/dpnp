@@ -194,10 +194,16 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_algo.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>  <span class="c1"># TODO need to investigate why dpnp.dpnp_algo can not be used</span>
+
 <span class="kn">import</span> <span class="nn">dpnp</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_algo.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>  <span class="c1"># TODO need to investigate why dpnp.dpnp_algo can not be used</span>
+<span class="c1"># full module name because dpnp_iface_counting loaded from cython too early</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils.dpnp_algo_utils</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">import</span> <span class="nn">dpnp</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s1">&#39;count_nonzero&#39;</span>
@@ -234,7 +240,7 @@
         <span class="k">elif</span> <span class="n">keepdims</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">result_obj</span> <span class="o">=</span> <span class="n">dpnp_count_nonzero</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+            <span class="n">result_obj</span> <span class="o">=</span> <span class="n">dpnp_count_nonzero</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">convert_single_elem_array_to_scalar</span><span class="p">(</span><span class="n">result_obj</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="n">result</span>
