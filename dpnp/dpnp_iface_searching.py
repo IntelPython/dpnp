@@ -102,7 +102,7 @@ def argmax(x1, axis=None, out=None):
         elif out is not None:
             pass
         else:
-            result_obj = dpnp_argmax(x1_desc)
+            result_obj = dpnp_argmax(x1_desc).get_pyobj()
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
@@ -157,7 +157,7 @@ def argmin(x1, axis=None, out=None):
         elif out is not None:
             pass
         else:
-            result_obj = dpnp_argmin(x1_desc)
+            result_obj = dpnp_argmin(x1_desc).get_pyobj()
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
