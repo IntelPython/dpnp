@@ -348,7 +348,7 @@ Statistics functions
 """
 cpdef dparray dpnp_cov(dparray array1)
 cpdef dparray dpnp_mean(dparray a, axis)
-cpdef dparray dpnp_min(dparray a, axis)
+cpdef dpnp_descriptor dpnp_min(dpnp_descriptor a, axis)
 
 
 """
