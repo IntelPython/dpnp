@@ -525,7 +525,7 @@ def min(x1, axis=None, out=None, keepdims=False, initial=None, where=True):
         elif where is not True:
             pass
         else:
-            result_obj = dpnp_min(x1, axis=axis)
+            result_obj = dpnp_min(x1_desc, axis).get_pyobj()
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
