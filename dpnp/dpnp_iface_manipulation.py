@@ -460,7 +460,7 @@ def repeat(x1, repeats, axis=None):
             pass
         else:
             repeat_val = repeats if dpnp.isscalar(repeats) else repeats[0]
-            return dpnp_repeat(x1_desc, repeat_val, axis)
+            return dpnp_repeat(x1_desc, repeat_val, axis).get_pyobj()
 
     return call_origin(numpy.repeat, x1, repeats, axis)
 
@@ -651,7 +651,7 @@ def transpose(x1, axes=None):
                 """
                 axes = None
 
-        result = dpnp_transpose(x1_desc, axes)
+        result = dpnp_transpose(x1_desc, axes).get_pyobj()
 
         return result
 
