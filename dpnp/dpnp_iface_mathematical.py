@@ -281,7 +281,8 @@ def ceil(x1, out=None, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and not kwargs:
-        return dpnp_ceil(x1_desc, out).get_pyobj()
+        out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+        return dpnp_ceil(x1_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.ceil, x1, out=out, **kwargs)
 
@@ -691,7 +692,8 @@ def floor(x1, out=None, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and not kwargs:
-        return dpnp_floor(x1_desc, out).get_pyobj()
+        out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+        return dpnp_floor(x1_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.floor, x1, out=out, **kwargs)
 
@@ -1657,6 +1659,7 @@ def trunc(x1, out=None, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and not kwargs:
-        return dpnp_trunc(x1_desc, out).get_pyobj()
+        out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+        return dpnp_trunc(x1_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.trunc, x1, out=out, **kwargs)
