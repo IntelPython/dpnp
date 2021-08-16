@@ -337,14 +337,13 @@ cpdef dparray dpnp_median(utils.dpnp_descriptor array1):
     return result
 
 
-cpdef dparray _dpnp_min(dparray input, _axis_, output_shape):
+cpdef utils.dpnp_descriptor _dpnp_min(utils.dpnp_descriptor input, _axis_, shape_type_c shape_output):
     cdef shape_type_c input_shape = input.shape
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MIN, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-    cdef dparray result = dparray(output_shape, dtype=result_type)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(shape_output, kernel_data.return_type, None)
 
     cdef custom_statistic_1in_1out_func_ptr_t func = <custom_statistic_1in_1out_func_ptr_t > kernel_data.ptr
     cdef shape_type_c axis
@@ -356,22 +355,27 @@ cpdef dparray _dpnp_min(dparray input, _axis_, output_shape):
         axis_.reserve(len(axis))
         for shape_it in axis:
             if shape_it < 0:
-                raise ValueError("DPNP dparray::__init__(): Negative values in 'shape' are not allowed")
+                raise ValueError("DPNP algo::_dpnp_min(): Negative values in 'shape' are not allowed")
             axis_.push_back(shape_it)
         axis_size = len(axis)
 
-    func(input.get_data(), result.get_data(), < size_t * > input_shape.data(), input.ndim, < size_t * > axis_.data(), axis_size)
+    func(input.get_data(),
+         result.get_data(),
+         < size_t * > input_shape.data(),
+         input.ndim,
+         < size_t * > axis_.data(),
+         axis_size)
 
-    dpnp_array = dpnp.array(result, dtype=input.dtype)
-    dpnp_result_array = dpnp_array.reshape(output_shape)
-    return dpnp_result_array
+    return result
 
 
-cpdef dparray dpnp_min(dparray input, axis):
+cpdef utils.dpnp_descriptor dpnp_min(utils.dpnp_descriptor input, axis):
     cdef shape_type_c shape_input = input.shape
+    cdef shape_type_c shape_output
+
     if axis is None:
         axis_ = axis
-        output_shape = 1
+        shape_output = (1,)
     else:
         if isinstance(axis, int):
             if axis < 0:
@@ -387,13 +391,11 @@ cpdef dparray dpnp_min(dparray input, axis):
                     _axis_.append(axis[i])
             axis_ = tuple(_axis_)
 
-        output_shape = dparray(len(shape_input) - len(axis_), dtype=numpy.int64)
-        ind = 0
         for id, shape_axis in enumerate(shape_input):
             if id not in axis_:
-                output_shape[ind] = shape_axis
-                ind += 1
-    return _dpnp_min(input, axis_, output_shape)
+                shape_output.push_back(shape_axis)
+
+    return _dpnp_min(input, axis_, shape_output)
 
 
 cpdef dparray dpnp_nanvar(utils.dpnp_descriptor arr, ddof):
