@@ -346,7 +346,7 @@ cpdef dparray dpnp_transpose(dpnp_descriptor array1, axes=*)
 """
 Statistics functions
 """
-cpdef dparray dpnp_cov(dparray array1)
+cpdef dpnp_descriptor dpnp_cov(dpnp_descriptor array1)
 cpdef dparray dpnp_mean(dparray a, axis)
 cpdef dparray dpnp_min(dparray a, axis)
 
