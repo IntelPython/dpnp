@@ -507,7 +507,7 @@ def take(x1, indices, axis=None, out=None, mode='raise'):
         elif mode != 'raise':
             pass
         else:
-            return dpnp_take(x1_desc, indices_desc)
+            return dpnp_take(x1_desc, indices_desc).get_pyobj()
 
     return call_origin(numpy.take, x1, indices, axis, out, mode)
 
