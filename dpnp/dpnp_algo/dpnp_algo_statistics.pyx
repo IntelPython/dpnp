@@ -113,7 +113,8 @@ cpdef dparray dpnp_correlate(utils.dpnp_descriptor x1, utils.dpnp_descriptor x2)
     return result
 
 
-cpdef dparray dpnp_cov(dparray array1):
+# supports "double" input only
+cpdef utils.dpnp_descriptor dpnp_cov(utils.dpnp_descriptor array1):
     cdef shape_type_c input_shape = array1.shape
 
     if array1.ndim == 1:
@@ -125,14 +126,13 @@ cpdef dparray dpnp_cov(dparray array1):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_COV, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    in_array = array1.astype(result_type)
-    cdef dparray result = dparray((input_shape[0], input_shape[0]), dtype=result_type)
+    cdef shape_type_c result_shape = (input_shape[0], input_shape[0])
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_custom_cov_1in_1out_t func = <fptr_custom_cov_1in_1out_t > kernel_data.ptr
     # call FPTR function
-    func(in_array.get_data(), result.get_data(), input_shape[0], input_shape[1])
+    func(array1.get_data(), result.get_data(), input_shape[0], input_shape[1])
 
     return result
 

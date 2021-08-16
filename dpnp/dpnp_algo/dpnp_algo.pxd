@@ -346,7 +346,7 @@ cpdef dparray dpnp_transpose(dpnp_descriptor array1, axes=*)
 """
 Statistics functions
 """
-cpdef dparray dpnp_cov(dparray array1)
+cpdef dpnp_descriptor dpnp_cov(dpnp_descriptor array1)
 cpdef dparray dpnp_mean(dparray a, axis)
 cpdef dpnp_descriptor dpnp_min(dpnp_descriptor a, axis)
 
@@ -360,8 +360,8 @@ cpdef dpnp_descriptor dpnp_sort(dpnp_descriptor array1)
 """
 Searching functions
 """
-cpdef dparray dpnp_argmax(dpnp_descriptor array1)
-cpdef dparray dpnp_argmin(dpnp_descriptor array1)
+cpdef dpnp_descriptor dpnp_argmax(dpnp_descriptor array1)
+cpdef dpnp_descriptor dpnp_argmin(dpnp_descriptor array1)
 
 """
 Trigonometric functions
