@@ -339,8 +339,8 @@ cpdef dpnp_descriptor dpnp_subtract(dpnp_descriptor x1_obj, dpnp_descriptor x2_o
 """
 Array manipulation routines
 """
-cpdef dparray dpnp_repeat(dpnp_descriptor array1, repeats, axes=*)
-cpdef dparray dpnp_transpose(dpnp_descriptor array1, axes=*)
+cpdef dpnp_descriptor dpnp_repeat(dpnp_descriptor array1, repeats, axes=*)
+cpdef dpnp_descriptor dpnp_transpose(dpnp_descriptor array1, axes=*)
 
 
 """
