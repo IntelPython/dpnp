@@ -305,8 +305,8 @@ cpdef dpnp_descriptor dpnp_matmul(dpnp_descriptor in_array1, dpnp_descriptor in_
 Array creation routines
 """
 cpdef dpnp_descriptor dpnp_arange(start, stop, step, dtype)
-cpdef dparray dpnp_array(object obj, object dtype=*)
-cpdef dparray dpnp_init_val(shape, dtype, value)
+cpdef dpnp_descriptor dpnp_array(object obj, object dtype=*)
+cpdef dpnp_descriptor dpnp_init_val(shape, dtype, value)
 cpdef dpnp_descriptor dpnp_full(result_shape, value_in, result_dtype)  # same as dpnp_init_val
 cpdef dpnp_descriptor dpnp_copy(dpnp_descriptor x1)
 
