@@ -1385,7 +1385,7 @@ def prod(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, wher
     return call_origin(numpy.prod, x1, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)
 
 
-def remainder(x1, x2, **kwargs):
+def remainder(x1, x2, out=None, where=True, dtype=None, **kwargs):
     """
     Return element-wise remainder of division.
 
@@ -1393,7 +1393,8 @@ def remainder(x1, x2, **kwargs):
 
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
+        Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
+        Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
         Keyword arguments ``kwargs`` are currently unsupported.
         Otherwise the functions will be executed sequentially on CPU.
         Input array data types are limited by supported DPNP :ref:`Data types`.
@@ -1414,18 +1415,42 @@ def remainder(x1, x2, **kwargs):
 
     """
 
+    x1_is_scalar = dpnp.isscalar(x1)
+    x2_is_scalar = dpnp.isscalar(x2)
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     x2_desc = dpnp.get_dpnp_descriptor(x2)
 
     if x1_desc and x2_desc and not kwargs:
-        if x1_desc.size != x2_desc.size:
+        if not x1_desc and not x1_is_scalar:
             pass
-        elif x1_desc.shape != x2_desc.shape:
+        elif not x2_desc and not x2_is_scalar:
+            pass
+        elif x1_is_scalar and x2_is_scalar:
+            pass
+        elif x1_desc and x1_desc.ndim == 0:
+            pass
+        elif x2_desc and x2_desc.ndim == 0:
+            pass
+        elif x2_is_scalar and not x2_desc:
+            pass
+        elif x1_desc and x2_desc and x1_desc.size != x2_desc.size:
+            pass
+        elif x1_desc and x2_desc and x1_desc.shape != x2_desc.shape:
+            pass
+        elif out is not None and not isinstance(out, dparray):
+            pass
+        elif dtype is not None:
+            pass
+        elif out is not None:
+            pass
+        elif not where:
+            pass
+        elif x1_is_scalar and x2_desc.ndim > 1:
             pass
         else:
-            return dpnp_remainder(x1_desc, x2_desc).get_pyobj()
+            return dpnp_remainder(x1_desc, x2_desc, out=out, where=where, dtype=dtype)
 
-    return call_origin(numpy.remainder, x1, x2, **kwargs)
+    return call_origin(numpy.remainder, x1, x2, out=out, where=where, dtype=dtype, **kwargs)
 
 
 def round_(a, decimals=0, out=None):

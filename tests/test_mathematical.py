@@ -148,6 +148,9 @@ class TestMathematical:
     def test_multiply(self, dtype, lhs, rhs):
         self._test_mathematical('multiply', dtype, lhs, rhs)
 
+    def test_remainder(self, dtype, lhs, rhs):
+        self._test_mathematical('remainder', dtype, lhs, rhs)
+
     def test_power(self, dtype, lhs, rhs):
         self._test_mathematical('power', dtype, lhs, rhs)
 
