@@ -118,6 +118,21 @@ INP_DLLEXPORT void dpnp_all_c(const void* array, void* result, const size_t size
 
 /**
  * @ingroup BACKEND_API
+ * @brief Test whether all array elements along a given axis evaluate to True.
+ *
+ * @param [in]  array1_in      First input array.
+ * @param [in]  array2_in      Second input array.
+ * @param [out] result1        Output array.
+ * @param [in]  size           Number of input elements in `array`.
+ * @param [in]  rtol_val       The relative tolerance parameter.
+ * @param [in]  atol_val       The absolute tolerance parameter.
+ */
+template <typename _DataType1, typename _DataType2, typename _ResultType>
+INP_DLLEXPORT void dpnp_allclose_c(
+    const void* array1_in, const void* array2_in, void* result1, const size_t size, double rtol, double atol);
+
+/**
+ * @ingroup BACKEND_API
  * @brief Test whether any array element along a given axis evaluates to True.
  *
  * @param [in]  array       Input array.
@@ -188,6 +203,18 @@ INP_DLLEXPORT void dpnp_full_like_c(void* array_in, void* result, size_t size);
 template <typename _DataType>
 INP_DLLEXPORT void
     dpnp_matmul_c(void* array1, void* array2, void* result1, size_t size_m, size_t size_n, size_t size_k);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief Compute the variance along the specified axis, while ignoring NaNs.
+ *
+ * @param [in]  array     Input array.
+ * @param [in]  mask_arr  Input mask array when elem is nan.
+ * @param [out] result    Output array.
+ * @param [in]  size      Number of elements in input arrays.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_nanvar_c(void* array, void* mask_arr, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -446,6 +473,21 @@ INP_DLLEXPORT void dpnp_argsort_c(void* array, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of searchsorted function
+ *
+ * @param [out] result      Output array.
+ * @param [in]  array       Input array with data.
+ * @param [in]  v           Input values to insert into array.
+ * @param [in]  side        Param for choosing a case of searching for elements.
+ * @param [in]  arr_size    Number of elements in input arrays.
+ * @param [in]  v_size      Number of elements in input values arrays.
+ */
+template <typename _DataType, typename _IndexingType>
+INP_DLLEXPORT void dpnp_searchsorted_c(
+    void* result, const void* array, const void* v, bool side, const size_t arr_size, const size_t v_size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of sort function
  *
  * @param [in]  array   Input array with data.
@@ -676,6 +718,18 @@ INP_DLLEXPORT void dpnp_argmax_c(void* array, void* result, size_t size);
  */
 template <typename _DataType, typename _idx_DataType>
 INP_DLLEXPORT void dpnp_argmin_c(void* array, void* result, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of around function
+ *
+ * @param [in]  input_in     Input array with data.
+ * @param [out] result_out   Output array with indeces.
+ * @param [in]  input_size   Number of elements in input arrays.
+ * @param [in]  decimals     Number of decimal places to round. Support only with default value 0.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_around_c(const void* input_in, void* result_out, const size_t input_size, const int decimals);
 
 /**
  * @ingroup BACKEND_API

@@ -57,7 +57,7 @@ static void dpnpc_show_mathlib_version()
 #endif
 }
 
-#if not defined(NDEBUG)
+#if (not defined(NDEBUG)) && defined(DPNP_LOCAL_QUEUE)
 static void show_available_sycl_devices()
 {
     const std::vector<cl::sycl::device> devices = cl::sycl::device::get_devices();
@@ -170,7 +170,15 @@ void backend_sycl::backend_sycl_queue_init(QueueOptions selector)
         dev = get_default_sycl_device();
     }
 
-    queue = new cl::sycl::queue(dev, exception_handler);
+    if (is_verbose_mode())
+    {
+        cl::sycl::property_list properties{sycl::property::queue::enable_profiling()};
+        queue = new cl::sycl::queue(dev, exception_handler, properties);
+    }
+    else
+    {
+        queue = new cl::sycl::queue(dev, exception_handler);
+    }
 
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> time_queue_init = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);

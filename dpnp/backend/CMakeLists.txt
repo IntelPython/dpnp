@@ -144,6 +144,7 @@ endif()
 add_definitions(-D_FORTIFY_SOURCE=2 -Wformat -Wformat-security)
 if(NOT WIN32)
   add_compile_options(-fno-delete-null-pointer-checks -fstack-protector-strong -fno-strict-overflow)
+  # add_link_options(-static-libstdc++ -static-libgcc)
   add_link_options(-Wl,-z,noexecstack,-z,relro,-z,now)
 endif()
 
@@ -185,7 +186,9 @@ set(DPNP_SRC
     kernels/dpnp_krnl_statistics.cpp
     src/dpnp_iface_fptr.cpp
     src/memory_sycl.cpp
-    src/queue_sycl.cpp)
+    src/queue_sycl.cpp
+    src/verbose.cpp
+    )
 
 if(DPNP_STATIC_LIB_ENABLE)
   add_library(dpnp_backend_c STATIC ${DPNP_SRC})
@@ -221,7 +224,7 @@ if(UNIX)
   set(DPNP_MATHLIB_DEP_LIBS
       mkl_sycl
       mkl_intel_ilp64
-      mkl_sequential
+      mkl_tbb_thread # mkl_sequential
       mkl_core
       sycl
       OpenCL

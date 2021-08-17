@@ -600,7 +600,7 @@ void dpnp_rng_negative_binomial_c(void* result, const double a, const double p, 
 template <typename _DataType>
 void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _DataType nonc, const size_t size)
 {
-    if (!size)
+    if (!size || !result)
     {
         return;
     }
@@ -614,8 +614,6 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
     {
         _DataType shape, loc;
         size_t i;
-        cl::sycl::event event_out;
-        cl::sycl::vector_class<cl::sycl::event> no_deps;
 
         if (df > 1)
         {
@@ -624,23 +622,22 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             shape = 0.5 * (df - 1.0);
             /* res has chi^2 with (df - 1) */
             mkl_rng::gamma<_DataType> gamma_distribution(shape, d_zero, d_two);
-            event_out = mkl_rng::generate(gamma_distribution, DPNP_RNG_ENGINE, size, result1);
-            event_out.wait();
+            auto event_gamma_distr = mkl_rng::generate(gamma_distribution, DPNP_RNG_ENGINE, size, result1);
 
             nvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
 
             loc = sqrt(nonc);
 
             mkl_rng::gaussian<_DataType> gaussian_distribution(loc, d_one);
-            event_out = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, nvec);
-            event_out.wait();
+            auto event_gaussian_distr = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, nvec);
 
             /* squaring could result in an overflow */
-            event_out = mkl_vm::sqr(DPNP_QUEUE, size, nvec, nvec, no_deps, mkl_vm::mode::ha);
-            event_out.wait();
-            event_out = mkl_vm::add(DPNP_QUEUE, size, result1, nvec, result1, no_deps, mkl_vm::mode::ha);
+            auto event_sqr_out =
+                mkl_vm::sqr(DPNP_QUEUE, size, nvec, nvec, {event_gamma_distr, event_gaussian_distr}, mkl_vm::mode::ha);
+            auto event_add_out =
+                mkl_vm::add(DPNP_QUEUE, size, result1, nvec, result1, {event_sqr_out}, mkl_vm::mode::ha);
             dpnp_memory_free_c(nvec);
-            event_out.wait();
+            event_add_out.wait();
         }
         else if (df < 1)
         {
@@ -651,7 +648,7 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             lambda = 0.5 * nonc;
 
             mkl_rng::poisson<int> poisson_distribution(lambda);
-            event_out = mkl_rng::generate(poisson_distribution, DPNP_RNG_ENGINE, size, pvec);
+            auto event_out = mkl_rng::generate(poisson_distribution, DPNP_RNG_ENGINE, size, pvec);
             event_out.wait();
 
             shape = 0.5 * df;
@@ -713,9 +710,8 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             /* noncentral_chisquare(1, nonc) ~ (Z + sqrt(nonc))**2 for df == 1 */
             loc = sqrt(nonc);
             mkl_rng::gaussian<_DataType> gaussian_distribution(loc, d_one);
-            event_out = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, result1);
-            event_out.wait();
-            event_out = mkl_vm::sqr(DPNP_QUEUE, size, result1, result1, no_deps, mkl_vm::mode::ha);
+            auto event_gaussian_distr = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, result1);
+            auto event_out = mkl_vm::sqr(DPNP_QUEUE, size, result1, result1, {event_gaussian_distr}, mkl_vm::mode::ha);
             event_out.wait();
         }
     }
@@ -1248,7 +1244,7 @@ void dpnp_rng_uniform_c(void* result, const long low, const long high, const siz
 template <typename _DataType>
 void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _DataType kappa, const size_t size)
 {
-    if (!size)
+    if (!size || !result)
     {
         return;
     }
@@ -1318,20 +1314,23 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
     dpnp_memory_free_c(Uvec);
 
     mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
-    auto event_out = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
-    event_out.wait();
+    auto uniform_distr_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
 
-    // TODO
-    // kernel
-    for (size_t i = 0; i < size; i++)
-    {
-        _DataType mod, resi;
+    cl::sycl::range<1> gws(size);
 
-        resi = (Vvec[i] < 0.5) ? mu - result1[i] : mu + result1[i];
-        mod = fabs(resi);
-        mod = (fmod(mod + M_PI, 2 * M_PI) - M_PI);
-        result1[i] = (resi < 0) ? -mod : mod;
-    }
+    auto paral_kernel_acceptance = [&](cl::sycl::handler& cgh) {
+        cgh.depends_on({uniform_distr_event});
+        cgh.parallel_for(gws, [=](cl::sycl::id<1> global_id) {
+            size_t i = global_id[0];
+            double mod, resi;
+            resi = (Vvec[i] < 0.5) ? mu - result1[i] : mu + result1[i];
+            mod = cl::sycl::fabs(resi);
+            mod = (cl::sycl::fmod(mod + M_PI, 2 * M_PI) - M_PI);
+            result1[i] = (resi < 0) ? -mod : mod;
+        });
+    };
+    auto acceptance_event = DPNP_QUEUE.submit(paral_kernel_acceptance);
+    acceptance_event.wait();
 
     dpnp_memory_free_c(Vvec);
     return;
@@ -1340,7 +1339,7 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
 template <typename _DataType>
 void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _DataType kappa, const size_t size)
 {
-    if (!size)
+    if (!size || !result)
     {
         return;
     }
@@ -1395,20 +1394,22 @@ void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _Da
     dpnp_memory_free_c(Uvec);
 
     mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
-    auto event_out = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
-    event_out.wait();
+    auto uniform_distr_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
 
-    // TODO
-    // kernel
-    for (size_t i = 0; i < size; i++)
-    {
-        double mod, resi;
-
-        resi = (Vvec[i] < 0.5) ? mu - result1[i] : mu + result1[i];
-        mod = fabs(resi);
-        mod = (fmod(mod + M_PI, 2 * M_PI) - M_PI);
-        result1[i] = (resi < 0) ? -mod : mod;
-    }
+    cl::sycl::range<1> gws(size);
+    auto paral_kernel_acceptance = [&](cl::sycl::handler& cgh) {
+        cgh.depends_on({uniform_distr_event});
+        cgh.parallel_for(gws, [=](cl::sycl::id<1> global_id) {
+            size_t i = global_id[0];
+            double mod, resi;
+            resi = (Vvec[i] < 0.5) ? mu - result1[i] : mu + result1[i];
+            mod = cl::sycl::fabs(resi);
+            mod = (cl::sycl::fmod(mod + M_PI, 2 * M_PI) - M_PI);
+            result1[i] = (resi < 0) ? -mod : mod;
+        });
+    };
+    auto acceptance_event = DPNP_QUEUE.submit(paral_kernel_acceptance);
+    acceptance_event.wait();
 
     dpnp_memory_free_c(Vvec);
     return;
@@ -1427,7 +1428,6 @@ void dpnp_rng_vonmises_c(void* result, const _DataType mu, const _DataType kappa
         dpnp_rng_vonmises_large_kappa_c<_DataType>(result, mu, kappa, size);
     else
         dpnp_rng_vonmises_small_kappa_c<_DataType>(result, mu, kappa, size);
-    // TODO case when kappa < kappa < 1e-8 (very small)
 }
 
 template <typename _KernelNameSpecialization>
@@ -1505,18 +1505,21 @@ void dpnp_rng_weibull_c(void* result, const double alpha, const size_t size)
     {
         return;
     }
-    _DataType* result1 = reinterpret_cast<_DataType*>(result);
 
-    // set displacement a
-    const _DataType a = (_DataType(0.0));
+    if (alpha == 0)
+    {
+        dpnp_zeros_c<_DataType>(result, size);
+    }
+    else
+    {
+        _DataType* result1 = reinterpret_cast<_DataType*>(result);
+        const _DataType a = (_DataType(0.0));
+        const _DataType beta = (_DataType(1.0));
 
-    // set beta
-    const _DataType beta = (_DataType(1.0));
-
-    mkl_rng::weibull<_DataType> distribution(alpha, a, beta);
-    // perform generation
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
+        mkl_rng::weibull<_DataType> distribution(alpha, a, beta);
+        auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+        event_out.wait();
+    }
 }
 
 template <typename _DataType>

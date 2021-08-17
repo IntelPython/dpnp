@@ -23,43 +23,14 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-/**
- * Example 9.
- *
- * This example shows simple usage of the DPNP C++ Backend library
- * to calculate sum of the given elements vector
- *
- * Possible compile line:
- * . /opt/intel/oneapi/setvars.sh
- * g++ -g dpnp/backend/examples/example9.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example9
- *
- */
+#pragma once
+#ifndef VERBOSE_H // Cython compatibility
+#define VERBOSE_H
 
-#include <iostream>
+#include <CL/sycl.hpp>
 
-#include "dpnp_iface.hpp"
+bool is_verbose_mode();
+void set_barrier_event(cl::sycl::queue queue, sycl::vector_class<sycl::event>& depends);
+void verbose_print(std::string header, cl::sycl::event first_event, cl::sycl::event last_event);
 
-int main(int, char**)
-{
-    const size_t size = 2097152;
-    long result = 0;
-    long result_verification = 0;
-
-    dpnp_queue_initialize_c(QueueOptions::CPU_SELECTOR);
-
-    long* array = reinterpret_cast<long*>(dpnp_memory_alloc_c(size * sizeof(long)));
-
-    for (size_t i = 0; i < size; ++i)
-    {
-        array[i] = i;
-        result_verification += i;
-    }
-
-    dpnp_sum_c<long, long>(&result, array, &size, 1, NULL, 0, NULL, NULL);
-
-    std::cout << "SUM() value: " << result << " verification value: " << result_verification << std::endl;
-
-    dpnp_memory_free_c(array);
-
-    return 0;
-}
+#endif // VERBOSE_H

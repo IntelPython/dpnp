@@ -40,12 +40,12 @@ it contains:
 """
 
 
-import numpy
-
 from dpnp.dpnp_algo import *
 from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
+
 import dpnp
+import numpy
 
 
 __all__ = [
@@ -56,6 +56,7 @@ __all__ = [
     "ceil",
     "conj",
     "conjugate",
+    "convolve",
     "copysign",
     "cross",
     "cumprod",
@@ -91,15 +92,6 @@ __all__ = [
     "true_divide",
     "trunc"
 ]
-
-
-def convert_result_scalar(result, keepdims):
-    # one element array result should be converted into scalar
-    # TODO empty shape must be converted into scalar (it is not in test system)
-    if (len(result.shape) > 0) and (result.size == 1) and (keepdims is False):
-        return result.dtype.type(result[0])
-    else:
-        return result
 
 
 def abs(*args, **kwargs):
@@ -151,12 +143,14 @@ def absolute(x1, **kwargs):
 
     """
 
-    is_input_dparray = isinstance(x1, dparray)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        if not x1_desc.ndim:
+            pass
+        else:
+            result = dpnp_absolute(x1_desc)
 
-    if not use_origin_backend(x1) and is_input_dparray and x1.ndim != 0 and not kwargs:
-        result = dpnp_absolute(x1)
-
-        return result
+            return result
 
     return call_origin(numpy.absolute, x1, **kwargs)
 
@@ -185,19 +179,22 @@ def add(x1, x2, dtype=None, out=None, where=True, **kwargs):
     [2, 4, 6]
 
     """
-    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
-    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
-    if not use_origin_backend(x1) and not kwargs:
-        if not x1_is_dparray and not x1_is_scalar:
+    x1_is_scalar = dpnp.isscalar(x1)
+    x2_is_scalar = dpnp.isscalar(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+
+    if x1_desc and x2_desc and not kwargs:
+        if not x1_desc and not x1_is_scalar:
             pass
-        elif not x2_is_dparray and not x2_is_scalar:
+        elif not x2_desc and not x2_is_scalar:
             pass
         elif x1_is_scalar and x2_is_scalar:
             pass
-        elif x1_is_dparray and x1.ndim == 0:
+        elif x1_desc and x1_desc.ndim == 0:
             pass
-        elif x2_is_dparray and x2.ndim == 0:
+        elif x2_desc and x2_desc.ndim == 0:
             pass
         elif out is not None and not isinstance(out, dparray):
             pass
@@ -208,16 +205,23 @@ def add(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_add(x1, x2, dtype=dtype, out=out, where=where)
+            return dpnp_add(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
 
     return call_origin(numpy.add, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
-def around(a, decimals=0, out=None):
+def around(x1, decimals=0, out=None):
     """
     Evenly round to the given number of decimals.
 
     For full documentation refer to :obj:`numpy.around`.
+
+    Limitations
+    -----------
+    Parameters ``x1`` is supported as :obj:`dpnp.ndarray`.
+    Parameters ``decimals`` and ``out`` are supported with their default values.
+    Otherwise the functions will be executed sequentially on CPU.
+    Input array data types are limited by supported DPNP :ref:`Data types`.
 
     Examples
     --------
@@ -235,16 +239,19 @@ def around(a, decimals=0, out=None):
 
     """
 
-    if not use_origin_backend(a):
-        if not isinstance(a, dparray):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if out is not None:
+            pass
+        elif decimals != 0:
             pass
         else:
-            return dpnp_around(a, decimals, out)
+            return dpnp_around(x1_desc, decimals)
 
-    return call_origin(numpy.around, a, decimals, out)
+    return call_origin(numpy.around, x1, decimals=decimals, out=out)
 
 
-def ceil(x1, **kwargs):
+def ceil(x1, out=None, **kwargs):
     """
     Compute  the ceiling of the input, element-wise.
 
@@ -272,12 +279,12 @@ def ceil(x1, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+        return dpnp_ceil(x1_desc, out_desc).get_pyobj()
 
-    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
-        return dpnp_ceil(x1)
-
-    return call_origin(numpy.ceil, x1, **kwargs)
+    return call_origin(numpy.ceil, x1, out=out, **kwargs)
 
 
 def conjugate(x1, **kwargs):
@@ -302,15 +309,31 @@ def conjugate(x1, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
-        return dpnp_conjugate(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        return dpnp_conjugate(x1_desc)
 
     return call_origin(numpy.conjugate, x1, **kwargs)
 
 
 conj = conjugate
+
+
+def convolve(a, v, mode='full'):
+    """
+    Returns the discrete, linear convolution of two one-dimensional sequences.
+
+    For full documentation refer to :obj:`numpy.convolve`.
+
+    Examples
+    --------
+    >>> ca = dpnp.convolve([1, 2, 3], [0, 1, 0.5])
+    >>> print(ca)
+    [0. , 1. , 2.5, 4. , 1.5]
+
+    """
+
+    return call_origin(numpy.convolve, a=a, v=v, mode=mode)
 
 
 def copysign(x1, x2, dtype=None, out=None, where=True, **kwargs):
@@ -335,19 +358,22 @@ def copysign(x1, x2, dtype=None, out=None, where=True, **kwargs):
     [-1.0, -2.0, 6.0, 9.0]
 
     """
-    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
-    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
-    if not use_origin_backend(x1) and not kwargs:
-        if not x1_is_dparray and not x1_is_scalar:
+    x1_is_scalar = dpnp.isscalar(x1)
+    x2_is_scalar = dpnp.isscalar(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+
+    if x1_desc and x2_desc and not kwargs:
+        if not x1_desc and not x1_is_scalar:
             pass
-        elif not x2_is_dparray and not x2_is_scalar:
+        elif not x2_desc and not x2_is_scalar:
             pass
         elif x1_is_scalar and x2_is_scalar:
             pass
-        elif x1_is_dparray and x1.ndim == 0:
+        elif x1_desc and x1_desc.ndim == 0:
             pass
-        elif x2_is_dparray and x2.ndim == 0:
+        elif x2_desc and x2_desc.ndim == 0:
             pass
         elif dtype is not None:
             pass
@@ -356,7 +382,7 @@ def copysign(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_copysign(x1, x2, dtype=dtype, out=out, where=where)
+            return dpnp_copysign(x1_desc, x2_desc, dtype=dtype, out=out, where=where)
 
     return call_origin(numpy.copysign, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -387,14 +413,13 @@ def cross(x1, x2, axisa=-1, axisb=-1, axisc=-1, axis=None):
 
     """
 
-    if not use_origin_backend(x1):
-        if not isinstance(x1, dparray):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+
+    if x1_desc and x2_desc:
+        if x1_desc.size != 3 or x2_desc.size != 3:
             pass
-        elif not isinstance(x2, dparray):
-            pass
-        elif x1.size != 3 or x2.size != 3:
-            pass
-        elif x1.shape != (3,) or x2.shape != (3,):
+        elif x1_desc.shape != (3,) or x2_desc.shape != (3,):
             pass
         elif axisa != -1:
             pass
@@ -405,7 +430,7 @@ def cross(x1, x2, axisa=-1, axisb=-1, axisc=-1, axis=None):
         elif axis is not None:
             pass
         else:
-            return dpnp_cross(x1, x2)
+            return dpnp_cross(x1_desc, x2_desc)
 
     return call_origin(numpy.cross, x1, x2, axisa, axisb, axisc, axis)
 
@@ -437,11 +462,9 @@ def cumprod(x1, **kwargs):
 
     """
 
-    if not use_origin_backend(x1) and not kwargs:
-        if not isinstance(x1, dparray):
-            pass
-        else:
-            return dpnp_cumprod(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        return dpnp_cumprod(x1_desc).get_pyobj()
 
     return call_origin(numpy.cumprod, x1, **kwargs)
 
@@ -473,16 +496,14 @@ def cumsum(x1, **kwargs):
 
     """
 
-    if not use_origin_backend(x1) and not kwargs:
-        if not isinstance(x1, dparray):
-            pass
-        else:
-            return dpnp_cumsum(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        return dpnp_cumsum(x1_desc).get_pyobj()
 
     return call_origin(numpy.cumsum, x1, **kwargs)
 
 
-def diff(input, n=1, axis=-1, prepend=None, append=None):
+def diff(x1, n=1, axis=-1, prepend=None, append=None):
     """
     Calculate the n-th discrete difference along the given axis.
 
@@ -495,10 +516,9 @@ def diff(input, n=1, axis=-1, prepend=None, append=None):
     Otherwise the function will be executed sequentially on CPU.
     """
 
-    if not use_origin_backend(input):
-        if not isinstance(input, dparray):
-            pass
-        elif not isinstance(n, int):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if not isinstance(n, int):
             pass
         elif n < 1:
             pass
@@ -509,9 +529,9 @@ def diff(input, n=1, axis=-1, prepend=None, append=None):
         elif append is not None:
             pass
         else:
-            return dpnp_diff(input, n)
+            return dpnp_diff(x1, n)
 
-    return call_origin(numpy.diff, input, n, axis, prepend, append)
+    return call_origin(numpy.diff, x1, n, axis, prepend, append)
 
 
 def divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
@@ -536,19 +556,22 @@ def divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
     [-0.5, 1.0, -3.0, 4.5]
 
     """
-    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
-    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
-    if not use_origin_backend(x1) and not kwargs:
-        if not x1_is_dparray and not x1_is_scalar:
+    x1_is_scalar = dpnp.isscalar(x1)
+    x2_is_scalar = dpnp.isscalar(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+
+    if x1_desc and x2_desc and not kwargs:
+        if not x1_desc and not x1_is_scalar:
             pass
-        elif not x2_is_dparray and not x2_is_scalar:
+        elif not x2_desc and not x2_is_scalar:
             pass
         elif x1_is_scalar and x2_is_scalar:
             pass
-        elif x1_is_dparray and x1.ndim == 0:
+        elif x1_desc and x1_desc.ndim == 0:
             pass
-        elif x2_is_dparray and x2.ndim == 0:
+        elif x2_desc and x2_desc.ndim == 0:
             pass
         elif dtype is not None:
             pass
@@ -557,7 +580,7 @@ def divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_divide(x1, x2, dtype=dtype, out=out, where=where)
+            return dpnp_divide(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
 
     return call_origin(numpy.divide, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -591,8 +614,14 @@ def ediff1d(x1, to_end=None, to_begin=None):
 
     """
 
-    if not use_origin_backend(x1) and isinstance(x1, dparray):
-        return dpnp_ediff1d(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if to_begin is not None:
+            pass
+        elif to_end is not None:
+            pass
+        else:
+            return dpnp_ediff1d(x1_desc).get_pyobj()
 
     return call_origin(numpy.ediff1d, x1, to_end=to_end, to_begin=to_begin)
 
@@ -621,15 +650,14 @@ def fabs(x1, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray):
-        return dpnp_fabs(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        return dpnp_fabs(x1_desc)
 
     return call_origin(numpy.fabs, x1, **kwargs)
 
 
-def floor(x1, **kwargs):
+def floor(x1, out=None, **kwargs):
     """
     Round a number to the nearest integer toward minus infinity.
 
@@ -662,15 +690,15 @@ def floor(x1, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+        return dpnp_floor(x1_desc, out_desc).get_pyobj()
 
-    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
-        return dpnp_floor(x1)
-
-    return call_origin(numpy.floor, x1, **kwargs)
+    return call_origin(numpy.floor, x1, out=out, **kwargs)
 
 
-def floor_divide(x1, x2, **kwargs):
+def floor_divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
     """
     Compute the largest integer smaller or equal to the division of the inputs.
 
@@ -678,7 +706,8 @@ def floor_divide(x1, x2, **kwargs):
 
     Limitations
     -----------
-        Parameters ``x1`` and ``x2`` are supported as :obj:`dpnp.ndarray`.
+        Parameters ``x1`` and ``x2`` are supported as either :obj:`dpnp.ndarray` or scalar.
+        Parameters ``dtype``, ``out`` and ``where`` are supported with their default values.
         Keyword arguments ``kwargs`` are currently unsupported.
         Otherwise the functions will be executed sequentially on CPU.
         Input array data types are limited by supported DPNP :ref:`Data types`.
@@ -699,13 +728,42 @@ def floor_divide(x1, x2, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-    is_x2_dparray = isinstance(x2, dparray)
+    x1_is_scalar = dpnp.isscalar(x1)
+    x2_is_scalar = dpnp.isscalar(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
 
-    if not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs:
-        return dpnp_floor_divide(x1, x2)
+    if x1_desc and x2_desc and not kwargs:
+        if not x1_desc and not x1_is_scalar:
+            pass
+        elif not x2_desc and not x2_is_scalar:
+            pass
+        elif x1_is_scalar and x2_is_scalar:
+            pass
+        elif x1_desc and x1_desc.ndim == 0:
+            pass
+        elif x2_desc and x2_desc.ndim == 0:
+            pass
+        elif x2_is_scalar and not x2_desc:
+            pass
+        elif x1_desc and x2_desc and x1_desc.size != x2_desc.size:
+            pass
+        elif x1_desc and x2_desc and x1_desc.shape != x2_desc.shape:
+            pass
+        elif out is not None and not isinstance(out, dparray):
+            pass
+        elif dtype is not None:
+            pass
+        elif out is not None:
+            pass
+        elif not where:
+            pass
+        elif x1_is_scalar and x2_desc.ndim > 1:
+            pass
+        else:
+            return dpnp_floor_divide(x1_desc, x2_desc, out=out, where=where, dtype=dtype)
 
-    return call_origin(numpy.floor_divide, x1, x2, **kwargs)
+    return call_origin(numpy.floor_divide, x1, x2, out=out, where=where, dtype=dtype, **kwargs)
 
 
 def fmax(*args, **kwargs):
@@ -778,20 +836,23 @@ def fmod(x1, x2, dtype=None, out=None, where=True, **kwargs):
     >>> [x for x in result]
     [0.0, -1.0, 0.0, 1.0, -0.5]
 
-    """    
-    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
-    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
+    """
 
-    if not use_origin_backend(x1) and not kwargs:
-        if not x1_is_dparray and not x1_is_scalar:
+    x1_is_scalar = dpnp.isscalar(x1)
+    x2_is_scalar = dpnp.isscalar(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+
+    if x1_desc and x2_desc and not kwargs:
+        if not x1_desc and not x1_is_scalar:
             pass
-        elif not x2_is_dparray and not x2_is_scalar:
+        elif not x2_desc and not x2_is_scalar:
             pass
         elif x1_is_scalar and x2_is_scalar:
             pass
-        elif x1_is_dparray and x1.ndim == 0:
+        elif x1_desc and x1.ndim == 0:
             pass
-        elif x2_is_dparray and x2.ndim == 0:
+        elif x2_desc and x2.ndim == 0:
             pass
         elif out is not None and not isinstance(out, dparray):
             pass
@@ -802,12 +863,12 @@ def fmod(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_fmod(x1, x2, dtype=dtype, out=out, where=where)
+            return dpnp_fmod(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
 
     return call_origin(numpy.fmod, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
 
-def gradient(y1, *varargs, **kwargs):
+def gradient(x1, *varargs, **kwargs):
     """
     Return the gradient of an array.
 
@@ -833,20 +894,20 @@ def gradient(y1, *varargs, **kwargs):
     [0.5, 0.75, 1.25, 1.75, 2.25, 2.5]
 
     """
-    if not use_origin_backend(y1) and not kwargs:
-        if not isinstance(y1, dparray):
-            pass
-        elif len(varargs) > 1:
+
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        if len(varargs) > 1:
             pass
         elif len(varargs) == 1 and not isinstance(varargs[0], int):
             pass
         else:
             if len(varargs) == 0:
-                return dpnp_gradient(y1)
+                return dpnp_gradient(x1)
 
-            return dpnp_gradient(y1, varargs[0])
+            return dpnp_gradient(x1, varargs[0])
 
-    return call_origin(numpy.gradient, y1, *varargs, **kwargs)
+    return call_origin(numpy.gradient, x1, *varargs, **kwargs)
 
 
 def maximum(x1, x2, dtype=None, out=None, where=True, **kwargs):
@@ -877,19 +938,22 @@ def maximum(x1, x2, dtype=None, out=None, where=True, **kwargs):
     [1, 5, 4]
 
     """
-    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
-    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
-    if not use_origin_backend(x1) and not kwargs:
-        if not x1_is_dparray and not x1_is_scalar:
+    x1_is_scalar = dpnp.isscalar(x1)
+    x2_is_scalar = dpnp.isscalar(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+
+    if x1_desc and x2_desc and not kwargs:
+        if not x1_desc and not x1_is_scalar:
             pass
-        elif not x2_is_dparray and not x2_is_scalar:
+        elif not x2_desc and not x2_is_scalar:
             pass
         elif x1_is_scalar and x2_is_scalar:
             pass
-        elif x1_is_dparray and x1.ndim == 0:
+        elif x1_desc and x1_desc.ndim == 0:
             pass
-        elif x2_is_dparray and x2.ndim == 0:
+        elif x2_desc and x2_desc.ndim == 0:
             pass
         elif dtype is not None:
             pass
@@ -898,7 +962,7 @@ def maximum(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_maximum(x1, x2, dtype=dtype, out=out, where=where)
+            return dpnp_maximum(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
 
     return call_origin(numpy.maximum, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -931,19 +995,22 @@ def minimum(x1, x2, dtype=None, out=None, where=True, **kwargs):
     [-2, 3, 2]
 
     """
-    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
-    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
-    if not use_origin_backend(x1) and not kwargs:
-        if not x1_is_dparray and not x1_is_scalar:
+    x1_is_scalar = dpnp.isscalar(x1)
+    x2_is_scalar = dpnp.isscalar(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+
+    if x1_desc and x2_desc and not kwargs:
+        if not x1_desc and not x1_is_scalar:
             pass
-        elif not x2_is_dparray and not x2_is_scalar:
+        elif not x2_desc and not x2_is_scalar:
             pass
         elif x1_is_scalar and x2_is_scalar:
             pass
-        elif x1_is_dparray and x1.ndim == 0:
+        elif x1_desc and x1_desc.ndim == 0:
             pass
-        elif x2_is_dparray and x2.ndim == 0:
+        elif x2_desc and x2_desc.ndim == 0:
             pass
         elif dtype is not None:
             pass
@@ -952,7 +1019,7 @@ def minimum(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_minimum(x1, x2, dtype=dtype, out=out, where=where)
+            return dpnp_minimum(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
 
     return call_origin(numpy.minimum, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -1001,11 +1068,10 @@ def modf(x, **kwargs):
 
 
     """
-    if not use_origin_backend(x) and not kwargs:
-        if not isinstance(x, dparray):
-            pass
-        else:
-            return dpnp_modf(x)
+
+    dpnp_desc = dpnp.get_dpnp_descriptor(x)
+    if dpnp_desc and not kwargs:
+        return dpnp_modf(dpnp_desc)
 
     return call_origin(numpy.modf, x, **kwargs)
 
@@ -1033,19 +1099,20 @@ def multiply(x1, x2, dtype=None, out=None, where=True, **kwargs):
     [1, 4, 9, 16, 25]
 
     """
-    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
-    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
-    if not use_origin_backend(x1) and not kwargs:
-        if not x1_is_dparray and not x1_is_scalar:
-            pass
-        elif not x2_is_dparray and not x2_is_scalar:
+    x1_is_scalar = dpnp.isscalar(x1)
+    x2_is_scalar = dpnp.isscalar(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+
+    if x1_desc and x2_desc and not kwargs:
+        if not x2_desc and not x2_is_scalar:
             pass
         elif x1_is_scalar and x2_is_scalar:
             pass
-        elif x1_is_dparray and x1.ndim == 0:
+        elif x1_desc and x1_desc.ndim == 0:
             pass
-        elif x2_is_dparray and x2.ndim == 0:
+        elif x2_desc and x2_desc.ndim == 0:
             pass
         elif dtype is not None:
             pass
@@ -1054,7 +1121,7 @@ def multiply(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_multiply(x1, x2, dtype=dtype, out=out, where=where)
+            return dpnp_multiply(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
 
     return call_origin(numpy.multiply, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -1089,11 +1156,9 @@ def nancumprod(x1, **kwargs):
 
     """
 
-    if not use_origin_backend(x1) and not kwargs:
-        if not isinstance(x1, dparray):
-            pass
-        else:
-            return dpnp_nancumprod(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        return dpnp_nancumprod(x1_desc)
 
     return call_origin(numpy.nancumprod, x1, **kwargs)
 
@@ -1127,11 +1192,9 @@ def nancumsum(x1, **kwargs):
 
     """
 
-    if not use_origin_backend(x1) and not kwargs:
-        if not isinstance(x1, dparray):
-            pass
-        else:
-            return dpnp_nancumsum(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        return dpnp_nancumsum(x1_desc)
 
     return call_origin(numpy.nancumsum, x1, **kwargs)
 
@@ -1159,9 +1222,8 @@ def nanprod(x1, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
         return dpnp_nanprod(x1)
 
     return call_origin(numpy.nanprod, x1, **kwargs)
@@ -1190,9 +1252,8 @@ def nansum(x1, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
         return dpnp_nansum(x1)
 
     return call_origin(numpy.nansum, x1, **kwargs)
@@ -1222,10 +1283,9 @@ def negative(x1, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
-        return dpnp_negative(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        return dpnp_negative(x1_desc).get_pyobj()
 
     return call_origin(numpy.negative, x1, **kwargs)
 
@@ -1260,31 +1320,31 @@ def power(x1, x2, dtype=None, out=None, where=True, **kwargs):
     >>> [x for x in result]
     [1, 4, 9, 16, 25]
 
-    """    
-    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
-    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
+    """
 
-    if not use_origin_backend(x1) and not kwargs:
-        if not x1_is_dparray and not x1_is_scalar:
+    x1_is_scalar = dpnp.isscalar(x1)
+    x2_is_scalar = dpnp.isscalar(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+
+    if x1_desc and x2_desc and not kwargs:
+        if not x1_desc and not x1_is_scalar:
             pass
-        elif not x2_is_dparray and not x2_is_scalar:
+        elif not x2_desc and not x2_is_scalar:
             pass
         elif x1_is_scalar and x2_is_scalar:
             pass
-        elif x1_is_dparray and x1.ndim == 0:
+        elif x1_desc and x1_desc.ndim == 0:
             pass
-        elif x2_is_dparray and x2.ndim == 0:
-            pass
-        elif out is not None and not isinstance(out, dparray):
+        elif x2_desc and x2_desc.ndim == 0:
             pass
         elif dtype is not None:
-            pass
-        elif out is not None:
             pass
         elif not where:
             pass
         else:
-            return dpnp_power(x1, x2, dtype=dtype, out=out, where=where)
+            out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+            return dpnp_power(x1_desc, x2_desc, dtype, out_desc, where).get_pyobj()
 
     return call_origin(numpy.power, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -1311,16 +1371,16 @@ def prod(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, wher
 
     """
 
-    if not use_origin_backend(x1):
-        if not isinstance(x1, dparray):
-            pass
-        elif out is not None and not isinstance(out, dparray):
-            pass
-        elif where is not True:
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if where is not True:
             pass
         else:
-            result = dpnp_prod(x1, axis, dtype, out, keepdims, initial, where)
-            return convert_result_scalar(result, keepdims)
+            out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+            result_obj = dpnp_prod(x1_desc, axis, dtype, out_desc, keepdims, initial, where).get_pyobj()
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj, keepdims)
+
+            return result
 
     return call_origin(numpy.prod, x1, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)
 
@@ -1354,17 +1414,16 @@ def remainder(x1, x2, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-    is_x2_dparray = isinstance(x2, dparray)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
 
-    if (not use_origin_backend(x1) and is_x1_dparray and is_x2_dparray and not kwargs):
-        if (x1.size != x2.size):
-            checker_throw_value_error("remainder", "size", x1.size, x2.size)
-
-        if (x1.shape != x2.shape):
-            checker_throw_value_error("remainder", "shape", x1.shape, x2.shape)
-
-        return dpnp_remainder(x1, x2)
+    if x1_desc and x2_desc and not kwargs:
+        if x1_desc.size != x2_desc.size:
+            pass
+        elif x1_desc.shape != x2_desc.shape:
+            pass
+        else:
+            return dpnp_remainder(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.remainder, x1, x2, **kwargs)
 
@@ -1406,10 +1465,9 @@ def sign(x1, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
-        return dpnp_sign(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        return dpnp_sign(x1_desc)
 
     return call_origin(numpy.sign, x1, **kwargs)
 
@@ -1436,23 +1494,25 @@ def subtract(x1, x2, dtype=None, out=None, where=True, **kwargs):
     [2, -4]
 
     """
-    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
-    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
 
-    if not use_origin_backend(x1) and not kwargs:
-        if not x1_is_dparray and not x1_is_scalar:
+    x1_is_scalar = dpnp.isscalar(x1)
+    x2_is_scalar = dpnp.isscalar(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    if x1_desc and x2_desc and not kwargs:
+        if not x1_desc and not x1_is_scalar:
             pass
-        elif not x2_is_dparray and not x2_is_scalar:
+        elif not x2_desc and not x2_is_scalar:
             pass
         elif x1_is_scalar and x2_is_scalar:
             pass
-        elif x1_is_dparray and x1.ndim == 0:
+        elif x1_desc and x1_desc.ndim == 0:
             pass
-        elif x1_is_dparray and x1.dtype == numpy.bool:
+        elif x1_desc and x1_desc.dtype == numpy.bool:
             pass
-        elif x2_is_dparray and x2.ndim == 0:
+        elif x2_desc and x2_desc.ndim == 0:
             pass
-        elif x2_is_dparray and x2.dtype == numpy.bool:
+        elif x2_desc and x2_desc.dtype == numpy.bool:
             pass
         elif dtype is not None:
             pass
@@ -1461,7 +1521,8 @@ def subtract(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_subtract(x1, x2, dtype=dtype, out=out, where=where)
+            out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+            return dpnp_subtract(x1_desc, x2_desc, dtype=dtype, out=out_desc, where=where).get_pyobj()
 
     return call_origin(numpy.subtract, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -1488,21 +1549,21 @@ def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, where
 
     """
 
-    if not use_origin_backend(x1):
-        if not isinstance(x1, dparray):
-            pass
-        elif out is not None and not isinstance(out, dparray):
-            pass
-        elif where is not True:
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if where is not True:
             pass
         else:
-            result = dpnp_sum(x1, axis, dtype, out, keepdims, initial, where)
-            return convert_result_scalar(result, keepdims)
+            out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+            result_obj = dpnp_sum(x1_desc, axis, dtype, out_desc, keepdims, initial, where).get_pyobj()
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj, keepdims)
+
+            return result
 
     return call_origin(numpy.sum, x1, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)
 
 
-def trapz(y, x=None, dx=1.0, **kwargs):
+def trapz(y, x=None, dx=1.0, axis=-1):
     """
     Integrate along the given axis using the composite trapezoidal rule.
 
@@ -1529,25 +1590,23 @@ def trapz(y, x=None, dx=1.0, **kwargs):
 
     """
 
-    if not use_origin_backend(y):
-
-        if not isinstance(y, dparray):
+    y_desc = dpnp.get_dpnp_descriptor(y)
+    if y_desc:
+        if not isinstance(x, dparray) and x is not None:
             pass
-        elif not isinstance(x, dparray) and x is not None:
+        elif x is not None and y_desc.size != x.size:
             pass
-        elif x is not None and y.size != x.size:
+        elif x is not None and y_desc.shape != x.shape:
             pass
-        elif x is not None and y.shape != x.shape:
-            pass
-        elif y.ndim > 1:
+        elif y_desc.ndim > 1:
             pass
         else:
             if x is None:
-                x = dpnp.empty(0, dtype=y.dtype)
+                x = dpnp.empty(0, dtype=y_desc.dtype)
 
-            return dpnp_trapz(y, x, dx)
+            return dpnp_trapz(y_desc, x, dx)
 
-    return call_origin(numpy.trapz, y, x=x, dx=dx, **kwargs)
+    return call_origin(numpy.trapz, y, x, dx, axis)
 
 
 def true_divide(*args, **kwargs):
@@ -1570,7 +1629,7 @@ def true_divide(*args, **kwargs):
     return dpnp.divide(*args, **kwargs)
 
 
-def trunc(x1, **kwargs):
+def trunc(x1, out=None, **kwargs):
     """
     Compute the truncated value of the input, element-wise.
 
@@ -1598,9 +1657,9 @@ def trunc(x1, **kwargs):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+        return dpnp_trunc(x1_desc, out_desc).get_pyobj()
 
-    if (not use_origin_backend(x1) and is_x1_dparray and not kwargs):
-        return dpnp_trunc(x1)
-
-    return call_origin(numpy.trunc, x1, **kwargs)
+    return call_origin(numpy.trunc, x1, out=out, **kwargs)

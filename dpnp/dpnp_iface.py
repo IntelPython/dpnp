@@ -45,7 +45,6 @@ import numpy
 import collections
 
 from dpnp.dpnp_algo import *
-from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 from dpnp.fft import *
 from dpnp.linalg import *
@@ -54,10 +53,11 @@ from dpnp.random import *
 __all__ = [
     "array_equal",
     "asnumpy",
+    "convert_single_elem_array_to_scalar",
     "dpnp_queue_initialize",
     "dpnp_queue_is_cpu",
-    "get_include",
-    "matmul"
+    "get_dpnp_descriptor",
+    "get_include"
 ]
 
 from dpnp.dpnp_iface_arraycreation import *
@@ -134,6 +134,43 @@ def asnumpy(input, order='C'):
     return numpy.asarray(input, order=order)
 
 
+def convert_single_elem_array_to_scalar(obj, keepdims=False):
+    """
+    Convert array with single element to scalar
+    """
+
+    if (obj.ndim > 0) and (obj.size == 1) and (keepdims is False):
+        return obj.dtype.type(obj[0])
+
+    return obj
+
+
+def get_dpnp_descriptor(ext_obj):
+    """
+    Return True:
+      never
+    Return DPNP internal data discriptor object if:
+      1. We can proceed with input data object with DPNP
+      2. We want to handle input data object
+    Return False if:
+      1. We do not want to work with input data object
+      2. We can not handle with input data object
+    """
+
+    # TODO need to allow "import dpnp" with no build procedure
+    # if no_modules_load_doc_build();
+    #    return False
+
+    if use_origin_backend():
+        return False
+
+    dpnp_desc = dpnp_descriptor(ext_obj)
+    if dpnp_desc.is_valid:
+        return dpnp_desc
+
+    return False
+
+
 def get_include():
     """
     Return the directory that contains the DPNP C++ backend \\*.h header files.
@@ -142,71 +179,3 @@ def get_include():
     dpnp_path = os.path.join(os.path.dirname(__file__), "backend", "include")
 
     return dpnp_path
-
-
-def matmul(in_array1, in_array2, out=None):
-    """
-    Matrix product of two arrays.
-
-    For full documentation refer to :obj:`numpy.matmul`.
-
-    Limitations
-    -----------
-    Input arrays are supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
-    Parameter ``out`` is supported only with default value ``None``.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.vdot` : Complex-conjugating dot product.
-    :obj:`dpnp.tensordot` : Sum products over arbitrary axes.
-    :obj:`dpnp.einsum` : Einstein summation convention.
-    :obj:`dpnp.dot` : Alternative matrix product with
-                      different broadcasting rules.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> a = np.ones([9, 5, 7, 4])
-    >>> c = np.ones([9, 5, 4, 3])
-    >>> np.matmul(a, c).shape
-    (9, 5, 7, 3)
-    >>> a = np.array([[1, 0], [0, 1]])
-    >>> b = np.array([[4, 1], [2, 2]])
-    >>> np.matmul(a, b)
-    array([[4, 1],
-           [2, 2]])
-
-    """
-
-    is_dparray1 = isinstance(in_array1, dparray)
-    is_dparray2 = isinstance(in_array2, dparray)
-
-    if (not use_origin_backend(in_array1) and is_dparray1 and is_dparray2):
-
-        if out is not None:
-            checker_throw_value_error("matmul", "out", type(out), None)
-
-        """
-        Cost model checks
-        """
-        cost_size = 4096  # 2D array shape(64, 64)
-        if ((in_array1.dtype == numpy.float64) or (in_array1.dtype == numpy.float32)):
-            """
-            Floating point types are handled via original math library better than SYCL math library
-            """
-            cost_size = 262144  # 2D array shape(512, 512)
-
-        dparray1_size = in_array1.size
-        dparray2_size = in_array2.size
-
-        if (dparray1_size > cost_size) and (dparray2_size > cost_size):
-            # print(f"dparray1_size={dparray1_size}")
-            return dpnp_matmul(in_array1, in_array2)
-
-    input1 = asnumpy(in_array1) if is_dparray1 else in_array1
-    input2 = asnumpy(in_array2) if is_dparray2 else in_array2
-
-    # TODO need to return dparray instead ndarray
-    return numpy.matmul(input1, input2, out=out)
