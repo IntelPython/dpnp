@@ -96,9 +96,8 @@ cpdef utils.dpnp_descriptor dpnp_arange(start, stop, step, dtype):
     return result
 
 
-cpdef dparray dpnp_array(object obj, object dtype=None):
-    cdef dparray result
-    cdef elem_dtype
+cpdef utils.dpnp_descriptor dpnp_array(object obj, object dtype=None):
+    cdef utils.dpnp_descriptor result
     cdef shape_type_c obj_shape
 
     # convert scalar to tuple
@@ -106,20 +105,20 @@ cpdef dparray dpnp_array(object obj, object dtype=None):
         obj = (obj, )
 
     if not cpython.PySequence_Check(obj):
-        raise TypeError(f"DPNP array(): Unsupported non-sequence obj={type(obj)}")
+        raise TypeError(f"DPNP dpnp_array(): Unsupported non-sequence obj={type(obj)}")
 
     obj_shape, elem_dtype = utils.get_shape_dtype(obj)
     if dtype is not None:
         """ Set type from parameter. result might be empty array """
-        result = dparray(obj_shape, dtype=dtype)
+        result = utils_py.create_output_descriptor_py(obj_shape, dtype, None)
     else:
         if obj_shape.empty():
             """ Empty object (ex. empty list) and no type provided """
-            result = dparray(obj_shape)
+            result = utils_py.create_output_descriptor_py(obj_shape, None, None)
         else:
-            result = dparray(obj_shape, dtype=elem_dtype)
+            result = utils_py.create_output_descriptor_py(obj_shape, elem_dtype, None)
 
-    utils.copy_values_to_dparray(result, obj)
+    utils.copy_values_to_dparray(result.get_pyobj(), obj)
 
     return result
 
@@ -153,7 +152,7 @@ cpdef dparray dpnp_flatten(dparray array_):
     return result
 
 
-cpdef dparray dpnp_init_val(shape, dtype, value):
+cpdef utils.dpnp_descriptor dpnp_init_val(shape, dtype, value):
     """
     same as dpnp_full(). TODO remove code dumplication
     """
@@ -161,12 +160,11 @@ cpdef dparray dpnp_init_val(shape, dtype, value):
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_INITVAL, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-    cdef dparray result = dparray(shape, dtype=dtype)
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(shape, dtype, None)
 
     # TODO: find better way to pass single value with type conversion
-    cdef dparray val_arr = dparray((1, ), dtype=dtype)
-    val_arr[0] = value
+    cdef utils.dpnp_descriptor val_arr = utils_py.create_output_descriptor_py((1, ), dtype, None)
+    val_arr.get_pyobj()[0] = value
 
     cdef fptr_dpnp_initval_t func = <fptr_dpnp_initval_t > kernel_data.ptr
     func(result.get_data(), val_arr.get_data(), result.size)

@@ -256,6 +256,7 @@ cdef tuple get_shape_dtype(object input_obj):
     cdef shape_type_c return_shape  # empty shape means scalar
     return_dtype = None
 
+    # TODO replace with checking "shape" and "dtype" attributes
     if issubclass(type(input_obj), (numpy.ndarray, dparray)):
         return (input_obj.shape, input_obj.dtype)
 
