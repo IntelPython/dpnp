@@ -1414,25 +1414,27 @@ def remainder(x1, x2, out=None, where=True, dtype=None, **kwargs):
 
     """
 
-    x1_is_scalar, x2_is_scalar = dpnp.isscalar(x1), dpnp.isscalar(x2)
-    x1_is_dparray, x2_is_dparray = isinstance(x1, dparray), isinstance(x2, dparray)
-    
-    if not use_origin_backend(x1) and not kwargs:
-        if not x1_is_dparray and not x1_is_scalar:
+    x1_is_scalar = dpnp.isscalar(x1)
+    x2_is_scalar = dpnp.isscalar(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+
+    if x1_desc and x2_desc and not kwargs:
+        if not x1_desc and not x1_is_scalar:
             pass
-        elif not x2_is_dparray and not x2_is_scalar:
+        elif not x2_desc and not x2_is_scalar:
             pass
         elif x1_is_scalar and x2_is_scalar:
             pass
-        elif x1_is_dparray and x1.ndim == 0:
+        elif x1_desc and x1_desc.ndim == 0:
             pass
-        elif x2_is_dparray and x2.ndim == 0:
+        elif x2_desc and x2_desc.ndim == 0:
             pass
-        elif x2_is_scalar and x2 == 0:
+        elif x2_is_scalar and not x2_desc:
             pass
-        elif x1_is_dparray and x2_is_dparray and x1.size != x2.size:
+        elif x1_desc and x2_desc and x1_desc.size != x2_desc.size:
             pass
-        elif x1_is_dparray and x2_is_dparray and x1.shape != x2.shape:
+        elif x1_desc and x2_desc and x1_desc.shape != x2_desc.shape:
             pass
         elif out is not None and not isinstance(out, dparray):
             pass
@@ -1442,12 +1444,12 @@ def remainder(x1, x2, out=None, where=True, dtype=None, **kwargs):
             pass
         elif not where:
             pass
-        elif x1_is_scalar and x2.ndim > 1:
+        elif x1_is_scalar and x2_desc.ndim > 1:
             pass
         else:
-            return dpnp_remainder(x1, x2, out=out, where=where, dtype=dtype)
+            return dpnp_remainder(x1_desc, x2_desc, out=out, where=where, dtype=dtype)
 
-    return call_origin(numpy.remainder, x1, x2, out=out, where=where, dtype=dtype **kwargs)
+    return call_origin(numpy.remainder, x1, x2, out=out, where=where, dtype=dtype, **kwargs)
 
 
 def round_(a, decimals=0, out=None):

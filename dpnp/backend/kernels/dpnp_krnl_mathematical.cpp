@@ -378,11 +378,11 @@ void dpnp_remainder_c(void* result_out,
 
     cl::sycl::range<1> gws(result_size); 
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
-        const size_t i = global_id[0]; /* for (size_t i = 0; i < result_size; ++i) */
+        const size_t i = global_id[0];
         const _DataType_output input1_elem = (*input1_it)[i];
         const _DataType_output input2_elem = (*input2_it)[i];
-        double fmod = cl::sycl::fmod((double)input1_elem, (double)input2_elem);
-        double add = fmod + input2_elem;
+        double fmod_res = cl::sycl::fmod((double)input1_elem, (double)input2_elem);
+        double add = fmod_res + input2_elem;
         result[i] = cl::sycl::fmod(add, (double)input2_elem);
 
     };
