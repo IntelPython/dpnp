@@ -98,7 +98,7 @@ def dot(x1, x2, **kwargs):
         dim2 = x2_desc.ndim
 
         if not (dim1 >= 2 and dim2 == 1) and not (dim1 >= 2 and dim2 >= 2) and (x1_desc.dtype == x2_desc.dtype):
-            result_obj = dpnp_dot(x1_desc, x2_desc)
+            result_obj = dpnp_dot(x1_desc, x2_desc).get_pyobj()
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result

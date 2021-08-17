@@ -47,7 +47,7 @@ __all__ += [
 ctypedef void(*fptr_2in_1out_shapes_t)(void *, void * , void * , size_t * , size_t * , size_t * , size_t)
 
 
-cpdef dparray dpnp_dot(dpnp_descriptor in_array1, dpnp_descriptor in_array2):
+cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp_descriptor in_array2):
 
     cdef shape_type_c shape1, shape2
 
@@ -63,9 +63,7 @@ cpdef dparray dpnp_dot(dpnp_descriptor in_array1, dpnp_descriptor in_array2):
 
     # scalar
     if dim1 == 0 or dim2 == 0:
-        x1_desc = dpnp.get_dpnp_descriptor(in_array1)
-        x2_desc = dpnp.get_dpnp_descriptor(in_array2)
-        return dpnp_multiply(x1_desc, x2_desc).get_pyobj()
+        return dpnp_multiply(in_array1, in_array2)
 
     cdef size_t size1 = 0
     cdef size_t size2 = 0
@@ -86,14 +84,22 @@ cpdef dparray dpnp_dot(dpnp_descriptor in_array1, dpnp_descriptor in_array2):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DOT, param1_type, param2_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray((1,), dtype=result_type)
+    cdef shape_type_c result_shape = (1,)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), in_array1.get_data(), in_array1.size, shape1.data(), shape1.size(),
-         in_array2.get_data(), in_array2.size, shape2.data(), shape2.size(), NULL)
+    func(result.get_data(),
+         in_array1.get_data(),
+         in_array1.size,
+         shape1.data(),
+         shape1.size(),
+         in_array2.get_data(),
+         in_array2.size,
+         shape2.data(),
+         shape2.size(),
+         NULL)
 
     return result
 
