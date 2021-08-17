@@ -419,7 +419,7 @@ def ravel(x1, order='C'):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_flatten(x1)
+        return dpnp_flatten(x1_desc).get_pyobj()
 
     return call_origin(numpy.ravel, x1, order=order)
 
