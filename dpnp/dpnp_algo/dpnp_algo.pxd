@@ -297,7 +297,7 @@ cpdef dpnp_descriptor dpnp_not_equal(dpnp_descriptor input1, dpnp_descriptor inp
 """
 Linear algebra
 """
-cpdef dparray dpnp_dot(dpnp_descriptor in_array1, dpnp_descriptor in_array2)
+cpdef dpnp_descriptor dpnp_dot(dpnp_descriptor in_array1, dpnp_descriptor in_array2)
 cpdef dpnp_descriptor dpnp_matmul(dpnp_descriptor in_array1, dpnp_descriptor in_array2, dpnp_descriptor out=*)
 
 
