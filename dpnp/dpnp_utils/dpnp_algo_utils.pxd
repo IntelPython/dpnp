@@ -99,7 +99,7 @@ cpdef find_common_type(object x1_obj, object x2_obj)
 Find common type of 2 input objects
 """
 
-cdef long copy_values_to_dparray(dparray dst, input_obj, size_t dst_idx=*) except -1
+cdef long container_copy(dparray dst, input_obj, size_t dst_idx=*) except -1
 """
 Copy values to `dst` by iterating element by element in `input_obj`
 """
@@ -159,16 +159,9 @@ cdef DPNPFuncType get_output_c_type(DPNPFuncName funcID,
 Calculate output array type by 'out' and 'dtype' cast parameters
 """
 
-cdef dparray create_output_array(shape_type_c output_shape,
-                                 DPNPFuncType c_type,
-                                 object requested_out)
-"""
-Create output array based on shape, type and 'out' parameters
-"""
-
 cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
                                               DPNPFuncType c_type,
                                               dpnp_descriptor requested_out)
 """
-Same as "create_output_array" but output is "dpnp_descriptor"
+Create output dpnp_descriptor based on shape, type and 'out' parameters
 """

@@ -126,14 +126,14 @@ cpdef utils.dpnp_descriptor dpnp_expand_dims(utils.dpnp_descriptor in_array, axi
     return result
 
 
-cpdef dparray dpnp_repeat(utils.dpnp_descriptor array1, repeats, axes=None):
+cpdef utils.dpnp_descriptor dpnp_repeat(utils.dpnp_descriptor array1, repeats, axes=None):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_REPEAT, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-    cdef long new_size = array1.size * repeats
-    cdef dparray result = dparray((new_size, ), dtype=array1.dtype)
+    # ceate result array with type given by FPTR data
+    cdef shape_type_c result_shape = (array1.size * repeats, )
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_dpnp_repeat_t func = <fptr_dpnp_repeat_t > kernel_data.ptr
     func(array1.get_data(), result.get_data(), repeats, array1.size)
@@ -141,7 +141,7 @@ cpdef dparray dpnp_repeat(utils.dpnp_descriptor array1, repeats, axes=None):
     return result
 
 
-cpdef dparray dpnp_transpose(utils.dpnp_descriptor array1, axes=None):
+cpdef utils.dpnp_descriptor dpnp_transpose(utils.dpnp_descriptor array1, axes=None):
     cdef shape_type_c input_shape = array1.shape
     cdef size_t input_shape_size = array1.ndim
     cdef shape_type_c result_shape = shape_type_c(input_shape_size, 1)
@@ -173,9 +173,8 @@ cpdef dparray dpnp_transpose(utils.dpnp_descriptor array1, axes=None):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRANSPOSE, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(result_shape, dtype=result_type)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_custom_elemwise_transpose_1in_1out_t func = <fptr_custom_elemwise_transpose_1in_1out_t > kernel_data.ptr
     # call FPTR function

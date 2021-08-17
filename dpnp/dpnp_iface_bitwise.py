@@ -82,8 +82,6 @@ def _check_nd_call(origin_func, dpnp_func, x1, x2, dtype=None, out=None, where=T
             pass
         elif x1_desc and x2_desc and x1_desc.shape != x2_desc.shape:
             pass
-        elif out is not None and not isinstance(out, dparray):
-            pass
         elif dtype is not None:
             pass
         elif out is not None:
@@ -91,7 +89,8 @@ def _check_nd_call(origin_func, dpnp_func, x1, x2, dtype=None, out=None, where=T
         elif not where:
             pass
         else:
-            return dpnp_func(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
+            out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+            return dpnp_func(x1_desc, x2_desc, dtype, out_desc, where).get_pyobj()
 
     return call_origin(origin_func, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 

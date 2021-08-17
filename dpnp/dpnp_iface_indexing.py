@@ -241,7 +241,7 @@ def diagonal(x1, offset=0, axis1=0, axis2=1):
         elif axis2 != 1:
             pass
         else:
-            return dpnp_diagonal(x1_desc, offset)
+            return dpnp_diagonal(x1_desc, offset).get_pyobj()
 
     return call_origin(numpy.diagonal, x1, offset, axis1, axis2)
 
@@ -507,7 +507,7 @@ def take(x1, indices, axis=None, out=None, mode='raise'):
         elif mode != 'raise':
             pass
         else:
-            return dpnp_take(x1_desc, indices_desc)
+            return dpnp_take(x1_desc, indices_desc).get_pyobj()
 
     return call_origin(numpy.take, x1, indices, axis, out, mode)
 
