@@ -39,6 +39,7 @@ import dpnp.dpnp_utils as utils_py
 import numpy
 
 cimport cpython
+from dpnp.dparray cimport dparray
 cimport dpnp.dpnp_utils as utils
 cimport numpy
 
@@ -123,14 +124,15 @@ cpdef utils.dpnp_descriptor dpnp_array(object obj, object dtype=None):
     return result
 
 
-cpdef dparray dpnp_astype(dparray array1, dtype_target):
+cpdef utils.dpnp_descriptor dpnp_astype(utils.dpnp_descriptor array1, dtype):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
-    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(dtype_target)
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ASTYPE, param1_type, param2_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-    cdef dparray result = dparray(array1.shape, dtype=result_type)
+    # ceate result array with type given by FPTR data
+    cdef shape_type_c result_shape = array1.shape
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_dpnp_astype_t func = <fptr_dpnp_astype_t > kernel_data.ptr
     func(array1.get_data(), result.get_data(), array1.size)
@@ -138,13 +140,14 @@ cpdef dparray dpnp_astype(dparray array1, dtype_target):
     return result
 
 
-cpdef dparray dpnp_flatten(dparray array_):
+cpdef utils.dpnp_descriptor dpnp_flatten(utils.dpnp_descriptor array_):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array_.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FLATTEN, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-    cdef dparray result = dparray(array_.size, dtype=result_type)
+    # ceate result array with type given by FPTR data
+    cdef shape_type_c result_shape = (array_.size,)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_dpnp_flatten_t func = <fptr_dpnp_flatten_t > kernel_data.ptr
     func(array_.get_data(), result.get_data(), array_.size)
