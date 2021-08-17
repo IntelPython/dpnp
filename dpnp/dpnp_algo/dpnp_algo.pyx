@@ -118,7 +118,7 @@ cpdef utils.dpnp_descriptor dpnp_array(object obj, object dtype=None):
         else:
             result = utils_py.create_output_descriptor_py(obj_shape, elem_dtype, None)
 
-    utils.copy_values_to_dparray(result.get_pyobj(), obj)
+    utils.container_copy(result.get_pyobj(), obj)
 
     return result
 
