@@ -272,9 +272,9 @@
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">val</span><span class="p">:</span>
                         <span class="k">pass</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="k">return</span> <span class="n">dpnp_choose</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">choices</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="n">dpnp_choose</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">choices</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_choose</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">choices</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpnp_choose</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">choices</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">choose</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
 
