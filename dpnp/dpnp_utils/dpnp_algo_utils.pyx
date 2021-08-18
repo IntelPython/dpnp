@@ -175,32 +175,16 @@ cpdef dp2nd_array(arr):
     """Convert dparray to ndarray"""
     return dpnp.asnumpy(arr) if isinstance(arr, dparray) else arr
 
-cdef long container_copy(dparray dst, input_obj, size_t dst_idx=0) except -1:
-    cdef elem_dtype = dst.dtype
+cdef long container_copy(object dst_obj, object src_obj, size_t dst_idx = 0) except -1:
+    cdef elem_dtype = dst_obj.dtype
 
-    for elem_value in input_obj:
+    for elem_value in src_obj:
         if isinstance(elem_value, (list, tuple)):
-            dst_idx = container_copy(dst, elem_value, dst_idx)
+            dst_idx = container_copy(dst_obj, elem_value, dst_idx)
         elif issubclass(type(elem_value), (numpy.ndarray, dparray)):
-            dst_idx = container_copy(dst, elem_value, dst_idx)
+            dst_idx = container_copy(dst_obj, elem_value, dst_idx)
         else:
-            if elem_dtype == numpy.float64:
-                ( < double * > dst.get_data())[dst_idx] = elem_value
-            elif elem_dtype == numpy.float32:
-                ( < float * > dst.get_data())[dst_idx] = elem_value
-            elif elem_dtype == numpy.int64:
-                ( < long * > dst.get_data())[dst_idx] = elem_value
-            elif elem_dtype == numpy.int32:
-                ( < int * > dst.get_data())[dst_idx] = elem_value
-            elif elem_dtype == numpy.bool_ or elem_dtype == numpy.bool:
-                (< cpp_bool * > dst.get_data())[dst_idx] = elem_value
-            elif elem_dtype == numpy.complex64:
-                (< cpp_complex[float] * > dst.get_data())[dst_idx] = elem_value
-            elif elem_dtype == numpy.complex128:
-                (< cpp_complex[double] * > dst.get_data())[dst_idx] = elem_value
-            else:
-                checker_throw_type_error("container_copy", elem_dtype)
-
+            dst_obj.flat[dst_idx] = elem_value
             dst_idx += 1
 
     return dst_idx

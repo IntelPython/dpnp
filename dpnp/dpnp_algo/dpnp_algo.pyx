@@ -108,7 +108,7 @@ cpdef utils.dpnp_descriptor dpnp_array(object obj, object dtype=None):
     if not cpython.PySequence_Check(obj):
         raise TypeError(f"DPNP dpnp_array(): Unsupported non-sequence obj={type(obj)}")
 
-    obj_shape, elem_dtype = utils.get_shape_dtype(obj)
+    obj_shape, obj_dtype = utils.get_shape_dtype(obj)
     if dtype is not None:
         """ Set type from parameter. result might be empty array """
         result = utils_py.create_output_descriptor_py(obj_shape, dtype, None)
@@ -117,7 +117,7 @@ cpdef utils.dpnp_descriptor dpnp_array(object obj, object dtype=None):
             """ Empty object (ex. empty list) and no type provided """
             result = utils_py.create_output_descriptor_py(obj_shape, None, None)
         else:
-            result = utils_py.create_output_descriptor_py(obj_shape, elem_dtype, None)
+            result = utils_py.create_output_descriptor_py(obj_shape, obj_dtype, None)
 
     utils.container_copy(result.get_pyobj(), obj)
 
