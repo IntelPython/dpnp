@@ -171,12 +171,13 @@ cpdef object dpnp_indices(dimensions):
     return dpnp_result
 
 
-cpdef tuple dpnp_nonzero(dparray in_array1):
+cpdef tuple dpnp_nonzero(utils.dpnp_descriptor in_array1):
     cdef shape_type_c shape_arr = in_array1.shape
     res_count = in_array1.ndim
 
     # have to go through array one extra time to count size of result arrays
-    res_size = dpnp.count_nonzero(in_array1)
+    res_size_obj = dpnp_count_nonzero(in_array1)
+    cdef size_t res_size = dpnp.convert_single_elem_array_to_scalar(res_size_obj.get_pyobj())
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(in_array1.dtype)
 
@@ -185,12 +186,15 @@ cpdef tuple dpnp_nonzero(dparray in_array1):
     cdef fptr_dpnp_nonzero_t func = <fptr_dpnp_nonzero_t > kernel_data.ptr
 
     res_list = []
+    cdef utils.dpnp_descriptor res_arr
+    cdef shape_type_c result_shape
     for j in range(res_count):
-        res_arr = dparray((res_size, ), dtype=dpnp.int64)
+        result_shape = utils._object_to_tuple(res_size)
+        res_arr = utils_py.create_output_descriptor_py(result_shape, dpnp.int64, None)
 
         func(in_array1.get_data(), res_arr.get_data(), < size_t * > shape_arr.data(), in_array1.ndim, j)
 
-        res_list.append(res_arr)
+        res_list.append(res_arr.get_pyobj())
 
     result = utils._object_to_tuple(res_list)
 
@@ -266,19 +270,20 @@ cpdef dpnp_putmask(object arr, object mask, object values):
 
 
 cpdef object dpnp_select(condlist, choicelist, default):
-    size_ = condlist[0].size
-    res_array = dparray(size_, dtype=choicelist[0].dtype)
+    cdef size_t size_ = condlist[0].size
+    cdef utils.dpnp_descriptor res_array = utils_py.create_output_descriptor_py(condlist[0].shape, choicelist[0].dtype, None)
+
     pass_val = {a: default for a in range(size_)}
     for i in range(len(condlist)):
         for j in range(size_):
             if (condlist[i])[j]:
-                res_array[j] = (choicelist[i])[j]
+                res_array.get_pyobj()[j] = (choicelist[i])[j]
                 pass_val.pop(j)
 
     for ind, val in pass_val.items():
-        res_array[ind] = val
+        res_array.get_pyobj()[ind] = val
 
-    return res_array.reshape(condlist[0].shape)
+    return res_array
 
 
 cpdef utils.dpnp_descriptor dpnp_take(utils.dpnp_descriptor input, utils.dpnp_descriptor indices):
@@ -373,7 +378,7 @@ cpdef object dpnp_take_along_axis(object arr, object indices, int axis):
         return dpnp_result_array
 
     else:
-        result_array = dparray(shape_arr, dtype=res_type)
+        result_array = utils_py.create_output_descriptor_py(shape_arr, res_type, None).get_pyobj()
         for i in range(size_arr):
             ind = size_indices * (i // size_indices) + indices[i % size_indices]
             result_array[i] = arr[ind]
