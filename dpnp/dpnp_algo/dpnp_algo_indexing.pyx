@@ -65,10 +65,12 @@ ctypedef void(*custom_indexing_6in_func_ptr_t)(void *, void * , void * , const s
 ctypedef void(*fptr_dpnp_nonzero_t)(const void * , void * , const size_t * , const size_t , const size_t)
 
 
-cpdef dparray dpnp_choose(input, choices):
-    res_array = dparray(len(input), dtype=choices[0].dtype)
+cpdef utils.dpnp_descriptor dpnp_choose(object input, list choices):
+    cdef shape_type_c obj_shape = utils._object_to_tuple(len(input))
+    cdef utils.dpnp_descriptor res_array = utils_py.create_output_descriptor_py(obj_shape, choices[0].dtype, None)
+
     for i in range(len(input)):
-        res_array[i] = (choices[input[i]])[i]
+        res_array.get_pyobj()[i] = (choices[input[i]])[i]
     return res_array
 
 

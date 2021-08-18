@@ -118,9 +118,9 @@ def choose(x1, choices, out=None, mode='raise'):
                     if not val:
                         pass
                     else:
-                        return dpnp_choose(x1, choices)
+                        return dpnp_choose(x1, choices).get_pyobj()
         else:
-            return dpnp_choose(x1, choices)
+            return dpnp_choose(x1, choices).get_pyobj()
 
     return call_origin(numpy.choose, x1, choices, out, mode)
 
