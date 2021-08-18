@@ -43,6 +43,7 @@ it contains:
 import numpy
 import dpnp
 
+import dpnp.config as config
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 
@@ -193,6 +194,12 @@ def array(x1, dtype=None, copy=True, order='C', subok=False, ndmin=0, like=None)
     """
 
     if not dpnp.is_type_supported(dtype) and dtype is not None:
+        pass
+    elif config.__DPNP_DPCTL_AVAILABLE__:
+        # TODO this is workaround becasue
+        # usm_array has no element wise assignment (aka []) and
+        # has no "flat" property and
+        # "usm_data.copy_from_host" doesn't work with diffrent datatypes
         pass
     elif subok is not False:
         pass
