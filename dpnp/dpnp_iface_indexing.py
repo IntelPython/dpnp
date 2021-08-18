@@ -345,7 +345,7 @@ def nonzero(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_nonzero(x1)
+        return dpnp_nonzero(x1_desc)
 
     return call_origin(numpy.nonzero, x1)
 
