@@ -183,8 +183,8 @@ def inner(x1, x2, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     x2_desc = dpnp.get_dpnp_descriptor(x2)
-    if 0 and x1_desc and x2_desc and not kwargs:
-        return dpnp_inner(x1_desc, x2_desc)
+    if x1_desc and x2_desc and not kwargs:
+        return dpnp_inner(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.inner, x1, x2, **kwargs)
 
@@ -202,7 +202,7 @@ def kron(x1, x2):
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     x2_desc = dpnp.get_dpnp_descriptor(x2)
     if x1_desc and x2_desc:
-        return dpnp_kron(x1_desc, x2_desc)
+        return dpnp_kron(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.kron, x1, x2)
 
@@ -312,8 +312,8 @@ def outer(x1, x2, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     x2_desc = dpnp.get_dpnp_descriptor(x2)
-    if 0 and x1_desc and x2_desc and not kwargs:
-        return dpnp_outer(x1_desc, x2_desc)
+    if x1_desc and x2_desc and not kwargs:
+        return dpnp_outer(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.outer, x1, x2, **kwargs)
 
