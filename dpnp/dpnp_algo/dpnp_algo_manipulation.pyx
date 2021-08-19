@@ -51,39 +51,42 @@ ctypedef void(*fptr_custom_elemwise_transpose_1in_1out_t)(void * , size_t * , si
 ctypedef void(*fptr_dpnp_repeat_t)(const void *, void * , const size_t , const size_t)
 
 
-cpdef dparray dpnp_atleast_2d(dparray arr):
+cpdef utils.dpnp_descriptor dpnp_atleast_2d(utils.dpnp_descriptor arr):
+    # it looks like it should be dpnp.copy + dpnp.reshape
+    cdef utils.dpnp_descriptor result
     cdef size_t arr_ndim = arr.ndim
     cdef long arr_size = arr.size
     if arr_ndim == 1:
-        result = dparray((1, arr_size), dtype=arr.dtype)
+        result = utils_py.create_output_descriptor_py((1, arr_size), arr.dtype, None)
         for i in range(arr_size):
-            result[0, i] = arr[i]
+            result.get_pyobj()[0, i] = arr.get_pyobj()[i]
         return result
     else:
         return arr
 
 
-cpdef dparray dpnp_atleast_3d(dparray arr):
+cpdef utils.dpnp_descriptor dpnp_atleast_3d(utils.dpnp_descriptor arr):
+    # it looks like it should be dpnp.copy + dpnp.reshape
     cdef size_t arr_ndim = arr.ndim
     cdef shape_type_c arr_shape = arr.shape
     cdef long arr_size = arr.size
     if arr_ndim == 1:
-        result = dparray((1, 1, arr_size), dtype=arr.dtype)
+        result = utils_py.create_output_descriptor_py((1, 1, arr_size), arr.dtype, None)
         for i in range(arr_size):
-            result[0, 0, i] = arr[i]
+            result.get_pyobj()[0, 0, i] = arr.get_pyobj()[i]
         return result
     elif arr_ndim == 2:
-        result = dparray((1, arr_shape[0], arr_shape[1]), dtype=arr.dtype)
+        result = utils_py.create_output_descriptor_py((1, arr_shape[0], arr_shape[1]), arr.dtype, None)
         for i in range(arr_shape[0]):
             for j in range(arr_shape[1]):
-                result[0, i, j] = arr[i, j]
+                result.get_pyobj()[0, i, j] = arr.get_pyobj()[i, j]
         return result
     else:
         return arr
 
 
 cpdef dpnp_copyto(utils.dpnp_descriptor dst, utils.dpnp_descriptor src, where=True):
-    # Convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # Convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType dst_type = dpnp_dtype_to_DPNPFuncType(dst.dtype)
     cdef DPNPFuncType src_type = dpnp_dtype_to_DPNPFuncType(src.dtype)
 
@@ -167,7 +170,7 @@ cpdef utils.dpnp_descriptor dpnp_transpose(utils.dpnp_descriptor array1, axes=No
         """ construct output shape """
         result_shape[i] = input_shape[permute_axes[i]]
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
 
     # get the FPTR data structure
