@@ -128,7 +128,7 @@ def partition(x1, kth, axis=-1, kind='introselect', order=None):
         elif order is not None:
             pass
         else:
-            return dpnp_partition(x1_desc, kth, axis, kind, order)
+            return dpnp_partition(x1_desc, kth, axis, kind, order).get_pyobj()
 
     return call_origin(numpy.partition, x1, kth, axis, kind, order)
 
@@ -160,7 +160,7 @@ def searchsorted(x1, x2, side='left', sorter=None):
         elif x1_desc.size < 2:
             pass
         else:
-            return dpnp_searchsorted(x1_desc, x2_desc, side=side)
+            return dpnp_searchsorted(x1_desc, x2_desc, side=side).get_pyobj()
 
     return call_origin(numpy.searchsorted, x1, x2, side=side, sorter=sorter)
 

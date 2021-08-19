@@ -44,7 +44,6 @@ import numpy
 
 
 from dpnp.dpnp_algo import *
-from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 import dpnp
 

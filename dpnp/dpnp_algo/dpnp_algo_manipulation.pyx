@@ -67,6 +67,7 @@ cpdef utils.dpnp_descriptor dpnp_atleast_2d(utils.dpnp_descriptor arr):
 
 cpdef utils.dpnp_descriptor dpnp_atleast_3d(utils.dpnp_descriptor arr):
     # it looks like it should be dpnp.copy + dpnp.reshape
+    cdef utils.dpnp_descriptor result
     cdef size_t arr_ndim = arr.ndim
     cdef shape_type_c arr_shape = arr.shape
     cdef long arr_size = arr.size
