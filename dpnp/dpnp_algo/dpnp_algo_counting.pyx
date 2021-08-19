@@ -39,14 +39,14 @@ __all__ += [
 ]
 
 
-cpdef dparray dpnp_count_nonzero(dparray in_array1):
-    cdef dparray result = dparray((1,), dtype=numpy.int64)
+cpdef utils.dpnp_descriptor dpnp_count_nonzero(utils.dpnp_descriptor in_array1):
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py((1,), dpnp.int64, None)
 
     count = 0
     for i in range(in_array1.size):
-        if in_array1[i] != 0:
+        if in_array1.get_pyobj()[i] != 0:
             count += 1
 
-    result[0] = count
+    result.get_pyobj()[0] = count
 
     return result

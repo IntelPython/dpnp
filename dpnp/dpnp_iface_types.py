@@ -41,6 +41,7 @@ __all__ = [
     "bool_",
     "complex128",
     "complex64",
+    "default_float_type",
     "dtype",
     "float",
     "float16",
@@ -51,6 +52,7 @@ __all__ = [
     "int64",
     "integer",
     "isscalar",
+    "is_type_supported",
     "longcomplex",
     "nan",
     "newaxis",
@@ -72,6 +74,8 @@ integer = numpy.integer
 int = numpy.int
 longcomplex = numpy.longcomplex
 
+def default_float_type():
+    return float64
 
 def isscalar(obj):
     """
@@ -86,3 +90,14 @@ def isscalar(obj):
 nan = numpy.nan
 newaxis = None
 void = numpy.void
+
+
+def is_type_supported(obj_type):
+    """
+    Return True if type is supported by DPNP python level.
+    """
+
+    if obj_type == float64 or obj_type == float32 or obj_type == int64 or obj_type == int32:
+        return True
+
+    return False

@@ -118,9 +118,9 @@ def choose(x1, choices, out=None, mode='raise'):
                     if not val:
                         pass
                     else:
-                        return dpnp_choose(x1, choices)
+                        return dpnp_choose(x1, choices).get_pyobj()
         else:
-            return dpnp_choose(x1, choices)
+            return dpnp_choose(x1, choices).get_pyobj()
 
     return call_origin(numpy.choose, x1, choices, out, mode)
 
@@ -241,7 +241,7 @@ def diagonal(x1, offset=0, axis1=0, axis2=1):
         elif axis2 != 1:
             pass
         else:
-            return dpnp_diagonal(x1_desc, offset)
+            return dpnp_diagonal(x1_desc, offset).get_pyobj()
 
     return call_origin(numpy.diagonal, x1, offset, axis1, axis2)
 
@@ -345,7 +345,7 @@ def nonzero(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_nonzero(x1)
+        return dpnp_nonzero(x1_desc)
 
     return call_origin(numpy.nonzero, x1)
 
@@ -507,7 +507,7 @@ def take(x1, indices, axis=None, out=None, mode='raise'):
         elif mode != 'raise':
             pass
         else:
-            return dpnp_take(x1_desc, indices_desc)
+            return dpnp_take(x1_desc, indices_desc).get_pyobj()
 
     return call_origin(numpy.take, x1, indices, axis, out, mode)
 

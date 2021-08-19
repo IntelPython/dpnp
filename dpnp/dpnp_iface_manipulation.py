@@ -56,6 +56,7 @@ __all__ = [
     "atleast_1d",
     "atleast_2d",
     "atleast_3d",
+    "concatenate",
     "copyto",
     "expand_dims",
     "hstack",
@@ -67,6 +68,7 @@ __all__ = [
     "stack",
     "swapaxes",
     "transpose",
+    "unique",
     "vstack"
 ]
 
@@ -177,6 +179,43 @@ def atleast_3d(*arys):
     return call_origin(numpy.atleast_3d, *arys)
 
 
+def concatenate(arrs, axis=0, out=None, dtype=None, casting="same_kind"):
+    """
+    Join a sequence of arrays along an existing axis.
+
+    For full documentation refer to :obj:`numpy.concatenate`.
+
+    Examples
+    --------
+    >>> import dpnp
+    >>> a = dpnp.array([[1, 2], [3, 4]])
+    >>> b = dpnp.array([[5, 6]])
+    >>> res = dpnp.concatenate((a, b), axis=0)
+    >>> print(res)
+    [[1 2]
+     [3 4]
+     [5 6]]
+    >>> res = dpnp.concatenate((a, b.T), axis=1)
+    >>> print(res)
+    [[1 2 5]
+     [3 4 6]]
+    >>> res = dpnp.concatenate((a, b), axis=None)
+    >>> print(res)
+    [1 2 3 4 5 6]
+
+    """
+
+    # TODO:
+    # `call_origin` cannot convert sequence of dparray to sequence of
+    # ndarrays
+    arrs_new = []
+    for arr in arrs:
+        arrx = dpnp.asnumpy(arr) if isinstance(arr, dparray) else arr
+        arrs_new.append(arrx)
+
+    return call_origin(numpy.concatenate, arrs_new, axis=axis, out=out, dtype=dtype, casting=casting)
+
+
 def copyto(dst, src, casting='same_kind', where=True):
     """
     Copies values from one array to another, broadcasting as necessary.
@@ -277,7 +316,7 @@ def expand_dims(x1, axis):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_expand_dims(x1, axis)
+        return dpnp_expand_dims(x1_desc, axis).get_pyobj()
 
     return call_origin(numpy.expand_dims, x1, axis)
 
@@ -290,7 +329,15 @@ def hstack(tup):
 
     """
 
-    return call_origin(numpy.hstack, tup)
+    # TODO:
+    # `call_origin` cannot convert sequence of dparray to sequence of
+    # nparrays
+    tup_new = []
+    for tp in tup:
+        tpx = dpnp.asnumpy(tp) if isinstance(tp, dparray) else tp
+        tup_new.append(tpx)
+
+    return call_origin(numpy.hstack, tup_new)
 
 
 def moveaxis(x1, source, destination):
@@ -372,7 +419,7 @@ def ravel(x1, order='C'):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_flatten(x1)
+        return dpnp_flatten(x1_desc).get_pyobj()
 
     return call_origin(numpy.ravel, x1, order=order)
 
@@ -413,7 +460,7 @@ def repeat(x1, repeats, axis=None):
             pass
         else:
             repeat_val = repeats if dpnp.isscalar(repeats) else repeats[0]
-            return dpnp_repeat(x1_desc, repeat_val, axis)
+            return dpnp_repeat(x1_desc, repeat_val, axis).get_pyobj()
 
     return call_origin(numpy.repeat, x1, repeats, axis)
 
@@ -502,7 +549,7 @@ def squeeze(x1, axis=None):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_squeeze(x1, axis)
+        return dpnp_squeeze(x1_desc, axis).get_pyobj()
 
     return call_origin(numpy.squeeze, x1, axis)
 
@@ -604,11 +651,30 @@ def transpose(x1, axes=None):
                 """
                 axes = None
 
-        result = dpnp_transpose(x1_desc, axes)
+        result = dpnp_transpose(x1_desc, axes).get_pyobj()
 
         return result
 
     return call_origin(numpy.transpose, x1, axes=axes)
+
+
+def unique(x1, **kwargs):
+    """
+    Find the unique elements of an array.
+
+    For full documentation refer to :obj:`numpy.unique`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 1, 2, 2, 3, 3])
+    >>> res = np.unique(x)
+    >>> print(res)
+    [1, 2, 3]
+
+    """
+
+    return call_origin(numpy.unique, x1, **kwargs)
 
 
 def vstack(tup):
@@ -619,4 +685,12 @@ def vstack(tup):
 
     """
 
-    return call_origin(numpy.vstack, tup)
+    # TODO:
+    # `call_origin` cannot convert sequence of dparray to sequence of
+    # nparray
+    tup_new = []
+    for tp in tup:
+        tpx = dpnp.asnumpy(tp) if isinstance(tp, dparray) else tp
+        tup_new.append(tpx)
+
+    return call_origin(numpy.vstack, tup_new)

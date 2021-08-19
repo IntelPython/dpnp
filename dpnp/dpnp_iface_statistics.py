@@ -43,7 +43,6 @@ it contains:
 import numpy
 
 from dpnp.dpnp_algo import *
-from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 import dpnp
 
@@ -52,8 +51,10 @@ __all__ = [
     'amax',
     'amin',
     'average',
+    'bincount',
     'correlate',
     'cov',
+    'histogram',
     'max',
     'mean',
     'median',
@@ -170,6 +171,28 @@ def average(x1, axis=None, weights=None, returned=False):
     return call_origin(numpy.average, x1, axis, weights, returned)
 
 
+def bincount(x1, weights=None, minlength=0):
+    """
+    Count number of occurrences of each value in array of non-negative ints.
+
+    For full documentation refer to :obj:`numpy.bincount`.
+
+    See Also
+    --------
+    :obj:`dpnp.unique` : Find the unique elements of an array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> res = np.bincount(np.arange(5))
+    >>> print(res)
+    [1, 1, 1, 1, 1]
+
+    """
+
+    return call_origin(numpy.bincount, x1, weights=weights, minlength=minlength)
+
+
 def correlate(x1, x2, mode='valid'):
     """
     Cross-correlation of two 1-dimensional sequences.
@@ -268,9 +291,40 @@ def cov(x1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=
         elif aweights is not None:
             pass
         else:
-            return dpnp_cov(x1)
+            if x1_desc.dtype != dpnp.float64:
+                x1_double_container = x1.astype(dpnp.float64)
+                x1_desc = dpnp.get_dpnp_descriptor(x1_double_container)
+
+            return dpnp_cov(x1_desc).get_pyobj()
 
     return call_origin(numpy.cov, x1, y, rowvar, bias, ddof, fweights, aweights)
+
+
+def histogram(a, bins=10, range=None, normed=None, weights=None, density=None):
+    """
+    Compute the histogram of a dataset.
+    For full documentation refer to :obj:`numpy.histogram`.
+    Examples
+    --------
+    >>> import dpnp
+    >>> dpnp.histogram([1, 2, 1], bins=[0, 1, 2, 3])
+    (array([0, 2, 1]), array([0, 1, 2, 3]))
+    >>> dpnp.histogram(dpnp.arange(4), bins=dpnp.arange(5), density=True)
+    (array([0.25, 0.25, 0.25, 0.25]), array([0, 1, 2, 3, 4]))
+    >>> dpnp.histogram([[1, 2, 1], [1, 0, 1]], bins=[0,1,2,3])
+    (array([1, 4, 1]), array([0, 1, 2, 3]))
+    >>> a = dpnp.arange(5)
+    >>> hist, bin_edges = dpnp.histogram(a, density=True)
+    >>> hist
+    array([0.5, 0. , 0.5, 0. , 0. , 0.5, 0. , 0.5, 0. , 0.5])
+    >>> hist.sum()
+    2.4999999999999996
+    >>> res = dpnp.sum(hist * dpnp.diff(bin_edges))
+    >>> print(res)
+    1.0
+    """
+
+    return call_origin(numpy.histogram, a=a, bins=bins, range=range, normed=normed, weights=weights, density=density)
 
 
 def max(x1, axis=None, out=None, keepdims=False, initial=None, where=True):
@@ -299,7 +353,7 @@ def max(x1, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        # Negative values in 'shape' are not allowed in dparray
+        # Negative values in 'shape' are not allowed in input array
         # 306-322 check on negative and duplicate axis
         isaxis = True
         if axis is not None:
@@ -378,7 +432,7 @@ def mean(x1, axis=None, **kwargs):
         if x1_desc.size == 0:
             pass
         else:
-            result_obj = dpnp_mean(x1, axis=axis)
+            result_obj = dpnp_mean(x1_desc, axis)
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
@@ -428,7 +482,7 @@ def median(x1, axis=None, out=None, overwrite_input=False, keepdims=False):
         elif keepdims:
             pass
         else:
-            result_obj = dpnp_median(x1_desc)
+            result_obj = dpnp_median(x1_desc).get_pyobj()
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
@@ -471,7 +525,7 @@ def min(x1, axis=None, out=None, keepdims=False, initial=None, where=True):
         elif where is not True:
             pass
         else:
-            result_obj = dpnp_min(x1, axis=axis)
+            result_obj = dpnp_min(x1_desc, axis).get_pyobj()
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
@@ -497,7 +551,9 @@ def nanvar(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        if axis is not None:
+        if x1.size == 0:
+            pass
+        elif axis is not None:
             pass
         elif dtype is not None:
             pass

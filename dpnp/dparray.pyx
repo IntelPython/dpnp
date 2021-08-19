@@ -42,6 +42,7 @@ from dpnp.dpnp_iface import *
 # to avoid interference with Python internal functions
 from dpnp.dpnp_iface import sum as iface_sum
 from dpnp.dpnp_iface import prod as iface_prod
+from dpnp.dpnp_iface import get_dpnp_descriptor as iface_get_dpnp_descriptor
 
 from dpnp.dpnp_algo cimport *
 from dpnp.dpnp_iface_statistics import min, max  # TODO do the same as for iface_sum
@@ -514,7 +515,8 @@ cdef class dparray:
                 if order == 'F':
                     return self.transpose().reshape(self.size)
 
-                return dpnp_flatten(self)
+                self_desc = iface_get_dpnp_descriptor(self)
+                return dpnp_flatten(self_desc).get_pyobj()
 
         result = utils.dp2nd_array(self).flatten(order=order)
 
@@ -794,10 +796,13 @@ cdef class dparray:
             pass
         elif order is not 'K':
             pass
-        elif self.dtype == numpy.complex128:
+        elif self.dtype == numpy.complex128 or dtype == numpy.complex128:
+            pass
+        elif self.dtype == numpy.complex64 or dtype == numpy.complex64:
             pass
         else:
-            return dpnp_astype(self, dtype)
+            self_desc = iface_get_dpnp_descriptor(self)
+            return dpnp_astype(self_desc, dtype).get_pyobj()
 
         result = utils.dp2nd_array(self).astype(dtype=dtype, order=order, casting=casting, subok=subok, copy=copy)
 

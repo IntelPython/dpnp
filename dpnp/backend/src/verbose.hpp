@@ -23,48 +23,14 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-/**
- * Example 9.
- *
- * TODO explanation of the example
- *
- * Possible compile line:
- * . /opt/intel/oneapi/setvars.sh
- * g++ -g dpnp/backend/examples/example8.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example8
- *
- */
-#include <iostream>
+#pragma once
+#ifndef VERBOSE_H // Cython compatibility
+#define VERBOSE_H
 
-#include "dpnp_iface.hpp"
+#include <CL/sycl.hpp>
 
-int main(int, char**)
-{
-    const size_t size = 16;
+bool is_verbose_mode();
+void set_barrier_event(cl::sycl::queue queue, sycl::vector_class<sycl::event>& depends);
+void verbose_print(std::string header, cl::sycl::event first_event, cl::sycl::event last_event);
 
-    dpnp_queue_initialize_c(QueueOptions::GPU_SELECTOR);
-
-    double* array = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    long* result = (long*)dpnp_memory_alloc_c(size * sizeof(long));
-
-    std::cout << "array" << std::endl;
-    for (size_t i = 0; i < size; ++i)
-    {
-        array[i] = (double)(size - i) / 2;
-        std::cout << array[i] << ", ";
-    }
-    std::cout << std::endl;
-
-    dpnp_argsort_c<double, long>(array, result, size);
-
-    std::cout << "array with 'sorted' indeces" << std::endl;
-    for (size_t i = 0; i < size; ++i)
-    {
-        std::cout << result[i] << ", ";
-    }
-    std::cout << std::endl;
-
-    dpnp_memory_free_c(result);
-    dpnp_memory_free_c(array);
-
-    return 0;
-}
+#endif // VERBOSE_H

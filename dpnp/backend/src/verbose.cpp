@@ -23,48 +23,46 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-/**
- * Example 9.
- *
- * TODO explanation of the example
- *
- * Possible compile line:
- * . /opt/intel/oneapi/setvars.sh
- * g++ -g dpnp/backend/examples/example8.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example8
- *
- */
+#include "verbose.hpp"
 #include <iostream>
 
-#include "dpnp_iface.hpp"
+bool _is_verbose_mode = false;
+bool _is_verbose_mode_init = false;
 
-int main(int, char**)
+bool is_verbose_mode()
 {
-    const size_t size = 16;
-
-    dpnp_queue_initialize_c(QueueOptions::GPU_SELECTOR);
-
-    double* array = (double*)dpnp_memory_alloc_c(size * sizeof(double));
-    long* result = (long*)dpnp_memory_alloc_c(size * sizeof(long));
-
-    std::cout << "array" << std::endl;
-    for (size_t i = 0; i < size; ++i)
+    if (!_is_verbose_mode_init)
     {
-        array[i] = (double)(size - i) / 2;
-        std::cout << array[i] << ", ";
+        _is_verbose_mode = false;
+        const char* env_var = std::getenv("DPNP_VERBOSE");
+        if (env_var and env_var == std::string("1"))
+        {
+            _is_verbose_mode = true;
+        }
+        _is_verbose_mode_init = true;
     }
-    std::cout << std::endl;
+    return _is_verbose_mode;
+}
 
-    dpnp_argsort_c<double, long>(array, result, size);
+class barrierKernelClass;
 
-    std::cout << "array with 'sorted' indeces" << std::endl;
-    for (size_t i = 0; i < size; ++i)
+void set_barrier_event(cl::sycl::queue queue, sycl::vector_class<sycl::event>& depends)
+{
+    if (is_verbose_mode())
     {
-        std::cout << result[i] << ", ";
+        cl::sycl::event barrier_event = queue.single_task<barrierKernelClass>(depends, [=] {});
+        depends.clear();
+        depends.push_back(barrier_event);
     }
-    std::cout << std::endl;
+}
 
-    dpnp_memory_free_c(result);
-    dpnp_memory_free_c(array);
-
-    return 0;
+void verbose_print(std::string header, cl::sycl::event first_event, cl::sycl::event last_event)
+{
+    if (is_verbose_mode())
+    {
+        auto first_event_end = first_event.get_profiling_info<sycl::info::event_profiling::command_end>();
+        auto last_event_end = last_event.get_profiling_info<sycl::info::event_profiling::command_end>();
+        std::cout << "DPNP_VERBOSE " << header << " Time: " << (last_event_end - first_event_end) / 1.0e9 << " s"
+                  << std::endl;
+    }
 }

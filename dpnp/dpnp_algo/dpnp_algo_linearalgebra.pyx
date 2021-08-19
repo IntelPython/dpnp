@@ -47,9 +47,9 @@ __all__ += [
 ctypedef void(*fptr_2in_1out_shapes_t)(void *, void * , void * , size_t * , size_t * , size_t * , size_t)
 
 
-cpdef dparray dpnp_dot(dpnp_descriptor in_array1, dpnp_descriptor in_array2):
+cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp_descriptor in_array2):
 
-    cdef dparray_shape_type shape1, shape2
+    cdef shape_type_c shape1, shape2
 
     shape1 = in_array1.shape
     shape2 = in_array2.shape
@@ -63,9 +63,7 @@ cpdef dparray dpnp_dot(dpnp_descriptor in_array1, dpnp_descriptor in_array2):
 
     # scalar
     if dim1 == 0 or dim2 == 0:
-        x1_desc = dpnp.get_dpnp_descriptor(in_array1)
-        x2_desc = dpnp.get_dpnp_descriptor(in_array2)
-        return dpnp_multiply(x1_desc, x2_desc)
+        return dpnp_multiply(in_array1, in_array2)
 
     cdef size_t size1 = 0
     cdef size_t size2 = 0
@@ -79,41 +77,50 @@ cpdef dparray dpnp_dot(dpnp_descriptor in_array1, dpnp_descriptor in_array2):
     if size1 != size2:
         utils.checker_throw_runtime_error("dpnp_dot", "input vectors must be of equal size")
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(in_array1.dtype)
     cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(in_array2.dtype)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DOT, param1_type, param2_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray((1,), dtype=result_type)
+    cdef shape_type_c result_shape = (1,)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
     # call FPTR function
-    func(result.get_data(), in_array1.get_data(), in_array1.size, shape1.data(), shape1.size(),
-         in_array2.get_data(), in_array2.size, shape2.data(), shape2.size(), NULL)
+    func(result.get_data(),
+         in_array1.get_data(),
+         in_array1.size,
+         shape1.data(),
+         shape1.size(),
+         in_array2.get_data(),
+         in_array2.size,
+         shape2.data(),
+         shape2.size(),
+         NULL)
 
     return result
 
 
-cpdef dparray dpnp_inner(dpnp_descriptor array1, dpnp_descriptor array2):
+cpdef utils.dpnp_descriptor dpnp_inner(dpnp_descriptor array1, dpnp_descriptor array2):
     result_type = numpy.promote_types(array1.dtype, array1.dtype)
 
     assert(len(array1.shape) == len(array2.shape))
 
-    cdef dparray_shape_type array1_no_last_axes = array1.shape[:-1]
-    cdef dparray_shape_type array2_no_last_axes = array2.shape[:-1]
+    cdef shape_type_c array1_no_last_axes = array1.shape[:-1]
+    cdef shape_type_c array2_no_last_axes = array2.shape[:-1]
 
-    cdef dparray_shape_type result_shape = array1_no_last_axes
+    cdef shape_type_c result_shape = array1_no_last_axes
     result_shape.insert(result_shape.end(), array2_no_last_axes.begin(), array2_no_last_axes.end())
 
-    cdef dparray result = dparray(result_shape, dtype=result_type)
+    # ceate result array with type given by FPTR data
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(result_shape, result_type, None)
 
     # calculate input arrays offsets
-    cdef dparray_shape_type array1_offsets = [1] * len(array1.shape)
-    cdef dparray_shape_type array2_offsets = [1] * len(array2.shape)
+    cdef shape_type_c array1_offsets = [1] * len(array1.shape)
+    cdef shape_type_c array2_offsets = [1] * len(array2.shape)
     cdef size_t acc1 = 1
     cdef size_t acc2 = 1
     for axis in range(len(array1.shape) - 1, -1, -1):
@@ -122,13 +129,13 @@ cpdef dparray dpnp_inner(dpnp_descriptor array1, dpnp_descriptor array2):
         acc1 *= array1.shape[axis]
         acc2 *= array2.shape[axis]
 
-    cdef dparray_shape_type result_shape_offsets = [1] * len(result.shape)
+    cdef shape_type_c result_shape_offsets = [1] * len(result.shape)
     acc = 1
     for i in range(len(result.shape) - 1, -1, -1):
         result_shape_offsets[i] = acc
         acc *= result.shape[i]
 
-    cdef dparray_shape_type xyz
+    cdef shape_type_c xyz
     cdef size_t array1_lin_index_base
     cdef size_t array2_lin_index_base
     cdef size_t axis2
@@ -151,44 +158,43 @@ cpdef dparray dpnp_inner(dpnp_descriptor array1, dpnp_descriptor array2):
             array2_lin_index_base += array2_offsets[axis] * xyz[axis2]
 
         # do inner product
-        result[idx1] = 0
+        result.get_pyobj()[idx1] = 0
         for idx2 in range(array1.shape[-1]):
-            result[idx1] += array1[array1_lin_index_base + idx2] * array2[array2_lin_index_base + idx2]
+            result.get_pyobj()[idx1] += array1.get_pyobj()[array1_lin_index_base + idx2] * array2.get_pyobj()[array2_lin_index_base + idx2]
 
     return result
 
 
-cpdef dparray dpnp_kron(dpnp_descriptor in_array1, dpnp_descriptor in_array2):
+cpdef utils.dpnp_descriptor dpnp_kron(dpnp_descriptor in_array1, dpnp_descriptor in_array2):
     cdef size_t ndim = max(in_array1.ndim, in_array2.ndim)
 
-    cdef dparray_shape_type in_array1_shape
+    cdef shape_type_c in_array1_shape
     if in_array1.ndim < ndim:
         for i in range(ndim - in_array1.ndim):
             in_array1_shape.push_back(1)
     for i in range(in_array1.ndim):
         in_array1_shape.push_back(in_array1.shape[i])
 
-    cdef dparray_shape_type in_array2_shape
+    cdef shape_type_c in_array2_shape
     if in_array2.ndim < ndim:
         for i in range(ndim - in_array2.ndim):
             in_array2_shape.push_back(1)
     for i in range(in_array2.ndim):
         in_array2_shape.push_back(in_array2.shape[i])
 
-    cdef dparray_shape_type result_shape
+    cdef shape_type_c result_shape
     for i in range(ndim):
         result_shape.push_back(in_array1_shape[i] * in_array2_shape[i])
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(in_array1.dtype)
     cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(in_array2.dtype)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_KRON, param1_type, param2_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(result_shape, dtype=result_type)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_2in_1out_shapes_t func = <fptr_2in_1out_shapes_t > kernel_data.ptr
     # call FPTR function
@@ -197,12 +203,12 @@ cpdef dparray dpnp_kron(dpnp_descriptor in_array1, dpnp_descriptor in_array2):
     return result
 
 
-cpdef dparray dpnp_matmul(dpnp_descriptor in_array1, dpnp_descriptor in_array2, dparray out=None):
+cpdef utils.dpnp_descriptor dpnp_matmul(utils.dpnp_descriptor in_array1, utils.dpnp_descriptor in_array2, utils.dpnp_descriptor out=None):
 
-    cdef dparray_shape_type shape_result
+    cdef shape_type_c shape_result
 
-    cdef dparray_shape_type shape1 = in_array1.shape
-    cdef dparray_shape_type shape2 = in_array2.shape
+    cdef shape_type_c shape1 = in_array1.shape
+    cdef shape_type_c shape2 = in_array2.shape
 
     cdef size_t size_m = 0
     cdef size_t size_n = 0
@@ -251,26 +257,15 @@ cpdef dparray dpnp_matmul(dpnp_descriptor in_array1, dpnp_descriptor in_array2, 
         """
         shape_result = shape1[:-1] + shape2[1:]
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(in_array1.dtype)
     cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(in_array2.dtype)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MATMUL, param1_type, param2_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-
-    cdef dparray result
-
-    if out is not None:
-        if out.dtype != result_type:
-            utils.checker_throw_value_error('matmul', 'out.dtype', out.dtype, result_type)
-        if out.shape != shape_result:
-            utils.checker_throw_value_error('matmul', 'out.shape', out.shape, shape_result)
-        result = out
-    else:
-        result = dparray(shape_result, dtype=result_type)
-
+    # ceate result array with type given by FPTR data
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(shape_result, kernel_data.return_type, out)
     if result.size == 0:
         return result
 
@@ -281,14 +276,14 @@ cpdef dparray dpnp_matmul(dpnp_descriptor in_array1, dpnp_descriptor in_array2, 
     return result
 
 
-cpdef dparray dpnp_outer(dpnp_descriptor array1, dpnp_descriptor array2):
-    cdef dparray_shape_type result_shape = (array1.size, array2.size)
+cpdef utils.dpnp_descriptor dpnp_outer(utils.dpnp_descriptor array1, utils.dpnp_descriptor array2):
+    cdef shape_type_c result_shape = (array1.size, array2.size)
     result_type = numpy.promote_types(array1.dtype, array1.dtype)
 
-    cdef dparray result = dparray(result_shape, dtype=result_type)
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(result_shape, result_type, None)
 
     for idx1 in range(array1.size):
         for idx2 in range(array2.size):
-            result[idx1 * array2.size + idx2] = array1[idx1] * array2[idx2]
+            result.get_pyobj()[idx1 * array2.size + idx2] = array1.get_pyobj()[idx1] * array2.get_pyobj()[idx2]
 
     return result

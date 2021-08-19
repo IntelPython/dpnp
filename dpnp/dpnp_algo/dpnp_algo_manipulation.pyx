@@ -65,7 +65,7 @@ cpdef dparray dpnp_atleast_2d(dparray arr):
 
 cpdef dparray dpnp_atleast_3d(dparray arr):
     cdef size_t arr_ndim = arr.ndim
-    cdef dparray_shape_type arr_shape = arr.shape
+    cdef shape_type_c arr_shape = arr.shape
     cdef long arr_size = arr.size
     if arr_ndim == 1:
         result = dparray((1, 1, arr_size), dtype=arr.dtype)
@@ -95,7 +95,7 @@ cpdef dpnp_copyto(utils.dpnp_descriptor dst, utils.dpnp_descriptor src, where=Tr
     func(dst.get_data(), src.get_data(), dst.size)
 
 
-cpdef dparray dpnp_expand_dims(dparray in_array, axis):
+cpdef utils.dpnp_descriptor dpnp_expand_dims(utils.dpnp_descriptor in_array, axis):
     axis_tuple = utils._object_to_tuple(axis)
     result_ndim = len(axis_tuple) + in_array.ndim
 
@@ -112,29 +112,28 @@ cpdef dparray dpnp_expand_dims(dparray in_array, axis):
     if len(axis_norm) > len(set(axis_norm)):
         utils.checker_throw_value_error("dpnp_expand_dims", "axis", axis, "no repeated axis")
 
-    shape_list = []
+    cdef shape_type_c shape_list
     axis_idx = 0
     for i in range(result_ndim):
         if i in axis_norm:
-            shape_list.append(1)
+            shape_list.push_back(1)
         else:
-            shape_list.append(in_array.shape[axis_idx])
+            shape_list.push_back(in_array.shape[axis_idx])
             axis_idx = axis_idx + 1
 
-    shape = utils._object_to_tuple(shape_list)
-    cdef dparray result = dpnp.copy(in_array).reshape(shape)
+    cdef utils.dpnp_descriptor result = dpnp.get_dpnp_descriptor(dpnp_copy(in_array).get_pyobj().reshape(shape_list))
 
     return result
 
 
-cpdef dparray dpnp_repeat(utils.dpnp_descriptor array1, repeats, axes=None):
+cpdef utils.dpnp_descriptor dpnp_repeat(utils.dpnp_descriptor array1, repeats, axes=None):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_REPEAT, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-    cdef long new_size = array1.size * repeats
-    cdef dparray result = dparray((new_size, ), dtype=array1.dtype)
+    # ceate result array with type given by FPTR data
+    cdef shape_type_c result_shape = (array1.size * repeats, )
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_dpnp_repeat_t func = <fptr_dpnp_repeat_t > kernel_data.ptr
     func(array1.get_data(), result.get_data(), repeats, array1.size)
@@ -142,12 +141,12 @@ cpdef dparray dpnp_repeat(utils.dpnp_descriptor array1, repeats, axes=None):
     return result
 
 
-cpdef dparray dpnp_transpose(utils.dpnp_descriptor array1, axes=None):
-    cdef dparray_shape_type input_shape = array1.shape
+cpdef utils.dpnp_descriptor dpnp_transpose(utils.dpnp_descriptor array1, axes=None):
+    cdef shape_type_c input_shape = array1.shape
     cdef size_t input_shape_size = array1.ndim
-    cdef dparray_shape_type result_shape = dparray_shape_type(input_shape_size, 1)
+    cdef shape_type_c result_shape = shape_type_c(input_shape_size, 1)
 
-    cdef dparray_shape_type permute_axes
+    cdef shape_type_c permute_axes
     if axes is None:
         """
         template to do transpose a tensor
@@ -174,9 +173,8 @@ cpdef dparray dpnp_transpose(utils.dpnp_descriptor array1, axes=None):
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRANSPOSE, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(result_shape, dtype=result_type)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_custom_elemwise_transpose_1in_1out_t func = <fptr_custom_elemwise_transpose_1in_1out_t > kernel_data.ptr
     # call FPTR function
@@ -186,12 +184,12 @@ cpdef dparray dpnp_transpose(utils.dpnp_descriptor array1, axes=None):
     return result
 
 
-cpdef dparray dpnp_squeeze(object in_array, axis):
-    shape_list = []
+cpdef utils.dpnp_descriptor dpnp_squeeze(utils.dpnp_descriptor in_array, axis):
+    cdef shape_type_c shape_list
     if axis is None:
         for i in range(in_array.ndim):
             if in_array.shape[i] != 1:
-                shape_list.append(in_array.shape[i])
+                shape_list.push_back(in_array.shape[i])
     else:
         axis_norm = utils._object_to_tuple(utils.normalize_axis(utils._object_to_tuple(axis), in_array.ndim))
         for i in range(in_array.ndim):
@@ -199,9 +197,8 @@ cpdef dparray dpnp_squeeze(object in_array, axis):
                 if in_array.shape[i] != 1:
                     utils.checker_throw_value_error("dpnp_squeeze", "axis", axis, "axis has size not equal to one")
             else:
-                shape_list.append(in_array.shape[i])
+                shape_list.push_back(in_array.shape[i])
 
-    shape = utils._object_to_tuple(shape_list)
-    cdef dparray result = dpnp.copy(in_array).reshape(shape)
+    cdef utils.dpnp_descriptor result = dpnp.get_dpnp_descriptor(dpnp_copy(in_array).get_pyobj().reshape(shape_list))
 
     return result

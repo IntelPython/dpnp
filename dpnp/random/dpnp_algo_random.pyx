@@ -34,10 +34,10 @@ and the rest of the library
 
 
 import dpnp.config as config
-
 from dpnp.dpnp_algo cimport *
-from dpnp.dparray cimport dparray
-from dpnp.dpnp_utils cimport *
+
+cimport dpnp.dpnp_utils as utils
+
 import numpy
 cimport numpy
 
@@ -82,62 +82,62 @@ __all__ = [
 ]
 
 
-ctypedef void(*fptr_dpnp_rng_beta_c_1out_t)(void * , const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_binomial_c_1out_t)(void * , const int, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_chisquare_c_1out_t)(void * , const int, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_exponential_c_1out_t)(void * , const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_f_c_1out_t)(void * , const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_gamma_c_1out_t)(void * , const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_geometric_c_1out_t)(void * , const float, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_gaussian_c_1out_t)(void * , const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_gumbel_c_1out_t)(void * , const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_hypergeometric_c_1out_t)(void * , const int, const int, const int, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_laplace_c_1out_t)(void * , const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_logistic_c_1out_t)(void * , const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_lognormal_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_beta_c_1out_t)(void *, const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_binomial_c_1out_t)(void *, const int, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_chisquare_c_1out_t)(void *, const int, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_exponential_c_1out_t)(void *, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_f_c_1out_t)(void *, const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_gamma_c_1out_t)(void *, const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_geometric_c_1out_t)(void *, const float, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_gaussian_c_1out_t)(void *, const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_gumbel_c_1out_t)(void *, const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_hypergeometric_c_1out_t)(void *, const int, const int, const int, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_laplace_c_1out_t)(void *, const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_logistic_c_1out_t)(void *, const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_lognormal_c_1out_t)(void *, const double, const double, const size_t) except +
 ctypedef void(*fptr_dpnp_rng_multinomial_c_1out_t)(void * result,
                                                    const int,
-                                                   const double * ,
+                                                   const double *,
                                                    const size_t,
                                                    const size_t) except +
-ctypedef void(*fptr_dpnp_rng_multivariate_normal_c_1out_t)(void * ,
+ctypedef void(*fptr_dpnp_rng_multivariate_normal_c_1out_t)(void *,
                                                            const int,
-                                                           const double * ,
+                                                           const double *,
                                                            const size_t,
-                                                           const double * ,
+                                                           const double *,
                                                            const size_t,
                                                            const size_t) except +
-ctypedef void(*fptr_dpnp_rng_negative_binomial_c_1out_t)(void * , const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_noncentral_chisquare_c_1out_t)(void * , const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_normal_c_1out_t)(void * , const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_pareto_c_1out_t)(void * , const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_poisson_c_1out_t)(void * , const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_power_c_1out_t)(void * , const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_rayleigh_c_1out_t)(void * , const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_shuffle_c_1out_t)(void * ,
+ctypedef void(*fptr_dpnp_rng_negative_binomial_c_1out_t)(void *, const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_noncentral_chisquare_c_1out_t)(void *, const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_normal_c_1out_t)(void *, const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_pareto_c_1out_t)(void *, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_poisson_c_1out_t)(void *, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_power_c_1out_t)(void *, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_rayleigh_c_1out_t)(void *, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_shuffle_c_1out_t)(void *,
                                                const size_t,
                                                const size_t,
                                                const size_t,
                                                const size_t) except +
 ctypedef void(*fptr_dpnp_rng_srand_c_1out_t)(const size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_cauchy_c_1out_t)(void * , const size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_exponential_c_1out_t)(void * , const size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_gamma_c_1out_t)(void * , const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_normal_c_1out_t)(void * , const size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_t_c_1out_t)(void * , const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_triangular_c_1out_t)(void * ,
+ctypedef void(*fptr_dpnp_rng_standard_cauchy_c_1out_t)(void *, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_standard_exponential_c_1out_t)(void *, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_standard_gamma_c_1out_t)(void *, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_standard_normal_c_1out_t)(void *, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_standard_t_c_1out_t)(void *, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_triangular_c_1out_t)(void *,
                                                   const double,
                                                   const double,
                                                   const double,
                                                   const size_t) except +
-ctypedef void(*fptr_dpnp_rng_uniform_c_1out_t)(void * , const long, const long, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_vonmises_c_1out_t)(void * , const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_wald_c_1out_t)(void *, const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_weibull_c_1out_t)(void * , const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_zipf_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_uniform_c_1out_t)(void *, const long, const long, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_vonmises_c_1out_t)(void *, const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_wald_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_weibull_c_1out_t)(void *, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_zipf_c_1out_t)(void *, const double, const size_t) except +
 
 
-cpdef dparray dpnp_rng_beta(double a, double b, size):
+cpdef utils.dpnp_descriptor dpnp_rng_beta(double a, double b, size):
     """
     Returns an array populated with samples from beta distribution.
     `dpnp_rng_beta` generates a matrix filled with random floats sampled from a
@@ -145,15 +145,15 @@ cpdef dparray dpnp_rng_beta(double a, double b, size):
 
     """
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_BETA, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(size, dtype=result_type)
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_dpnp_rng_beta_c_1out_t func = <fptr_dpnp_rng_beta_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -162,7 +162,7 @@ cpdef dparray dpnp_rng_beta(double a, double b, size):
     return result
 
 
-cpdef dparray dpnp_rng_binomial(int ntrial, double p, size):
+cpdef utils.dpnp_descriptor dpnp_rng_binomial(int ntrial, double p, size):
     """
     Returns an array populated with samples from binomial distribution.
     `dpnp_rng_binomial` generates a matrix filled with random floats sampled from a
@@ -172,20 +172,19 @@ cpdef dparray dpnp_rng_binomial(int ntrial, double p, size):
     """
 
     dtype = numpy.int32
-    cdef dparray result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_binomial_c_1out_t func
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
     kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_BINOMIAL, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    result = dparray(size, dtype=result_type)
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     func = <fptr_dpnp_rng_binomial_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -194,7 +193,7 @@ cpdef dparray dpnp_rng_binomial(int ntrial, double p, size):
     return result
 
 
-cpdef dparray dpnp_rng_chisquare(int df, size):
+cpdef utils.dpnp_descriptor dpnp_rng_chisquare(int df, size):
     """
     Returns an array populated with samples from chi-square distribution.
     `dpnp_rng_chisquare` generates a matrix filled with random floats sampled from a
@@ -202,15 +201,15 @@ cpdef dparray dpnp_rng_chisquare(int df, size):
 
     """
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_CHISQUARE, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(size, dtype=result_type)
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_dpnp_rng_chisquare_c_1out_t func = <fptr_dpnp_rng_chisquare_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -219,7 +218,7 @@ cpdef dparray dpnp_rng_chisquare(int df, size):
     return result
 
 
-cpdef dparray dpnp_rng_exponential(double beta, size):
+cpdef utils.dpnp_descriptor dpnp_rng_exponential(double beta, size):
     """
     Returns an array populated with samples from exponential distribution.
     `dpnp_rng_exponential` generates a matrix filled with random floats sampled from a
@@ -228,15 +227,15 @@ cpdef dparray dpnp_rng_exponential(double beta, size):
     """
 
     dtype = numpy.float64
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_EXPONENTIAL, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(size, dtype=dtype)
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_dpnp_rng_exponential_c_1out_t func = <fptr_dpnp_rng_exponential_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -245,7 +244,7 @@ cpdef dparray dpnp_rng_exponential(double beta, size):
     return result
 
 
-cpdef dparray dpnp_rng_f(double df_num, double df_den, size):
+cpdef utils.dpnp_descriptor dpnp_rng_f(double df_num, double df_den, size):
     """
     Returns an array populated with samples from F distribution.
     `dpnp_rng_f` generates a matrix filled with random floats sampled from a
@@ -253,15 +252,15 @@ cpdef dparray dpnp_rng_f(double df_num, double df_den, size):
     """
 
     dtype = numpy.float64
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_F, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(size, dtype=dtype)
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_dpnp_rng_f_c_1out_t func = <fptr_dpnp_rng_f_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -270,7 +269,7 @@ cpdef dparray dpnp_rng_f(double df_num, double df_den, size):
     return result
 
 
-cpdef dparray dpnp_rng_gamma(double shape, double scale, size):
+cpdef utils.dpnp_descriptor dpnp_rng_gamma(double shape, double scale, size):
     """
     Returns an array populated with samples from gamma distribution.
     `dpnp_rng_gamma` generates a matrix filled with random floats sampled from a
@@ -279,7 +278,6 @@ cpdef dparray dpnp_rng_gamma(double shape, double scale, size):
     """
 
     dtype = numpy.float64
-    cdef dparray result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_gamma_c_1out_t func
@@ -287,8 +285,10 @@ cpdef dparray dpnp_rng_gamma(double shape, double scale, size):
     param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GAMMA, param1_type, param1_type)
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-    result = dparray(size, dtype=result_type)
+
+    # ceate result array with type given by FPTR data
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     func = <fptr_dpnp_rng_gamma_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -297,7 +297,7 @@ cpdef dparray dpnp_rng_gamma(double shape, double scale, size):
     return result
 
 
-cpdef dparray dpnp_rng_geometric(float p, size):
+cpdef utils.dpnp_descriptor dpnp_rng_geometric(float p, size):
     """
     Returns an array populated with samples from geometric distribution.
     `dpnp_rng_geometric` generates a matrix filled with random floats sampled from a
@@ -307,20 +307,19 @@ cpdef dparray dpnp_rng_geometric(float p, size):
     """
 
     dtype = numpy.int32
-    cdef dparray result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_geometric_c_1out_t func
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
     kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GEOMETRIC, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    result = dparray(size, dtype=result_type)
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     func = <fptr_dpnp_rng_geometric_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -329,7 +328,7 @@ cpdef dparray dpnp_rng_geometric(float p, size):
     return result
 
 
-cpdef dparray dpnp_rng_gumbel(double loc, double scale, size):
+cpdef utils.dpnp_descriptor dpnp_rng_gumbel(double loc, double scale, size):
     """
     Returns an array populated with samples from gumbel distribution.
     `dpnp_rng_gumbel` generates a matrix filled with random floats sampled from a
@@ -338,15 +337,16 @@ cpdef dparray dpnp_rng_gumbel(double loc, double scale, size):
     """
 
     dtype = numpy.float64
-    cdef dparray result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_gumbel_c_1out_t func
 
     param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
     kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GUMBEL, param1_type, param1_type)
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-    result = dparray(size, dtype=result_type)
+
+    # ceate result array with type given by FPTR data
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     func = <fptr_dpnp_rng_gumbel_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -355,7 +355,7 @@ cpdef dparray dpnp_rng_gumbel(double loc, double scale, size):
     return result
 
 
-cpdef dparray dpnp_rng_hypergeometric(int l, int s, int m, size):
+cpdef utils.dpnp_descriptor dpnp_rng_hypergeometric(int l, int s, int m, size):
     """
     Returns an array populated with samples from hypergeometric distribution.
     `dpnp_rng_hypergeometric` generates a matrix filled with random floats sampled from a
@@ -364,20 +364,19 @@ cpdef dparray dpnp_rng_hypergeometric(int l, int s, int m, size):
     """
 
     dtype = numpy.int32
-    cdef dparray result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_hypergeometric_c_1out_t func
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
     kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_HYPERGEOMETRIC, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    result = dparray(size, dtype=result_type)
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     func = <fptr_dpnp_rng_hypergeometric_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -386,7 +385,7 @@ cpdef dparray dpnp_rng_hypergeometric(int l, int s, int m, size):
     return result
 
 
-cpdef dparray dpnp_rng_laplace(double loc, double scale, size):
+cpdef utils.dpnp_descriptor dpnp_rng_laplace(double loc, double scale, size):
     """
     Returns an array populated with samples from laplace distribution.
     `dpnp_rng_laplace` generates a matrix filled with random floats sampled from a
@@ -395,20 +394,19 @@ cpdef dparray dpnp_rng_laplace(double loc, double scale, size):
     """
 
     dtype = numpy.float64
-    cdef dparray result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_laplace_c_1out_t func
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
     kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_LAPLACE, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    result = dparray(size, dtype=result_type)
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     func = <fptr_dpnp_rng_laplace_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -417,7 +415,7 @@ cpdef dparray dpnp_rng_laplace(double loc, double scale, size):
     return result
 
 
-cpdef dparray dpnp_rng_logistic(double loc, double scale, size):
+cpdef utils.dpnp_descriptor dpnp_rng_logistic(double loc, double scale, size):
     """
     Returns an array populated with samples from logistic distribution.
     `dpnp_rng_logistic` generates a matrix filled with random floats sampled from a
@@ -425,15 +423,15 @@ cpdef dparray dpnp_rng_logistic(double loc, double scale, size):
 
     """
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_LOGISTIC, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(size, dtype=result_type)
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_dpnp_rng_logistic_c_1out_t func = < fptr_dpnp_rng_logistic_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -442,7 +440,7 @@ cpdef dparray dpnp_rng_logistic(double loc, double scale, size):
     return result
 
 
-cpdef dparray dpnp_rng_lognormal(double mean, double stddev, size):
+cpdef utils.dpnp_descriptor dpnp_rng_lognormal(double mean, double stddev, size):
     """
     Returns an array populated with samples from lognormal distribution.
     `dpnp_rng_lognormal` generates a matrix filled with random floats sampled from a
@@ -451,20 +449,19 @@ cpdef dparray dpnp_rng_lognormal(double mean, double stddev, size):
     """
 
     dtype = numpy.float64
-    cdef dparray result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_lognormal_c_1out_t func
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
     kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_LOGNORMAL, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    result = dparray(size, dtype=result_type)
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     func = <fptr_dpnp_rng_lognormal_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -473,7 +470,7 @@ cpdef dparray dpnp_rng_lognormal(double mean, double stddev, size):
     return result
 
 
-cpdef dparray dpnp_rng_multinomial(int ntrial, p, size):
+cpdef utils.dpnp_descriptor dpnp_rng_multinomial(int ntrial, p, size):
     """
     Returns an array populated with samples from multinomial distribution.
 
@@ -484,7 +481,6 @@ cpdef dparray dpnp_rng_multinomial(int ntrial, p, size):
     """
 
     dtype = numpy.int32
-    cdef dparray result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_multinomial_c_1out_t func
@@ -493,15 +489,15 @@ cpdef dparray dpnp_rng_multinomial(int ntrial, p, size):
     cdef double * p_vector = <double * > numpy.PyArray_DATA(p)
     cdef size_t p_vector_size = len(p)
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
     kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_MULTINOMIAL, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    result = dparray(size, dtype=result_type)
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     func = <fptr_dpnp_rng_multinomial_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -510,7 +506,7 @@ cpdef dparray dpnp_rng_multinomial(int ntrial, p, size):
     return result
 
 
-cpdef dparray dpnp_rng_multivariate_normal(numpy.ndarray mean, numpy.ndarray cov, size):
+cpdef utils.dpnp_descriptor dpnp_rng_multivariate_normal(numpy.ndarray mean, numpy.ndarray cov, size):
     """
     Returns an array populated with samples from multivariate normal distribution.
     `dpnp_rng_multivariate_normal` generates a matrix filled with random floats sampled from a
@@ -519,7 +515,6 @@ cpdef dparray dpnp_rng_multivariate_normal(numpy.ndarray mean, numpy.ndarray cov
     """
 
     dtype = numpy.float64
-    cdef dparray result
     cdef int dimen
     cdef double * mean_vector
     cdef double * cov_vector
@@ -537,15 +532,15 @@ cpdef dparray dpnp_rng_multivariate_normal(numpy.ndarray mean, numpy.ndarray cov
     mean_vector_size = mean.size
     cov_vector_size = cov.size
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
     kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_MULTIVARIATE_NORMAL, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    result = dparray(size, dtype=result_type)
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     dimen = len(mean)
 
@@ -556,7 +551,7 @@ cpdef dparray dpnp_rng_multivariate_normal(numpy.ndarray mean, numpy.ndarray cov
     return result
 
 
-cpdef dparray dpnp_rng_negative_binomial(double a, double p, size):
+cpdef utils.dpnp_descriptor dpnp_rng_negative_binomial(double a, double p, size):
     """
     Returns an array populated with samples from negative binomial distribution.
 
@@ -567,28 +562,27 @@ cpdef dparray dpnp_rng_negative_binomial(double a, double p, size):
     """
 
     dtype = numpy.int32
-    cdef dparray result
+    cdef utils.dpnp_descriptor result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_negative_binomial_c_1out_t func
+    cdef shape_type_c result_shape
 
     if p == 0.0:
         filled_val = numpy.iinfo(dtype).min
-        result = dparray(size, dtype=dtype)
-        result.fill(filled_val)
+        return dpnp_full(size, filled_val, dtype)
     elif p == 1.0:
-        result = dparray(size, dtype=dtype)
-        result.fill(0)
+        return dpnp_full(size, 0, dtype)
     else:
-        # convert string type names (dparray.dtype) to C enum DPNPFuncType
+        # convert string type names (array.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_NEGATIVE_BINOMIAL, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
         # ceate result array with type given by FPTR data
-        result = dparray(size, dtype=result_type)
+        result_shape = utils._object_to_tuple(size)
+        result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
         func = <fptr_dpnp_rng_negative_binomial_c_1out_t > kernel_data.ptr
         # call FPTR function
@@ -597,7 +591,7 @@ cpdef dparray dpnp_rng_negative_binomial(double a, double p, size):
     return result
 
 
-cpdef dparray dpnp_rng_noncentral_chisquare(double df, double nonc, size):
+cpdef utils.dpnp_descriptor dpnp_rng_noncentral_chisquare(double df, double nonc, size):
     """
     Returns an array populated with samples from noncentral chisquare distribution.
     `dpnp_rng_noncentral_chisquare` generates a matrix filled with random floats sampled from a
@@ -605,15 +599,15 @@ cpdef dparray dpnp_rng_noncentral_chisquare(double df, double nonc, size):
 
     """
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_NONCENTRAL_CHISQUARE, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(size, dtype=result_type)
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_dpnp_rng_noncentral_chisquare_c_1out_t func = < fptr_dpnp_rng_noncentral_chisquare_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -622,7 +616,7 @@ cpdef dparray dpnp_rng_noncentral_chisquare(double df, double nonc, size):
     return result
 
 
-cpdef dparray dpnp_rng_normal(double loc, double scale, size):
+cpdef utils.dpnp_descriptor dpnp_rng_normal(double loc, double scale, size):
     """
     Returns an array populated with samples from normal distribution.
     `dpnp_rng_normal` generates a matrix filled with random floats sampled from a
@@ -631,24 +625,24 @@ cpdef dparray dpnp_rng_normal(double loc, double scale, size):
     """
 
     dtype = numpy.float64
-    cdef dparray result
+    cdef shape_type_c result_shape
+    cdef utils.dpnp_descriptor result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_normal_c_1out_t func
 
     if scale == 0.0:
-        result = dparray(size, dtype=dtype)
-        result.fill(loc)
+        return dpnp_full(size, loc, dtype)
     else:
-        # convert string type names (dparray.dtype) to C enum DPNPFuncType
+        # convert string type names (array.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_NORMAL, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
         # ceate result array with type given by FPTR data
-        result = dparray(size, dtype=result_type)
+        result_shape = utils._object_to_tuple(size)
+        result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
         func = <fptr_dpnp_rng_normal_c_1out_t > kernel_data.ptr
         # call FPTR function
@@ -657,7 +651,7 @@ cpdef dparray dpnp_rng_normal(double loc, double scale, size):
     return result
 
 
-cpdef dparray dpnp_rng_pareto(double alpha, size):
+cpdef utils.dpnp_descriptor dpnp_rng_pareto(double alpha, size):
     """
     Returns an array populated with samples from Pareto distribution.
     `dpnp_rng_pareto` generates a matrix filled with random floats sampled from a
@@ -666,15 +660,15 @@ cpdef dparray dpnp_rng_pareto(double alpha, size):
     """
 
     dtype = numpy.float64
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_PARETO, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(size, dtype=dtype)
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_dpnp_rng_pareto_c_1out_t func = <fptr_dpnp_rng_pareto_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -683,7 +677,7 @@ cpdef dparray dpnp_rng_pareto(double alpha, size):
     return result
 
 
-cpdef dparray dpnp_rng_poisson(double lam, size):
+cpdef utils.dpnp_descriptor dpnp_rng_poisson(double lam, size):
     """
     Returns an array populated with samples from Poisson distribution.
     `dpnp_rng_poisson` generates a matrix filled with random floats sampled from a
@@ -693,24 +687,24 @@ cpdef dparray dpnp_rng_poisson(double lam, size):
     """
 
     dtype = numpy.int32
-    cdef dparray result
+    cdef shape_type_c result_shape
+    cdef utils.dpnp_descriptor result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_poisson_c_1out_t func
 
     if lam == 0:
-        result = dparray(size, dtype=dtype)
-        result.fill(0)
+        return dpnp_full(size, 0, dtype)
     else:
-        # convert string type names (dparray.dtype) to C enum DPNPFuncType
+        # convert string type names (array.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_POISSON, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
         # ceate result array with type given by FPTR data
-        result = dparray(size, dtype=result_type)
+        result_shape = utils._object_to_tuple(size)
+        result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
         func = <fptr_dpnp_rng_poisson_c_1out_t > kernel_data.ptr
         # call FPTR function
@@ -719,7 +713,7 @@ cpdef dparray dpnp_rng_poisson(double lam, size):
     return result
 
 
-cpdef dparray dpnp_rng_power(double alpha, size):
+cpdef utils.dpnp_descriptor dpnp_rng_power(double alpha, size):
     """
     Returns an array populated with samples from power distribution.
     `dpnp_rng_power` generates a matrix filled with random floats sampled from a
@@ -727,15 +721,15 @@ cpdef dparray dpnp_rng_power(double alpha, size):
     """
 
     dtype = numpy.float64
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_POWER, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(size, dtype=dtype)
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_dpnp_rng_power_c_1out_t func = <fptr_dpnp_rng_power_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -744,7 +738,7 @@ cpdef dparray dpnp_rng_power(double alpha, size):
     return result
 
 
-cpdef dparray dpnp_rng_randn(dims):
+cpdef utils.dpnp_descriptor dpnp_rng_randn(dims):
     """
     Returns an array populated with samples from standard normal distribution.
     `dpnp_rng_randn` generates a matrix filled with random floats sampled from a
@@ -754,15 +748,15 @@ cpdef dparray dpnp_rng_randn(dims):
     cdef double mean = 0.0
     cdef double stddev = 1.0
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_GAUSSIAN, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(dims, dtype=result_type)
+    cdef shape_type_c result_shape = utils._object_to_tuple(dims)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_dpnp_rng_gaussian_c_1out_t func = <fptr_dpnp_rng_gaussian_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -771,7 +765,7 @@ cpdef dparray dpnp_rng_randn(dims):
     return result
 
 
-cpdef dparray dpnp_rng_random(dims):
+cpdef utils.dpnp_descriptor dpnp_rng_random(dims):
     """
     Create an array of the given shape and populate it
     with random samples from a uniform distribution over [0, 1).
@@ -780,15 +774,15 @@ cpdef dparray dpnp_rng_random(dims):
     cdef long low = 0
     cdef long high = 1
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_UNIFORM, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(dims, dtype=result_type)
+    cdef shape_type_c result_shape = utils._object_to_tuple(dims)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_dpnp_rng_uniform_c_1out_t func = <fptr_dpnp_rng_uniform_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -797,7 +791,7 @@ cpdef dparray dpnp_rng_random(dims):
     return result
 
 
-cpdef dparray dpnp_rng_rayleigh(double scale, size):
+cpdef utils.dpnp_descriptor dpnp_rng_rayleigh(double scale, size):
     """
     Returns an array populated with samples from Rayleigh distribution.
     `dpnp_rayleigh` generates a matrix filled with random floats sampled from a
@@ -806,24 +800,24 @@ cpdef dparray dpnp_rng_rayleigh(double scale, size):
     """
 
     dtype = numpy.float64
-    cdef dparray result
+    cdef shape_type_c result_shape
+    cdef utils.dpnp_descriptor result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_rayleigh_c_1out_t func
 
     if scale == 0.0:
-        result = dparray(size, dtype=dtype)
-        result.fill(0.0)
+        return dpnp_full(size, 0.0, dtype)
     else:
-        # convert string type names (dparray.dtype) to C enum DPNPFuncType
+        # convert string type names (array.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_RAYLEIGH, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
         # ceate result array with type given by FPTR data
-        result = dparray(size, dtype=result_type)
+        result_shape = utils._object_to_tuple(size)
+        result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
         func = <fptr_dpnp_rng_rayleigh_c_1out_t > kernel_data.ptr
         # call FPTR function
@@ -832,17 +826,17 @@ cpdef dparray dpnp_rng_rayleigh(double scale, size):
     return result
 
 
-cpdef dparray dpnp_rng_shuffle(dparray x1):
+cpdef utils.dpnp_descriptor dpnp_rng_shuffle(utils.dpnp_descriptor x1):
     """
     Modify a sequence in-place by shuffling its contents.
 
     """
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype.type)
     cdef size_t itemsize = x1.dtype.itemsize
     cdef size_t ndim = x1.ndim
-    cdef size_t high_dim_size = len(x1)
+    cdef size_t high_dim_size = len(x1.get_pyobj())
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_SHUFFLE, param1_type, param1_type)
@@ -860,7 +854,7 @@ cpdef dpnp_rng_srand(seed):
 
     """
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
@@ -871,7 +865,7 @@ cpdef dpnp_rng_srand(seed):
     func(seed)
 
 
-cpdef dparray dpnp_rng_standard_cauchy(size):
+cpdef utils.dpnp_descriptor dpnp_rng_standard_cauchy(size):
     """
     Returns an array populated with samples from standard cauchy distribution.
     `dpnp_standard_cauchy` generates a matrix filled with random floats sampled from a
@@ -879,15 +873,15 @@ cpdef dparray dpnp_rng_standard_cauchy(size):
 
     """
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_CAUCHY, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(size, dtype=result_type)
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_dpnp_rng_standard_cauchy_c_1out_t func = < fptr_dpnp_rng_standard_cauchy_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -896,7 +890,7 @@ cpdef dparray dpnp_rng_standard_cauchy(size):
     return result
 
 
-cpdef dparray dpnp_rng_standard_exponential(size):
+cpdef utils.dpnp_descriptor dpnp_rng_standard_exponential(size):
     """
     Returns an array populated with samples from standard exponential distribution.
     `dpnp_standard_exponential` generates a matrix filled with random floats sampled from a
@@ -906,15 +900,15 @@ cpdef dparray dpnp_rng_standard_exponential(size):
 
     cdef fptr_dpnp_rng_standard_exponential_c_1out_t func
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_EXPONENTIAL, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(size, dtype=result_type)
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     func = < fptr_dpnp_rng_standard_exponential_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -923,7 +917,7 @@ cpdef dparray dpnp_rng_standard_exponential(size):
     return result
 
 
-cpdef dparray dpnp_rng_standard_gamma(double shape, size):
+cpdef utils.dpnp_descriptor dpnp_rng_standard_gamma(double shape, size):
     """
     Returns an array populated with samples from standard gamma distribution.
     `dpnp_standard_gamma` generates a matrix filled with random floats sampled from a
@@ -932,24 +926,24 @@ cpdef dparray dpnp_rng_standard_gamma(double shape, size):
     """
 
     dtype = numpy.float64
-    cdef dparray result
+    cdef shape_type_c result_shape
+    cdef utils.dpnp_descriptor result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_standard_gamma_c_1out_t func
 
     if shape == 0.0:
-        result = dparray(size, dtype=dtype)
-        result.fill(0.0)
+        return dpnp_full(size, 0.0, dtype)
     else:
-        # convert string type names (dparray.dtype) to C enum DPNPFuncType
+        # convert string type names (array.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_GAMMA, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
         # ceate result array with type given by FPTR data
-        result = dparray(size, dtype=result_type)
+        result_shape = utils._object_to_tuple(size)
+        result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
         func = <fptr_dpnp_rng_standard_gamma_c_1out_t > kernel_data.ptr
         # call FPTR function
@@ -958,7 +952,7 @@ cpdef dparray dpnp_rng_standard_gamma(double shape, size):
     return result
 
 
-cpdef dparray dpnp_rng_standard_normal(size):
+cpdef utils.dpnp_descriptor dpnp_rng_standard_normal(size):
     """
     Returns an array populated with samples from standard normal(Gaussian) distribution.
     `dpnp_standard_normal` generates a matrix filled with random floats sampled from a
@@ -966,15 +960,15 @@ cpdef dparray dpnp_rng_standard_normal(size):
 
     """
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_NORMAL, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(size, dtype=result_type)
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_dpnp_rng_standard_normal_c_1out_t func = < fptr_dpnp_rng_standard_normal_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -982,7 +976,7 @@ cpdef dparray dpnp_rng_standard_normal(size):
 
     return result
 
-cpdef dparray dpnp_rng_standard_t(double df, size):
+cpdef utils.dpnp_descriptor dpnp_rng_standard_t(double df, size):
     """
     Returns an array populated with samples from standard t distribution.
     `dpnp_standard_t` generates a matrix filled with random floats sampled from a
@@ -990,15 +984,15 @@ cpdef dparray dpnp_rng_standard_t(double df, size):
 
     """
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_STANDARD_T, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(size, dtype=result_type)
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_dpnp_rng_standard_t_c_1out_t func = <fptr_dpnp_rng_standard_t_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -1007,7 +1001,7 @@ cpdef dparray dpnp_rng_standard_t(double df, size):
     return result
 
 
-cpdef dparray dpnp_rng_triangular(double left, double mode, double right, size):
+cpdef utils.dpnp_descriptor dpnp_rng_triangular(double left, double mode, double right, size):
     """
     Returns an array populated with samples from triangular distribution.
     `dpnp_rng_triangular` generates a matrix filled with random floats sampled from a
@@ -1016,15 +1010,15 @@ cpdef dparray dpnp_rng_triangular(double left, double mode, double right, size):
     """
 
     dtype = numpy.float64
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_TRIANGULAR, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(size, dtype=dtype)
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_dpnp_rng_triangular_c_1out_t func = <fptr_dpnp_rng_triangular_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -1033,7 +1027,7 @@ cpdef dparray dpnp_rng_triangular(double left, double mode, double right, size):
     return result
 
 
-cpdef dparray dpnp_rng_uniform(long low, long high, size, dtype):
+cpdef utils.dpnp_descriptor dpnp_rng_uniform(long low, long high, size, dtype):
     """
     Returns an array populated with samples from standard uniform distribution.
     Generates a matrix filled with random numbers sampled from a
@@ -1042,24 +1036,24 @@ cpdef dparray dpnp_rng_uniform(long low, long high, size, dtype):
 
     """
 
-    cdef dparray result
+    cdef shape_type_c result_shape
+    cdef utils.dpnp_descriptor result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_uniform_c_1out_t func
 
     if low == high:
-        result = dparray(size, dtype=dtype)
-        result.fill(low)
+        return dpnp_full(size, low, dtype)
     else:
-        # convert string type names (dparray.dtype) to C enum DPNPFuncType
+        # convert string type names (array.dtype) to C enum DPNPFuncType
         param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
         # get the FPTR data structure
         kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_UNIFORM, param1_type, param1_type)
 
-        result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
         # ceate result array with type given by FPTR data
-        result = dparray(size, dtype=result_type)
+        result_shape = utils._object_to_tuple(size)
+        result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
         func = <fptr_dpnp_rng_uniform_c_1out_t > kernel_data.ptr
         # call FPTR function
@@ -1068,7 +1062,7 @@ cpdef dparray dpnp_rng_uniform(long low, long high, size, dtype):
     return result
 
 
-cpdef dparray dpnp_rng_vonmises(double mu, double kappa, size):
+cpdef utils.dpnp_descriptor dpnp_rng_vonmises(double mu, double kappa, size):
     """
     Returns an array populated with samples from Vonmises distribution.
     `dpnp_rng_vonmises` generates a matrix filled with random floats sampled from a
@@ -1076,15 +1070,15 @@ cpdef dparray dpnp_rng_vonmises(double mu, double kappa, size):
 
     """
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_VONMISES, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(size, dtype=result_type)
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_dpnp_rng_vonmises_c_1out_t func = <fptr_dpnp_rng_vonmises_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -1093,7 +1087,7 @@ cpdef dparray dpnp_rng_vonmises(double mu, double kappa, size):
     return result
 
 
-cpdef dparray dpnp_rng_wald(double mean, double scale, size):
+cpdef utils.dpnp_descriptor dpnp_rng_wald(double mean, double scale, size):
     """
     Returns an array populated with samples from Wald's distribution.
     `dpnp_rng_wald` generates a matrix filled with random floats sampled from a
@@ -1102,15 +1096,15 @@ cpdef dparray dpnp_rng_wald(double mean, double scale, size):
     """
 
     dtype = numpy.float64
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_WALD, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(size, dtype=dtype)
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_dpnp_rng_wald_c_1out_t func = <fptr_dpnp_rng_wald_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -1119,7 +1113,7 @@ cpdef dparray dpnp_rng_wald(double mean, double scale, size):
     return result
 
 
-cpdef dparray dpnp_rng_weibull(double a, size):
+cpdef utils.dpnp_descriptor dpnp_rng_weibull(double a, size):
     """
     Returns an array populated with samples from weibull distribution.
     `dpnp_weibull` generates a matrix filled with random floats sampled from a
@@ -1128,20 +1122,19 @@ cpdef dparray dpnp_rng_weibull(double a, size):
     """
 
     dtype = numpy.float64
-    cdef dparray result
     cdef DPNPFuncType param1_type
     cdef DPNPFuncData kernel_data
     cdef fptr_dpnp_rng_weibull_c_1out_t func
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
     kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_WEIBULL, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    result = dparray(size, dtype=result_type)
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     func = <fptr_dpnp_rng_weibull_c_1out_t > kernel_data.ptr
     # call FPTR function
@@ -1150,7 +1143,7 @@ cpdef dparray dpnp_rng_weibull(double a, size):
     return result
 
 
-cpdef dparray dpnp_rng_zipf(double a, size):
+cpdef utils.dpnp_descriptor dpnp_rng_zipf(double a, size):
     """
     Returns an array populated with samples from Zipf distribution.
     `dpnp_rng_zipf` generates a matrix filled with random floats sampled from a
@@ -1158,15 +1151,15 @@ cpdef dparray dpnp_rng_zipf(double a, size):
 
     """
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(numpy.float64)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_ZIPF, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(size, dtype=result_type)
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_dpnp_rng_zipf_c_1out_t func = <fptr_dpnp_rng_zipf_c_1out_t > kernel_data.ptr
     # call FPTR function

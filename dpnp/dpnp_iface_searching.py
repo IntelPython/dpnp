@@ -41,7 +41,6 @@ it contains:
 
 
 from dpnp.dpnp_algo import *
-from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 
 import dpnp
@@ -50,7 +49,9 @@ import numpy
 
 __all__ = [
     'argmax',
-    'argmin'
+    'argmin',
+    'searchsorted',
+    'where'
 ]
 
 
@@ -101,7 +102,7 @@ def argmax(x1, axis=None, out=None):
         elif out is not None:
             pass
         else:
-            result_obj = dpnp_argmax(x1_desc)
+            result_obj = dpnp_argmax(x1_desc).get_pyobj()
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
@@ -156,9 +157,31 @@ def argmin(x1, axis=None, out=None):
         elif out is not None:
             pass
         else:
-            result_obj = dpnp_argmin(x1_desc)
+            result_obj = dpnp_argmin(x1_desc).get_pyobj()
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
 
     return call_origin(numpy.argmin, x1, axis, out)
+
+
+def searchsorted(a, v, side='left', sorter=None):
+    """
+    Find indices where elements should be inserted to maintain order.
+
+    For full documentation refer to :obj:`numpy.searchsorted`.
+
+    """
+
+    return call_origin(numpy.where, a, v, side, sorter)
+
+
+def where(condition, x=None, y=None):
+    """
+    Find indices where elements should be inserted to maintain order.
+
+    For full documentation refer to :obj:`numpy.searchsorted`.
+
+    """
+
+    return call_origin(numpy.where, condition, x, y)
