@@ -43,7 +43,6 @@ it contains:
 import collections.abc
 
 from dpnp.dpnp_algo import *
-from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 from dpnp.dpnp_iface_arraycreation import array
 
@@ -128,16 +127,20 @@ def atleast_2d(*arys):
     Input arrays is supported as :obj:`dpnp.ndarray`.
     """
 
-    all_is_dparray = True
+    all_is_array = True
+    arys_desc = []
     for ary in arys:
-        if not isinstance(ary, dparray):
-            all_is_dparray = False
+        ary_desc = dpnp.get_dpnp_descriptor(ary)
+        if ary_desc:
+            arys_desc.append(ary_desc)
+        else:
+            all_is_array = False
             break
 
-    if not use_origin_backend(arys[0]) and all_is_dparray:
+    if not use_origin_backend(arys[0]) and all_is_array:
         result = []
-        for ary in arys:
-            res = dpnp_atleast_2d(ary)
+        for ary_desc in arys_desc:
+            res = dpnp_atleast_2d(ary_desc).get_pyobj()
             result.append(res)
 
         if len(result) == 1:
@@ -159,16 +162,20 @@ def atleast_3d(*arys):
     Input arrays is supported as :obj:`dpnp.ndarray`.
     """
 
-    all_is_dparray = True
+    all_is_array = True
+    arys_desc = []
     for ary in arys:
-        if not isinstance(ary, dparray):
-            all_is_dparray = False
+        ary_desc = dpnp.get_dpnp_descriptor(ary)
+        if ary_desc:
+            arys_desc.append(ary_desc)
+        else:
+            all_is_array = False
             break
 
-    if not use_origin_backend(arys[0]) and all_is_dparray:
+    if not use_origin_backend(arys[0]) and all_is_array:
         result = []
-        for ary in arys:
-            res = dpnp_atleast_3d(ary)
+        for ary_desc in arys_desc:
+            res = dpnp_atleast_3d(ary_desc).get_pyobj()
             result.append(res)
 
         if len(result) == 1:
@@ -206,11 +213,11 @@ def concatenate(arrs, axis=0, out=None, dtype=None, casting="same_kind"):
     """
 
     # TODO:
-    # `call_origin` cannot convert sequence of dparray to sequence of
+    # `call_origin` cannot convert sequence of array to sequence of
     # ndarrays
     arrs_new = []
     for arr in arrs:
-        arrx = dpnp.asnumpy(arr) if isinstance(arr, dparray) else arr
+        arrx = dpnp.asnumpy(arr) if not isinstance(arr, numpy.ndarray) else arr
         arrs_new.append(arrx)
 
     return call_origin(numpy.concatenate, arrs_new, axis=axis, out=out, dtype=dtype, casting=casting)
@@ -330,11 +337,11 @@ def hstack(tup):
     """
 
     # TODO:
-    # `call_origin` cannot convert sequence of dparray to sequence of
+    # `call_origin` cannot convert sequence of array to sequence of
     # nparrays
     tup_new = []
     for tp in tup:
-        tpx = dpnp.asnumpy(tp) if isinstance(tp, dparray) else tp
+        tpx = dpnp.asnumpy(tp) if not isinstance(tp, numpy.ndarray) else tp
         tup_new.append(tpx)
 
     return call_origin(numpy.hstack, tup_new)
@@ -686,11 +693,11 @@ def vstack(tup):
     """
 
     # TODO:
-    # `call_origin` cannot convert sequence of dparray to sequence of
+    # `call_origin` cannot convert sequence of array to sequence of
     # nparray
     tup_new = []
     for tp in tup:
-        tpx = dpnp.asnumpy(tp) if isinstance(tp, dparray) else tp
+        tpx = dpnp.asnumpy(tp) if not isinstance(tp, numpy.ndarray) else tp
         tup_new.append(tpx)
 
     return call_origin(numpy.vstack, tup_new)

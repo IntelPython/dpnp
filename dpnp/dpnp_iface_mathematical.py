@@ -1357,7 +1357,6 @@ def prod(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, wher
 
     Limitations
     -----------
-        Parameter ``x1`` is supported as :obj:`dpnp.dparray` only.
         Parameter ``where`` is unsupported.
         Input array data types are limited by DPNP :ref:`Data types`.
 
@@ -1560,7 +1559,6 @@ def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, where
 
     Limitations
     -----------
-        Parameter ``x1`` is supported as :obj:`dpnp.dparray` only.
         Parameter `where`` is unsupported.
         Input array data types are limited by DPNP :ref:`Data types`.
 
