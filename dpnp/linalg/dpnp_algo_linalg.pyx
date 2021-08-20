@@ -34,6 +34,7 @@ and the rest of the library
 
 import dpnp
 cimport dpnp.dpnp_utils as utils
+import dpnp.dpnp_utils as utils_py
 from dpnp.dpnp_algo cimport *
 from dpnp.dparray cimport dparray
 import numpy
@@ -80,7 +81,7 @@ cpdef utils.dpnp_descriptor dpnp_cholesky(utils.dpnp_descriptor input_):
     return result
 
 
-cpdef dparray dpnp_cond(dparray input, p):
+cpdef object dpnp_cond(object input, object p):
     if p in ('f', 'fro'):
         input = input.ravel(order='K')
         sqnorm = dpnp.dot(input, input)
@@ -130,7 +131,7 @@ cpdef utils.dpnp_descriptor dpnp_det(utils.dpnp_descriptor input):
     return result
 
 
-cpdef tuple dpnp_eig(dparray x1):
+cpdef tuple dpnp_eig(utils.dpnp_descriptor x1):
     cdef shape_type_c x1_shape = x1.shape
 
     cdef size_t size = 0 if x1_shape.empty() else x1_shape.front()
@@ -140,14 +141,14 @@ cpdef tuple dpnp_eig(dparray x1):
 
     result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
 
-    cdef dparray res_val = dparray((size,), dtype=result_type)
-    cdef dparray res_vec = dparray(x1_shape, dtype=result_type)
+    cdef utils.dpnp_descriptor res_val = utils.create_output_descriptor((size,), kernel_data.return_type, None)
+    cdef utils.dpnp_descriptor res_vec = utils.create_output_descriptor(x1_shape, kernel_data.return_type, None)
 
     cdef custom_linalg_2in_1out_func_ptr_t func = <custom_linalg_2in_1out_func_ptr_t > kernel_data.ptr
     # call FPTR function
     func(x1.get_data(), res_val.get_data(), res_vec.get_data(), size)
 
-    return (res_val, res_vec)
+    return (res_val.get_pyobj(), res_vec.get_pyobj())
 
 
 cpdef utils.dpnp_descriptor dpnp_eigvals(utils.dpnp_descriptor input):
@@ -168,22 +169,21 @@ cpdef utils.dpnp_descriptor dpnp_eigvals(utils.dpnp_descriptor input):
     return res_val
 
 
-cpdef dparray dpnp_inv(dparray input_):
-    cdef dparray input = input_.astype(dpnp.float64)
+cpdef utils.dpnp_descriptor dpnp_inv(utils.dpnp_descriptor input):
     cdef shape_type_c input_shape = input.shape
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_INV, param1_type, param1_type)
 
-    cdef dparray result = dparray(input.size, dtype=dpnp.float64)
+    # ceate result array with type given by FPTR data
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(input_shape, kernel_data.return_type, None)
 
     cdef custom_linalg_1in_1out_func_ptr_t func = <custom_linalg_1in_1out_func_ptr_t > kernel_data.ptr
 
     func(input.get_data(), result.get_data(), < size_t * > input_shape.data(), input.ndim)
 
-    dpnp_result = result.reshape(input.shape)
-    return dpnp_result
+    return result
 
 
 cpdef utils.dpnp_descriptor dpnp_matrix_rank(utils.dpnp_descriptor input):
