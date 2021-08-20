@@ -80,19 +80,18 @@ ctypedef void(*ftpr_custom_trapz_2in_1out_with_2size_t)(void *, void * , void * 
 ctypedef void(*ftpr_custom_around_1in_1out_t)(const void * , void * , const size_t, const int)
 
 
-cpdef dparray dpnp_absolute(utils.dpnp_descriptor input):
+cpdef utils.dpnp_descriptor dpnp_absolute(utils.dpnp_descriptor input):
     cdef shape_type_c input_shape = input.shape
     cdef size_t input_shape_size = input.ndim
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ABSOLUTE, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(input_shape, dtype=result_type)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(input_shape, kernel_data.return_type, None)
 
     cdef fptr_custom_elemwise_absolute_1in_1out_t func = <fptr_custom_elemwise_absolute_1in_1out_t > kernel_data.ptr
     # call FPTR function
@@ -117,15 +116,15 @@ cpdef utils.dpnp_descriptor dpnp_arctan2(utils.dpnp_descriptor x1_obj,
     return call_fptr_2in_1out(DPNP_FN_ARCTAN2, x1_obj, x2_obj, dtype, out, where, func_name="arctan2")
 
 
-cpdef dpnp_around(utils.dpnp_descriptor x1, int decimals):
+cpdef utils.dpnp_descriptor dpnp_around(utils.dpnp_descriptor x1, int decimals):
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_AROUND, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-
-    cdef dparray result = dparray(x1.shape, dtype=result_type)
+    # ceate result array with type given by FPTR data
+    cdef shape_type_c result_shape = x1.shape
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef ftpr_custom_around_1in_1out_t func = <ftpr_custom_around_1in_1out_t > kernel_data.ptr
 
@@ -182,11 +181,11 @@ cpdef utils.dpnp_descriptor dpnp_cumsum(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_CUMSUM, x1, (x1.size,))
 
 
-cpdef dparray dpnp_diff(object input, int n):
+cpdef object dpnp_diff(utils.dpnp_descriptor input, int n):
     if n == 0:
-        return input
+        return input.get_pyobj()
     if n < input.shape[-1]:
-        arr = input
+        arr = input.get_pyobj()
         for _ in range(n):
             list_shape_i = list(arr.shape)
             list_shape_i[-1] = list_shape_i[-1] - 1
@@ -249,23 +248,25 @@ cpdef utils.dpnp_descriptor dpnp_fmod(utils.dpnp_descriptor x1_obj,
     return call_fptr_2in_1out(DPNP_FN_FMOD, x1_obj, x2_obj, dtype, out, where)
 
 
-cpdef dparray dpnp_gradient(object y1, int dx=1):
+cpdef utils.dpnp_descriptor dpnp_gradient(utils.dpnp_descriptor y1, int dx=1):
 
-    size = y1.size
+    cdef size_t size = y1.size
 
-    cdef dparray result = dparray(size, dtype=dpnp.float64)
+    # ceate result array with type given by FPTR data
+    cdef shape_type_c result_shape = utils._object_to_tuple(size)
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(result_shape, dpnp.float64, None)
 
-    cur = (y1[1] - y1[0]) / dx
+    cdef double cur = (y1.get_pyobj()[1] - y1.get_pyobj()[0]) / dx
 
-    result._setitem_scalar(0, cur)
+    result.get_pyobj().flat[0] = cur
 
-    cur = (y1[-1] - y1[-2]) / dx
+    cur = (y1.get_pyobj()[-1] - y1.get_pyobj()[-2]) / dx
 
-    result._setitem_scalar(size - 1, cur)
+    result.get_pyobj().flat[size - 1] = cur
 
     for i in range(1, size - 1):
-        cur = (y1[i + 1] - y1[i - 1]) / (2 * dx)
-        result._setitem_scalar(i, cur)
+        cur = (y1.get_pyobj()[i + 1] - y1.get_pyobj()[i - 1]) / (2 * dx)
+        result.get_pyobj().flat[i] = cur
 
     return result
 
@@ -295,22 +296,22 @@ cpdef utils.dpnp_descriptor dpnp_minimum(utils.dpnp_descriptor x1_obj,
 
 
 cpdef tuple dpnp_modf(utils.dpnp_descriptor x1):
-    """ Convert string type names (dparray.dtype) to C enum DPNPFuncType """
+    """ Convert string type names (array.dtype) to C enum DPNPFuncType """
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
 
     """ get the FPTR data structure """
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MODF, param1_type, DPNP_FT_NONE)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-    """ Create result arrays with type given by FPTR data """
-    cdef dparray result1 = dparray(x1.shape, dtype=result_type)
-    cdef dparray result2 = dparray(x1.shape, dtype=result_type)
+    # ceate result array with type given by FPTR data
+    cdef shape_type_c result_shape = x1.shape
+    cdef utils.dpnp_descriptor result1 = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
+    cdef utils.dpnp_descriptor result2 = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef fptr_1in_2out_t func = <fptr_1in_2out_t > kernel_data.ptr
     """ Call FPTR function """
     func(x1.get_data(), result1.get_data(), result2.get_data(), x1.size)
 
-    return result1, result2
+    return (result1.get_pyobj(), result2.get_pyobj())
 
 
 cpdef utils.dpnp_descriptor dpnp_multiply(utils.dpnp_descriptor x1_obj,
@@ -343,38 +344,32 @@ cpdef utils.dpnp_descriptor dpnp_nancumsum(utils.dpnp_descriptor x1):
     return dpnp_cumsum(x1_desc)
 
 
-cpdef dpnp_nanprod(object x1):
-    cdef dparray result = dparray(x1.shape, dtype=x1.dtype)
+cpdef utils.dpnp_descriptor dpnp_nanprod(utils.dpnp_descriptor x1):
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(x1.shape, x1.dtype, None)
 
     for i in range(result.size):
-        input_elem = x1.item(i)
+        input_elem = x1.get_pyobj().flat[i]
 
         if dpnp.isnan(input_elem):
-            result._setitem_scalar(i, 1)
+            result.get_pyobj().flat[i] = 1
         else:
-            result._setitem_scalar(i, input_elem)
+            result.get_pyobj().flat[i] = input_elem
 
-    result_desc = dpnp.get_dpnp_descriptor(result)  # TODO remove it later
-    return dpnp_prod(result_desc)
+    return dpnp_prod(result)
 
 
-cpdef dpnp_nansum(object x1):
-    cdef dparray result = dparray(x1.shape, dtype=x1.dtype)
+cpdef utils.dpnp_descriptor dpnp_nansum(utils.dpnp_descriptor x1):
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(x1.shape, x1.dtype, None)
 
     for i in range(result.size):
-        input_elem = x1.item(i)
+        input_elem = x1.get_pyobj().flat[i]
 
         if dpnp.isnan(input_elem):
-            result._setitem_scalar(i, 0)
+            result.get_pyobj().flat[i] = 0
         else:
-            result._setitem_scalar(i, input_elem)
+            result.get_pyobj().flat[i] = input_elem
 
-    # due to bug in dpnp_sum need this workaround
-    # return dpnp_sum(result)
-
-    result_desc = dpnp.get_dpnp_descriptor(result)  # TODO remove it later
-    sum_result = dpnp_sum(result_desc).get_pyobj()
-    return x1.dtype.type(sum_result[0])
+    return dpnp_sum(result)
 
 
 cpdef utils.dpnp_descriptor dpnp_negative(dpnp_descriptor x1):
@@ -476,20 +471,20 @@ cpdef utils.dpnp_descriptor dpnp_sum(utils.dpnp_descriptor input,
     return result
 
 
-cpdef dpnp_trapz(utils.dpnp_descriptor y1, dparray x1, double dx):
+cpdef utils.dpnp_descriptor dpnp_trapz(utils.dpnp_descriptor y1, utils.dpnp_descriptor x1, double dx):
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(y1.dtype)
     cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRAPZ, param1_type, param2_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-
-    cdef dparray result = dparray((1,), dtype=result_type)
+    # ceate result array with type given by FPTR data
+    cdef shape_type_c result_shape = (1,)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef ftpr_custom_trapz_2in_1out_with_2size_t func = <ftpr_custom_trapz_2in_1out_with_2size_t > kernel_data.ptr
     func(y1.get_data(), x1.get_data(), result.get_data(), dx, y1.size, x1.size)
 
-    return result[0]
+    return result
 
 
 cpdef utils.dpnp_descriptor dpnp_trunc(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):

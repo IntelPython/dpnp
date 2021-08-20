@@ -39,7 +39,6 @@ import dpnp.dpnp_utils as utils_py
 import numpy
 
 cimport cpython
-from dpnp.dparray cimport dparray
 cimport dpnp.dpnp_utils as utils
 cimport numpy
 

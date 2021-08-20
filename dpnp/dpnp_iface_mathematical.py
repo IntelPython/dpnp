@@ -148,7 +148,7 @@ def absolute(x1, **kwargs):
         if not x1_desc.ndim:
             pass
         else:
-            result = dpnp_absolute(x1_desc)
+            result = dpnp_absolute(x1_desc).get_pyobj()
 
             return result
 
@@ -246,7 +246,7 @@ def around(x1, decimals=0, out=None):
         elif decimals != 0:
             pass
         else:
-            return dpnp_around(x1_desc, decimals)
+            return dpnp_around(x1_desc, decimals).get_pyobj()
 
     return call_origin(numpy.around, x1, decimals=decimals, out=out)
 
@@ -529,7 +529,7 @@ def diff(x1, n=1, axis=-1, prepend=None, append=None):
         elif append is not None:
             pass
         else:
-            return dpnp_diff(x1, n)
+            return dpnp_diff(x1_desc, n)
 
     return call_origin(numpy.diff, x1, n, axis, prepend, append)
 
@@ -903,9 +903,9 @@ def gradient(x1, *varargs, **kwargs):
             pass
         else:
             if len(varargs) == 0:
-                return dpnp_gradient(x1)
+                return dpnp_gradient(x1_desc).get_pyobj()
 
-            return dpnp_gradient(x1, varargs[0])
+            return dpnp_gradient(x1_desc, varargs[0]).get_pyobj()
 
     return call_origin(numpy.gradient, x1, *varargs, **kwargs)
 
@@ -1045,7 +1045,7 @@ def mod(*args, **kwargs):
     return dpnp.remainder(*args, **kwargs)
 
 
-def modf(x, **kwargs):
+def modf(x1, **kwargs):
     """
     Return the fractional and integral parts of an array, element-wise.
 
@@ -1069,11 +1069,11 @@ def modf(x, **kwargs):
 
     """
 
-    dpnp_desc = dpnp.get_dpnp_descriptor(x)
-    if dpnp_desc and not kwargs:
-        return dpnp_modf(dpnp_desc)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        return dpnp_modf(x1_desc)
 
-    return call_origin(numpy.modf, x, **kwargs)
+    return call_origin(numpy.modf, x1, **kwargs)
 
 
 def multiply(x1, x2, dtype=None, out=None, where=True, **kwargs):
@@ -1224,7 +1224,7 @@ def nanprod(x1, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and not kwargs:
-        return dpnp_nanprod(x1)
+        return dpnp_nanprod(x1_desc).get_pyobj()
 
     return call_origin(numpy.nanprod, x1, **kwargs)
 
@@ -1254,7 +1254,9 @@ def nansum(x1, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and not kwargs:
-        return dpnp_nansum(x1)
+        result_obj = dpnp_nansum(x1_desc).get_pyobj()
+        result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+        return result
 
     return call_origin(numpy.nansum, x1, **kwargs)
 
@@ -1586,7 +1588,7 @@ def sum(x1, axis=None, dtype=None, out=None, keepdims=False, initial=None, where
     return call_origin(numpy.sum, x1, axis=axis, dtype=dtype, out=out, keepdims=keepdims, initial=initial, where=where)
 
 
-def trapz(y, x=None, dx=1.0, axis=-1):
+def trapz(y1, x1=None, dx=1.0, axis=-1):
     """
     Integrate along the given axis using the composite trapezoidal rule.
 
@@ -1613,23 +1615,23 @@ def trapz(y, x=None, dx=1.0, axis=-1):
 
     """
 
-    y_desc = dpnp.get_dpnp_descriptor(y)
+    y_desc = dpnp.get_dpnp_descriptor(y1)
     if y_desc:
-        if not isinstance(x, dparray) and x is not None:
-            pass
-        elif x is not None and y_desc.size != x.size:
-            pass
-        elif x is not None and y_desc.shape != x.shape:
-            pass
-        elif y_desc.ndim > 1:
+        if y_desc.ndim > 1:
             pass
         else:
-            if x is None:
-                x = dpnp.empty(0, dtype=y_desc.dtype)
+            x_obj = dpnp.empty(y_desc.shape, dtype=y_desc.dtype) if x1 is None else x1
+            x_desc = dpnp.get_dpnp_descriptor(x_obj)
+            if x_desc:
+                pass
+            elif y_desc.size != x_desc.size:
+                pass
+            elif y_desc.shape != x_desc.shape:
+                pass
+            else:
+                return dpnp_trapz(y_desc, x_desc, dx).get_pyobj()
 
-            return dpnp_trapz(y_desc, x, dx)
-
-    return call_origin(numpy.trapz, y, x, dx, axis)
+    return call_origin(numpy.trapz, y1, x1, dx, axis)
 
 
 def true_divide(*args, **kwargs):
