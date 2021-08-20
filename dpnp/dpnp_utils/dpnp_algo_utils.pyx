@@ -82,30 +82,66 @@ __all__ = [
 
 cdef ERROR_PREFIX = "DPNP error:"
 
+def convert_item(item):
+    if getattr(item, "__sycl_usm_array_interface__", False):
+        item_converted = dpnp.asnumpy(item) 
+    elif getattr(item, "__array_interface__", False): # detect if it is a container (TODO any better way?)
+        mod_name = getattr(item, "__module__", 'none')
+        if (mod_name != 'numpy'):
+            item_converted = dpnp.asnumpy(item)
+        else:  
+            item_converted = item
+    elif isinstance(item, list):
+        item_converted = convert_list_args(item)
+    elif isinstance(item, tuple):
+        item_converted = tuple(convert_list_args(item))
+    else:
+        item_converted = item
+    
+    return item_converted
+    
+def convert_list_args(input_list):
+    result_list = []
+    for item in input_list:
+        item_converted = convert_item(item)     
+        result_list.append(item_converted)
 
+    return result_list
+    
 def call_origin(function, *args, **kwargs):
     """
     Call fallback function for unsupported cases
     """
 
-    # print(f"DPNP call_origin(): Fallback called. \n\t function={function}, \n\t args={args}, \n\t kwargs={kwargs}")
+    dpnp_inplace = kwargs.pop("dpnp_inplace", False)
+    # print(f"DPNP call_origin(): Fallback called. \n\t function={function}, \n\t args={args}, \n\t kwargs={kwargs}, \n\t dpnp_inplace={dpnp_inplace}")
 
     kwargs_out = kwargs.get("out", None)
     if (kwargs_out is not None):
-        kwargs["out"] = dpnp.asnumpy(kwargs_out) if isinstance(kwargs_out, dparray) else kwargs_out
+        if isinstance(kwargs_out, numpy.ndarray):
+            kwargs["out"] = kwargs_out
+        else:
+            kwargs["out"] = dpnp.asnumpy(kwargs_out)
 
-    args_new = []
-    for arg in args:
-        argx = dpnp.asnumpy(arg) if isinstance(arg, dparray) else arg
-        args_new.append(argx)
+    if dpnp_inplace:
+        # TODO replacement of foreign containers is still needed
+        args_new = args
+    else:
+        args_new_list = []
+        for arg in args:
+            argx = convert_item(arg)     
+            args_new_list.append(argx)
+        args_new = tuple(args_new_list)
 
     kwargs_new = {}
     for key, kwarg in kwargs.items():
-        kwargx = dpnp.asnumpy(kwarg) if isinstance(kwarg, dparray) else kwarg
+        kwargx = convert_item(kwarg)     
         kwargs_new[key] = kwargx
 
-    # TODO need to put dparray memory into NumPy call
+    # print(f"DPNP call_origin(): bakend called. \n\t function={function}, \n\t args_new={args_new}, \n\t kwargs_new={kwargs_new}, \n\t dpnp_inplace={dpnp_inplace}")
+    # TODO need to put array memory into NumPy call
     result_origin = function(*args_new, **kwargs_new)
+    # print(f"DPNP call_origin(): result from backend. \n\t result_origin={result_origin}, \n\t args_new={args_new}, \n\t kwargs_new={kwargs_new}, \n\t dpnp_inplace={dpnp_inplace}")
     result = result_origin
     if isinstance(result, numpy.ndarray):
         if (kwargs_out is None):
@@ -119,7 +155,8 @@ def call_origin(function, *args, **kwargs):
             result = kwargs_out
 
         for i in range(result.size):
-            result._setitem_scalar(i, result_origin.item(i))
+            result.flat[i] = result_origin.item(i)
+
     elif isinstance(result, tuple):
         # convert tuple(ndarray) to tuple(dparray)
         result_list = []
@@ -128,7 +165,7 @@ def call_origin(function, *args, **kwargs):
             if isinstance(res_origin, numpy.ndarray):
                 res = dparray(res_origin.shape, dtype=res_origin.dtype)
                 for i in range(res.size):
-                    res._setitem_scalar(i, res_origin.item(i))
+                    res.flat[i] = res_origin.item(i)
             result_list.append(res)
 
         result = tuple(result_list)
