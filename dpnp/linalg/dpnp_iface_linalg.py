@@ -118,12 +118,12 @@ def cond(input, p=None):
     :obj:`dpnp.norm` : Matrix or vector norm.
     """
 
-    is_input_dparray = isinstance(input, dparray)
-
-    if (not use_origin_backend(input) and is_input_dparray):
+    if (not use_origin_backend(input)):
         if p in [None, 1, -1, 2, -2, numpy.inf, -numpy.inf, 'fro']:
-            result = dpnp_cond(input, p=p)
-            return result.dtype.type(result[0])
+            result_obj = dpnp_cond(input, p)
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+
+            return result
         else:
             pass
 
@@ -164,11 +164,10 @@ def eig(x1):
 
     """
 
-    is_x1_dparray = isinstance(x1, dparray)
-
-    if (not use_origin_backend(x1) and is_x1_dparray):
-        if (x1.size > 0):
-            return dpnp_eig(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if (x1_desc.size > 0):
+            return dpnp_eig(x1_desc)
 
     return call_origin(numpy.linalg.eig, x1)
 
@@ -214,11 +213,10 @@ def inv(input):
         Otherwise the function will be executed sequentially on CPU.
     """
 
-    is_input_dparray = isinstance(input, dparray)
-
-    if (not use_origin_backend(input) and is_input_dparray):
-        if input.ndim == 2 and input.shape[0] == input.shape[1] and input.shape[0] >= 2:
-            return dpnp_inv(input)
+    x1_desc = dpnp.get_dpnp_descriptor(input)
+    if x1_desc:
+        if x1_desc.ndim == 2 and x1_desc.shape[0] == x1_desc.shape[1] and x1_desc.shape[0] >= 2:
+            return dpnp_inv(x1_desc).get_pyobj()
 
     return call_origin(numpy.linalg.inv, input)
 

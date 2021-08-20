@@ -622,7 +622,7 @@ INP_DLLEXPORT void dpnp_initval_c(void* result1, void* value, size_t size);
  * @param [in]  shape   Shape of input array.
  * @param [in]  ndim    Number of elements in shape.
  */
-template <typename _DataType>
+template <typename _DataType, typename _ResultType>
 INP_DLLEXPORT void dpnp_inv_c(void* array1_in, void* result1, size_t* shape, size_t ndim);
 
 /**
