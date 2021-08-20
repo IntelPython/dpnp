@@ -1461,10 +1461,11 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_type_supported</span><span class="p">(</span><span class="n">x1_desc</span><span class="o">.</span><span class="n">dtype</span><span class="p">):</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_rng_shuffle</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">result</span>
+            <span class="n">dpnp_rng_shuffle</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+            <span class="k">return</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span></div>
+    <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">dpnp_inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span></div>
 
 
 <div class="viewcode-block" id="seed"><a class="viewcode-back" href="../../../reference/generated/dpnp.random.seed.html#dpnp.random.seed">[docs]</a><span class="k">def</span> <span class="nf">seed</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
