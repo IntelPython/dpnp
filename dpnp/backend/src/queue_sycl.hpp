@@ -148,4 +148,47 @@ public:
     }
 };
 
+
+/**
+ * @ingroup BACKEND_UTILS
+ * @brief Type of memory pointer
+ *
+ * Return status of given pointer
+ *
+ * @param [in] src_ptr  Input pointer
+ *
+ * @return              Output pointer
+ */
+static inline void * get_memory_pointer(cl::sycl::queue& queue, const void* src_ptr)
+{
+    cl::sycl::usm::alloc ptr_type; // enum class alloc { host = 0, device = 1, shared = 2, unknown = 3 };
+    void* dst_ptr = const_cast<void*>(src_ptr);
+
+    ptr_type = cl::sycl::get_pointer_type(src_ptr, queue.get_context());
+
+    std::cout << "Input pointer=0x" << src_ptr
+              << "\n\t type=" << (int) ptr_type
+              << "\n\t queue_in_order=" << queue.is_in_order()
+              << "\n\t queue_is_host=" << queue.is_host()
+              << "\n\t device.is_host=" << queue.get_device().is_host()
+              << "\n\t device.is_cpu=" << queue.get_device().is_cpu()
+              << "\n\t device.is_gpu=" << queue.get_device().is_gpu()
+              << "\n\t device.is_accelerator=" << queue.get_device().is_accelerator()
+              << std::endl;
+
+    if (queue.is_host() && (ptr_type == cl::sycl::usm::alloc::device))
+    { // move from Device memory to Host
+        // dst_ptr = alloc()
+        queue.memcpy(dst_ptr, src_ptr, 1);
+
+    }
+    else if(!queue.is_host() && ((ptr_type == cl::sycl::usm::alloc::host) || (ptr_type == cl::sycl::usm::alloc::unknown)))
+    { // Queue is not on host and memory out of device. Need to copy to device.
+        // dst_ptr = alloc()
+        queue.memcpy(dst_ptr, src_ptr, 1);
+    }
+
+    return dst_ptr;
+}
+
 #endif // QUEUE_SYCL_H

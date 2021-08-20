@@ -46,6 +46,8 @@ void dpnp_around_c(const void* input_in, void* result_out, const size_t input_si
         return;
     }
 
+    input_in = get_memory_pointer(DPNP_QUEUE, input_in);
+
     cl::sycl::event event;
     _DataType* input = reinterpret_cast<_DataType*>(const_cast<void*>(input_in));
     _DataType* result = reinterpret_cast<_DataType*>(result_out);
