@@ -43,7 +43,6 @@ it contains:
 import collections
 
 from dpnp.dpnp_algo import *
-from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 
 import dpnp
@@ -83,7 +82,7 @@ def choose(x1, choices, out=None, mode='raise'):
     :obj:`take_along_axis` : Preferable if choices is an array.
     """
     if not use_origin_backend(x1):
-        if not isinstance(x1, list) and not isinstance(x1, dparray):
+        if not isinstance(x1, list):
             pass
         elif not isinstance(choices, list):
             pass
@@ -91,36 +90,26 @@ def choose(x1, choices, out=None, mode='raise'):
             pass
         elif mode != 'raise':
             pass
-        elif isinstance(choices, list):
+        else:
             val = True
+            len_ = len(x1)
+            size_ = choices[0].size
             for i in range(len(choices)):
-                if not isinstance(choices[i], dparray):
+                if choices[i].size != size_ or choices[i].size != len_:
                     val = False
                     break
             if not val:
                 pass
             else:
                 val = True
-                len_ = len(x1)
-                size_ = choices[0].size
-                for i in range(len(choices)):
-                    if choices[i].size != size_ or choices[i].size != len_:
+                for i in range(len_):
+                    if x1[i] >= size_:
                         val = False
                         break
                 if not val:
                     pass
                 else:
-                    val = True
-                    for i in range(len_):
-                        if x1[i] >= size_:
-                            val = False
-                            break
-                    if not val:
-                        pass
-                    else:
-                        return dpnp_choose(x1, choices).get_pyobj()
-        else:
-            return dpnp_choose(x1, choices).get_pyobj()
+                    return dpnp_choose(x1, choices).get_pyobj()
 
     return call_origin(numpy.choose, x1, choices, out, mode)
 
@@ -456,15 +445,11 @@ def select(condlist, choicelist, default=0):
     if not use_origin_backend():
         if not isinstance(condlist, list):
             pass
-        elif not isinstance(condlist[0], dparray):
-            pass
         elif not isinstance(choicelist, list):
-            pass
-        elif not isinstance(choicelist[0], dparray):
             pass
         elif len(condlist) != len(choicelist):
             pass
-        elif len(condlist) == len(choicelist):
+        else:
             val = True
             size_ = condlist[0].size
             for i in range(len(condlist)):
@@ -473,9 +458,7 @@ def select(condlist, choicelist, default=0):
             if not val:
                 pass
             else:
-                return dpnp_select(condlist, choicelist, default)
-        else:
-            return dpnp_select(condlist, choicelist, default)
+                return dpnp_select(condlist, choicelist, default).get_pyobj()
 
     return call_origin(numpy.select, condlist, choicelist, default)
 

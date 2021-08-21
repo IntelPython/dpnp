@@ -269,7 +269,7 @@ cpdef dpnp_putmask(object arr, object mask, object values):
             arr[i] = values[i % values_size]
 
 
-cpdef object dpnp_select(condlist, choicelist, default):
+cpdef utils.dpnp_descriptor dpnp_select(list condlist, list choicelist, default):
     cdef size_t size_ = condlist[0].size
     cdef utils.dpnp_descriptor res_array = utils_py.create_output_descriptor_py(condlist[0].shape, choicelist[0].dtype, None)
 
