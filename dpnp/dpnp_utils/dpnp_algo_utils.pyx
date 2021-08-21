@@ -150,7 +150,7 @@ def call_origin(function, *args, **kwargs):
             if (kwargs_dtype is not None):
                 result_dtype = kwargs_dtype
 
-            result = dparray(result_origin.shape, dtype=result_dtype)
+            result = create_output_descriptor_py(result_origin.shape, result_dtype, None).get_pyobj()
         else:
             result = kwargs_out
 
@@ -158,12 +158,12 @@ def call_origin(function, *args, **kwargs):
             result.flat[i] = result_origin.item(i)
 
     elif isinstance(result, tuple):
-        # convert tuple(ndarray) to tuple(dparray)
+        # convert tuple(fallback_array) to tuple(result_array)
         result_list = []
         for res_origin in result:
             res = res_origin
             if isinstance(res_origin, numpy.ndarray):
-                res = dparray(res_origin.shape, dtype=res_origin.dtype)
+                res = create_output_descriptor_py(res_origin.shape, res_origin.dtype, None).get_pyobj()
                 for i in range(res.size):
                     res.flat[i] = res_origin.item(i)
             result_list.append(res)
