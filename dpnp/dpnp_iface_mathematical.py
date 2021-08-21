@@ -41,7 +41,6 @@ it contains:
 
 
 from dpnp.dpnp_algo import *
-from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 
 import dpnp
@@ -196,8 +195,6 @@ def add(x1, x2, dtype=None, out=None, where=True, **kwargs):
             pass
         elif x2_desc and x2_desc.ndim == 0:
             pass
-        elif out is not None and not isinstance(out, dparray):
-            pass
         elif dtype is not None:
             pass
         elif out is not None:
@@ -205,7 +202,8 @@ def add(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_add(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
+            out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+            return dpnp_add(x1_desc, x2_desc, dtype, out_desc, where).get_pyobj()
 
     return call_origin(numpy.add, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -750,8 +748,6 @@ def floor_divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
             pass
         elif x1_desc and x2_desc and x1_desc.shape != x2_desc.shape:
             pass
-        elif out is not None and not isinstance(out, dparray):
-            pass
         elif dtype is not None:
             pass
         elif out is not None:
@@ -761,7 +757,8 @@ def floor_divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif x1_is_scalar and x2_desc.ndim > 1:
             pass
         else:
-            return dpnp_floor_divide(x1_desc, x2_desc, out=out, where=where, dtype=dtype)
+            out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+            return dpnp_floor_divide(x1_desc, x2_desc, dtype, out_desc, where)
 
     return call_origin(numpy.floor_divide, x1, x2, out=out, where=where, dtype=dtype, **kwargs)
 
@@ -854,8 +851,6 @@ def fmod(x1, x2, dtype=None, out=None, where=True, **kwargs):
             pass
         elif x2_desc and x2.ndim == 0:
             pass
-        elif out is not None and not isinstance(out, dparray):
-            pass
         elif dtype is not None:
             pass
         elif out is not None:
@@ -863,7 +858,8 @@ def fmod(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_fmod(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
+            out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+            return dpnp_fmod(x1_desc, x2_desc, dtype, out_desc, where).get_pyobj()
 
     return call_origin(numpy.fmod, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -1438,8 +1434,6 @@ def remainder(x1, x2, out=None, where=True, dtype=None, **kwargs):
             pass
         elif x1_desc and x2_desc and x1_desc.shape != x2_desc.shape:
             pass
-        elif out is not None and not isinstance(out, dparray):
-            pass
         elif dtype is not None:
             pass
         elif out is not None:
@@ -1449,7 +1443,8 @@ def remainder(x1, x2, out=None, where=True, dtype=None, **kwargs):
         elif x1_is_scalar and x2_desc.ndim > 1:
             pass
         else:
-            return dpnp_remainder(x1_desc, x2_desc, out=out, where=where, dtype=dtype)
+            out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+            return dpnp_remainder(x1_desc, x2_desc, dtype, out_desc, where)
 
     return call_origin(numpy.remainder, x1, x2, out=out, where=where, dtype=dtype, **kwargs)
 
