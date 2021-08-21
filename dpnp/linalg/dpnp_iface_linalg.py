@@ -43,7 +43,6 @@ it contains:
 import dpnp
 import numpy
 
-from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 from dpnp.linalg.dpnp_algo_linalg import *
 
@@ -231,7 +230,7 @@ def matrix_power(input, count):
 
     Returns
     -------
-    output : dparray
+    output : array
         Returns the dot product of the supplied arrays.
 
     See Also
@@ -328,7 +327,7 @@ def multi_dot(arrays, out=None):
     return result
 
 
-def norm(input, ord=None, axis=None, keepdims=False):
+def norm(x1, ord=None, axis=None, keepdims=False):
     """
     Matrix or vector norm.
     This function is able to return one of eight different matrix norms,
@@ -362,22 +361,21 @@ def norm(input, ord=None, axis=None, keepdims=False):
         Norm of the matrix or vector(s).
     """
 
-    if not use_origin_backend(input):
-        if not isinstance(input, dparray):
-            pass
-        elif not isinstance(axis, int) and not isinstance(axis, tuple) and axis is not None:
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if not isinstance(axis, int) and not isinstance(axis, tuple) and axis is not None:
             pass
         elif keepdims is not False:
             pass
         elif ord not in [None, 0, 3, 'fro', 'f']:
             pass
         else:
-            result_obj = dpnp_norm(input, ord=ord, axis=axis)
+            result_obj = dpnp_norm(x1, ord=ord, axis=axis)
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
 
-    return call_origin(numpy.linalg.norm, input, ord, axis, keepdims)
+    return call_origin(numpy.linalg.norm, x1, ord, axis, keepdims)
 
 
 def qr(x1, mode='reduced'):
@@ -396,21 +394,19 @@ def qr(x1, mode='reduced'):
 
     """
 
-    if not use_origin_backend(x1):
-        if not isinstance(x1, dparray):
-            pass
-        elif mode != 'reduced':
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if mode != 'reduced':
             pass
         else:
-            # I see something wrong with it. it is couse SIGSEGV in 1 of 10 test times
-            res_q, res_r = dpnp_qr(x1, mode)
+            result_tup = dpnp_qr(x1, mode)
 
-            return (res_q, res_r)
+            return result_tup
 
     return call_origin(numpy.linalg.qr, x1, mode)
 
 
-def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
+def svd(x1, full_matrices=True, compute_uv=True, hermitian=False):
     """
     Singular Value Decomposition.
 
@@ -467,10 +463,9 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
 
     """
 
-    if not use_origin_backend(a):
-        if not isinstance(a, dparray):
-            pass
-        elif not a.ndim == 2:
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if not x1_desc.ndim == 2:
             pass
         elif not full_matrices == True:
             pass
@@ -479,6 +474,8 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
         elif not hermitian == False:
             pass
         else:
-            return dpnp_svd(a, full_matrices, compute_uv, hermitian)
+            result_tup = dpnp_svd(x1_desc, full_matrices, compute_uv, hermitian)
 
-    return call_origin(numpy.linalg.svd, a, full_matrices, compute_uv, hermitian)
+            return result_tup
+
+    return call_origin(numpy.linalg.svd, x1, full_matrices, compute_uv, hermitian)

@@ -36,7 +36,7 @@ import dpnp
 cimport dpnp.dpnp_utils as utils
 import dpnp.dpnp_utils as utils_py
 from dpnp.dpnp_algo cimport *
-from dpnp.dparray cimport dparray
+
 import numpy
 cimport numpy
 
@@ -202,7 +202,7 @@ cpdef utils.dpnp_descriptor dpnp_matrix_rank(utils.dpnp_descriptor input):
     return result
 
 
-cpdef dparray dpnp_norm(dparray input, ord=None, axis=None):
+cpdef object dpnp_norm(object input, ord=None, axis=None):
     cdef long size_input = input.size
     cdef shape_type_c shape_input = input.shape
 
@@ -246,14 +246,14 @@ cpdef dparray dpnp_norm(dparray input, ord=None, axis=None):
         else:
             absx = dpnp.abs(input)
             absx_size = absx.size
-            absx_power = dparray(absx_size, dtype=absx.dtype)
+            absx_power = utils_py.create_output_descriptor_py((absx_size,), absx.dtype, None).get_pyobj()
             for i in range(absx_size):
                 absx_elem = absx.item(i)
                 absx_power[i] = absx_elem ** ord
             absx_ = absx_power.reshape(absx.shape)
             ret = dpnp.sum(absx_, axis=axis)
             ret_size = ret.size
-            ret_power = dparray(ret_size)
+            ret_power = utils_py.create_output_descriptor_py((ret_size,), None, None).get_pyobj()
             for i in range(ret_size):
                 ret_elem = ret.item(i)
                 ret_power[i] = ret_elem ** (1 / ord)
@@ -270,86 +270,73 @@ cpdef dparray dpnp_norm(dparray input, ord=None, axis=None):
         elif ord == 1:
             if col_axis > row_axis:
                 col_axis -= 1
-            dpnp_sum_val_ = dpnp.sum(dpnp.abs(input), axis=row_axis)
-            dpnp_sum_val = dpnp_sum_val_ if isinstance(dpnp_sum_val_, dparray) else dpnp.array([dpnp_sum_val_])
-            dpnp_max_val = dpnp_sum_val.min(axis=col_axis)
-            ret = dpnp_max_val if isinstance(dpnp_max_val, dparray) else dpnp.array([dpnp_max_val])
+            dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=row_axis)
+            ret = dpnp_sum_val.min(axis=col_axis)
         elif ord == numpy.inf:
             if row_axis > col_axis:
                 row_axis -= 1
-            dpnp_sum_val_ = dpnp.sum(dpnp.abs(input), axis=col_axis)
-            dpnp_sum_val = dpnp_sum_val_ if isinstance(dpnp_sum_val_, dparray) else dpnp.array([dpnp_sum_val_])
-            dpnp_max_val = dpnp_sum_val.max(axis=row_axis)
-            ret = dpnp_max_val if isinstance(dpnp_max_val, dparray) else dpnp.array([dpnp_max_val])
+            dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=col_axis)
+            ret = dpnp_sum_val.max(axis=row_axis)
         elif ord == -1:
             if col_axis > row_axis:
                 col_axis -= 1
-            dpnp_sum_val_ = dpnp.sum(dpnp.abs(input), axis=row_axis)
-            dpnp_sum_val = dpnp_sum_val_ if isinstance(dpnp_sum_val_, dparray) else dpnp.array([dpnp_sum_val_])
-            dpnp_min_val = dpnp_sum_val.min(axis=col_axis)
-            ret = dpnp_min_val if isinstance(dpnp_min_val, dparray) else dpnp.array([dpnp_min_val])
+            dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=row_axis)
+            ret = dpnp_sum_val.min(axis=col_axis)
         elif ord == -numpy.inf:
             if row_axis > col_axis:
                 row_axis -= 1
-            dpnp_sum_val_ = dpnp.sum(dpnp.abs(input), axis=col_axis)
-            dpnp_sum_val = dpnp_sum_val_ if isinstance(dpnp_sum_val_, dparray) else dpnp.array([dpnp_sum_val_])
-            dpnp_min_val = dpnp_sum_val.min(axis=row_axis)
-            ret = dpnp_min_val if isinstance(dpnp_min_val, dparray) else dpnp.array([dpnp_min_val])
+            dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=col_axis)
+            ret = dpnp_sum_val.min(axis=row_axis)
         elif ord in [None, 'fro', 'f']:
             ret = dpnp.sqrt(dpnp.sum(input * input, axis=axis))
         # elif ord == 'nuc':
         #     ret = _multi_svd_norm(input, row_axis, col_axis, sum)
         else:
             raise ValueError("Invalid norm order for matrices.")
+
         return ret
     else:
         raise ValueError("Improper number of dimensions to norm.")
 
 
-cpdef tuple dpnp_qr(dparray x1, mode):
+cpdef tuple dpnp_qr(utils.dpnp_descriptor x1, str mode):
     cdef size_t size_m = x1.shape[0]
     cdef size_t size_n = x1.shape[1]
+    cdef size_t size_tau = min(size_m, size_n)
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_QR, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-
-    cdef dparray res_q = dparray((size_m, size_m), dtype=result_type)
-    cdef dparray res_r = dparray((size_m, size_n), dtype=result_type)
-
-    size_tau = min(size_m, size_n)
-    cdef dparray tau = dparray((size_tau, ), dtype=result_type)
+    cdef utils.dpnp_descriptor res_q = utils.create_output_descriptor((size_m, size_m), kernel_data.return_type, None)
+    cdef utils.dpnp_descriptor res_r = utils.create_output_descriptor((size_m, size_n), kernel_data.return_type, None)
+    cdef utils.dpnp_descriptor tau = utils.create_output_descriptor((size_tau, ), kernel_data.return_type, None)
 
     cdef custom_linalg_1in_3out_shape_t func = < custom_linalg_1in_3out_shape_t > kernel_data.ptr
 
     func(x1.get_data(), res_q.get_data(), res_r.get_data(), tau.get_data(), size_m, size_n)
 
-    return (res_q, res_r)
+    return (res_q.get_pyobj(), res_r.get_pyobj())
 
 
-cpdef tuple dpnp_svd(dparray x1, full_matrices, compute_uv, hermitian):
+cpdef tuple dpnp_svd(utils.dpnp_descriptor x1, cpp_bool full_matrices, cpp_bool compute_uv, cpp_bool hermitian):
     cdef size_t size_m = x1.shape[0]
     cdef size_t size_n = x1.shape[1]
+    cdef size_t size_s = min(size_m, size_n)
 
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_SVD, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-
+    cdef DPNPFuncType type_s = DPNP_FT_DOUBLE
     if x1.dtype == dpnp.float32:
-        type_s = dpnp.float32
-    else:
-        type_s = dpnp.float64
+        type_s = DPNP_FT_FLOAT
 
-    size_s = min(size_m, size_n)
 
-    cdef dparray res_u = dparray((size_m, size_m), dtype=result_type)
-    cdef dparray res_s = dparray((size_s, ), dtype=type_s)
-    cdef dparray res_vt = dparray((size_n, size_n), dtype=result_type)
+    cdef utils.dpnp_descriptor res_u = utils.create_output_descriptor((size_m, size_m), kernel_data.return_type, None)
+    cdef utils.dpnp_descriptor res_s = utils.create_output_descriptor((size_s, ), type_s, None)
+    cdef utils.dpnp_descriptor res_vt = utils.create_output_descriptor((size_n, size_n), kernel_data.return_type, None)
 
     cdef custom_linalg_1in_3out_shape_t func = < custom_linalg_1in_3out_shape_t > kernel_data.ptr
 
     func(x1.get_data(), res_u.get_data(), res_s.get_data(), res_vt.get_data(), size_m, size_n)
 
-    return (res_u, res_s, res_vt)
+    return (res_u.get_pyobj(), res_s.get_pyobj(), res_vt.get_pyobj())
