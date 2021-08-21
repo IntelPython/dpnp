@@ -38,6 +38,8 @@ from dpnp.dpnp_algo cimport dpnp_DPNPFuncType_to_dtype, dpnp_dtype_to_DPNPFuncTy
 from libcpp cimport bool as cpp_bool
 from libcpp.complex cimport complex as cpp_complex
 
+from dpnp.dparray import dparray
+
 cimport cpython
 cimport cython
 cimport numpy
@@ -69,12 +71,10 @@ __all__ = [
     "checker_throw_type_error",
     "checker_throw_value_error",
     "create_output_descriptor_py",
-    "dp2nd_array",
     "dpnp_descriptor",
     "get_axis_indeces",
     "get_axis_offsets",
     "_get_linear_index",
-    "nd2dp_array",
     "normalize_axis",
     "_object_to_tuple",
     "use_origin_backend"
@@ -207,10 +207,6 @@ cpdef dpnp_descriptor create_output_descriptor_py(shape_type_c output_shape, obj
 
     return create_output_descriptor(output_shape, c_type, requested_out)
 
-
-cpdef dp2nd_array(arr):
-    """Convert dparray to ndarray"""
-    return dpnp.asnumpy(arr) if isinstance(arr, dparray) else arr
 
 cdef long container_copy(object dst_obj, object src_obj, size_t dst_idx = 0) except -1:
     cdef elem_dtype = dst_obj.dtype
@@ -419,18 +415,6 @@ cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
             result_desc = dpnp_descriptor(requested_out)
 
     return result_desc
-
-
-cpdef nd2dp_array(arr):
-    """Convert ndarray to dparray"""
-    if not isinstance(arr, numpy.ndarray):
-        return arr
-
-    result = dparray(arr.shape, dtype=arr.dtype)
-    for i in range(result.size):
-        result._setitem_scalar(i, arr.item(i))
-
-    return result
 
 
 cpdef shape_type_c normalize_axis(object axis_obj, size_t shape_size_inp):
