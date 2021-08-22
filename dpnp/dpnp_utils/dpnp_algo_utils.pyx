@@ -150,7 +150,7 @@ def call_origin(function, *args, **kwargs):
             if (kwargs_dtype is not None):
                 result_dtype = kwargs_dtype
 
-            result = dparray(result_origin.shape, dtype=result_dtype)
+            result = create_output_container(result_origin.shape, result_dtype)
         else:
             result = kwargs_out
 
@@ -158,12 +158,12 @@ def call_origin(function, *args, **kwargs):
             result.flat[i] = result_origin.item(i)
 
     elif isinstance(result, tuple):
-        # convert tuple(ndarray) to tuple(dparray)
+        # convert tuple(fallback_array) to tuple(result_array)
         result_list = []
         for res_origin in result:
             res = res_origin
             if isinstance(res_origin, numpy.ndarray):
-                res = dparray(res_origin.shape, dtype=res_origin.dtype)
+                res = create_output_container(res_origin.shape, res_origin.dtype)
                 for i in range(res.size):
                     res.flat[i] = res_origin.item(i)
             result_list.append(res)
@@ -384,6 +384,20 @@ cdef DPNPFuncType get_output_c_type(DPNPFuncName funcID,
     checker_throw_value_error("get_output_c_type", "dtype and out", requested_dtype, requested_out)
 
 
+def create_output_container(shape, type):
+    if config.__DPNP_OUTPUT_NUMPY__:
+        """ Create NumPy ndarray """
+        # TODO need to use "buffer=" parameter to use SYCL aware memory
+        result = numpy.ndarray(shape, dtype=type)
+    elif config.__DPNP_DPCTL_AVAILABLE__:
+        """ Create DPCTL array """
+        result = dpctl.usm_ndarray(shape, dtype=numpy.dtype(type).name)
+    else:
+        """ Create DPNP array """
+        result = dparray(shape, dtype=type)
+
+    return result    
+    
 cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
                                               DPNPFuncType c_type,
                                               dpnp_descriptor requested_out):
@@ -392,18 +406,8 @@ cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
     if requested_out is None:
         result = None
         result_dtype = dpnp_DPNPFuncType_to_dtype( < size_t > c_type)
-        if config.__DPNP_OUTPUT_NUMPY__:
-            """ Create NumPy ndarray """
-            # TODO need to use "buffer=" parameter to use SYCL aware memory
-            result = numpy.ndarray(output_shape, dtype=result_dtype)
-        elif config.__DPNP_DPCTL_AVAILABLE__:
-            """ Create DPCTL array """
-            result = dpctl.usm_ndarray(output_shape, dtype=numpy.dtype(result_dtype).name)
-        else:
-            """ Create DPNP array """
-            result = dparray(output_shape, dtype=result_dtype)
-
-        result_desc = dpnp_descriptor(result)
+        result_obj = create_output_container(output_shape, result_dtype)
+        result_desc = dpnp_descriptor(result_obj)
     else:
         """ Based on 'out' parameter """
         if (output_shape != requested_out.shape):
