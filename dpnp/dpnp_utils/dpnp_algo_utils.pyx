@@ -35,6 +35,7 @@ import numpy
 import dpnp.config as config
 import dpnp
 from dpnp.dpnp_algo cimport dpnp_DPNPFuncType_to_dtype, dpnp_dtype_to_DPNPFuncType, get_dpnp_function_ptr
+from dpnp.dpnp_container import create_output_container
 from libcpp cimport bool as cpp_bool
 from libcpp.complex cimport complex as cpp_complex
 
@@ -44,21 +45,6 @@ cimport cpython
 cimport cython
 cimport numpy
 
-try:
-    """
-    Detect DPCtl availability to use data container
-    """
-    import dpctl.tensor as dpctl
-
-    config.__DPNP_DPCTL_AVAILABLE__ = True
-
-except ImportError:
-    """
-    No DPCtl data container available
-    """
-    config.__DPNP_DPCTL_AVAILABLE__ = False
-
-# config.__DPNP_DPCTL_AVAILABLE__ = False
 
 """
 Python import functions
@@ -384,20 +370,6 @@ cdef DPNPFuncType get_output_c_type(DPNPFuncName funcID,
     checker_throw_value_error("get_output_c_type", "dtype and out", requested_dtype, requested_out)
 
 
-def create_output_container(shape, type):
-    if config.__DPNP_OUTPUT_NUMPY__:
-        """ Create NumPy ndarray """
-        # TODO need to use "buffer=" parameter to use SYCL aware memory
-        result = numpy.ndarray(shape, dtype=type)
-    elif config.__DPNP_DPCTL_AVAILABLE__:
-        """ Create DPCTL array """
-        result = dpctl.usm_ndarray(shape, dtype=numpy.dtype(type).name)
-    else:
-        """ Create DPNP array """
-        result = dparray(shape, dtype=type)
-
-    return result    
-    
 cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
                                               DPNPFuncType c_type,
                                               dpnp_descriptor requested_out):
