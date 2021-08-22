@@ -286,24 +286,21 @@ cdef tuple get_shape_dtype(object input_obj):
 
 
 cpdef find_common_type(object x1_obj, object x2_obj):
-    cdef bint x1_obj_is_dparray = isinstance(x1_obj, dparray)
-    cdef bint x2_obj_is_dparray = isinstance(x2_obj, dparray)
-
     _, x1_dtype = get_shape_dtype(x1_obj)
     _, x2_dtype = get_shape_dtype(x2_obj)
 
     cdef list array_types = []
     cdef list scalar_types = []
 
-    if x1_obj_is_dparray:
-        array_types.append(x1_dtype)
-    else:
+    if dpnp.isscalar(x1_obj):
         scalar_types.append(x1_dtype)
-
-    if x2_obj_is_dparray:
-        array_types.append(x2_dtype)
     else:
+        array_types.append(x1_dtype)
+
+    if dpnp.isscalar(x2_obj):
         scalar_types.append(x2_dtype)
+    else:
+        array_types.append(x2_dtype)
 
     return numpy.find_common_type(array_types, scalar_types)
 
