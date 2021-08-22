@@ -274,7 +274,7 @@ cdef tuple get_shape_dtype(object input_obj):
     return_dtype = None
 
     # TODO replace with checking "shape" and "dtype" attributes
-    if issubclass(type(input_obj), (numpy.ndarray, dparray)):
+    if hasattr(input_obj, "shape") and hasattr(input_obj, "dtype"):
         return (input_obj.shape, input_obj.dtype)
 
     cdef shape_type_c elem_shape
