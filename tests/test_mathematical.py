@@ -148,6 +148,9 @@ class TestMathematical:
     def test_multiply(self, dtype, lhs, rhs):
         self._test_mathematical('multiply', dtype, lhs, rhs)
 
+    def test_remainder(self, dtype, lhs, rhs):
+        self._test_mathematical('remainder', dtype, lhs, rhs)
+
     def test_power(self, dtype, lhs, rhs):
         self._test_mathematical('power', dtype, lhs, rhs)
 
@@ -328,8 +331,8 @@ class TestTrapz:
         np_x = numpy.array(x_array, dtype=data_type_x)
         dpnp_x = dpnp.array(x_array, dtype=data_type_x)
 
-        result = dpnp.trapz(dpnp_y, x=dpnp_x)
-        expected = numpy.trapz(np_y, x=np_x)
+        result = dpnp.trapz(dpnp_y, dpnp_x)
+        expected = numpy.trapz(np_y, np_x)
         numpy.testing.assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("array", [[1, 2, 3], [4, 5, 6]])
@@ -337,8 +340,8 @@ class TestTrapz:
         np_a = numpy.array(array)
         dpnp_a = dpnp.array(array)
 
-        result = dpnp.trapz(dpnp_a, x=dpnp_a)
-        expected = numpy.trapz(np_a, x=np_a)
+        result = dpnp.trapz(dpnp_a, dpnp_a)
+        expected = numpy.trapz(np_a, np_a)
         numpy.testing.assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("y_array", [[1, 2, 4, 5],

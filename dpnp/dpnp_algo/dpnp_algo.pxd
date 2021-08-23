@@ -27,7 +27,7 @@
 
 from libcpp.vector cimport vector
 from libcpp cimport bool as cpp_bool
-from dpnp.dparray cimport dparray
+
 from dpnp.dpnp_utils.dpnp_algo_utils cimport dpnp_descriptor
 
 
@@ -235,8 +235,8 @@ ctypedef void(*fptr_2in_1out_t)(void * , const void * , const size_t, const long
 ctypedef void(*fptr_blas_gemm_2in_1out_t)(void *, void * , void * , size_t, size_t, size_t)
 ctypedef void(*dpnp_reduction_c_t)(void *, const void * , const size_t*, const size_t, const long*, const size_t, const void * , const long*)
 
-cpdef dparray dpnp_astype(dparray array1, dtype_target)
-cpdef dparray dpnp_flatten(dparray array1)
+cpdef dpnp_descriptor dpnp_astype(dpnp_descriptor array1, dtype)
+cpdef dpnp_descriptor dpnp_flatten(dpnp_descriptor array1)
 
 
 """

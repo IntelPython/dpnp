@@ -1307,10 +1307,11 @@ def shuffle(x1):
         if not dpnp.is_type_supported(x1_desc.dtype):
             pass
         else:
-            result = dpnp_rng_shuffle(x1_desc).get_pyobj()
-            return result
+            dpnp_rng_shuffle(x1_desc).get_pyobj()
+            return
 
-    return call_origin(numpy.random.shuffle, x1)
+    call_origin(numpy.random.shuffle, x1, dpnp_inplace=True)
+    return
 
 
 def seed(seed=None):
