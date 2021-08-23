@@ -69,7 +69,17 @@ def create_output_container(shape, type):
         result = numpy.ndarray(shape, dtype=type)
     elif config.__DPNP_DPCTL_AVAILABLE__:
         """ Create DPCTL array """
-        result = dpctl.usm_ndarray(shape, dtype=numpy.dtype(type).name)
+        if config.__DPNP_OUTPUT_DPCTL_DEFAULT_SHARED__:
+            """
+            From DPCtrl documentation:
+            'buffer can be strings ('device'|'shared'|'host' to allocate new memory)'
+            """
+            result = dpctl.usm_ndarray(shape, dtype=numpy.dtype(type).name, buffer='shared')
+        else:
+            """
+            Can't pass 'None' as buffer= parameter to allow DPCtrl uses it's default
+            """
+            result = dpctl.usm_ndarray(shape, dtype=numpy.dtype(type).name)
     else:
         """ Create DPNP array """
         result = dparray(shape, dtype=type)
