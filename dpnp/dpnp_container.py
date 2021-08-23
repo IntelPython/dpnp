@@ -85,3 +85,20 @@ def create_output_container(shape, type):
         result = dparray(shape, dtype=type)
 
     return result    
+
+
+def container_copy(dst_obj, src_obj, dst_idx = 0):
+    """
+    Copy values to `dst` by iterating element by element in `input_obj`
+    """
+
+    for elem_value in src_obj:
+        if isinstance(elem_value, (list, tuple)):
+            dst_idx = container_copy(dst_obj, elem_value, dst_idx)
+        elif issubclass(type(elem_value), (numpy.ndarray, dparray)):
+            dst_idx = container_copy(dst_obj, elem_value, dst_idx)
+        else:
+            dst_obj.flat[dst_idx] = elem_value
+            dst_idx += 1
+
+    return dst_idx
