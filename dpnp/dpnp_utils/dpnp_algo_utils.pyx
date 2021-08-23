@@ -35,11 +35,9 @@ import numpy
 import dpnp.config as config
 import dpnp
 from dpnp.dpnp_algo cimport dpnp_DPNPFuncType_to_dtype, dpnp_dtype_to_DPNPFuncType, get_dpnp_function_ptr
-from dpnp.dpnp_container import create_output_container
+from dpnp.dpnp_container import create_output_container, container_copy
 from libcpp cimport bool as cpp_bool
 from libcpp.complex cimport complex as cpp_complex
-
-from dpnp.dparray import dparray
 
 cimport cpython
 cimport cython
@@ -192,21 +190,6 @@ cpdef dpnp_descriptor create_output_descriptor_py(shape_type_c output_shape, obj
     cdef DPNPFuncType c_type = dpnp_dtype_to_DPNPFuncType(py_type)
 
     return create_output_descriptor(output_shape, c_type, requested_out)
-
-
-cdef long container_copy(object dst_obj, object src_obj, size_t dst_idx = 0) except -1:
-    cdef elem_dtype = dst_obj.dtype
-
-    for elem_value in src_obj:
-        if isinstance(elem_value, (list, tuple)):
-            dst_idx = container_copy(dst_obj, elem_value, dst_idx)
-        elif issubclass(type(elem_value), (numpy.ndarray, dparray)):
-            dst_idx = container_copy(dst_obj, elem_value, dst_idx)
-        else:
-            dst_obj.flat[dst_idx] = elem_value
-            dst_idx += 1
-
-    return dst_idx
 
 
 cpdef tuple get_axis_indeces(idx, shape):
