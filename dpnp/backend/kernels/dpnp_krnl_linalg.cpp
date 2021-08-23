@@ -190,17 +190,17 @@ void dpnp_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
     return;
 }
 
-template <typename _DataType>
+template <typename _DataType, typename _ResultType>
 void dpnp_inv_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
 {
     (void)ndim; // avoid warning unused variable
     _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
+    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
 
     size_t n = shape[0];
 
-    _DataType a_arr[n][n];
-    _DataType e_arr[n][n];
+    _ResultType a_arr[n][n];
+    _ResultType e_arr[n][n];
 
     for (size_t i = 0; i < n; ++i)
     {
@@ -541,10 +541,10 @@ void func_map_init_linalg_func(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_DET][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_det_c<float>};
     fmap[DPNPFuncName::DPNP_FN_DET][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_det_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_INV][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_inv_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_INV][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_inv_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_INV][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_inv_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_INV][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_inv_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_INV][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_inv_c<int, double>};
+    fmap[DPNPFuncName::DPNP_FN_INV][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_inv_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_INV][eft_FLT][eft_FLT] = {eft_DBL, (void*)dpnp_inv_c<float, double>};
+    fmap[DPNPFuncName::DPNP_FN_INV][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_inv_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_kron_c<int, int, int>};
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_kron_c<int, long, long>};
