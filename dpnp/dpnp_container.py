@@ -40,21 +40,18 @@ from dpnp.dparray import dparray
 import numpy
 
 
-try:
-    """
-    Detect DPCtl availability to use data container
-    """
-    import dpctl.tensor as dpctl
+if config.__DPNP_OUTPUT_DPCTL__:
+    try:
+        """
+        Detect DPCtl availability to use data container
+        """
+        import dpctl.tensor as dpctl
 
-    config.__DPNP_DPCTL_AVAILABLE__ = True
-
-except ImportError:
-    """
-    No DPCtl data container available
-    """
-    config.__DPNP_DPCTL_AVAILABLE__ = False
-
-# config.__DPNP_DPCTL_AVAILABLE__ = False
+    except ImportError:
+        """
+        No DPCtl data container available
+        """
+        config.__DPNP_OUTPUT_DPCTL__ = 0
 
 
 __all__ = [
@@ -67,7 +64,7 @@ def create_output_container(shape, type):
         """ Create NumPy ndarray """
         # TODO need to use "buffer=" parameter to use SYCL aware memory
         result = numpy.ndarray(shape, dtype=type)
-    elif config.__DPNP_DPCTL_AVAILABLE__:
+    elif config.__DPNP_OUTPUT_DPCTL__:
         """ Create DPCTL array """
         if config.__DPNP_OUTPUT_DPCTL_DEFAULT_SHARED__:
             """
