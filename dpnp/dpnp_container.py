@@ -40,21 +40,18 @@ from dpnp.dparray import dparray
 import numpy
 
 
-try:
-    """
-    Detect DPCtl availability to use data container
-    """
-    import dpctl.tensor as dpctl
+if config.__DPNP_OUTPUT_DPCTL__:
+    try:
+        """
+        Detect DPCtl availability to use data container
+        """
+        import dpctl.tensor as dpctl
 
-    config.__DPNP_DPCTL_AVAILABLE__ = True
-
-except ImportError:
-    """
-    No DPCtl data container available
-    """
-    config.__DPNP_DPCTL_AVAILABLE__ = False
-
-# config.__DPNP_DPCTL_AVAILABLE__ = False
+    except ImportError:
+        """
+        No DPCtl data container available
+        """
+        config.__DPNP_OUTPUT_DPCTL__ = 0
 
 
 __all__ = [
@@ -67,11 +64,38 @@ def create_output_container(shape, type):
         """ Create NumPy ndarray """
         # TODO need to use "buffer=" parameter to use SYCL aware memory
         result = numpy.ndarray(shape, dtype=type)
-    elif config.__DPNP_DPCTL_AVAILABLE__:
+    elif config.__DPNP_OUTPUT_DPCTL__:
         """ Create DPCTL array """
-        result = dpctl.usm_ndarray(shape, dtype=numpy.dtype(type).name)
+        if config.__DPNP_OUTPUT_DPCTL_DEFAULT_SHARED__:
+            """
+            From DPCtrl documentation:
+            'buffer can be strings ('device'|'shared'|'host' to allocate new memory)'
+            """
+            result = dpctl.usm_ndarray(shape, dtype=numpy.dtype(type).name, buffer='shared')
+        else:
+            """
+            Can't pass 'None' as buffer= parameter to allow DPCtrl uses it's default
+            """
+            result = dpctl.usm_ndarray(shape, dtype=numpy.dtype(type).name)
     else:
         """ Create DPNP array """
         result = dparray(shape, dtype=type)
 
     return result    
+
+
+def container_copy(dst_obj, src_obj, dst_idx = 0):
+    """
+    Copy values to `dst` by iterating element by element in `input_obj`
+    """
+
+    for elem_value in src_obj:
+        if isinstance(elem_value, (list, tuple)):
+            dst_idx = container_copy(dst_obj, elem_value, dst_idx)
+        elif issubclass(type(elem_value), (numpy.ndarray, dparray)):
+            dst_idx = container_copy(dst_obj, elem_value, dst_idx)
+        else:
+            dst_obj.flat[dst_idx] = elem_value
+            dst_idx += 1
+
+    return dst_idx
