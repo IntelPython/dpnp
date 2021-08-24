@@ -200,7 +200,7 @@ def array(x1, dtype=None, copy=True, order='C', subok=False, ndmin=0, like=None)
         # usm_array has no element wise assignment (aka []) and
         # has no "flat" property and
         # "usm_data.copy_from_host" doesn't work with diffrent datatypes
-        return numpy.array(x1, dtype=dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)
+        return call_origin(numpy.array, x1, dtype=dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)
     elif subok is not False:
         pass
     elif copy is not True:

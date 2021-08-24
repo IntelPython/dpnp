@@ -43,6 +43,11 @@ __DPNP_OUTPUT_NUMPY__ = int(os.getenv('DPNP_OUTPUT_NUMPY', 0))
 Explicitly use NumPy.ndarray as return type for creation functions
 '''
 
+__DPNP_OUTPUT_DPCTL__ = int(os.getenv('DPNP_OUTPUT_DPCTL', 0))
+'''
+Explicitly use DPCtl array as return type for creation functions
+'''
+
 __DPNP_OUTPUT_DPCTL_DEFAULT_SHARED__ = int(os.getenv('DPNP_OUTPUT_DPCTL_DEFAULT_SHARED', 0))
 '''
 Explicitly use SYCL shared memory parameter in DPCtl array constructor for creation functions

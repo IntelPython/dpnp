@@ -33,6 +33,7 @@ This module contains code and dependency on diffrent containers used in DPNP
 
 """
 
+import warnings
 
 import dpnp.config as config
 from dpnp.dparray import dparray
@@ -47,6 +48,9 @@ try:
     import dpctl.tensor as dpctl
 
     config.__DPNP_DPCTL_AVAILABLE__ = True
+
+    if not config.__DPNP_OUTPUT_DPCTL__:
+        warnings.warn("\nDPNP: Module DPCtl found, but not used. Please set DPNP_OUTPUT_DPCTL=1 to use it.\n")
 
 except ImportError:
     """
@@ -67,7 +71,7 @@ def create_output_container(shape, type):
         """ Create NumPy ndarray """
         # TODO need to use "buffer=" parameter to use SYCL aware memory
         result = numpy.ndarray(shape, dtype=type)
-    elif config.__DPNP_DPCTL_AVAILABLE__:
+    elif config.__DPNP_OUTPUT_DPCTL__ and config.__DPNP_DPCTL_AVAILABLE__:
         """ Create DPCTL array """
         if config.__DPNP_OUTPUT_DPCTL_DEFAULT_SHARED__:
             """
