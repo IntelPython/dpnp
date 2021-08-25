@@ -28,7 +28,6 @@
 from libcpp cimport bool as cpp_bool
 from libcpp.vector cimport vector
 
-from dpnp.dparray cimport dparray
 from dpnp.dpnp_algo.dpnp_algo cimport DPNPFuncType, DPNPFuncName
 
 
@@ -87,7 +86,7 @@ Conversion of the transformation shape axis [-1, 0, 1] into [2, 0, 1] where numb
 
 cdef tuple get_shape_dtype(object input_obj)
 """
-input_obj: Complex object with lists, scalars and dparrays
+input_obj: Complex object with lists, scalars and numpy-like arrays
 
 Returns a tuple of:
 1. concatenated shape, empty `shape_type_c` if unsuccessful.
@@ -99,10 +98,6 @@ cpdef find_common_type(object x1_obj, object x2_obj)
 Find common type of 2 input objects
 """
 
-cdef long container_copy(object dst_obj, object src_obj, size_t dst_idx=*) except -1
-"""
-Copy values to `dst` by iterating element by element in `input_obj`
-"""
 
 cpdef long _get_linear_index(key, tuple shape, int ndim)
 """
@@ -117,16 +112,6 @@ Compute axis indices of an element in array from array linear index
 cpdef tuple get_axis_offsets(shape)
 """
 Compute axis offsets in the linear array memory
-"""
-
-cpdef dp2nd_array(arr)
-"""
-Convert dparray to ndarray
-"""
-
-cpdef nd2dp_array(arr)
-"""
-Convert ndarray to dparray
 """
 
 cdef class dpnp_descriptor:

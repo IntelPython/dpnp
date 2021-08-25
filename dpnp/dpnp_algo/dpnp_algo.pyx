@@ -36,10 +36,11 @@ from libc.time cimport time, time_t
 import dpnp
 import dpnp.config as config
 import dpnp.dpnp_utils as utils_py
+from dpnp.dpnp_container import container_copy
+
 import numpy
 
 cimport cpython
-from dpnp.dparray cimport dparray
 cimport dpnp.dpnp_utils as utils
 cimport numpy
 
@@ -119,7 +120,7 @@ cpdef utils.dpnp_descriptor dpnp_array(object obj, object dtype=None):
         else:
             result = utils_py.create_output_descriptor_py(obj_shape, obj_dtype, None)
 
-    utils.container_copy(result.get_pyobj(), obj)
+    container_copy(result.get_pyobj(), obj)
 
     return result
 
