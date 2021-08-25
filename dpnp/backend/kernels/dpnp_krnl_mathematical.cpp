@@ -46,8 +46,6 @@ void dpnp_around_c(const void* input_in, void* result_out, const size_t input_si
         return;
     }
 
-    input_in = get_memory_pointer(DPNP_QUEUE, input_in);
-
     cl::sycl::event event;
     _DataType* input = reinterpret_cast<_DataType*>(const_cast<void*>(input_in));
     _DataType* result = reinterpret_cast<_DataType*>(result_out);
@@ -80,7 +78,7 @@ template <typename _KernelNameSpecialization>
 class dpnp_elemwise_absolute_c_kernel;
 
 template <typename _DataType>
-void dpnp_elemwise_absolute_c(void* array1_in, void* result1, size_t size)
+void dpnp_elemwise_absolute_c(const void* input1_in, void* result1, size_t size)
 {
     if (!size)
     {
@@ -88,7 +86,8 @@ void dpnp_elemwise_absolute_c(void* array1_in, void* result1, size_t size)
     }
 
     cl::sycl::event event;
-    _DataType* array1 = reinterpret_cast<_DataType*>(array1_in);
+    DPNPC_ptr_converter<_DataType> input1_ptr(&DPNP_QUEUE, input1_in, size);
+    _DataType* array1 = input1_ptr.get_ptr();
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
     if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
@@ -122,10 +121,10 @@ void dpnp_elemwise_absolute_c(void* array1_in, void* result1, size_t size)
     event.wait();
 }
 
-template void dpnp_elemwise_absolute_c<double>(void* array1_in, void* result1, size_t size);
-template void dpnp_elemwise_absolute_c<float>(void* array1_in, void* result1, size_t size);
-template void dpnp_elemwise_absolute_c<long>(void* array1_in, void* result1, size_t size);
-template void dpnp_elemwise_absolute_c<int>(void* array1_in, void* result1, size_t size);
+// template void dpnp_elemwise_absolute_c<double>(void* array1_in, void* result1, size_t size);
+// template void dpnp_elemwise_absolute_c<float>(void* array1_in, void* result1, size_t size);
+// template void dpnp_elemwise_absolute_c<long>(void* array1_in, void* result1, size_t size);
+// template void dpnp_elemwise_absolute_c<int>(void* array1_in, void* result1, size_t size);
 
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
 void dpnp_cross_c(void* result_out,
@@ -147,9 +146,12 @@ void dpnp_cross_c(void* result_out,
     (void)input2_shape_ndim;
     (void)where;
 
-    const _DataType_input1* input1 = reinterpret_cast<const _DataType_input1*>(input1_in);
-    const _DataType_input2* input2 = reinterpret_cast<const _DataType_input2*>(input2_in);
-    _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
+    DPNPC_ptr_converter<_DataType_input1> input1_ptr(nullptr, input1_in, input1_size);
+    DPNPC_ptr_converter<_DataType_input2> input2_ptr(nullptr, input2_in, input2_size);
+    DPNPC_ptr_converter<_DataType_output> result_ptr(nullptr, result_out, std::max(input1_size, input2_size), true);
+    const _DataType_input1* input1 = input1_ptr.get_ptr();
+    const _DataType_input2* input2 = input2_ptr.get_ptr();
+    _DataType_output* result = result_ptr.get_ptr();
 
     result[0] = input1[1] * input2[2] - input1[2] * input2[1];
 

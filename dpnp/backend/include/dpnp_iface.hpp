@@ -234,12 +234,12 @@ INP_DLLEXPORT void
  * @ingroup BACKEND_API
  * @brief absolute function.
  *
- * @param [in]  array1_in    Input array.
+ * @param [in]  input1_in    Input array.
  * @param [out] result1      Output array.
  * @param [in]  size         Number of elements in input arrays.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_elemwise_absolute_c(void* array1_in, void* result1, size_t size);
+INP_DLLEXPORT void dpnp_elemwise_absolute_c(const void* input1_in, void* result1, size_t size);
 
 /**
  * @ingroup BACKEND_API
