@@ -33,6 +33,97 @@
 #include "dpnp_utils.hpp"
 #include "queue_sycl.hpp"
 
+template <typename _DataType>
+class DPNPC_ptr_adapter final
+{
+    void* aux_ptr = nullptr;
+    void* orig_ptr = nullptr;
+    size_t size_in_bytes = 0;
+    bool allocated = false;
+    bool copy_back = false;
+    const bool verbose = false;
+
+public:
+    DPNPC_ptr_adapter() = delete;
+
+    DPNPC_ptr_adapter(const void* src_ptr, const size_t size, bool copy_back_request = false)
+    {
+        copy_back = copy_back_request;
+        orig_ptr = const_cast<void*>(src_ptr);
+        size_in_bytes = size * sizeof(_DataType);
+
+        // enum class alloc { host = 0, device = 1, shared = 2, unknown = 3 };
+        cl::sycl::usm::alloc src_ptr_type = cl::sycl::usm::alloc::unknown;
+        src_ptr_type = cl::sycl::get_pointer_type(src_ptr, DPNP_QUEUE.get_context());
+       if (verbose)
+       {
+            std::cerr << "DPNPC_ptr_converter:";
+            std::cerr << "\n\t pointer=" << src_ptr;
+            std::cerr << "\n\t size=" << size;
+            std::cerr << "\n\t size_in_bytes=" << size_in_bytes;
+            std::cerr << "\n\t pointer type=" << (long)src_ptr_type;
+            std::cerr << "\n\t queue inorder=" << DPNP_QUEUE.is_in_order();
+            std::cerr << "\n\t queue is_host=" << DPNP_QUEUE.is_host();
+            std::cerr << "\n\t queue device is_host=" << DPNP_QUEUE.get_device().is_host();
+            std::cerr << "\n\t queue device is_cpu=" << DPNP_QUEUE.get_device().is_cpu();
+            std::cerr << "\n\t queue device is_gpu=" << DPNP_QUEUE.get_device().is_gpu();
+            std::cerr << "\n\t queue device is_accelerator=" << DPNP_QUEUE.get_device().is_accelerator();
+            std::cerr << std::endl;
+       }
+
+        if (is_memcpy_required(src_ptr_type))
+        {
+            aux_ptr = dpnp_memory_alloc_c(size_in_bytes);
+            dpnp_memory_memcpy_c(aux_ptr, src_ptr, size_in_bytes);
+            allocated = true;
+            if (verbose)
+            {
+                std::cerr << "DPNPC_ptr_converter::alloc and copy memory to=" << aux_ptr << std::endl;
+            }
+        }
+        else
+        {
+            aux_ptr = const_cast<void*>(src_ptr);
+        }
+    }
+
+    ~DPNPC_ptr_adapter()
+    {
+        if (allocated)
+        {
+            if (verbose) std::cerr << "DPNPC_ptr_converter::free_memory at=" << aux_ptr << std::endl;
+            if (copy_back)
+            {
+                copy_data_back();
+            }
+
+            dpnp_memory_free_c(aux_ptr);
+        }
+    }
+
+    bool is_memcpy_required(cl::sycl::usm::alloc src_ptr_type)
+    {
+        if (src_ptr_type == cl::sycl::usm::alloc::unknown)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    _DataType* get_ptr() const
+    {
+        return reinterpret_cast<_DataType*>(aux_ptr);
+    }
+
+    void copy_data_back() const
+    {
+        if (verbose) std::cerr << "DPNPC_ptr_converter::copy_data_back to=" << orig_ptr << std::endl;
+        dpnp_memory_memcpy_c(orig_ptr, aux_ptr, size_in_bytes);
+    }
+};
+
+
 template <typename _KernelNameSpecialization>
 class dpnp_around_c_kernel;
 
@@ -86,7 +177,7 @@ void dpnp_elemwise_absolute_c(const void* input1_in, void* result1, size_t size)
     }
 
     cl::sycl::event event;
-    DPNPC_ptr_converter<_DataType> input1_ptr(&DPNP_QUEUE, input1_in, size);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(input1_in, size);
     _DataType* array1 = input1_ptr.get_ptr();
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
@@ -146,9 +237,9 @@ void dpnp_cross_c(void* result_out,
     (void)input2_shape_ndim;
     (void)where;
 
-    DPNPC_ptr_converter<_DataType_input1> input1_ptr(nullptr, input1_in, input1_size);
-    DPNPC_ptr_converter<_DataType_input2> input2_ptr(nullptr, input2_in, input2_size);
-    DPNPC_ptr_converter<_DataType_output> result_ptr(nullptr, result_out, std::max(input1_size, input2_size), true);
+    DPNPC_ptr_adapter<_DataType_input1> input1_ptr(input1_in, input1_size);
+    DPNPC_ptr_adapter<_DataType_input2> input2_ptr(input2_in, input2_size);
+    DPNPC_ptr_adapter<_DataType_output> result_ptr(result_out, std::max(input1_size, input2_size), true);
     const _DataType_input1* input1 = input1_ptr.get_ptr();
     const _DataType_input2* input2 = input2_ptr.get_ptr();
     _DataType_output* result = result_ptr.get_ptr();
@@ -158,6 +249,8 @@ void dpnp_cross_c(void* result_out,
     result[1] = input1[2] * input2[0] - input1[0] * input2[2];
 
     result[2] = input1[0] * input2[1] - input1[1] * input2[0];
+
+    result_ptr.copy_data_back();
 
     return;
 }
