@@ -30,6 +30,19 @@
 #include <dpnp_iface.hpp>
 #include "queue_sycl.hpp"
 
+
+static bool get_default_sycl_memory_type()
+{
+    // TODO need to move all getenv() into common dpnpc place
+    const char* dpnpc_memtype_device = getenv("DPNPC_OUTPUT_DPARRAY_USE_MEMORY_DEVICE");
+    if (dpnpc_memtype_device != nullptr)
+    {
+        return true;
+    }
+
+    return false;
+}
+
 // This variable is needed for the NumPy corner case
 // if we have zero memory array (ex. shape=(0,10)) we must keep the pointer to somewhere
 // memory of this variable must not be used
@@ -42,7 +55,12 @@ char* dpnp_memory_alloc_c(size_t size_in_bytes)
     //std::cout << "dpnp_memory_alloc_c(size=" << size_in_bytes << std::flush;
     if (size_in_bytes > 0)
     {
-        array = reinterpret_cast<char*>(malloc_shared(size_in_bytes, DPNP_QUEUE));
+        cl::sycl::usm::alloc memory_type = cl::sycl::usm::alloc::shared;
+        if (get_default_sycl_memory_type())
+        {
+            memory_type = cl::sycl::usm::alloc::device;
+        }
+        array = reinterpret_cast<char*>(malloc(size_in_bytes, DPNP_QUEUE, memory_type));
         if (array == nullptr)
         {
             // TODO add information about number of allocated bytes
