@@ -31,7 +31,7 @@
 #include "queue_sycl.hpp"
 
 
-static bool get_default_sycl_memory_type()
+static bool use_sycl_device_memory()
 {
     // TODO need to move all getenv() into common dpnpc place
     const char* dpnpc_memtype_device = getenv("DPNPC_OUTPUT_DPARRAY_USE_MEMORY_DEVICE");
@@ -56,7 +56,7 @@ char* dpnp_memory_alloc_c(size_t size_in_bytes)
     if (size_in_bytes > 0)
     {
         cl::sycl::usm::alloc memory_type = cl::sycl::usm::alloc::shared;
-        if (get_default_sycl_memory_type())
+        if (use_sycl_device_memory())
         {
             memory_type = cl::sycl::usm::alloc::device;
         }
