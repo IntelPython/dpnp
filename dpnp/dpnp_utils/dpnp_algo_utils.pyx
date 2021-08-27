@@ -565,7 +565,7 @@ cdef class dpnp_descriptor:
         return self.origin_pyobj
 
     cdef void * get_data(self):
-        cdef long val = self.data
+        cdef size_t val = self.data
         return < void * > val
 
     def __bool__(self):
