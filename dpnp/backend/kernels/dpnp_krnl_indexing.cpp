@@ -32,6 +32,21 @@
 #include "queue_sycl.hpp"
 
 template <typename _DataType>
+class dpnp_diag_indices_c_kernel;
+
+template <typename _DataType>
+void dpnp_diag_indices_c(void* result1, size_t shape, size_t res_ndim)
+{
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
+    for (size_t i = 0; i < res_ndim; ++i) {
+        for (size_t j = 0; j < shape; ++j)
+            result[j + (i*shape)] = j;
+    }
+
+    return;
+}
+
+template <typename _DataType>
 class dpnp_diagonal_c_kernel;
 
 template <typename _DataType>
@@ -484,6 +499,11 @@ void dpnp_take_c(void* array1_in, void* indices1, void* result1, size_t size)
 
 void func_map_init_indexing_func(func_map_t& fmap)
 {
+    fmap[DPNPFuncName::DPNP_FN_DIAG_INDICES][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_diag_indices_c<int>};
+    fmap[DPNPFuncName::DPNP_FN_DIAG_INDICES][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_diag_indices_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_DIAG_INDICES][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_diag_indices_c<float>};
+    fmap[DPNPFuncName::DPNP_FN_DIAG_INDICES][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_diag_indices_c<double>};
+
     fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_diagonal_c<int>};
     fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_diagonal_c<long>};
     fmap[DPNPFuncName::DPNP_FN_DIAGONAL][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_diagonal_c<float>};

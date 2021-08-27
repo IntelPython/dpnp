@@ -581,6 +581,17 @@ INP_DLLEXPORT void dpnp_diag_c(
  * @ingroup BACKEND_API
  * @brief math library implementation of diagonal function
  *
+ * @param [out] result      Output array.
+ * @param [in]  shape       Size of array
+ * @param [in]  ndim        Number of elements in shape.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_diag_indices_c(void* result1, size_t shape, size_t res_ndim);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of diagonal function
+ *
  * @param [in]  array   Input array with data.
  * @param [out] result  Output array.
  * @param [in]  offset  Offset of the diagonal from the main diagonal.

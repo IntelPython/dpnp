@@ -54,7 +54,7 @@ __all__ += [
     "dpnp_triu_indices_from"
 ]
 
-
+ctypedef void(*fptr_dpnp_diag_indices)(void*, size_t, size_t)
 ctypedef void(*custom_indexing_2in_1out_func_ptr_t)(void *, void * , void * , size_t)
 ctypedef void(*custom_indexing_2in_1out_func_ptr_t_)(void * , void * , const size_t, size_t * , size_t * , const size_t)
 ctypedef void(*custom_indexing_2in_func_ptr_t)(void *, void * , size_t * , const size_t)
@@ -75,15 +75,29 @@ cpdef utils.dpnp_descriptor dpnp_choose(object input, list choices):
 
 
 cpdef tuple dpnp_diag_indices(n, ndim):
-    res_item = dpnp.arange(n, dtype=dpnp.int64)
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dpnp.int64)
 
-    # yes, all are the same item
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DIAG_INDICES, param1_type, param1_type)
+
+    # Create result array
+    cdef shape_type_c x = utils._object_to_tuple([1, n])
+    cdef shape_type_c ndim_shape = utils._object_to_tuple([ndim, 1])
+    cdef shape_type_c result_shape = utils.get_common_shape(x, ndim_shape)
+    res_array = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
+    
+    cdef fptr_dpnp_diag_indices func = <fptr_dpnp_diag_indices> kernel_data.ptr
+    func(res_array.get_data(), n, ndim)
+
+    # result = dpnp.array(res_array.get_pyobj(), dtype=res_array.dtype)
+    # result.reshape(result_shape)
+
     result = []
     for i in range(ndim):
-        result.append(res_item)
+        result.append([])
+        for j in range(n):
+            result[i].append(res_array.get_pyobj()[j])
 
     return tuple(result)
-
 
 cpdef utils.dpnp_descriptor dpnp_diagonal(dpnp_descriptor input, offset=0):
     cdef shape_type_c input_shape = input.shape
