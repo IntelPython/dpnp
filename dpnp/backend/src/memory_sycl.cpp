@@ -60,7 +60,7 @@ char* dpnp_memory_alloc_c(size_t size_in_bytes)
         {
             memory_type = cl::sycl::usm::alloc::device;
         }
-        array = reinterpret_cast<char*>(malloc(size_in_bytes, DPNP_QUEUE, memory_type));
+        array = reinterpret_cast<char*>(sycl::malloc(size_in_bytes, DPNP_QUEUE, memory_type));
         if (array == nullptr)
         {
             // TODO add information about number of allocated bytes
@@ -87,7 +87,7 @@ void dpnp_memory_free_c(void* ptr)
     //std::cout << "dpnp_memory_free_c(ptr=" << (void*)ptr << ")" << std::endl;
     if (ptr != numpy_stub)
     {
-        free(ptr, DPNP_QUEUE);
+        sycl::free(ptr, DPNP_QUEUE);
     }
 }
 
@@ -95,5 +95,5 @@ void dpnp_memory_memcpy_c(void* dst, const void* src, size_t size_in_bytes)
 {
     //std::cout << "dpnp_memory_memcpy_c(dst=" << dst << ", src=" << src << ")" << std::endl;
 
-    memcpy(dst, src, size_in_bytes);
+    DPNP_QUEUE.memcpy(dst, src, size_in_bytes).wait();
 }
