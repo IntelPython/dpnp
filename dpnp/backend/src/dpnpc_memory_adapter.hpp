@@ -95,6 +95,7 @@ public:
                 std::cerr << "DPNPC_ptr_converter::alloc and copy memory"
                           << " from=" << src_ptr
                           << " to=" << aux_ptr
+                          << " size_in_bytes=" << size_in_bytes
                           << std::endl;
             }
         }
