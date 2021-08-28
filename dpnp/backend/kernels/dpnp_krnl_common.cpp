@@ -319,7 +319,6 @@ void dpnp_matmul_c(void* array1_in, void* array2_in, void* result1, size_t size_
     _DataType* array_2 = input2_ptr.get_ptr();
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
-
     if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
     {
         // using std::max for these ldx variables is required by math library
