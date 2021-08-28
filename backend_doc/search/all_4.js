@@ -43,7 +43,7 @@ var searchData=
   ['dpnp_5fediff1d_5fc_54',['dpnp_ediff1d_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gadf8b37522ccbe304eab0bb2a25a53703',1,'dpnp_gen_1arg_2type_tbl.hpp']]],
   ['dpnp_5feig_5fc_55',['dpnp_eig_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gac34d83d772ef9b059ff7f09151709304',1,'dpnp_iface.hpp']]],
   ['dpnp_5feigvals_5fc_56',['dpnp_eigvals_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga846b56f4a4c89c24d1b6f9ee5a6ca1a4',1,'dpnp_iface.hpp']]],
-  ['dpnp_5felemwise_5fabsolute_5fc_57',['dpnp_elemwise_absolute_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gab3ed560f1a8a171281e86ea1c0c619ce',1,'dpnp_iface.hpp']]],
+  ['dpnp_5felemwise_5fabsolute_5fc_57',['dpnp_elemwise_absolute_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gad6caac7c43dd14fcd326fa5d0240aeef',1,'dpnp_iface.hpp']]],
   ['dpnp_5felemwise_5ftranspose_5fc_58',['dpnp_elemwise_transpose_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gaa7805d09d9500298c16fefff3446cdb7',1,'dpnp_iface.hpp']]],
   ['dpnp_5ferf_5fc_59',['dpnp_erf_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga211e7d202a770a6e634e88fb14e225e2',1,'dpnp_gen_1arg_1type_tbl.hpp']]],
   ['dpnp_5fexp2_5fc_60',['dpnp_exp2_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga6c157cc4305f594d872b82e8fede8c74',1,'dpnp_gen_1arg_2type_tbl.hpp']]],
@@ -321,8 +321,9 @@ var searchData=
   ['dpnp_5fzeros_5fc_332',['dpnp_zeros_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga906e16d71f40098e50cb56ad7ff7d515',1,'dpnp_iface.hpp']]],
   ['dpnp_5fzeros_5flike_5fc_333',['dpnp_zeros_like_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga62a35488ac07d8f091284333429874f0',1,'dpnp_iface.hpp']]],
   ['dpnpc_5fid_334',['DPNPC_id',['../class_d_p_n_p_c__id.html',1,'DPNPC_id&lt; _Tp &gt;'],['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#gae3c3b0a869dc364c99e7e33e739dfa07',1,'DPNPC_id::DPNPC_id()']]],
-  ['dpnpfuncdata_335',['DPNPFuncData',['../struct_d_p_n_p_func_data.html',1,'']]],
-  ['dpnpfuncdata_5ft_336',['DPNPFuncData_t',['../group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ga52f631e01afd73cc5573f9e8f61bd78f',1,'dpnp_iface_fptr.hpp']]],
-  ['dpnpfuncname_337',['DPNPFuncName',['../group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ga8b20590525bff7c7ce4f728d2021b558',1,'dpnp_iface_fptr.hpp']]],
-  ['dpnpfunctype_338',['DPNPFuncType',['../group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gaec54569b58e937e84099479f078bce15',1,'dpnp_iface_fptr.hpp']]]
+  ['dpnpc_5fptr_5fadapter_335',['DPNPC_ptr_adapter',['../class_d_p_n_p_c__ptr__adapter.html',1,'']]],
+  ['dpnpfuncdata_336',['DPNPFuncData',['../struct_d_p_n_p_func_data.html',1,'']]],
+  ['dpnpfuncdata_5ft_337',['DPNPFuncData_t',['../group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ga52f631e01afd73cc5573f9e8f61bd78f',1,'dpnp_iface_fptr.hpp']]],
+  ['dpnpfuncname_338',['DPNPFuncName',['../group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ga8b20590525bff7c7ce4f728d2021b558',1,'dpnp_iface_fptr.hpp']]],
+  ['dpnpfunctype_339',['DPNPFuncType',['../group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gaec54569b58e937e84099479f078bce15',1,'dpnp_iface_fptr.hpp']]]
 ];

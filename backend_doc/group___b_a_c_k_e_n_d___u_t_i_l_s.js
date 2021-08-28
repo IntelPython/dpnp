@@ -39,6 +39,14 @@ var group___b_a_c_k_e_n_d___u_t_i_l_s =
       [ "set_axes", "group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga86f1f123df6b60b57542124fed792572", null ],
       [ "set_axis", "group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga743bcd47e85667e5f238b99478c54d0f", null ]
     ] ],
+    [ "DPNPC_ptr_adapter", "class_d_p_n_p_c__ptr__adapter.html", [
+      [ "DPNPC_ptr_adapter", "class_d_p_n_p_c__ptr__adapter.html#abd0ffc2d64a39bbe88d1e218380f86c8", null ],
+      [ "DPNPC_ptr_adapter", "class_d_p_n_p_c__ptr__adapter.html#ae477f0ba298297c6b869d78fdc820600", null ],
+      [ "~DPNPC_ptr_adapter", "class_d_p_n_p_c__ptr__adapter.html#a8a33bb3a6108dfdfaed24f9ce895bc81", null ],
+      [ "copy_data_back", "class_d_p_n_p_c__ptr__adapter.html#acec6b75dd261d49cf7d16db23229638a", null ],
+      [ "get_ptr", "class_d_p_n_p_c__ptr__adapter.html#af2fa080970d86bff55574dd90e2905c6", null ],
+      [ "is_memcpy_required", "class_d_p_n_p_c__ptr__adapter.html#a2d101b635558b6c90143aef8d1983ef4", null ]
+    ] ],
     [ "broadcast_to_shape", "group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga5f47f787627aa8dbd02301760482d7d6", null ],
     [ "DPNPC_id", "group___b_a_c_k_e_n_d___u_t_i_l_s.html#gae3c3b0a869dc364c99e7e33e739dfa07", null ],
     [ "get_id_by_xyz_inkernel", "group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga064c245ca5bae67e4c986442e22d484e", null ],

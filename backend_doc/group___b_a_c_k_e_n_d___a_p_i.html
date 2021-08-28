@@ -411,10 +411,10 @@ Functions</h2></td></tr>
 <tr class="memitem:ga6fd897f416eb94bd15d00f338583752e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga6fd897f416eb94bd15d00f338583752e">dpnp_nonzero_c</a> (const void *array1, void *result1, const size_t *shape, const size_t ndim, const size_t j)</td></tr>
 <tr class="memdesc:ga6fd897f416eb94bd15d00f338583752e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the indices of the elements that are non-zero.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga6fd897f416eb94bd15d00f338583752e">More...</a><br /></td></tr>
 <tr class="separator:ga6fd897f416eb94bd15d00f338583752e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab3ed560f1a8a171281e86ea1c0c619ce"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
-<tr class="memitem:gab3ed560f1a8a171281e86ea1c0c619ce"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gab3ed560f1a8a171281e86ea1c0c619ce">dpnp_elemwise_absolute_c</a> (void *array1_in, void *result1, size_t size)</td></tr>
-<tr class="memdesc:gab3ed560f1a8a171281e86ea1c0c619ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">absolute function.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gab3ed560f1a8a171281e86ea1c0c619ce">More...</a><br /></td></tr>
-<tr class="separator:gab3ed560f1a8a171281e86ea1c0c619ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad6caac7c43dd14fcd326fa5d0240aeef"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
+<tr class="memitem:gad6caac7c43dd14fcd326fa5d0240aeef"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gad6caac7c43dd14fcd326fa5d0240aeef">dpnp_elemwise_absolute_c</a> (const void *input1_in, void *result1, size_t size)</td></tr>
+<tr class="memdesc:gad6caac7c43dd14fcd326fa5d0240aeef"><td class="mdescLeft">&#160;</td><td class="mdescRight">absolute function.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gad6caac7c43dd14fcd326fa5d0240aeef">More...</a><br /></td></tr>
+<tr class="separator:gad6caac7c43dd14fcd326fa5d0240aeef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad659bb840d9017cdc380db4229a660fb"><td class="memTemplParams" colspan="2">template&lt;typename _DataType_output , typename _DataType_input1 , typename _DataType_input2 &gt; </td></tr>
 <tr class="memitem:gad659bb840d9017cdc380db4229a660fb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gad659bb840d9017cdc380db4229a660fb">dpnp_dot_c</a> (void *result_out, const void *input1_in, const size_t input1_size, const size_t *input1_shape, const size_t input1_shape_ndim, const void *input2_in, const size_t input2_size, const size_t *input2_shape, const size_t input2_shape_ndim, const size_t *where)</td></tr>
 <tr class="memdesc:gad659bb840d9017cdc380db4229a660fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom implementation of dot function.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gad659bb840d9017cdc380db4229a660fb">More...</a><br /></td></tr>
@@ -3153,8 +3153,8 @@ template&lt;typename _DataType , typename _ResultType &gt; </div>
 
 </div>
 </div>
-<a id="gab3ed560f1a8a171281e86ea1c0c619ce"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gab3ed560f1a8a171281e86ea1c0c619ce">&#9670;&nbsp;</a></span>dpnp_elemwise_absolute_c()</h2>
+<a id="gad6caac7c43dd14fcd326fa5d0240aeef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gad6caac7c43dd14fcd326fa5d0240aeef">&#9670;&nbsp;</a></span>dpnp_elemwise_absolute_c()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3164,8 +3164,8 @@ template&lt;typename _DataType &gt; </div>
         <tr>
           <td class="memname">void dpnp_elemwise_absolute_c </td>
           <td>(</td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>array1_in</em>, </td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>input1_in</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -3190,7 +3190,7 @@ template&lt;typename _DataType &gt; </div>
 <p>absolute function. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">array1_in</td><td>Input array. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">input1_in</td><td>Input array. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">result1</td><td>Output array. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of elements in input arrays. </td></tr>
   </table>
