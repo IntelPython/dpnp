@@ -27,6 +27,7 @@
 
 #include "dpnp_fptr.hpp"
 #include "dpnp_iface.hpp"
+#include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
 template <typename _KernelNameSpecialization>
@@ -70,8 +71,12 @@ void dpnp_diag_c(
     // avoid warning unused variable
     (void)res_ndim;
 
-    _DataType* v = reinterpret_cast<_DataType*>(v_in);
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
+    const size_t input1_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    const size_t result_size = std::accumulate(res_shape, res_shape + res_ndim, 1, std::multiplies<size_t>());
+    DPNPC_ptr_adapter<_DataType> input1_ptr(v_in, input1_size, true);
+    DPNPC_ptr_adapter<_DataType> result_ptr(result1, result_size, true, true);
+    _DataType* v = input1_ptr.get_ptr();
+    _DataType* result = result_ptr.get_ptr();
 
     size_t init0 = std::max(0, -k);
     size_t init1 = std::max(0, k);
@@ -167,8 +172,10 @@ void dpnp_vander_c(const void* array1_in, void* result1, const size_t size_in, c
     if (!size_in || !N)
         return;
 
-    const _DataType_input* array_in = reinterpret_cast<const _DataType_input*>(array1_in);
-    _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, size_in, true);
+    DPNPC_ptr_adapter<_DataType_output> result_ptr(result1, size_in * N, true, true);
+    const _DataType_input* array_in = input1_ptr.get_ptr();
+    _DataType_output* result = result_ptr.get_ptr();
 
     if (N == 1)
     {
@@ -222,15 +229,16 @@ void dpnp_trace_c(const void* array1_in, void* result_in, const size_t* shape_, 
         return;
     }
 
-    const _DataType* input = reinterpret_cast<const _DataType*>(array1_in);
-    _ResultType* result = reinterpret_cast<_ResultType*>(result_in);
     const size_t last_dim = shape_[ndim - 1];
-
     const size_t size = std::accumulate(shape_, shape_ + (ndim - 1), 1, std::multiplies<size_t>());
     if (!size)
     {
         return;
     }
+
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size * last_dim);
+    const _DataType* input = input1_ptr.get_ptr();
+    _ResultType* result = reinterpret_cast<_ResultType*>(result_in);
 
     cl::sycl::range<1> gws(size);
     auto kernel_parallel_for_func = [=](auto index) {
@@ -312,9 +320,6 @@ void dpnp_tril_c(void* array_in,
         return;
     }
 
-    _DataType* array_m = reinterpret_cast<_DataType*>(array_in);
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
-
     if ((shape == nullptr) || (res_shape == nullptr))
     {
         return;
@@ -325,16 +330,22 @@ void dpnp_tril_c(void* array_in,
         return;
     }
 
-    size_t res_size = 1;
-    for (size_t i = 0; i < res_ndim; ++i)
-    {
-        res_size *= res_shape[i];
-    }
-
+    const size_t res_size = std::accumulate(res_shape, res_shape + res_ndim, 1, std::multiplies<size_t>());
     if (res_size == 0)
     {
         return;
     }
+
+    const size_t input_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    if (input_size == 0)
+    {
+        return;
+    }
+
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array_in, input_size, true);
+    DPNPC_ptr_adapter<_DataType> result_ptr(result1, res_size, true, true);
+    _DataType* array_m = input1_ptr.get_ptr();
+    _DataType* result = result_ptr.get_ptr();
 
     if (ndim == 1)
     {
@@ -416,8 +427,6 @@ void dpnp_triu_c(void* array_in,
     {
         return;
     }
-    _DataType* array_m = reinterpret_cast<_DataType*>(array_in);
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
 
     if ((shape == nullptr) || (res_shape == nullptr))
     {
@@ -429,16 +438,22 @@ void dpnp_triu_c(void* array_in,
         return;
     }
 
-    size_t res_size = 1;
-    for (size_t i = 0; i < res_ndim; ++i)
-    {
-        res_size *= res_shape[i];
-    }
-
+    const size_t res_size = std::accumulate(res_shape, res_shape + res_ndim, 1, std::multiplies<size_t>());
     if (res_size == 0)
     {
         return;
     }
+
+    const size_t input_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    if (input_size == 0)
+    {
+        return;
+    }
+
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array_in, input_size, true);
+    DPNPC_ptr_adapter<_DataType> result_ptr(result1, res_size, true, true);
+    _DataType* array_m = input1_ptr.get_ptr();
+    _DataType* result = result_ptr.get_ptr();
 
     if (ndim == 1)
     {
