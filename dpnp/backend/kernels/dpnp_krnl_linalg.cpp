@@ -360,7 +360,8 @@ void dpnp_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t nd
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
     size_t elems = 1;
-    result[0] = 0;
+    const _DataType init_val = 0;
+    dpnp_memory_memcpy_c(result, &init_val, sizeof(_DataType)); // result[0] = 0;
     if (ndim > 1)
     {
         elems = shape[0];
