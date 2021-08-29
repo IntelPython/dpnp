@@ -27,6 +27,7 @@
 
 #include "dpnp_fptr.hpp"
 #include "dpnp_iface.hpp"
+#include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
 template <typename _KernelNameSpecialization>
@@ -36,7 +37,8 @@ template <typename _DataType>
 void dpnp_invert_c(void* array1_in, void* result1, size_t size)
 {
     cl::sycl::event event;
-    _DataType* array1 = reinterpret_cast<_DataType*>(array1_in);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
+    _DataType* array1 = input1_ptr.get_ptr();
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
     cl::sycl::range<1> gws(size);
@@ -94,8 +96,10 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
         }                                                                                                              \
                                                                                                                        \
         cl::sycl::event event;                                                                                         \
-        const _DataType* input1 = reinterpret_cast<const _DataType*>(input1_in);                                       \
-        const _DataType* input2 = reinterpret_cast<const _DataType*>(input2_in);                                       \
+        DPNPC_ptr_adapter<_DataType> input1_ptr(input1_in, input1_size);                                               \
+        DPNPC_ptr_adapter<_DataType> input2_ptr(input2_in, input2_size);                                               \
+        const _DataType* input1 = input1_ptr.get_ptr();                                                                \
+        const _DataType* input2 = input2_ptr.get_ptr();                                                                \
         _DataType* result = reinterpret_cast<_DataType*>(result_out);                                                  \
                                                                                                                        \
         const size_t gws_size = std::max(input1_size, input2_size);                                                    \
