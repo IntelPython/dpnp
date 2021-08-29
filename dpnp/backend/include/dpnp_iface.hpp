@@ -211,10 +211,11 @@ INP_DLLEXPORT void
  * @param [in]  array     Input array.
  * @param [in]  mask_arr  Input mask array when elem is nan.
  * @param [out] result    Output array.
+ * @param [in]  result_size    Output array size.
  * @param [in]  size      Number of elements in input arrays.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_nanvar_c(void* array, void* mask_arr, void* result, size_t size);
+INP_DLLEXPORT void dpnp_nanvar_c(void* array, void* mask_arr, void* result, const size_t result_size, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -645,6 +646,7 @@ INP_DLLEXPORT void dpnp_matrix_rank_c(void* array1_in, void* result1, size_t* sh
  *
  * @param [in]  array   Input array with data.
  * @param [out] result  Output array.
+ * @param [in]  result_size  Output array size.
  * @param [in]  shape   Shape of input array.
  * @param [in]  ndim    Number of elements in shape.
  * @param [in]  axis    Axis.
@@ -652,7 +654,7 @@ INP_DLLEXPORT void dpnp_matrix_rank_c(void* array1_in, void* result1, size_t* sh
  */
 template <typename _DataType>
 INP_DLLEXPORT void
-    dpnp_max_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
+    dpnp_max_c(void* array1_in, void* result1, const size_t result_size, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
@@ -690,6 +692,7 @@ INP_DLLEXPORT void
  *
  * @param [in]  array   Input array with data.
  * @param [out] result  Output array.
+ * @param [in]  result_size  Output array size.
  * @param [in]  shape   Shape of input array.
  * @param [in]  ndim    Number of elements in shape.
  * @param [in]  axis    Axis.
@@ -697,7 +700,7 @@ INP_DLLEXPORT void
  */
 template <typename _DataType>
 INP_DLLEXPORT void
-    dpnp_min_c(void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
+    dpnp_min_c(void* array, void* result, const size_t result_size, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
