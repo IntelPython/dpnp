@@ -41,9 +41,9 @@ class source_clean(Command):
 
     description = "Clean up the project source tree"
 
-    CLEAN_ROOTDIRS = ['build', 'build_cython', 'cython_debug', 'Intel_NumPy.egg-info', 'doc/_build']
+    CLEAN_ROOTDIRS = ['build', 'build_cython', 'cython_debug', 'Intel_NumPy.egg-info', 'doc/_build', 'CMakeFiles']
     CLEAN_DIRS = ['__pycache__']
-    CLEAN_FILES = ['*.so', '*.pyc', '*.pyd', '*.dll', '*.lib']
+    CLEAN_FILES = ['*.so', '*.pyc', '*.pyd', '*.dll', '*.lib', 'CMakeCache.txt']
 
     user_options = []
 
