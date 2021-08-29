@@ -459,7 +459,8 @@ void dpnp_trapz_c(
 
     if (array1_size < 2)
     {
-        result[0] = 0; // TODO make it on SYCL QUEUE via memcpy
+        const _DataType_output init_val = 0;
+        dpnp_memory_memcpy_c(result, &init_val, sizeof(_DataType_output)); // result[0] = 0;
         return;
     }
 

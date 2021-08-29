@@ -149,7 +149,7 @@ void dpnp_dot_c(void* result_out,
             std::reduce(policy, local_mem, local_mem + input1_size, _DataType_output(0), std::plus<_DataType_output>());
         policy.queue().wait();
 
-        result[0] = accumulator; // TODO use memcpy_c
+        dpnp_memory_memcpy_c(result, &accumulator, sizeof(_DataType_output)); // result[0] = accumulator;
 
         free(local_mem, DPNP_QUEUE);
     }

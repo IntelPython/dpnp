@@ -44,7 +44,8 @@ void dpnp_argmax_c(void* array1_in, void* result1, size_t size)
     _DataType* res = std::max_element(policy, array_1, array_1 + size);
     policy.queue().wait();
 
-    result[0] = std::distance(array_1, res);
+    _idx_DataType result_val = std::distance(array_1, res);
+    dpnp_memory_memcpy_c(result, &result_val, sizeof(_idx_DataType)); // result[0] = std::distance(array_1, res);
 
     return;
 }
@@ -64,7 +65,8 @@ void dpnp_argmin_c(void* array1_in, void* result1, size_t size)
     _DataType* res = std::min_element(policy, array_1, array_1 + size);
     policy.queue().wait();
 
-    result[0] = std::distance(array_1, res);
+    _idx_DataType result_val = std::distance(array_1, res);
+    dpnp_memory_memcpy_c(result, &result_val, sizeof(_idx_DataType)); // result[0] = std::distance(array_1, res);
 
     return;
 }
