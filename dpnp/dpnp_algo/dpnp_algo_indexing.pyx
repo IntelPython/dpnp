@@ -55,14 +55,14 @@ __all__ += [
 ]
 
 
-ctypedef void(*custom_indexing_2in_1out_func_ptr_t)(void *, void * , void * , size_t)
-ctypedef void(*custom_indexing_2in_1out_func_ptr_t_)(void * , void * , const size_t, size_t * , size_t * , const size_t)
+ctypedef void(*custom_indexing_2in_1out_func_ptr_t)(void *, const size_t, void * , void * , size_t)
+ctypedef void(*custom_indexing_2in_1out_func_ptr_t_)(void * , const size_t, void * , const size_t, size_t * , size_t * , const size_t)
 ctypedef void(*custom_indexing_2in_func_ptr_t)(void *, void * , size_t * , const size_t)
 ctypedef void(*custom_indexing_3in_func_ptr_t)(void * , void * , void * , const size_t, const size_t)
 ctypedef void(*custom_indexing_3in_with_axis_func_ptr_t)(void * , void * , void * , const size_t, size_t * , const size_t,
                                                          const size_t, const size_t,)
 ctypedef void(*custom_indexing_6in_func_ptr_t)(void *, void * , void * , const size_t, const size_t, const size_t)
-ctypedef void(*fptr_dpnp_nonzero_t)(const void * , void * , const size_t * , const size_t , const size_t)
+ctypedef void(*fptr_dpnp_nonzero_t)(const void * , void * , const size_t, const size_t * , const size_t , const size_t)
 
 
 cpdef utils.dpnp_descriptor dpnp_choose(object input, list choices):
@@ -114,6 +114,7 @@ cpdef utils.dpnp_descriptor dpnp_diagonal(dpnp_descriptor input, offset=0):
     cdef custom_indexing_2in_1out_func_ptr_t_ func = <custom_indexing_2in_1out_func_ptr_t_ > kernel_data.ptr
 
     func(input.get_data(),
+         input.size,
          result.get_data(),
          offset,
          < size_t * > input_shape.data(),
@@ -192,7 +193,7 @@ cpdef tuple dpnp_nonzero(utils.dpnp_descriptor in_array1):
         result_shape = utils._object_to_tuple(res_size)
         res_arr = utils_py.create_output_descriptor_py(result_shape, dpnp.int64, None)
 
-        func(in_array1.get_data(), res_arr.get_data(), < size_t * > shape_arr.data(), in_array1.ndim, j)
+        func(in_array1.get_data(), res_arr.get_data(), res_arr.size, < size_t * > shape_arr.data(), in_array1.ndim, j)
 
         res_list.append(res_arr.get_pyobj())
 
@@ -295,7 +296,7 @@ cpdef utils.dpnp_descriptor dpnp_take(utils.dpnp_descriptor input, utils.dpnp_de
 
     cdef custom_indexing_2in_1out_func_ptr_t func = <custom_indexing_2in_1out_func_ptr_t > kernel_data.ptr
 
-    func(input.get_data(), indices.get_data(), result.get_data(), indices.size)
+    func(input.get_data(), input.size, indices.get_data(), result.get_data(), indices.size)
 
     return result
 
