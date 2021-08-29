@@ -49,7 +49,8 @@ void dpnp_around_c(const void* input_in, void* result_out, const size_t input_si
     }
 
     cl::sycl::event event;
-    _DataType* input = reinterpret_cast<_DataType*>(const_cast<void*>(input_in));
+    DPNPC_ptr_adapter<_DataType> input1_ptr(input_in, input_size);
+    _DataType* input = input1_ptr.get_ptr();
     _DataType* result = reinterpret_cast<_DataType*>(result_out);
 
     if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
@@ -175,8 +176,10 @@ void dpnp_cumprod_c(void* array1_in, void* result1, size_t size)
         return;
     }
 
-    _DataType_input* array1 = reinterpret_cast<_DataType_input*>(array1_in);
-    _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, size, true);
+    DPNPC_ptr_adapter<_DataType_output> result_ptr(result1, size, true, true);
+    _DataType_input* array1 = input1_ptr.get_ptr();
+    _DataType_output* result = result_ptr.get_ptr();
 
     _DataType_output cur_res = 1;
 
@@ -200,8 +203,10 @@ void dpnp_cumsum_c(void* array1_in, void* result1, size_t size)
         return;
     }
 
-    _DataType_input* array1 = reinterpret_cast<_DataType_input*>(array1_in);
-    _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, size, true);
+    DPNPC_ptr_adapter<_DataType_output> result_ptr(result1, size, true, true);
+    _DataType_input* array1 = input1_ptr.get_ptr();
+    _DataType_output* result = result_ptr.get_ptr();
 
     _DataType_output cur_res = 0;
 
@@ -236,8 +241,10 @@ void dpnp_floor_divide_c(void* result_out,
         return;
     }
 
-    _DataType_input1* input1_data = reinterpret_cast<_DataType_input1*>(const_cast<void*>(input1_in));
-    _DataType_input2* input2_data = reinterpret_cast<_DataType_input2*>(const_cast<void*>(input2_in));
+    DPNPC_ptr_adapter<_DataType_input1> input1_ptr(input1_in, input1_size);
+    DPNPC_ptr_adapter<_DataType_input2> input2_ptr(input2_in, input2_size);
+    _DataType_input1* input1_data = input1_ptr.get_ptr();
+    _DataType_input2* input2_data = input2_ptr.get_ptr();
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
 
     std::vector<size_t> result_shape =
@@ -307,7 +314,8 @@ template <typename _DataType_input, typename _DataType_output>
 void dpnp_modf_c(void* array1_in, void* result1_out, void* result2_out, size_t size)
 {
     cl::sycl::event event;
-    _DataType_input* array1 = reinterpret_cast<_DataType_input*>(array1_in);
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, size);
+    _DataType_input* array1 = input1_ptr.get_ptr();
     _DataType_output* result1 = reinterpret_cast<_DataType_output*>(result1_out);
     _DataType_output* result2 = reinterpret_cast<_DataType_output*>(result2_out);
 
@@ -359,8 +367,10 @@ void dpnp_remainder_c(void* result_out,
         return;
     }
 
-    _DataType_input1* input1_data = reinterpret_cast<_DataType_input1*>(const_cast<void*>(input1_in));
-    _DataType_input2* input2_data = reinterpret_cast<_DataType_input2*>(const_cast<void*>(input2_in));
+    DPNPC_ptr_adapter<_DataType_input1> input1_ptr(input1_in, input1_size);
+    DPNPC_ptr_adapter<_DataType_input2> input2_ptr(input2_in, input2_size);
+    _DataType_input1* input1_data = input1_ptr.get_ptr();
+    _DataType_input2* input2_data = input2_ptr.get_ptr();
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
 
     std::vector<size_t> result_shape = get_result_shape(input1_shape, input1_shape_ndim,
@@ -441,13 +451,15 @@ void dpnp_trapz_c(
     }
 
     cl::sycl::event event;
-    _DataType_input1* array1 = reinterpret_cast<_DataType_input1*>(const_cast<void*>(array1_in));
-    _DataType_input2* array2 = reinterpret_cast<_DataType_input2*>(const_cast<void*>(array2_in));
+    DPNPC_ptr_adapter<_DataType_input1> input1_ptr(array1_in, array1_size);
+    DPNPC_ptr_adapter<_DataType_input2> input2_ptr(array2_in, array2_size);
+    _DataType_input1* array1 = input1_ptr.get_ptr();
+    _DataType_input2* array2 = input2_ptr.get_ptr();
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
 
     if (array1_size < 2)
     {
-        result[0] = 0;
+        result[0] = 0; // TODO make it on SYCL QUEUE via memcpy
         return;
     }
 
