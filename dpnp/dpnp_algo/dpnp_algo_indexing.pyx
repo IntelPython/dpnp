@@ -75,29 +75,29 @@ cpdef utils.dpnp_descriptor dpnp_choose(object input, list choices):
 
 
 cpdef tuple dpnp_diag_indices(n, ndim):
+    if n < 0:
+        n = 0
+        
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dpnp.int64)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DIAG_INDICES, param1_type, param1_type)
-
-    # Create result array
-    cdef shape_type_c x = utils._object_to_tuple([1, n])
-    cdef shape_type_c ndim_shape = utils._object_to_tuple([ndim, 1])
-    cdef shape_type_c result_shape = utils.get_common_shape(x, ndim_shape)
-    res_array = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
     
     cdef fptr_dpnp_diag_indices func = <fptr_dpnp_diag_indices> kernel_data.ptr
-    func(res_array.get_data(), n, ndim)
-
-    # result = dpnp.array(res_array.get_pyobj(), dtype=res_array.dtype)
-    # result.reshape(result_shape)
-
-    result = []
+    
+    res_list = []
+    cdef utils.dpnp_descriptor res_arr
+    cdef shape_type_c result_shape 
     for i in range(ndim):
-        result.append([])
-        for j in range(n):
-            result[i].append(res_array.get_pyobj()[j])
+        result_shape = utils._object_to_tuple(n)
+        res_arr = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
-    return tuple(result)
+        func(res_arr.get_data(), n, ndim)
+
+        res_list.append(res_arr.get_pyobj())
+
+    result = tuple(res_list)
+ 
+    return result
 
 cpdef utils.dpnp_descriptor dpnp_diagonal(dpnp_descriptor input, offset=0):
     cdef shape_type_c input_shape = input.shape

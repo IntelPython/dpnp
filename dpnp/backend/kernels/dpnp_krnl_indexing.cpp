@@ -35,13 +35,11 @@ template <typename _DataType>
 class dpnp_diag_indices_c_kernel;
 
 template <typename _DataType>
-void dpnp_diag_indices_c(void* result1, size_t shape, size_t res_ndim)
+void dpnp_diag_indices_c(void* result1, size_t shape, size_t ndim)
 {
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
-    for (size_t i = 0; i < res_ndim; ++i) {
-        for (size_t j = 0; j < shape; ++j)
-            result[j + (i*shape)] = j;
-    }
+    long* result = reinterpret_cast<long*>(result1);
+    for (size_t j = 0; j < shape; ++j)
+        result[j] = j;
 
     return;
 }
