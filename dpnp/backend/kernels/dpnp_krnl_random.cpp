@@ -33,6 +33,7 @@
 
 #include "dpnp_fptr.hpp"
 #include "dpnp_utils.hpp"
+#include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
 namespace mkl_blas = oneapi::mkl::blas;
@@ -209,7 +210,8 @@ void dpnp_rng_f_c(void* result, const _DataType df_num, const _DataType df_den, 
     _DataType scale = 2.0 / df_num;
     _DataType* den = nullptr;
 
-    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
+    _DataType* result1 = result1_ptr.get_ptr();
 
     if (dpnp_queue_is_cpu_c())
     {
