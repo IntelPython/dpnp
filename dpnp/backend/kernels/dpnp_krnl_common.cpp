@@ -169,10 +169,12 @@ void dpnp_eig_c(const void* array_in, void* result1, void* result2, size_t size)
     }
 
     cl::sycl::event event;
-    DPNPC_ptr_adapter<_DataType> input1_ptr(array_in, size);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array_in, size * size, true);
+    DPNPC_ptr_adapter<_ResultType> result1_ptr(result1, size, true, true);
+    DPNPC_ptr_adapter<_ResultType> result2_ptr(result2, size * size, true, true);
     const _DataType* array = input1_ptr.get_ptr();
-    _ResultType* result_val = reinterpret_cast<_ResultType*>(result1);
-    _ResultType* result_vec = reinterpret_cast<_ResultType*>(result2);
+    _ResultType* result_val = result1_ptr.get_ptr();
+    _ResultType* result_vec = result2_ptr.get_ptr();
 
     double* result_val_kern = reinterpret_cast<double*>(dpnp_memory_alloc_c(size * sizeof(double)));
     double* result_vec_kern = reinterpret_cast<double*>(dpnp_memory_alloc_c(size * size * sizeof(double)));
@@ -231,9 +233,10 @@ void dpnp_eigvals_c(const void* array_in, void* result1, size_t size)
     }
 
     cl::sycl::event event;
-    DPNPC_ptr_adapter<_DataType> input1_ptr(array_in, size);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array_in, size * size, true);
+    DPNPC_ptr_adapter<_ResultType> result1_ptr(result1, size, true, true);
     const _DataType* array = input1_ptr.get_ptr();
-    _ResultType* result_val = reinterpret_cast<_ResultType*>(result1);
+    _ResultType* result_val = result1_ptr.get_ptr();
 
     double* result_val_kern = reinterpret_cast<double*>(dpnp_memory_alloc_c(size * sizeof(double)));
     double* result_vec_kern = reinterpret_cast<double*>(dpnp_memory_alloc_c(size * size * sizeof(double)));
