@@ -316,11 +316,12 @@ void dpnp_matmul_c(void* array1_in, void* array2_in, void* result1, size_t size_
     }
 
     cl::sycl::event event;
-    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size_m * size_k);
-    DPNPC_ptr_adapter<_DataType> input2_ptr(array2_in, size_k * size_n);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size_m * size_k, true);
+    DPNPC_ptr_adapter<_DataType> input2_ptr(array2_in, size_k * size_n, true);
+    DPNPC_ptr_adapter<_DataType> result_ptr(result1, size_m * size_n, true, true);
     _DataType* array_1 = input1_ptr.get_ptr();
     _DataType* array_2 = input2_ptr.get_ptr();
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
+    _DataType* result = result_ptr.get_ptr();
 
     if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
     {
