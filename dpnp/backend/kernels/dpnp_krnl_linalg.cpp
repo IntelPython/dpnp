@@ -387,8 +387,8 @@ void dpnp_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t nd
         return;
     }
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, input_size);
-    DPNPC_ptr_adapter<_DataType> result_ptr(result1, 1);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, input_size, true);
+    DPNPC_ptr_adapter<_DataType> result_ptr(result1, 1, true, true);
     _DataType* array_1 = input1_ptr.get_ptr();
     _DataType* result = result_ptr.get_ptr();
 
