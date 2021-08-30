@@ -27,6 +27,7 @@
 
 #include <dpnp_iface.hpp>
 #include "dpnp_fptr.hpp"
+#include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
 template <typename _DataType, typename _idx_DataType>
@@ -52,8 +53,10 @@ class dpnp_argsort_c_kernel;
 template <typename _DataType, typename _idx_DataType>
 void dpnp_argsort_c(void* array1_in, void* result1, size_t size)
 {
-    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
-    _idx_DataType* result = reinterpret_cast<_idx_DataType*>(result1);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size, true);
+    DPNPC_ptr_adapter<_idx_DataType> result1_ptr(result1, size, true, true);
+    _DataType* array_1 = input1_ptr.get_ptr();
+    _idx_DataType* result = result1_ptr.get_ptr();
 
     std::iota(result, result + size, 0);
 
@@ -90,11 +93,7 @@ template <typename _DataType>
 void dpnp_partition_c(
     void* array1_in, void* array2_in, void* result1, const size_t kth, const size_t* shape_, const size_t ndim)
 {
-    _DataType* arr = reinterpret_cast<_DataType*>(array1_in);
-    _DataType* arr2 = reinterpret_cast<_DataType*>(array2_in);
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
-
-    if ((arr == nullptr) || (result == nullptr))
+    if ((array1_in == nullptr) || (array2_in == nullptr) || (result1 == nullptr))
     {
         return;
     }
@@ -104,18 +103,22 @@ void dpnp_partition_c(
         return;
     }
 
-    size_t size = 1;
-    for (size_t i = 0; i < ndim; ++i)
-    {
-        size *= shape_[i];
-    }
-
+    const size_t size = std::accumulate(shape_, shape_ + ndim, 1, std::multiplies<size_t>());
     size_t size_ = size / shape_[ndim - 1];
 
     if (size_ == 0)
     {
         return;
     }
+
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size, true);
+    DPNPC_ptr_adapter<_DataType> input2_ptr(array2_in, size, true);
+    DPNPC_ptr_adapter<_DataType> result1_ptr(result1, size, true, true);
+    _DataType* arr = input1_ptr.get_ptr();
+    _DataType* arr2 = input2_ptr.get_ptr();
+    _DataType* result = result1_ptr.get_ptr();
+
+
 
     auto arr_to_result_event = DPNP_QUEUE.memcpy(result, arr, size * sizeof(_DataType));
     arr_to_result_event.wait();
@@ -182,11 +185,7 @@ template <typename _DataType, typename _IndexingType>
 void dpnp_searchsorted_c(
     void* result1, const void* array1_in, const void* v1_in, bool side, const size_t arr_size, const size_t v_size)
 {
-    const _DataType* arr = reinterpret_cast<const _DataType*>(array1_in);
-    const _DataType* v = reinterpret_cast<const _DataType*>(v1_in);
-    _IndexingType* result = reinterpret_cast<_IndexingType*>(result1);
-
-    if ((arr == nullptr) || (v == nullptr) || (result == nullptr))
+    if ((array1_in == nullptr) || (v1_in == nullptr) || (result1 == nullptr))
     {
         return;
     }
@@ -200,6 +199,12 @@ void dpnp_searchsorted_c(
     {
         return;
     }
+
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, arr_size);
+    DPNPC_ptr_adapter<_DataType> input2_ptr(v1_in, v_size);
+    const _DataType* arr = input1_ptr.get_ptr();
+    const _DataType* v = input2_ptr.get_ptr();
+    _IndexingType* result = reinterpret_cast<_IndexingType*>(result1);
 
     cl::sycl::range<2> gws(v_size, arr_size);
     auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
@@ -281,8 +286,10 @@ class dpnp_sort_c_kernel;
 template <typename _DataType>
 void dpnp_sort_c(void* array1_in, void* result1, size_t size)
 {
-    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size, true);
+    DPNPC_ptr_adapter<_DataType> result1_ptr(result1, size, true, true);
+    _DataType* array_1 = input1_ptr.get_ptr();
+    _DataType* result = result1_ptr.get_ptr();
 
     std::copy(array_1, array_1 + size, result);
 
