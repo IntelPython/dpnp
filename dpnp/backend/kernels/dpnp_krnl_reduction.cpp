@@ -78,7 +78,7 @@ void dpnp_sum_c(void* result_out,
     const size_t input_size =
         std::accumulate(input_shape, input_shape + input_shape_ndim, size_t(1), std::multiplies<size_t>());
 
-    DPNPC_ptr_adapter<_DataType_input> input1_ptr(input_in, input_size);
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(input_in, input_size, true);
     _DataType_input* input = input1_ptr.get_ptr();
     _DataType_output* result = get_array_ptr<_DataType_output>(result_out);
 
@@ -155,7 +155,7 @@ void dpnp_prod_c(void* result_out,
     const size_t input_size =
         std::accumulate(input_shape, input_shape + input_shape_ndim, size_t(1), std::multiplies<size_t>());
 
-    DPNPC_ptr_adapter<_DataType_input> input1_ptr(input_in, input_size);
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(input_in, input_size, true);
     _DataType_input* input = input1_ptr.get_ptr();
     _DataType_output* result = get_array_ptr<_DataType_output>(result_out);
 
