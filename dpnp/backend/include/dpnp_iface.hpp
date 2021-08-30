@@ -583,10 +583,9 @@ INP_DLLEXPORT void dpnp_diag_c(
  *
  * @param [out] result      Output array.
  * @param [in]  shape       Size of array.
- * @param [in]  ndim        Size of array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_diag_indices_c(void* result1, size_t shape, size_t ndim);
+INP_DLLEXPORT void dpnp_diag_indices_c(void* result1, size_t shape);
 
 /**
  * @ingroup BACKEND_API

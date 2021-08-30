@@ -54,7 +54,7 @@ __all__ += [
     "dpnp_triu_indices_from"
 ]
 
-ctypedef void(*fptr_dpnp_diag_indices)(void*, size_t, size_t)
+ctypedef void(*fptr_dpnp_diag_indices)(void*, size_t)
 ctypedef void(*custom_indexing_2in_1out_func_ptr_t)(void *, void * , void * , size_t)
 ctypedef void(*custom_indexing_2in_1out_func_ptr_t_)(void * , void * , const size_t, size_t * , size_t * , const size_t)
 ctypedef void(*custom_indexing_2in_func_ptr_t)(void *, void * , size_t * , const size_t)
@@ -77,7 +77,7 @@ cpdef utils.dpnp_descriptor dpnp_choose(object input, list choices):
 cpdef tuple dpnp_diag_indices(n, ndim):
     if n < 0:
         n = 0
-        
+
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dpnp.int64)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DIAG_INDICES, param1_type, param1_type)
@@ -91,7 +91,7 @@ cpdef tuple dpnp_diag_indices(n, ndim):
         result_shape = utils._object_to_tuple(n)
         res_arr = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
-        func(res_arr.get_data(), n, ndim)
+        func(res_arr.get_data(), n)
 
         res_list.append(res_arr.get_pyobj())
 
