@@ -91,7 +91,8 @@ void dpnp_elemwise_absolute_c(const void* input1_in, void* result1, size_t size)
     cl::sycl::event event;
     DPNPC_ptr_adapter<_DataType> input1_ptr(input1_in, size);
     _DataType* array1 = input1_ptr.get_ptr();
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
+    DPNPC_ptr_adapter<_DataType> result1_ptr(result1, size, false, true);
+    _DataType* result = result1_ptr.get_ptr();
 
     if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
     {
