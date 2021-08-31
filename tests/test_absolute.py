@@ -4,8 +4,6 @@ import dpnp as inp
 
 import numpy
 
-from tests import testing
-
 
 @pytest.mark.parametrize("type",
                          [numpy.int64],

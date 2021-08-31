@@ -30,6 +30,10 @@ import numpy.lib.stride_tricks as np_st
 import dpnp.config as config
 
 
+assert_allclose_orig = numpy.testing.assert_allclose
+assert_array_equal_orig = numpy.testing.assert_array_equal
+
+
 if config.__DPNP_OUTPUT_DPCTL__:
     try:
         """
@@ -64,7 +68,21 @@ def _to_numpy(usm_ary):
         )
 
 
-def assert_array_equal(expected, result):
+def assert_allclose(result, expected, *args, **kwargs):
     if config.__DPNP_OUTPUT_DPCTL__:
-        result = _to_numpy(result)
-    numpy.testing.assert_array_equal(expected, result)
+        if isinstance(result, dpt.usm_ndarray):
+            result = _to_numpy(result)
+        if isinstance(expected, dpt.usm_ndarray):
+            expected = _to_numpy(expected)
+
+    assert_allclose_orig(result, expected, *args, **kwargs)
+
+
+def assert_array_equal(result, expected, *args, **kwargs):
+    if config.__DPNP_OUTPUT_DPCTL__:
+        if isinstance(result, dpt.usm_ndarray):
+            result = _to_numpy(result)
+        if isinstance(expected, dpt.usm_ndarray):
+            expected = _to_numpy(expected)
+
+    assert_array_equal_orig(result, expected, *args, **kwargs)
