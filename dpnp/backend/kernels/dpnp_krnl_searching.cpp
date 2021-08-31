@@ -27,6 +27,7 @@
 
 #include <dpnp_iface.hpp>
 #include "dpnp_fptr.hpp"
+#include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
 template <typename _DataType, typename _idx_DataType>
@@ -35,7 +36,8 @@ class dpnp_argmax_c_kernel;
 template <typename _DataType, typename _idx_DataType>
 void dpnp_argmax_c(void* array1_in, void* result1, size_t size)
 {
-    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
+    _DataType* array_1 = input1_ptr.get_ptr();
     _idx_DataType* result = reinterpret_cast<_idx_DataType*>(result1);
 
     auto policy =
@@ -56,7 +58,8 @@ class dpnp_argmin_c_kernel;
 template <typename _DataType, typename _idx_DataType>
 void dpnp_argmin_c(void* array1_in, void* result1, size_t size)
 {
-    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
+    _DataType* array_1 = input1_ptr.get_ptr();
     _idx_DataType* result = reinterpret_cast<_idx_DataType*>(result1);
 
     auto policy =

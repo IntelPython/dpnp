@@ -169,10 +169,12 @@ void dpnp_eig_c(const void* array_in, void* result1, void* result2, size_t size)
     }
 
     cl::sycl::event event;
-    DPNPC_ptr_adapter<_DataType> input1_ptr(array_in, size);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array_in, size * size, true);
+    DPNPC_ptr_adapter<_ResultType> result1_ptr(result1, size, true, true);
+    DPNPC_ptr_adapter<_ResultType> result2_ptr(result2, size * size, true, true);
     const _DataType* array = input1_ptr.get_ptr();
-    _ResultType* result_val = reinterpret_cast<_ResultType*>(result1);
-    _ResultType* result_vec = reinterpret_cast<_ResultType*>(result2);
+    _ResultType* result_val = result1_ptr.get_ptr();
+    _ResultType* result_vec = result2_ptr.get_ptr();
 
     double* result_val_kern = reinterpret_cast<double*>(dpnp_memory_alloc_c(size * sizeof(double)));
     double* result_vec_kern = reinterpret_cast<double*>(dpnp_memory_alloc_c(size * size * sizeof(double)));
@@ -231,9 +233,10 @@ void dpnp_eigvals_c(const void* array_in, void* result1, size_t size)
     }
 
     cl::sycl::event event;
-    DPNPC_ptr_adapter<_DataType> input1_ptr(array_in, size);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array_in, size * size, true);
+    DPNPC_ptr_adapter<_ResultType> result1_ptr(result1, size, true, true);
     const _DataType* array = input1_ptr.get_ptr();
-    _ResultType* result_val = reinterpret_cast<_ResultType*>(result1);
+    _ResultType* result_val = result1_ptr.get_ptr();
 
     double* result_val_kern = reinterpret_cast<double*>(dpnp_memory_alloc_c(size * sizeof(double)));
     double* result_vec_kern = reinterpret_cast<double*>(dpnp_memory_alloc_c(size * size * sizeof(double)));
@@ -313,11 +316,12 @@ void dpnp_matmul_c(void* array1_in, void* array2_in, void* result1, size_t size_
     }
 
     cl::sycl::event event;
-    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size_m * size_k);
-    DPNPC_ptr_adapter<_DataType> input2_ptr(array2_in, size_k * size_n);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size_m * size_k, true);
+    DPNPC_ptr_adapter<_DataType> input2_ptr(array2_in, size_k * size_n, true);
+    DPNPC_ptr_adapter<_DataType> result_ptr(result1, size_m * size_n, true, true);
     _DataType* array_1 = input1_ptr.get_ptr();
     _DataType* array_2 = input2_ptr.get_ptr();
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
+    _DataType* result = result_ptr.get_ptr();
 
     if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
     {
