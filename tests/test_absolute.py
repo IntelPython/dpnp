@@ -14,7 +14,7 @@ def test_abs_int(type):
 
     result = inp.abs(ia)
     expected = numpy.abs(a)
-    testing.assert_array_equal(expected, result)
+    numpy.testing.assert_array_equal(expected, result)
 
 
 @pytest.mark.parametrize("type",
@@ -26,7 +26,7 @@ def test_absolute_int(type):
 
     result = inp.absolute(ia)
     expected = numpy.absolute(a)
-    testing.assert_array_equal(expected, result)
+    numpy.testing.assert_array_equal(expected, result)
 
 
 @pytest.mark.parametrize("type",
@@ -38,7 +38,7 @@ def test_absolute_float(type):
 
     result = inp.absolute(ia)
     expected = numpy.absolute(a)
-    testing.assert_array_equal(expected, result)
+    numpy.testing.assert_array_equal(expected, result)
 
 
 @pytest.mark.parametrize("type",
@@ -50,4 +50,4 @@ def test_absolute_float_3(type):
 
     result = inp.absolute(ia)
     expected = numpy.absolute(a)
-    testing.assert_array_equal(expected, result)
+    numpy.testing.assert_array_equal(expected, result)
