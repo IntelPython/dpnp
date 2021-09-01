@@ -43,7 +43,7 @@ __DPNP_OUTPUT_NUMPY__ = int(os.getenv('DPNP_OUTPUT_NUMPY', 0))
 Explicitly use NumPy.ndarray as return type for creation functions
 '''
 
-__DPNP_OUTPUT_DPCTL__ = int(os.getenv('DPNP_OUTPUT_DPCTL', 0))
+__DPNP_OUTPUT_DPCTL__ = int(os.getenv('DPNP_OUTPUT_DPCTL', 1))
 '''
 Explicitly use DPCtl package container as return type for creation functions
 '''
