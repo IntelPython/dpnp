@@ -35,7 +35,7 @@ import numpy
 import dpnp.config as config
 import dpnp
 from dpnp.dpnp_algo cimport dpnp_DPNPFuncType_to_dtype, dpnp_dtype_to_DPNPFuncType, get_dpnp_function_ptr
-from dpnp.dpnp_container import create_output_container, container_copy
+from dpnp.dpnp_container import create_output_container, container_copy, _to_numpy
 from libcpp cimport bool as cpp_bool
 from libcpp.complex cimport complex as cpp_complex
 
@@ -68,7 +68,10 @@ cdef ERROR_PREFIX = "DPNP error:"
 
 def convert_item(item):
     if getattr(item, "__sycl_usm_array_interface__", False):
-        item_converted = dpnp.asnumpy(item) 
+        if config.__DPNP_OUTPUT_DPCTL__:
+            item_converted = _to_numpy(item)
+        else:
+            item_converted = dpnp.asnumpy(item)
     elif getattr(item, "__array_interface__", False): # detect if it is a container (TODO any better way?)
         mod_name = getattr(item, "__module__", 'none')
         if (mod_name != 'numpy'):
