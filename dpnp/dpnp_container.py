@@ -59,26 +59,6 @@ __all__ = [
 ]
 
 
-# https://github.com/IntelPython/dpctl/blob/3fe25706995e76255a931d8ed87786da69db685c/dpctl/tests/test_usm_ndarray_ctor.py#L157  # noqa
-def _to_numpy(usm_ary):
-    if type(usm_ary) is dpctl.usm_ndarray:
-        usm_buf = usm_ary.usm_data
-        s = usm_buf.nbytes
-        host_buf = usm_buf.copy_to_host().view(usm_ary.dtype)
-        usm_ary_itemsize = usm_ary.itemsize
-        R_offset = (
-            usm_ary.__sycl_usm_array_interface__["offset"] * usm_ary_itemsize
-        )
-        R = numpy.ndarray((s,), dtype="u1", buffer=host_buf)
-        R = R[R_offset:].view(usm_ary.dtype)
-        R_strides = (usm_ary_itemsize * si for si in usm_ary.strides)
-        return np_st.as_strided(R, shape=usm_ary.shape, strides=R_strides)
-    else:
-        raise ValueError(
-            "Expected dpctl.tensor.usm_ndarray, got {}".format(type(usm_ary))
-        )
-
-
 def create_output_container(shape, type):
     if config.__DPNP_OUTPUT_NUMPY__:
         """ Create NumPy ndarray """
