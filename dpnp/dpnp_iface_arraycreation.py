@@ -197,7 +197,6 @@ def array(x1, dtype=None, copy=True, order='C', subok=False, ndmin=0, like=None)
         pass
     elif config.__DPNP_OUTPUT_DPCTL__:
         return call_origin(numpy.array, x1, dtype=dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)
-
     elif subok is not False:
         pass
     elif copy is not True:
