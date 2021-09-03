@@ -32,6 +32,7 @@ This module contains differnt helpers and utilities
 """
 
 import numpy
+import numpy.lib.stride_tricks as np_st
 import dpnp.config as config
 import dpnp
 from dpnp.dpnp_algo cimport dpnp_DPNPFuncType_to_dtype, dpnp_dtype_to_DPNPFuncType, get_dpnp_function_ptr
@@ -55,6 +56,7 @@ __all__ = [
     "checker_throw_type_error",
     "checker_throw_value_error",
     "create_output_descriptor_py",
+    "get_shape_dtype_py",
     "dpnp_descriptor",
     "get_axis_indeces",
     "get_axis_offsets",
@@ -69,7 +71,8 @@ cdef ERROR_PREFIX = "DPNP error:"
 def convert_item(item):
     if getattr(item, "__sycl_usm_array_interface__", False):
         if config.__DPNP_OUTPUT_DPCTL__:
-            item_converted = item.usm_data.copy_to_host().view(item.dtype)
+            # copy usm array with 
+            item_converted = np_st.as_strided(item.usm_data.copy_to_host().view(item.dtype), shape=item.shape)
         else:
             item_converted = dpnp.asnumpy(item)
     elif getattr(item, "__array_interface__", False): # detect if it is a container (TODO any better way?)
@@ -94,7 +97,18 @@ def convert_list_args(input_list):
         result_list.append(item_converted)
 
     return result_list
-    
+
+
+def copy_from_origin(dst, src):
+    """Copy origin result to output result."""
+    if config.__DPNP_OUTPUT_DPCTL__ and hasattr(dst, "__sycl_usm_array_interface__"):
+        if src.size:
+            dst.usm_data.copy_from_host(src.reshape(-1).view("|u1"))
+    else:
+        for i in range(dst.size):
+            dst.flat[i] = src.item(i)
+
+
 def call_origin(function, *args, **kwargs):
     """
     Call fallback function for unsupported cases
@@ -141,8 +155,7 @@ def call_origin(function, *args, **kwargs):
         else:
             result = kwargs_out
 
-        for i in range(result.size):
-            result.flat[i] = result_origin.item(i)
+        copy_from_origin(result, result_origin)
 
     elif isinstance(result, tuple):
         # convert tuple(fallback_array) to tuple(result_array)
@@ -151,8 +164,7 @@ def call_origin(function, *args, **kwargs):
             res = res_origin
             if isinstance(res_origin, numpy.ndarray):
                 res = create_output_container(res_origin.shape, res_origin.dtype)
-                for i in range(res.size):
-                    res.flat[i] = res_origin.item(i)
+                copy_from_origin(res, res_origin)
             result_list.append(res)
 
         result = tuple(result_list)
@@ -269,6 +281,10 @@ cdef tuple get_shape_dtype(object input_obj):
 
     # assume scalar or object
     return (return_shape, numpy.dtype(type(input_obj)))
+
+
+cpdef get_shape_dtype_py(object input_obj):
+    return get_shape_dtype(input_obj)
 
 
 cpdef find_common_type(object x1_obj, object x2_obj):

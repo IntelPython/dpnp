@@ -200,7 +200,47 @@ def array(x1, dtype=None, copy=True, order='C', subok=False, ndmin=0, like=None)
         # usm_array has no element wise assignment (aka []) and
         # has no "flat" property and
         # "usm_data.copy_from_host" doesn't work with diffrent datatypes
-        return numpy.array(x1, dtype=dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)
+        # x1_shape, x1_dtype = get_shape_dtype_py(x1)
+        # if dtype is not None:
+        #     x1_dtype = dtype
+        # elif len(x1_shape) == 0:
+        #     x1_dtype = None
+
+        # result_origin = numpy.array(x1, dtype=x1_dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)
+
+        # print()
+        # print("result_origin =", result_origin)
+        # print("result_origin.dtype =", result_origin.dtype)
+        # print("result_origin.shape =", result_origin.shape)
+
+        # print()
+        # print("result_origin.reshape(-1) =", result_origin.reshape(-1))
+        # print("result_origin.reshape(-1).dtype =", result_origin.reshape(-1).dtype)
+        # print("result_origin.reshape(-1).shape =", result_origin.reshape(-1).shape)
+
+        # print()
+        # print("result_origin.reshape(-1).view(\"|u1\") =", result_origin.reshape(-1).view("|u1"))
+        # print("result_origin.reshape(-1).view(\"|u1\").dtype =", result_origin.reshape(-1).view("|u1").dtype)
+        # print("result_origin.reshape(-1).view(\"|u1\").shape =", result_origin.reshape(-1).view("|u1").shape)
+
+        # result = create_output_descriptor_py(x1_shape, x1_dtype, None).get_pyobj()
+
+        # print()
+        # print("result =", result)
+        # print("result.dtype =", result.dtype)
+        # print("result.shape =", result.shape)
+
+        # if result_origin.size != 0:
+        #     result.usm_data.copy_from_host(result_origin.reshape(-1).view("|u1"))
+
+        # print()
+        # print("result =", result)
+        # print("result.dtype =", result.dtype)
+        # print("result.shape =", result.shape)
+
+        # return result
+        return call_origin(numpy.array, x1, dtype=dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)
+
     elif subok is not False:
         pass
     elif copy is not True:
