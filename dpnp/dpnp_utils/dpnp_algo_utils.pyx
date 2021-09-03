@@ -56,7 +56,6 @@ __all__ = [
     "checker_throw_type_error",
     "checker_throw_value_error",
     "create_output_descriptor_py",
-    "get_shape_dtype_py",
     "dpnp_descriptor",
     "get_axis_indeces",
     "get_axis_offsets",
@@ -71,7 +70,6 @@ cdef ERROR_PREFIX = "DPNP error:"
 def convert_item(item):
     if getattr(item, "__sycl_usm_array_interface__", False):
         if config.__DPNP_OUTPUT_DPCTL__:
-            # copy usm array with 
             item_converted = np_st.as_strided(item.usm_data.copy_to_host().view(item.dtype), shape=item.shape)
         else:
             item_converted = dpnp.asnumpy(item)
@@ -281,10 +279,6 @@ cdef tuple get_shape_dtype(object input_obj):
 
     # assume scalar or object
     return (return_shape, numpy.dtype(type(input_obj)))
-
-
-cpdef get_shape_dtype_py(object input_obj):
-    return get_shape_dtype(input_obj)
 
 
 cpdef find_common_type(object x1_obj, object x2_obj):
