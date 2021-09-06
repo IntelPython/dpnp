@@ -32,6 +32,7 @@ import dpnp.config as config
 
 assert_allclose_orig = numpy.testing.assert_allclose
 assert_array_equal_orig = numpy.testing.assert_array_equal
+assert_equal_orig = numpy.testing.assert_equal
 
 
 if config.__DPNP_OUTPUT_DPCTL__:
@@ -48,41 +49,30 @@ if config.__DPNP_OUTPUT_DPCTL__:
         config.__DPNP_OUTPUT_DPCTL__ = 0
 
 
-# https://github.com/IntelPython/dpctl/blob/3fe25706995e76255a931d8ed87786da69db685c/dpctl/tests/test_usm_ndarray_ctor.py#L157  # noqa
-def _to_numpy(usm_ary):
-    if type(usm_ary) is dpt.usm_ndarray:
-        usm_buf = usm_ary.usm_data
-        s = usm_buf.nbytes
-        host_buf = usm_buf.copy_to_host().view(usm_ary.dtype)
-        usm_ary_itemsize = usm_ary.itemsize
-        R_offset = (
-            usm_ary.__sycl_usm_array_interface__["offset"] * usm_ary_itemsize
-        )
-        R = numpy.ndarray((s,), dtype="u1", buffer=host_buf)
-        R = R[R_offset:].view(usm_ary.dtype)
-        R_strides = (usm_ary_itemsize * si for si in usm_ary.strides)
-        return np_st.as_strided(R, shape=usm_ary.shape, strides=R_strides)
-    else:
-        raise ValueError(
-            "Expected dpctl.tensor.usm_ndarray, got {}".format(type(usm_ary))
-        )
+def _asnumpy(ary):
+    if config.__DPNP_OUTPUT_DPCTL__ and isinstance(ary, dpt.usm_ndarray):
+        return np_st.as_strided(ary.usm_data.copy_to_host().view(ary.dtype), shape=ary.shape)
+
+    return numpy.asnumpy(ary)
+
+
+def _assert(assert_func, result, expected, *args, **kwargs):
+    if config.__DPNP_OUTPUT_DPCTL__:
+        if isinstance(result, dpt.usm_ndarray):
+            result = _asnumpy(result)
+        if isinstance(expected, dpt.usm_ndarray):
+            expected = _asnumpy(expected)
+
+    assert_func(result, expected, *args, **kwargs)
 
 
 def assert_allclose(result, expected, *args, **kwargs):
-    if config.__DPNP_OUTPUT_DPCTL__:
-        if isinstance(result, dpt.usm_ndarray):
-            result = _to_numpy(result)
-        if isinstance(expected, dpt.usm_ndarray):
-            expected = _to_numpy(expected)
-
-    assert_allclose_orig(result, expected, *args, **kwargs)
+    _assert(assert_allclose_orig, result, expected, *args, **kwargs)
 
 
 def assert_array_equal(result, expected, *args, **kwargs):
-    if config.__DPNP_OUTPUT_DPCTL__:
-        if isinstance(result, dpt.usm_ndarray):
-            result = _to_numpy(result)
-        if isinstance(expected, dpt.usm_ndarray):
-            expected = _to_numpy(expected)
+    _assert(assert_array_equal_orig, result, expected, *args, **kwargs)
 
-    assert_array_equal_orig(result, expected, *args, **kwargs)
+
+def assert_equal(result, expected, *args, **kwargs):
+    _assert(assert_equal_orig, result, expected, *args, **kwargs)
