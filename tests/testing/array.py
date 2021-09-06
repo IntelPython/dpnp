@@ -56,12 +56,20 @@ def _asnumpy(ary):
     return numpy.asnumpy(ary)
 
 
+def _to_numpy(item):
+    if config.__DPNP_OUTPUT_DPCTL__ and isinstance(item, dpt.usm_ndarray):
+        item = _asnumpy(item)
+    elif isinstance(item, tuple):
+        item = tuple(_to_numpy(i) for i in item)
+    elif isinstance(item, list):
+        item = [_to_numpy(i) for i in item]
+
+    return item
+
 def _assert(assert_func, result, expected, *args, **kwargs):
     if config.__DPNP_OUTPUT_DPCTL__:
-        if isinstance(result, dpt.usm_ndarray):
-            result = _asnumpy(result)
-        if isinstance(expected, dpt.usm_ndarray):
-            expected = _asnumpy(expected)
+        result = _to_numpy(result)
+        expected = _to_numpy(expected)
 
     assert_func(result, expected, *args, **kwargs)
 
