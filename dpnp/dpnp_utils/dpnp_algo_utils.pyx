@@ -69,10 +69,7 @@ cdef ERROR_PREFIX = "DPNP error:"
 
 def convert_item(item):
     if getattr(item, "__sycl_usm_array_interface__", False):
-        if config.__DPNP_OUTPUT_DPCTL__:
-            item_converted = np_st.as_strided(item.usm_data.copy_to_host().view(item.dtype), shape=item.shape)
-        else:
-            item_converted = dpnp.asnumpy(item)
+        item_converted = dpnp.asnumpy(item)
     elif getattr(item, "__array_interface__", False): # detect if it is a container (TODO any better way?)
         mod_name = getattr(item, "__module__", 'none')
         if (mod_name != 'numpy'):
