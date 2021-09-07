@@ -25,9 +25,7 @@
 # *****************************************************************************
 
 import numpy
-import numpy.lib.stride_tricks as np_st
-
-import dpnp.config as config
+from dpnp.dpnp_utils import convert_item
 
 
 assert_allclose_orig = numpy.testing.assert_allclose
@@ -35,41 +33,9 @@ assert_array_equal_orig = numpy.testing.assert_array_equal
 assert_equal_orig = numpy.testing.assert_equal
 
 
-if config.__DPNP_OUTPUT_DPCTL__:
-    try:
-        """
-        Detect DPCtl availability to use data container
-        """
-        import dpctl.tensor as dpt
-
-    except ImportError:
-        """
-        No DPCtl data container available
-        """
-        config.__DPNP_OUTPUT_DPCTL__ = 0
-
-
-def _asnumpy(ary):
-    if config.__DPNP_OUTPUT_DPCTL__ and isinstance(ary, dpt.usm_ndarray):
-        return np_st.as_strided(ary.usm_data.copy_to_host().view(ary.dtype), shape=ary.shape)
-
-    return numpy.asnumpy(ary)
-
-
-def _to_numpy(item):
-    if config.__DPNP_OUTPUT_DPCTL__ and isinstance(item, dpt.usm_ndarray):
-        item = _asnumpy(item)
-    elif isinstance(item, tuple):
-        item = tuple(_to_numpy(i) for i in item)
-    elif isinstance(item, list):
-        item = [_to_numpy(i) for i in item]
-
-    return item
-
 def _assert(assert_func, result, expected, *args, **kwargs):
-    if config.__DPNP_OUTPUT_DPCTL__:
-        result = _to_numpy(result)
-        expected = _to_numpy(expected)
+    result = convert_item(result)
+    expected = convert_item(expected)
 
     assert_func(result, expected, *args, **kwargs)
 
