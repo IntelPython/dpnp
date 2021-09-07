@@ -32,7 +32,6 @@ This module contains differnt helpers and utilities
 """
 
 import numpy
-import numpy.lib.stride_tricks as np_st
 import dpnp.config as config
 import dpnp
 from dpnp.dpnp_algo cimport dpnp_DPNPFuncType_to_dtype, dpnp_dtype_to_DPNPFuncType, get_dpnp_function_ptr
