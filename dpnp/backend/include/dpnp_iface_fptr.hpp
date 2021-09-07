@@ -96,6 +96,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_DEGREES,                  /**< Used in numpy.degrees() implementation  */
     DPNP_FN_DET,                      /**< Used in numpy.linalg.det() implementation  */
     DPNP_FN_DIAG,                     /**< Used in numpy.diag() implementation  */
+    DPNP_FN_DIAG_INDICES,             /**< Used in numpy.diag_indices() implementation  */
     DPNP_FN_DIAGONAL,                 /**< Used in numpy.diagonal() implementation  */
     DPNP_FN_DIVIDE,                   /**< Used in numpy.divide() implementation  */
     DPNP_FN_DOT,                      /**< Used in numpy.dot() implementation  */
