@@ -45,6 +45,7 @@ var group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i =
       [ "DPNP_FN_DEGREES", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558accd4f4f5361af9a38bca158550c4499a", null ],
       [ "DPNP_FN_DET", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ad2fe3ba99890bd43d5ec2888daaa3401", null ],
       [ "DPNP_FN_DIAG", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a02eb0bbaa0c5274848f5abfb8d74d06d", null ],
+      [ "DPNP_FN_DIAG_INDICES", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a46b9c91b3f2180bf14880065b4b23534", null ],
       [ "DPNP_FN_DIAGONAL", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a0f2c28f3c9ecce4b9b54df32b9f1113f", null ],
       [ "DPNP_FN_DIVIDE", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a011747f4bb8e8fa90b1eccc3288a18cb", null ],
       [ "DPNP_FN_DOT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a5333d3eb859da5bba7770ae8194ca5d2", null ],
