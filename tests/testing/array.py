@@ -24,31 +24,29 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+import numpy
+from dpnp.dpnp_utils import convert_item
 
-import os
+
+assert_allclose_orig = numpy.testing.assert_allclose
+assert_array_equal_orig = numpy.testing.assert_array_equal
+assert_equal_orig = numpy.testing.assert_equal
 
 
-__DPNP_ORIGIN__ = int(os.getenv('DPNP_ORIGIN', 0))
-'''
-Explicitly use original host Python NumPy
-'''
+def _assert(assert_func, result, expected, *args, **kwargs):
+    result = convert_item(result)
+    expected = convert_item(expected)
 
-__DPNP_QUEUE_GPU__ = int(os.getenv('DPNP_QUEUE_GPU', 0))
-'''
-Explicitly use GPU for SYCL queue
-'''
+    assert_func(result, expected, *args, **kwargs)
 
-__DPNP_OUTPUT_NUMPY__ = int(os.getenv('DPNP_OUTPUT_NUMPY', 0))
-'''
-Explicitly use NumPy.ndarray as return type for creation functions
-'''
 
-__DPNP_OUTPUT_DPCTL__ = int(os.getenv('DPNP_OUTPUT_DPCTL', 1))
-'''
-Explicitly use DPCtl package container as return type for creation functions
-'''
+def assert_allclose(result, expected, *args, **kwargs):
+    _assert(assert_allclose_orig, result, expected, *args, **kwargs)
 
-__DPNP_OUTPUT_DPCTL_DEFAULT_SHARED__ = int(os.getenv('DPNP_OUTPUT_DPCTL_DEFAULT_SHARED', 0))
-'''
-Explicitly use SYCL shared memory parameter in DPCtl array constructor for creation functions
-'''
+
+def assert_array_equal(result, expected, *args, **kwargs):
+    _assert(assert_array_equal_orig, result, expected, *args, **kwargs)
+
+
+def assert_equal(result, expected, *args, **kwargs):
+    _assert(assert_equal_orig, result, expected, *args, **kwargs)

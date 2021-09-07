@@ -42,6 +42,8 @@ it contains:
 
 import os
 import numpy
+import numpy.lib.stride_tricks as np_st
+import dpnp.config as config
 import collections
 
 from dpnp.dpnp_algo import *
@@ -130,6 +132,8 @@ def asnumpy(input, order='C'):
     This function works exactly the same as :obj:`numpy.asarray`.
 
     """
+    if config.__DPNP_OUTPUT_DPCTL__ and hasattr(input, "__sycl_usm_array_interface__"):
+        return np_st.as_strided(input.usm_data.copy_to_host().view(input.dtype), shape=input.shape)
 
     return numpy.asarray(input, order=order)
 
