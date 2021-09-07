@@ -244,18 +244,7 @@ cpdef utils.dpnp_descriptor dpnp_matmul(utils.dpnp_descriptor in_array1, utils.d
         """
         size_n = 1
 
-    if ndim_max > 2:
-        """
-        shape1(5, 3, 2) * shape2(5, 2, 4) -> result(5, 3, 4)
-        test: pytest tests/test_matmul.py::test_matmul[shape_pair10-types0] -v -s
-        """
-        shape_result = shape1[:-1] + [shape2.back()]
-    else:
-        """
-        shape1(5,2) * shape2(2,3) -> result(5,3)
-        test: pytest tests/test_matmul.py::test_matmul[shape_pair0-types0] -v -s
-        """
-        shape_result = shape1[:-1] + shape2[1:]
+    shape_result = shape1[:-1] + shape2[-1:]
 
     # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(in_array1.dtype)
