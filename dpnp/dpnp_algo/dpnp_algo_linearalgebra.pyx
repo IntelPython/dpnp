@@ -45,7 +45,9 @@ __all__ += [
 
 # C function pointer to the C library template functions
 ctypedef void(*fptr_2in_1out_shapes_t)(void *, void * , void * , size_t * , size_t * , size_t * , size_t)
-
+ctypedef void(*fptr_2in_1out_dot_t)(void * , const size_t, const size_t, const long * , const long * ,
+                                    void * , const size_t, const size_t, const long * , const long * ,
+                                    void * , const size_t, const size_t, const long * , const long * )
 
 cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp_descriptor in_array2):
 
@@ -88,18 +90,23 @@ cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp
     cdef shape_type_c result_shape = (1,)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
-    cdef fptr_2in_1out_t func = <fptr_2in_1out_t > kernel_data.ptr
+    cdef fptr_2in_1out_dot_t func = <fptr_2in_1out_dot_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(),
+         result.size,
+         result.ndim,
+         result_shape.data(),
+         NULL, # result_strides
          in_array1.get_data(),
          in_array1.size,
+         in_array1.ndim,
          shape1.data(),
-         shape1.size(),
+         NULL, # in_array1_strides
          in_array2.get_data(),
          in_array2.size,
+         in_array2.ndim,
          shape2.data(),
-         shape2.size(),
-         NULL)
+         NULL) # in_array2_strides
 
     return result
 
@@ -258,9 +265,23 @@ cpdef utils.dpnp_descriptor dpnp_matmul(utils.dpnp_descriptor in_array1, utils.d
     if result.size == 0:
         return result
 
-    cdef fptr_blas_gemm_2in_1out_t func = <fptr_blas_gemm_2in_1out_t > kernel_data.ptr
+    cdef fptr_2in_1out_dot_t func = <fptr_2in_1out_dot_t > kernel_data.ptr
     # call FPTR function
-    func(in_array1.get_data(), in_array2.get_data(), result.get_data(), size_m, size_n, size_k)
+    func(result.get_data(),
+         result.size,
+         result.ndim,
+         NULL, # result_shape
+         NULL, # result_strides
+         in_array1.get_data(),
+         in_array1.size,
+         in_array1.ndim,
+         shape1.data(),
+         NULL, # in_array1_strides
+         in_array2.get_data(),
+         in_array2.size,
+         in_array2.ndim,
+         shape2.data(),
+         NULL) # in_array2_strides
 
     return result
 

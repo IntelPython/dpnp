@@ -49,16 +49,23 @@ void dpnp_correlate_c(void* result_out,
                       const size_t input2_shape_ndim,
                       const size_t* where)
 {
+    (void)where;
+
     dpnp_dot_c<_DataType_output, _DataType_input1, _DataType_input2>(result_out,
+                                                                     42, // dummy result_size
+                                                                     42, // dummy result_ndim
+                                                                     NULL, // dummy result_shape
+                                                                     NULL, // dummy result_strides
                                                                      input1_in,
                                                                      input1_size,
-                                                                     input1_shape,
                                                                      input1_shape_ndim,
+                                                                     input1_shape,
+                                                                     NULL, // dummy input1_strides
                                                                      input2_in,
                                                                      input2_size,
-                                                                     input2_shape,
                                                                      input2_shape_ndim,
-                                                                     where);
+                                                                     input2_shape,
+                                                                     NULL); // dummy input2_strides
 
     return;
 }
