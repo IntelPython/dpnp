@@ -638,6 +638,9 @@ template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:gaa4be84f68fb1e6f7a0706e22378d54e0"><td class="memItemLeft" align="right" valign="top">INP_DLLEXPORT void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaa4be84f68fb1e6f7a0706e22378d54e0">get_dpnp_function_ptr1</a> (<a class="el" href="group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gaec54569b58e937e84099479f078bce15">DPNPFuncType</a> &amp;result_type, <a class="el" href="group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ga8b20590525bff7c7ce4f728d2021b558">DPNPFuncName</a> name, <a class="el" href="group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gaec54569b58e937e84099479f078bce15">DPNPFuncType</a> first_type, <a class="el" href="group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gaec54569b58e937e84099479f078bce15">DPNPFuncType</a> second_type=<a class="el" href="group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15a4dd2e447249c9f1ed5b4a01263bd8d06">DPNPFuncType::DPNP_FT_NONE</a>)</td></tr>
 <tr class="memdesc:gaa4be84f68fb1e6f7a0706e22378d54e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">get runtime pointer to selected function  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gaa4be84f68fb1e6f7a0706e22378d54e0">More...</a><br /></td></tr>
 <tr class="separator:gaa4be84f68fb1e6f7a0706e22378d54e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4e191231edc850c6882379230ecec168"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga4e191231edc850c6882379230ecec168">dpnp_python_constants_initialize_c</a> (void *py_none, void *py_nan)</td></tr>
+<tr class="memdesc:ga4e191231edc850c6882379230ecec168"><td class="mdescLeft">&#160;</td><td class="mdescRight">Python constants initialization in the backend.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga4e191231edc850c6882379230ecec168">More...</a><br /></td></tr>
+<tr class="separator:ga4e191231edc850c6882379230ecec168"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>This section describes Backend API. </p>
@@ -5689,6 +5692,44 @@ template&lt;typename _DataType , typename _IndecesType , typename _ValueType &gt
     <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Number of input elements in <code>array</code>. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">size_ind</td><td>Number of input elements in <code>ind</code>. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">size_v</td><td>Number of input elements in <code>v</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga4e191231edc850c6882379230ecec168"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga4e191231edc850c6882379230ecec168">&#9670;&nbsp;</a></span>dpnp_python_constants_initialize_c()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void dpnp_python_constants_initialize_c </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>py_none</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>py_nan</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Python constants initialization in the backend. </p>
+<p>Global values from Python to use in algorithms.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">py_none</td><td>Python NONE representation </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">py_nan</td><td>Python NAN representation </td></tr>
   </table>
   </dd>
 </dl>

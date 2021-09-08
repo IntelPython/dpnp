@@ -95,6 +95,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_prod_c", "group___b_a_c_k_e_n_d___a_p_i.html#gae11916836622bfa3348becbecdfbfeb5", null ],
     [ "dpnp_put_along_axis_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga545f1e2f2ca883129600e63d1fdd4e2c", null ],
     [ "dpnp_put_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga7caded16aee29c16ca4aa1df979630c8", null ],
+    [ "dpnp_python_constants_initialize_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga4e191231edc850c6882379230ecec168", null ],
     [ "dpnp_queue_initialize_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga0368d7cc2e2eb7a3f8c4184b6aca3547", null ],
     [ "dpnp_queue_is_cpu_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga2df766b3642aa4e94c8cef7927d6022d", null ],
     [ "dpnp_radians_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga49dcacfecef40446301ddd1d4d63f57d", null ],

@@ -1,5 +1,7 @@
 var NAVTREEINDEX1 =
 {
+"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a4d36c00d4572df84a1542dbaad885f7d":[0,2,2,140],
+"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a4e3c9946978c0627bf39906da7804b3b":[0,2,2,32],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a4ef557a202150c72794b887434d8ab6b":[0,2,2,2],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a4f6034abd1dbffe17b749af2d3484f1e":[0,2,2,52],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a51216d8cda7e009964d71ddd8c7fbb1d":[0,2,2,155],
@@ -160,20 +162,21 @@ var NAVTREEINDEX1 =
 "group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga4706968b8ce210d69309a0cae330cea5":[0,4,6],
 "group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga5f47f787627aa8dbd02301760482d7d6":[0,4,1,10],
 "group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga5f47f787627aa8dbd02301760482d7d6":[0,4,3],
-"group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga743bcd47e85667e5f238b99478c54d0f":[0,4,11],
 "group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga743bcd47e85667e5f238b99478c54d0f":[0,4,1,16],
+"group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga743bcd47e85667e5f238b99478c54d0f":[0,4,11],
 "group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga86f1f123df6b60b57542124fed792572":[0,4,1,15],
 "group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga86f1f123df6b60b57542124fed792572":[0,4,10],
 "group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga9ed3925b3af87fcbebdf27990480b98b":[0,4,8],
 "group___b_a_c_k_e_n_d___u_t_i_l_s.html#gad37eb9ce0ad29590cc931a9b6cd538e2":[0,4,7],
-"group___b_a_c_k_e_n_d___u_t_i_l_s.html#gae3c3b0a869dc364c99e7e33e739dfa07":[0,4,1,6],
 "group___b_a_c_k_e_n_d___u_t_i_l_s.html#gae3c3b0a869dc364c99e7e33e739dfa07":[0,4,4],
+"group___b_a_c_k_e_n_d___u_t_i_l_s.html#gae3c3b0a869dc364c99e7e33e739dfa07":[0,4,1,6],
 "index.html":[],
 "modules.html":[0],
 "pages.html":[],
-"queue__sycl_8hpp_source.html":[2,0,1,5],
+"queue__sycl_8hpp_source.html":[2,0,1,6],
 "struct_d_p_n_p_func_data.html":[0,2,0],
 "struct_d_p_n_p_func_data.html#a59c07232bc3830e89d5abe5447a24816":[0,2,0,1],
 "struct_d_p_n_p_func_data.html#af40fd22f5954384788121f817fb02f0d":[0,2,0,0],
-"verbose_8hpp_source.html":[2,0,1,6]
+"structpython__constants.html":[1,0,5],
+"verbose_8hpp_source.html":[2,0,1,7]
 };
