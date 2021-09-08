@@ -218,6 +218,9 @@ cdef extern from "dpnp_iface.hpp" namespace "QueueOptions":  # need this namespa
         GPU_SELECTOR
         AUTO_SELECTOR
 
+cdef extern from "constants.hpp":
+    void dpnp_python_constants_initialize_c(void* py_none, void* py_nan)
+
 cdef extern from "dpnp_iface.hpp":
     void dpnp_queue_initialize_c(QueueOptions selector)
     size_t dpnp_queue_is_cpu_c()

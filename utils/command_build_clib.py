@@ -178,6 +178,7 @@ dpnp_backend_c_description = [
                 "dpnp/backend/kernels/dpnp_krnl_statistics.cpp",
                 "dpnp/backend/src/dpnp_iface_fptr.cpp",
                 "dpnp/backend/src/memory_sycl.cpp",
+                "dpnp/backend/src/constants.cpp"
                 "dpnp/backend/src/queue_sycl.cpp"
             ],
         }
