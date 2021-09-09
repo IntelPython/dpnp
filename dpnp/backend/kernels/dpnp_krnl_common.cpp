@@ -77,21 +77,32 @@ class dpnp_dot_c_kernel;
 
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
 void dpnp_dot_c(void* result_out,
+                const size_t result_size,
+                const size_t result_ndim,
+                const size_t* result_shape,
+                const size_t* result_strides,
                 const void* input1_in,
                 const size_t input1_size,
+                const size_t input1_ndim,
                 const size_t* input1_shape,
-                const size_t input1_shape_ndim,
+                const size_t* input1_strides,
                 const void* input2_in,
                 const size_t input2_size,
+                const size_t input2_ndim,
                 const size_t* input2_shape,
-                const size_t input2_shape_ndim,
-                const size_t* where)
+                const size_t* input2_strides)
 {
     (void)input1_shape;
-    (void)input1_shape_ndim;
+    (void)input1_ndim;
     (void)input2_shape;
-    (void)input2_shape_ndim;
-    (void)where;
+    (void)input2_ndim;
+
+    (void)result_size;
+    (void)result_ndim;
+    (void)result_shape;
+    (void)result_strides;
+    (void)input1_strides;
+    (void)input2_strides;
 
     cl::sycl::event event;
     DPNPC_ptr_adapter<_DataType_input1> input1_ptr(input1_in, input1_size);
@@ -308,17 +319,46 @@ template <typename _KernelNameSpecialization>
 class dpnp_matmul_c_kernel;
 
 template <typename _DataType>
-void dpnp_matmul_c(void* array1_in, void* array2_in, void* result1, size_t size_m, size_t size_n, size_t size_k)
+void dpnp_matmul_c(void* result_out,
+                   const size_t result_size,
+                   const size_t result_ndim,
+                   const size_t* result_shape,
+                   const size_t* result_strides,
+                   const void* input1_in,
+                   const size_t input1_size,
+                   const size_t input1_ndim,
+                   const size_t* input1_shape,
+                   const size_t* input1_strides,
+                   const void* input2_in,
+                   const size_t input2_size,
+                   const size_t input2_ndim,
+                   const size_t* input2_shape,
+                   const size_t* input2_strides)
 {
+    (void)result_size;
+    (void)result_ndim;
+    (void)result_shape;
+    (void)result_strides;
+    (void)input1_size;
+    (void)input1_ndim;
+    (void)input1_strides;
+    (void)input2_size;
+    (void)input2_ndim;
+    (void)input2_strides;
+
+    size_t size_m = input1_shape[0];
+    size_t size_n = input2_shape[1];
+    size_t size_k = input1_shape[1];
+
     if (!size_m || !size_n || !size_k)
     {
         return;
     }
 
     cl::sycl::event event;
-    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size_m * size_k, true);
-    DPNPC_ptr_adapter<_DataType> input2_ptr(array2_in, size_k * size_n, true);
-    DPNPC_ptr_adapter<_DataType> result_ptr(result1, size_m * size_n, true, true);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(input1_in, size_m * size_k, true);
+    DPNPC_ptr_adapter<_DataType> input2_ptr(input2_in, size_k * size_n, true);
+    DPNPC_ptr_adapter<_DataType> result_ptr(result_out, size_m * size_n, true, true);
     _DataType* array_1 = input1_ptr.get_ptr();
     _DataType* array_2 = input2_ptr.get_ptr();
     _DataType* result = result_ptr.get_ptr();
