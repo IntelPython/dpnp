@@ -133,7 +133,8 @@ def asnumpy(input, order='C'):
 
     """
     if config.__DPNP_OUTPUT_DPCTL__ and hasattr(input, "__sycl_usm_array_interface__"):
-        return np_st.as_strided(input.usm_data.copy_to_host().view(input.dtype), shape=input.shape)
+        strides = (x * input.itemsize for x in input.strides)
+        return np_st.as_strided(input.usm_data.copy_to_host().view(input.dtype), shape=input.shape, strides=strides)
 
     return numpy.asarray(input, order=order)
 
