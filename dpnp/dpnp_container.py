@@ -89,13 +89,17 @@ def container_copy(dst_obj, src_obj, dst_idx = 0):
     Copy values to `dst` by iterating element by element in `input_obj`
     """
 
-    for elem_value in src_obj:
-        if isinstance(elem_value, (list, tuple)):
-            dst_idx = container_copy(dst_obj, elem_value, dst_idx)
-        elif issubclass(type(elem_value), (numpy.ndarray, dparray)):
-            dst_idx = container_copy(dst_obj, elem_value, dst_idx)
-        else:
-            dst_obj.flat[dst_idx] = elem_value
-            dst_idx += 1
+    # zero dimensional arrays are not iterable
+    if issubclass(type(src_obj), (numpy.ndarray, dparray)) and (src_obj.ndim == 0):
+        dst_idx = container_copy(dst_obj, (src_obj.item(0),), dst_idx)
+    else:
+        for elem_value in src_obj:
+            if isinstance(elem_value, (list, tuple)):
+                dst_idx = container_copy(dst_obj, elem_value, dst_idx)
+            elif issubclass(type(elem_value), (numpy.ndarray, dparray)):
+                dst_idx = container_copy(dst_obj, elem_value, dst_idx)
+            else:
+                dst_obj.flat[dst_idx] = elem_value
+                dst_idx += 1
 
     return dst_idx
