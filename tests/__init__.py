@@ -13,6 +13,6 @@ numpy.testing.assert_equal = testing.assert_equal
 from tests.third_party.cupy import testing as cupy_testing
 orig_shaped_arange = cupy_testing.shaped_arange
 def _shaped_arange(shape, xp=dpnp, dtype=dpnp.float64, order='C'):
-    res = xp.array(orig_shaped_arange(shape, xp=numpy, dtype=dtype, order=order))
+    res = xp.array(orig_shaped_arange(shape, xp=numpy, dtype=dtype, order=order), dtype=dtype)
     return res
 cupy_testing.shaped_arange = _shaped_arange
