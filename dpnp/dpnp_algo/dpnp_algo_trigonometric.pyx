@@ -72,16 +72,16 @@ cpdef utils.dpnp_descriptor dpnp_arccosh(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_ARCCOSH, x1, x1.shape)
 
 
-cpdef utils.dpnp_descriptor dpnp_arcsin(utils.dpnp_descriptor x1, dparray out):
-    return call_fptr_1in_1out(DPNP_FN_ARCSIN, x1, x1.shape, out=out, func_name='arcsin')
+cpdef utils.dpnp_descriptor dpnp_arcsin(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
+    return call_fptr_1in_1out(DPNP_FN_ARCSIN, x1, x1.shape, out, func_name='arcsin')
 
 
 cpdef utils.dpnp_descriptor dpnp_arcsinh(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_ARCSINH, x1, x1.shape)
 
 
-cpdef utils.dpnp_descriptor dpnp_arctan(utils.dpnp_descriptor x1, dparray out):
-    return call_fptr_1in_1out(DPNP_FN_ARCTAN, x1, x1.shape, out=out, func_name='arctan')
+cpdef utils.dpnp_descriptor dpnp_arctan(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
+    return call_fptr_1in_1out(DPNP_FN_ARCTAN, x1, x1.shape, out, func_name='arctan')
 
 
 cpdef utils.dpnp_descriptor dpnp_arctanh(utils.dpnp_descriptor x1):
@@ -92,8 +92,8 @@ cpdef utils.dpnp_descriptor dpnp_cbrt(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_CBRT, x1, x1.shape)
 
 
-cpdef utils.dpnp_descriptor dpnp_cos(utils.dpnp_descriptor x1, dparray out):
-    return call_fptr_1in_1out(DPNP_FN_COS, x1, x1.shape, out=out, func_name='cos')
+cpdef utils.dpnp_descriptor dpnp_cos(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
+    return call_fptr_1in_1out(DPNP_FN_COS, x1, x1.shape, out, func_name='cos')
 
 
 cpdef utils.dpnp_descriptor dpnp_cosh(utils.dpnp_descriptor x1):
@@ -104,8 +104,8 @@ cpdef utils.dpnp_descriptor dpnp_degrees(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_DEGREES, x1, x1.shape)
 
 
-cpdef utils.dpnp_descriptor dpnp_exp(utils.dpnp_descriptor x1, dparray out):
-    return call_fptr_1in_1out(DPNP_FN_EXP, x1, x1.shape, out=out, func_name='exp')
+cpdef utils.dpnp_descriptor dpnp_exp(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
+    return call_fptr_1in_1out(DPNP_FN_EXP, x1, x1.shape, out, func_name='exp')
 
 
 cpdef utils.dpnp_descriptor dpnp_exp2(utils.dpnp_descriptor x1):
@@ -116,8 +116,8 @@ cpdef utils.dpnp_descriptor dpnp_expm1(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_EXPM1, x1, x1.shape)
 
 
-cpdef utils.dpnp_descriptor dpnp_log(utils.dpnp_descriptor x1, dparray out):
-    return call_fptr_1in_1out(DPNP_FN_LOG, x1, x1.shape, out=out, func_name='log')
+cpdef utils.dpnp_descriptor dpnp_log(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
+    return call_fptr_1in_1out(DPNP_FN_LOG, x1, x1.shape, out, func_name='log')
 
 
 cpdef utils.dpnp_descriptor dpnp_log10(utils.dpnp_descriptor x1):
@@ -140,8 +140,8 @@ cpdef utils.dpnp_descriptor dpnp_radians(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_RADIANS, x1, x1.shape)
 
 
-cpdef utils.dpnp_descriptor dpnp_sin(utils.dpnp_descriptor x1, dparray out):
-    return call_fptr_1in_1out(DPNP_FN_SIN, x1, x1.shape, out=out, func_name='sin')
+cpdef utils.dpnp_descriptor dpnp_sin(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
+    return call_fptr_1in_1out(DPNP_FN_SIN, x1, x1.shape, out, func_name='sin')
 
 
 cpdef utils.dpnp_descriptor dpnp_sinh(utils.dpnp_descriptor x1):
@@ -156,26 +156,25 @@ cpdef utils.dpnp_descriptor dpnp_square(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_SQUARE, x1, x1.shape)
 
 
-cpdef utils.dpnp_descriptor dpnp_tan(utils.dpnp_descriptor x1, dparray out):
-    return call_fptr_1in_1out(DPNP_FN_TAN, x1, x1.shape, out=out, func_name='tan')
+cpdef utils.dpnp_descriptor dpnp_tan(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
+    return call_fptr_1in_1out(DPNP_FN_TAN, x1, x1.shape, out, func_name='tan')
 
 
 cpdef utils.dpnp_descriptor dpnp_tanh(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_TANH, x1, x1.shape)
 
 
-cpdef dparray dpnp_unwrap(dparray array1):
+cpdef utils.dpnp_descriptor dpnp_unwrap(utils.dpnp_descriptor array1):
 
-    call_type = array1.dtype
-    cdef dparray result
+    result_type = dpnp.float64
 
-    if call_type == numpy.float32:
-        result = dparray(array1.shape, dtype=call_type)
-    else:
-        result = dparray(array1.shape)
+    if array1.dtype == dpnp.float32:
+        result_type = dpnp.float32
+
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(array1.shape, result_type, None)
 
     for i in range(result.size):
-        val, = numpy.unwrap([array1[i]])
-        result[i] = val
+        val, = numpy.unwrap([array1.get_pyobj()[i]])
+        result.get_pyobj()[i] = val
 
     return result
