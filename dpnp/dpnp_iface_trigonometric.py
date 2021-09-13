@@ -43,7 +43,6 @@ it contains:
 import numpy
 
 from dpnp.dpnp_algo import *
-from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 import dpnp
 
@@ -187,7 +186,8 @@ def arcsin(x1, out=None, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_arcsin(x1_desc, out).get_pyobj()
+        out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+        return dpnp_arcsin(x1_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.arcsin, x1, out=out, **kwargs)
 
@@ -251,7 +251,8 @@ def arctan(x1, out=None, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_arctan(x1_desc, out).get_pyobj()
+        out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+        return dpnp_arctan(x1_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.arctan, x1, out=out, **kwargs)
 
@@ -359,14 +360,13 @@ def arctan2(x1, x2, dtype=None, out=None, where=True, **kwargs):
             pass
         elif x2_desc and x2_desc.ndim == 0:
             pass
-        elif out is not None and not isinstance(out, dparray):
-            pass
         elif dtype is not None:
             pass
         elif not where:
             pass
         else:
-            return dpnp_arctan2(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
+            out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+            return dpnp_arctan2(x1_desc, x2_desc, dtype, out_desc, where).get_pyobj()
 
     return call_origin(numpy.arctan2, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -395,7 +395,8 @@ def cos(x1, out=None, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_cos(x1_desc, out).get_pyobj()
+        out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+        return dpnp_cos(x1_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.cos, x1, out=out, **kwargs)
 
@@ -507,7 +508,8 @@ def exp(x1, out=None, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_exp(x1_desc, out).get_pyobj()
+        out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+        return dpnp_exp(x1_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.exp, x1, out=out, **kwargs)
 
@@ -616,8 +618,6 @@ def hypot(x1, x2, dtype=None, out=None, where=True, **kwargs):
             pass
         elif x2_desc and x2_desc.ndim == 0:
             pass
-        elif out is not None and not isinstance(out, dparray):
-            pass
         elif dtype is not None:
             pass
         elif out is not None:
@@ -625,7 +625,8 @@ def hypot(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_hypot(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
+            out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+            return dpnp_hypot(x1_desc, x2_desc, dtype, out_desc, where).get_pyobj()
 
     return call_origin(numpy.hypot, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -662,7 +663,8 @@ def log(x1, out=None, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_log(x1_desc, out).get_pyobj()
+        out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+        return dpnp_log(x1_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.log, x1, out=out, **kwargs)
 
@@ -876,7 +878,8 @@ def sin(x1, out=None, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_sin(x1_desc, out).get_pyobj()
+        out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+        return dpnp_sin(x1_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.sin, x1, out=out, **kwargs)
 
@@ -999,7 +1002,8 @@ def tan(x1, out=None, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_tan(x1_desc, out).get_pyobj()
+        out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+        return dpnp_tan(x1_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.tan, x1, out=out, **kwargs)
 

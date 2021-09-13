@@ -30,6 +30,7 @@
 #include <dpnp_iface.hpp>
 #include "dpnp_fptr.hpp"
 #include "dpnp_utils.hpp"
+#include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
 namespace mkl_blas = oneapi::mkl::blas;
@@ -42,8 +43,8 @@ template <typename _DataType, typename _ResultType>
 void dpnp_astype_c(const void* array1_in, void* result1, const size_t size)
 {
     cl::sycl::event event;
-
-    const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
+    const _DataType* array_in = input1_ptr.get_ptr();
     _ResultType* result = reinterpret_cast<_ResultType*>(result1);
 
     if ((array_in == nullptr) || (result == nullptr))
@@ -76,26 +77,39 @@ class dpnp_dot_c_kernel;
 
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
 void dpnp_dot_c(void* result_out,
+                const size_t result_size,
+                const size_t result_ndim,
+                const size_t* result_shape,
+                const size_t* result_strides,
                 const void* input1_in,
                 const size_t input1_size,
+                const size_t input1_ndim,
                 const size_t* input1_shape,
-                const size_t input1_shape_ndim,
+                const size_t* input1_strides,
                 const void* input2_in,
                 const size_t input2_size,
+                const size_t input2_ndim,
                 const size_t* input2_shape,
-                const size_t input2_shape_ndim,
-                const size_t* where)
+                const size_t* input2_strides)
 {
     (void)input1_shape;
-    (void)input1_shape_ndim;
-    (void)input2_size;
+    (void)input1_ndim;
     (void)input2_shape;
-    (void)input2_shape_ndim;
-    (void)where;
+    (void)input2_ndim;
+
+    (void)result_size;
+    (void)result_ndim;
+    (void)result_shape;
+    (void)result_strides;
+    (void)input1_strides;
+    (void)input2_strides;
 
     cl::sycl::event event;
-    _DataType_input1* input1 = reinterpret_cast<_DataType_input1*>(const_cast<void*>(input1_in));
-    _DataType_input2* input2 = reinterpret_cast<_DataType_input2*>(const_cast<void*>(input2_in));
+    DPNPC_ptr_adapter<_DataType_input1> input1_ptr(input1_in, input1_size);
+    DPNPC_ptr_adapter<_DataType_input2> input2_ptr(input2_in, input2_size);
+
+    _DataType_input1* input1 = input1_ptr.get_ptr();
+    _DataType_input2* input2 = input2_ptr.get_ptr();
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
 
     if (!input1_size)
@@ -146,7 +160,7 @@ void dpnp_dot_c(void* result_out,
             std::reduce(policy, local_mem, local_mem + input1_size, _DataType_output(0), std::plus<_DataType_output>());
         policy.queue().wait();
 
-        result[0] = accumulator;
+        dpnp_memory_memcpy_c(result, &accumulator, sizeof(_DataType_output)); // result[0] = accumulator;
 
         free(local_mem, DPNP_QUEUE);
     }
@@ -166,10 +180,12 @@ void dpnp_eig_c(const void* array_in, void* result1, void* result2, size_t size)
     }
 
     cl::sycl::event event;
-
-    const _DataType* array = reinterpret_cast<const _DataType*>(array_in);
-    _ResultType* result_val = reinterpret_cast<_ResultType*>(result1);
-    _ResultType* result_vec = reinterpret_cast<_ResultType*>(result2);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array_in, size * size, true);
+    DPNPC_ptr_adapter<_ResultType> result1_ptr(result1, size, true, true);
+    DPNPC_ptr_adapter<_ResultType> result2_ptr(result2, size * size, true, true);
+    const _DataType* array = input1_ptr.get_ptr();
+    _ResultType* result_val = result1_ptr.get_ptr();
+    _ResultType* result_vec = result2_ptr.get_ptr();
 
     double* result_val_kern = reinterpret_cast<double*>(dpnp_memory_alloc_c(size * sizeof(double)));
     double* result_vec_kern = reinterpret_cast<double*>(dpnp_memory_alloc_c(size * size * sizeof(double)));
@@ -177,7 +193,7 @@ void dpnp_eig_c(const void* array_in, void* result1, void* result2, size_t size)
     // type conversion. Also, math library requires copy memory because override
     for (size_t it = 0; it < (size * size); ++it)
     {
-        result_vec_kern[it] = array[it];
+        result_vec_kern[it] = array[it]; // TODO use memcpy_c or input1_ptr(array_in, size, true)
     }
 
     const std::int64_t lda = std::max<size_t>(1UL, size);
@@ -202,7 +218,7 @@ void dpnp_eig_c(const void* array_in, void* result1, void* result2, size_t size)
 
     for (size_t it1 = 0; it1 < size; ++it1)
     {
-        result_val[it1] = result_val_kern[it1];
+        result_val[it1] = result_val_kern[it1]; // TODO use memcpy_c or dpnpc_transpose_c
         for (size_t it2 = 0; it2 < size; ++it2)
         {
             // copy + transpose
@@ -228,9 +244,10 @@ void dpnp_eigvals_c(const void* array_in, void* result1, size_t size)
     }
 
     cl::sycl::event event;
-
-    const _DataType* array = reinterpret_cast<const _DataType*>(array_in);
-    _ResultType* result_val = reinterpret_cast<_ResultType*>(result1);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array_in, size * size, true);
+    DPNPC_ptr_adapter<_ResultType> result1_ptr(result1, size, true, true);
+    const _DataType* array = input1_ptr.get_ptr();
+    _ResultType* result_val = result1_ptr.get_ptr();
 
     double* result_val_kern = reinterpret_cast<double*>(dpnp_memory_alloc_c(size * sizeof(double)));
     double* result_vec_kern = reinterpret_cast<double*>(dpnp_memory_alloc_c(size * size * sizeof(double)));
@@ -238,7 +255,7 @@ void dpnp_eigvals_c(const void* array_in, void* result1, size_t size)
     // type conversion. Also, math library requires copy memory because override
     for (size_t it = 0; it < (size * size); ++it)
     {
-        result_vec_kern[it] = array[it];
+        result_vec_kern[it] = array[it]; // TODO same as previous kernel
     }
 
     const std::int64_t lda = std::max<size_t>(1UL, size);
@@ -302,17 +319,49 @@ template <typename _KernelNameSpecialization>
 class dpnp_matmul_c_kernel;
 
 template <typename _DataType>
-void dpnp_matmul_c(void* array1_in, void* array2_in, void* result1, size_t size_m, size_t size_n, size_t size_k)
+void dpnp_matmul_c(void* result_out,
+                   const size_t result_size,
+                   const size_t result_ndim,
+                   const size_t* result_shape,
+                   const size_t* result_strides,
+                   const void* input1_in,
+                   const size_t input1_size,
+                   const size_t input1_ndim,
+                   const size_t* input1_shape,
+                   const size_t* input1_strides,
+                   const void* input2_in,
+                   const size_t input2_size,
+                   const size_t input2_ndim,
+                   const size_t* input2_shape,
+                   const size_t* input2_strides)
 {
-    cl::sycl::event event;
-    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
-    _DataType* array_2 = reinterpret_cast<_DataType*>(array2_in);
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
+    (void)result_size;
+    (void)result_ndim;
+    (void)result_shape;
+    (void)result_strides;
+    (void)input1_size;
+    (void)input1_ndim;
+    (void)input1_strides;
+    (void)input2_size;
+    (void)input2_ndim;
+    (void)input2_strides;
+
+    size_t size_m = input1_shape[0];
+    size_t size_n = input2_shape[1];
+    size_t size_k = input1_shape[1];
 
     if (!size_m || !size_n || !size_k)
     {
         return;
     }
+
+    cl::sycl::event event;
+    DPNPC_ptr_adapter<_DataType> input1_ptr(input1_in, size_m * size_k, true);
+    DPNPC_ptr_adapter<_DataType> input2_ptr(input2_in, size_k * size_n, true);
+    DPNPC_ptr_adapter<_DataType> result_ptr(result_out, size_m * size_n, true, true);
+    _DataType* array_1 = input1_ptr.get_ptr();
+    _DataType* array_2 = input2_ptr.get_ptr();
+    _DataType* result = result_ptr.get_ptr();
 
     if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
     {

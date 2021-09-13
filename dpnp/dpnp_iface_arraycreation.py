@@ -43,6 +43,7 @@ it contains:
 import numpy
 import dpnp
 
+import dpnp.config as config
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 
@@ -149,7 +150,7 @@ def arange(start, stop=None, step=1, dtype=None):
     return call_origin(numpy.arange, start, stop=stop, step=step, dtype=dtype)
 
 
-def array(obj, dtype=None, copy=True, order='C', subok=False, ndmin=0):
+def array(x1, dtype=None, copy=True, order='C', subok=False, ndmin=0, like=None):
     """
     Creates an array.
 
@@ -192,51 +193,22 @@ def array(obj, dtype=None, copy=True, order='C', subok=False, ndmin=0):
 
     """
 
-    # print("=======================")
-    # print(f"x1={obj}")
-    if (use_origin_backend(obj)):
-        # print("=========numpy.array==============")
-        return numpy.array(obj, dtype=dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)
+    if not dpnp.is_type_supported(dtype) and dtype is not None:
+        pass
+    elif config.__DPNP_OUTPUT_DPCTL__:
+        return call_origin(numpy.array, x1, dtype=dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)
+    elif subok is not False:
+        pass
+    elif copy is not True:
+        pass
+    elif order != 'C':
+        pass
+    elif ndmin != 0:
+        pass
+    else:
+        return dpnp_array(x1, dtype).get_pyobj()
 
-    # if not isinstance(obj, collections.abc.Sequence):
-    #     return numpy.array(obj, dtype=dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)
-
-    # if isinstance(obj, numpy.object):
-    #     return numpy.array(obj, dtype=dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)
-
-    if subok is not False:
-        checker_throw_value_error("array", "subok", subok, False)
-
-    if copy is not True:
-        checker_throw_value_error("array", "copy", copy, True)
-
-    if order != 'C':
-        checker_throw_value_error("array", "order", order, 'C')
-
-    if ndmin != 0:
-        checker_throw_value_error("array", "ndmin", ndmin, 0)
-
-    # print("=========dpnp_array==============")
-    return dpnp_array(obj, dtype)
-
-
-# def array(x1, dtype=None, copy=True, order='C', subok=False, ndmin=0):
-#     print("=======================")
-#     print(f"x1={x1}")
-#     x1_desc = dpnp.get_dpnp_descriptor(x1)
-#     if x1_desc:
-#         if subok is not False:
-#             pass
-#         elif copy is not True:
-#             pass
-#         elif order != 'C':
-#             pass
-#         elif ndmin != 0:
-#             pass
-#         else:
-#             return dpnp_array(x1, dtype)
-
-#     return call_origin(numpy.array, x1, dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)
+    return call_origin(numpy.array, x1, dtype=dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)
 
 
 def asanyarray(a, dtype=None, order='C'):
@@ -742,9 +714,9 @@ def geomspace(start, stop, num=50, endpoint=True, dtype=None, axis=0):
 
     if not use_origin_backend():
         if axis != 0:
-            checker_throw_value_error("linspace", "axis", axis, 0)
-
-        return dpnp_geomspace(start, stop, num, endpoint, dtype, axis)
+            pass
+        else:
+            return dpnp_geomspace(start, stop, num, endpoint, dtype, axis).get_pyobj()
 
     return call_origin(numpy.geomspace, start, stop, num, endpoint, dtype, axis)
 
@@ -778,7 +750,7 @@ def identity(n, dtype=None, *, like=None):
         else:
             if dtype is None:
                 dtype = dpnp.float64
-            return dpnp_identity(n, dtype)
+            return dpnp_identity(n, dtype).get_pyobj()
 
     return call_origin(numpy.identity, n, dtype=dtype, like=like)
 
@@ -1175,7 +1147,7 @@ def tri(N, M=None, k=0, dtype=numpy.float, **kwargs):
         elif not isinstance(k, int):
             pass
         else:
-            return dpnp_tri(N, M, k, dtype)
+            return dpnp_tri(N, M, k, dtype).get_pyobj()
 
     return call_origin(numpy.tri, N, M, k, dtype, **kwargs)
 

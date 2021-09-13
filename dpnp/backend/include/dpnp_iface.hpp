@@ -193,16 +193,40 @@ INP_DLLEXPORT void dpnp_full_like_c(void* array_in, void* result, size_t size);
  * @ingroup BACKEND_API
  * @brief Matrix multiplication.
  *
- * Matrix multiplication procedure. Works with 2-D matrices
+ * Matrix multiplication procedure.
  *
- * @param [in]  array1    Input array.
- * @param [in]  array2    Input array.
- * @param [out] result1   Output array.
- * @param [in]  size      Number of elements in input arrays.
+ * @param [out] result_out          Output array.
+ * @param [in]  result_size         Size of output array.
+ * @param [in]  result_ndim         Number of output array dimensions.
+ * @param [in]  result_shape        Shape of output array.
+ * @param [in]  result_strides      Strides of output array.
+ * @param [in]  input1_in           First input array.
+ * @param [in]  input1_size         Size of first input array.
+ * @param [in]  input1_ndim         Number of first input array dimensions.
+ * @param [in]  input1_shape        Shape of first input array.
+ * @param [in]  input1_strides      Strides of first input array.
+ * @param [in]  input2_in           Second input array.
+ * @param [in]  input2_size         Size of second input array.
+ * @param [in]  input2_ndim         Number of second input array dimensions.
+ * @param [in]  input2_shape        Shape of second input array.
+ * @param [in]  input2_strides      Strides of second input array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void
-    dpnp_matmul_c(void* array1, void* array2, void* result1, size_t size_m, size_t size_n, size_t size_k);
+INP_DLLEXPORT void dpnp_matmul_c(void* result_out,
+                                 const size_t result_size,
+                                 const size_t result_ndim,
+                                 const size_t* result_shape,
+                                 const size_t* result_strides,
+                                 const void* input1_in,
+                                 const size_t input1_size,
+                                 const size_t input1_ndim,
+                                 const size_t* input1_shape,
+                                 const size_t* input1_strides,
+                                 const void* input2_in,
+                                 const size_t input2_size,
+                                 const size_t input2_ndim,
+                                 const size_t* input2_shape,
+                                 const size_t* input2_strides);
 
 /**
  * @ingroup BACKEND_API
@@ -211,10 +235,11 @@ INP_DLLEXPORT void
  * @param [in]  array     Input array.
  * @param [in]  mask_arr  Input mask array when elem is nan.
  * @param [out] result    Output array.
+ * @param [in]  result_size    Output array size.
  * @param [in]  size      Number of elements in input arrays.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_nanvar_c(void* array, void* mask_arr, void* result, size_t size);
+INP_DLLEXPORT void dpnp_nanvar_c(void* array, void* mask_arr, void* result, const size_t result_size, size_t size);
 
 /**
  * @ingroup BACKEND_API
@@ -222,53 +247,62 @@ INP_DLLEXPORT void dpnp_nanvar_c(void* array, void* mask_arr, void* result, size
  *
  * @param [in]  array1    Input array.
  * @param [out] result1   Output array.
+ * @param [in]  result_size   Output array size.
  * @param [in]  shape     Shape of input array.
  * @param [in]  ndim      Number of elements in shape.
  * @param [in]  j         Number input array.
  */
 template <typename _DataType>
 INP_DLLEXPORT void
-    dpnp_nonzero_c(const void* array1, void* result1, const size_t* shape, const size_t ndim, const size_t j);
+    dpnp_nonzero_c(const void* array1, void* result1, const size_t result_size, const size_t* shape, const size_t ndim, const size_t j);
 
 /**
  * @ingroup BACKEND_API
  * @brief absolute function.
  *
- * @param [in]  array1_in    Input array.
+ * @param [in]  input1_in    Input array.
  * @param [out] result1      Output array.
  * @param [in]  size         Number of elements in input arrays.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_elemwise_absolute_c(void* array1_in, void* result1, size_t size);
+INP_DLLEXPORT void dpnp_elemwise_absolute_c(const void* input1_in, void* result1, size_t size);
 
 /**
  * @ingroup BACKEND_API
  * @brief Custom implementation of dot function
  *
  * @param [out] result_out          Output array.
+ * @param [in]  result_size         Size of output array.
+ * @param [in]  result_ndim         Number of output array dimensions.
+ * @param [in]  result_shape        Shape of output array.
+ * @param [in]  result_strides      Strides of output array.
  * @param [in]  input1_in           First input array.
  * @param [in]  input1_size         Size of first input array.
+ * @param [in]  input1_ndim         Number of first input array dimensions.
  * @param [in]  input1_shape        Shape of first input array.
- * @param [in]  input1_shape_ndim   Number of first array dimensions.
+ * @param [in]  input1_strides      Strides of first input array.
  * @param [in]  input2_in           Second input array.
- * @param [in]  input2_size         Shape of second input array.
- * @param [in]  input2_shape        Shape of first input array.
- * @param [in]  input2_shape_ndim   Number of second array dimensions.
- * @param [in]  where               Mask array.
- * @param [out] result1             Output array.
- * @param [in]  size                Number of elements in input arrays.
+ * @param [in]  input2_size         Size of second input array.
+ * @param [in]  input2_ndim         Number of second input array dimensions.
+ * @param [in]  input2_shape        Shape of second input array.
+ * @param [in]  input2_strides      Strides of second input array.
  */
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
 INP_DLLEXPORT void dpnp_dot_c(void* result_out,
+                              const size_t result_size,
+                              const size_t result_ndim,
+                              const size_t* result_shape,
+                              const size_t* result_strides,
                               const void* input1_in,
                               const size_t input1_size,
+                              const size_t input1_ndim,
                               const size_t* input1_shape,
-                              const size_t input1_shape_ndim,
+                              const size_t* input1_strides,
                               const void* input2_in,
                               const size_t input2_size,
+                              const size_t input2_ndim,
                               const size_t* input2_shape,
-                              const size_t input2_shape_ndim,
-                              const size_t* where);
+                              const size_t* input2_strides);
 
 /**
  * @ingroup BACKEND_API
@@ -581,7 +615,18 @@ INP_DLLEXPORT void dpnp_diag_c(
  * @ingroup BACKEND_API
  * @brief math library implementation of diagonal function
  *
+ * @param [out] result      Output array.
+ * @param [in]  size        Size of array.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_diag_indices_c(void* result1, size_t size);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief math library implementation of diagonal function
+ *
  * @param [in]  array   Input array with data.
+ * @param [in]  input1_size   Input1 data size.
  * @param [out] result  Output array.
  * @param [in]  offset  Offset of the diagonal from the main diagonal.
  * @param [in]  shape   Shape of input array.
@@ -590,7 +635,7 @@ INP_DLLEXPORT void dpnp_diag_c(
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_diagonal_c(
-    void* array1_in, void* result1, const size_t offset, size_t* shape, size_t* res_shape, const size_t res_ndim);
+    void* array1_in, const size_t input1_size, void* result1, const size_t offset, size_t* shape, size_t* res_shape, const size_t res_ndim);
 
 /**
  * @ingroup BACKEND_API
@@ -622,7 +667,7 @@ INP_DLLEXPORT void dpnp_initval_c(void* result1, void* value, size_t size);
  * @param [in]  shape   Shape of input array.
  * @param [in]  ndim    Number of elements in shape.
  */
-template <typename _DataType>
+template <typename _DataType, typename _ResultType>
 INP_DLLEXPORT void dpnp_inv_c(void* array1_in, void* result1, size_t* shape, size_t ndim);
 
 /**
@@ -643,6 +688,7 @@ INP_DLLEXPORT void dpnp_matrix_rank_c(void* array1_in, void* result1, size_t* sh
  *
  * @param [in]  array   Input array with data.
  * @param [out] result  Output array.
+ * @param [in]  result_size  Output array size.
  * @param [in]  shape   Shape of input array.
  * @param [in]  ndim    Number of elements in shape.
  * @param [in]  axis    Axis.
@@ -650,7 +696,7 @@ INP_DLLEXPORT void dpnp_matrix_rank_c(void* array1_in, void* result1, size_t* sh
  */
 template <typename _DataType>
 INP_DLLEXPORT void
-    dpnp_max_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
+    dpnp_max_c(void* array1_in, void* result1, const size_t result_size, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
@@ -688,6 +734,7 @@ INP_DLLEXPORT void
  *
  * @param [in]  array   Input array with data.
  * @param [out] result  Output array.
+ * @param [in]  result_size  Output array size.
  * @param [in]  shape   Shape of input array.
  * @param [in]  ndim    Number of elements in shape.
  * @param [in]  axis    Axis.
@@ -695,7 +742,7 @@ INP_DLLEXPORT void
  */
 template <typename _DataType>
 INP_DLLEXPORT void
-    dpnp_min_c(void* array, void* result, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
+    dpnp_min_c(void* array, void* result, const size_t result_size, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
@@ -752,12 +799,13 @@ INP_DLLEXPORT void dpnp_std_c(
  * @brief math library implementation of take function
  *
  * @param [in]  array   Input array with data.
+ * @param [in]  array1_size   Input array size.
  * @param [in]  indices Input array with indices.
  * @param [out] result  Output array.
  * @param [in]  size    Number of elements in the input array.
  */
 template <typename _DataType, typename _IndecesType>
-INP_DLLEXPORT void dpnp_take_c(void* array, void* indices, void* result, size_t size);
+INP_DLLEXPORT void dpnp_take_c(void* array, const size_t array1_size, void* indices, void* result, size_t size);
 
 /**
  * @ingroup BACKEND_API

@@ -33,6 +33,7 @@
 
 #include "dpnp_fptr.hpp"
 #include "dpnp_utils.hpp"
+#include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
 namespace mkl_blas = oneapi::mkl::blas;
@@ -209,7 +210,8 @@ void dpnp_rng_f_c(void* result, const _DataType df_num, const _DataType df_den, 
     _DataType scale = 2.0 / df_num;
     _DataType* den = nullptr;
 
-    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
+    _DataType* result1 = result1_ptr.get_ptr();
 
     if (dpnp_queue_is_cpu_c())
     {
@@ -604,7 +606,8 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
     {
         return;
     }
-    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
+    _DataType* result1 = result1_ptr.get_ptr();
 
     const _DataType d_zero = _DataType(0.0);
     const _DataType d_one = _DataType(1.0);
@@ -939,7 +942,8 @@ void dpnp_rng_rayleigh_c(void* result, const _DataType scale, const size_t size)
     const _DataType a = 0.0;
     const _DataType beta = 2.0;
 
-    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
+    _DataType* result1 = result1_ptr.get_ptr();
 
     mkl_rng::exponential<_DataType> distribution(a, beta);
 
@@ -970,7 +974,8 @@ void dpnp_rng_shuffle_c(
         return;
     }
 
-    char* result1 = reinterpret_cast<char*>(result);
+    DPNPC_ptr_adapter<char> result1_ptr(result, size, true, true);
+    char* result1 = result1_ptr.get_ptr();
 
     size_t uvec_size = high_dim_size - 1;
     double* Uvec = reinterpret_cast<double*>(dpnp_memory_alloc_c(uvec_size * sizeof(double)));
@@ -1248,7 +1253,9 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
     {
         return;
     }
-    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+    
+    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
+    _DataType* result1 = result1_ptr.get_ptr();
 
     _DataType r_over_two_kappa, recip_two_kappa;
     _DataType s_minus_one, hpt, r_over_two_kappa_minus_one, rho_minus_one;
@@ -1343,7 +1350,9 @@ void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _Da
     {
         return;
     }
-    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+
+    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
+    _DataType* result1 = result1_ptr.get_ptr();
 
     _DataType rho_over_kappa, rho, r, s_kappa;
     _DataType* Uvec = nullptr;
@@ -1538,7 +1547,9 @@ void dpnp_rng_zipf_c(void* result, const _DataType a, const size_t size)
     long X;
     const _DataType d_zero = 0.0;
     const _DataType d_one = 1.0;
-    _DataType* result1 = reinterpret_cast<_DataType*>(result);
+    
+    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
+    _DataType* result1 = result1_ptr.get_ptr();
 
     am1 = a - d_one;
     b = pow(2.0, am1);

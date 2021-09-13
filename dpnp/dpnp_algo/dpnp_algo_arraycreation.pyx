@@ -98,7 +98,7 @@ cpdef utils.dpnp_descriptor dpnp_diag(utils.dpnp_descriptor v, int k):
 
 
 cpdef utils.dpnp_descriptor dpnp_full(result_shape, value_in, result_dtype):
-    # Convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # Convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType dtype_in = dpnp_dtype_to_DPNPFuncType(result_dtype)
 
     # get the FPTR data structure
@@ -121,7 +121,7 @@ cpdef utils.dpnp_descriptor dpnp_full(result_shape, value_in, result_dtype):
 
 
 cpdef utils.dpnp_descriptor dpnp_full_like(result_shape, value_in, result_dtype):
-    # Convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # Convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType dtype_in = dpnp_dtype_to_DPNPFuncType(result_dtype)
 
     # get the FPTR data structure
@@ -143,8 +143,9 @@ cpdef utils.dpnp_descriptor dpnp_full_like(result_shape, value_in, result_dtype)
     return result
 
 
-cpdef dparray dpnp_geomspace(start, stop, num, endpoint, dtype, axis):
-    cdef dparray result = dparray(num, dtype=dtype)
+cpdef utils.dpnp_descriptor dpnp_geomspace(start, stop, num, endpoint, dtype, axis):
+    cdef shape_type_c obj_shape = utils._object_to_tuple(num)
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(obj_shape, dtype, None)
 
     if endpoint:
         steps_count = num - 1
@@ -156,28 +157,27 @@ cpdef dparray dpnp_geomspace(start, stop, num, endpoint, dtype, axis):
         step = dpnp.power(dpnp.float64(stop) / start, 1.0 / steps_count)
         mult = step
         for i in range(1, result.size):
-            result[i] = start * mult
+            result.get_pyobj()[i] = start * mult
             mult = mult * step
     else:
         step = dpnp.nan
 
     # if result is not empty, then fiil first and last elements
     if num > 0:
-        result[0] = start
+        result.get_pyobj()[0] = start
         if endpoint and result.size > 1:
-            result[result.size - 1] = stop
+            result.get_pyobj()[result.size - 1] = stop
 
     return result
 
 
-cpdef dparray dpnp_identity(n, result_dtype):
+cpdef utils.dpnp_descriptor dpnp_identity(n, result_dtype):
     cdef DPNPFuncType dtype_in = dpnp_dtype_to_DPNPFuncType(result_dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_IDENTITY, dtype_in, DPNP_FT_NONE)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-
-    cdef dparray result = dparray((n, n), dtype=result_type)
+    cdef shape_type_c shape_in = (n, n)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(shape_in, kernel_data.return_type, None)
 
     cdef fptr_1out_t func = <fptr_1out_t > kernel_data.ptr
     func(result.get_data(), n)
@@ -187,7 +187,8 @@ cpdef dparray dpnp_identity(n, result_dtype):
 
 # TODO this function should work through dpnp_arange_c
 cpdef tuple dpnp_linspace(start, stop, num, endpoint, retstep, dtype, axis):
-    cdef dparray result = dparray(num, dtype=dtype)
+    cdef shape_type_c obj_shape = utils._object_to_tuple(num)
+    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(obj_shape, dtype, None)
 
     if endpoint:
         steps_count = num - 1
@@ -198,27 +199,25 @@ cpdef tuple dpnp_linspace(start, stop, num, endpoint, retstep, dtype, axis):
     if steps_count > 0:
         step = (dpnp.float64(stop) - start) / steps_count
         for i in range(1, result.size):
-            result[i] = start + step * i
+            result.get_pyobj()[i] = start + step * i
     else:
         step = dpnp.nan
 
     # if result is not empty, then fiil first and last elements
     if num > 0:
-        result[0] = start
+        result.get_pyobj()[0] = start
         if endpoint and result.size > 1:
-            result[result.size - 1] = stop
+            result.get_pyobj()[result.size - 1] = stop
 
-    return (result, step)
+    return (result.get_pyobj(), step)
 
 
-cpdef dparray dpnp_logspace(start, stop, num, endpoint, base, dtype, axis):
+cpdef object dpnp_logspace(start, stop, num, endpoint, base, dtype, axis):
     temp = dpnp.linspace(start, stop, num=num, endpoint=endpoint)
     return dpnp.power(base, temp).astype(dtype)
 
 
 cpdef list dpnp_meshgrid(xi, copy, sparse, indexing):
-    cdef dparray res_item
-
     input_count = len(xi)
 
     # simple case
@@ -252,14 +251,15 @@ cpdef list dpnp_meshgrid(xi, copy, sparse, indexing):
 
     shape = tuple(shape_list)
 
+    cdef utils.dpnp_descriptor res_item
     result = []
     for i in range(input_count):
-        res_item = utils_py.create_output_descriptor_py(shape, xi[i].dtype, None).get_pyobj()
+        res_item = utils_py.create_output_descriptor_py(shape, xi[i].dtype, None)
 
         for j in range(res_item.size):
-            res_item[j] = xi[i][(j // steps[i]) % xi[i].size]
+            res_item.get_pyobj()[j] = xi[i][(j // steps[i]) % xi[i].size]
 
-        result.append(res_item)
+        result.append(res_item.get_pyobj())
 
     return result
 
@@ -278,7 +278,7 @@ cpdef utils.dpnp_descriptor dpnp_trace(utils.dpnp_descriptor arr, offset=0, axis
     else:
         dtype_ = dtype
 
-    cdef dparray diagonal_arr = dpnp.diagonal(arr, offset, axis1, axis2)
+    cdef utils.dpnp_descriptor diagonal_arr = dpnp_diagonal(arr, offset)
     cdef size_t diagonal_ndim = diagonal_arr.ndim
     cdef shape_type_c diagonal_shape = diagonal_arr.shape
 
@@ -298,22 +298,19 @@ cpdef utils.dpnp_descriptor dpnp_trace(utils.dpnp_descriptor arr, offset=0, axis
     return result
 
 
-cpdef dparray dpnp_tri(N, M=None, k=0, dtype=numpy.float):
+cpdef utils.dpnp_descriptor dpnp_tri(N, M=None, k=0, dtype=numpy.float):
     if M is None:
         M = N
 
     if dtype == numpy.float:
         dtype = numpy.float64
 
-    cdef dparray result
-
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TRI, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
-
-    result = dparray(shape=(N, M), dtype=result_type)
+    cdef shape_type_c shape_in = (N, M)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(shape_in, kernel_data.return_type, None)
 
     cdef custom_indexing_1out_func_ptr_t func = <custom_indexing_1out_func_ptr_t > kernel_data.ptr
 

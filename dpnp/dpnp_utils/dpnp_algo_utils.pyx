@@ -35,6 +35,7 @@ import numpy
 import dpnp.config as config
 import dpnp
 from dpnp.dpnp_algo cimport dpnp_DPNPFuncType_to_dtype, dpnp_dtype_to_DPNPFuncType, get_dpnp_function_ptr
+from dpnp.dpnp_container import create_output_container, container_copy
 from libcpp cimport bool as cpp_bool
 from libcpp.complex cimport complex as cpp_complex
 
@@ -54,12 +55,11 @@ __all__ = [
     "checker_throw_type_error",
     "checker_throw_value_error",
     "create_output_descriptor_py",
-    "dp2nd_array",
+    "convert_item",
     "dpnp_descriptor",
     "get_axis_indeces",
     "get_axis_offsets",
     "_get_linear_index",
-    "nd2dp_array",
     "normalize_axis",
     "_object_to_tuple",
     "use_origin_backend"
@@ -67,30 +67,77 @@ __all__ = [
 
 cdef ERROR_PREFIX = "DPNP error:"
 
+def convert_item(item):
+    if getattr(item, "__sycl_usm_array_interface__", False):
+        item_converted = dpnp.asnumpy(item)
+    elif getattr(item, "__array_interface__", False): # detect if it is a container (TODO any better way?)
+        mod_name = getattr(item, "__module__", 'none')
+        if (mod_name != 'numpy'):
+            item_converted = dpnp.asnumpy(item)
+        else:  
+            item_converted = item
+    elif isinstance(item, list):
+        item_converted = convert_list_args(item)
+    elif isinstance(item, tuple):
+        item_converted = tuple(convert_list_args(item))
+    else:
+        item_converted = item
+    
+    return item_converted
+    
+def convert_list_args(input_list):
+    result_list = []
+    for item in input_list:
+        item_converted = convert_item(item)     
+        result_list.append(item_converted)
+
+    return result_list
+
+
+def copy_from_origin(dst, src):
+    """Copy origin result to output result."""
+    if config.__DPNP_OUTPUT_DPCTL__ and hasattr(dst, "__sycl_usm_array_interface__"):
+        if src.size:
+            dst.usm_data.copy_from_host(src.reshape(-1).view("|u1"))
+    else:
+        for i in range(dst.size):
+            dst.flat[i] = src.item(i)
+
 
 def call_origin(function, *args, **kwargs):
     """
     Call fallback function for unsupported cases
     """
 
-    # print(f"DPNP call_origin(): Fallback called. \n\t function={function}, \n\t args={args}, \n\t kwargs={kwargs}")
+    dpnp_inplace = kwargs.pop("dpnp_inplace", False)
+    # print(f"DPNP call_origin(): Fallback called. \n\t function={function}, \n\t args={args}, \n\t kwargs={kwargs}, \n\t dpnp_inplace={dpnp_inplace}")
 
     kwargs_out = kwargs.get("out", None)
     if (kwargs_out is not None):
-        kwargs["out"] = dpnp.asnumpy(kwargs_out) if isinstance(kwargs_out, dparray) else kwargs_out
+        if isinstance(kwargs_out, numpy.ndarray):
+            kwargs["out"] = kwargs_out
+        else:
+            kwargs["out"] = dpnp.asnumpy(kwargs_out)
 
-    args_new = []
-    for arg in args:
-        argx = dpnp.asnumpy(arg) if isinstance(arg, dparray) else arg
-        args_new.append(argx)
+    if dpnp_inplace:
+        # TODO replacement of foreign containers is still needed
+        args_new = args
+    else:
+        args_new_list = []
+        for arg in args:
+            argx = convert_item(arg)     
+            args_new_list.append(argx)
+        args_new = tuple(args_new_list)
 
     kwargs_new = {}
     for key, kwarg in kwargs.items():
-        kwargx = dpnp.asnumpy(kwarg) if isinstance(kwarg, dparray) else kwarg
+        kwargx = convert_item(kwarg)     
         kwargs_new[key] = kwargx
 
-    # TODO need to put dparray memory into NumPy call
+    # print(f"DPNP call_origin(): bakend called. \n\t function={function}, \n\t args_new={args_new}, \n\t kwargs_new={kwargs_new}, \n\t dpnp_inplace={dpnp_inplace}")
+    # TODO need to put array memory into NumPy call
     result_origin = function(*args_new, **kwargs_new)
+    # print(f"DPNP call_origin(): result from backend. \n\t result_origin={result_origin}, \n\t args_new={args_new}, \n\t kwargs_new={kwargs_new}, \n\t dpnp_inplace={dpnp_inplace}")
     result = result_origin
     if isinstance(result, numpy.ndarray):
         if (kwargs_out is None):
@@ -99,21 +146,20 @@ def call_origin(function, *args, **kwargs):
             if (kwargs_dtype is not None):
                 result_dtype = kwargs_dtype
 
-            result = dparray(result_origin.shape, dtype=result_dtype)
+            result = create_output_container(result_origin.shape, result_dtype)
         else:
             result = kwargs_out
 
-        for i in range(result.size):
-            result._setitem_scalar(i, result_origin.item(i))
+        copy_from_origin(result, result_origin)
+
     elif isinstance(result, tuple):
-        # convert tuple(ndarray) to tuple(dparray)
+        # convert tuple(fallback_array) to tuple(result_array)
         result_list = []
         for res_origin in result:
             res = res_origin
             if isinstance(res_origin, numpy.ndarray):
-                res = dparray(res_origin.shape, dtype=res_origin.dtype)
-                for i in range(res.size):
-                    res._setitem_scalar(i, res_origin.item(i))
+                res = create_output_container(res_origin.shape, res_origin.dtype)
+                copy_from_origin(res, res_origin)
             result_list.append(res)
 
         result = tuple(result_list)
@@ -149,44 +195,11 @@ cpdef checker_throw_value_error(function_name, param_name, param, expected):
 
 
 cpdef dpnp_descriptor create_output_descriptor_py(shape_type_c output_shape, object d_type, object requested_out):
-    cdef DPNPFuncType c_type = dpnp_dtype_to_DPNPFuncType(d_type)
+    py_type = dpnp.default_float_type() if d_type is None else d_type
+    
+    cdef DPNPFuncType c_type = dpnp_dtype_to_DPNPFuncType(py_type)
 
     return create_output_descriptor(output_shape, c_type, requested_out)
-
-
-cpdef dp2nd_array(arr):
-    """Convert dparray to ndarray"""
-    return dpnp.asnumpy(arr) if isinstance(arr, dparray) else arr
-
-cdef long copy_values_to_dparray(dparray dst, input_obj, size_t dst_idx=0) except -1:
-    cdef elem_dtype = dst.dtype
-
-    for elem_value in input_obj:
-        if isinstance(elem_value, (list, tuple)):
-            dst_idx = copy_values_to_dparray(dst, elem_value, dst_idx)
-        elif issubclass(type(elem_value), (numpy.ndarray, dparray)):
-            dst_idx = copy_values_to_dparray(dst, elem_value, dst_idx)
-        else:
-            if elem_dtype == numpy.float64:
-                ( < double * > dst.get_data())[dst_idx] = elem_value
-            elif elem_dtype == numpy.float32:
-                ( < float * > dst.get_data())[dst_idx] = elem_value
-            elif elem_dtype == numpy.int64:
-                ( < long * > dst.get_data())[dst_idx] = elem_value
-            elif elem_dtype == numpy.int32:
-                ( < int * > dst.get_data())[dst_idx] = elem_value
-            elif elem_dtype == numpy.bool_ or elem_dtype == numpy.bool:
-                (< cpp_bool * > dst.get_data())[dst_idx] = elem_value
-            elif elem_dtype == numpy.complex64:
-                (< cpp_complex[float] * > dst.get_data())[dst_idx] = elem_value
-            elif elem_dtype == numpy.complex128:
-                (< cpp_complex[double] * > dst.get_data())[dst_idx] = elem_value
-            else:
-                checker_throw_type_error("copy_values_to_dparray", elem_dtype)
-
-            dst_idx += 1
-
-    return dst_idx
 
 
 cpdef tuple get_axis_indeces(idx, shape):
@@ -239,7 +252,8 @@ cdef tuple get_shape_dtype(object input_obj):
     cdef shape_type_c return_shape  # empty shape means scalar
     return_dtype = None
 
-    if issubclass(type(input_obj), (numpy.ndarray, dparray)):
+    # TODO replace with checking "shape" and "dtype" attributes
+    if hasattr(input_obj, "shape") and hasattr(input_obj, "dtype"):
         return (input_obj.shape, input_obj.dtype)
 
     cdef shape_type_c elem_shape
@@ -265,24 +279,21 @@ cdef tuple get_shape_dtype(object input_obj):
 
 
 cpdef find_common_type(object x1_obj, object x2_obj):
-    cdef bint x1_obj_is_dparray = isinstance(x1_obj, dparray)
-    cdef bint x2_obj_is_dparray = isinstance(x2_obj, dparray)
-
     _, x1_dtype = get_shape_dtype(x1_obj)
     _, x2_dtype = get_shape_dtype(x2_obj)
 
     cdef list array_types = []
     cdef list scalar_types = []
 
-    if x1_obj_is_dparray:
-        array_types.append(x1_dtype)
-    else:
+    if dpnp.isscalar(x1_obj):
         scalar_types.append(x1_dtype)
-
-    if x2_obj_is_dparray:
-        array_types.append(x2_dtype)
     else:
+        array_types.append(x1_dtype)
+
+    if dpnp.isscalar(x2_obj):
         scalar_types.append(x2_dtype)
+    else:
+        array_types.append(x2_dtype)
 
     return numpy.find_common_type(array_types, scalar_types)
 
@@ -349,37 +360,20 @@ cdef DPNPFuncType get_output_c_type(DPNPFuncName funcID,
     checker_throw_value_error("get_output_c_type", "dtype and out", requested_dtype, requested_out)
 
 
-cdef dparray create_output_array(shape_type_c output_shape, DPNPFuncType c_type, object requested_out):
-    """
-    TODO This function needs to be deleted. Replace with create_output_descriptor()
-    """
-
-    cdef dparray result
-
-    if requested_out is None:
-        """ Create DPNP array """
-        result = dparray(output_shape, dtype=dpnp_DPNPFuncType_to_dtype( < size_t > c_type))
-    else:
-        """ Based on 'out' parameter """
-        if (output_shape != requested_out.shape):
-            checker_throw_value_error("create_output_array", "out.shape", requested_out.shape, output_shape)
-        result = requested_out
-
-    return result
-
 cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
                                               DPNPFuncType c_type,
                                               dpnp_descriptor requested_out):
     cdef dpnp_descriptor result_desc
 
     if requested_out is None:
-        """ Create DPNP array """
-        result = dparray(output_shape, dtype=dpnp_DPNPFuncType_to_dtype( < size_t > c_type))
-        result_desc = dpnp_descriptor(result)
+        result = None
+        result_dtype = dpnp_DPNPFuncType_to_dtype( < size_t > c_type)
+        result_obj = create_output_container(output_shape, result_dtype)
+        result_desc = dpnp_descriptor(result_obj)
     else:
         """ Based on 'out' parameter """
         if (output_shape != requested_out.shape):
-            checker_throw_value_error("create_output_array", "out.shape", requested_out.shape, output_shape)
+            checker_throw_value_error("create_output_descriptor", "out.shape", requested_out.shape, output_shape)
 
         if isinstance(requested_out, dpnp_descriptor):
             result_desc = requested_out
@@ -387,18 +381,6 @@ cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
             result_desc = dpnp_descriptor(requested_out)
 
     return result_desc
-
-
-cpdef nd2dp_array(arr):
-    """Convert ndarray to dparray"""
-    if not isinstance(arr, numpy.ndarray):
-        return arr
-
-    result = dparray(arr.shape, dtype=arr.dtype)
-    for i in range(result.size):
-        result._setitem_scalar(i, arr.item(i))
-
-    return result
 
 
 cpdef shape_type_c normalize_axis(object axis_obj, size_t shape_size_inp):
@@ -491,13 +473,17 @@ cdef class dpnp_descriptor:
         self.dpnp_descriptor_data_size = 0
         self.dpnp_descriptor_is_scalar = True
 
-        """ Accure main data storage """
-        self.descriptor = getattr(obj, "__array_interface__", None)
+        """ Accure DPCTL data container storage """
+        self.descriptor = getattr(obj, "__sycl_usm_array_interface__", None)
         if self.descriptor is None:
-            return
 
-        if self.descriptor["version"] != 3:
-            return
+            """ Accure main data storage """
+            self.descriptor = getattr(obj, "__array_interface__", None)
+            if self.descriptor is None:
+                return
+
+            if self.descriptor["version"] != 3:
+                return
 
         self.origin_pyobj = obj
 
@@ -589,7 +575,7 @@ cdef class dpnp_descriptor:
         return self.origin_pyobj
 
     cdef void * get_data(self):
-        cdef long val = self.data
+        cdef size_t val = self.data
         return < void * > val
 
     def __bool__(self):

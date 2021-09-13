@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2020, Intel Corporation
@@ -25,10 +24,29 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""
-DPNP version module
-"""
+import numpy
+from dpnp.dpnp_utils import convert_item
 
-__version__: str = '0.7.1'
 
-version: str = __version__
+assert_allclose_orig = numpy.testing.assert_allclose
+assert_array_equal_orig = numpy.testing.assert_array_equal
+assert_equal_orig = numpy.testing.assert_equal
+
+
+def _assert(assert_func, result, expected, *args, **kwargs):
+    result = convert_item(result)
+    expected = convert_item(expected)
+
+    assert_func(result, expected, *args, **kwargs)
+
+
+def assert_allclose(result, expected, *args, **kwargs):
+    _assert(assert_allclose_orig, result, expected, *args, **kwargs)
+
+
+def assert_array_equal(result, expected, *args, **kwargs):
+    _assert(assert_array_equal_orig, result, expected, *args, **kwargs)
+
+
+def assert_equal(result, expected, *args, **kwargs):
+    _assert(assert_equal_orig, result, expected, *args, **kwargs)

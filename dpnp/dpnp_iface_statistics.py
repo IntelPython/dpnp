@@ -231,7 +231,7 @@ def correlate(x1, x2, mode='valid'):
         elif mode != 'valid':
             pass
         else:
-            return dpnp_correlate(x1_desc, x2_desc)
+            return dpnp_correlate(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.correlate, x1, x2, mode=mode)
 
@@ -291,7 +291,11 @@ def cov(x1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=
         elif aweights is not None:
             pass
         else:
-            return dpnp_cov(x1)
+            if x1_desc.dtype != dpnp.float64:
+                x1_double_container = x1.astype(dpnp.float64)
+                x1_desc = dpnp.get_dpnp_descriptor(x1_double_container)
+
+            return dpnp_cov(x1_desc).get_pyobj()
 
     return call_origin(numpy.cov, x1, y, rowvar, bias, ddof, fweights, aweights)
 
@@ -380,7 +384,7 @@ def max(x1, axis=None, out=None, keepdims=False, initial=None, where=True):
         elif where is not True:
             pass
         else:
-            result_obj = dpnp_max(x1, axis=axis)
+            result_obj = dpnp_max(x1_desc, axis).get_pyobj()
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
@@ -428,7 +432,7 @@ def mean(x1, axis=None, **kwargs):
         if x1_desc.size == 0:
             pass
         else:
-            result_obj = dpnp_mean(x1, axis=axis)
+            result_obj = dpnp_mean(x1_desc, axis)
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
@@ -478,7 +482,7 @@ def median(x1, axis=None, out=None, overwrite_input=False, keepdims=False):
         elif keepdims:
             pass
         else:
-            result_obj = dpnp_median(x1_desc)
+            result_obj = dpnp_median(x1_desc).get_pyobj()
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
@@ -521,7 +525,7 @@ def min(x1, axis=None, out=None, keepdims=False, initial=None, where=True):
         elif where is not True:
             pass
         else:
-            result_obj = dpnp_min(x1, axis=axis)
+            result_obj = dpnp_min(x1_desc, axis).get_pyobj()
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
@@ -558,7 +562,7 @@ def nanvar(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
         elif keepdims:
             pass
         else:
-            result_obj = dpnp_nanvar(x1_desc, ddof)
+            result_obj = dpnp_nanvar(x1_desc, ddof).get_pyobj()
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
@@ -616,7 +620,7 @@ def std(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
         elif keepdims:
             pass
         else:
-            result_obj = dpnp_std(x1_desc, ddof)
+            result_obj = dpnp_std(x1_desc, ddof).get_pyobj()
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
@@ -674,7 +678,7 @@ def var(x1, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
         elif keepdims:
             pass
         else:
-            result_obj = dpnp_var(x1_desc, ddof)
+            result_obj = dpnp_var(x1_desc, ddof).get_pyobj()
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
