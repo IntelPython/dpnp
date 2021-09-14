@@ -35,9 +35,9 @@ class TestDistribution(unittest.TestCase):
         seed = 28041990
         size = 10
         dpnp.random.seed(seed)
-        a1 = numpy.asarray(getattr(dpnp.random, dist_name)(size=size, **params))
+        a1 = dpnp.asarray(getattr(dpnp.random, dist_name)(size=size, **params))
         dpnp.random.seed(seed)
-        a2 = numpy.asarray(getattr(dpnp.random, dist_name)(size=size, **params))
+        a2 = dpnp.asarray(getattr(dpnp.random, dist_name)(size=size, **params))
         assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
@@ -638,9 +638,9 @@ class TestDistributionsNoncentralChisquare:
         size = 10
         nonc = 1.8
         dpnp.random.seed(seed)
-        a1 = numpy.asarray(dpnp.random.noncentral_chisquare(df, nonc, size=size))
+        a1 = dpnp.asarray(dpnp.random.noncentral_chisquare(df, nonc, size=size))
         dpnp.random.seed(seed)
-        a2 = numpy.asarray(dpnp.random.noncentral_chisquare(df, nonc, size=size))
+        a2 = dpnp.asarray(dpnp.random.noncentral_chisquare(df, nonc, size=size))
         assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
@@ -877,9 +877,9 @@ class TestDistributionsVonmises:
         size = 10
         mu = 2.
         dpnp.random.seed(seed)
-        a1 = numpy.asarray(dpnp.random.vonmises(mu, kappa, size=size))
+        a1 = dpnp.asarray(dpnp.random.vonmises(mu, kappa, size=size))
         dpnp.random.seed(seed)
-        a2 = numpy.asarray(dpnp.random.vonmises(mu, kappa, size=size))
+        a2 = dpnp.asarray(dpnp.random.vonmises(mu, kappa, size=size))
         assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
