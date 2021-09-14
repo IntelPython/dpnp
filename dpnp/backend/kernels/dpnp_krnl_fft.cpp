@@ -43,19 +43,18 @@ template <typename _KernelNameSpecialization1, typename _KernelNameSpecializatio
 class dpnp_fft_fft_c_kernel;
 
 template <typename _DataType_input, typename _DataType_output>
-void dpnp_fft_fft_kernel_func_c(const void* array1_in,
-                                void* result1,
-                                const long* input_shape,
-                                const long* output_shape,
-                                size_t shape_size,
-                                const size_t result_size,
-                                long axis,
-                                long input_boundarie,
-                                size_t inverse)
+void dpnp_fft_fft_sycl_c(const void* array1_in,
+                         void* result1,
+                         const long* input_shape,
+                         const long* output_shape,
+                         size_t shape_size,
+                         const size_t result_size,
+                         long axis,
+                         long input_boundarie,
+                         size_t inverse)
 {
 
     const size_t input_size = std::accumulate(input_shape, input_shape + shape_size, 1, std::multiplies<size_t>());
-    const size_t result_size = std::accumulate(output_shape, output_shape + shape_size, 1, std::multiplies<size_t>());
     if (!(input_size && result_size && shape_size))
     {
         return;
@@ -179,22 +178,33 @@ void dpnp_fft_fft_c(const void* array1_in,
     if constexpr (std::is_same<_DataType_input, std::complex<double>>::value &&
                   std::is_same<_DataType_output, std::complex<double>>::value)
     {
-        cl::sycl::event event;
-        _DataType_input* array_1 = reinterpret_cast<_DataType_input*>(const_cast<void*>(array1_in));
-        _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
+        // TODO
+        // will be moved into new func `dpnp_fft_fft_mathlib_c`
+        if (shape_size == 1)
+        {
+            cl::sycl::event event;
+            _DataType_input* array_1 = reinterpret_cast<_DataType_input*>(const_cast<void*>(array1_in));
+            _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
 
-        oneapi::mkl::dft::descriptor<mkl_dft::precision::DOUBLE, mkl_dft::domain::COMPLEX> desc(result_size);
-        desc.set_value(mkl_dft::config_param::BACKWARD_SCALE, (1.0 / result_size));
-        desc.set_value(mkl_dft::config_param::PLACEMENT, DFTI_NOT_INPLACE); // enum value from math library C interface
-        // instead of mkl_dft::config_value::NOT_INPLACE
-        desc.commit(DPNP_QUEUE);
+            oneapi::mkl::dft::descriptor<mkl_dft::precision::DOUBLE, mkl_dft::domain::COMPLEX> desc(result_size);
+            desc.set_value(mkl_dft::config_param::BACKWARD_SCALE, (1.0 / result_size));
+            desc.set_value(mkl_dft::config_param::PLACEMENT, DFTI_NOT_INPLACE); // enum value from math library C interface
+            // instead of mkl_dft::config_value::NOT_INPLACE
+            desc.commit(DPNP_QUEUE);
 
-        event = mkl_dft::compute_forward(desc, array_1, result);
-        event.wait();
+            event = mkl_dft::compute_forward(desc, array_1, result);
+            event.wait();
+        }
+        else
+        {
+            // TODO for other shape
+            dpnp_fft_fft_sycl_c<_DataType_input, _DataType_output>(array1_in, result1, input_shape, output_shape, shape_size, result_size, axis, input_boundarie, inverse);
+        }
+
     }
     else
     {
-        dpnp_fft_fft_kernel_func_c<_DataType_input, _DataType_output>(
+        dpnp_fft_fft_sycl_c<_DataType_input, _DataType_output>(
             array1_in, result1, input_shape, output_shape, shape_size, result_size, axis, input_boundarie, inverse);
     }
 
