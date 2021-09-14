@@ -45,8 +45,13 @@ template <typename _DataType>
 class dpnp_diagonal_c_kernel;
 
 template <typename _DataType>
-void dpnp_diagonal_c(
-    void* array1_in, const size_t input1_size, void* result1, const size_t offset, size_t* shape, size_t* res_shape, const size_t res_ndim)
+void dpnp_diagonal_c(void* array1_in,
+                     const size_t input1_size,
+                     void* result1,
+                     const size_t offset,
+                     size_t* shape,
+                     size_t* res_shape,
+                     const size_t res_ndim)
 {
     const size_t res_size = std::accumulate(res_shape, res_shape + res_ndim, 1, std::multiplies<size_t>());
     if (!(res_size && input1_size))
@@ -196,7 +201,12 @@ void dpnp_fill_diagonal_c(void* array1_in, void* val_in, size_t* shape, const si
 }
 
 template <typename _DataType>
-void dpnp_nonzero_c(const void* in_array1, void* result1, const size_t result_size, const size_t* shape, const size_t ndim, const size_t j)
+void dpnp_nonzero_c(const void* in_array1,
+                    void* result1,
+                    const size_t result_size,
+                    const size_t* shape,
+                    const size_t ndim,
+                    const size_t j)
 {
     if ((in_array1 == nullptr) || (result1 == nullptr))
     {
@@ -214,7 +224,6 @@ void dpnp_nonzero_c(const void* in_array1, void* result1, const size_t result_si
     DPNPC_ptr_adapter<long> result_ptr(result1, result_size, true, true);
     const _DataType* arr = input1_ptr.get_ptr();
     long* result = result_ptr.get_ptr();
-
 
     size_t idx = 0;
     for (size_t i = 0; i < input1_size; ++i)

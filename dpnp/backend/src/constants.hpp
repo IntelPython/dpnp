@@ -33,7 +33,6 @@
 #define INP_DLLEXPORT
 #endif
 
-
 /**
  * This is container for the constants from Python interpreter and other modules. These constants are subject to use
  * in algorithms.
@@ -53,6 +52,6 @@ struct python_constants
  * @param [in]  py_none   Python NONE representation
  * @param [in]  py_nan    Python NAN representation
  */
-INP_DLLEXPORT void dpnp_python_constants_initialize_c(void *py_none, void *py_nan);
+INP_DLLEXPORT void dpnp_python_constants_initialize_c(void* py_none, void* py_nan);
 
 #endif // CONSTANTS_H
