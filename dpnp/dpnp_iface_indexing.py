@@ -111,7 +111,6 @@ def choose(x1, choices, out=None, mode='raise'):
     return call_origin(numpy.choose, x1, choices, out, mode)
 
 
-
 def diag_indices(n, ndim=2):
     """
     Return the indices to access the main diagonal of an array.

@@ -67,10 +67,6 @@ ctypedef void(*fptr_dpnp_nonzero_t)(const void * , void * , const size_t, const 
 
 
 cpdef utils.dpnp_descriptor dpnp_choose(utils.dpnp_descriptor input, list choices1):
-    cdef shape_type_c input_shape = input.shape 
-    cdef shape_type_c choices_shape = (len(choices1),) 
-    cdef shape_type_c choice_shape = choices1[0].shape
-
     cdef vector[void * ] choices
     cdef utils.dpnp_descriptor choice
     for desc in choices1:
@@ -90,9 +86,9 @@ cpdef utils.dpnp_descriptor dpnp_choose(utils.dpnp_descriptor input, list choice
     func(res_array.get_data(),
          input.get_data(),
          choices.data(),
-         < size_t * > input_shape[0],
-         < size_t * > choices_shape[0],
-         < size_t * > choice_shape[0])
+         < size_t * > input.shape[0],
+         < size_t * > choices.shape[0],
+         < size_t * > choices1[0].shape[0])
 
     return res_array
 
@@ -322,6 +318,7 @@ cpdef utils.dpnp_descriptor dpnp_select(list condlist, list choicelist, default)
 
 cpdef utils.dpnp_descriptor dpnp_take(utils.dpnp_descriptor input, utils.dpnp_descriptor indices):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
+    
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TAKE, param1_type, param1_type)
 
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(indices.shape, kernel_data.return_type, None)
