@@ -13,14 +13,14 @@ class TestDistribution(unittest.TestCase):
         seed = 28041990
         size = 10
         dpnp.random.seed(seed)
-        res = numpy.asarray(getattr(dpnp.random, dist_name)(size=size, **params))
+        res = dpnp.asnumpy(getattr(dpnp.random, dist_name)(size=size, **params))
         assert len(numpy.unique(res)) == 1
         assert numpy.unique(res)[0] == val
 
     def check_moments(self, dist_name, expected_mean, expected_var, params, size=10**5):
         seed = 28041995
         dpnp.random.seed(seed)
-        res = numpy.asarray(getattr(dpnp.random, dist_name)(size=size, **params))
+        res = dpnp.asnumpy(getattr(dpnp.random, dist_name)(size=size, **params))
         var = numpy.var(res)
         mean = numpy.mean(res)
         assert math.isclose(var, expected_var, abs_tol=0.1)
@@ -35,9 +35,9 @@ class TestDistribution(unittest.TestCase):
         seed = 28041990
         size = 10
         dpnp.random.seed(seed)
-        a1 = dpnp.asarray(getattr(dpnp.random, dist_name)(size=size, **params))
+        a1 = dpnp.asnumpy(getattr(dpnp.random, dist_name)(size=size, **params))
         dpnp.random.seed(seed)
-        a2 = dpnp.asarray(getattr(dpnp.random, dist_name)(size=size, **params))
+        a2 = dpnp.asnumpy(getattr(dpnp.random, dist_name)(size=size, **params))
         assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
@@ -93,9 +93,10 @@ def test_check_otput(func):
         res = func(shape)
 #    assert numpy.all(res >= 0)
 #    assert numpy.all(res < 1)
-    for i in range(res.size):
-        assert res[i] >= 0.0
-        assert res[i] < 1.0
+    res_as_numpy = dpnp.asnumpy(res)
+    for i in range(res_as_numpy.size):
+        assert res_as_numpy[i] >= 0.0
+        assert res_as_numpy[i] < 1.0
 
 
 @pytest.mark.parametrize("func",
@@ -135,7 +136,7 @@ def test_randn_normal_distribution():
     expected_var = 1.0
 
     dpnp.random.seed(seed)
-    res = dpnp.random.randn(pts)
+    res = dpnp.asnumpy(dpnp.random.randn(pts))
     var = numpy.var(res)
     mean = numpy.mean(res)
     assert math.isclose(var, expected_var, abs_tol=0.03)
@@ -518,7 +519,7 @@ class TestDistributionsMultivariateNormal(TestDistribution):
         mean = [2.56, 3.23]
         cov = [[1, 0], [0, 1]]
         size = 10**5
-        res = numpy.array(dpnp.random.multivariate_normal(mean=mean, cov=cov, size=size))
+        res = dpnp.asnumpy(dpnp.random.multivariate_normal(mean=mean, cov=cov, size=size))
         res_mean = [numpy.mean(res.T[0]), numpy.mean(res.T[1])]
         assert_allclose(res_mean, mean, rtol=1e-02, atol=0)
 
@@ -560,7 +561,7 @@ class TestDistributionsNegativeBinomial(TestDistribution):
         self.check_extreme_value('negative_binomial', check_val, {'n': n, 'p': p})
         n = 5
         p = 0.0
-        res = numpy.asarray(dpnp.random.negative_binomial(n=n, p=p, size=10))
+        res = dpnp.asnumpy(dpnp.random.negative_binomial(n=n, p=p, size=10))
         check_val = numpy.iinfo(res.dtype).min
         assert len(numpy.unique(res)) == 1
         assert numpy.unique(res)[0] == check_val
@@ -615,7 +616,7 @@ class TestDistributionsNoncentralChisquare:
         size = 10**6
         seed = 28041995
         dpnp.random.seed(seed)
-        res = numpy.asarray(dpnp.random.noncentral_chisquare(df, nonc, size=size))
+        res = dpnp.asnumpy(dpnp.random.noncentral_chisquare(df, nonc, size=size))
         var = numpy.var(res)
         mean = numpy.mean(res)
         assert math.isclose(var, expected_var, abs_tol=0.6)
@@ -858,7 +859,7 @@ class TestDistributionsVonmises:
         expected_mean = numpy.mean(numpy_res)
         expected_var = numpy.var(numpy_res)
 
-        res = numpy.asarray(dpnp.random.vonmises(mu, kappa, size=size))
+        res = dpnp.asnumpy(dpnp.random.vonmises(mu, kappa, size=size))
         var = numpy.var(res)
         mean = numpy.mean(res)
         assert math.isclose(var, expected_var, abs_tol=0.6)
