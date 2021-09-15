@@ -30,8 +30,8 @@ build:
     number: {{ GIT_DESCRIBE_NUMBER }}
     include_recipe: False
     script_env:
-      - _ONEAPI_ROOT
-      - DPCPPROOT
+      - _ONEAPI_ROOT # renamed for ignore in CI
+      - _DPCPPROOT # renamed for ignore in CI
       - MKLROOT
       - TBBROOT
       - WHEELS_OUTPUT_FOLDER
