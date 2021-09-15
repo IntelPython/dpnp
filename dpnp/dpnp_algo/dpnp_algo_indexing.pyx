@@ -54,7 +54,7 @@ __all__ += [
     "dpnp_triu_indices_from"
 ]
 
-ctypedef void(*fptr_dpnp_choose_t)(void * , void * , vector[void *], size_t *)
+ctypedef void(*fptr_dpnp_choose_t)(void * , void * , void **, size_t *, size_t *, size_t *)
 ctypedef void(*fptr_dpnp_diag_indices)(void*, size_t)
 ctypedef void(*custom_indexing_2in_1out_func_ptr_t)(void *, const size_t, void * , void * , size_t)
 ctypedef void(*custom_indexing_2in_1out_func_ptr_t_)(void * , const size_t, void * , const size_t, size_t * , size_t * , const size_t)
@@ -67,7 +67,9 @@ ctypedef void(*fptr_dpnp_nonzero_t)(const void * , void * , const size_t, const 
 
 
 cpdef utils.dpnp_descriptor dpnp_choose(utils.dpnp_descriptor input, list choices1):
-    cdef shape_type_c input_shape = input.shape  
+    cdef shape_type_c input_shape = input.shape 
+    cdef shape_type_c choices_shape = (len(choices1),) 
+    cdef shape_type_c choice_shape = choices1[0].shape
 
     cdef vector[void * ] choices
     cdef utils.dpnp_descriptor choice
@@ -81,11 +83,16 @@ cpdef utils.dpnp_descriptor dpnp_choose(utils.dpnp_descriptor input, list choice
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_CHOOSE, param1_type, param2_type)
 
-    cdef utils.dpnp_descriptor res_array = utils.create_output_descriptor(input.shape, kernel_data.return_type, None)
+    cdef utils.dpnp_descriptor res_array = utils.create_output_descriptor(input_shape, kernel_data.return_type, None)
 
     cdef fptr_dpnp_choose_t func = <fptr_dpnp_choose_t> kernel_data.ptr
 
-    func(res_array.get_data(), input.get_data(), choices, < size_t * > input_shape[0])
+    func(res_array.get_data(),
+         input.get_data(),
+         choices.data(),
+         < size_t * > input_shape[0],
+         < size_t * > choices_shape[0],
+         < size_t * > choice_shape[0])
 
     return res_array
 

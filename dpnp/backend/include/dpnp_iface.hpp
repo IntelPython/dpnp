@@ -253,8 +253,12 @@ INP_DLLEXPORT void dpnp_nanvar_c(void* array, void* mask_arr, void* result, cons
  * @param [in]  j         Number input array.
  */
 template <typename _DataType>
-INP_DLLEXPORT void
-    dpnp_nonzero_c(const void* array1, void* result1, const size_t result_size, const size_t* shape, const size_t ndim, const size_t j);
+INP_DLLEXPORT void dpnp_nonzero_c(const void* array1,
+                                  void* result1,
+                                  const size_t result_size,
+                                  const size_t* shape,
+                                  const size_t ndim,
+                                  const size_t j);
 
 /**
  * @ingroup BACKEND_API
@@ -604,9 +608,12 @@ INP_DLLEXPORT void dpnp_det_c(void* array1_in, void* result1, size_t* shape, siz
  * @param [in]  array         Input array with data.
  * @param [in]  choices       Choice arrays.
  * @param [in]  size          Input array size.
+ * @param [in]  choices_size  Choices size.
+ * @param [in]  choice_size  Choices size.
  */
 template <typename _DataType1, typename _DataType2>
-INP_DLLEXPORT void dpnp_choose_c(void* result1, void* array1_in, std::vector<void*> choices, size_t size);
+INP_DLLEXPORT void
+    dpnp_choose_c(void* result1, void* array1_in, void** choices, size_t size, size_t choices_size, size_t choice_size);
 
 /**
  * @ingroup BACKEND_API
@@ -646,8 +653,13 @@ INP_DLLEXPORT void dpnp_diag_indices_c(void* result1, size_t size);
  * @param [in]  ndim    Number of elements in shape.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_diagonal_c(
-    void* array1_in, const size_t input1_size, void* result1, const size_t offset, size_t* shape, size_t* res_shape, const size_t res_ndim);
+INP_DLLEXPORT void dpnp_diagonal_c(void* array1_in,
+                                   const size_t input1_size,
+                                   void* result1,
+                                   const size_t offset,
+                                   size_t* shape,
+                                   size_t* res_shape,
+                                   const size_t res_ndim);
 
 /**
  * @ingroup BACKEND_API
@@ -707,8 +719,13 @@ INP_DLLEXPORT void dpnp_matrix_rank_c(void* array1_in, void* result1, size_t* sh
  * @param [in]  naxis   Number of elements in axis.
  */
 template <typename _DataType>
-INP_DLLEXPORT void
-    dpnp_max_c(void* array1_in, void* result1, const size_t result_size, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
+INP_DLLEXPORT void dpnp_max_c(void* array1_in,
+                              void* result1,
+                              const size_t result_size,
+                              const size_t* shape,
+                              size_t ndim,
+                              const size_t* axis,
+                              size_t naxis);
 
 /**
  * @ingroup BACKEND_API
@@ -753,8 +770,13 @@ INP_DLLEXPORT void
  * @param [in]  naxis   Number of elements in axis.
  */
 template <typename _DataType>
-INP_DLLEXPORT void
-    dpnp_min_c(void* array, void* result, const size_t result_size, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
+INP_DLLEXPORT void dpnp_min_c(void* array,
+                              void* result,
+                              const size_t result_size,
+                              const size_t* shape,
+                              size_t ndim,
+                              const size_t* axis,
+                              size_t naxis);
 
 /**
  * @ingroup BACKEND_API

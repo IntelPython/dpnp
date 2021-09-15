@@ -26,7 +26,6 @@
 #include <iostream>
 #include <list>
 #include <vector>
-#include <list>
 
 #include <dpnp_iface.hpp>
 #include "dpnp_fptr.hpp"
@@ -37,17 +36,25 @@ template <typename _DataType1, typename _DataType2>
 class dpnp_choose_c_kernel;
 
 template <typename _DataType1, typename _DataType2>
-void dpnp_choose_c(void* result1, void* array1_in, std::vector<void*> choices1, size_t size)
+void dpnp_choose_c(
+    void* result1, void* array1_in, void** choices1, size_t size, size_t choices_size, size_t choice_size)
 {
-    if ((array1_in == nullptr) || (result1 == nullptr) || !choices1.size() || !size)
+    if ((array1_in == nullptr) || (result1 == nullptr) || (choices1 == nullptr) || !size || !choices_size ||
+        !choice_size)
     {
         return;
     }
     DPNPC_ptr_adapter<_DataType1> input1_ptr(array1_in, size);
     _DataType1* array_in = input1_ptr.get_ptr();
 
-    DPNPC_ptr_adapter<_DataType2*> choices_ptr(choices1.data(), choices1.size());
+    DPNPC_ptr_adapter<_DataType2*> choices_ptr(choices1, choices_size);
     _DataType2** choices = choices_ptr.get_ptr();
+
+    for (size_t i = 0; i < choices_size; ++i)
+    {
+        DPNPC_ptr_adapter<_DataType2> choice_ptr(choices[i], choice_size);
+        choices[i] = choice_ptr.get_ptr();
+    }
 
     DPNPC_ptr_adapter<_DataType2> result1_ptr(result1, size, false, true);
     _DataType2* result = result1_ptr.get_ptr();
@@ -79,8 +86,13 @@ template <typename _DataType>
 class dpnp_diagonal_c_kernel;
 
 template <typename _DataType>
-void dpnp_diagonal_c(
-    void* array1_in, const size_t input1_size, void* result1, const size_t offset, size_t* shape, size_t* res_shape, const size_t res_ndim)
+void dpnp_diagonal_c(void* array1_in,
+                     const size_t input1_size,
+                     void* result1,
+                     const size_t offset,
+                     size_t* shape,
+                     size_t* res_shape,
+                     const size_t res_ndim)
 {
     const size_t res_size = std::accumulate(res_shape, res_shape + res_ndim, 1, std::multiplies<size_t>());
     if (!(res_size && input1_size))
@@ -230,7 +242,12 @@ void dpnp_fill_diagonal_c(void* array1_in, void* val_in, size_t* shape, const si
 }
 
 template <typename _DataType>
-void dpnp_nonzero_c(const void* in_array1, void* result1, const size_t result_size, const size_t* shape, const size_t ndim, const size_t j)
+void dpnp_nonzero_c(const void* in_array1,
+                    void* result1,
+                    const size_t result_size,
+                    const size_t* shape,
+                    const size_t ndim,
+                    const size_t j)
 {
     if ((in_array1 == nullptr) || (result1 == nullptr))
     {
@@ -248,7 +265,6 @@ void dpnp_nonzero_c(const void* in_array1, void* result1, const size_t result_si
     DPNPC_ptr_adapter<long> result_ptr(result1, result_size, true, true);
     const _DataType* arr = input1_ptr.get_ptr();
     long* result = result_ptr.get_ptr();
-
 
     size_t idx = 0;
     for (size_t i = 0; i < input1_size; ++i)
