@@ -650,7 +650,7 @@ def fabs(x1, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
-        return dpnp_fabs(x1_desc)
+        return dpnp_fabs(x1_desc).get_pyobj()
 
     return call_origin(numpy.fabs, x1, **kwargs)
 
@@ -758,7 +758,7 @@ def floor_divide(x1, x2, dtype=None, out=None, where=True, **kwargs):
             pass
         else:
             out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
-            return dpnp_floor_divide(x1_desc, x2_desc, dtype, out_desc, where)
+            return dpnp_floor_divide(x1_desc, x2_desc, dtype, out_desc, where).get_pyobj()
 
     return call_origin(numpy.floor_divide, x1, x2, out=out, where=where, dtype=dtype, **kwargs)
 
@@ -1444,7 +1444,7 @@ def remainder(x1, x2, out=None, where=True, dtype=None, **kwargs):
             pass
         else:
             out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
-            return dpnp_remainder(x1_desc, x2_desc, dtype, out_desc, where)
+            return dpnp_remainder(x1_desc, x2_desc, dtype, out_desc, where).get_pyobj()
 
     return call_origin(numpy.remainder, x1, x2, out=out, where=where, dtype=dtype, **kwargs)
 
@@ -1488,7 +1488,7 @@ def sign(x1, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and not kwargs:
-        return dpnp_sign(x1_desc)
+        return dpnp_sign(x1_desc).get_pyobj()
 
     return call_origin(numpy.sign, x1, **kwargs)
 
