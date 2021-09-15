@@ -39,8 +39,11 @@ template <typename _DataType1, typename _DataType2>
 void dpnp_choose_c(
     void* result1, void* array1_in, void** choices1, size_t size, size_t choices_size, size_t choice_size)
 {
-    if ((array1_in == nullptr) || (result1 == nullptr) || (choices1 == nullptr) || !size || !choices_size ||
-        !choice_size)
+    if ((array1_in == nullptr) || (result1 == nullptr) || (choices1 == nullptr))
+    {
+        return;
+    }
+    if (!size || !choices_size || !choice_size)
     {
         return;
     }

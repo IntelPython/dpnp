@@ -87,8 +87,6 @@ def choose(x1, choices, out=None, mode='raise'):
     for choice in choices:
         choices_list.append(dpnp.get_dpnp_descriptor(choice))
 
-    size = x1_desc.size
-    choices_size = choices_list[0].size
     if x1_desc:
         if any(not desc for desc in choices_list):
             pass
@@ -97,6 +95,8 @@ def choose(x1, choices, out=None, mode='raise'):
         elif mode != 'raise':
             pass
         elif any(not choices[0].dtype == choice.dtype for choice in choices):
+            pass
+        elif not len(choices_list):
             pass
         else:
             size = x1_desc.size
