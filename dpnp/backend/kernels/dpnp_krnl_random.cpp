@@ -1253,7 +1253,7 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
     {
         return;
     }
-    
+
     DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
     _DataType* result1 = result1_ptr.get_ptr();
 
@@ -1547,7 +1547,7 @@ void dpnp_rng_zipf_c(void* result, const _DataType a, const size_t size)
     long X;
     const _DataType d_zero = 0.0;
     const _DataType d_one = 1.0;
-    
+
     DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
     _DataType* result1 = result1_ptr.get_ptr();
 

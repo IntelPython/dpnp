@@ -124,7 +124,8 @@ void dpnp_sum_c(void* result_out,
             policy, input_it.begin(output_id), input_it.end(output_id), init, std::plus<_DataType_output>());
         policy.queue().wait(); // TODO move out of the loop
 
-        dpnp_memory_memcpy_c(result + output_id, &accumulator, sizeof(_DataType_output)); // result[output_id] = accumulator;
+        dpnp_memory_memcpy_c(
+            result + output_id, &accumulator, sizeof(_DataType_output)); // result[output_id] = accumulator;
     }
 
     return;
@@ -184,7 +185,8 @@ void dpnp_prod_c(void* result_out,
             policy, input_it.begin(output_id), input_it.end(output_id), init, std::multiplies<_DataType_output>());
         policy.queue().wait(); // TODO move out of the loop
 
-        dpnp_memory_memcpy_c(result + output_id, &accumulator, sizeof(_DataType_output)); // result[output_id] = accumulator;
+        dpnp_memory_memcpy_c(
+            result + output_id, &accumulator, sizeof(_DataType_output)); // result[output_id] = accumulator;
     }
 
     return;

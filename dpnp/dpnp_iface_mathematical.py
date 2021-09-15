@@ -428,7 +428,7 @@ def cross(x1, x2, axisa=-1, axisb=-1, axisc=-1, axis=None):
         elif axis is not None:
             pass
         else:
-            return dpnp_cross(x1_desc, x2_desc)
+            return dpnp_cross(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.cross, x1, x2, axisa, axisb, axisc, axis)
 
