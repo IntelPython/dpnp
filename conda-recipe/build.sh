@@ -29,6 +29,8 @@ fi
 export CFLAGS="-Wl,-rpath,\$ORIGIN/../dpctl,-rpath,\$ORIGIN $CFLAGS"
 export LDFLAGS="-Wl,-rpath,\$ORIGIN/../dpctl,-rpath,\$ORIGIN $LDFLAGS"
 
+export CC=dpcpp
+
 $PYTHON setup.py build_clib
 $PYTHON setup.py build_ext install
 

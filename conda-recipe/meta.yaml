@@ -16,7 +16,7 @@ requirements:
       - mkl-devel >=2021.1.1
       - wheel
     build:
-      - {{ compiler('cxx') }}
+      - {{ compiler('dpcpp') }}
     run:
       - python
       - dpctl >=0.5.0a0
@@ -29,7 +29,7 @@ build:
     number: {{ GIT_DESCRIBE_NUMBER }}
     include_recipe: False
     script_env:
-      - ONEAPI_ROOT
+      - _ONEAPI_ROOT
       - DPCPPROOT
       - MKLROOT
       - TBBROOT
