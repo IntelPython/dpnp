@@ -205,9 +205,12 @@ tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_arra
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_from_numpy_scalar
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_no_copy
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_array_no_copy_ndmin
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asanyarray_with_order
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asarray_cuda_array_zero_dim
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asarray_cuda_array_zero_dim_dtype
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asarray_from_numpy
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asarray_is_not_copied
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asarray_with_order
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asarray_with_order_copy_behavior
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_ascontiguousarray_on_noncontiguous_array
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asfortranarray_cuda_array_zero_dim
