@@ -53,10 +53,10 @@ void dpnp_correlate_c(void* result_out,
 
     size_t dummy[] = {1};
     dpnp_dot_c<_DataType_output, _DataType_input1, _DataType_input2>(result_out,
-                                                                     1, // dummy result_size
-                                                                     1, // dummy result_ndim
-                                                                     dummy, // dummy result_shape
-                                                                     dummy, // dummy result_strides
+                                                                     42,   // dummy result_size
+                                                                     42,   // dummy result_ndim
+                                                                     NULL, // dummy result_shape
+                                                                     NULL, // dummy result_strides
                                                                      input1_in,
                                                                      input1_size,
                                                                      input1_shape_ndim,
@@ -154,7 +154,13 @@ template <typename _DataType>
 class dpnp_max_c_kernel;
 
 template <typename _DataType>
-void dpnp_max_c(void* array1_in, void* result1, const size_t result_size, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
+void dpnp_max_c(void* array1_in,
+                void* result1,
+                const size_t result_size,
+                const size_t* shape,
+                size_t ndim,
+                const size_t* axis,
+                size_t naxis)
 {
     const size_t size_input = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
     if (!size_input)
@@ -417,7 +423,13 @@ template <typename _DataType>
 class dpnp_min_c_kernel;
 
 template <typename _DataType>
-void dpnp_min_c(void* array1_in, void* result1, const size_t result_size, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
+void dpnp_min_c(void* array1_in,
+                void* result1,
+                const size_t result_size,
+                const size_t* shape,
+                size_t ndim,
+                const size_t* axis,
+                size_t naxis)
 {
     __attribute__((unused)) void* tmp = (void*)(axis + naxis);
 
