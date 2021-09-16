@@ -73,6 +73,9 @@ void dpnp_astype_c(const void* array1_in, void* result1, const size_t size)
     event.wait();
 }
 
+template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2, typename _KernelNameSpecialization3>
+class dpnp_dot_c_kernel;
+
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
 cl::sycl::event dot(cl::sycl::queue &queue,
                     _DataType_output *result_out, _DataType_input1 *input1_in, _DataType_input2 *input2_in, size_t input1_strides, size_t input2_strides, size_t size,
@@ -96,6 +99,7 @@ cl::sycl::event dot(cl::sycl::queue &queue,
     }
     else
     {
+#if LIBSYCL_VERSION_GREATER(5, 3, 0)
         event = queue.submit([&](sycl::handler &cgh)
         {
             cgh.parallel_for(sycl::range<1>{size},
@@ -108,8 +112,42 @@ cl::sycl::event dot(cl::sycl::queue &queue,
             });
         });
         // for some reason few such kernels cannot work in parallel
+        // looks like a bug in level0 because with opencl works fine
         // that is why we call wait here
         event.wait();
+#else
+        _DataType_output* local_mem =
+            reinterpret_cast<_DataType_output*>(dpnp_memory_alloc_c(size * sizeof(_DataType_output)));
+
+        // what about reduction??
+        cl::sycl::range<1> gws(size);
+
+        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+            const size_t index = global_id[0];
+            local_mem[index] = input1_in[index * input1_strides] * input2_in[index * input2_strides];
+        };
+
+        auto kernel_func = [&](cl::sycl::handler& cgh) {
+            cgh.parallel_for<class dpnp_dot_c_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(
+                gws, kernel_parallel_for_func);
+        };
+
+        event = DPNP_QUEUE.submit(kernel_func);
+
+        event.wait();
+
+        auto policy = oneapi::dpl::execution::make_device_policy<
+            class dpnp_dot_c_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(DPNP_QUEUE);
+
+        _DataType_output accumulator = 0;
+        accumulator =
+            std::reduce(policy, local_mem, local_mem + size, _DataType_output(0), std::plus<_DataType_output>());
+        policy.queue().wait();
+
+        dpnp_memory_memcpy_c(result_out, &accumulator, sizeof(_DataType_output)); // result[0] = accumulator;
+
+        free(local_mem, DPNP_QUEUE);
+#endif
     }
     return event;
 }

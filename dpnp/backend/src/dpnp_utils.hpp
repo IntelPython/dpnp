@@ -34,6 +34,11 @@
 
 #include <dpnp_iface_fptr.hpp>
 
+#define LIBSYCL_VERSION_GREATER(major, minor, patch)                                                                \
+    (__LIBSYCL_MAJOR_VERSION > major)                                                                               \
+    || (__LIBSYCL_MAJOR_VERSION == major and __LIBSYCL_MINOR_VERSION > minor)                                       \
+    || (__LIBSYCL_MAJOR_VERSION == major and __LIBSYCL_MINOR_VERSION == minor and __LIBSYCL_PATCH_VERSION >= patch)
+
 /**
  * @defgroup BACKEND_UTILS Backend C++ library utilities
  * @{
