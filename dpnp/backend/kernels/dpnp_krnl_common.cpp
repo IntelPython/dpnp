@@ -277,9 +277,6 @@ void dpnp_dot_c(void* result_out,
             (ext_input2_strides[0] == 1 || ext_input2_strides[1] == 1)
             )
         {
-            _DataType_output val = _DataType_output(42);
-            dpnp_initval_c<_DataType_output>(result, &val, result_size);
-
             oneapi::mkl::transpose trans1 = ext_input1_strides[0] == 1 ? oneapi::mkl::transpose::trans : oneapi::mkl::transpose::nontrans;
             oneapi::mkl::transpose trans2 = ext_input2_strides[0] == 1 ? oneapi::mkl::transpose::trans : oneapi::mkl::transpose::nontrans;
 
