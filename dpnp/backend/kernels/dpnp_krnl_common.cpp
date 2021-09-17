@@ -277,6 +277,9 @@ void dpnp_dot_c(void* result_out,
             (ext_input2_strides[0] == 1 || ext_input2_strides[1] == 1)
             )
         {
+// there is a difference of behavior with trans and sizes params in previous version of GEMM
+// only new version is supported, in case of old version computation goes in common way
+#if INTEL_MKL_VERSION >= 20210004
             oneapi::mkl::transpose trans1 = ext_input1_strides[0] == 1 ? oneapi::mkl::transpose::trans : oneapi::mkl::transpose::nontrans;
             oneapi::mkl::transpose trans2 = ext_input2_strides[0] == 1 ? oneapi::mkl::transpose::trans : oneapi::mkl::transpose::nontrans;
 
@@ -306,6 +309,7 @@ void dpnp_dot_c(void* result_out,
                                                       ldc);
             event.wait();
             return;
+#endif
         }
     }
 
