@@ -32,6 +32,7 @@ var group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i =
       [ "DPNP_FN_CEIL", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558af11c9206d6eb40b78e5382a5b952668b", null ],
       [ "DPNP_FN_CHOLESKY", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ae4103d59e90a46b2d70fa1a139c6ceea", null ],
       [ "DPNP_FN_CONJIGUATE", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ab6cd4a5ab3cdef67272476d1b3421e1e", null ],
+      [ "DPNP_FN_CHOOSE", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a753a922dac7c8d4151b2f1c65b95f80f", null ],
       [ "DPNP_FN_COPY", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ad6319d6567c73e03f40f319302a5eb6c", null ],
       [ "DPNP_FN_COPYSIGN", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a28e876fdcaa743f412997cbae503cb7c", null ],
       [ "DPNP_FN_COPYTO", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a282f41003de5330062fd236e8028f1a7", null ],
