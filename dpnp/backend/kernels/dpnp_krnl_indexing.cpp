@@ -32,6 +32,50 @@
 #include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
+template <typename _DataType1, typename _DataType2>
+class dpnp_choose_c_kernel;
+
+template <typename _DataType1, typename _DataType2>
+void dpnp_choose_c(
+    void* result1, void* array1_in, void** choices1, size_t size, size_t choices_size, size_t choice_size)
+{
+    if ((array1_in == nullptr) || (result1 == nullptr) || (choices1 == nullptr))
+    {
+        return;
+    }
+    if (!size || !choices_size || !choice_size)
+    {
+        return;
+    }
+    DPNPC_ptr_adapter<_DataType1> input1_ptr(array1_in, size);
+    _DataType1* array_in = input1_ptr.get_ptr();
+
+    DPNPC_ptr_adapter<_DataType2*> choices_ptr(choices1, choices_size);
+    _DataType2** choices = choices_ptr.get_ptr();
+
+    for (size_t i = 0; i < choices_size; ++i)
+    {
+        DPNPC_ptr_adapter<_DataType2> choice_ptr(choices[i], choice_size);
+        choices[i] = choice_ptr.get_ptr();
+    }
+
+    DPNPC_ptr_adapter<_DataType2> result1_ptr(result1, size, false, true);
+    _DataType2* result = result1_ptr.get_ptr();
+
+    cl::sycl::range<1> gws(size);
+    auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
+        const size_t idx = global_id[0];
+        result[idx] = choices[array_in[idx]][idx];
+    };
+
+    auto kernel_func = [&](cl::sycl::handler& cgh) {
+        cgh.parallel_for<class dpnp_choose_c_kernel<_DataType1, _DataType2>>(gws, kernel_parallel_for_func);
+    };
+
+    cl::sycl::event event = DPNP_QUEUE.submit(kernel_func);
+    event.wait();
+}
+
 template <typename _DataType>
 class dpnp_diag_indices_c_kernel;
 
@@ -521,6 +565,15 @@ void dpnp_take_c(void* array1_in, const size_t array1_size, void* indices1, void
 
 void func_map_init_indexing_func(func_map_t& fmap)
 {
+    fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_choose_c<int, int>};
+    fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_choose_c<int, long>};
+    fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_INT][eft_FLT] = {eft_FLT, (void*)dpnp_choose_c<int, float>};
+    fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_INT][eft_DBL] = {eft_DBL, (void*)dpnp_choose_c<int, double>};
+    fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_LNG][eft_INT] = {eft_INT, (void*)dpnp_choose_c<long, int>};
+    fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_choose_c<long, long>};
+    fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_LNG][eft_FLT] = {eft_FLT, (void*)dpnp_choose_c<long, float>};
+    fmap[DPNPFuncName::DPNP_FN_CHOOSE][eft_LNG][eft_DBL] = {eft_DBL, (void*)dpnp_choose_c<long, double>};
+
     fmap[DPNPFuncName::DPNP_FN_DIAG_INDICES][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_diag_indices_c<int>};
     fmap[DPNPFuncName::DPNP_FN_DIAG_INDICES][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_diag_indices_c<long>};
     fmap[DPNPFuncName::DPNP_FN_DIAG_INDICES][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_diag_indices_c<float>};
