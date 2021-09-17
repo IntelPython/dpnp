@@ -33,6 +33,7 @@ and the rest of the library
 """
 
 from libc.time cimport time, time_t
+from libcpp.vector cimport vector
 import dpnp
 import dpnp.config as config
 import dpnp.dpnp_utils as utils_py
