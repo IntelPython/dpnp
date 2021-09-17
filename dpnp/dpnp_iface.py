@@ -150,7 +150,7 @@ def convert_single_elem_array_to_scalar(obj, keepdims=False):
     return obj
 
 
-def get_dpnp_descriptor(ext_obj):
+def get_dpnp_descriptor(ext_obj, copy_when_strides=True):
     """
     Return True:
       never
@@ -168,6 +168,14 @@ def get_dpnp_descriptor(ext_obj):
 
     if use_origin_backend():
         return False
+
+    # while dpnp functions have no implementation with strides support
+    # we need to create a non-strided copy
+    # if function get implementation for strides case
+    # then this behavior can be disabled with setting "copy_when_strides"
+    if copy_when_strides and getattr(ext_obj, "strides", None) is not None:
+        # TODO: replace this workaround when usm_ndarray will provide such functionality
+        ext_obj = array(ext_obj)
 
     dpnp_desc = dpnp_descriptor(ext_obj)
     if dpnp_desc.is_valid:
