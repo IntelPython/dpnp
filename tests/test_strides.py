@@ -11,7 +11,7 @@ def _getattr(ex, str_):
     return res
 
 @pytest.mark.parametrize("func_name",
-                         ['cos', 'sin'])
+                         ['abs',])
 @pytest.mark.parametrize("type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['float64', 'float32', 'int64', 'int32'])
