@@ -56,6 +56,7 @@ __all__ = [
     "checker_throw_value_error",
     "create_output_descriptor_py",
     "convert_item",
+    "copy_from_origin",
     "dpnp_descriptor",
     "get_axis_indeces",
     "get_axis_offsets",

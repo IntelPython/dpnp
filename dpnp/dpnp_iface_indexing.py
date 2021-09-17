@@ -42,6 +42,7 @@ it contains:
 
 import collections
 
+import dpnp.config as config
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 
@@ -355,6 +356,14 @@ def place(x1, mask, vals):
     vals_desc = dpnp.get_dpnp_descriptor(vals)
     if x1_desc and mask_desc and vals_desc:
         return dpnp_place(x1_desc, mask, vals_desc)
+
+    if config.__DPNP_OUTPUT_DPCTL__:
+        # call_origin cannot modify usm_ndarray in place
+        x1_new = convert_item(x1)
+        mask_new = convert_item(mask)
+        vals_new = convert_item(vals)
+        numpy.place(x1_new, mask_new, vals_new)
+        return copy_from_origin(x1, x1_new)
 
     return call_origin(numpy.place, x1, mask, vals)
 
