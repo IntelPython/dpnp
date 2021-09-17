@@ -418,6 +418,15 @@ def put_along_axis(x1, indices, values, axis):
         else:
             return dpnp_put_along_axis(x1_desc, indices_desc, values_desc, axis)
 
+    if config.__DPNP_OUTPUT_DPCTL__:
+        # call_origin cannot modify usm_ndarray in place
+        x1_new = convert_item(x1)
+        indices_new = convert_item(indices)
+        values_new = convert_item(values)
+        axis_new = convert_item(axis)
+        numpy.put_along_axis(x1_new, indices_new, values_new, axis_new)
+        return copy_from_origin(x1, x1_new)
+
     return call_origin(numpy.put_along_axis, x1, indices, values, axis)
 
 
