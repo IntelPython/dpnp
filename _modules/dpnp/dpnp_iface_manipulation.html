@@ -551,7 +551,7 @@
                 <span class="c1"># checker_throw_value_error(&quot;swapaxes&quot;, &quot;source_id exists&quot;, source_id, input_permute)</span>
                 <span class="n">input_permute</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">destination_id</span><span class="p">,</span> <span class="n">source_id</span><span class="p">)</span>
 
-            <span class="k">return</span> <span class="n">transpose</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">input_permute</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">transpose</span><span class="p">(</span><span class="n">x1_desc</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">(),</span> <span class="n">axes</span><span class="o">=</span><span class="n">input_permute</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span></div>
 
@@ -669,7 +669,7 @@
             <span class="n">start_norm</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">ndim</span> <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">start</span>
             <span class="n">destination</span> <span class="o">=</span> <span class="n">start_norm</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">start_norm</span> <span class="o">&gt;</span> <span class="n">axis</span> <span class="k">else</span> <span class="n">start_norm</span>
 
-            <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">x1_desc</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">(),</span> <span class="n">axis</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">rollaxis</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span></div>
 
@@ -764,7 +764,7 @@
             <span class="c1"># swap axes</span>
             <span class="n">input_permute</span><span class="p">[</span><span class="n">axis1</span><span class="p">],</span> <span class="n">input_permute</span><span class="p">[</span><span class="n">axis2</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_permute</span><span class="p">[</span><span class="n">axis2</span><span class="p">],</span> <span class="n">input_permute</span><span class="p">[</span><span class="n">axis1</span><span class="p">]</span>
 
-            <span class="k">return</span> <span class="n">transpose</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">input_permute</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">transpose</span><span class="p">(</span><span class="n">x1_desc</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">(),</span> <span class="n">axes</span><span class="o">=</span><span class="n">input_permute</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">axis1</span><span class="p">,</span> <span class="n">axis2</span><span class="p">)</span></div>
 

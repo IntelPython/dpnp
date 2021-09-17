@@ -558,7 +558,7 @@
                     <span class="n">checker_throw_axis_error</span><span class="p">(</span><span class="s2">&quot;fft.ifftn&quot;</span><span class="p">,</span> <span class="s2">&quot;is out of bounds&quot;</span><span class="p">,</span> <span class="n">param_axis</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;&lt; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">boundaries</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
                 <span class="n">x1_iter_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1_iter</span><span class="p">)</span>
-                <span class="n">x1_iter</span> <span class="o">=</span> <span class="n">ifft</span><span class="p">(</span><span class="n">x1_iter_desc</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">param_n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">param_axis</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+                <span class="n">x1_iter</span> <span class="o">=</span> <span class="n">ifft</span><span class="p">(</span><span class="n">x1_iter_desc</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">(),</span> <span class="n">n</span><span class="o">=</span><span class="n">param_n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">param_axis</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="n">x1_iter</span>
 
@@ -671,7 +671,7 @@
         <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">irfftn</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">irfftn</span><span class="p">(</span><span class="n">x1_desc</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">(),</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft2</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
@@ -718,7 +718,7 @@
                     <span class="n">checker_throw_axis_error</span><span class="p">(</span><span class="s2">&quot;fft.irfftn&quot;</span><span class="p">,</span> <span class="s2">&quot;is out of bounds&quot;</span><span class="p">,</span> <span class="n">param_axis</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;&lt; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">boundaries</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
                 <span class="n">x1_iter_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1_iter</span><span class="p">)</span>
-                <span class="n">x1_iter</span> <span class="o">=</span> <span class="n">irfft</span><span class="p">(</span><span class="n">x1_iter_desc</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">param_n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">param_axis</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+                <span class="n">x1_iter</span> <span class="o">=</span> <span class="n">irfft</span><span class="p">(</span><span class="n">x1_iter_desc</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">(),</span> <span class="n">n</span><span class="o">=</span><span class="n">param_n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">param_axis</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="n">x1_iter</span>
 
@@ -786,7 +786,7 @@
         <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">rfftn</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">rfftn</span><span class="p">(</span><span class="n">x1_desc</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">(),</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft2</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
 
@@ -850,7 +850,7 @@
                     <span class="n">checker_throw_axis_error</span><span class="p">(</span><span class="s2">&quot;fft.rfftn&quot;</span><span class="p">,</span> <span class="s2">&quot;is out of bounds&quot;</span><span class="p">,</span> <span class="n">param_axis</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;&lt; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">boundaries</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
                 <span class="n">x1_iter_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1_iter</span><span class="p">)</span>
-                <span class="n">x1_iter</span> <span class="o">=</span> <span class="n">rfft</span><span class="p">(</span><span class="n">x1_iter_desc</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">param_n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">param_axis</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+                <span class="n">x1_iter</span> <span class="o">=</span> <span class="n">rfft</span><span class="p">(</span><span class="n">x1_iter_desc</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">(),</span> <span class="n">n</span><span class="o">=</span><span class="n">param_n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">param_axis</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="n">x1_iter</span>
 

@@ -233,7 +233,7 @@
 
     <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">in_array1</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_erf</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dpnp_erf</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="n">result</span> <span class="o">=</span> <span class="n">create_output_descriptor_py</span><span class="p">(</span><span class="n">in_array1</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">in_array1</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
