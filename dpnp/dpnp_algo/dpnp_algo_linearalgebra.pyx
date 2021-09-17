@@ -49,7 +49,7 @@ ctypedef void(*fptr_2in_1out_dot_t)(void * , const size_t, const size_t, const l
                                     void * , const size_t, const size_t, const long * , const long * ,
                                     void * , const size_t, const size_t, const long * , const long * )
 
-cpdef shape_type_c strides_to_vector(strides, shape):
+cdef shape_type_c strides_to_vector(strides, shape) except *:
     cdef shape_type_c res
     if strides is None:
         res = utils.get_axis_offsets(shape)

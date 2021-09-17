@@ -214,14 +214,14 @@ void dpnp_dot_c(void* result_out,
 
     // 1D vector
     size_t ext_input1_ndim = input1_ndim == 1 ? 2 : input1_ndim;
-    size_t* ext_input1_shape = new size_t[ext_input1_ndim];;
-    size_t* ext_input1_strides = new size_t[ext_input1_ndim];;
+    size_t* ext_input1_shape = new size_t[ext_input1_ndim];
+    size_t* ext_input1_strides = new size_t[ext_input1_ndim];
     if (input1_ndim == 1)
     {
         ext_input1_shape[0] = 1;
         ext_input1_shape[1] = input1_shape[0];
-        ext_input1_strides[0] = 1;
-        ext_input1_strides[1] = 1;
+        ext_input1_strides[0] = 0;
+        ext_input1_strides[1] = input1_strides[0];
     }
     else
     {
@@ -232,14 +232,14 @@ void dpnp_dot_c(void* result_out,
         }
     }
     size_t ext_input2_ndim = input2_ndim == 1 ? 2 : input2_ndim;
-    size_t* ext_input2_shape = new size_t[ext_input2_ndim];;
-    size_t* ext_input2_strides = new size_t[ext_input2_ndim];;
+    size_t* ext_input2_shape = new size_t[ext_input2_ndim];
+    size_t* ext_input2_strides = new size_t[ext_input2_ndim];
     if (input2_ndim == 1)
     {
         ext_input2_shape[0] = input2_shape[0];
         ext_input2_shape[1] = 1;
-        ext_input2_strides[0] = 1;
-        ext_input2_strides[1] = 1;
+        ext_input2_strides[0] = input2_strides[0];
+        ext_input2_strides[1] = 0;
     }
     else
     {
