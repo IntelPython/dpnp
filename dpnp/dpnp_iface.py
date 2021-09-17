@@ -173,7 +173,7 @@ def get_dpnp_descriptor(ext_obj, copy_when_strides=True):
     # we need to create a non-strided copy
     # if function get implementation for strides case
     # then this behavior can be disabled with setting "copy_when_strides"
-    if copy_when_strides and hasattr(ext_obj, "strides") and ext_obj.strides is not None:
+    if copy_when_strides and getattr(ext_obj, "strides", None) is not None:
         # TODO: replace this workaround when usm_ndarray will provide such functionality
         ext_obj = array(ext_obj)
 
