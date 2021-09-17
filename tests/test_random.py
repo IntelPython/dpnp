@@ -518,7 +518,7 @@ class TestDistributionsMultivariateNormal(TestDistribution):
         mean = [2.56, 3.23]
         cov = [[1, 0], [0, 1]]
         size = 10**5
-        res = numpy.array(dpnp.random.multivariate_normal(mean=mean, cov=cov, size=size))
+        res = dpnp.asnumpy(dpnp.random.multivariate_normal(mean=mean, cov=cov, size=size))
         res_mean = [numpy.mean(res.T[0]), numpy.mean(res.T[1])]
         assert_allclose(res_mean, mean, rtol=1e-02, atol=0)
 
