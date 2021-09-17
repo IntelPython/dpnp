@@ -211,16 +211,7 @@ def concatenate(arrs, axis=0, out=None, dtype=None, casting="same_kind"):
     [1 2 3 4 5 6]
 
     """
-
-    # TODO:
-    # `call_origin` cannot convert sequence of array to sequence of
-    # ndarrays
-    arrs_new = []
-    for arr in arrs:
-        arrx = dpnp.asnumpy(arr) if not isinstance(arr, numpy.ndarray) else arr
-        arrs_new.append(arrx)
-
-    return call_origin(numpy.concatenate, arrs_new, axis=axis, out=out, dtype=dtype, casting=casting)
+    return call_origin(numpy.concatenate, arrs, axis=axis, out=out, dtype=dtype, casting=casting)
 
 
 def copyto(dst, src, casting='same_kind', where=True):
