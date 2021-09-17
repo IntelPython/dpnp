@@ -323,14 +323,7 @@ cpdef utils.dpnp_descriptor dpnp_multiply(utils.dpnp_descriptor x1_obj,
 
 
 cpdef utils.dpnp_descriptor dpnp_nancumprod(utils.dpnp_descriptor x1):
-    cur_x1 = dpnp_copy(x1).get_pyobj()
-
-    for i in range(cur_x1.size):
-        if dpnp.isnan(cur_x1[i]):
-            cur_x1._setitem_scalar(i, 1)
-
-    x1_desc = dpnp.get_dpnp_descriptor(cur_x1)
-    return dpnp_cumprod(x1_desc)
+    return call_fptr_1in_1out(DPNP_FN_NANCUMPROD, x1, (x1.size,))
 
 
 cpdef utils.dpnp_descriptor dpnp_nancumsum(utils.dpnp_descriptor x1):

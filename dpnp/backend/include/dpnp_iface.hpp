@@ -351,6 +351,18 @@ INP_DLLEXPORT void dpnp_cumprod_c(void* array1_in, void* result1, size_t size);
 
 /**
  * @ingroup BACKEND_API
+ * @brief Custom implementation of nancumprod function
+ *
+ * @param [in]  array1_in  Input array.
+ * @param [out] result1    Output array.
+ * @param [in]  size       Number of elements in input arrays.
+ *
+ */
+template <typename _DataType_input, typename _DataType_output>
+INP_DLLEXPORT void dpnp_nancumprod_c(void* array1_in, void* result1, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief Custom implementation of cumsum function
  *
  * @param [in]  array1_in  Input array.

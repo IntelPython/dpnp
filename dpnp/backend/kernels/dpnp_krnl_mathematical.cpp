@@ -24,8 +24,11 @@
 //*****************************************************************************
 
 #include <cmath>
+#include <math.h>
 #include <iostream>
 #include <vector>
+
+#include "constants.hpp"
 
 #include <dpnp_iface.hpp>
 
@@ -186,6 +189,48 @@ void dpnp_cumprod_c(void* array1_in, void* result1, size_t size)
 
     for (size_t i = 0; i < size; ++i)
     {
+        cur_res *= array1[i];
+        result[i] = cur_res;
+    }
+
+    return;
+}
+
+template <typename _DataType_input, typename _DataType_output>
+void dpnp_nancumprod_c(void* array1_in, void* result1, size_t size)
+{
+    if (!size)
+    {
+        return;
+    }
+
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, size, true);
+    DPNPC_ptr_adapter<_DataType_output> result_ptr(result1, size, true, true);
+    _DataType_input* array1 = input1_ptr.get_ptr();
+    _DataType_output* result = result_ptr.get_ptr();
+
+    std::cout << "python_constants::py_nan = " << python_constants::py_nan << std::endl;
+    std::cout << "(_DataType_input*)python_constants::py_nan = " << (_DataType_input*)python_constants::py_nan << std::endl;
+    std::cout << "*(_DataType_input*)python_constants::py_nan = " << *(_DataType_input*)python_constants::py_nan << std::endl;
+
+    _DataType_output cur_res = 1;
+
+    for (size_t i = 0; i < size; ++i)
+    {
+        std::cout << "array1[" << i << "] = " << array1[i] << std::endl;
+        if (array1[i] != *(_DataType_input*)python_constants::py_nan)
+        {
+            std::cout << array1[i] << " != " << *(_DataType_input*)python_constants::py_nan << " is true" << std::endl;
+        }
+        if (array1[i] == *(_DataType_input*)python_constants::py_nan)
+        {
+            std::cout << array1[i] << " == " << *(_DataType_input*)python_constants::py_nan << " is true" << std::endl;
+        }
+        if (isnan(array1[i]))
+        {
+            std::cout << "isnan(" << array1[i] << ") is true" << std::endl;
+        }
+
         cur_res *= array1[i];
         result[i] = cur_res;
     }
@@ -577,6 +622,11 @@ void func_map_init_mathematical(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_MODF][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_modf_c<long, double>};
     fmap[DPNPFuncName::DPNP_FN_MODF][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_modf_c<float, float>};
     fmap[DPNPFuncName::DPNP_FN_MODF][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_modf_c<double, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_NANCUMPROD][eft_INT][eft_INT] = {eft_LNG, (void*)dpnp_nancumprod_c<int, long>};
+    fmap[DPNPFuncName::DPNP_FN_NANCUMPROD][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_nancumprod_c<long, long>};
+    fmap[DPNPFuncName::DPNP_FN_NANCUMPROD][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_nancumprod_c<float, float>};
+    fmap[DPNPFuncName::DPNP_FN_NANCUMPROD][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_nancumprod_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_remainder_c<int, int, int>};
     fmap[DPNPFuncName::DPNP_FN_REMAINDER][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_remainder_c<long, int, long>};
