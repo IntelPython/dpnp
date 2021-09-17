@@ -380,7 +380,7 @@ def copysign(x1, x2, dtype=None, out=None, where=True, **kwargs):
         elif not where:
             pass
         else:
-            return dpnp_copysign(x1_desc, x2_desc, dtype=dtype, out=out, where=where)
+            return dpnp_copysign(x1_desc, x2_desc, dtype=dtype, out=out, where=where).get_pyobj()
 
     return call_origin(numpy.copysign, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -1154,7 +1154,7 @@ def nancumprod(x1, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and not kwargs:
-        return dpnp_nancumprod(x1_desc)
+        return dpnp_nancumprod(x1_desc).get_pyobj()
 
     return call_origin(numpy.nancumprod, x1, **kwargs)
 
@@ -1190,7 +1190,7 @@ def nancumsum(x1, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and not kwargs:
-        return dpnp_nancumsum(x1_desc)
+        return dpnp_nancumsum(x1_desc).get_pyobj()
 
     return call_origin(numpy.nancumsum, x1, **kwargs)
 

@@ -79,7 +79,7 @@ def erf(in_array1):
 
     x1_desc = dpnp.get_dpnp_descriptor(in_array1)
     if x1_desc:
-        return dpnp_erf(x1_desc)
+        return dpnp_erf(x1_desc).get_pyobj()
 
     result = create_output_descriptor_py(in_array1.shape, in_array1.dtype, None).get_pyobj()
     for i in range(result.size):
