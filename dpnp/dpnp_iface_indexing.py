@@ -357,15 +357,7 @@ def place(x1, mask, vals):
     if x1_desc and mask_desc and vals_desc:
         return dpnp_place(x1_desc, mask, vals_desc)
 
-    if config.__DPNP_OUTPUT_DPCTL__:
-        # call_origin cannot modify usm_ndarray in place
-        x1_new = convert_item(x1)
-        mask_new = convert_item(mask)
-        vals_new = convert_item(vals)
-        numpy.place(x1_new, mask_new, vals_new)
-        return copy_from_origin(x1, x1_new)
-
-    return call_origin(numpy.place, x1, mask, vals)
+    return call_origin(numpy.place, x1, mask, vals, dpnp_inplace=True)
 
 
 def put(x1, ind, v, mode='raise'):
@@ -418,16 +410,7 @@ def put_along_axis(x1, indices, values, axis):
         else:
             return dpnp_put_along_axis(x1_desc, indices_desc, values_desc, axis)
 
-    if config.__DPNP_OUTPUT_DPCTL__:
-        # call_origin cannot modify usm_ndarray in place
-        x1_new = convert_item(x1)
-        indices_new = convert_item(indices)
-        values_new = convert_item(values)
-        axis_new = convert_item(axis)
-        numpy.put_along_axis(x1_new, indices_new, values_new, axis_new)
-        return copy_from_origin(x1, x1_new)
-
-    return call_origin(numpy.put_along_axis, x1, indices, values, axis)
+    return call_origin(numpy.put_along_axis, x1, indices, values, axis, dpnp_inplace=True)
 
 
 def putmask(x1, mask, values):
