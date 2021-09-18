@@ -91,8 +91,8 @@ def dot(x1, x2, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
+    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False)
     if x1_desc and x2_desc and not kwargs:
         # TODO: remove fallback with scalars when muliply backend func will support strides
         if(x1_desc.ndim == 0 and x2_desc.strides is not None
