@@ -51,6 +51,7 @@ void dpnp_correlate_c(void* result_out,
 {
     (void)where;
 
+    size_t dummy[] = {1};
     dpnp_dot_c<_DataType_output, _DataType_input1, _DataType_input2>(result_out,
                                                                      42,   // dummy result_size
                                                                      42,   // dummy result_ndim
@@ -60,12 +61,12 @@ void dpnp_correlate_c(void* result_out,
                                                                      input1_size,
                                                                      input1_shape_ndim,
                                                                      input1_shape,
-                                                                     NULL, // dummy input1_strides
+                                                                     dummy, // dummy input1_strides
                                                                      input2_in,
                                                                      input2_size,
                                                                      input2_shape_ndim,
                                                                      input2_shape,
-                                                                     NULL); // dummy input2_strides
+                                                                     dummy); // dummy input2_strides
 
     return;
 }

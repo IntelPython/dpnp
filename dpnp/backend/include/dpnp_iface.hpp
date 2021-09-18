@@ -614,6 +614,21 @@ INP_DLLEXPORT void dpnp_det_c(void* array1_in, void* result1, size_t* shape, siz
 
 /**
  * @ingroup BACKEND_API
+ * @brief math library implementation of take function
+ *
+ * @param [out] result        Output array.
+ * @param [in]  array         Input array with data.
+ * @param [in]  choices       Choice arrays.
+ * @param [in]  size          Input array size.
+ * @param [in]  choices_size  Choices size.
+ * @param [in]  choice_size  Choices size.
+ */
+template <typename _DataType1, typename _DataType2>
+INP_DLLEXPORT void
+    dpnp_choose_c(void* result1, void* array1_in, void** choices, size_t size, size_t choices_size, size_t choice_size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief math library implementation of det function
  *
  * @param [in]  array          Input array with data.
