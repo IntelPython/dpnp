@@ -24,11 +24,8 @@
 //*****************************************************************************
 
 #include <cmath>
-#include <math.h>
 #include <iostream>
 #include <vector>
-
-#include "constants.hpp"
 
 #include <dpnp_iface.hpp>
 
@@ -209,30 +206,17 @@ void dpnp_nancumprod_c(void* array1_in, void* result1, size_t size)
     _DataType_input* array1 = input1_ptr.get_ptr();
     _DataType_output* result = result_ptr.get_ptr();
 
-    std::cout << "python_constants::py_nan = " << python_constants::py_nan << std::endl;
-    std::cout << "(_DataType_input*)python_constants::py_nan = " << (_DataType_input*)python_constants::py_nan << std::endl;
-    std::cout << "*(_DataType_input*)python_constants::py_nan = " << *(_DataType_input*)python_constants::py_nan << std::endl;
-
-    _DataType_output cur_res = 1;
-
+    _DataType_output accumulator = 1;
     for (size_t i = 0; i < size; ++i)
     {
-        std::cout << "array1[" << i << "] = " << array1[i] << std::endl;
-        if (array1[i] != *(_DataType_input*)python_constants::py_nan)
+        const _DataType_input input_elem = array1[i];
+
+        if (!std::isnan(input_elem))        // add_compile_options(-fno-fast-math) is required (non SYCL)
         {
-            std::cout << array1[i] << " != " << *(_DataType_input*)python_constants::py_nan << " is true" << std::endl;
-        }
-        if (array1[i] == *(_DataType_input*)python_constants::py_nan)
-        {
-            std::cout << array1[i] << " == " << *(_DataType_input*)python_constants::py_nan << " is true" << std::endl;
-        }
-        if (isnan(array1[i]))
-        {
-            std::cout << "isnan(" << array1[i] << ") is true" << std::endl;
+            accumulator *= input_elem;
         }
 
-        cur_res *= array1[i];
-        result[i] = cur_res;
+        result[i] = accumulator;
     }
 
     return;
