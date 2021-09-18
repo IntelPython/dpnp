@@ -148,6 +148,9 @@ if(NOT WIN32)
   add_link_options(-Wl,-z,noexecstack,-z,relro,-z,now)
 endif()
 
+# used to handle NaN in the user input data
+add_compile_options(-fno-fast-math)
+
 # disable PSTL policies due to compiler bug
 add_definitions(-DPSTL_USE_PARALLEL_POLICIES=0 -D_GLIBCXX_USE_TBB_PAR_BACKEND=0)
 
