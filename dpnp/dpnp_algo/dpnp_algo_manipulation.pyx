@@ -40,6 +40,7 @@ __all__ += [
     "dpnp_copyto",
     "dpnp_expand_dims",
     "dpnp_repeat",
+    "dpnp_reshape",
     "dpnp_transpose",
     "dpnp_squeeze",
 ]
@@ -143,6 +144,11 @@ cpdef utils.dpnp_descriptor dpnp_repeat(utils.dpnp_descriptor array1, repeats, a
     func(array1.get_data(), result.get_data(), repeats, array1.size)
 
     return result
+
+
+cpdef utils.dpnp_descriptor dpnp_reshape(utils.dpnp_descriptor array1, newshape, order=None):
+    # return utils_py.create_output_descriptor_py(newshape, array1.dtype, create_output_container(newshape, array1.dtype, buffer=array1.get_pyobj()))
+    return dpnp.get_dpnp_descriptor(create_output_container(newshape, array1.dtype, buffer=array1.get_pyobj()))
 
 
 cpdef utils.dpnp_descriptor dpnp_transpose(utils.dpnp_descriptor array1, axes=None):

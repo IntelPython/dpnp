@@ -59,14 +59,16 @@ __all__ = [
 ]
 
 
-def create_output_container(shape, type):
+def create_output_container(shape, type, buffer=None):
     if config.__DPNP_OUTPUT_NUMPY__:
         """ Create NumPy ndarray """
         # TODO need to use "buffer=" parameter to use SYCL aware memory
         result = numpy.ndarray(shape, dtype=type)
     elif config.__DPNP_OUTPUT_DPCTL__:
         """ Create DPCTL array """
-        if config.__DPNP_OUTPUT_DPCTL_DEFAULT_SHARED__:
+        if buffer is not None:
+            result = dpctl.usm_ndarray(shape, dtype=numpy.dtype(type).name, buffer=buffer)
+        elif config.__DPNP_OUTPUT_DPCTL_DEFAULT_SHARED__:
             """
             From DPCtrl documentation:
             'buffer can be strings ('device'|'shared'|'host' to allocate new memory)'
