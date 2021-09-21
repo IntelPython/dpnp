@@ -214,8 +214,9 @@ void dpnp_fill_diagonal_c(void* array1_in, void* val_in, size_t* shape, const si
     }
 
     DPNPC_ptr_adapter<_DataType> result_ptr(array1_in, result_size, true, true);
+    DPNPC_ptr_adapter<_DataType> val_ptr(val_in, 1, true);
     _DataType* array_1 = result_ptr.get_ptr();
-    _DataType* val_arr = reinterpret_cast<_DataType*>(val_in);
+    _DataType* val_arr = val_ptr.get_ptr();
 
     size_t min_shape = shape[0];
     for (size_t i = 0; i < ndim; ++i)
