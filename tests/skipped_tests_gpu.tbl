@@ -52,6 +52,17 @@ tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_b
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_invert
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_left_shift
 tests/third_party/cupy/binary_tests/test_elementwise.py::TestElementwise::test_right_shift
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayItem_param_0_{shape=()}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayItem_param_1_{shape=(1,)}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayItem_param_2_{shape=(1, 1, 1)}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayItemRaise_param_0_{shape=(0,)}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayItemRaise_param_1_{shape=(2, 3)}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayItemRaise_param_2_{shape=(1, 0, 1)}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes_param_0_{shape=()}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes_param_1_{shape=(1,)}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes_param_2_{shape=(2, 3)}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes_param_3_{order='C', shape=(2, 3)}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes_param_4_{order='F', shape=(2, 3)}::test_item
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestAngle::test_angle
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_imag
 tests/third_party/cupy/core_tests/test_ndarray_complex_ops.py::TestRealImag::test_imag_inplace
@@ -237,6 +248,7 @@ tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asar
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_ascontiguousarray_on_noncontiguous_array
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asfortranarray_cuda_array_zero_dim
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asfortranarray_cuda_array_zero_dim_dtype
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_copy_order
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_fromfile
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_0_{copy=False, indexing='xy', sparse=False}::test_meshgrid0
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_0_{copy=False, indexing='xy', sparse=False}::test_meshgrid1
@@ -1114,12 +1126,16 @@ tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{extern
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_multi_dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_negative_kth
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_non_contiguous
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_none_axis
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_one_dim
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_sequence_kth
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_zero_dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_multi_dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_negative_kth
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_non_contiguous
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_none_axis
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_one_dim
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_sequence_kth
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_zero_dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestSort_complex::test_sort_complex_1dim
 tests/third_party/cupy/sorting_tests/test_sort.py::TestSort_complex::test_sort_complex_nan
