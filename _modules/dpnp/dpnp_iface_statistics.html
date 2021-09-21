@@ -446,8 +446,7 @@
             <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
-                <span class="n">x1_double_container</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-                <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1_double_container</span><span class="p">)</span>
+                <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp_astype</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="n">dpnp_cov</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
