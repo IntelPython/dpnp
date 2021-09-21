@@ -311,10 +311,13 @@ void dpnp_place_c(void* arr_in, long* mask_in, void* vals_in, const size_t arr_s
     _DataType* vals = input1_ptr.get_ptr();
     _DataType* arr = result_ptr.get_ptr();
 
+    DPNPC_ptr_adapter<long> mask_ptr(mask_in, arr_size, true);
+    long* mask = mask_ptr.get_ptr();
+
     size_t counter = 0;
     for (size_t i = 0; i < arr_size; ++i)
     {
-        if (mask_in[i])
+        if (mask[i])
         {
             arr[i] = vals[counter % vals_size];
             counter += 1;
