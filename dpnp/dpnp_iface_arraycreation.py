@@ -869,7 +869,7 @@ def logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0):
         if axis != 0:
             checker_throw_value_error("linspace", "axis", axis, 0)
 
-        return dpnp_logspace(start, stop, num, endpoint, base, dtype, axis)
+        return dpnp_logspace(start, stop, num, endpoint, base, dtype, axis).get_pyobj()
 
     return call_origin(numpy.logspace, start, stop, num, endpoint, base, dtype, axis)
 
