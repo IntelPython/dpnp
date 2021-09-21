@@ -40,6 +40,7 @@ import dpnp.dpnp_utils as utils_py
 from dpnp.dpnp_container import create_output_container, container_copy
 
 import numpy
+import dpctl
 
 cimport cpython
 cimport dpnp.dpnp_utils as utils
