@@ -211,16 +211,7 @@ def concatenate(arrs, axis=0, out=None, dtype=None, casting="same_kind"):
     [1 2 3 4 5 6]
 
     """
-
-    # TODO:
-    # `call_origin` cannot convert sequence of array to sequence of
-    # ndarrays
-    arrs_new = []
-    for arr in arrs:
-        arrx = dpnp.asnumpy(arr) if not isinstance(arr, numpy.ndarray) else arr
-        arrs_new.append(arrx)
-
-    return call_origin(numpy.concatenate, arrs_new, axis=axis, out=out, dtype=dtype, casting=casting)
+    return call_origin(numpy.concatenate, arrs, axis=axis, out=out, dtype=dtype, casting=casting)
 
 
 def copyto(dst, src, casting='same_kind', where=True):
@@ -397,7 +388,7 @@ def moveaxis(x1, source, destination):
                 # checker_throw_value_error("swapaxes", "source_id exists", source_id, input_permute)
                 input_permute.insert(destination_id, source_id)
 
-            return transpose(x1_desc, axes=input_permute)
+            return transpose(x1_desc.get_pyobj(), axes=input_permute)
 
     return call_origin(numpy.moveaxis, x1, source, destination)
 
@@ -515,7 +506,7 @@ def rollaxis(x1, axis, start=0):
             start_norm = start + x1_desc.ndim if start < 0 else start
             destination = start_norm - 1 if start_norm > axis else start_norm
 
-            return dpnp.moveaxis(x1_desc, axis, destination)
+            return dpnp.moveaxis(x1_desc.get_pyobj(), axis, destination)
 
     return call_origin(numpy.rollaxis, x1, axis, start)
 
@@ -610,7 +601,7 @@ def swapaxes(x1, axis1, axis2):
             # swap axes
             input_permute[axis1], input_permute[axis2] = input_permute[axis2], input_permute[axis1]
 
-            return transpose(x1_desc, axes=input_permute)
+            return transpose(x1_desc.get_pyobj(), axes=input_permute)
 
     return call_origin(numpy.swapaxes, x1, axis1, axis2)
 

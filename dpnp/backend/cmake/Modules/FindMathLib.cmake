@@ -51,13 +51,13 @@ endif()
 
 find_path(
   MATHLIB_INCLUDE_DIR oneapi/mkl.hpp
-  HINTS ENV CONDA_PREFIX ${MATHLIB_ROOT_DIR} # search order is important
+  HINTS ENV CONDA_PREFIX ENV PREFIX ${MATHLIB_ROOT_DIR} # search order is important
   PATH_SUFFIXES include latest/include
   DOC "Path to mathlib include files")
 
 find_path(
   MATHLIB_LIBRARY_DIR ${MATHLIB_SYCL_LIB}
-  HINTS ENV CONDA_PREFIX ${MATHLIB_ROOT_DIR} # search order is important
+  HINTS ENV CONDA_PREFIX ENV PREFIX ${MATHLIB_ROOT_DIR} # search order is important
   PATH_SUFFIXES lib latest/lib/intel64
   DOC "Path to mathlib library files")
 
