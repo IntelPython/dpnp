@@ -292,7 +292,7 @@ def cov(x1, y=None, rowvar=True, bias=False, ddof=None, fweights=None, aweights=
             pass
         else:
             if x1_desc.dtype != dpnp.float64:
-                x1_desc = dpnp_astype(x1_desc, dpnp.float64)
+                x1_desc = dpnp.get_dpnp_descriptor(dpnp.astype(x1, dpnp.float64))
 
             return dpnp_cov(x1_desc).get_pyobj()
 
