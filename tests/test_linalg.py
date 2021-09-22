@@ -5,11 +5,11 @@ import dpnp as inp
 import numpy
 
 
-def vvsort(val, vec, size):
+def vvsort(val, vec, size, xp):
     for i in range(size):
         imax = i
         for j in range(i + 1, size):
-            if inp.abs(val[imax]) < inp.abs(val[j]):
+            if xp.abs(val[imax]) < xp.abs(val[j]):
                 imax = j
 
         temp = val[i]
@@ -86,10 +86,10 @@ def test_eig_arange(type, size):
     np_val, np_vec = numpy.linalg.eig(symm)
 
     # DPNP sort val/vec by abs value
-    vvsort(dpnp_val, dpnp_vec, size)
+    vvsort(dpnp_val, dpnp_vec, size, inp)
 
     # NP sort val/vec by abs value
-    vvsort(np_val, np_vec, size)
+    vvsort(np_val, np_vec, size, numpy)
 
     # NP change sign of vectors
     for i in range(np_vec.shape[1]):
