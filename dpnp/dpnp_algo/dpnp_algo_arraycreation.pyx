@@ -214,7 +214,7 @@ cpdef tuple dpnp_linspace(start, stop, num, endpoint, retstep, dtype, axis):
 
 cpdef object dpnp_logspace(start, stop, num, endpoint, base, dtype, axis):
     temp = dpnp.linspace(start, stop, num=num, endpoint=endpoint)
-    return dpnp.power(base, temp).astype(dtype)
+    return dpnp_astype(dpnp.get_dpnp_descriptor(dpnp.power(base, temp)), dtype)
 
 
 cpdef list dpnp_meshgrid(xi, copy, sparse, indexing):
