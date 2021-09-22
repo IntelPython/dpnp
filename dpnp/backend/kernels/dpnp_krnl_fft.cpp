@@ -28,6 +28,7 @@
 #include <dpnp_iface.hpp>
 #include "dpnp_fptr.hpp"
 #include "dpnp_utils.hpp"
+#include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
 namespace mkl_dft = oneapi::mkl::dft;
@@ -51,8 +52,9 @@ void dpnp_fft_fft_c(const void* array1_in,
                     long input_boundarie,
                     size_t inverse)
 {
+    const size_t input_size = std::accumulate(input_shape, input_shape + shape_size, 1, std::multiplies<size_t>());
     const size_t result_size = std::accumulate(output_shape, output_shape + shape_size, 1, std::multiplies<size_t>());
-    if (!(result_size && shape_size))
+    if (!(input_size && result_size && shape_size))
     {
         return;
     }
@@ -60,7 +62,8 @@ void dpnp_fft_fft_c(const void* array1_in,
     cl::sycl::event event;
     const double kernel_pi = inverse ? -M_PI : M_PI;
 
-    const _DataType_input* array_1 = reinterpret_cast<const _DataType_input*>(array1_in);
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, input_size);
+    const _DataType_input* array_1 = input1_ptr.get_ptr();
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
 
     // kernel specific temporal data

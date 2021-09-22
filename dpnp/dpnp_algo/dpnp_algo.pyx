@@ -33,6 +33,7 @@ and the rest of the library
 """
 
 from libc.time cimport time, time_t
+from libcpp.vector cimport vector
 import dpnp
 import dpnp.config as config
 import dpnp.dpnp_utils as utils_py
@@ -188,6 +189,8 @@ cpdef dpnp_queue_initialize():
         queue_type = GPU_SELECTOR
 
     dpnp_queue_initialize_c(queue_type)
+    dpnp_python_constants_initialize_c(<void*> None,
+                                       <void*> dpnp.nan)
 
     # TODO:
     # choose seed number as is in numpy

@@ -91,17 +91,15 @@ def dot(x1, x2, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
+    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False)
     if x1_desc and x2_desc and not kwargs:
-        dim1 = x1_desc.ndim
-        dim2 = x2_desc.ndim
-
-        if not (dim1 >= 2 and dim2 == 1) and not (dim1 >= 2 and dim2 >= 2) and (x1_desc.dtype == x2_desc.dtype):
-            result_obj = dpnp_dot(x1_desc, x2_desc).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
-
-            return result
+        # TODO: remove fallback with scalars when muliply backend func will support strides
+        if(x1_desc.ndim == 0 and x2_desc.strides is not None
+            or x2_desc.ndim == 0 and x1_desc.strides is not None):
+            pass
+        else:
+            return dpnp_dot(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.dot, x1, x2, **kwargs)
 
@@ -246,7 +244,7 @@ def matmul(x1, x2, out=None, **kwargs):
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     x2_desc = dpnp.get_dpnp_descriptor(x2)
     if x1_desc and x2_desc and not kwargs:
-        if x1_desc.size != x2_desc.size:
+        if x1_desc.ndim != 2 or x2_desc.ndim != 2:
             pass
         elif not x1_desc.ndim:
             pass

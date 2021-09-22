@@ -54,36 +54,68 @@ __all__ += [
     "dpnp_triu_indices_from"
 ]
 
-
-ctypedef void(*custom_indexing_2in_1out_func_ptr_t)(void *, void * , void * , size_t)
-ctypedef void(*custom_indexing_2in_1out_func_ptr_t_)(void * , void * , const size_t, size_t * , size_t * , const size_t)
+ctypedef void(*fptr_dpnp_choose_t)(void * , void * , void **, size_t, size_t, size_t)
+ctypedef void(*fptr_dpnp_diag_indices)(void*, size_t)
+ctypedef void(*custom_indexing_2in_1out_func_ptr_t)(void *, const size_t, void * , void * , size_t)
+ctypedef void(*custom_indexing_2in_1out_func_ptr_t_)(void * , const size_t, void * , const size_t, size_t * , size_t * , const size_t)
 ctypedef void(*custom_indexing_2in_func_ptr_t)(void *, void * , size_t * , const size_t)
 ctypedef void(*custom_indexing_3in_func_ptr_t)(void * , void * , void * , const size_t, const size_t)
 ctypedef void(*custom_indexing_3in_with_axis_func_ptr_t)(void * , void * , void * , const size_t, size_t * , const size_t,
                                                          const size_t, const size_t,)
 ctypedef void(*custom_indexing_6in_func_ptr_t)(void *, void * , void * , const size_t, const size_t, const size_t)
-ctypedef void(*fptr_dpnp_nonzero_t)(const void * , void * , const size_t * , const size_t , const size_t)
+ctypedef void(*fptr_dpnp_nonzero_t)(const void * , void * , const size_t, const size_t * , const size_t , const size_t)
 
 
-cpdef utils.dpnp_descriptor dpnp_choose(object input, list choices):
-    cdef shape_type_c obj_shape = utils._object_to_tuple(len(input))
-    cdef utils.dpnp_descriptor res_array = utils_py.create_output_descriptor_py(obj_shape, choices[0].dtype, None)
+cpdef utils.dpnp_descriptor dpnp_choose(utils.dpnp_descriptor input, list choices1):
+    cdef vector[void * ] choices
+    cdef utils.dpnp_descriptor choice
+    for desc in choices1:
+        choice = desc
+        choices.push_back(choice.get_data())
 
-    for i in range(len(input)):
-        res_array.get_pyobj()[i] = (choices[input[i]])[i]
+    cdef shape_type_c input_shape = input.shape
+    cdef size_t choice_size = choices1[0].size
+        
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
+
+    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(choices1[0].dtype)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_CHOOSE, param1_type, param2_type)
+
+    cdef utils.dpnp_descriptor res_array = utils.create_output_descriptor(input_shape, kernel_data.return_type, None)
+
+    cdef fptr_dpnp_choose_t func = <fptr_dpnp_choose_t> kernel_data.ptr
+
+    func(res_array.get_data(),
+         input.get_data(),
+         choices.data(),
+         input_shape[0],
+         choices.size(),
+         choice_size)
+
     return res_array
 
 
 cpdef tuple dpnp_diag_indices(n, ndim):
-    res_item = dpnp.arange(n, dtype=dpnp.int64)
+    cdef size_t res_size = 0 if n < 0 else n
 
-    # yes, all are the same item
-    result = []
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dpnp.int64)
+
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DIAG_INDICES, param1_type, param1_type)
+    
+    cdef fptr_dpnp_diag_indices func = <fptr_dpnp_diag_indices> kernel_data.ptr
+    
+    res_list = []
+    cdef utils.dpnp_descriptor res_arr
+    cdef shape_type_c result_shape = utils._object_to_tuple(res_size)
     for i in range(ndim):
-        result.append(res_item)
+        res_arr = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
-    return tuple(result)
+        func(res_arr.get_data(), res_size)
 
+        res_list.append(res_arr.get_pyobj())
+ 
+    return tuple(res_list)
 
 cpdef utils.dpnp_descriptor dpnp_diagonal(dpnp_descriptor input, offset=0):
     cdef shape_type_c input_shape = input.shape
@@ -114,6 +146,7 @@ cpdef utils.dpnp_descriptor dpnp_diagonal(dpnp_descriptor input, offset=0):
     cdef custom_indexing_2in_1out_func_ptr_t_ func = <custom_indexing_2in_1out_func_ptr_t_ > kernel_data.ptr
 
     func(input.get_data(),
+         input.size,
          result.get_data(),
          offset,
          < size_t * > input_shape.data(),
@@ -192,7 +225,7 @@ cpdef tuple dpnp_nonzero(utils.dpnp_descriptor in_array1):
         result_shape = utils._object_to_tuple(res_size)
         res_arr = utils_py.create_output_descriptor_py(result_shape, dpnp.int64, None)
 
-        func(in_array1.get_data(), res_arr.get_data(), < size_t * > shape_arr.data(), in_array1.ndim, j)
+        func(in_array1.get_data(), res_arr.get_data(), res_arr.size, < size_t * > shape_arr.data(), in_array1.ndim, j)
 
         res_list.append(res_arr.get_pyobj())
 
@@ -288,14 +321,14 @@ cpdef utils.dpnp_descriptor dpnp_select(list condlist, list choicelist, default)
 
 cpdef utils.dpnp_descriptor dpnp_take(utils.dpnp_descriptor input, utils.dpnp_descriptor indices):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
-
+    
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TAKE, param1_type, param1_type)
 
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(indices.shape, kernel_data.return_type, None)
 
     cdef custom_indexing_2in_1out_func_ptr_t func = <custom_indexing_2in_1out_func_ptr_t > kernel_data.ptr
 
-    func(input.get_data(), indices.get_data(), result.get_data(), indices.size)
+    func(input.get_data(), input.size, indices.get_data(), result.get_data(), indices.size)
 
     return result
 

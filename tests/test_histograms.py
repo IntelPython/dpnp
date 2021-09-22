@@ -18,7 +18,7 @@ class TestHistogram:
         v = dpnp.random.rand(n)
         (a, b) = dpnp.histogram(v)
         # check if the sum of the bins equals the number of samples
-        numpy.testing.assert_equal(dpnp.sum(a, axis=0)[0], n)
+        numpy.testing.assert_equal(dpnp.sum(a, axis=0), n)
         # check that the bin counts are evenly spaced when the data is from
         # a linear function
         (a, b) = dpnp.histogram(numpy.linspace(0, 10, 100))

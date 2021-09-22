@@ -13,10 +13,11 @@ requirements:
       - cython
       - cmake >=3.16.5
       - dpctl >=0.5.0a0
-      - mkl-devel >=2021.1.1
+      - mkl-devel-dpcpp
+      - tbb-devel
       - wheel
     build:
-      - {{ compiler('cxx') }}
+      - {{ compiler('dpcpp') }}
     run:
       - python
       - dpctl >=0.5.0a0
@@ -29,8 +30,8 @@ build:
     number: {{ GIT_DESCRIBE_NUMBER }}
     include_recipe: False
     script_env:
-      - ONEAPI_ROOT
-      - DPCPPROOT
+      - _ONEAPI_ROOT # renamed for ignore in CI
+      - _DPCPPROOT # renamed for ignore in CI
       - MKLROOT
       - TBBROOT
       - WHEELS_OUTPUT_FOLDER

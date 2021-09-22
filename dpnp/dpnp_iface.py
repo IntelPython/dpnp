@@ -42,6 +42,8 @@ it contains:
 
 import os
 import numpy
+import numpy.lib.stride_tricks as np_st
+import dpnp.config as config
 import collections
 
 from dpnp.dpnp_algo import *
@@ -130,6 +132,9 @@ def asnumpy(input, order='C'):
     This function works exactly the same as :obj:`numpy.asarray`.
 
     """
+    if config.__DPNP_OUTPUT_DPCTL__ and hasattr(input, "__sycl_usm_array_interface__"):
+        strides = (x * input.itemsize for x in input.strides)
+        return np_st.as_strided(input.usm_data.copy_to_host().view(input.dtype), shape=input.shape, strides=strides)
 
     return numpy.asarray(input, order=order)
 
@@ -145,7 +150,7 @@ def convert_single_elem_array_to_scalar(obj, keepdims=False):
     return obj
 
 
-def get_dpnp_descriptor(ext_obj):
+def get_dpnp_descriptor(ext_obj, copy_when_strides=True):
     """
     Return True:
       never
@@ -163,6 +168,14 @@ def get_dpnp_descriptor(ext_obj):
 
     if use_origin_backend():
         return False
+
+    # while dpnp functions have no implementation with strides support
+    # we need to create a non-strided copy
+    # if function get implementation for strides case
+    # then this behavior can be disabled with setting "copy_when_strides"
+    if copy_when_strides and getattr(ext_obj, "strides", None) is not None:
+        # TODO: replace this workaround when usm_ndarray will provide such functionality
+        ext_obj = array(ext_obj)
 
     dpnp_desc = dpnp_descriptor(ext_obj)
     if dpnp_desc.is_valid:

@@ -28,6 +28,7 @@
 #include <dpnp_iface.hpp>
 #include "dpnp_fptr.hpp"
 #include "dpnp_utils.hpp"
+#include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
 namespace mkl_blas = oneapi::mkl::blas::row_major;
@@ -48,16 +49,24 @@ void dpnp_correlate_c(void* result_out,
                       const size_t input2_shape_ndim,
                       const size_t* where)
 {
+    (void)where;
+
+    size_t dummy[] = {1};
     dpnp_dot_c<_DataType_output, _DataType_input1, _DataType_input2>(result_out,
+                                                                     42,   // dummy result_size
+                                                                     42,   // dummy result_ndim
+                                                                     NULL, // dummy result_shape
+                                                                     NULL, // dummy result_strides
                                                                      input1_in,
                                                                      input1_size,
-                                                                     input1_shape,
                                                                      input1_shape_ndim,
+                                                                     input1_shape,
+                                                                     dummy, // dummy input1_strides
                                                                      input2_in,
                                                                      input2_size,
-                                                                     input2_shape,
                                                                      input2_shape_ndim,
-                                                                     where);
+                                                                     input2_shape,
+                                                                     dummy); // dummy input2_strides
 
     return;
 }
@@ -68,7 +77,8 @@ class dpnp_cov_c_kernel;
 template <typename _DataType>
 void dpnp_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols)
 {
-    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, nrows * ncols);
+    _DataType* array_1 = input1_ptr.get_ptr();
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
     if (!nrows || !ncols)
@@ -168,14 +178,28 @@ template <typename _DataType>
 class dpnp_max_c_kernel;
 
 template <typename _DataType>
-void dpnp_max_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
+void dpnp_max_c(void* array1_in,
+                void* result1,
+                const size_t result_size,
+                const size_t* shape,
+                size_t ndim,
+                const size_t* axis,
+                size_t naxis)
 {
+    const size_t size_input = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    if (!size_input)
+    {
+        return;
+    }
+
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size_input, true);
+    DPNPC_ptr_adapter<_DataType> result_ptr(result1, result_size, true, true);
+    _DataType* array_1 = input1_ptr.get_ptr();
+    _DataType* result = result_ptr.get_ptr();
+
     if (naxis == 0)
     {
         __attribute__((unused)) void* tmp = (void*)(axis + naxis);
-
-        _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
-        _DataType* result = reinterpret_cast<_DataType*>(result1);
 
         size_t size = 1;
         for (size_t i = 0; i < ndim; ++i)
@@ -206,9 +230,6 @@ void dpnp_max_c(void* array1_in, void* result1, const size_t* shape, size_t ndim
     }
     else
     {
-        _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
-        _DataType* result = reinterpret_cast<_DataType*>(result1);
-
         size_t res_ndim = ndim - naxis;
         size_t res_shape[res_ndim];
         int ind = 0;
@@ -228,12 +249,6 @@ void dpnp_max_c(void* array1_in, void* result1, const size_t* shape, size_t ndim
                 res_shape[ind] = shape[i];
                 ind++;
             }
-        }
-
-        size_t size_input = 1;
-        for (size_t i = 0; i < ndim; ++i)
-        {
-            size_input *= shape[i];
         }
 
         size_t input_shape_offsets[ndim];
@@ -362,24 +377,20 @@ void dpnp_mean_c(void* array1_in, void* result1, const size_t* shape, size_t ndi
 {
     __attribute__((unused)) void* tmp = (void*)(axis + naxis);
 
-    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
-
-    size_t size = 1;
-    for (size_t i = 0; i < ndim; ++i)
-    {
-        size *= shape[i];
-    }
-
+    const size_t size = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
     if (!size)
     {
         return;
     }
 
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size, true);
+    DPNPC_ptr_adapter<_ResultType> result_ptr(result1, 1, true, true);
+    _DataType* array = input1_ptr.get_ptr();
+    _ResultType* result = result_ptr.get_ptr();
+
     if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
     {
-        _ResultType* array = reinterpret_cast<_DataType*>(array1_in);
-
-        auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, size, array);
+        auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major /*, _ResultType*/>(1, size, array);
 
         cl::sycl::event event = mkl_stats::mean(DPNP_QUEUE, dataset, result);
 
@@ -390,7 +401,7 @@ void dpnp_mean_c(void* array1_in, void* result1, const size_t* shape, size_t ndi
         _ResultType* sum = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(1 * sizeof(_ResultType)));
 
         dpnp_sum_c<_ResultType, _DataType>(
-            sum, array1_in, shape, ndim, reinterpret_cast<const long*>(axis), naxis, nullptr, nullptr);
+            sum, array, shape, ndim, reinterpret_cast<const long*>(axis), naxis, nullptr, nullptr);
 
         result[0] = sum[0] / static_cast<_ResultType>(size);
 
@@ -405,13 +416,14 @@ void dpnp_median_c(void* array1_in, void* result1, const size_t* shape, size_t n
 {
     __attribute__((unused)) void* tmp = (void*)(axis + naxis);
 
-    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
-
-    size_t size = 1;
-    for (size_t i = 0; i < ndim; ++i)
+    const size_t size = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    if (!size)
     {
-        size *= shape[i];
+        return;
     }
+
+    DPNPC_ptr_adapter<_ResultType> result_ptr(result1, 1, true, true);
+    _ResultType* result = result_ptr.get_ptr();
 
     _DataType* sorted = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
 
@@ -435,26 +447,35 @@ template <typename _DataType>
 class dpnp_min_c_kernel;
 
 template <typename _DataType>
-void dpnp_min_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
+void dpnp_min_c(void* array1_in,
+                void* result1,
+                const size_t result_size,
+                const size_t* shape,
+                size_t ndim,
+                const size_t* axis,
+                size_t naxis)
 {
+    __attribute__((unused)) void* tmp = (void*)(axis + naxis);
+
+    const size_t size_input = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    if (!size_input)
+    {
+        return;
+    }
+
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size_input, true);
+    DPNPC_ptr_adapter<_DataType> result_ptr(result1, result_size, true, true);
+    _DataType* array_1 = input1_ptr.get_ptr();
+    _DataType* result = result_ptr.get_ptr();
+
     if (naxis == 0)
     {
-        __attribute__((unused)) void* tmp = (void*)(axis + naxis);
-
-        _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
-        _DataType* result = reinterpret_cast<_DataType*>(result1);
-
-        size_t size = 1;
-        for (size_t i = 0; i < ndim; ++i)
-        {
-            size *= shape[i];
-        }
         if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
         {
             // Required initializing the result before call the function
             result[0] = array_1[0];
 
-            auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, size, array_1);
+            auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, size_input, array_1);
 
             cl::sycl::event event = mkl_stats::min(DPNP_QUEUE, dataset, result);
 
@@ -464,7 +485,7 @@ void dpnp_min_c(void* array1_in, void* result1, const size_t* shape, size_t ndim
         {
             auto policy = oneapi::dpl::execution::make_device_policy<class dpnp_min_c_kernel<_DataType>>(DPNP_QUEUE);
 
-            _DataType* res = std::min_element(policy, array_1, array_1 + size);
+            _DataType* res = std::min_element(policy, array_1, array_1 + size_input);
             policy.queue().wait();
 
             result[0] = *res;
@@ -472,9 +493,6 @@ void dpnp_min_c(void* array1_in, void* result1, const size_t* shape, size_t ndim
     }
     else
     {
-        _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
-        _DataType* result = reinterpret_cast<_DataType*>(result1);
-
         size_t res_ndim = ndim - naxis;
         size_t res_shape[res_ndim];
         int ind = 0;
@@ -494,12 +512,6 @@ void dpnp_min_c(void* array1_in, void* result1, const size_t* shape, size_t ndim
                 res_shape[ind] = shape[i];
                 ind++;
             }
-        }
-
-        size_t size_input = 1;
-        for (size_t i = 0; i < ndim; ++i)
-        {
-            size_input *= shape[i];
         }
 
         size_t input_shape_offsets[ndim];
@@ -624,13 +636,9 @@ void dpnp_min_c(void* array1_in, void* result1, const size_t* shape, size_t ndim
 }
 
 template <typename _DataType>
-void dpnp_nanvar_c(void* array1_in, void* mask_arr1, void* result1, size_t arr_size)
+void dpnp_nanvar_c(void* array1_in, void* mask_arr1, void* result1, const size_t result_size, size_t arr_size)
 {
-    _DataType* array1 = reinterpret_cast<_DataType*>(array1_in);
-    bool* mask_arr = reinterpret_cast<bool*>(mask_arr1);
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
-
-    if ((array1 == nullptr) || (mask_arr == nullptr) || (result == nullptr))
+    if ((array1_in == nullptr) || (mask_arr1 == nullptr) || (result1 == nullptr))
     {
         return;
     }
@@ -639,6 +647,13 @@ void dpnp_nanvar_c(void* array1_in, void* mask_arr1, void* result1, size_t arr_s
     {
         return;
     }
+
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, arr_size, true);
+    DPNPC_ptr_adapter<bool> input2_ptr(mask_arr1, arr_size, true);
+    DPNPC_ptr_adapter<_DataType> result_ptr(result1, result_size, true, true);
+    _DataType* array1 = input1_ptr.get_ptr();
+    bool* mask_arr = input2_ptr.get_ptr();
+    _DataType* result = result_ptr.get_ptr();
 
     size_t ind = 0;
     for (size_t i = 0; i < arr_size; ++i)
@@ -657,13 +672,10 @@ template <typename _DataType, typename _ResultType>
 void dpnp_std_c(
     void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof)
 {
-    _DataType* array1 = reinterpret_cast<_DataType*>(array1_in);
-    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
-
     _ResultType* var = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(1 * sizeof(_ResultType)));
-    dpnp_var_c<_DataType, _ResultType>(array1, var, shape, ndim, axis, naxis, ddof);
 
-    dpnp_sqrt_c<_ResultType, _ResultType>(var, result, 1);
+    dpnp_var_c<_DataType, _ResultType>(array1_in, var, shape, ndim, axis, naxis, ddof);
+    dpnp_sqrt_c<_ResultType, _ResultType>(var, result1, 1);
 
     dpnp_memory_free_c(var);
 
@@ -677,19 +689,21 @@ template <typename _DataType, typename _ResultType>
 void dpnp_var_c(
     void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof)
 {
+    const size_t size = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    if (!size)
+    {
+        return;
+    }
+
     cl::sycl::event event;
-    _DataType* array1 = reinterpret_cast<_DataType*>(array1_in);
-    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
+    DPNPC_ptr_adapter<_ResultType> result_ptr(result1, 1, true, true);
+    _DataType* array1 = input1_ptr.get_ptr();
+    _ResultType* result = result_ptr.get_ptr();
 
     _ResultType* mean = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(1 * sizeof(_ResultType)));
     dpnp_mean_c<_DataType, _ResultType>(array1, mean, shape, ndim, axis, naxis);
     _ResultType mean_val = mean[0];
-
-    size_t size = 1;
-    for (size_t i = 0; i < ndim; ++i)
-    {
-        size *= shape[i];
-    }
 
     _ResultType* squared_deviations = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(size * sizeof(_ResultType)));
 

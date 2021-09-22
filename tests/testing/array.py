@@ -1,5 +1,3 @@
-# cython: language_level=3
-# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2020, Intel Corporation
@@ -26,63 +24,29 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""
-Interface of the function from Python Math library
-
-Notes
------
-This module is a face or public interface file for the library
-it contains:
- - Interface functions
- - documentation for the functions
- - The functions parameters check
-
-"""
-
-import math
-
-from dpnp.dpnp_algo import *
-from dpnp.dpnp_utils import *
-import dpnp
-
-__all__ = [
-    "erf"
-]
+import numpy
+from dpnp.dpnp_utils import convert_item
 
 
-def erf(in_array1):
-    """
-    Returns the error function of complex argument.
+assert_allclose_orig = numpy.testing.assert_allclose
+assert_array_equal_orig = numpy.testing.assert_array_equal
+assert_equal_orig = numpy.testing.assert_equal
 
-    For full documentation refer to :obj:`scipy.special.erf`.
 
-    Limitations
-    -----------
-    Parameter ``in_array1`` is supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+def _assert(assert_func, result, expected, *args, **kwargs):
+    result = convert_item(result)
+    expected = convert_item(expected)
 
-    .. seealso:: :obj:`math.erf`
+    assert_func(result, expected, *args, **kwargs)
 
-    Examples
-    --------
 
-    >>> import dpnp as np
-    >>> x = np.linspace(2.0, 3.0, num=5)
-    >>> [i for i in x]
-    [2.0, 2.25, 2.5, 2.75, 3.0]
-    >>> out = np.erf(x)
-    >>> [i for i in out]
-    [0.99532227, 0.99853728, 0.99959305, 0.99989938, 0.99997791]
+def assert_allclose(result, expected, *args, **kwargs):
+    _assert(assert_allclose_orig, result, expected, *args, **kwargs)
 
-    """
 
-    x1_desc = dpnp.get_dpnp_descriptor(in_array1)
-    if x1_desc:
-        return dpnp_erf(x1_desc).get_pyobj()
+def assert_array_equal(result, expected, *args, **kwargs):
+    _assert(assert_array_equal_orig, result, expected, *args, **kwargs)
 
-    result = create_output_descriptor_py(in_array1.shape, in_array1.dtype, None).get_pyobj()
-    for i in range(result.size):
-        result[i] = math.erf(in_array1[i])
 
-    return result
+def assert_equal(result, expected, *args, **kwargs):
+    _assert(assert_equal_orig, result, expected, *args, **kwargs)

@@ -60,6 +60,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_CBRT
         DPNP_FN_CEIL
         DPNP_FN_CHOLESKY
+        DPNP_FN_CHOOSE
         DPNP_FN_CONJIGUATE
         DPNP_FN_COPY
         DPNP_FN_COPYSIGN
@@ -75,6 +76,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_DEGREES
         DPNP_FN_DET
         DPNP_FN_DIAG
+        DPNP_FN_DIAG_INDICES
         DPNP_FN_DIAGONAL
         DPNP_FN_DIVIDE
         DPNP_FN_DOT
@@ -217,6 +219,9 @@ cdef extern from "dpnp_iface.hpp" namespace "QueueOptions":  # need this namespa
         CPU_SELECTOR
         GPU_SELECTOR
         AUTO_SELECTOR
+
+cdef extern from "constants.hpp":
+    void dpnp_python_constants_initialize_c(void* py_none, void* py_nan)
 
 cdef extern from "dpnp_iface.hpp":
     void dpnp_queue_initialize_c(QueueOptions selector)
