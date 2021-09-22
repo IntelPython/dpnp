@@ -126,7 +126,7 @@ cpdef utils.dpnp_descriptor dpnp_expand_dims(utils.dpnp_descriptor in_array, axi
             shape_list.push_back(in_array.shape[axis_idx])
             axis_idx = axis_idx + 1
 
-    cdef utils.dpnp_descriptor result = dpnp.get_dpnp_descriptor(dpnp_copy(in_array).get_pyobj().reshape(shape_list))
+    cdef utils.dpnp_descriptor result = dpnp.get_dpnp_descriptor(dpnp.reshape(dpnp_copy(in_array).get_pyobj(), (shape_list)))
 
     return result
 
@@ -210,6 +210,6 @@ cpdef utils.dpnp_descriptor dpnp_squeeze(utils.dpnp_descriptor in_array, axis):
             else:
                 shape_list.push_back(in_array.shape[i])
 
-    cdef utils.dpnp_descriptor result = dpnp.get_dpnp_descriptor(dpnp_copy(in_array).get_pyobj().reshape(shape_list))
+    cdef utils.dpnp_descriptor result = dpnp.get_dpnp_descriptor(dpnp.reshape(dpnp_copy(in_array).get_pyobj(), (shape_list)))
 
     return result
