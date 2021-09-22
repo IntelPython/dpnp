@@ -39,14 +39,5 @@ __all__ += [
 ]
 
 
-cpdef utils.dpnp_descriptor dpnp_count_nonzero(utils.dpnp_descriptor in_array1):
-    cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py((1,), dpnp.int64, None)
-
-    count = 0
-    for i in range(in_array1.size):
-        if in_array1.get_pyobj()[i] != 0:
-            count += 1
-
-    result.get_pyobj()[0] = count
-
-    return result
+cpdef utils.dpnp_descriptor dpnp_count_nonzero(utils.dpnp_descriptor x1):
+    return call_fptr_1in_1out(DPNP_FN_COUNT_NONZERO, x1, (1,))

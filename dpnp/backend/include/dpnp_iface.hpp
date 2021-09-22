@@ -391,6 +391,18 @@ INP_DLLEXPORT void dpnp_sum_c(void* result_out,
 
 /**
  * @ingroup BACKEND_API
+ * @brief Custom implementation of count_nonzero function
+ *
+ * @param [in]  array1_in     Input array.
+ * @param [out] result1_out   Output array.
+ * @param [in]  size          Number of elements in input arrays.
+ *
+ */
+template <typename _DataType_input, typename _DataType_output>
+INP_DLLEXPORT void dpnp_count_nonzero_c(void* array1_in, void* result1_out, size_t size);
+
+/**
+ * @ingroup BACKEND_API
  * @brief Place of array elements
  *
  * @param [in]  array       Input array.
