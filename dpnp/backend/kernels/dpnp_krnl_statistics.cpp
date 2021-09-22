@@ -158,8 +158,11 @@ void dpnp_count_nonzero_c(void* array1_in, void* result1_out, size_t size)
         return;
     }
 
-    _DataType_input* array1 = reinterpret_cast<_DataType_input*>(array1_in);
-    _DataType_output* result1 = reinterpret_cast<_DataType_output*>(result1_out);
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, size, true);
+    DPNPC_ptr_adapter<_DataType_output> result_ptr(result1_out, 1, true, true);
+    _DataType_input* array1 = input1_ptr.get_ptr();
+    _DataType_output* result1 = result_ptr.get_ptr();
+
 
     result1[0] = 0;
 
