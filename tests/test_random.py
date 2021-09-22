@@ -968,7 +968,7 @@ class TestPermutationsTestShuffle:
                                       lambda x: dpnp.astype(asarray(x), dpnp.int8),
                                       lambda x: dpnp.astype(asarray(x), dpnp.float32),
                                       # lambda x: dpnp.asarray(x).astype(dpnp.complex64),
-                                      # lambda x: dpnp.astype(asarray(x), object),
+                                      lambda x: dpnp.astype(asarray(x), object),
                                       lambda x: dpnp.asarray([[i, i] for i in x]),
                                       lambda x: dpnp.vstack([x, x]).T,
                                       lambda x: (dpnp.asarray([(i, i) for i in x], [
@@ -979,7 +979,7 @@ class TestPermutationsTestShuffle:
                                   'lambda x: dpnp.astype(asarray(x), dpnp.int8)',
                                   'lambda x: dpnp.astype(asarray(x), dpnp.float32)',
                                   # 'lambda x: dpnp.asarray(x).astype(dpnp.complex64)',
-                                  # 'lambda x: dpnp.astype(asarray(x), object)',
+                                  'lambda x: dpnp.astype(asarray(x), object)',
                                   'lambda x: dpnp.asarray([[i, i] for i in x])',
                                   'lambda x: dpnp.vstack([x, x]).T',
                                   'lambda x: (dpnp.asarray([(i, i) for i in x], ['\
