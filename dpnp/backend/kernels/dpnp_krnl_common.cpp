@@ -77,9 +77,14 @@ template <typename _KernelNameSpecialization1, typename _KernelNameSpecializatio
 class dpnp_dot_c_kernel;
 
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
-cl::sycl::event dot(cl::sycl::queue &queue,
-                    _DataType_output *result_out, _DataType_input1 *input1_in, _DataType_input2 *input2_in, size_t input1_strides, size_t input2_strides, size_t size,
-                    const cl::sycl::vector_class<cl::sycl::event> &dependencies = {})
+cl::sycl::event dot(cl::sycl::queue& queue,
+                    _DataType_output* result_out,
+                    _DataType_input1* input1_in,
+                    _DataType_input2* input2_in,
+                    size_t input1_strides,
+                    size_t input2_strides,
+                    size_t size,
+                    const cl::sycl::vector_class<cl::sycl::event>& dependencies = {})
 {
     (void)dependencies;
 
@@ -100,16 +105,15 @@ cl::sycl::event dot(cl::sycl::queue &queue,
     else
     {
 #if LIBSYCL_VERSION_GREATER(5, 3, 0)
-        event = queue.submit([&](sycl::handler &cgh)
-        {
+        event = queue.submit([&](sycl::handler& cgh) {
             cgh.parallel_for(sycl::range<1>{size},
-            cl::sycl::reduction(result_out,
-                                std::plus<_DataType_output>(),
-                                cl::sycl::property::reduction::initialize_to_identity{}),
-            [=](cl::sycl::id<1> idx, auto& sum)
-            {
-                sum += static_cast <_DataType_output>(input1_in[idx * input1_strides]) * static_cast <_DataType_output>(input2_in[idx * input2_strides]);
-            });
+                             cl::sycl::reduction(result_out,
+                                                 std::plus<_DataType_output>(),
+                                                 cl::sycl::property::reduction::initialize_to_identity{}),
+                             [=](cl::sycl::id<1> idx, auto& sum) {
+                                 sum += static_cast<_DataType_output>(input1_in[idx * input1_strides]) *
+                                        static_cast<_DataType_output>(input2_in[idx * input2_strides]);
+                             });
         });
         // for some reason few such kernels cannot work in parallel
         // looks like a bug in level0 because with opencl works fine
@@ -190,7 +194,7 @@ void dpnp_dot_c(void* result_out,
     {
         // there is no support of strides in multiply function
         // so result can be wrong if input array has non-standard (c-contiguous) strides
-        dpnp_multiply_c<_DataType_output, _DataType_input1, _DataType_input2>(result,                                                                                    \
+        dpnp_multiply_c<_DataType_output, _DataType_input1, _DataType_input2>(result,
                                                                               input1_in,
                                                                               input1_size,
                                                                               input1_shape,
@@ -207,7 +211,8 @@ void dpnp_dot_c(void* result_out,
     if ((input1_ndim == 1) && (input2_ndim == 1))
     {
         assert(input1_size == input2_size);
-        cl::sycl::event event = dot(DPNP_QUEUE, result, input1, input2, input1_strides[0], input2_strides[0], input1_size);
+        cl::sycl::event event =
+            dot(DPNP_QUEUE, result, input1, input2, input1_strides[0], input2_strides[0], input1_size);
         event.wait();
         return;
     }
@@ -225,7 +230,7 @@ void dpnp_dot_c(void* result_out,
     }
     else
     {
-        for(size_t i = 0; i < ext_input1_ndim; ++i)
+        for (size_t i = 0; i < ext_input1_ndim; ++i)
         {
             ext_input1_shape[i] = input1_shape[i];
             ext_input1_strides[i] = input1_strides[i];
@@ -243,7 +248,7 @@ void dpnp_dot_c(void* result_out,
     }
     else
     {
-        for(size_t i = 0; i < ext_input2_ndim; ++i)
+        for (size_t i = 0; i < ext_input2_ndim; ++i)
         {
             ext_input2_shape[i] = input2_shape[i];
             ext_input2_strides[i] = input2_strides[i];
@@ -258,7 +263,7 @@ void dpnp_dot_c(void* result_out,
     }
     else
     {
-        for(size_t i = 0; i < ext_result_ndim; ++i)
+        for (size_t i = 0; i < ext_result_ndim; ++i)
         {
             ext_result_shape[i] = result_shape[i];
         }
@@ -274,21 +279,25 @@ void dpnp_dot_c(void* result_out,
         // (looks like there are such another cases)
         if ((ext_input1_ndim == 2 && ext_input2_ndim == 2) &&
             (ext_input1_strides[0] == 1 || ext_input1_strides[1] == 1) &&
-            (ext_input2_strides[0] == 1 || ext_input2_strides[1] == 1)
-            )
+            (ext_input2_strides[0] == 1 || ext_input2_strides[1] == 1))
         {
 // there is a difference of behavior with trans and sizes params in previous version of GEMM
 // only new version is supported, in case of old version computation goes in common way
 #if INTEL_MKL_VERSION >= 20210004
-            oneapi::mkl::transpose trans1 = ext_input1_strides[0] == 1 ? oneapi::mkl::transpose::trans : oneapi::mkl::transpose::nontrans;
-            oneapi::mkl::transpose trans2 = ext_input2_strides[0] == 1 ? oneapi::mkl::transpose::trans : oneapi::mkl::transpose::nontrans;
+            oneapi::mkl::transpose trans1 =
+                ext_input1_strides[0] == 1 ? oneapi::mkl::transpose::trans : oneapi::mkl::transpose::nontrans;
+            oneapi::mkl::transpose trans2 =
+                ext_input2_strides[0] == 1 ? oneapi::mkl::transpose::trans : oneapi::mkl::transpose::nontrans;
 
             const size_t size_m = ext_input1_shape[0];
             const size_t size_n = ext_input2_shape[1];
             const size_t size_k = ext_input1_shape[1];
 
-            const std::int64_t lda = trans1 == oneapi::mkl::transpose::nontrans ? ext_input1_strides[0] : ext_input1_strides[1];
-            const std::int64_t ldb = trans2 == oneapi::mkl::transpose::nontrans ? ext_input2_strides[0] : ext_input2_strides[1];;
+            const std::int64_t lda =
+                trans1 == oneapi::mkl::transpose::nontrans ? ext_input1_strides[0] : ext_input1_strides[1];
+            const std::int64_t ldb =
+                trans2 == oneapi::mkl::transpose::nontrans ? ext_input2_strides[0] : ext_input2_strides[1];
+            ;
             // defenition of ldc will be another for result with non-standard (c-contiguous) strides
             // const std::int64_t ldc = result_strides[0] == 1 ? result_strides[1] : result_strides[0];
             const std::int64_t ldc = size_n;
@@ -326,20 +335,20 @@ void dpnp_dot_c(void* result_out,
     size_t* result_offsets = new size_t[ext_result_ndim];
     get_shape_offsets_inkernel(ext_result_shape, ext_result_ndim, result_offsets);
 
-    for(size_t i = 0; i < result_size; ++i)
+    for (size_t i = 0; i < result_size; ++i)
     {
         get_xyz_by_id(i, ext_result_ndim, result_offsets, res_coords);
 
         _DataType_output* dot_res = result + i;
 
         _DataType_input1* dot_in1 = input1;
-        for(size_t j = 0; j < ext_input1_ndim - 1; ++j)
+        for (size_t j = 0; j < ext_input1_ndim - 1; ++j)
         {
             dot_in1 = dot_in1 + res_coords[j] * ext_input1_strides[j];
         }
 
         _DataType_input2* dot_in2 = input2;
-        for(size_t j = 0; j < ext_input2_ndim - 2; ++j)
+        for (size_t j = 0; j < ext_input2_ndim - 2; ++j)
         {
             dot_in2 = dot_in2 + res_coords[ext_input1_ndim - 1 + j] * ext_input2_strides[j];
         }
@@ -357,7 +366,6 @@ void dpnp_dot_c(void* result_out,
     delete[] ext_input2_shape;
     delete[] ext_input2_strides;
     delete[] ext_result_shape;
-
 }
 
 template <typename _DataType, typename _ResultType>
