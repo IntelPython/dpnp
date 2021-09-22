@@ -7,16 +7,19 @@ class TestArithmetic(unittest.TestCase):
 
     @testing.for_float_dtypes()
     @testing.numpy_cupy_allclose()
-    def test_modf(self, xp, dtype):
+    def test_modf_part1(self, xp, dtype):
         a = xp.array([-2.5, -1.5, -0.5, 0, 0.5, 1.5, 2.5], dtype=dtype)
-        b, c = xp.modf(a)
+        b, _ = xp.modf(a)
 
-        d = xp.empty(2 * a.size, dtype=dtype)
-        for i in range(a.size):
-            d[i] = b[i]
-            d[i + a.size] = c[i]
+        return b
 
-        return d
+    @testing.for_float_dtypes()
+    @testing.numpy_cupy_allclose()
+    def test_modf_part2(self, xp, dtype):
+        a = xp.array([-2.5, -1.5, -0.5, 0, 0.5, 1.5, 2.5], dtype=dtype)
+        _, c = xp.modf(a)
+
+        return c
 
     @testing.for_float_dtypes()
     @testing.numpy_cupy_allclose()
