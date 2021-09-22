@@ -362,6 +362,9 @@ tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asco
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asfortranarray_cuda_array_zero_dim
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asfortranarray_cuda_array_zero_dim_dtype
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_fromfile
+tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_construction
+tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_construction_from_list
+tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_construction_from_tuple
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_0_{copy=False, indexing='xy', sparse=False}::test_meshgrid0
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_0_{copy=False, indexing='xy', sparse=False}::test_meshgrid1
 tests/third_party/cupy/creation_tests/test_ranges.py::TestMeshgrid_param_0_{copy=False, indexing='xy', sparse=False}::test_meshgrid2
