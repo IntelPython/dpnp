@@ -9,7 +9,7 @@ def vvsort(val, vec, size):
     for i in range(size):
         imax = i
         for j in range(i + 1, size):
-            if numpy.abs(val[imax]) < numpy.abs(val[j]):
+            if inp.abs(val[imax]) < inp.abs(val[j]):
                 imax = j
 
         temp = val[i]
