@@ -273,7 +273,7 @@ def test_svd(type, shape):
 
     # check decomposition
     dpnp_diag_s = inp.zeros(shape, dtype=dpnp_s.dtype)
-    for i in range(len(dpnp_s)):
+    for i in range(dpnp_s.size):
         dpnp_diag_s[i, i] = dpnp_s[i]
 
     numpy.testing.assert_allclose(ia, inp.dot(dpnp_u, inp.dot(dpnp_diag_s, dpnp_vt)), rtol=tol, atol=tol)
