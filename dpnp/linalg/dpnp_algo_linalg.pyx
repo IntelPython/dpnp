@@ -83,22 +83,22 @@ cpdef utils.dpnp_descriptor dpnp_cholesky(utils.dpnp_descriptor input_):
 
 cpdef object dpnp_cond(object input, object p):
     if p in ('f', 'fro'):
-        input = input.ravel(order='K')
+        input = dpnp.ravel(input, order='K')
         sqnorm = dpnp.dot(input, input)
         res = dpnp.sqrt(sqnorm)
         ret = dpnp.array([res])
     elif p == numpy.inf:
         dpnp_sum_val = dpnp.array([dpnp.sum(dpnp.abs(input), axis=1)])
-        ret = dpnp.array([dpnp_sum_val.max()])
+        ret = dpnp.max(dpnp_sum_val)
     elif p == -numpy.inf:
         dpnp_sum_val = dpnp.array([dpnp.sum(dpnp.abs(input), axis=1)])
-        ret = dpnp.array([dpnp_sum_val.min()])
+        ret = dpnp.min(dpnp_sum_val)
     elif p == 1:
         dpnp_sum_val = dpnp.array([dpnp.sum(dpnp.abs(input), axis=0)])
-        ret = dpnp.array([dpnp_sum_val.max()])
+        ret = dpnp.max(dpnp_sum_val)
     elif p == -1:
         dpnp_sum_val = dpnp.array([dpnp.sum(dpnp.abs(input), axis=0)])
-        ret = dpnp.array([dpnp_sum_val.min()])
+        ret = dpnp.min(dpnp_sum_val)
     else:
         ret = dpnp.array([input.item(0)])
     return ret
@@ -225,7 +225,7 @@ cpdef object dpnp_norm(object input, ord=None, axis=None):
             (ord in ('f', 'fro') and ndim == 2) or
                 (ord == 2 and ndim == 1)):
 
-            input = input.ravel(order='K')
+            input = dpnp.ravel(input, order='K')
             sqnorm = dpnp.dot(input, input)
             ret = dpnp.sqrt([sqnorm])
             return dpnp.array([ret], dtype=res_type)
