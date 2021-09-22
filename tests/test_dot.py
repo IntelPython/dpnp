@@ -41,10 +41,10 @@ def test_dot_arange(type):
                          ids=['float64', 'float32', 'int64', 'int32'])
 def test_multi_dot(type):
     n = 16
-    a = inp.arange(n, dtype=type).reshape((4, 4))
-    b = inp.arange(n, dtype=type).reshape((4, 4))
-    c = inp.arange(n, dtype=type).reshape((4, 4))
-    d = inp.arange(n, dtype=type).reshape((4, 4))
+    a = inp.reshape(inp.arange(n, dtype=type), (4, 4))
+    b = inp.reshape(inp.arange(n, dtype=type), (4, 4))
+    c = inp.reshape(inp.arange(n, dtype=type), (4, 4))
+    d = inp.reshape(inp.arange(n, dtype=type), (4, 4))
 
     a1 = numpy.arange(n, dtype=type).reshape((4, 4))
     b1 = numpy.arange(n, dtype=type).reshape((4, 4))
