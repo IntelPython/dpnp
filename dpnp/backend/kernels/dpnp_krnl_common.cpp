@@ -491,13 +491,15 @@ void dpnp_initval_c(void* result1, void* value, size_t size)
         return;
     }
 
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
-    _DataType val = *(reinterpret_cast<_DataType*>(value));
+    DPNPC_ptr_adapter<_DataType> result1_ptr(result1, size);
+    DPNPC_ptr_adapter<_DataType> value_ptr(value, 1);
+    _DataType* result = result1_ptr.get_ptr();
+    _DataType* val = value_ptr.get_ptr();
 
     cl::sycl::range<1> gws(size);
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
         const size_t idx = global_id[0];
-        result[idx] = val;
+        result[idx] = *val;
     };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
