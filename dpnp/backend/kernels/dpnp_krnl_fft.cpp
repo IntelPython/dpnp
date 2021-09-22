@@ -49,12 +49,11 @@ void dpnp_fft_fft_sycl_c(const void* array1_in,
                          const long* output_shape,
                          size_t shape_size,
                          const size_t result_size,
+                         const size_t input_size,
                          long axis,
                          long input_boundarie,
                          size_t inverse)
 {
-
-    const size_t input_size = std::accumulate(input_shape, input_shape + shape_size, 1, std::multiplies<size_t>());
     if (!(input_size && result_size && shape_size))
     {
         return;
@@ -170,10 +169,22 @@ void dpnp_fft_fft_c(const void* array1_in,
                     size_t inverse)
 {
     const size_t result_size = std::accumulate(output_shape, output_shape + shape_size, 1, std::multiplies<size_t>());
+    const size_t input_size = std::accumulate(input_shape, input_shape + shape_size, 1, std::multiplies<size_t>());
+
     if (!(result_size && shape_size))
     {
         return;
     }
+
+    if (!(input_size && result_size && shape_size))
+    {
+        return;
+    }
+
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, result_size);
+    DPNPC_ptr_adapter<_DataType_output> result_ptr(result1, input_size);
+    _DataType_input* array_1 = input1_ptr.get_ptr();
+    _DataType_output* result = result_ptr.get_ptr();
 
     if constexpr (std::is_same<_DataType_input, std::complex<double>>::value &&
                   std::is_same<_DataType_output, std::complex<double>>::value)
@@ -183,13 +194,12 @@ void dpnp_fft_fft_c(const void* array1_in,
         if (shape_size == 1)
         {
             cl::sycl::event event;
-            _DataType_input* array_1 = reinterpret_cast<_DataType_input*>(const_cast<void*>(array1_in));
-            _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
 
             oneapi::mkl::dft::descriptor<mkl_dft::precision::DOUBLE, mkl_dft::domain::COMPLEX> desc(result_size);
             desc.set_value(mkl_dft::config_param::BACKWARD_SCALE, (1.0 / result_size));
-            desc.set_value(mkl_dft::config_param::PLACEMENT, DFTI_NOT_INPLACE); // enum value from math library C interface
+            // enum value from math library C interface
             // instead of mkl_dft::config_value::NOT_INPLACE
+            desc.set_value(mkl_dft::config_param::PLACEMENT, DFTI_NOT_INPLACE);
             desc.commit(DPNP_QUEUE);
 
             event = mkl_dft::compute_forward(desc, array_1, result);
@@ -197,15 +207,31 @@ void dpnp_fft_fft_c(const void* array1_in,
         }
         else
         {
-            // TODO for other shape
-            dpnp_fft_fft_sycl_c<_DataType_input, _DataType_output>(array1_in, result1, input_shape, output_shape, shape_size, result_size, axis, input_boundarie, inverse);
+            // TODO for different shapes
+            dpnp_fft_fft_sycl_c<_DataType_input, _DataType_output>(array1_in,
+                                                                   result1,
+                                                                   input_shape,
+                                                                   output_shape,
+                                                                   shape_size,
+                                                                   result_size,
+                                                                   input_size,
+                                                                   axis,
+                                                                   input_boundarie,
+                                                                   inverse);
         }
-
     }
     else
     {
-        dpnp_fft_fft_sycl_c<_DataType_input, _DataType_output>(
-            array1_in, result1, input_shape, output_shape, shape_size, result_size, axis, input_boundarie, inverse);
+        dpnp_fft_fft_sycl_c<_DataType_input, _DataType_output>(array1_in,
+                                                               result1,
+                                                               input_shape,
+                                                               output_shape,
+                                                               shape_size,
+                                                               result_size,
+                                                               input_size,
+                                                               axis,
+                                                               input_boundarie,
+                                                               inverse);
     }
 
     return;
