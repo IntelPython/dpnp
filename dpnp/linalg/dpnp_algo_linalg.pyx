@@ -95,7 +95,7 @@ cpdef object dpnp_cond(object input, object p):
         ret = dpnp.min(dpnp_sum_val)
     elif p == 1:
         dpnp_sum_val = dpnp.array([dpnp.sum(dpnp.abs(input), axis=0)])
-        ret = dpnp.min(dpnp_sum_val)
+        ret = dpnp.max(dpnp_sum_val)
     elif p == -1:
         dpnp_sum_val = dpnp.array([dpnp.sum(dpnp.abs(input), axis=0)])
         ret = dpnp.min(dpnp_sum_val)
