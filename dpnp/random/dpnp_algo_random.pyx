@@ -836,7 +836,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_shuffle(utils.dpnp_descriptor x1):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype.type)
     cdef size_t itemsize = x1.dtype.itemsize
     cdef size_t ndim = x1.ndim
-    cdef size_t high_dim_size = len(x1.get_pyobj())
+    cdef size_t high_dim_size = x1.get_pyobj().size
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_SHUFFLE, param1_type, param1_type)
