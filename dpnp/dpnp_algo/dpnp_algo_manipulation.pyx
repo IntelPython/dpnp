@@ -147,8 +147,8 @@ cpdef utils.dpnp_descriptor dpnp_repeat(utils.dpnp_descriptor array1, repeats, a
 
 
 cpdef utils.dpnp_descriptor dpnp_reshape(utils.dpnp_descriptor array1, newshape, order=None):
-    # return utils_py.create_output_descriptor_py(newshape, array1.dtype, create_output_container(newshape, array1.dtype, buffer=array1.get_pyobj()))
-    return dpnp.get_dpnp_descriptor(create_output_container(newshape, array1.dtype, buffer=array1.get_pyobj()))
+    # return dpnp.get_dpnp_descriptor(create_output_container(newshape, array1.dtype, buffer=array1.get_pyobj()))
+    return dpnp.get_dpnp_descriptor(dpctl.tensor.usm_ndarray(newshape, dtype=numpy.dtype(array1.dtype).name, buffer=array1.get_pyobj()))
     # return dpnp.get_dpnp_descriptor(dpctl.tensor.reshape(array1.get_pyobj(), newshape))
 
 
