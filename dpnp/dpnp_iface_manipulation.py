@@ -232,7 +232,7 @@ def copyto(dst, src, casting='same_kind', where=True):
 
     """
 
-    dst_desc = dpnp.get_dpnp_descriptor(dst)
+    dst_desc = dpnp.get_dpnp_descriptor(dst, copy_when_strides=False)
     src_desc = dpnp.get_dpnp_descriptor(src)
     if dst_desc and src_desc:
         if casting != 'same_kind':
@@ -248,6 +248,8 @@ def copyto(dst, src, casting='same_kind', where=True):
         elif where is not True:
             pass
         elif dst_desc.shape != src_desc.shape:
+            pass
+        elif dst_desc.strides != src_desc.strides:
             pass
         else:
             return dpnp_copyto(dst_desc, src_desc, where=where)
