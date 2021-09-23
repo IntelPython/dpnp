@@ -22,6 +22,7 @@ tests/test_random.py::TestDistributionsMultivariateNormal::test_moments
 tests/test_random.py::TestDistributionsNormal::test_moments
 tests/test_random.py::TestDistributionsNoncentralChisquare::test_moments[df_grt_1]
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_multidim_outer
+tests/third_party/cupy/random_tests/test_sample.py::TestRandintDtype::test_dtype
 tests/third_party/cupy/random_tests/test_sample.py::TestRandintDtype::test_dtype2
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_axis
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_negative_axis
