@@ -966,10 +966,10 @@ class TestPermutationsTestShuffle:
         assert_array_equal(actual_x, desired_x)
 
     @pytest.mark.parametrize("conv", [lambda x: dpnp.array([]),
-                                      lambda x: dpnp.astype(asarray(x), dpnp.int8),
-                                      lambda x: dpnp.astype(asarray(x), dpnp.float32),
+                                      lambda x: dpnp.astype(dpnp.asarray(x), dpnp.int8),
+                                      lambda x: dpnp.astype(dpnp.asarray(x), dpnp.float32),
                                       # lambda x: dpnp.asarray(x).astype(dpnp.complex64),
-                                      lambda x: dpnp.astype(asarray(x), object),
+                                      lambda x: dpnp.astype(dpnp.asarray(x), object),
                                       lambda x: dpnp.asarray([[i, i] for i in x]),
                                       lambda x: dpnp.vstack([x, x]).T,
                                       lambda x: (dpnp.asarray([(i, i) for i in x], [
@@ -977,10 +977,10 @@ class TestPermutationsTestShuffle:
                                       lambda x: dpnp.asarray([(i, i) for i in x],
                                                              [("a", object), ("b", dpnp.int32)])],
                              ids=['lambda x: dpnp.array([])',
-                                  'lambda x: dpnp.astype(asarray(x), dpnp.int8)',
-                                  'lambda x: dpnp.astype(asarray(x), dpnp.float32)',
+                                  'lambda x: dpnp.astype(dpnp.asarray(x), dpnp.int8)',
+                                  'lambda x: dpnp.astype(dpnp.asarray(x), dpnp.float32)',
                                   # 'lambda x: dpnp.asarray(x).astype(dpnp.complex64)',
-                                  'lambda x: dpnp.astype(asarray(x), object)',
+                                  'lambda x: dpnp.astype(dpnp.asarray(x), object)',
                                   'lambda x: dpnp.asarray([[i, i] for i in x])',
                                   'lambda x: dpnp.vstack([x, x]).T',
                                   'lambda x: (dpnp.asarray([(i, i) for i in x], ['\
