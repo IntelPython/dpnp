@@ -52,8 +52,8 @@ import time
 
 
 def run_dgemm(executor, name, size, test_type, repetition):
-    x1 = executor.arange(size * size, dtype=test_type).reshape((size, size))
-    x2 = executor.arange(size * size, dtype=test_type).reshape((size, size))
+    x1 = executor.reshape(executor.arange(size * size, dtype=test_type), (size, size))
+    x2 = executor.reshape(executor.arange(size * size, dtype=test_type), (size, size))
 
     times = []
     for iteration in range(repetition):
