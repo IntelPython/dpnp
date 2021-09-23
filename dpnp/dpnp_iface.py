@@ -46,6 +46,8 @@ import numpy.lib.stride_tricks as np_st
 import dpnp.config as config
 import collections
 
+import dpctl
+
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 from dpnp.fft import *
@@ -134,8 +136,7 @@ def asnumpy(input, order='C'):
 
     """
     if config.__DPNP_OUTPUT_DPCTL__ and hasattr(input, "__sycl_usm_array_interface__"):
-        strides = (x * input.itemsize for x in input.strides)
-        return np_st.as_strided(input.usm_data.copy_to_host().view(input.dtype), shape=input.shape, strides=strides)
+        return dpctl.tensor.to_numpy(input)
 
     return numpy.asarray(input, order=order)
 
