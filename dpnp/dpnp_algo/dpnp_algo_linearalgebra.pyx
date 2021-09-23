@@ -175,9 +175,9 @@ cpdef utils.dpnp_descriptor dpnp_inner(dpnp_descriptor array1, dpnp_descriptor a
             array2_lin_index_base += array2_offsets[axis] * xyz[axis2]
 
         # do inner product
-        result.get_pyobj()[idx1] = 0
+        result.get_pyobj()[numpy.unravel_index(idx1, result.shape)] = 0
         for idx2 in range(array1.shape[-1]):
-            result.get_pyobj()[idx1] += array1.get_pyobj()[array1_lin_index_base + idx2] * array2.get_pyobj()[array2_lin_index_base + idx2]
+            result.get_pyobj()[numpy.unravel_index(idx1, result.shape)] += array1.get_pyobj()[numpy.unravel_index(array1_lin_index_base + idx2, array1.shape)] * array2.get_pyobj()[numpy.unravel_index(array2_lin_index_base + idx2, array2.shape)]
 
     return result
 
