@@ -73,7 +73,7 @@ class TestConcatenate:
         # Arrays much match shape
         numpy.testing.assert_raises(ValueError, dpnp.concatenate, (a23.T, a13.T), 0)
         # 3D
-        res = dpnp.arange(2 * 3 * 7).reshape((2, 3, 7))
+        res = dpnp.reshape(dpnp.arange(2 * 3 * 7), (2, 3, 7))
         a0 = res[..., :4]
         a1 = res[..., 4:6]
         a2 = res[..., 6:]
@@ -81,7 +81,7 @@ class TestConcatenate:
         numpy.testing.assert_array_equal(dpnp.concatenate((a0, a1, a2), -1), res)
         numpy.testing.assert_array_equal(dpnp.concatenate((a0.T, a1.T, a2.T), 0), res.T)
 
-        out = res.copy()
+        out = dpnp.copy(res)
         rout = dpnp.concatenate((a0, a1, a2), 2, out=out)
         numpy.testing.assert_(out is rout)
         numpy.testing.assert_equal(res, rout)

@@ -202,7 +202,7 @@ cpdef object dpnp_diff(utils.dpnp_descriptor input, int n):
                     counter = 0
 
             dpnp_array = dpnp.array(res, dtype=input.dtype)
-            arr = dpnp_array.reshape(output_shape)
+            arr = dpnp.reshape(dpnp_array, output_shape)
         return arr
     else:
         return dpnp.array([], dtype=input.dtype)

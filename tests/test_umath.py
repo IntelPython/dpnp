@@ -34,7 +34,7 @@ def shaped_arange(shape, xp=numpy, dtype=numpy.float32):
     for i in shape:
         size = size * i
     array_data = numpy.arange(1, size + 1, 1).tolist()
-    return xp.array(array_data, dtype=dtype).reshape(shape)
+    return xp.reshape(xp.array(array_data, dtype=dtype), shape)
 
 
 def get_args(args_str, xp=numpy):

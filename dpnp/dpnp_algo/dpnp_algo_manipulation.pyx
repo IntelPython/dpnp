@@ -40,6 +40,7 @@ __all__ += [
     "dpnp_copyto",
     "dpnp_expand_dims",
     "dpnp_repeat",
+    "dpnp_reshape",
     "dpnp_transpose",
     "dpnp_squeeze",
 ]
@@ -125,7 +126,7 @@ cpdef utils.dpnp_descriptor dpnp_expand_dims(utils.dpnp_descriptor in_array, axi
             shape_list.push_back(in_array.shape[axis_idx])
             axis_idx = axis_idx + 1
 
-    cdef utils.dpnp_descriptor result = dpnp.get_dpnp_descriptor(dpnp_copy(in_array).get_pyobj().reshape(shape_list))
+    cdef utils.dpnp_descriptor result = dpnp.get_dpnp_descriptor(dpnp.reshape(dpnp_copy(in_array).get_pyobj(), (shape_list)))
 
     return result
 
@@ -143,6 +144,11 @@ cpdef utils.dpnp_descriptor dpnp_repeat(utils.dpnp_descriptor array1, repeats, a
     func(array1.get_data(), result.get_data(), repeats, array1.size)
 
     return result
+
+
+cpdef utils.dpnp_descriptor dpnp_reshape(utils.dpnp_descriptor array1, newshape, order=None):
+    # return dpnp.get_dpnp_descriptor(dpctl.tensor.usm_ndarray(newshape, dtype=numpy.dtype(array1.dtype).name, buffer=array1.get_pyobj()))
+    return dpnp.get_dpnp_descriptor(dpctl.tensor.reshape(array1.get_pyobj(), newshape))
 
 
 cpdef utils.dpnp_descriptor dpnp_transpose(utils.dpnp_descriptor array1, axes=None):
@@ -203,6 +209,6 @@ cpdef utils.dpnp_descriptor dpnp_squeeze(utils.dpnp_descriptor in_array, axis):
             else:
                 shape_list.push_back(in_array.shape[i])
 
-    cdef utils.dpnp_descriptor result = dpnp.get_dpnp_descriptor(dpnp_copy(in_array).get_pyobj().reshape(shape_list))
+    cdef utils.dpnp_descriptor result = dpnp.get_dpnp_descriptor(dpnp.reshape(dpnp_copy(in_array).get_pyobj(), (shape_list)))
 
     return result

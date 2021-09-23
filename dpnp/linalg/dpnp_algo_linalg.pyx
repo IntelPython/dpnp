@@ -250,14 +250,14 @@ cpdef object dpnp_norm(object input, ord=None, axis=None):
             for i in range(absx_size):
                 absx_elem = absx.item(i)
                 absx_power[i] = absx_elem ** ord
-            absx_ = absx_power.reshape(absx.shape)
+            absx_ = dpnp.reshape(absx_power, absx.shape)
             ret = dpnp.sum(absx_, axis=axis)
             ret_size = ret.size
             ret_power = utils_py.create_output_descriptor_py((ret_size,), None, None).get_pyobj()
             for i in range(ret_size):
                 ret_elem = ret.item(i)
                 ret_power[i] = ret_elem ** (1 / ord)
-            ret_ = ret_power.reshape(ret.shape)
+            ret_ = dpnp.reshape(ret_power, ret.shape)
             return ret_
     elif len_axis == 2:
         row_axis, col_axis = axis_

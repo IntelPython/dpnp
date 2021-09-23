@@ -407,7 +407,7 @@ cpdef object dpnp_take_along_axis(object arr, object indices, int axis):
                 result_array[result_offset] = arr_elem
 
         dpnp_array = dpnp.array(result_array, dtype=res_type)
-        dpnp_result_array = dpnp_array.reshape(res_shape)
+        dpnp_result_array = dpnp.reshape(dpnp_array, res_shape)
         return dpnp_result_array
 
     else:

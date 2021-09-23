@@ -326,7 +326,7 @@ cpdef object dpnp_mean(utils.dpnp_descriptor input, axis):
             if i not in axis_:
                 del_ = del_ / shape_input[i]
     dpnp_array = dpnp.array(result_array, dtype=input.dtype)
-    dpnp_result_array = dpnp_array.reshape(output_shape)
+    dpnp_result_array = dpnp.reshape(dpnp_array, output_shape)
     return dpnp_result_array / del_
 
 
