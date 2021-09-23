@@ -136,7 +136,9 @@ def call_origin(function, *args, **kwargs):
     # print(f"DPNP call_origin(): result from backend. \n\t result_origin={result_origin}, \n\t args_new={args_new}, \n\t kwargs_new={kwargs_new}, \n\t dpnp_inplace={dpnp_inplace}")
     result = result_origin
     if dpnp_inplace:
-        for arg, arg_new in zip(args, args_new):
+        # enough to modify only first argument in place
+        if args and args_new:
+            arg, arg_new = args[0], args_new[0]
             if isinstance(arg_new, numpy.ndarray):
                 copy_from_origin(arg, arg_new)
             elif isinstance(arg_new, list):
