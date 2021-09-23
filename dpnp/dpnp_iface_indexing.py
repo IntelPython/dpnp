@@ -367,7 +367,7 @@ def put(x1, ind, v, mode='raise'):
     Not supported parameter mode.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc:
         if mode != 'raise':
             pass
