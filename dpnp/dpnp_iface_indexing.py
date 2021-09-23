@@ -353,7 +353,7 @@ def place(x1, mask, vals):
     if x1_desc and mask_desc and vals_desc:
         return dpnp_place(x1_desc, mask, vals_desc)
 
-    return call_origin(numpy.place, x1, mask, vals)
+    return call_origin(numpy.place, x1, mask, vals, dpnp_inplace=True)
 
 
 def put(x1, ind, v, mode='raise'):
@@ -406,7 +406,7 @@ def put_along_axis(x1, indices, values, axis):
         else:
             return dpnp_put_along_axis(x1_desc, indices_desc, values_desc, axis)
 
-    return call_origin(numpy.put_along_axis, x1, indices, values, axis)
+    return call_origin(numpy.put_along_axis, x1, indices, values, axis, dpnp_inplace=True)
 
 
 def putmask(x1, mask, values):

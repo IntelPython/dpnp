@@ -119,15 +119,11 @@ def call_origin(function, *args, **kwargs):
         else:
             kwargs["out"] = dpnp.asnumpy(kwargs_out)
 
-    if dpnp_inplace:
-        # TODO replacement of foreign containers is still needed
-        args_new = args
-    else:
-        args_new_list = []
-        for arg in args:
-            argx = convert_item(arg)     
-            args_new_list.append(argx)
-        args_new = tuple(args_new_list)
+    args_new_list = []
+    for arg in args:
+        argx = convert_item(arg)     
+        args_new_list.append(argx)
+    args_new = tuple(args_new_list)
 
     kwargs_new = {}
     for key, kwarg in kwargs.items():
@@ -139,7 +135,17 @@ def call_origin(function, *args, **kwargs):
     result_origin = function(*args_new, **kwargs_new)
     # print(f"DPNP call_origin(): result from backend. \n\t result_origin={result_origin}, \n\t args_new={args_new}, \n\t kwargs_new={kwargs_new}, \n\t dpnp_inplace={dpnp_inplace}")
     result = result_origin
-    if isinstance(result, numpy.ndarray):
+    if dpnp_inplace:
+        # enough to modify only first argument in place
+        if args and args_new:
+            arg, arg_new = args[0], args_new[0]
+            if isinstance(arg_new, numpy.ndarray):
+                copy_from_origin(arg, arg_new)
+            elif isinstance(arg_new, list):
+                for i, val in enumerate(arg_new):
+                    arg[i] = val
+
+    elif isinstance(result, numpy.ndarray):
         if (kwargs_out is None):
             result_dtype = result_origin.dtype
             kwargs_dtype = kwargs.get("dtype", None)
