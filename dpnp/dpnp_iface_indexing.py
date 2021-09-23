@@ -378,7 +378,7 @@ def put(x1, ind, v, mode='raise'):
         else:
             return dpnp_put(x1_desc, ind, v)
 
-    return call_origin(numpy.put, x1, ind, v, mode)
+    return call_origin(numpy.put, x1, ind, v, mode, dpnp_inplace=True)
 
 
 def put_along_axis(x1, indices, values, axis):
