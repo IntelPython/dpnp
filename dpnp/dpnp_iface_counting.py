@@ -75,9 +75,6 @@ def count_nonzero(x1, axis=None, *, keepdims=False):
     5
 
     """
-    if config.__DPNP_OUTPUT_DPCTL__:
-        return call_origin(numpy.count_nonzero, x1, axis, keepdims=keepdims)
-
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
         if axis is not None:

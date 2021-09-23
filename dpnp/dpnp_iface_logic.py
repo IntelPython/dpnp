@@ -432,9 +432,6 @@ def isfinite(x1, out=None, **kwargs):
     [False, True, False]
 
     """
-    if config.__DPNP_OUTPUT_DPCTL__:
-        return call_origin(numpy.isfinite, x1, out, **kwargs)
-
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and not kwargs:
         if out is not None:
@@ -479,9 +476,6 @@ def isinf(x1, out=None, **kwargs):
     [True, False, True]
 
     """
-    if config.__DPNP_OUTPUT_DPCTL__:
-        return call_origin(numpy.isinf, x1, out, **kwargs)
-
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and not kwargs:
         if out is not None:
@@ -527,9 +521,6 @@ def isnan(x1, out=None, **kwargs):
     [False, False, True]
 
     """
-    if config.__DPNP_OUTPUT_DPCTL__:
-        return call_origin(numpy.isnan, x1, out, **kwargs)
-
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and not kwargs:
         if out is not None:
