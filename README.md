@@ -1,6 +1,7 @@
 [![Build Status](https://dev.azure.com/IntelPython/dpnp/_apis/build/status/IntelPython.dpnp?branchName=master)](https://dev.azure.com/IntelPython/dpnp/_build/latest?definitionId=6&branchName=master)
 [![codecov](https://codecov.io/gh/IntelPython/dpnp/branch/master/graph/badge.svg)](https://codecov.io/gh/IntelPython/dpnp)
 [![Build Sphinx](https://github.com/IntelPython/dpnp/workflows/Build%20Sphinx/badge.svg)](https://intelpython.github.io/dpnp)
+[![Downloads](https://pepy.tech/badge/dpnp)](https://pepy.tech/project/dpnp)
 
 # DPNP: NumPy-like API accelerated with SYCL
 [API coverage summary](https://intelpython.github.io/dpnp/reference/comparison.html#summary)
