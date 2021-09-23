@@ -69,6 +69,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_COS
         DPNP_FN_COSH
         DPNP_FN_COV
+        DPNP_FN_COUNT_NONZERO
         DPNP_FN_CROSS
         DPNP_FN_CUMPROD
         DPNP_FN_CUMSUM
