@@ -32,12 +32,12 @@ and the rest of the library
 
 """
 
+import numpy
+from dpnp.dpnp_algo cimport *
+import dpnp.dpnp_utils as utils_py
 import dpnp
 cimport dpnp.dpnp_utils as utils
-import dpnp.dpnp_utils as utils_py
-from dpnp.dpnp_algo cimport *
 
-import numpy
 cimport numpy
 
 
@@ -56,12 +56,12 @@ __all__ = [
 
 
 # C function pointer to the C library template functions
-ctypedef void(*custom_linalg_1in_1out_func_ptr_t)(void * , void * , size_t * , size_t)
-ctypedef void(*custom_linalg_1in_1out_func_ptr_t_)(void *, void * , size_t * )
-ctypedef void(*custom_linalg_1in_1out_with_size_func_ptr_t_)(void * , void * , size_t)
-ctypedef void(*custom_linalg_1in_1out_with_2size_func_ptr_t_)(void * , void * , size_t, size_t)
-ctypedef void(*custom_linalg_1in_3out_shape_t)(void * , void * , void * , void * , size_t , size_t )
-ctypedef void(*custom_linalg_2in_1out_func_ptr_t)(void * , void * , void * , size_t )
+ctypedef void(*custom_linalg_1in_1out_func_ptr_t)(void *, void * , size_t * , size_t)
+ctypedef void(*custom_linalg_1in_1out_func_ptr_t_)(void * , void * , size_t * )
+ctypedef void(*custom_linalg_1in_1out_with_size_func_ptr_t_)(void *, void * , size_t)
+ctypedef void(*custom_linalg_1in_1out_with_2size_func_ptr_t_)(void *, void * , size_t, size_t)
+ctypedef void(*custom_linalg_1in_3out_shape_t)(void *, void * , void * , void * , size_t , size_t )
+ctypedef void(*custom_linalg_2in_1out_func_ptr_t)(void *, void * , void * , size_t )
 
 
 cpdef utils.dpnp_descriptor dpnp_cholesky(utils.dpnp_descriptor input_):
@@ -139,7 +139,7 @@ cpdef tuple dpnp_eig(utils.dpnp_descriptor x1):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_EIG, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
 
     cdef utils.dpnp_descriptor res_val = utils.create_output_descriptor((size,), kernel_data.return_type, None)
     cdef utils.dpnp_descriptor res_vec = utils.create_output_descriptor(x1_shape, kernel_data.return_type, None)
@@ -329,7 +329,6 @@ cpdef tuple dpnp_svd(utils.dpnp_descriptor x1, cpp_bool full_matrices, cpp_bool 
     cdef DPNPFuncType type_s = DPNP_FT_DOUBLE
     if x1.dtype == dpnp.float32:
         type_s = DPNP_FT_FLOAT
-
 
     cdef utils.dpnp_descriptor res_u = utils.create_output_descriptor((size_m, size_m), kernel_data.return_type, None)
     cdef utils.dpnp_descriptor res_s = utils.create_output_descriptor((size_s, ), type_s, None)

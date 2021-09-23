@@ -169,6 +169,7 @@ def astype(x1, dtype, order='K', casting='unsafe', subok=True, copy=True):
 
     return call_origin(numpy.ndarray.astype, x1, dtype, order=order, casting=casting, subok=subok, copy=copy)
 
+
 def convert_single_elem_array_to_scalar(obj, keepdims=False):
     """
     Convert array with single element to scalar

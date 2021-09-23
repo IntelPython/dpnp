@@ -946,10 +946,10 @@ class TestPermutationsTestShuffle:
         input_x_int64 = dpnp.asarray([1, 2, 3, 4, 5, 6, 7, 8, 9, 0], dtype=dpnp.int64)
         input_x = dpnp.asarray([1, 2, 3, 4, 5, 6, 7, 8, 9, 0], dtype=dtype)
         dpnp.random.seed(seed)
-        dpnp.random.shuffle(input_x_int64) # inplace
+        dpnp.random.shuffle(input_x_int64)  # inplace
         desired_x = dpnp.astype(input_x_int64, dtype)
         dpnp.random.seed(seed)
-        dpnp.random.shuffle(input_x) # inplace
+        dpnp.random.shuffle(input_x)  # inplace
         actual_x = input_x
         assert_array_equal(actual_x, desired_x)
 
@@ -960,7 +960,7 @@ class TestPermutationsTestShuffle:
         input_x = dpnp.asarray([5, 4, 0, 7, 6, 1, 8, 3, 2, 9], dtype=dtype)
         desired_x = dpnp.sort(input_x)
         dpnp.random.seed(seed)
-        dpnp.random.shuffle(input_x) # inplace
+        dpnp.random.shuffle(input_x)  # inplace
         output_x = input_x
         actual_x = dpnp.sort(output_x)
         assert_array_equal(actual_x, desired_x)
@@ -1006,13 +1006,13 @@ class TestPermutationsTestShuffle:
         dpnp.random.seed(seed)
         list_1d = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
         dpnp_1d = dpnp.array(list_1d)
-        dpnp.random.shuffle(dpnp_1d) # inplace
+        dpnp.random.shuffle(dpnp_1d)  # inplace
         dpnp_desired_1d = dpnp_1d
         desired_1d = [i for i in dpnp_desired_1d]
 
         dpnp.random.seed(seed)
         alist = conv(list_1d)
-        dpnp.random.shuffle(alist) # inplace
+        dpnp.random.shuffle(alist)  # inplace
         actual = alist
         desired = conv(desired_1d)
         assert_array_equal(actual, desired)
