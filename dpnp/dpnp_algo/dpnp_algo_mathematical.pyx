@@ -196,7 +196,7 @@ cpdef object dpnp_diff(utils.dpnp_descriptor input, int n):
             for i in range(arr.size):
                 if counter < size_idx:
                     counter += 1
-                    arr_elem = arr.item(i + 1) - arr.item(i)
+                    arr_elem = arr[numpy.unravel_index(i + 1, arr.shape)] - arr[numpy.unravel_index(i, arr.shape)]
                     res.append(arr_elem)
                 else:
                     counter = 0
