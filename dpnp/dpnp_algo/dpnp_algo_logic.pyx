@@ -199,7 +199,7 @@ cpdef utils.dpnp_descriptor dpnp_logical_and(utils.dpnp_descriptor input1, utils
     cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape, dpnp.bool, None)
 
     for i in range(result.size):
-        result.get_pyobj()[i] = numpy.logical_and(input1.get_pyobj()[i], input2.get_pyobj()[i])
+        result[i] = numpy.logical_and(input1[i], input2[i])
 
     return result
 
@@ -208,7 +208,7 @@ cpdef utils.dpnp_descriptor dpnp_logical_not(utils.dpnp_descriptor input1):
     cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape, dpnp.bool, None)
 
     for i in range(result.size):
-        result.get_pyobj()[i] = numpy.logical_not(input1.get_pyobj()[i])
+        result[i] = numpy.logical_not(input1[i])
 
     return result
 
@@ -217,7 +217,7 @@ cpdef utils.dpnp_descriptor dpnp_logical_or(utils.dpnp_descriptor input1, utils.
     cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape, dpnp.bool, None)
 
     for i in range(result.size):
-        result.get_pyobj()[i] = numpy.logical_or(input1.get_pyobj()[i], input2.get_pyobj()[i])
+        result[i] = numpy.logical_or(input1[i], input2[i])
 
     return result
 
