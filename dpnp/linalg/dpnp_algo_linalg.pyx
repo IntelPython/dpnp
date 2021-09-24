@@ -237,7 +237,7 @@ cpdef object dpnp_norm(object input, ord=None, axis=None):
         elif ord == -numpy.inf:
             return dpnp.array([dpnp.abs(input).min(axis=axis)])
         elif ord == 0:
-            return dpnp.array([dpnp.sum(dpnp.astype((input != 0), input.dtype), axis=axis)])
+            return input.dtype.type(dpnp.count_nonzero(input, axis=axis))
         elif ord is None or ord == 2:
             s = input * input
             return dpnp.sqrt(dpnp.sum(s, axis=axis))

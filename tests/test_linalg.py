@@ -5,19 +5,26 @@ import dpnp as inp
 import numpy
 
 
-def vvsort(val, vec, size, xp):
+def vvsort(val, vec, size, xp): 
     for i in range(size):
         imax = i
         for j in range(i + 1, size):
-            if xp.abs(val[imax]) < xp.abs(val[j]):
+            unravel_imax = numpy.unravel_index(imax, val.shape)
+            unravel_j = numpy.unravel_index(j, val.shape)
+            if xp.abs(val[unravel_imax]) < xp.abs(val[unravel_j]):
                 imax = j
 
-        temp = val[i]
-        val[i] = val[imax]
-        val[imax] = temp
+        unravel_i = numpy.unravel_index(i, val.shape)
+        unravel_imax = numpy.unravel_index(imax, val.shape)
 
+        temp = xp.empty(tuple(), dtype=vec.dtype)
+        temp[()] = val[unravel_i]  # make a copy
+        val[unravel_i] = val[unravel_imax]
+        val[unravel_imax] = temp
+        
         for k in range(size):
-            temp = vec[k, i]
+            temp = xp.empty(tuple(), dtype=val.dtype)
+            temp[()] = vec[k, i]  # make a copy
             vec[k, i] = vec[k, imax]
             vec[k, imax] = temp
 
