@@ -44,6 +44,7 @@ import dpnp
 import numpy
 
 from dpnp.dpnp_utils import *
+from dpnp.dpnp_algo import *
 from dpnp.linalg.dpnp_algo_linalg import *
 
 
@@ -94,7 +95,7 @@ def cholesky(input):
         else:
             if input.dtype == dpnp.int32 or input.dtype == dpnp.int64:
                 # TODO memory copy. needs to move into DPNPC
-                input_ = dpnp.get_dpnp_descriptor(input.astype(dpnp.float64))
+                input_ = dpnp.get_dpnp_descriptor(dpnp.astype(input, dpnp.float64))
             else:
                 input_ = x1_desc
             return dpnp_cholesky(input_).get_pyobj()

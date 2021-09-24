@@ -3,6 +3,7 @@ import pytest
 import dpnp
 import numpy
 
+
 def _getattr(ex, str_):
     attrs = str_.split(".")
     res = ex
@@ -10,8 +11,9 @@ def _getattr(ex, str_):
         res = getattr(res, attr)
     return res
 
+
 @pytest.mark.parametrize("func_name",
-                         ['abs',])
+                         ['abs', ])
 @pytest.mark.parametrize("type",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
                          ids=['float64', 'float32', 'int64', 'int32'])

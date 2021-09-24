@@ -46,6 +46,8 @@ import numpy.lib.stride_tricks as np_st
 import dpnp.config as config
 import collections
 
+import dpctl
+
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
 from dpnp.fft import *
@@ -55,6 +57,7 @@ from dpnp.random import *
 __all__ = [
     "array_equal",
     "asnumpy",
+    "astype",
     "convert_single_elem_array_to_scalar",
     "dpnp_queue_initialize",
     "dpnp_queue_is_cpu",
@@ -133,10 +136,38 @@ def asnumpy(input, order='C'):
 
     """
     if config.__DPNP_OUTPUT_DPCTL__ and hasattr(input, "__sycl_usm_array_interface__"):
-        strides = (x * input.itemsize for x in input.strides)
-        return np_st.as_strided(input.usm_data.copy_to_host().view(input.dtype), shape=input.shape, strides=strides)
+        return dpctl.tensor.to_numpy(input)
 
     return numpy.asarray(input, order=order)
+
+
+def astype(x1, dtype, order='K', casting='unsafe', subok=True, copy=True):
+    """Copy the array with data type casting."""
+    if config.__DPNP_OUTPUT_DPCTL__ and hasattr(x1, "__sycl_usm_array_interface__"):
+        import dpctl.tensor as dpt
+        # TODO: remove check dpctl.tensor has attribute "astype"
+        if hasattr(dpt, "astype"):
+            return dpt.astype(x1, dtype, order=order, casting=casting, copy=copy)
+
+    x1_desc = get_dpnp_descriptor(x1)
+    if not x1_desc:
+        pass
+    elif order != 'K':
+        pass
+    elif casting != 'unsafe':
+        pass
+    elif not subok:
+        pass
+    elif not copy:
+        pass
+    elif x1_desc.dtype == numpy.complex128 or dtype == numpy.complex128:
+        pass
+    elif x1_desc.dtype == numpy.complex64 or dtype == numpy.complex64:
+        pass
+    else:
+        return dpnp_astype(x1_desc, dtype).get_pyobj()
+
+    return call_origin(numpy.ndarray.astype, x1, dtype, order=order, casting=casting, subok=subok, copy=copy)
 
 
 def convert_single_elem_array_to_scalar(obj, keepdims=False):

@@ -214,8 +214,9 @@ void dpnp_fill_diagonal_c(void* array1_in, void* val_in, size_t* shape, const si
     }
 
     DPNPC_ptr_adapter<_DataType> result_ptr(array1_in, result_size, true, true);
+    DPNPC_ptr_adapter<_DataType> val_ptr(val_in, 1, true);
     _DataType* array_1 = result_ptr.get_ptr();
-    _DataType* val_arr = reinterpret_cast<_DataType*>(val_in);
+    _DataType* val_arr = val_ptr.get_ptr();
 
     size_t min_shape = shape[0];
     for (size_t i = 0; i < ndim; ++i)
@@ -310,10 +311,13 @@ void dpnp_place_c(void* arr_in, long* mask_in, void* vals_in, const size_t arr_s
     _DataType* vals = input1_ptr.get_ptr();
     _DataType* arr = result_ptr.get_ptr();
 
+    DPNPC_ptr_adapter<long> mask_ptr(mask_in, arr_size, true);
+    long* mask = mask_ptr.get_ptr();
+
     size_t counter = 0;
     for (size_t i = 0; i < arr_size; ++i)
     {
-        if (mask_in[i])
+        if (mask[i])
         {
             arr[i] = vals[counter % vals_size];
             counter += 1;
