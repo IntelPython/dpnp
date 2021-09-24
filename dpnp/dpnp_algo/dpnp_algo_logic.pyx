@@ -110,8 +110,7 @@ cpdef utils.dpnp_descriptor dpnp_equal(utils.dpnp_descriptor array1, utils.dpnp_
                                                                              dpnp.bool,
                                                                              None)
     for i in range(result.size):
-        unravel_i = numpy.unravel_index(i, result.shape)
-        result.get_pyobj()[unravel_i] = dpnp.bool(array1.get_pyobj()[unravel_i] == input2.get_pyobj()[unravel_i])
+        result.get_pyobj()[i] = dpnp.bool(array1.get_pyobj()[i] == input2.get_pyobj()[i])
 
     return result
 
@@ -121,8 +120,7 @@ cpdef utils.dpnp_descriptor dpnp_greater(utils.dpnp_descriptor input1, utils.dpn
                                                                              dpnp.bool,
                                                                              None)
     for i in range(result.size):
-        unravel_i = numpy.unravel_index(i, result.shape)
-        result.get_pyobj()[unravel_i] = dpnp.bool(input1.get_pyobj()[unravel_i] > input2.get_pyobj()[unravel_i])
+        result.get_pyobj()[i] = dpnp.bool(input1.get_pyobj()[i] > input2.get_pyobj()[i])
 
     return result
 
@@ -132,8 +130,7 @@ cpdef utils.dpnp_descriptor dpnp_greater_equal(utils.dpnp_descriptor input1, uti
                                                                              dpnp.bool,
                                                                              None)
     for i in range(result.size):
-        unravel_i = numpy.unravel_index(i, result.shape)
-        result.get_pyobj()[unravel_i] = dpnp.bool(input1.get_pyobj()[unravel_i] >= input2.get_pyobj()[unravel_i])
+        result.get_pyobj()[i] = dpnp.bool(input1.get_pyobj()[i] >= input2.get_pyobj()[i])
 
     return result
 
@@ -146,9 +143,7 @@ cpdef utils.dpnp_descriptor dpnp_isclose(utils.dpnp_descriptor input1,
     cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape, dpnp.bool, None)
 
     for i in range(result.size):
-        unravel_i = numpy.unravel_index(i, result.shape)
-        in1 = input1.get_pyobj()[unravel_i]
-        result.get_pyobj()[unravel_i] = numpy.isclose(in1, input2.get_pyobj()[i], rtol, atol, equal_nan)
+        result.get_pyobj()[i] = numpy.isclose(input1.get_pyobj()[i], input2.get_pyobj()[i], rtol, atol, equal_nan)
 
     return result
 
@@ -157,8 +152,7 @@ cpdef utils.dpnp_descriptor dpnp_isfinite(utils.dpnp_descriptor input1):
     cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape, dpnp.bool, None)
 
     for i in range(result.size):
-        unravel_i = numpy.unravel_index(i, result.shape)
-        result.get_pyobj()[unravel_i] = numpy.isfinite(input1.get_pyobj()[unravel_i])
+        result.get_pyobj()[i] = numpy.isfinite(input1.get_pyobj()[i])
 
     return result
 
@@ -167,8 +161,7 @@ cpdef utils.dpnp_descriptor dpnp_isinf(utils.dpnp_descriptor input1):
     cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape, dpnp.bool, None)
 
     for i in range(result.size):
-        unravel_i = numpy.unravel_index(i, result.shape)
-        result.get_pyobj()[unravel_i] = numpy.isinf(input1.get_pyobj()[unravel_i])
+        result.get_pyobj()[i] = numpy.isinf(input1.get_pyobj()[i])
 
     return result
 
@@ -177,8 +170,7 @@ cpdef utils.dpnp_descriptor dpnp_isnan(utils.dpnp_descriptor input1):
     cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape, dpnp.bool, None)
 
     for i in range(result.size):
-        unravel_i = numpy.unravel_index(i, result.shape)
-        result.get_pyobj()[unravel_i] = numpy.isnan(input1.get_pyobj()[unravel_i])
+        result.get_pyobj()[i] = numpy.isnan(input1.get_pyobj()[i])
 
     return result
 
@@ -188,8 +180,7 @@ cpdef utils.dpnp_descriptor dpnp_less(utils.dpnp_descriptor input1, utils.dpnp_d
                                                                              dpnp.bool,
                                                                              None)
     for i in range(result.size):
-        unravel_i = numpy.unravel_index(i, result.shape)
-        result.get_pyobj()[unravel_i] = dpnp.bool(input1.get_pyobj()[unravel_i] < input2.get_pyobj()[unravel_i])
+        result.get_pyobj()[i] = dpnp.bool(input1.get_pyobj()[i] < input2.get_pyobj()[i])
 
     return result
 
@@ -199,8 +190,7 @@ cpdef utils.dpnp_descriptor dpnp_less_equal(utils.dpnp_descriptor input1, utils.
                                                                              dpnp.bool,
                                                                              None)
     for i in range(result.size):
-        unravel_i = numpy.unravel_index(i, result.shape)
-        result.get_pyobj()[unravel_i] = dpnp.bool(input1.get_pyobj()[unravel_i] <= input2.get_pyobj()[unravel_i])
+        result.get_pyobj()[i] = dpnp.bool(input1.get_pyobj()[i] <= input2.get_pyobj()[i])
 
     return result
 
@@ -209,8 +199,7 @@ cpdef utils.dpnp_descriptor dpnp_logical_and(utils.dpnp_descriptor input1, utils
     cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape, dpnp.bool, None)
 
     for i in range(result.size):
-        unravel_i = numpy.unravel_index(i, result.shape)
-        result.get_pyobj()[unravel_i] = numpy.logical_and(input1.get_pyobj()[unravel_i], input2.get_pyobj()[unravel_i])
+        result.get_pyobj()[i] = numpy.logical_and(input1.get_pyobj()[i], input2.get_pyobj()[i])
 
     return result
 
@@ -219,8 +208,7 @@ cpdef utils.dpnp_descriptor dpnp_logical_not(utils.dpnp_descriptor input1):
     cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape, dpnp.bool, None)
 
     for i in range(result.size):
-        unravel_i = numpy.unravel_index(i, result.shape)
-        result.get_pyobj()[unravel_i] = numpy.logical_not(input1.get_pyobj()[unravel_i])
+        result.get_pyobj()[i] = numpy.logical_not(input1.get_pyobj()[i])
 
     return result
 
@@ -229,8 +217,7 @@ cpdef utils.dpnp_descriptor dpnp_logical_or(utils.dpnp_descriptor input1, utils.
     cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape, dpnp.bool, None)
 
     for i in range(result.size):
-        unravel_i = numpy.unravel_index(i, result.shape)
-        result.get_pyobj()[unravel_i] = numpy.logical_or(input1.get_pyobj()[unravel_i], input2.get_pyobj()[unravel_i])
+        result.get_pyobj()[i] = numpy.logical_or(input1.get_pyobj()[i], input2.get_pyobj()[i])
 
     return result
 
@@ -239,8 +226,7 @@ cpdef utils.dpnp_descriptor dpnp_logical_xor(utils.dpnp_descriptor input1, utils
     cdef utils.dpnp_descriptor result = utils_py.create_output_descriptor_py(input1.shape, dpnp.bool, None)
 
     for i in range(result.size):
-        unravel_i = numpy.unravel_index(i, result.shape)
-        result.get_pyobj()[unravel_i] = numpy.logical_xor(input1.get_pyobj()[unravel_i], input2.get_pyobj()[unravel_i])
+        result.get_pyobj()[i] = numpy.logical_xor(input1.get_pyobj()[i], input2.get_pyobj()[i])
 
     return result
 
@@ -250,7 +236,6 @@ cpdef utils.dpnp_descriptor dpnp_not_equal(utils.dpnp_descriptor input1, utils.d
                                                                              dpnp.bool,
                                                                              None)
     for i in range(result.size):
-        unravel_i = numpy.unravel_index(i, result.shape)
-        result.get_pyobj()[unravel_i] = dpnp.bool(input1.get_pyobj()[unravel_i] != input2.get_pyobj()[unravel_i])
+        result.get_pyobj()[i] = dpnp.bool(input1.get_pyobj()[i] != input2.get_pyobj()[i])
 
     return result
