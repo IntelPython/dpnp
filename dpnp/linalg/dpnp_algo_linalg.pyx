@@ -237,7 +237,7 @@ cpdef object dpnp_norm(object input, ord=None, axis=None):
         elif ord == -numpy.inf:
             return dpnp.array([dpnp.abs(input).min(axis=axis)])
         elif ord == 0:
-            return dpnp.array([(input != 0).astype(input.dtype).sum(axis=axis)])
+            return dpnp.array([dpnp.sum(dpnp.astype((input != 0), input.dtype), axis=axis)])
         elif ord is None or ord == 2:
             s = input * input
             return dpnp.sqrt(dpnp.sum(s, axis=axis))
@@ -248,14 +248,14 @@ cpdef object dpnp_norm(object input, ord=None, axis=None):
             absx_size = absx.size
             absx_power = utils_py.create_output_descriptor_py((absx_size,), absx.dtype, None).get_pyobj()
             for i in range(absx_size):
-                absx_elem = absx.item(i)
+                absx_elem = absx[numpy.unravel_index(i, absx.shape)]
                 absx_power[i] = absx_elem ** ord
             absx_ = dpnp.reshape(absx_power, absx.shape)
             ret = dpnp.sum(absx_, axis=axis)
             ret_size = ret.size
             ret_power = utils_py.create_output_descriptor_py((ret_size,), None, None).get_pyobj()
             for i in range(ret_size):
-                ret_elem = ret.item(i)
+                ret_elem = ret[numpy.unravel_index(i, ret.shape)]
                 ret_power[i] = ret_elem ** (1 / ord)
             ret_ = dpnp.reshape(ret_power, ret.shape)
             return ret_
