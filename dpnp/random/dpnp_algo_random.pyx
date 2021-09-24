@@ -33,12 +33,12 @@ and the rest of the library
 """
 
 
+import numpy
 import dpnp.config as config
 from dpnp.dpnp_algo cimport *
 
 cimport dpnp.dpnp_utils as utils
 
-import numpy
 cimport numpy
 
 
@@ -82,59 +82,59 @@ __all__ = [
 ]
 
 
-ctypedef void(*fptr_dpnp_rng_beta_c_1out_t)(void *, const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_binomial_c_1out_t)(void *, const int, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_chisquare_c_1out_t)(void *, const int, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_exponential_c_1out_t)(void *, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_f_c_1out_t)(void *, const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_gamma_c_1out_t)(void *, const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_geometric_c_1out_t)(void *, const float, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_gaussian_c_1out_t)(void *, const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_gumbel_c_1out_t)(void *, const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_hypergeometric_c_1out_t)(void *, const int, const int, const int, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_laplace_c_1out_t)(void *, const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_logistic_c_1out_t)(void *, const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_lognormal_c_1out_t)(void *, const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_beta_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_binomial_c_1out_t)(void * , const int, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_chisquare_c_1out_t)(void * , const int, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_exponential_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_f_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_gamma_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_geometric_c_1out_t)(void * , const float, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_gaussian_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_gumbel_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_hypergeometric_c_1out_t)(void * , const int, const int, const int, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_laplace_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_logistic_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_lognormal_c_1out_t)(void * , const double, const double, const size_t) except +
 ctypedef void(*fptr_dpnp_rng_multinomial_c_1out_t)(void * result,
                                                    const int,
-                                                   const double *,
+                                                   const double * ,
                                                    const size_t,
                                                    const size_t) except +
-ctypedef void(*fptr_dpnp_rng_multivariate_normal_c_1out_t)(void *,
+ctypedef void(*fptr_dpnp_rng_multivariate_normal_c_1out_t)(void * ,
                                                            const int,
-                                                           const double *,
+                                                           const double * ,
                                                            const size_t,
-                                                           const double *,
+                                                           const double * ,
                                                            const size_t,
                                                            const size_t) except +
-ctypedef void(*fptr_dpnp_rng_negative_binomial_c_1out_t)(void *, const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_noncentral_chisquare_c_1out_t)(void *, const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_normal_c_1out_t)(void *, const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_pareto_c_1out_t)(void *, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_poisson_c_1out_t)(void *, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_power_c_1out_t)(void *, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_rayleigh_c_1out_t)(void *, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_shuffle_c_1out_t)(void *,
+ctypedef void(*fptr_dpnp_rng_negative_binomial_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_noncentral_chisquare_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_normal_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_pareto_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_poisson_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_power_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_rayleigh_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_shuffle_c_1out_t)(void * ,
                                                const size_t,
                                                const size_t,
                                                const size_t,
                                                const size_t) except +
 ctypedef void(*fptr_dpnp_rng_srand_c_1out_t)(const size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_cauchy_c_1out_t)(void *, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_exponential_c_1out_t)(void *, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_gamma_c_1out_t)(void *, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_normal_c_1out_t)(void *, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_standard_t_c_1out_t)(void *, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_triangular_c_1out_t)(void *,
+ctypedef void(*fptr_dpnp_rng_standard_cauchy_c_1out_t)(void * , const size_t) except +
+ctypedef void(*fptr_dpnp_rng_standard_exponential_c_1out_t)(void * , const size_t) except +
+ctypedef void(*fptr_dpnp_rng_standard_gamma_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_standard_normal_c_1out_t)(void * , const size_t) except +
+ctypedef void(*fptr_dpnp_rng_standard_t_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_triangular_c_1out_t)(void * ,
                                                   const double,
                                                   const double,
                                                   const double,
                                                   const size_t) except +
-ctypedef void(*fptr_dpnp_rng_uniform_c_1out_t)(void *, const long, const long, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_vonmises_c_1out_t)(void *, const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_wald_c_1out_t)(void * , const double, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_weibull_c_1out_t)(void *, const double, const size_t) except +
-ctypedef void(*fptr_dpnp_rng_zipf_c_1out_t)(void *, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_uniform_c_1out_t)(void * , const long, const long, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_vonmises_c_1out_t)(void * , const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_wald_c_1out_t)(void *, const double, const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_weibull_c_1out_t)(void * , const double, const size_t) except +
+ctypedef void(*fptr_dpnp_rng_zipf_c_1out_t)(void * , const double, const size_t) except +
 
 
 cpdef utils.dpnp_descriptor dpnp_rng_beta(double a, double b, size):
@@ -836,7 +836,7 @@ cpdef utils.dpnp_descriptor dpnp_rng_shuffle(utils.dpnp_descriptor x1):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype.type)
     cdef size_t itemsize = x1.dtype.itemsize
     cdef size_t ndim = x1.ndim
-    cdef size_t high_dim_size = len(x1.get_pyobj())
+    cdef size_t high_dim_size = x1.get_pyobj().size
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_RNG_SHUFFLE, param1_type, param1_type)

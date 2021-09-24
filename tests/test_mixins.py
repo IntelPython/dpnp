@@ -12,8 +12,8 @@ class TestMatMul(unittest.TestCase):
         size = 2
 
         # DPNP
-        array1 = inp.array(array_data, dtype=inp.float64).reshape((size, size))
-        array2 = inp.array(array_data, dtype=inp.float64).reshape((size, size))
+        array1 = inp.reshape(inp.array(array_data, dtype=inp.float64), (size, size))
+        array2 = inp.reshape(inp.array(array_data, dtype=inp.float64), (size, size))
         result = inp.matmul(array1, array2)
         # print(result)
 
@@ -33,8 +33,8 @@ class TestMatMul(unittest.TestCase):
         array_data2 = [1., 2., 3., 4., 5., 6., 7., 8.]
 
         # DPNP
-        array1 = inp.array(array_data1, dtype=inp.float64).reshape((3, 2))
-        array2 = inp.array(array_data2, dtype=inp.float64).reshape((2, 4))
+        array1 = inp.reshape(inp.array(array_data1, dtype=inp.float64), (3, 2))
+        array2 = inp.reshape(inp.array(array_data2, dtype=inp.float64), (2, 4))
         result = inp.matmul(array1, array2)
         # print(result)
 

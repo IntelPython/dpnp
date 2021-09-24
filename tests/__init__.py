@@ -1,3 +1,4 @@
+from tests.third_party.cupy import testing as cupy_testing
 import dpnp
 import numpy
 
@@ -10,18 +11,20 @@ numpy.testing.assert_equal = testing.assert_equal
 
 # patch for shaped_arange func to exclude calls of astype and reshape
 # necessary because new data container does not support these functions yet
-from tests.third_party.cupy import testing as cupy_testing
 
 orig_shaped_arange = cupy_testing.shaped_arange
 orig_shaped_reverse_arange = cupy_testing.shaped_reverse_arange
+
 
 def _shaped_arange(shape, xp=dpnp, dtype=dpnp.float64, order='C'):
     res = xp.array(orig_shaped_arange(shape, xp=numpy, dtype=dtype, order=order), dtype=dtype)
     return res
 
+
 def _shaped_reverse_arange(shape, xp=dpnp, dtype=dpnp.float32):
     res = xp.array(orig_shaped_reverse_arange(shape, xp=numpy, dtype=dtype), dtype=dtype)
     return res
+
 
 cupy_testing.shaped_arange = _shaped_arange
 cupy_testing.shaped_reverse_arange = _shaped_reverse_arange

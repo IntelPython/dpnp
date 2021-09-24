@@ -54,20 +54,20 @@ __all__ += [
     "dpnp_triu_indices_from"
 ]
 
-ctypedef void(*fptr_dpnp_choose_t)(void * , void * , void **, size_t, size_t, size_t)
-ctypedef void(*fptr_dpnp_diag_indices)(void*, size_t)
-ctypedef void(*custom_indexing_2in_1out_func_ptr_t)(void *, const size_t, void * , void * , size_t)
-ctypedef void(*custom_indexing_2in_1out_func_ptr_t_)(void * , const size_t, void * , const size_t, size_t * , size_t * , const size_t)
-ctypedef void(*custom_indexing_2in_func_ptr_t)(void *, void * , size_t * , const size_t)
-ctypedef void(*custom_indexing_3in_func_ptr_t)(void * , void * , void * , const size_t, const size_t)
-ctypedef void(*custom_indexing_3in_with_axis_func_ptr_t)(void * , void * , void * , const size_t, size_t * , const size_t,
+ctypedef void(*fptr_dpnp_choose_t)(void * , void * , void ** , size_t, size_t, size_t)
+ctypedef void(*fptr_dpnp_diag_indices)(void *, size_t)
+ctypedef void(*custom_indexing_2in_1out_func_ptr_t)(void * , const size_t, void * , void * , size_t)
+ctypedef void(*custom_indexing_2in_1out_func_ptr_t_)(void *, const size_t, void * , const size_t, size_t * , size_t * , const size_t)
+ctypedef void(*custom_indexing_2in_func_ptr_t)(void * , void * , size_t * , const size_t)
+ctypedef void(*custom_indexing_3in_func_ptr_t)(void *, void * , void * , const size_t, const size_t)
+ctypedef void(*custom_indexing_3in_with_axis_func_ptr_t)(void *, void * , void * , const size_t, size_t * , const size_t,
                                                          const size_t, const size_t,)
-ctypedef void(*custom_indexing_6in_func_ptr_t)(void *, void * , void * , const size_t, const size_t, const size_t)
-ctypedef void(*fptr_dpnp_nonzero_t)(const void * , void * , const size_t, const size_t * , const size_t , const size_t)
+ctypedef void(*custom_indexing_6in_func_ptr_t)(void * , void * , void * , const size_t, const size_t, const size_t)
+ctypedef void(*fptr_dpnp_nonzero_t)(const void *, void * , const size_t, const size_t * , const size_t , const size_t)
 
 
 cpdef utils.dpnp_descriptor dpnp_choose(utils.dpnp_descriptor input, list choices1):
-    cdef vector[void * ] choices
+    cdef vector[void *] choices
     cdef utils.dpnp_descriptor choice
     for desc in choices1:
         choice = desc
@@ -75,7 +75,7 @@ cpdef utils.dpnp_descriptor dpnp_choose(utils.dpnp_descriptor input, list choice
 
     cdef shape_type_c input_shape = input.shape
     cdef size_t choice_size = choices1[0].size
-        
+
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
     cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(choices1[0].dtype)
@@ -84,7 +84,7 @@ cpdef utils.dpnp_descriptor dpnp_choose(utils.dpnp_descriptor input, list choice
 
     cdef utils.dpnp_descriptor res_array = utils.create_output_descriptor(input_shape, kernel_data.return_type, None)
 
-    cdef fptr_dpnp_choose_t func = <fptr_dpnp_choose_t> kernel_data.ptr
+    cdef fptr_dpnp_choose_t func = <fptr_dpnp_choose_t > kernel_data.ptr
 
     func(res_array.get_data(),
          input.get_data(),
@@ -102,9 +102,9 @@ cpdef tuple dpnp_diag_indices(n, ndim):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(dpnp.int64)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DIAG_INDICES, param1_type, param1_type)
-    
-    cdef fptr_dpnp_diag_indices func = <fptr_dpnp_diag_indices> kernel_data.ptr
-    
+
+    cdef fptr_dpnp_diag_indices func = <fptr_dpnp_diag_indices > kernel_data.ptr
+
     res_list = []
     cdef utils.dpnp_descriptor res_arr
     cdef shape_type_c result_shape = utils._object_to_tuple(res_size)
@@ -114,7 +114,7 @@ cpdef tuple dpnp_diag_indices(n, ndim):
         func(res_arr.get_data(), res_size)
 
         res_list.append(res_arr.get_pyobj())
- 
+
     return tuple(res_list)
 
 cpdef utils.dpnp_descriptor dpnp_diagonal(dpnp_descriptor input, offset=0):
@@ -295,11 +295,11 @@ cpdef dpnp_put_along_axis(dpnp_descriptor arr, dpnp_descriptor indices, dpnp_des
     func(arr.get_data(), indices.get_data(), values.get_data(), axis, < size_t * > arr_shape.data(), arr.ndim, indices.size, values.size)
 
 
-cpdef dpnp_putmask(object arr, object mask, object values):
+cpdef dpnp_putmask(utils.dpnp_descriptor arr, utils.dpnp_descriptor mask, utils.dpnp_descriptor values):
     cdef int values_size = values.size
     for i in range(arr.size):
-        if mask[i]:
-            arr[i] = values[i % values_size]
+        if mask.get_pyobj()[numpy.unravel_index(i, mask.shape)]:
+            arr.get_pyobj()[numpy.unravel_index(i, arr.shape)] = values.get_pyobj()[numpy.unravel_index(i % values_size, values.shape)]
 
 
 cpdef utils.dpnp_descriptor dpnp_select(list condlist, list choicelist, default):
@@ -321,7 +321,7 @@ cpdef utils.dpnp_descriptor dpnp_select(list condlist, list choicelist, default)
 
 cpdef utils.dpnp_descriptor dpnp_take(utils.dpnp_descriptor input, utils.dpnp_descriptor indices):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
-    
+
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_TAKE, param1_type, param1_type)
 
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(indices.shape, kernel_data.return_type, None)
@@ -407,7 +407,7 @@ cpdef object dpnp_take_along_axis(object arr, object indices, int axis):
                 result_array[result_offset] = arr_elem
 
         dpnp_array = dpnp.array(result_array, dtype=res_type)
-        dpnp_result_array = dpnp_array.reshape(res_shape)
+        dpnp_result_array = dpnp.reshape(dpnp_array, res_shape)
         return dpnp_result_array
 
     else:

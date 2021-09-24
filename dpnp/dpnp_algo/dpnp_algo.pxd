@@ -69,6 +69,7 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_COS
         DPNP_FN_COSH
         DPNP_FN_COV
+        DPNP_FN_COUNT_NONZERO
         DPNP_FN_CROSS
         DPNP_FN_CUMPROD
         DPNP_FN_CUMSUM
@@ -220,7 +221,7 @@ cdef extern from "dpnp_iface.hpp" namespace "QueueOptions":  # need this namespa
         AUTO_SELECTOR
 
 cdef extern from "constants.hpp":
-    void dpnp_python_constants_initialize_c(void* py_none, void* py_nan)
+    void dpnp_python_constants_initialize_c(void * py_none, void * py_nan)
 
 cdef extern from "dpnp_iface.hpp":
     void dpnp_queue_initialize_c(QueueOptions selector)
