@@ -83,12 +83,14 @@ enum class DPNPFuncName : size_t
     DPNP_FN_CEIL,                     /**< Used in numpy.ceil() implementation  */
     DPNP_FN_CHOLESKY,                 /**< Used in numpy.linalg.cholesky() implementation  */
     DPNP_FN_CONJIGUATE,               /**< Used in numpy.conjugate() implementation  */
+    DPNP_FN_CHOOSE,                   /**< Used in numpy.choose() implementation  */
     DPNP_FN_COPY,                     /**< Used in numpy.copy() implementation  */
     DPNP_FN_COPYSIGN,                 /**< Used in numpy.copysign() implementation  */
     DPNP_FN_COPYTO,                   /**< Used in numpy.copyto() implementation  */
     DPNP_FN_CORRELATE,                /**< Used in numpy.correlate() implementation  */
     DPNP_FN_COS,                      /**< Used in numpy.cos() implementation  */
     DPNP_FN_COSH,                     /**< Used in numpy.cosh() implementation  */
+    DPNP_FN_COUNT_NONZERO,            /**< Used in numpy.count_nonzero() implementation  */
     DPNP_FN_COV,                      /**< Used in numpy.cov() implementation  */
     DPNP_FN_CROSS,                    /**< Used in numpy.cross() implementation  */
     DPNP_FN_CUMPROD,                  /**< Used in numpy.cumprod() implementation  */

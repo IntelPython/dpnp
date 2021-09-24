@@ -51,21 +51,22 @@ void dpnp_correlate_c(void* result_out,
 {
     (void)where;
 
+    size_t dummy[] = {1};
     dpnp_dot_c<_DataType_output, _DataType_input1, _DataType_input2>(result_out,
-                                                                     42, // dummy result_size
-                                                                     42, // dummy result_ndim
+                                                                     42,   // dummy result_size
+                                                                     42,   // dummy result_ndim
                                                                      NULL, // dummy result_shape
                                                                      NULL, // dummy result_strides
                                                                      input1_in,
                                                                      input1_size,
                                                                      input1_shape_ndim,
                                                                      input1_shape,
-                                                                     NULL, // dummy input1_strides
+                                                                     dummy, // dummy input1_strides
                                                                      input2_in,
                                                                      input2_size,
                                                                      input2_shape_ndim,
                                                                      input2_shape,
-                                                                     NULL); // dummy input2_strides
+                                                                     dummy); // dummy input2_strides
 
     return;
 }
@@ -149,11 +150,43 @@ void dpnp_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols)
     return;
 }
 
+template <typename _DataType_input, typename _DataType_output>
+void dpnp_count_nonzero_c(void* array1_in, void* result1_out, size_t size)
+{
+    if (array1_in == nullptr)
+    {
+        return;
+    }
+
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, size, true);
+    DPNPC_ptr_adapter<_DataType_output> result_ptr(result1_out, 1, true, true);
+    _DataType_input* array1 = input1_ptr.get_ptr();
+    _DataType_output* result1 = result_ptr.get_ptr();
+
+    result1[0] = 0;
+
+    for (size_t i = 0; i < size; ++i)
+    {
+        if (array1[i] != 0)
+        {
+            result1[0] += 1;
+        }
+    }
+
+    return;
+}
+
 template <typename _DataType>
 class dpnp_max_c_kernel;
 
 template <typename _DataType>
-void dpnp_max_c(void* array1_in, void* result1, const size_t result_size, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
+void dpnp_max_c(void* array1_in,
+                void* result1,
+                const size_t result_size,
+                const size_t* shape,
+                size_t ndim,
+                const size_t* axis,
+                size_t naxis)
 {
     const size_t size_input = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
     if (!size_input)
@@ -416,7 +449,13 @@ template <typename _DataType>
 class dpnp_min_c_kernel;
 
 template <typename _DataType>
-void dpnp_min_c(void* array1_in, void* result1, const size_t result_size, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
+void dpnp_min_c(void* array1_in,
+                void* result1,
+                const size_t result_size,
+                const size_t* shape,
+                size_t ndim,
+                const size_t* axis,
+                size_t naxis)
 {
     __attribute__((unused)) void* tmp = (void*)(axis + naxis);
 
@@ -717,6 +756,11 @@ void func_map_init_statistics(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_FLT] = {eft_DBL, (void*)dpnp_correlate_c<double, double, float>};
     fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_DBL][eft_DBL] = {eft_DBL,
                                                                (void*)dpnp_correlate_c<double, double, double>};
+
+    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO][eft_INT][eft_INT] = {eft_LNG, (void*)dpnp_count_nonzero_c<int, long>};
+    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_count_nonzero_c<long, long>};
+    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO][eft_FLT][eft_FLT] = {eft_LNG, (void*)dpnp_count_nonzero_c<float, long>};
+    fmap[DPNPFuncName::DPNP_FN_COUNT_NONZERO][eft_DBL][eft_DBL] = {eft_LNG, (void*)dpnp_count_nonzero_c<double, long>};
 
     fmap[DPNPFuncName::DPNP_FN_COV][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_cov_c<double>};
     fmap[DPNPFuncName::DPNP_FN_COV][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_cov_c<double>};

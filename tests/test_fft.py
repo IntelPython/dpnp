@@ -4,6 +4,7 @@ import dpnp
 
 import numpy
 
+
 @pytest.mark.parametrize("type", ['complex128', 'complex64', 'float32', 'float64', 'int32', 'int64'])
 def test_fft(type):
     # 1 dim array

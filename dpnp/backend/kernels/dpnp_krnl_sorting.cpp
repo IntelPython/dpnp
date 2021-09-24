@@ -118,8 +118,6 @@ void dpnp_partition_c(
     _DataType* arr2 = input2_ptr.get_ptr();
     _DataType* result = result1_ptr.get_ptr();
 
-
-
     auto arr_to_result_event = DPNP_QUEUE.memcpy(result, arr, size * sizeof(_DataType));
     arr_to_result_event.wait();
 

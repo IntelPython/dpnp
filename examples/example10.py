@@ -47,7 +47,7 @@ import numpy
 
 
 def run(executor, size, test_type, repetition):
-    x = executor.arange(size * size, dtype=test_type).reshape((size, size))
+    x = executor.reshape(executor.arange(size * size, dtype=test_type), (size, size))
 
     times = []
     for _ in range(repetition):
