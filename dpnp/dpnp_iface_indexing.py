@@ -419,13 +419,13 @@ def putmask(x1, mask, values):
     Input arrays ``arr``, ``mask`` and ``values``  are supported as :obj:`dpnp.ndarray`.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     mask_desc = dpnp.get_dpnp_descriptor(mask)
     values_desc = dpnp.get_dpnp_descriptor(values)
     if x1_desc and mask_desc and values_desc:
-        return dpnp_putmask(x1, mask, values)
+        return dpnp_putmask(x1_desc, mask_desc, values_desc)
 
-    return call_origin(numpy.putmask, x1, mask, values)
+    return call_origin(numpy.putmask, x1, mask, values, dpnp_inplace=True)
 
 
 def select(condlist, choicelist, default=0):
