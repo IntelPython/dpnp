@@ -6,6 +6,22 @@ import numpy
 
 
 def vvsort(val, vec, size, xp):
+    # for i in range(size):
+    # imax = i
+    # for j in range(i + 1, size):
+    #     if xp.abs(val[imax]) < xp.abs(val[j]):
+    #         imax = j
+
+    # temp = val[i]
+    # val[i] = val[imax]
+    # val[imax] = temp
+
+    # for k in range(size):
+    #     temp = vec[k, i]
+    #     vec[k, i] = vec[k, imax]
+    #     vec[k, imax] = temp
+    
+    # The function was changed because 
     for i in range(size):
         imax = i
         for j in range(i + 1, size):
@@ -14,19 +30,19 @@ def vvsort(val, vec, size, xp):
             if xp.abs(val[unravel_imax]) < xp.abs(val[unravel_j]):
                 imax = j
 
-        if i == imax:
-            continue
-
         unravel_i = numpy.unravel_index(i, val.shape)
         unravel_imax = numpy.unravel_index(imax, val.shape)
-        val[unravel_i] = val[unravel_i] + val[unravel_imax]
-        val[unravel_imax] = val[unravel_i] - val[unravel_imax]
-        val[unravel_i] = val[unravel_i] - val[unravel_imax]
+
+        temp = xp.empty(tuple())
+        temp[()] = val[unravel_i] # make a copy
+        val[unravel_i] = val[unravel_imax]
+        val[unravel_imax] = temp
         
         for k in range(size):
-            vec[k, i] = vec[k, i] + vec[k, imax]
-            vec[k, imax] = vec[k, i] - vec[k, imax]
-            vec[k, i] = vec[k, i] - vec[k, imax]
+            temp = xp.empty(tuple())
+            temp[()] = vec[k, i] # make a copy
+            vec[k, i] = vec[k, imax]
+            vec[k, imax] = temp
 
 
 @pytest.mark.parametrize("array",
