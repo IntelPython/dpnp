@@ -381,8 +381,6 @@ def isclose(x1, x2, rtol=1e-05, atol=1e-08, equal_nan=False):
     [True, False]
 
     """
-    if config.__DPNP_OUTPUT_DPCTL__:
-        return call_origin(numpy.isclose, x1, x2, rtol=rtol, atol=atol, equal_nan=equal_nan)
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     x2_desc = dpnp.get_dpnp_descriptor(x2)

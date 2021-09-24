@@ -591,9 +591,3 @@ cdef class dpnp_descriptor:
 
     def __str__(self):
         return str(self.descriptor)
-
-    def __getitem__(self, ind):
-        return self.get_pyobj()[numpy.unravel_index(ind, self.shape)]
-
-    def __setitem__(self, key, val):
-        self.get_pyobj()[numpy.unravel_index(key, self.shape)] = val
