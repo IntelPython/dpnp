@@ -9,17 +9,24 @@ def vvsort(val, vec, size, xp):
     for i in range(size):
         imax = i
         for j in range(i + 1, size):
-            if xp.abs(val[imax]) < xp.abs(val[j]):
+            unravel_imax = numpy.unravel_index(imax, val.shape)
+            unravel_j = numpy.unravel_index(j, val.shape)
+            if xp.abs(val[unravel_imax]) < xp.abs(val[unravel_j]):
                 imax = j
 
-        temp = val[i]
-        val[i] = val[imax]
-        val[imax] = temp
+        if i == imax:
+            continue
 
+        unravel_i = numpy.unravel_index(i, val.shape)
+        unravel_imax = numpy.unravel_index(imax, val.shape)
+        val[unravel_i] = val[unravel_i] + val[unravel_imax]
+        val[unravel_imax] = val[unravel_i] - val[unravel_imax]
+        val[unravel_i] = val[unravel_i] - val[unravel_imax]
+        
         for k in range(size):
-            temp = vec[k, i]
-            vec[k, i] = vec[k, imax]
-            vec[k, imax] = temp
+            vec[k, i] = vec[k, i] + vec[k, imax]
+            vec[k, imax] = vec[k, i] - vec[k, imax]
+            vec[k, i] = vec[k, i] - vec[k, imax]
 
 
 @pytest.mark.parametrize("array",
