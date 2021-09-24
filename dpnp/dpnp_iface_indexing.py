@@ -248,7 +248,7 @@ def fill_diagonal(x1, val, wrap=False):
     :obj:`dpnp.diag_indices_from` : Return the indices to access the main diagonal of an n-dimensional array.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc:
         if not dpnp.isscalar(val):
             pass
@@ -257,7 +257,7 @@ def fill_diagonal(x1, val, wrap=False):
         else:
             return dpnp_fill_diagonal(x1_desc, val)
 
-    return call_origin(numpy.fill_diagonal, x1, val, wrap)
+    return call_origin(numpy.fill_diagonal, x1, val, wrap, dpnp_inplace=True)
 
 
 def indices(dimensions, dtype=int, sparse=False):
