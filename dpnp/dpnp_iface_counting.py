@@ -43,6 +43,9 @@ it contains:
 import dpnp
 import numpy
 
+import dpnp.config as config
+from dpnp.dpnp_utils import *
+
 from dpnp.dpnp_algo.dpnp_algo import *  # TODO need to investigate why dpnp.dpnp_algo can not be used
 
 __all__ = [
@@ -72,7 +75,6 @@ def count_nonzero(x1, axis=None, *, keepdims=False):
     5
 
     """
-
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
         if axis is not None:
@@ -85,4 +87,4 @@ def count_nonzero(x1, axis=None, *, keepdims=False):
 
             return result
 
-    return numpy.count_nonzero(x1, axis, keepdims=keepdims)
+    return call_origin(numpy.count_nonzero, x1, axis, keepdims=keepdims)
