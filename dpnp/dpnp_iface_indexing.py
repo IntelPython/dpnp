@@ -82,8 +82,8 @@ def choose(x1, choices, out=None, mode='raise'):
     :obj:`take_along_axis` : Preferable if choices is an array.
     """
     x1_desc = dpnp.get_dpnp_descriptor(x1)
-    
-    choices_list =[]
+
+    choices_list = []
     for choice in choices:
         choices_list.append(dpnp.get_dpnp_descriptor(choice))
 

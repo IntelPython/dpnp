@@ -73,10 +73,10 @@ include "dpnp_algo_statistics.pyx"
 include "dpnp_algo_trigonometric.pyx"
 
 
-ctypedef void(*fptr_dpnp_arange_t)(size_t, size_t, void * , size_t)
-ctypedef void(*fptr_dpnp_astype_t)(const void * , void * , const size_t)
-ctypedef void(*fptr_dpnp_flatten_t)(const void * , void * , const size_t)
-ctypedef void(*fptr_dpnp_initval_t)(void * , void * , size_t)
+ctypedef void(*fptr_dpnp_arange_t)(size_t, size_t, void *, size_t)
+ctypedef void(*fptr_dpnp_astype_t)(const void *, void * , const size_t)
+ctypedef void(*fptr_dpnp_flatten_t)(const void *, void * , const size_t)
+ctypedef void(*fptr_dpnp_initval_t)(void *, void * , size_t)
 
 
 cpdef utils.dpnp_descriptor dpnp_arange(start, stop, step, dtype):
@@ -190,8 +190,8 @@ cpdef dpnp_queue_initialize():
         queue_type = GPU_SELECTOR
 
     dpnp_queue_initialize_c(queue_type)
-    dpnp_python_constants_initialize_c(<void*> None,
-                                       <void*> dpnp.nan)
+    dpnp_python_constants_initialize_c(< void*> None,
+                                        < void * > dpnp.nan)
 
     # TODO:
     # choose seed number as is in numpy
@@ -283,7 +283,7 @@ cdef utils.dpnp_descriptor call_fptr_1in_1out(DPNPFuncName fptr_name,
     """ get the FPTR data structure """
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
 
     cdef utils.dpnp_descriptor result
 
@@ -320,7 +320,7 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out(DPNPFuncName fptr_name,
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, x1_c_type, x2_c_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
 
     # Create result array
     cdef shape_type_c x1_shape = x1_obj.shape

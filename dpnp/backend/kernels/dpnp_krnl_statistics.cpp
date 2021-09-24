@@ -163,7 +163,6 @@ void dpnp_count_nonzero_c(void* array1_in, void* result1_out, size_t size)
     _DataType_input* array1 = input1_ptr.get_ptr();
     _DataType_output* result1 = result_ptr.get_ptr();
 
-
     result1[0] = 0;
 
     for (size_t i = 0; i < size; ++i)

@@ -34,10 +34,9 @@
 
 #include <dpnp_iface_fptr.hpp>
 
-#define LIBSYCL_VERSION_GREATER(major, minor, patch)                                                                \
-    (__LIBSYCL_MAJOR_VERSION > major)                                                                               \
-    || (__LIBSYCL_MAJOR_VERSION == major and __LIBSYCL_MINOR_VERSION > minor)                                       \
-    || (__LIBSYCL_MAJOR_VERSION == major and __LIBSYCL_MINOR_VERSION == minor and __LIBSYCL_PATCH_VERSION >= patch)
+#define LIBSYCL_VERSION_GREATER(major, minor, patch)                                                                   \
+    (__LIBSYCL_MAJOR_VERSION > major) || (__LIBSYCL_MAJOR_VERSION == major and __LIBSYCL_MINOR_VERSION > minor) ||     \
+        (__LIBSYCL_MAJOR_VERSION == major and __LIBSYCL_MINOR_VERSION == minor and __LIBSYCL_PATCH_VERSION >= patch)
 
 /**
  * @defgroup BACKEND_UTILS Backend C++ library utilities
@@ -93,7 +92,7 @@ void get_xyz_by_id(size_t idx, size_t ndim, const _DataType* offsets, _DataType*
     size_t quotient;
     size_t remainder = idx;
 
-    for(size_t i = 0; i < ndim; ++i)
+    for (size_t i = 0; i < ndim; ++i)
     {
         quotient = remainder / offsets[i];
         remainder = remainder - quotient * offsets[i];

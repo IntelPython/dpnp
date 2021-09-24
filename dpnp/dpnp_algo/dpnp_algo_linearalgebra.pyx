@@ -44,10 +44,10 @@ __all__ += [
 
 
 # C function pointer to the C library template functions
-ctypedef void(*fptr_2in_1out_shapes_t)(void *, void * , void * , size_t * , size_t * , size_t * , size_t)
-ctypedef void(*fptr_2in_1out_dot_t)(void * , const size_t, const size_t, const long * , const long * ,
-                                    void * , const size_t, const size_t, const long * , const long * ,
-                                    void * , const size_t, const size_t, const long * , const long * )
+ctypedef void(*fptr_2in_1out_shapes_t)(void * , void * , void * , size_t * , size_t * , size_t * , size_t)
+ctypedef void(*fptr_2in_1out_dot_t)(void *, const size_t, const size_t, const long * , const long * ,
+                                    void *, const size_t, const size_t, const long * , const long * ,
+                                    void *, const size_t, const size_t, const long * , const long * )
 
 cdef shape_type_c strides_to_vector(strides, shape) except *:
     cdef shape_type_c res
@@ -80,9 +80,9 @@ cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp
         result_shape = shape1
     elif ndim1 == 1 and ndim2 == 1:
         result_shape = ()
-    elif ndim1 == 1: # ndim2 > 1
+    elif ndim1 == 1:  # ndim2 > 1
         result_shape = shape2[:-1]
-    elif ndim2 == 1: # ndim1 > 1
+    elif ndim2 == 1:  # ndim1 > 1
         result_shape = shape1[:-1]
     else:
         if ndim1 == 1:
@@ -177,7 +177,8 @@ cpdef utils.dpnp_descriptor dpnp_inner(dpnp_descriptor array1, dpnp_descriptor a
         # do inner product
         result.get_pyobj()[numpy.unravel_index(idx1, result.shape)] = 0
         for idx2 in range(array1.shape[-1]):
-            result.get_pyobj()[numpy.unravel_index(idx1, result.shape)] += array1.get_pyobj()[numpy.unravel_index(array1_lin_index_base + idx2, array1.shape)] * array2.get_pyobj()[numpy.unravel_index(array2_lin_index_base + idx2, array2.shape)]
+            result.get_pyobj()[numpy.unravel_index(idx1, result.shape)] += array1.get_pyobj()[numpy.unravel_index(
+                array1_lin_index_base + idx2, array1.shape)] * array2.get_pyobj()[numpy.unravel_index(array2_lin_index_base + idx2, array2.shape)]
 
     return result
 
@@ -280,18 +281,18 @@ cpdef utils.dpnp_descriptor dpnp_matmul(utils.dpnp_descriptor in_array1, utils.d
     func(result.get_data(),
          result.size,
          result.ndim,
-         NULL, # result_shape
-         NULL, # result_strides
+         NULL,  # result_shape
+         NULL,  # result_strides
          in_array1.get_data(),
          in_array1.size,
          in_array1.ndim,
          shape1.data(),
-         NULL, # in_array1_strides
+         NULL,  # in_array1_strides
          in_array2.get_data(),
          in_array2.size,
          in_array2.ndim,
          shape2.data(),
-         NULL) # in_array2_strides
+         NULL)  # in_array2_strides
 
     return result
 
