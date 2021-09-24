@@ -812,7 +812,7 @@ def not_equal(x1, x2):
 
     Examples
     --------
-    >>> import dpnp as np>>>
+    >>> import dpnp as np
     >>> x1 = np.array([1., 2.])
     >>> x2 = np.arange(1., 3.)
     >>> out = np.not_equal(x1, x2)
