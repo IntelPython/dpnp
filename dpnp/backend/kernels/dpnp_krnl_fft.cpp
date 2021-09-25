@@ -33,6 +33,9 @@
 
 namespace mkl_dft = oneapi::mkl::dft;
 
+typedef mkl_dft::descriptor<mkl_dft::precision::DOUBLE, mkl_dft::domain::COMPLEX> desc_dp_cmplx_t;
+typedef mkl_dft::descriptor<mkl_dft::precision::SINGLE, mkl_dft::domain::COMPLEX> desc_sp_cmplx_t;
+
 #ifdef _WIN32
 #ifndef M_PI // Windows compatibility
 #define M_PI 3.14159265358979323846
@@ -158,6 +161,73 @@ void dpnp_fft_fft_sycl_c(const void* array1_in,
     return;
 }
 
+template <typename _DataType_input, typename _DataType_output, typename _Descriptor_type>
+void dpnp_fft_fft_mathlib_compute_c(
+    const void* array1_in, void* result1, const size_t shape_size, const size_t result_size, _Descriptor_type& desc)
+{
+    cl::sycl::event event;
+
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, result_size);
+    DPNPC_ptr_adapter<_DataType_output> result_ptr(result1, result_size);
+    _DataType_input* array_1 = input1_ptr.get_ptr();
+    _DataType_output* result = result_ptr.get_ptr();
+
+    desc.set_value(mkl_dft::config_param::BACKWARD_SCALE, (1.0 / result_size));
+    // enum value from math library C interface
+    // instead of mkl_dft::config_value::NOT_INPLACE
+    desc.set_value(mkl_dft::config_param::PLACEMENT, DFTI_NOT_INPLACE);
+    desc.commit(DPNP_QUEUE);
+    event = mkl_dft::compute_forward(desc, array_1, result);
+    event.wait();
+
+    return;
+}
+
+template <typename _DataType_input, typename _DataType_output>
+void dpnp_fft_fft_mathlib_c(
+    const void* array1_in, void* result1, const long* input_shape, const size_t shape_size, const size_t result_size)
+{
+    if (!shape_size || !result_size || !array1_in || !result1)
+    {
+        return;
+    }
+    std::vector<std::int64_t> dimensions(input_shape, input_shape + shape_size);
+
+    if constexpr (std::is_same<_DataType_input, std::complex<double>>::value &&
+                  std::is_same<_DataType_output, std::complex<double>>::value)
+    {
+        if (shape_size == 1)
+        {
+            desc_dp_cmplx_t desc(result_size);
+            dpnp_fft_fft_mathlib_compute_c<_DataType_input, _DataType_output, desc_dp_cmplx_t>(
+                array1_in, result1, shape_size, result_size, desc);
+        }
+        else
+        {
+            desc_dp_cmplx_t desc(dimensions);
+            dpnp_fft_fft_mathlib_compute_c<_DataType_input, _DataType_output, desc_dp_cmplx_t>(
+                array1_in, result1, shape_size, result_size, desc);
+        }
+    }
+    else if (std::is_same<_DataType_input, std::complex<float>>::value &&
+             std::is_same<_DataType_output, std::complex<float>>::value)
+    {
+        if (shape_size == 1)
+        {
+            desc_sp_cmplx_t desc(result_size);
+            dpnp_fft_fft_mathlib_compute_c<_DataType_input, _DataType_output, desc_sp_cmplx_t>(
+                array1_in, result1, shape_size, result_size, desc);
+        }
+        else
+        {
+            desc_sp_cmplx_t desc(dimensions);
+            dpnp_fft_fft_mathlib_compute_c<_DataType_input, _DataType_output, desc_sp_cmplx_t>(
+                array1_in, result1, shape_size, result_size, desc);
+        }
+    }
+    return;
+}
+
 template <typename _DataType_input, typename _DataType_output>
 void dpnp_fft_fft_c(const void* array1_in,
                     void* result1,
@@ -168,57 +238,27 @@ void dpnp_fft_fft_c(const void* array1_in,
                     long input_boundarie,
                     size_t inverse)
 {
+    if (!shape_size)
+    {
+        return;
+    }
+
     const size_t result_size = std::accumulate(output_shape, output_shape + shape_size, 1, std::multiplies<size_t>());
     const size_t input_size = std::accumulate(input_shape, input_shape + shape_size, 1, std::multiplies<size_t>());
 
-    if (!(result_size && shape_size))
+    if (!input_size || !result_size || !array1_in || !result1)
     {
         return;
     }
 
-    if (!(input_size && result_size && shape_size))
+    if (((std::is_same<_DataType_input, std::complex<double>>::value &&
+          std::is_same<_DataType_output, std::complex<double>>::value) ||
+         (std::is_same<_DataType_input, std::complex<float>>::value &&
+          std::is_same<_DataType_output, std::complex<float>>::value)) &&
+        (shape_size <= 3))
     {
-        return;
-    }
-
-    DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, result_size);
-    DPNPC_ptr_adapter<_DataType_output> result_ptr(result1, input_size);
-    _DataType_input* array_1 = input1_ptr.get_ptr();
-    _DataType_output* result = result_ptr.get_ptr();
-
-    if constexpr (std::is_same<_DataType_input, std::complex<double>>::value &&
-                  std::is_same<_DataType_output, std::complex<double>>::value)
-    {
-        // TODO
-        // will be moved into new func `dpnp_fft_fft_mathlib_c`
-        if (shape_size == 1)
-        {
-            cl::sycl::event event;
-
-            oneapi::mkl::dft::descriptor<mkl_dft::precision::DOUBLE, mkl_dft::domain::COMPLEX> desc(result_size);
-            desc.set_value(mkl_dft::config_param::BACKWARD_SCALE, (1.0 / result_size));
-            // enum value from math library C interface
-            // instead of mkl_dft::config_value::NOT_INPLACE
-            desc.set_value(mkl_dft::config_param::PLACEMENT, DFTI_NOT_INPLACE);
-            desc.commit(DPNP_QUEUE);
-
-            event = mkl_dft::compute_forward(desc, array_1, result);
-            event.wait();
-        }
-        else
-        {
-            // TODO for different shapes
-            dpnp_fft_fft_sycl_c<_DataType_input, _DataType_output>(array1_in,
-                                                                   result1,
-                                                                   input_shape,
-                                                                   output_shape,
-                                                                   shape_size,
-                                                                   result_size,
-                                                                   input_size,
-                                                                   axis,
-                                                                   input_boundarie,
-                                                                   inverse);
-        }
+        dpnp_fft_fft_mathlib_c<_DataType_input, _DataType_output>(
+            array1_in, result1, input_shape, shape_size, result_size);
     }
     else
     {
@@ -248,7 +288,7 @@ void func_map_init_fft_func(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_DBL][eft_DBL] = {eft_C128,
                                                              (void*)dpnp_fft_fft_c<double, std::complex<double>>};
     fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_C64][eft_C64] = {
-        eft_C128, (void*)dpnp_fft_fft_c<std::complex<float>, std::complex<double>>};
+        eft_C64, (void*)dpnp_fft_fft_c<std::complex<float>, std::complex<float>>};
     fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_C128][eft_C128] = {
         eft_C128, (void*)dpnp_fft_fft_c<std::complex<double>, std::complex<double>>};
     return;
