@@ -5,10 +5,11 @@ import dpnp
 import numpy
 
 
-@pytest.mark.parametrize("type", ['complex128', 'complex64', 'float32', 'float64', 'int32', 'int64'])
-def test_fft(type):
+@pytest.mark.parametrize("dtype", ['complex128', 'complex64', 'float32', 'float64', 'int32', 'int64'])
+@pytest.mark.parametrize("shape", [(100,), (10, 10), (2, 5, 10), (2, 5, 2, 5)], ids=['1dim', '2dim', '3dim', '4dim'])
+def test_fft(dtype, shape):
     # 1 dim array
-    data = numpy.arange(100, dtype=numpy.dtype(type))
+    data = numpy.arange(100, dtype=numpy.dtype(dtype)).reshape(shape)
     # TODO:
     # doesn't work correct with `complex64` (not supported)
     # dpnp_data = dpnp.arange(100, dtype=dpnp.dtype(type))
