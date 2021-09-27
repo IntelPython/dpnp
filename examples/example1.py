@@ -66,8 +66,10 @@ def run_dgemm(executor, name, size, test_type, repetition):
     min_time = numpy.min(times)
     med_time = numpy.median(times)
     max_time = numpy.max(times)
-    # print("%s gemm() execution time: %f  verification result[5]=%f" % (name, execution_time, result.item(5)))
-    return (min_time, med_time, max_time), result.item(5)
+
+    item5 = result[numpy.unravel_index(5, result.shape)]
+    # print("%s gemm() execution time: %f  verification result[5]=%f" % (name, execution_time, item5))
+    return (min_time, med_time, max_time), item5
 
 
 if __name__ == '__main__':
