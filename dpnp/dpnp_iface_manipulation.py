@@ -254,7 +254,7 @@ def copyto(dst, src, casting='same_kind', where=True):
         else:
             return dpnp_copyto(dst_desc, src_desc, where=where)
 
-    return call_origin(numpy.copyto, dst, src, casting, where)
+    return call_origin(numpy.copyto, dst, src, casting, where, dpnp_inplace=True)
 
 
 def expand_dims(x1, axis):

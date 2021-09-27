@@ -295,11 +295,11 @@ cpdef dpnp_put_along_axis(dpnp_descriptor arr, dpnp_descriptor indices, dpnp_des
     func(arr.get_data(), indices.get_data(), values.get_data(), axis, < size_t * > arr_shape.data(), arr.ndim, indices.size, values.size)
 
 
-cpdef dpnp_putmask(object arr, object mask, object values):
+cpdef dpnp_putmask(utils.dpnp_descriptor arr, utils.dpnp_descriptor mask, utils.dpnp_descriptor values):
     cdef int values_size = values.size
     for i in range(arr.size):
-        if mask[i]:
-            arr[i] = values[i % values_size]
+        if mask.get_pyobj()[numpy.unravel_index(i, mask.shape)]:
+            arr.get_pyobj()[numpy.unravel_index(i, arr.shape)] = values.get_pyobj()[numpy.unravel_index(i % values_size, values.shape)]
 
 
 cpdef utils.dpnp_descriptor dpnp_select(list condlist, list choicelist, default):
