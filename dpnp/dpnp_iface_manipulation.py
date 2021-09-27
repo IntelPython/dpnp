@@ -62,6 +62,7 @@ __all__ = [
     "moveaxis",
     "ravel",
     "repeat",
+    "reshape",
     "rollaxis",
     "squeeze",
     "stack",
@@ -231,7 +232,7 @@ def copyto(dst, src, casting='same_kind', where=True):
 
     """
 
-    dst_desc = dpnp.get_dpnp_descriptor(dst)
+    dst_desc = dpnp.get_dpnp_descriptor(dst, copy_when_strides=False)
     src_desc = dpnp.get_dpnp_descriptor(src)
     if dst_desc and src_desc:
         if casting != 'same_kind':
@@ -248,10 +249,12 @@ def copyto(dst, src, casting='same_kind', where=True):
             pass
         elif dst_desc.shape != src_desc.shape:
             pass
+        elif dst_desc.strides != src_desc.strides:
+            pass
         else:
             return dpnp_copyto(dst_desc, src_desc, where=where)
 
-    return call_origin(numpy.copyto, dst, src, casting, where)
+    return call_origin(numpy.copyto, dst, src, casting, where, dpnp_inplace=True)
 
 
 def expand_dims(x1, axis):
@@ -461,6 +464,28 @@ def repeat(x1, repeats, axis=None):
             return dpnp_repeat(x1_desc, repeat_val, axis).get_pyobj()
 
     return call_origin(numpy.repeat, x1, repeats, axis)
+
+
+def reshape(x1, newshape, order='C'):
+    """
+    Gives a new shape to an array without changing its data.
+
+    For full documentation refer to :obj:`numpy.reshape`.
+
+    Limitations
+    -----------
+    Only 'C' order is supported.
+
+    """
+
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if order != 'C':
+            pass
+        else:
+            return dpnp_reshape(x1_desc, newshape, order).get_pyobj()
+
+    return call_origin(numpy.reshape, x1, newshape, order)
 
 
 def rollaxis(x1, axis, start=0):

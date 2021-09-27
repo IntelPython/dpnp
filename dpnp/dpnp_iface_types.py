@@ -74,8 +74,10 @@ integer = numpy.integer
 int = numpy.int
 longcomplex = numpy.longcomplex
 
+
 def default_float_type():
     return float64
+
 
 def isscalar(obj):
     """
