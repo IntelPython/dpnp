@@ -542,7 +542,7 @@ def eye(N, M=None, k=0, dtype=None, order='C', **kwargs):
         elif len(kwargs) != 0:
             pass
         else:
-            return dpnp_eye(N, M=M, k=k, dtype=dtype)
+            return dpnp_eye(N, M=M, k=k, dtype=dtype).get_pyobj()
 
     if dtype is None:
         dtype = dpnp.float

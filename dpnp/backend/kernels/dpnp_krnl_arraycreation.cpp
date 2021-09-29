@@ -103,9 +103,7 @@ void dpnp_diag_c(
 template <typename _DataType>
 void dpnp_eye_c(void* result1, int k, const size_t* res_shape)
 {
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
-
-    if (result == nullptr)
+    if (result1 == nullptr)
     {
         return;
     }
@@ -115,6 +113,11 @@ void dpnp_eye_c(void* result1, int k, const size_t* res_shape)
         return;
     }
 
+    size_t result_size = res_shape[0] * res_shape[1];
+
+    DPNPC_ptr_adapter<_DataType> result_ptr(result1, result_size, true, true);
+    _DataType* result = result_ptr.get_ptr();
+
     int diag_val_;
     diag_val_ = std::min((int)res_shape[0], (int)res_shape[1]);
     diag_val_ = std::min(diag_val_, ((int)res_shape[0] + k));
@@ -122,9 +125,7 @@ void dpnp_eye_c(void* result1, int k, const size_t* res_shape)
 
     size_t diag_val = (diag_val_ < 0) ? 0 : (size_t)diag_val_;
 
-    size_t size = res_shape[0] * res_shape[1];
-
-    for (size_t i = 0; i < size; ++i)
+    for (size_t i = 0; i < result_size; ++i)
     {
         result[i] = 0;
         for (size_t j = 0; j < diag_val; j ++)
