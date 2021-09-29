@@ -1,3 +1,174 @@
+tests/test_arraymanipulation.py::TestConcatenate::test_concatenate
+tests/test_histograms.py::TestHistogram::test_density
+tests/test_indexing.py::test_take_along_axis
+tests/test_indexing.py::test_take_along_axis1
+tests/test_mathematical.py::test_nancumprod[array1]
+tests/test_mathematical.py::test_nancumprod[array2]
+tests/test_mathematical.py::test_nancumsum[array1]
+tests/test_mathematical.py::test_nancumsum[array2]
+tests/test_mathematical.py::TestGradient::test_gradient_y1[array0]
+tests/test_mathematical.py::TestGradient::test_gradient_y1[array1]
+tests/test_mathematical.py::TestGradient::test_gradient_y1[array2]
+tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[2-array0]
+tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[2-array1]
+tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[2-array2]
+tests/test_random.py::test_check_otput[random]
+tests/test_random.py::test_check_otput[random_sample]
+tests/test_random.py::test_check_otput[ranf]
+tests/test_random.py::test_check_otput[sample]
+tests/test_random.py::TestDistributionsMultinomial::test_check_sum
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.astype(dpnp.asarray(x), dpnp.int8)]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.astype(dpnp.asarray(x), object)]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.vstack([x, x]).T]
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayItem_param_0_{shape=()}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayItem_param_1_{shape=(1,)}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayItem_param_2_{shape=(1, 1, 1)}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayItemRaise_param_0_{shape=(0,)}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayItemRaise_param_1_{shape=(2, 3)}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayItemRaise_param_2_{shape=(1, 0, 1)}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes_param_0_{shape=()}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes_param_1_{shape=(1,)}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes_param_2_{shape=(2, 3)}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes_param_3_{order='C', shape=(2, 3)}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes_param_4_{order='F', shape=(2, 3)}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRoundHalfway_param_0_{decimals=-3}::test_round_halfway_float
+tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRoundHalfway_param_1_{decimals=-2}::test_round_halfway_float
+tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRoundHalfway_param_2_{decimals=-1}::test_round_halfway_float
+tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRoundHalfway_param_3_{decimals=0}::test_round_halfway_float
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asanyarray_with_order
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asarray_from_numpy
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asarray_preserves_numpy_array_order
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asarray_with_order
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_ascontiguousarray_on_contiguous_array
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_copy_order
+tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_construction
+tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_construction_from_list
+tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_construction_from_tuple
+tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_extraction_from_nested_list
+tests/third_party/cupy/creation_tests/test_matrix.py::TestMatrix::test_diag_extraction_from_nested_tuple
+tests/third_party/cupy/creation_tests/test_ranges.py::TestRanges::test_logspace_zero_num
+tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_1_{n_vals=0, shape=(2, 3)}::test_place
+tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_2_{n_vals=0, shape=(4, 3, 2)}::test_place
+tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_3_{n_vals=1, shape=(7,)}::test_place
+tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_4_{n_vals=1, shape=(2, 3)}::test_place
+tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_5_{n_vals=1, shape=(4, 3, 2)}::test_place
+tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_6_{n_vals=3, shape=(7,)}::test_place
+tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_7_{n_vals=3, shape=(2, 3)}::test_place
+tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_8_{n_vals=3, shape=(4, 3, 2)}::test_place
+tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_9_{n_vals=15, shape=(7,)}::test_place
+tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_10_{n_vals=15, shape=(2, 3)}::test_place
+tests/third_party/cupy/indexing_tests/test_insert.py::TestPlace_param_11_{n_vals=15, shape=(4, 3, 2)}::test_place
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_4_{shape=(3, 3), val=(2,), wrap=True}::test_1darray
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_4_{shape=(3, 3), val=(2,), wrap=True}::test_fill_diagonal
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_5_{shape=(3, 3), val=(2,), wrap=False}::test_1darray
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_5_{shape=(3, 3), val=(2,), wrap=False}::test_fill_diagonal
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_6_{shape=(3, 3), val=(2, 2), wrap=True}::test_1darray
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_6_{shape=(3, 3), val=(2, 2), wrap=True}::test_fill_diagonal
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_7_{shape=(3, 3), val=(2, 2), wrap=False}::test_1darray
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_7_{shape=(3, 3), val=(2, 2), wrap=False}::test_fill_diagonal
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_12_{shape=(2, 2, 2), val=(2,), wrap=True}::test_1darray
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_12_{shape=(2, 2, 2), val=(2,), wrap=True}::test_fill_diagonal
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_13_{shape=(2, 2, 2), val=(2,), wrap=False}::test_1darray
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_13_{shape=(2, 2, 2), val=(2,), wrap=False}::test_fill_diagonal
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_14_{shape=(2, 2, 2), val=(2, 2), wrap=True}::test_1darray
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_14_{shape=(2, 2, 2), val=(2, 2), wrap=True}::test_fill_diagonal
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_15_{shape=(2, 2, 2), val=(2, 2), wrap=False}::test_1darray
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_15_{shape=(2, 2, 2), val=(2, 2), wrap=False}::test_fill_diagonal
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_20_{shape=(3, 5), val=(2,), wrap=True}::test_1darray
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_20_{shape=(3, 5), val=(2,), wrap=True}::test_fill_diagonal
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_21_{shape=(3, 5), val=(2,), wrap=False}::test_1darray
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_21_{shape=(3, 5), val=(2,), wrap=False}::test_fill_diagonal
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_22_{shape=(3, 5), val=(2, 2), wrap=True}::test_1darray
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_22_{shape=(3, 5), val=(2, 2), wrap=True}::test_fill_diagonal
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_23_{shape=(3, 5), val=(2, 2), wrap=False}::test_1darray
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_23_{shape=(3, 5), val=(2, 2), wrap=False}::test_fill_diagonal
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_28_{shape=(5, 3), val=(2,), wrap=True}::test_1darray
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_28_{shape=(5, 3), val=(2,), wrap=True}::test_fill_diagonal
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_29_{shape=(5, 3), val=(2,), wrap=False}::test_1darray
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_29_{shape=(5, 3), val=(2,), wrap=False}::test_fill_diagonal
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_30_{shape=(5, 3), val=(2, 2), wrap=True}::test_1darray
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_30_{shape=(5, 3), val=(2, 2), wrap=True}::test_fill_diagonal
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_31_{shape=(5, 3), val=(2, 2), wrap=False}::test_1darray
+tests/third_party/cupy/indexing_tests/test_insert.py::TestFillDiagonal_param_31_{shape=(5, 3), val=(2, 2), wrap=False}::test_fill_diagonal
+tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumError::test_dim_mismatch_ellipsis2
+tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumError::test_dim_mismatch_ellipsis3
+tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumError::test_invalid_diagonal1
+tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumError::test_invalid_diagonal2
+tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumError::test_invalid_diagonal3
+tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumError::test_too_few_dimension
+tests/third_party/cupy/linalg_tests/test_einsum.py::TestEinSumError::test_too_many_dimension3
+tests/third_party/cupy/linalg_tests/test_einsum.py::TestListArgEinSumError::test_dim_mismatch3
+tests/third_party/cupy/linalg_tests/test_einsum.py::TestListArgEinSumError::test_too_many_dims3
+tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_outer
+tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_outer
+tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_reversed_vdot
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_7_{dst_shape=(0,), src=3.2}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_8_{dst_shape=(0,), src=0}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_9_{dst_shape=(0,), src=4}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_10_{dst_shape=(0,), src=-4}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_11_{dst_shape=(0,), src=True}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_12_{dst_shape=(0,), src=False}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_13_{dst_shape=(0,), src=(1+1j)}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_14_{dst_shape=(1,), src=3.2}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_15_{dst_shape=(1,), src=0}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_16_{dst_shape=(1,), src=4}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_17_{dst_shape=(1,), src=-4}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_18_{dst_shape=(1,), src=True}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_19_{dst_shape=(1,), src=False}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_20_{dst_shape=(1,), src=(1+1j)}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_21_{dst_shape=(1, 1), src=3.2}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_22_{dst_shape=(1, 1), src=0}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_23_{dst_shape=(1, 1), src=4}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_24_{dst_shape=(1, 1), src=-4}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_25_{dst_shape=(1, 1), src=True}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_26_{dst_shape=(1, 1), src=False}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_27_{dst_shape=(1, 1), src=(1+1j)}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_28_{dst_shape=(2, 2), src=3.2}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_29_{dst_shape=(2, 2), src=0}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_30_{dst_shape=(2, 2), src=4}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_31_{dst_shape=(2, 2), src=-4}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_32_{dst_shape=(2, 2), src=True}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_33_{dst_shape=(2, 2), src=False}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_basic.py::TestCopytoFromScalar_param_34_{dst_shape=(2, 2), src=(1+1j)}::test_copyto_where
+tests/third_party/cupy/manipulation_tests/test_shape.py::TestReshape::test_reshape_invalid_order
+tests/third_party/cupy/manipulation_tests/test_shape.py::TestReshape::test_reshape_with_changed_arraysize
+tests/third_party/cupy/manipulation_tests/test_shape.py::TestReshape::test_reshape_with_multiple_unknown_dimensions
+tests/third_party/cupy/manipulation_tests/test_shape.py::TestReshape::test_reshape_zerosize
+tests/third_party/cupy/manipulation_tests/test_shape.py::TestReshape::test_reshape_zerosize_invalid
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumprod::test_cumprod_out_noncontiguous
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_0_{axis=0}::test_cumsum_axis_out_noncontiguous
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_0_{axis=0}::test_cumsum_out_noncontiguous
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_1_{axis=1}::test_cumsum_axis_out_noncontiguous
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_1_{axis=1}::test_cumsum_out_noncontiguous
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_2_{axis=2}::test_cumsum_axis_out_noncontiguous
+tests/third_party/cupy/math_tests/test_sumprod.py::TestCumsum_param_2_{axis=2}::test_cumsum_out_noncontiguous
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsMultivariateNormal_param_0_{d=2, shape=(4, 3, 2)}::test_normal
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsMultivariateNormal_param_1_{d=2, shape=(3, 2)}::test_normal
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsMultivariateNormal_param_2_{d=4, shape=(4, 3, 2)}::test_normal
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsMultivariateNormal_param_3_{d=4, shape=(3, 2)}::test_normal
+tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_bound_1
+tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_bound_2
+tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_bound_float1
+tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_bound_float2
+tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_bound_overflow
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_axis1
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_axis2
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_kth
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_negative_axis1
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_negative_axis2
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_negative_kth
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_axis1
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_axis2
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_kth
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_negative_axis1
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_negative_axis2
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_negative_kth
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_axis
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_negative_axis
+tests/third_party/cupy/statistics_tests/test_correlation.py::TestCov::test_cov_empty
+tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_mean_axis
+tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_axis_ddof
+
 tests/test_linalg.py::test_eig_arange[16-float64]
 tests/test_linalg.py::test_eig_arange[16-float32]
 tests/test_linalg.py::test_eig_arange[16-int64]
@@ -251,25 +422,6 @@ tests/test_linalg.py::test_eig_arange[300-float32]
 tests/test_linalg.py::test_eig_arange[300-float64]
 tests/test_linalg.py::test_eig_arange[300-int32]
 tests/test_linalg.py::test_eig_arange[300-int64]
-tests/test_linalg.py::test_svd[(16,16)-float32]
-tests/test_linalg.py::test_svd[(16,16)-float64]
-tests/test_linalg.py::test_svd[(16,16)-int32]
-tests/test_linalg.py::test_svd[(16,16)-int64]
-tests/test_linalg.py::test_svd[(2,2)-float64]
-tests/test_linalg.py::test_svd[(2,2)-int32]
-tests/test_linalg.py::test_svd[(2,2)-int64]
-tests/test_linalg.py::test_svd[(3,4)-float32]
-tests/test_linalg.py::test_svd[(3,4)-float64]
-tests/test_linalg.py::test_svd[(3,4)-int32]
-tests/test_linalg.py::test_svd[(3,4)-int64]
-tests/test_linalg.py::test_svd[(5,3)-float32]
-tests/test_linalg.py::test_svd[(5,3)-float64]
-tests/test_linalg.py::test_svd[(5,3)-int32]
-tests/test_linalg.py::test_svd[(5,3)-int64]
-tests/test_linalg.py::test_svd[(2,2)-complex128]
-tests/test_linalg.py::test_svd[(3,4)-complex128]
-tests/test_linalg.py::test_svd[(5,3)-complex128]
-tests/test_linalg.py::test_svd[(16,16)-complex128]
 tests/test_logic.py::test_all[(0,)-float64]
 tests/test_logic.py::test_all[(0,)-float32]
 tests/test_logic.py::test_all[(0,)-int64]
