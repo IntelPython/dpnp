@@ -195,12 +195,8 @@ def array(x1, dtype=None, copy=True, order='C', subok=False, ndmin=0, like=None)
 
     if not dpnp.is_type_supported(dtype) and dtype is not None:
         pass
-    elif config.__DPNP_DPCTL_AVAILABLE__:
-        # TODO this is workaround becasue
-        # usm_array has no element wise assignment (aka []) and
-        # has no "flat" property and
-        # "usm_data.copy_from_host" doesn't work with diffrent datatypes
-        return numpy.array(x1, dtype=dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)
+    elif config.__DPNP_OUTPUT_DPCTL__:
+        return call_origin(numpy.array, x1, dtype=dtype, copy=copy, order=order, subok=subok, ndmin=ndmin)
     elif subok is not False:
         pass
     elif copy is not True:
@@ -679,7 +675,7 @@ def full_like(x1, fill_value, dtype=None, order='C', subok=False, shape=None):
         else:
             _shape = shape if shape is not None else x1.shape
             _dtype = dtype if dtype is not None else x1.dtype
-    
+
             return dpnp_full_like(_shape, fill_value, _dtype).get_pyobj()
 
     return numpy.full_like(x1, fill_value, dtype, order, subok, shape)
@@ -873,7 +869,7 @@ def logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0):
         if axis != 0:
             checker_throw_value_error("linspace", "axis", axis, 0)
 
-        return dpnp_logspace(start, stop, num, endpoint, base, dtype, axis)
+        return dpnp_logspace(start, stop, num, endpoint, base, dtype, axis).get_pyobj()
 
     return call_origin(numpy.logspace, start, stop, num, endpoint, base, dtype, axis)
 

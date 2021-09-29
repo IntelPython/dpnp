@@ -4,17 +4,30 @@ import dpnp
 import numpy
 
 
-@pytest.mark.parametrize("type",
+@pytest.mark.parametrize("dtype",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-                         ids=['float64', 'float32', 'int64', 'int32'])
-@pytest.mark.parametrize("input",
-                         [[1, 2, 3], [1., 2., 3.], dpnp.array([1, 2, 3]), dpnp.array([1., 2., 3.])],
-                         ids=['intlist', 'floatlist', 'intarray', 'floatarray'])
-def test_asfarray(type, input):
-    np_res = numpy.asfarray(input, type)
-    dpnp_res = dpnp.asfarray(input, type)
+                         ids=["float64", "float32", "int64", "int32"])
+@pytest.mark.parametrize("data",
+                         [[1, 2, 3], [1., 2., 3.]],
+                         ids=["[1, 2, 3]", "[1., 2., 3.]"])
+def test_asfarray(dtype, data):
+    expected = numpy.asfarray(data, dtype)
+    result = dpnp.asfarray(data, dtype)
 
-    numpy.testing.assert_array_equal(dpnp_res, np_res)
+    numpy.testing.assert_array_equal(result, expected)
+
+
+@pytest.mark.parametrize("dtype",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=["float64", "float32", "int64", "int32"])
+@pytest.mark.parametrize("data",
+                         [[1, 2, 3], [1., 2., 3.]],
+                         ids=["[1, 2, 3]", "[1., 2., 3.]"])
+def test_asfarray2(dtype, data):
+    expected = numpy.asfarray(numpy.array(data), dtype)
+    result = dpnp.asfarray(dpnp.array(data), dtype)
+
+    numpy.testing.assert_array_equal(result, expected)
 
 
 class TestConcatenate:
@@ -60,7 +73,7 @@ class TestConcatenate:
         # Arrays much match shape
         numpy.testing.assert_raises(ValueError, dpnp.concatenate, (a23.T, a13.T), 0)
         # 3D
-        res = dpnp.arange(2 * 3 * 7).reshape((2, 3, 7))
+        res = dpnp.reshape(dpnp.arange(2 * 3 * 7), (2, 3, 7))
         a0 = res[..., :4]
         a1 = res[..., 4:6]
         a2 = res[..., 6:]
@@ -68,7 +81,7 @@ class TestConcatenate:
         numpy.testing.assert_array_equal(dpnp.concatenate((a0, a1, a2), -1), res)
         numpy.testing.assert_array_equal(dpnp.concatenate((a0.T, a1.T, a2.T), 0), res.T)
 
-        out = res.copy()
+        out = dpnp.copy(res)
         rout = dpnp.concatenate((a0, a1, a2), 2, out=out)
         numpy.testing.assert_(out is rout)
         numpy.testing.assert_equal(res, rout)
