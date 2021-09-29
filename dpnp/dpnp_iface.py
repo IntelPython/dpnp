@@ -42,10 +42,13 @@ it contains:
 
 import os
 import numpy
+import numpy.lib.stride_tricks as np_st
+import dpnp.config as config
 import collections
 
+import dpctl
+
 from dpnp.dpnp_algo import *
-from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 from dpnp.fft import *
 from dpnp.linalg import *
@@ -54,11 +57,12 @@ from dpnp.random import *
 __all__ = [
     "array_equal",
     "asnumpy",
+    "astype",
+    "convert_single_elem_array_to_scalar",
     "dpnp_queue_initialize",
     "dpnp_queue_is_cpu",
     "get_dpnp_descriptor",
-    "get_include",
-    "matmul"
+    "get_include"
 ]
 
 from dpnp.dpnp_iface_arraycreation import *
@@ -131,11 +135,53 @@ def asnumpy(input, order='C'):
     This function works exactly the same as :obj:`numpy.asarray`.
 
     """
+    if config.__DPNP_OUTPUT_DPCTL__ and hasattr(input, "__sycl_usm_array_interface__"):
+        return dpctl.tensor.to_numpy(input)
 
     return numpy.asarray(input, order=order)
 
 
-def get_dpnp_descriptor(ext_obj):
+def astype(x1, dtype, order='K', casting='unsafe', subok=True, copy=True):
+    """Copy the array with data type casting."""
+    if config.__DPNP_OUTPUT_DPCTL__ and hasattr(x1, "__sycl_usm_array_interface__"):
+        import dpctl.tensor as dpt
+        # TODO: remove check dpctl.tensor has attribute "astype"
+        if hasattr(dpt, "astype"):
+            return dpt.astype(x1, dtype, order=order, casting=casting, copy=copy)
+
+    x1_desc = get_dpnp_descriptor(x1)
+    if not x1_desc:
+        pass
+    elif order != 'K':
+        pass
+    elif casting != 'unsafe':
+        pass
+    elif not subok:
+        pass
+    elif not copy:
+        pass
+    elif x1_desc.dtype == numpy.complex128 or dtype == numpy.complex128:
+        pass
+    elif x1_desc.dtype == numpy.complex64 or dtype == numpy.complex64:
+        pass
+    else:
+        return dpnp_astype(x1_desc, dtype).get_pyobj()
+
+    return call_origin(numpy.ndarray.astype, x1, dtype, order=order, casting=casting, subok=subok, copy=copy)
+
+
+def convert_single_elem_array_to_scalar(obj, keepdims=False):
+    """
+    Convert array with single element to scalar
+    """
+
+    if (obj.ndim > 0) and (obj.size == 1) and (keepdims is False):
+        return obj.dtype.type(obj[0])
+
+    return obj
+
+
+def get_dpnp_descriptor(ext_obj, copy_when_strides=True):
     """
     Return True:
       never
@@ -154,6 +200,14 @@ def get_dpnp_descriptor(ext_obj):
     if use_origin_backend():
         return False
 
+    # while dpnp functions have no implementation with strides support
+    # we need to create a non-strided copy
+    # if function get implementation for strides case
+    # then this behavior can be disabled with setting "copy_when_strides"
+    if copy_when_strides and getattr(ext_obj, "strides", None) is not None:
+        # TODO: replace this workaround when usm_ndarray will provide such functionality
+        ext_obj = array(ext_obj)
+
     dpnp_desc = dpnp_descriptor(ext_obj)
     if dpnp_desc.is_valid:
         return dpnp_desc
@@ -169,67 +223,3 @@ def get_include():
     dpnp_path = os.path.join(os.path.dirname(__file__), "backend", "include")
 
     return dpnp_path
-
-
-def matmul(in_array1, in_array2, out=None, **kwargs):
-    """
-    Matrix product of two arrays.
-
-    For full documentation refer to :obj:`numpy.matmul`.
-
-    Limitations
-    -----------
-    Input arrays are supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
-    Parameter ``out`` is supported as :obj:`dpnp.ndarray` and as default value ``None``.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    See Also
-    --------
-    :obj:`dpnp.vdot` : Complex-conjugating dot product.
-    :obj:`dpnp.tensordot` : Sum products over arbitrary axes.
-    :obj:`dpnp.einsum` : Einstein summation convention.
-    :obj:`dpnp.dot` : Alternative matrix product with
-                      different broadcasting rules.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> a = np.ones([9, 5, 7, 4])
-    >>> c = np.ones([9, 5, 4, 3])
-    >>> np.matmul(a, c).shape
-    (9, 5, 7, 3)
-    >>> a = np.array([[1, 0], [0, 1]])
-    >>> b = np.array([[4, 1], [2, 2]])
-    >>> np.matmul(a, b)
-    array([[4, 1],
-           [2, 2]])
-
-    """
-
-    if not use_origin_backend(in_array1) and not kwargs:
-        if not isinstance(in_array1, dparray):
-            pass
-        elif not isinstance(in_array2, dparray):
-            pass
-        elif out is not None and not isinstance(out, dparray):
-            pass
-        else:
-            """
-            Cost model checks
-            """
-
-            dparray1_size = in_array1.size
-            dparray2_size = in_array2.size
-            cost_size = 4096  # 2D array shape(64, 64)
-
-            if ((in_array1.dtype == numpy.float64) or (in_array1.dtype == numpy.float32)):
-                """
-                Floating point types are handled via original math library better than SYCL math library
-                """
-                cost_size = 262144  # 2D array shape(512, 512)
-
-            if (dparray1_size > cost_size) and (dparray2_size > cost_size):
-                return dpnp_matmul(in_array1, in_array2, out=out)
-
-    return call_origin(numpy.matmul, in_array1, in_array2, out=out, **kwargs)

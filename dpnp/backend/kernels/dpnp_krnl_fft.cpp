@@ -28,6 +28,7 @@
 #include <dpnp_iface.hpp>
 #include "dpnp_fptr.hpp"
 #include "dpnp_utils.hpp"
+#include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
 namespace mkl_dft = oneapi::mkl::dft;
@@ -51,8 +52,9 @@ void dpnp_fft_fft_c(const void* array1_in,
                     long input_boundarie,
                     size_t inverse)
 {
+    const size_t input_size = std::accumulate(input_shape, input_shape + shape_size, 1, std::multiplies<size_t>());
     const size_t result_size = std::accumulate(output_shape, output_shape + shape_size, 1, std::multiplies<size_t>());
-    if (!(result_size && shape_size))
+    if (!(input_size && result_size && shape_size))
     {
         return;
     }
@@ -60,7 +62,8 @@ void dpnp_fft_fft_c(const void* array1_in,
     cl::sycl::event event;
     const double kernel_pi = inverse ? -M_PI : M_PI;
 
-    const _DataType_input* array_1 = reinterpret_cast<const _DataType_input*>(array1_in);
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, input_size);
+    const _DataType_input* array_1 = input1_ptr.get_ptr();
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
 
     // kernel specific temporal data
@@ -104,6 +107,13 @@ void dpnp_fft_fft_c(const void* array1_in,
                 {
                     const _DataType_input* cmplx_ptr = array_1 + input_it;
                     const double* dbl_ptr = reinterpret_cast<const double*>(cmplx_ptr);
+                    in_real = *dbl_ptr;
+                    in_imag = *(dbl_ptr + 1);
+                }
+                else if constexpr (std::is_same<_DataType_input, std::complex<float>>::value)
+                {
+                    const _DataType_input* cmplx_ptr = array_1 + input_it;
+                    const float* dbl_ptr = reinterpret_cast<const float*>(cmplx_ptr);
                     in_real = *dbl_ptr;
                     in_imag = *(dbl_ptr + 1);
                 }
@@ -167,6 +177,8 @@ void func_map_init_fft_func(func_map_t& fmap)
                                                              (void*)dpnp_fft_fft_c<float, std::complex<double>>};
     fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_DBL][eft_DBL] = {eft_C128,
                                                              (void*)dpnp_fft_fft_c<double, std::complex<double>>};
+    fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_C64][eft_C64] = {
+        eft_C128, (void*)dpnp_fft_fft_c<std::complex<float>, std::complex<double>>};
     fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_C128][eft_C128] = {
         eft_C128, (void*)dpnp_fft_fft_c<std::complex<double>, std::complex<double>>};
     return;

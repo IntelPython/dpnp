@@ -30,7 +30,8 @@
  * to calculate sum of the given elements vector
  *
  * Possible compile line:
- * clang++ dpnp/backend/examples/example9.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example9
+ * . /opt/intel/oneapi/setvars.sh
+ * g++ -g dpnp/backend/examples/example9.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example9
  *
  */
 

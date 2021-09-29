@@ -43,7 +43,6 @@ it contains:
 import numpy
 
 from dpnp.dpnp_algo import *
-from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 
 import dpnp
@@ -90,22 +89,21 @@ def argsort(in_array1, axis=-1, kind=None, order=None):
 
     """
 
-    is_dparray1 = isinstance(in_array1, dparray)
-
-    if (not use_origin_backend(in_array1) and is_dparray1):
+    x1_desc = dpnp.get_dpnp_descriptor(in_array1)
+    if x1_desc:
         if axis != -1:
-            checker_throw_value_error("argsort", "axis", axis, -1)
-        if kind is not None:
-            checker_throw_value_error("argsort", "kind", type(kind), None)
-        if order is not None:
-            checker_throw_value_error("argsort", "order", type(order), None)
+            pass
+        elif kind is not None:
+            pass
+        elif order is not None:
+            pass
+        else:
+            return dpnp_argsort(x1_desc).get_pyobj()
 
-        return dpnp_argsort(in_array1)
-
-    return numpy.argsort(in_array1, axis, kind, order)
+    return call_origin(numpy.argsort, in_array1, axis, kind, order)
 
 
-def partition(arr, kth, axis=-1, kind='introselect', order=None):
+def partition(x1, kth, axis=-1, kind='introselect', order=None):
     """
     Return a partitioned copy of an array.
     For full documentation refer to :obj:`numpy.partition`.
@@ -116,12 +114,12 @@ def partition(arr, kth, axis=-1, kind='introselect', order=None):
     Input kth is supported as :obj:`int`.
     Parameters ``axis``, ``kind`` and ``order`` are supported only with default values.
     """
-    if not use_origin_backend():
-        if not isinstance(arr, dparray):
+
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
+        if not isinstance(kth, int):
             pass
-        elif not isinstance(kth, int):
-            pass
-        elif kth >= arr.shape[arr.ndim - 1] or arr.ndim + kth < 0:
+        elif kth >= x1_desc.shape[x1_desc.ndim - 1] or x1_desc.ndim + kth < 0:
             pass
         elif axis != -1:
             pass
@@ -130,12 +128,12 @@ def partition(arr, kth, axis=-1, kind='introselect', order=None):
         elif order is not None:
             pass
         else:
-            return dpnp_partition(arr, kth, axis, kind, order)
+            return dpnp_partition(x1_desc, kth, axis, kind, order).get_pyobj()
 
-    return call_origin(numpy.partition, arr, kth, axis, kind, order)
+    return call_origin(numpy.partition, x1, kth, axis, kind, order)
 
 
-def searchsorted(arr, v, side='left', sorter=None):
+def searchsorted(x1, x2, side='left', sorter=None):
     """
     Find indices where elements should be inserted to maintain order.
     For full documentation refer to :obj:`numpy.searchsorted`.
@@ -147,25 +145,24 @@ def searchsorted(arr, v, side='left', sorter=None):
     Input side is supported only values ``left``, ``right``.
     Parameters ``sorter`` is supported only with default values.
     """
-    if not use_origin_backend():
-        if not isinstance(arr, dparray):
+
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    if 0 and x1_desc and x2_desc:
+        if x1_desc.ndim != 1:
             pass
-        elif dpnp.sort(arr) != arr:
-            pass
-        elif not isinstance(v, dparray):
-            pass
-        elif arr.ndim != 1:
-            pass
-        elif arr.dtype != v.dtype:
+        elif x1_desc.dtype != x2_desc.dtype:
             pass
         elif side not in ['left', 'right']:
             pass
         elif sorter is not None:
             pass
+        elif x1_desc.size < 2:
+            pass
         else:
-            return dpnp_searchsorted(arr, v, side=side)
+            return dpnp_searchsorted(x1_desc, x2_desc, side=side).get_pyobj()
 
-        return call_origin(numpy.searchsorted, arr, v, side=side, sorter=sorter)
+    return call_origin(numpy.searchsorted, x1, x2, side=side, sorter=sorter)
 
 
 def sort(x1, **kwargs):
@@ -198,12 +195,12 @@ def sort(x1, **kwargs):
     [1, 1, 3, 4]
 
     """
-    if not use_origin_backend(x1) and not kwargs:
-        if not isinstance(x1, dparray):
-            pass
-        elif x1.ndim != 1:
+
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc and not kwargs:
+        if x1_desc.ndim != 1:
             pass
         else:
-            return dpnp_sort(x1)
+            return dpnp_sort(x1_desc).get_pyobj()
 
     return call_origin(numpy.sort, x1, **kwargs)

@@ -64,7 +64,7 @@ _project_compiler = "dpcpp"
 _project_linker = "dpcpp"
 _project_cmplr_flag_sycl_devel = ["-fsycl-device-code-split=per_kernel"]
 _project_cmplr_flag_sycl = ["-fsycl"]
-_project_cmplr_flag_stdcpp_static = ["-static-libstdc++", "-static-libgcc"]
+_project_cmplr_flag_stdcpp_static = []  # This brakes TBB ["-static-libstdc++", "-static-libgcc"]
 _project_cmplr_flag_compatibility = ["-Wl,--enable-new-dtags"]
 _project_cmplr_flag_lib = ["-shared"]
 _project_cmplr_flag_release_build = ["-O3", "-DNDEBUG", "-fPIC"]
@@ -178,6 +178,7 @@ dpnp_backend_c_description = [
                 "dpnp/backend/kernels/dpnp_krnl_statistics.cpp",
                 "dpnp/backend/src/dpnp_iface_fptr.cpp",
                 "dpnp/backend/src/memory_sycl.cpp",
+                "dpnp/backend/src/constants.cpp"
                 "dpnp/backend/src/queue_sycl.cpp"
             ],
         }

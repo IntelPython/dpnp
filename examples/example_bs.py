@@ -55,23 +55,26 @@ RISK_FREE = 0.1
 VOLATILITY = 0.2
 
 
-def black_scholes(price, strike, t, mrs, vol_vol_twos, quarters, ones, halfs, call, put):
+def black_scholes(price, strike, t, rate, vol, call, put):
+    mr = -rate
+    sig_sig_two = vol * vol * 2
+
     P = price
     S = strike
     T = t
 
     a = np.log(P / S)
-    b = T * mrs
+    b = T * mr
 
-    z = T * vol_vol_twos
-    c = quarters * z
-    y = ones / np.sqrt(z)
+    z = T * sig_sig_two
+    c = 0.25 * z
+    y = 1. / np.sqrt(z)
 
     w1 = (a - b + c) * y
     w2 = (a - b - c) * y
 
-    d1 = halfs + halfs * np.erf(w1)
-    d2 = halfs + halfs * np.erf(w2)
+    d1 = 0.5 + 0.5 * np.erf(w1)
+    d2 = 0.5 + 0.5 * np.erf(w2)
 
     Se = np.exp(b) * S
 
@@ -85,18 +88,9 @@ price = np.random.uniform(PL, PH, SIZE)
 strike = np.random.uniform(SL, SH, SIZE)
 t = np.random.uniform(TL, TH, SIZE)
 
-call = np.full(SIZE, 0, dtype=DTYPE)
-put = np.full(SIZE, -1, dtype=DTYPE)
+call = np.zeros(SIZE, dtype=DTYPE)
+put = -np.ones(SIZE, dtype=DTYPE)
 
-mrs = np.full(SIZE, -RISK_FREE, dtype=DTYPE)
-
-vol = VOLATILITY
-vol_vol_twos = np.full(SIZE, vol * vol * 2, dtype=DTYPE)
-
-quarters = np.full(SIZE, 0.25, dtype=DTYPE)
-ones = np.full(SIZE, 1, dtype=DTYPE)
-halfs = np.full(SIZE, 0.5, dtype=DTYPE)
-
-black_scholes(price, strike, t, mrs, vol_vol_twos, quarters, ones, halfs, call, put)
+black_scholes(price, strike, t, RISK_FREE, VOLATILITY, call, put)
 print(call[:10])
 print(put[:10])

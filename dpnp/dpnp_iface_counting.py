@@ -40,20 +40,20 @@ it contains:
 """
 
 
+import dpnp
 import numpy
 
-from dpnp.dpnp_algo.dpnp_algo import *  # TODO need to investigate why dpnp.dpnp_algo can not be used
-from dpnp.dparray import dparray
+import dpnp.config as config
+from dpnp.dpnp_utils import *
 
-# full module name because dpnp_iface_counting loaded from cython too early
-from dpnp.dpnp_utils.dpnp_algo_utils import *
+from dpnp.dpnp_algo.dpnp_algo import *  # TODO need to investigate why dpnp.dpnp_algo can not be used
 
 __all__ = [
     'count_nonzero'
 ]
 
 
-def count_nonzero(in_array1, axis=None, *, keepdims=False):
+def count_nonzero(x1, axis=None, *, keepdims=False):
     """
     Counts the number of non-zero values in the array ``in_array1``.
 
@@ -61,7 +61,7 @@ def count_nonzero(in_array1, axis=None, *, keepdims=False):
 
     Limitations
     -----------
-        Parameter ``in_array1`` is supported as :obj:`dpnp.ndarray`.
+        Parameter ``x1`` is supported as :obj:`dpnp.ndarray`.
         Otherwise the function will be executed sequentially on CPU.
         Parameter ``axis`` is supported only with default value `None`.
         Parameter ``keepdims`` is supported only with default value `False`.
@@ -75,21 +75,16 @@ def count_nonzero(in_array1, axis=None, *, keepdims=False):
     5
 
     """
-
-    is_dparray1 = isinstance(in_array1, dparray)
-
-    if (not use_origin_backend(in_array1) and is_dparray1):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    if x1_desc:
         if axis is not None:
-            checker_throw_value_error("count_nonzero", "axis", type(axis), None)
-        if keepdims is not False:
-            checker_throw_value_error("count_nonzero", "keepdims", keepdims, False)
+            pass
+        elif keepdims is not False:
+            pass
+        else:
+            result_obj = dpnp_count_nonzero(x1_desc).get_pyobj()
+            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
-        result = dpnp_count_nonzero(in_array1)
+            return result
 
-        # scalar returned
-        if result.shape == (1,):
-            return result.dtype.type(result[0])
-
-        return result
-
-    return numpy.count_nonzero(in_array1, axis, keepdims=keepdims)
+    return call_origin(numpy.count_nonzero, x1, axis, keepdims=keepdims)
