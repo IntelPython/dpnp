@@ -35,6 +35,8 @@ namespace mkl_dft = oneapi::mkl::dft;
 
 typedef mkl_dft::descriptor<mkl_dft::precision::DOUBLE, mkl_dft::domain::COMPLEX> desc_dp_cmplx_t;
 typedef mkl_dft::descriptor<mkl_dft::precision::SINGLE, mkl_dft::domain::COMPLEX> desc_sp_cmplx_t;
+typedef mkl_dft::descriptor<mkl_dft::precision::DOUBLE, mkl_dft::domain::REAL> desc_dp_real_t;
+typedef mkl_dft::descriptor<mkl_dft::precision::SINGLE, mkl_dft::domain::REAL> desc_sp_real_t;
 
 #ifdef _WIN32
 #ifndef M_PI // Windows compatibility
@@ -162,8 +164,12 @@ void dpnp_fft_fft_sycl_c(const void* array1_in,
 }
 
 template <typename _DataType_input, typename _DataType_output, typename _Descriptor_type>
-void dpnp_fft_fft_mathlib_compute_c(
-    const void* array1_in, void* result1, const size_t shape_size, const size_t result_size, _Descriptor_type& desc)
+void dpnp_fft_fft_mathlib_compute_c(const void* array1_in,
+                                    void* result1,
+                                    const size_t shape_size,
+                                    const size_t result_size,
+                                    _Descriptor_type& desc,
+                                    const size_t norm)
 {
     cl::sycl::event event;
 
@@ -177,15 +183,22 @@ void dpnp_fft_fft_mathlib_compute_c(
     // instead of mkl_dft::config_value::NOT_INPLACE
     desc.set_value(mkl_dft::config_param::PLACEMENT, DFTI_NOT_INPLACE);
     desc.commit(DPNP_QUEUE);
+
     event = mkl_dft::compute_forward(desc, array_1, result);
+
     event.wait();
 
     return;
 }
 
+// norm: backward - 0, forward is 1
 template <typename _DataType_input, typename _DataType_output>
-void dpnp_fft_fft_mathlib_c(
-    const void* array1_in, void* result1, const long* input_shape, const size_t shape_size, const size_t result_size)
+void dpnp_fft_fft_mathlib_c(const void* array1_in,
+                            void* result1,
+                            const long* input_shape,
+                            const size_t shape_size,
+                            const size_t result_size,
+                            const size_t norm)
 {
     if (!shape_size || !result_size || !array1_in || !result1)
     {
@@ -200,13 +213,13 @@ void dpnp_fft_fft_mathlib_c(
         {
             desc_dp_cmplx_t desc(result_size);
             dpnp_fft_fft_mathlib_compute_c<_DataType_input, _DataType_output, desc_dp_cmplx_t>(
-                array1_in, result1, shape_size, result_size, desc);
+                array1_in, result1, shape_size, result_size, desc, norm);
         }
         else
         {
             desc_dp_cmplx_t desc(dimensions);
             dpnp_fft_fft_mathlib_compute_c<_DataType_input, _DataType_output, desc_dp_cmplx_t>(
-                array1_in, result1, shape_size, result_size, desc);
+                array1_in, result1, shape_size, result_size, desc, norm);
         }
     }
     else if (std::is_same<_DataType_input, std::complex<float>>::value &&
@@ -216,13 +229,13 @@ void dpnp_fft_fft_mathlib_c(
         {
             desc_sp_cmplx_t desc(result_size);
             dpnp_fft_fft_mathlib_compute_c<_DataType_input, _DataType_output, desc_sp_cmplx_t>(
-                array1_in, result1, shape_size, result_size, desc);
+                array1_in, result1, shape_size, result_size, desc, norm);
         }
         else
         {
             desc_sp_cmplx_t desc(dimensions);
             dpnp_fft_fft_mathlib_compute_c<_DataType_input, _DataType_output, desc_sp_cmplx_t>(
-                array1_in, result1, shape_size, result_size, desc);
+                array1_in, result1, shape_size, result_size, desc, norm);
         }
     }
     return;
@@ -236,7 +249,8 @@ void dpnp_fft_fft_c(const void* array1_in,
                     size_t shape_size,
                     long axis,
                     long input_boundarie,
-                    size_t inverse)
+                    size_t inverse,
+                    const size_t norm)
 {
     if (!shape_size)
     {
@@ -258,7 +272,7 @@ void dpnp_fft_fft_c(const void* array1_in,
         (shape_size <= 3))
     {
         dpnp_fft_fft_mathlib_c<_DataType_input, _DataType_output>(
-            array1_in, result1, input_shape, shape_size, result_size);
+            array1_in, result1, input_shape, shape_size, result_size, norm);
     }
     else
     {
