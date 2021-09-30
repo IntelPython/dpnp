@@ -39,14 +39,5 @@ __all__ += [
 ]
 
 
-cpdef dparray dpnp_count_nonzero(dparray in_array1):
-    cdef dparray result = dparray((1,), dtype=numpy.int64)
-
-    count = 0
-    for i in range(in_array1.size):
-        if in_array1[i] != 0:
-            count += 1
-
-    result[0] = count
-
-    return result
+cpdef utils.dpnp_descriptor dpnp_count_nonzero(utils.dpnp_descriptor x1):
+    return call_fptr_1in_1out(DPNP_FN_COUNT_NONZERO, x1, (1,))

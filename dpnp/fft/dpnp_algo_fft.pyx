@@ -41,30 +41,34 @@ __all__ = [
     "dpnp_fft"
 ]
 
-ctypedef void(*fptr_dpnp_fft_fft_t)(void *, void * , long * , long * , size_t, long, long, size_t)
+ctypedef void(*fptr_dpnp_fft_fft_t)(void *, void * , long * , long * , size_t, long, long, size_t, size_t)
 
 
-cpdef dparray dpnp_fft(utils.dpnp_descriptor input, size_t input_boundarie, size_t output_boundarie, long axis, size_t inverse):
+cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
+                                     size_t input_boundarie,
+                                     size_t output_boundarie,
+                                     long axis,
+                                     size_t inverse,
+                                     size_t norm):
 
-    cdef dparray_shape_type input_shape = input.shape
-    cdef dparray_shape_type output_shape = input_shape
+    cdef shape_type_c input_shape = input.shape
+    cdef shape_type_c output_shape = input_shape
 
     cdef long axis_norm = utils.normalize_axis((axis,), input_shape.size())[0]
     output_shape[axis_norm] = output_boundarie
 
-    # convert string type names (dparray.dtype) to C enum DPNPFuncType
+    # convert string type names (dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(input.dtype)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FFT_FFT, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
     # ceate result array with type given by FPTR data
-    cdef dparray result = dparray(output_shape, dtype=result_type)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(output_shape, kernel_data.return_type, None)
 
     cdef fptr_dpnp_fft_fft_t func = <fptr_dpnp_fft_fft_t > kernel_data.ptr
     # call FPTR function
     func(input.get_data(), result.get_data(), input_shape.data(),
-         output_shape.data(), input_shape.size(), axis_norm, input_boundarie, inverse)
+         output_shape.data(), input_shape.size(), axis_norm, input_boundarie, inverse, norm)
 
     return result

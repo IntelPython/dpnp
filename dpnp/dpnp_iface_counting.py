@@ -40,16 +40,13 @@ it contains:
 """
 
 
+import dpnp
+import numpy
+
+import dpnp.config as config
+from dpnp.dpnp_utils import *
+
 from dpnp.dpnp_algo.dpnp_algo import *  # TODO need to investigate why dpnp.dpnp_algo can not be used
-
-import dpnp
-import numpy
-
-# full module name because dpnp_iface_counting loaded from cython too early
-from dpnp.dpnp_utils.dpnp_algo_utils import *
-
-import dpnp
-import numpy
 
 __all__ = [
     'count_nonzero'
@@ -64,7 +61,7 @@ def count_nonzero(x1, axis=None, *, keepdims=False):
 
     Limitations
     -----------
-        Parameter ``in_array1`` is supported as :obj:`dpnp.ndarray`.
+        Parameter ``x1`` is supported as :obj:`dpnp.ndarray`.
         Otherwise the function will be executed sequentially on CPU.
         Parameter ``axis`` is supported only with default value `None`.
         Parameter ``keepdims`` is supported only with default value `False`.
@@ -78,7 +75,6 @@ def count_nonzero(x1, axis=None, *, keepdims=False):
     5
 
     """
-
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
         if axis is not None:
@@ -86,9 +82,9 @@ def count_nonzero(x1, axis=None, *, keepdims=False):
         elif keepdims is not False:
             pass
         else:
-            result_obj = dpnp_count_nonzero(x1)
+            result_obj = dpnp_count_nonzero(x1_desc).get_pyobj()
             result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
             return result
 
-    return numpy.count_nonzero(x1, axis, keepdims=keepdims)
+    return call_origin(numpy.count_nonzero, x1, axis, keepdims=keepdims)

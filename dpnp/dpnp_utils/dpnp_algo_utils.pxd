@@ -28,8 +28,10 @@
 from libcpp cimport bool as cpp_bool
 from libcpp.vector cimport vector
 
-from dpnp.dparray cimport dparray, dparray_shape_type
 from dpnp.dpnp_algo.dpnp_algo cimport DPNPFuncType, DPNPFuncName
+
+
+ctypedef vector.vector[long] shape_type_c
 
 
 cpdef checker_throw_runtime_error(function_name, message)
@@ -77,17 +79,17 @@ Return:
 cpdef tuple _object_to_tuple(object obj)
 cdef int _normalize_order(order, cpp_bool allow_k=*) except? 0
 
-cpdef dparray_shape_type normalize_axis(object axis, size_t shape_size)
+cpdef shape_type_c normalize_axis(object axis, size_t shape_size)
 """
 Conversion of the transformation shape axis [-1, 0, 1] into [2, 0, 1] where numbers are `id`s of array shape axis
 """
 
 cdef tuple get_shape_dtype(object input_obj)
 """
-input_obj: Complex object with lists, scalars and dparrays
+input_obj: Complex object with lists, scalars and numpy-like arrays
 
 Returns a tuple of:
-1. concatenated shape, empty `dparray_shape_type` if unsuccessful.
+1. concatenated shape, empty `shape_type_c` if unsuccessful.
 2. dtype
 """
 
@@ -96,10 +98,6 @@ cpdef find_common_type(object x1_obj, object x2_obj)
 Find common type of 2 input objects
 """
 
-cdef long copy_values_to_dparray(dparray dst, input_obj, size_t dst_idx=*) except -1
-"""
-Copy values to `dst` by iterating element by element in `input_obj`
-"""
 
 cpdef long _get_linear_index(key, tuple shape, int ndim)
 """
@@ -116,20 +114,11 @@ cpdef tuple get_axis_offsets(shape)
 Compute axis offsets in the linear array memory
 """
 
-cpdef dp2nd_array(arr)
-"""
-Convert dparray to ndarray
-"""
-
-cpdef nd2dp_array(arr)
-"""
-Convert ndarray to dparray
-"""
-
 cdef class dpnp_descriptor:
     """array DPNP descriptor"""
 
     cdef public:  # TODO remove "public" as python accessible attribute
+        object origin_pyobj
         dict descriptor
         Py_ssize_t dpnp_descriptor_data_size
         cpp_bool dpnp_descriptor_is_scalar
@@ -137,12 +126,12 @@ cdef class dpnp_descriptor:
     cdef void * get_data(self)
 
 
-cdef dparray_shape_type get_common_shape(dparray_shape_type input1_shape, dparray_shape_type input2_shape)
+cdef shape_type_c get_common_shape(shape_type_c input1_shape, shape_type_c input2_shape)
 """
 Calculate common shape from input shapes
 """
 
-cdef dparray_shape_type get_reduction_output_shape(dparray_shape_type input_shape, object axis, cpp_bool keepdims)
+cdef shape_type_c get_reduction_output_shape(shape_type_c input_shape, object axis, cpp_bool keepdims)
 """
 Calculate output array shape in reduction functions
 """
@@ -155,7 +144,9 @@ cdef DPNPFuncType get_output_c_type(DPNPFuncName funcID,
 Calculate output array type by 'out' and 'dtype' cast parameters
 """
 
-cdef dparray create_output_array(dparray_shape_type output_shape, DPNPFuncType c_type, object requested_out)
+cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
+                                              DPNPFuncType c_type,
+                                              dpnp_descriptor requested_out)
 """
-Create output array based on shape, type and 'out' parameters
+Create output dpnp_descriptor based on shape, type and 'out' parameters
 """

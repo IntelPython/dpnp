@@ -42,6 +42,7 @@ from dpnp.dpnp_iface import *
 # to avoid interference with Python internal functions
 from dpnp.dpnp_iface import sum as iface_sum
 from dpnp.dpnp_iface import prod as iface_prod
+from dpnp.dpnp_iface import get_dpnp_descriptor as iface_get_dpnp_descriptor
 
 from dpnp.dpnp_algo cimport *
 from dpnp.dpnp_iface_statistics import min, max  # TODO do the same as for iface_sum
@@ -386,7 +387,7 @@ cdef class dparray:
 
         if key_is_slice or key_has_slice:
             # fallback to numpy in case of slicing
-            return utils.nd2dp_array(utils.dp2nd_array(self)[key])
+            return nd2dp_array(dp2nd_array(self)[key])
 
         lin_idx = utils._get_linear_index(key, self.shape, self.ndim)
 
@@ -514,11 +515,12 @@ cdef class dparray:
                 if order == 'F':
                     return self.transpose().reshape(self.size)
 
-                return dpnp_flatten(self)
+                self_desc = iface_get_dpnp_descriptor(self)
+                return dpnp_flatten(self_desc).get_pyobj()
 
-        result = utils.dp2nd_array(self).flatten(order=order)
+        result = dp2nd_array(self).flatten(order=order)
 
-        return utils.nd2dp_array(result)
+        return nd2dp_array(result)
 
     def ravel(self, order='C'):
         """
@@ -794,14 +796,17 @@ cdef class dparray:
             pass
         elif order is not 'K':
             pass
-        elif self.dtype == numpy.complex128:
+        elif self.dtype == numpy.complex128 or dtype == numpy.complex128:
+            pass
+        elif self.dtype == numpy.complex64 or dtype == numpy.complex64:
             pass
         else:
-            return dpnp_astype(self, dtype)
+            self_desc = iface_get_dpnp_descriptor(self)
+            return dpnp_astype(self_desc, dtype).get_pyobj()
 
-        result = utils.dp2nd_array(self).astype(dtype=dtype, order=order, casting=casting, subok=subok, copy=copy)
+        result = dp2nd_array(self).astype(dtype=dtype, order=order, casting=casting, subok=subok, copy=copy)
 
-        return utils.nd2dp_array(result)
+        return nd2dp_array(result)
 
     def conj(self):
         """
@@ -1271,3 +1276,20 @@ cdef class dparray:
         """
 
         return asnumpy(self).tostring(order)
+
+
+def dp2nd_array(arr):
+    """Convert dparray to ndarray"""
+    return asnumpy(arr) if isinstance(arr, dparray) else arr
+
+
+def nd2dp_array(arr):
+    """Convert ndarray to dparray"""
+    if not isinstance(arr, numpy.ndarray):
+        return arr
+
+    result = dparray(arr.shape, dtype=arr.dtype)
+    for i in range(result.size):
+        result._setitem_scalar(i, arr.item(i))
+
+    return result

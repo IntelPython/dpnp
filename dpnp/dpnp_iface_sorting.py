@@ -43,7 +43,6 @@ it contains:
 import numpy
 
 from dpnp.dpnp_algo import *
-from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 
 import dpnp
@@ -93,15 +92,15 @@ def argsort(in_array1, axis=-1, kind=None, order=None):
     x1_desc = dpnp.get_dpnp_descriptor(in_array1)
     if x1_desc:
         if axis != -1:
-            checker_throw_value_error("argsort", "axis", axis, -1)
-        if kind is not None:
-            checker_throw_value_error("argsort", "kind", type(kind), None)
-        if order is not None:
-            checker_throw_value_error("argsort", "order", type(order), None)
+            pass
+        elif kind is not None:
+            pass
+        elif order is not None:
+            pass
+        else:
+            return dpnp_argsort(x1_desc).get_pyobj()
 
-        return dpnp_argsort(x1_desc)
-
-    return numpy.argsort(in_array1, axis, kind, order)
+    return call_origin(numpy.argsort, in_array1, axis, kind, order)
 
 
 def partition(x1, kth, axis=-1, kind='introselect', order=None):
@@ -129,7 +128,7 @@ def partition(x1, kth, axis=-1, kind='introselect', order=None):
         elif order is not None:
             pass
         else:
-            return dpnp_partition(x1_desc, kth, axis, kind, order)
+            return dpnp_partition(x1_desc, kth, axis, kind, order).get_pyobj()
 
     return call_origin(numpy.partition, x1, kth, axis, kind, order)
 
@@ -161,7 +160,7 @@ def searchsorted(x1, x2, side='left', sorter=None):
         elif x1_desc.size < 2:
             pass
         else:
-            return dpnp_searchsorted(x1_desc, x2_desc, side=side)
+            return dpnp_searchsorted(x1_desc, x2_desc, side=side).get_pyobj()
 
     return call_origin(numpy.searchsorted, x1, x2, side=side, sorter=sorter)
 
@@ -202,6 +201,6 @@ def sort(x1, **kwargs):
         if x1_desc.ndim != 1:
             pass
         else:
-            return dpnp_sort(x1_desc)
+            return dpnp_sort(x1_desc).get_pyobj()
 
     return call_origin(numpy.sort, x1, **kwargs)

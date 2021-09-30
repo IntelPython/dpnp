@@ -27,9 +27,11 @@
 #include <iostream>
 
 #include <dpnp_iface.hpp>
+
 #include "dpnp_fptr.hpp"
 #include "dpnp_iterator.hpp"
 #include "dpnp_utils.hpp"
+#include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
 #define MACRO_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)                                                 \
@@ -40,8 +42,9 @@
     void __name__(void* array1_in, void* result1, size_t size)                                                         \
     {                                                                                                                  \
         cl::sycl::event event;                                                                                         \
+        DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, size);                                                \
                                                                                                                        \
-        _DataType_input* array1 = reinterpret_cast<_DataType_input*>(array1_in);                                       \
+        _DataType_input* array1 = input1_ptr.get_ptr();                                                                \
         _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);                                       \
                                                                                                                        \
         cl::sycl::range<1> gws(size);                                                                                  \
@@ -259,7 +262,8 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
             return;                                                                                                    \
         }                                                                                                              \
                                                                                                                        \
-        _DataType* array1 = reinterpret_cast<_DataType*>(array1_in);                                                   \
+        DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);                                                      \
+        _DataType* array1 = input1_ptr.get_ptr();                                                                      \
         _DataType* result = reinterpret_cast<_DataType*>(result1);                                                     \
                                                                                                                        \
         cl::sycl::range<1> gws(size);                                                                                  \
@@ -366,8 +370,10 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
             return;                                                                                                    \
         }                                                                                                              \
                                                                                                                        \
-        _DataType_input1* input1_data = reinterpret_cast<_DataType_input1*>(const_cast<void*>(input1_in));             \
-        _DataType_input2* input2_data = reinterpret_cast<_DataType_input2*>(const_cast<void*>(input2_in));             \
+        DPNPC_ptr_adapter<_DataType_input1> input1_ptr(input1_in, input1_size);                                        \
+        DPNPC_ptr_adapter<_DataType_input2> input2_ptr(input2_in, input2_size);                                        \
+        _DataType_input1* input1_data = input1_ptr.get_ptr();                                                          \
+        _DataType_input2* input2_data = input2_ptr.get_ptr();                                                          \
         _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);                                    \
                                                                                                                        \
         std::vector<size_t> result_shape =                                                                             \

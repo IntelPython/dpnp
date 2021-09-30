@@ -91,17 +91,15 @@ def dot(x1, x2, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
+    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_strides=False)
     if x1_desc and x2_desc and not kwargs:
-        dim1 = x1_desc.ndim
-        dim2 = x2_desc.ndim
-
-        if not (dim1 >= 2 and dim2 == 1) and not (dim1 >= 2 and dim2 >= 2) and (x1_desc.dtype == x2_desc.dtype):
-            result_obj = dpnp_dot(x1_desc, x2_desc)
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
-
-            return result
+        # TODO: remove fallback with scalars when muliply backend func will support strides
+        if(x1_desc.ndim == 0 and x2_desc.strides is not None
+                or x2_desc.ndim == 0 and x1_desc.strides is not None):
+            pass
+        else:
+            return dpnp_dot(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.dot, x1, x2, **kwargs)
 
@@ -183,8 +181,8 @@ def inner(x1, x2, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     x2_desc = dpnp.get_dpnp_descriptor(x2)
-    if 0 and x1_desc and x2_desc and not kwargs:
-        return dpnp_inner(x1_desc, x2_desc)
+    if x1_desc and x2_desc and not kwargs:
+        return dpnp_inner(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.inner, x1, x2, **kwargs)
 
@@ -202,7 +200,7 @@ def kron(x1, x2):
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     x2_desc = dpnp.get_dpnp_descriptor(x2)
     if x1_desc and x2_desc:
-        return dpnp_kron(x1_desc, x2_desc)
+        return dpnp_kron(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.kron, x1, x2)
 
@@ -245,9 +243,8 @@ def matmul(x1, x2, out=None, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     x2_desc = dpnp.get_dpnp_descriptor(x2)
-    out_desc = dpnp.get_dpnp_descriptor(x2)
-    if x1_desc and x2_desc and out_desc and not kwargs:
-        if x1_desc.size != x2_desc.size:
+    if x1_desc and x2_desc and not kwargs:
+        if x1_desc.ndim != 2 or x2_desc.ndim != 2:
             pass
         elif not x1_desc.ndim:
             pass
@@ -263,8 +260,8 @@ def matmul(x1, x2, out=None, **kwargs):
                 Cost model checks
                 """
 
-                dparray1_size = x1_desc.size
-                dparray2_size = x2_desc.size
+                array1_size = x1_desc.size
+                array2_size = x2_desc.size
                 cost_size = 4096  # 2D array shape(64, 64)
 
                 if ((x1_desc.dtype == numpy.float64) or (x1_desc.dtype == numpy.float32)):
@@ -273,10 +270,11 @@ def matmul(x1, x2, out=None, **kwargs):
                     """
                     cost_size = 262144  # 2D array shape(512, 512)
 
-                if (dparray1_size > cost_size) and (dparray2_size > cost_size):
+                if (array1_size > cost_size) and (array2_size > cost_size):
                     return dpnp_matmul(x1_desc, x2_desc, out)
             else:
-                return dpnp_matmul(x1_desc, x2_desc, out)
+                out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+                return dpnp_matmul(x1_desc, x2_desc, out_desc).get_pyobj()
 
     return call_origin(numpy.matmul, x1, x2, out=out, **kwargs)
 
@@ -312,8 +310,8 @@ def outer(x1, x2, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     x2_desc = dpnp.get_dpnp_descriptor(x2)
-    if 0 and x1_desc and x2_desc and not kwargs:
-        return dpnp_outer(x1_desc, x2_desc)
+    if x1_desc and x2_desc and not kwargs:
+        return dpnp_outer(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.outer, x1, x2, **kwargs)
 

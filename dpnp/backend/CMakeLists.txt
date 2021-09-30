@@ -27,8 +27,8 @@
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-# set(DPNP_VERSION 0.6.2)
-# set(DPNP_API_VERSION 0.6)
+# set(DPNP_VERSION 0.8.0)
+# set(DPNP_API_VERSION 0.8)
 
 # set directory where the custom finders live
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
@@ -184,6 +184,7 @@ set(DPNP_SRC
     kernels/dpnp_krnl_searching.cpp
     kernels/dpnp_krnl_sorting.cpp
     kernels/dpnp_krnl_statistics.cpp
+    src/constants.cpp
     src/dpnp_iface_fptr.cpp
     src/memory_sycl.cpp
     src/queue_sycl.cpp

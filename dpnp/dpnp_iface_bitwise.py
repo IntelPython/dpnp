@@ -44,7 +44,6 @@ import numpy
 
 
 from dpnp.dpnp_algo import *
-from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 import dpnp
 
@@ -82,8 +81,6 @@ def _check_nd_call(origin_func, dpnp_func, x1, x2, dtype=None, out=None, where=T
             pass
         elif x1_desc and x2_desc and x1_desc.shape != x2_desc.shape:
             pass
-        elif out is not None and not isinstance(out, dparray):
-            pass
         elif dtype is not None:
             pass
         elif out is not None:
@@ -91,7 +88,8 @@ def _check_nd_call(origin_func, dpnp_func, x1, x2, dtype=None, out=None, where=T
         elif not where:
             pass
         else:
-            return dpnp_func(x1_desc, x2_desc, dtype=dtype, out=out, where=where)
+            out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
+            return dpnp_func(x1_desc, x2_desc, dtype, out_desc, where).get_pyobj()
 
     return call_origin(origin_func, x1, x2, dtype=dtype, out=out, where=where, **kwargs)
 
@@ -230,7 +228,7 @@ def invert(x, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x)
     if x1_desc and not kwargs:
-        return dpnp_invert(x1_desc)
+        return dpnp_invert(x1_desc).get_pyobj()
 
     return call_origin(numpy.invert, x, **kwargs)
 

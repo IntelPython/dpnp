@@ -27,6 +27,7 @@
 
 #include "dpnp_fptr.hpp"
 #include "dpnp_iface.hpp"
+#include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
 template <typename _DataType, typename _ResultType>
@@ -35,15 +36,16 @@ class dpnp_all_c_kernel;
 template <typename _DataType, typename _ResultType>
 void dpnp_all_c(const void* array1_in, void* result1, const size_t size)
 {
-    cl::sycl::event event;
-
-    const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
-    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
-
     if (!array1_in || !result1)
     {
         return;
     }
+
+    cl::sycl::event event;
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
+    DPNPC_ptr_adapter<_ResultType> result1_ptr(result1, 1, true, true);
+    const _DataType* array_in = input1_ptr.get_ptr();
+    _ResultType* result = result1_ptr.get_ptr();
 
     result[0] = true;
 
@@ -75,16 +77,21 @@ template <typename _DataType1, typename _DataType2, typename _ResultType>
 class dpnp_allclose_c_kernel;
 
 template <typename _DataType1, typename _DataType2, typename _ResultType>
-void dpnp_allclose_c(const void* array1_in, const void* array2_in, void* result1, const size_t size, double rtol_val, double atol_val)
+void dpnp_allclose_c(
+    const void* array1_in, const void* array2_in, void* result1, const size_t size, double rtol_val, double atol_val)
 {
     if (!array1_in || !result1)
     {
         return;
     }
 
-    const _DataType1* array1 = reinterpret_cast<const _DataType1*>(array1_in);
-    const _DataType2* array2 = reinterpret_cast<const _DataType2*>(array2_in);
-    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
+    cl::sycl::event event;
+    DPNPC_ptr_adapter<_DataType1> input1_ptr(array1_in, size);
+    DPNPC_ptr_adapter<_DataType2> input2_ptr(array2_in, size);
+    DPNPC_ptr_adapter<_ResultType> result1_ptr(result1, 1, true, true);
+    const _DataType1* array1 = input1_ptr.get_ptr();
+    const _DataType2* array2 = input2_ptr.get_ptr();
+    _ResultType* result = result1_ptr.get_ptr();
 
     result[0] = true;
 
@@ -93,28 +100,24 @@ void dpnp_allclose_c(const void* array1_in, const void* array2_in, void* result1
         return;
     }
 
-    cl::sycl::event event;
-
     cl::sycl::range<1> gws(size);
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
         size_t i = global_id[0];
 
-        if (std::abs(array1[i] - array2[i]) > (atol_val + rtol_val * std::abs(array2[i]))){
-            
-            result[0]= false;
-
+        if (std::abs(array1[i] - array2[i]) > (atol_val + rtol_val * std::abs(array2[i])))
+        {
+            result[0] = false;
         }
-
     };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
-        cgh.parallel_for<class dpnp_allclose_c_kernel<_DataType1, _DataType2, _ResultType>>(gws, kernel_parallel_for_func);
+        cgh.parallel_for<class dpnp_allclose_c_kernel<_DataType1, _DataType2, _ResultType>>(gws,
+                                                                                            kernel_parallel_for_func);
     };
 
     event = DPNP_QUEUE.submit(kernel_func);
 
     event.wait();
-
 }
 
 template <typename _DataType, typename _ResultType>
@@ -123,15 +126,16 @@ class dpnp_any_c_kernel;
 template <typename _DataType, typename _ResultType>
 void dpnp_any_c(const void* array1_in, void* result1, const size_t size)
 {
-    cl::sycl::event event;
-
-    const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
-    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
-
     if (!array1_in || !result1)
     {
         return;
     }
+
+    cl::sycl::event event;
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
+    DPNPC_ptr_adapter<_ResultType> result1_ptr(result1, 1, true, true);
+    const _DataType* array_in = input1_ptr.get_ptr();
+    _ResultType* result = result1_ptr.get_ptr();
 
     result[0] = false;
 

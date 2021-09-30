@@ -43,7 +43,6 @@ it contains:
 import dpnp
 import numpy
 
-from dpnp.dparray import dparray
 from dpnp.dpnp_utils import *
 from dpnp.fft.dpnp_algo_fft import *
 
@@ -77,8 +76,8 @@ def fft(x1, n=None, axis=-1, norm=None):
     Limitations
     -----------
     Parameter ``norm`` is unsupported.
-    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
-    ``dpnp.complex128`` datatypes only.
+    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64``,
+    ``dpnp.complex64`` and ``dpnp.complex128`` datatypes only.
 
     For full documentation refer to :obj:`numpy.fft.fft`.
 
@@ -86,6 +85,10 @@ def fft(x1, n=None, axis=-1, norm=None):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc:
+        # if norm is None or norm is 'backward':
+        #     norm_val = 0
+        # else:
+        #     norm_val = 1
         if axis is None:
             axis_param = -1      # the most right dimension (default value)
         else:
@@ -105,7 +108,7 @@ def fft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = input_boundarie
 
-            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False)
+            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False, 0).get_pyobj()
 
     return call_origin(numpy.fft.fft, x1, n, axis, norm)
 
@@ -223,7 +226,7 @@ def fftshift(x1, axes=None):
         if x1_desc.size < 1:
             pass                 # let fallback to handle exception
         else:
-            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False)
+            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False).get_pyobj()
 
     return call_origin(numpy.fft.fftshift, x1, axes)
 
@@ -263,7 +266,7 @@ def hfft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = input_boundarie
 
-            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False)
+            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False).get_pyobj()
 
     return call_origin(numpy.fft.hfft, x1, n, axis, norm)
 
@@ -303,7 +306,7 @@ def ifft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = input_boundarie
 
-            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, True)
+            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, True).get_pyobj()
 
     return call_origin(numpy.fft.ifft, x1, n, axis, norm)
 
@@ -358,7 +361,7 @@ def ifftshift(x1, axes=None):
         if x1_desc.size < 1:
             pass                 # let fallback to handle exception
         else:
-            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False)
+            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False).get_pyobj()
 
     return call_origin(numpy.fft.ifftshift, x1, axes)
 
@@ -405,7 +408,7 @@ def ifftn(x1, s=None, axes=None, norm=None):
                     checker_throw_axis_error("fft.ifftn", "is out of bounds", param_axis, f"< {len(boundaries)}")
 
                 x1_iter_desc = dpnp.get_dpnp_descriptor(x1_iter)
-                x1_iter = ifft(x1_iter_desc, n=param_n, axis=param_axis, norm=norm)
+                x1_iter = ifft(x1_iter_desc.get_pyobj(), n=param_n, axis=param_axis, norm=norm)
 
             return x1_iter
 
@@ -447,7 +450,7 @@ def ihfft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = input_boundarie
 
-            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False)
+            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False).get_pyobj()
 
     return call_origin(numpy.fft.ihfft, x1, n, axis, norm)
 
@@ -487,12 +490,12 @@ def irfft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = 2 * (input_boundarie - 1)
 
-            result = dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, True)
+            result = dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, True).get_pyobj()
             # TODO tmp = utils.create_output_array(result_shape, result_c_type, out)
-            tmp = dparray(result.shape, dtype=dpnp.float64)
-            for it in range(tmp.size):
-                tmp[it] = result[it].real
-            return tmp
+            # tmp = dparray(result.shape, dtype=dpnp.float64)
+            # for it in range(tmp.size):
+            #     tmp[it] = result[it].real
+            return result
 
     return call_origin(numpy.fft.irfft, x1, n, axis, norm)
 
@@ -518,7 +521,7 @@ def irfft2(x1, s=None, axes=(-2, -1), norm=None):
         if norm is not None:
             pass
         else:
-            return irfftn(x1_desc, s, axes, norm)
+            return irfftn(x1_desc.get_pyobj(), s, axes, norm)
 
     return call_origin(numpy.fft.irfft2, x1, s, axes, norm)
 
@@ -565,7 +568,7 @@ def irfftn(x1, s=None, axes=None, norm=None):
                     checker_throw_axis_error("fft.irfftn", "is out of bounds", param_axis, f"< {len(boundaries)}")
 
                 x1_iter_desc = dpnp.get_dpnp_descriptor(x1_iter)
-                x1_iter = irfft(x1_iter_desc, n=param_n, axis=param_axis, norm=norm)
+                x1_iter = irfft(x1_iter_desc.get_pyobj(), n=param_n, axis=param_axis, norm=norm)
 
             return x1_iter
 
@@ -607,7 +610,7 @@ def rfft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = input_boundarie // 2 + 1  # rfft specific requirenment
 
-            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False)
+            return dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, False).get_pyobj()
 
     return call_origin(numpy.fft.rfft, x1, n, axis, norm)
 
@@ -633,7 +636,7 @@ def rfft2(x1, s=None, axes=(-2, -1), norm=None):
         if norm is not None:
             pass
         else:
-            return rfftn(x1_desc, s, axes, norm)
+            return rfftn(x1_desc.get_pyobj(), s, axes, norm)
 
     return call_origin(numpy.fft.rfft2, x1, s, axes, norm)
 
@@ -697,7 +700,7 @@ def rfftn(x1, s=None, axes=None, norm=None):
                     checker_throw_axis_error("fft.rfftn", "is out of bounds", param_axis, f"< {len(boundaries)}")
 
                 x1_iter_desc = dpnp.get_dpnp_descriptor(x1_iter)
-                x1_iter = rfft(x1_iter_desc, n=param_n, axis=param_axis, norm=norm)
+                x1_iter = rfft(x1_iter_desc.get_pyobj(), n=param_n, axis=param_axis, norm=norm)
 
             return x1_iter
 

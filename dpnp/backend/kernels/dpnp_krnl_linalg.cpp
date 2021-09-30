@@ -29,6 +29,7 @@
 #include <dpnp_iface.hpp>
 #include "dpnp_fptr.hpp"
 #include "dpnp_utils.hpp"
+#include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
 namespace mkl_blas = oneapi::mkl::blas::row_major;
@@ -39,8 +40,10 @@ void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const si
 {
     cl::sycl::event event;
 
-    _DataType* in_array = reinterpret_cast<_DataType*>(array1_in);
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size, true);
+    DPNPC_ptr_adapter<_DataType> result_ptr(result1, size, true, true);
+    _DataType* in_array = input1_ptr.get_ptr();
+    _DataType* result = result_ptr.get_ptr();
 
     size_t iters = size / (data_size * data_size);
 
@@ -97,8 +100,11 @@ void dpnp_cholesky_c(void* array1_in, void* result1, const size_t size, const si
 template <typename _DataType>
 void dpnp_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
 {
-    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
+    const size_t input_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    if (!input_size)
+    {
+        return;
+    }
 
     size_t n = shape[ndim - 1];
     size_t size_out = 1;
@@ -109,6 +115,11 @@ void dpnp_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
             size_out *= shape[i];
         }
     }
+
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, input_size, true);
+    DPNPC_ptr_adapter<_DataType> result_ptr(result1, size_out, true, true);
+    _DataType* array_1 = input1_ptr.get_ptr();
+    _DataType* result = result_ptr.get_ptr();
 
     for (size_t i = 0; i < size_out; i++)
     {
@@ -190,17 +201,26 @@ void dpnp_det_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
     return;
 }
 
-template <typename _DataType>
+template <typename _DataType, typename _ResultType>
 void dpnp_inv_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
 {
     (void)ndim; // avoid warning unused variable
-    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
+
+    const size_t input_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    if (!input_size)
+    {
+        return;
+    }
+
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, input_size, true);
+    DPNPC_ptr_adapter<_ResultType> result_ptr(result1, input_size, true, true);
+    _DataType* array_1 = input1_ptr.get_ptr();
+    _ResultType* result = result_ptr.get_ptr();
 
     size_t n = shape[0];
 
-    _DataType a_arr[n][n];
-    _DataType e_arr[n][n];
+    _ResultType a_arr[n][n];
+    _ResultType e_arr[n][n];
 
     for (size_t i = 0; i < n; ++i)
     {
@@ -298,15 +318,20 @@ void dpnp_kron_c(void* array1_in,
                  size_t* res_shape,
                  size_t ndim)
 {
-    _DataType1* array1 = reinterpret_cast<_DataType1*>(array1_in);
-    _DataType2* array2 = reinterpret_cast<_DataType2*>(array2_in);
-    _ResultType* result = reinterpret_cast<_ResultType*>(result1);
-
-    size_t size = 1;
-    for (size_t i = 0; i < ndim; ++i)
+    const size_t input1_size = std::accumulate(in1_shape, in1_shape + ndim, 1, std::multiplies<size_t>());
+    const size_t input2_size = std::accumulate(in2_shape, in2_shape + ndim, 1, std::multiplies<size_t>());
+    const size_t result_size = std::accumulate(res_shape, res_shape + ndim, 1, std::multiplies<size_t>());
+    if (!(result_size && input1_size && input2_size))
     {
-        size *= res_shape[i];
+        return;
     }
+
+    DPNPC_ptr_adapter<_DataType1> input1_ptr(array1_in, input1_size);
+    DPNPC_ptr_adapter<_DataType2> input2_ptr(array2_in, input2_size);
+    DPNPC_ptr_adapter<_ResultType> result_ptr(result1, result_size);
+    _DataType1* array1 = input1_ptr.get_ptr();
+    _DataType2* array2 = input2_ptr.get_ptr();
+    _ResultType* result = result_ptr.get_ptr();
 
     size_t* _in1_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
     size_t* _in2_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(size_t)));
@@ -322,7 +347,7 @@ void dpnp_kron_c(void* array1_in,
     get_shape_offsets_inkernel<size_t>(in2_shape, ndim, in2_offsets);
     get_shape_offsets_inkernel<size_t>(res_shape, ndim, res_offsets);
 
-    cl::sycl::range<1> gws(size);
+    cl::sycl::range<1> gws(result_size);
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
         const size_t idx = global_id[0];
 
@@ -356,11 +381,18 @@ void dpnp_kron_c(void* array1_in,
 template <typename _DataType>
 void dpnp_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t ndim)
 {
-    _DataType* array_1 = reinterpret_cast<_DataType*>(array1_in);
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
+    const size_t input_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    if (!input_size)
+    {
+        return;
+    }
+
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, input_size, true);
+    DPNPC_ptr_adapter<_DataType> result_ptr(result1, 1, true, true);
+    _DataType* array_1 = input1_ptr.get_ptr();
+    _DataType* result = result_ptr.get_ptr();
 
     size_t elems = 1;
-    result[0] = 0;
     if (ndim > 1)
     {
         elems = shape[0];
@@ -372,6 +404,8 @@ void dpnp_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t nd
             }
         }
     }
+
+    _DataType acc = 0;
     for (size_t i = 0; i < elems; i++)
     {
         size_t ind = 0;
@@ -379,8 +413,9 @@ void dpnp_matrix_rank_c(void* array1_in, void* result1, size_t* shape, size_t nd
         {
             ind += (shape[j] - 1) * i;
         }
-        result[0] += array_1[ind];
+        acc += array_1[ind];
     }
+    result[0] = acc;
 
     return;
 }
@@ -390,7 +425,8 @@ void dpnp_qr_c(void* array1_in, void* result1, void* result2, void* result3, siz
 {
     cl::sycl::event event;
 
-    _InputDT* in_array = reinterpret_cast<_InputDT*>(array1_in);
+    DPNPC_ptr_adapter<_InputDT> input1_ptr(array1_in, size_m * size_n, true);
+    _InputDT* in_array = input1_ptr.get_ptr();
 
     // math lib func overrides input
     _ComputeDT* in_a = reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(size_m * size_n * sizeof(_ComputeDT)));
@@ -399,13 +435,17 @@ void dpnp_qr_c(void* array1_in, void* result1, void* result2, void* result3, siz
     {
         for (size_t j = 0; j < size_n; ++j)
         {
+            // TODO transpose? use dpnp_transpose_c()
             in_a[j * size_m + i] = in_array[i * size_n + j];
         }
     }
 
-    _ComputeDT* res_q = reinterpret_cast<_ComputeDT*>(result1);
-    _ComputeDT* res_r = reinterpret_cast<_ComputeDT*>(result2);
-    _ComputeDT* tau = reinterpret_cast<_ComputeDT*>(result3);
+    DPNPC_ptr_adapter<_ComputeDT> result1_ptr(result1, size_m * size_m, true, true);
+    DPNPC_ptr_adapter<_ComputeDT> result2_ptr(result2, size_m * size_n, true, true);
+    DPNPC_ptr_adapter<_ComputeDT> result3_ptr(result3, std::min(size_m, size_n), true, true);
+    _ComputeDT* res_q = result1_ptr.get_ptr();
+    _ComputeDT* res_r = result2_ptr.get_ptr();
+    _ComputeDT* tau = result3_ptr.get_ptr();
 
     const std::int64_t lda = size_m;
 
@@ -418,7 +458,8 @@ void dpnp_qr_c(void* array1_in, void* result1, void* result2, void* result3, siz
     cl::sycl::vector_class<cl::sycl::event> depends(1);
     set_barrier_event(DPNP_QUEUE, depends);
 
-    event = mkl_lapack::geqrf(DPNP_QUEUE, size_m, size_n, in_a, lda, tau, geqrf_scratchpad, geqrf_scratchpad_size, depends);
+    event =
+        mkl_lapack::geqrf(DPNP_QUEUE, size_m, size_n, in_a, lda, tau, geqrf_scratchpad, geqrf_scratchpad_size, depends);
 
     event.wait();
 
@@ -453,8 +494,8 @@ void dpnp_qr_c(void* array1_in, void* result1, void* result2, void* result3, siz
     depends.clear();
     set_barrier_event(DPNP_QUEUE, depends);
 
-    event =
-        mkl_lapack::orgqr(DPNP_QUEUE, size_m, size_m, nrefl, in_a, lda, tau, orgqr_scratchpad, orgqr_scratchpad_size, depends);
+    event = mkl_lapack::orgqr(
+        DPNP_QUEUE, size_m, size_m, nrefl, in_a, lda, tau, orgqr_scratchpad, orgqr_scratchpad_size, depends);
 
     event.wait();
 
@@ -485,18 +526,22 @@ void dpnp_svd_c(void* array1_in, void* result1, void* result2, void* result3, si
 {
     cl::sycl::event event;
 
-    _InputDT* in_array = reinterpret_cast<_InputDT*>(array1_in);
+    DPNPC_ptr_adapter<_InputDT> input1_ptr(array1_in, size_m * size_n, true); // TODO no need this if use dpnp_copy_to()
+    _InputDT* in_array = input1_ptr.get_ptr();
 
     // math lib gesvd func overrides input
     _ComputeDT* in_a = reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(size_m * size_n * sizeof(_ComputeDT)));
     for (size_t it = 0; it < size_m * size_n; ++it)
     {
-        in_a[it] = in_array[it];
+        in_a[it] = in_array[it]; // TODO Type conversion. memcpy can not be used directly. dpnp_copy_to() ?
     }
 
-    _ComputeDT* res_u = reinterpret_cast<_ComputeDT*>(result1);
-    _SVDT* res_s = reinterpret_cast<_SVDT*>(result2);
-    _ComputeDT* res_vt = reinterpret_cast<_ComputeDT*>(result3);
+    DPNPC_ptr_adapter<_ComputeDT> result1_ptr(result1, size_m * size_m, true, true);
+    DPNPC_ptr_adapter<_SVDT> result2_ptr(result2, std::min(size_m, size_n), true, true);
+    DPNPC_ptr_adapter<_ComputeDT> result3_ptr(result3, size_n * size_n, true, true);
+    _ComputeDT* res_u = result1_ptr.get_ptr();
+    _SVDT* res_s = result2_ptr.get_ptr();
+    _ComputeDT* res_vt = result3_ptr.get_ptr();
 
     const std::int64_t m = size_m;
     const std::int64_t n = size_n;
@@ -540,10 +585,10 @@ void func_map_init_linalg_func(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_DET][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_det_c<float>};
     fmap[DPNPFuncName::DPNP_FN_DET][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_det_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_INV][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_inv_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_INV][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_inv_c<long>};
-    fmap[DPNPFuncName::DPNP_FN_INV][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_inv_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_INV][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_inv_c<double>};
+    fmap[DPNPFuncName::DPNP_FN_INV][eft_INT][eft_INT] = {eft_DBL, (void*)dpnp_inv_c<int, double>};
+    fmap[DPNPFuncName::DPNP_FN_INV][eft_LNG][eft_LNG] = {eft_DBL, (void*)dpnp_inv_c<long, double>};
+    fmap[DPNPFuncName::DPNP_FN_INV][eft_FLT][eft_FLT] = {eft_DBL, (void*)dpnp_inv_c<float, double>};
+    fmap[DPNPFuncName::DPNP_FN_INV][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_inv_c<double, double>};
 
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_kron_c<int, int, int>};
     fmap[DPNPFuncName::DPNP_FN_KRON][eft_INT][eft_LNG] = {eft_LNG, (void*)dpnp_kron_c<int, long, long>};
