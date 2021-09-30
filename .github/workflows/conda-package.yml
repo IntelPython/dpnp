@@ -29,9 +29,9 @@ jobs:
           sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
       - name: Install Intel OneAPI
         run: |
-          sudo apt-get install intel-oneapi-mkl                \
-                               intel-oneapi-mkl-devel          \
-                               intel-oneapi-dpcpp-cpp-compiler
+          sudo apt-get install intel-oneapi-mkl=2021.3.0-520  \
+                               intel-oneapi-mkl-devel=2021.3.0-520  \
+                               intel-oneapi-compiler-dpcpp-cpp=2021.3.0-3350
       - name: Checkout repo
         uses: actions/checkout@v2
         with:
