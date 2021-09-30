@@ -173,8 +173,6 @@ void dpnp_dot_c(void* result_out,
                 const size_t* input2_shape,
                 const size_t* input2_strides)
 {
-    (void)result_strides;
-
     DPNPC_ptr_adapter<_DataType_input1> input1_ptr(input1_in, input1_size);
     DPNPC_ptr_adapter<_DataType_input2> input2_ptr(input2_in, input2_size);
 
@@ -195,14 +193,20 @@ void dpnp_dot_c(void* result_out,
         // there is no support of strides in multiply function
         // so result can be wrong if input array has non-standard (c-contiguous) strides
         dpnp_multiply_c<_DataType_output, _DataType_input1, _DataType_input2>(result,
+                                                                              result_size,
+                                                                              result_ndim,
+                                                                              result_shape,
+                                                                              result_strides,
                                                                               input1_in,
                                                                               input1_size,
-                                                                              input1_shape,
                                                                               input1_ndim,
+                                                                              input1_shape,
+                                                                              input1_strides,
                                                                               input2_in,
                                                                               input2_size,
-                                                                              input2_shape,
                                                                               input2_ndim,
+                                                                              input2_shape,
+                                                                              input2_strides,
                                                                               NULL);
         return;
     }
