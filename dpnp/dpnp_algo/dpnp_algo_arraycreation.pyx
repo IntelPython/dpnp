@@ -111,8 +111,6 @@ cpdef utils.dpnp_descriptor dpnp_eye(N, M=None, k=0, dtype=None):
 
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor((N, M), kernel_data.return_type, None)
 
-    # result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
-
     cdef fptr_dpnp_eye_t func = <fptr_dpnp_eye_t > kernel_data.ptr
 
     cdef shape_type_c result_shape = result.shape

@@ -544,9 +544,6 @@ def eye(N, M=None, k=0, dtype=None, order='C', **kwargs):
         else:
             return dpnp_eye(N, M=M, k=k, dtype=dtype).get_pyobj()
 
-    if dtype is None:
-        dtype = dpnp.float
-
     return call_origin(numpy.eye, N, M=M, k=k, dtype=dtype, order=order, **kwargs)
 
 
