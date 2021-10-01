@@ -166,6 +166,16 @@ void dpnp_ones_like_c(void* result, size_t size)
 template <typename _DataType>
 void dpnp_ptp_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
 {
+    if ((array1_in == nullptr) || (result1 == nullptr))
+    {
+        return;
+    }
+
+    if (ndim < 1)
+    {
+        return;
+    }
+
     size_t size = 1;
     for (size_t i = 0; i < ndim; ++i)
     {
@@ -177,22 +187,15 @@ void dpnp_ptp_c(void* array1_in, void* result1, const size_t* shape, size_t ndim
     _DataType* arr = input1_ptr.get_ptr();
     _DataType* result = result_ptr.get_ptr();
 
-    if ((arr == nullptr) || (result == nullptr))
-    {
-        return;
-    }
-
-    if (ndim < 1)
-    {
-        return;
-    }
-
     _DataType* min_arr = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
     _DataType* max_arr = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
 
     dpnp_min_c<_DataType>(arr, min_arr, size, shape, ndim, axis, naxis);
     dpnp_max_c<_DataType>(arr, max_arr, size, shape, ndim, axis, naxis);
     dpnp_subtract_c<_DataType, _DataType, _DataType>(result, max_arr, size, shape, ndim, min_arr, size, shape, ndim, NULL);
+
+    dpnp_memory_free_c(min_arr);
+    dpnp_memory_free_c(max_arr);
 
 }
 
