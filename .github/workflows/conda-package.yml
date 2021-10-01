@@ -8,6 +8,11 @@ env:
 jobs:
   build:
     runs-on: ubuntu-20.04
+
+    strategy:
+      matrix:
+        python: [3.8, 3.9]
+
     steps:
       - name: Install Intel repository
         run: |
@@ -24,9 +29,9 @@ jobs:
           sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
       - name: Install Intel OneAPI
         run: |
-          sudo apt-get install intel-oneapi-mkl                \
-                               intel-oneapi-mkl-devel          \
-                               intel-oneapi-dpcpp-cpp-compiler
+          sudo apt-get install intel-oneapi-mkl=2021.3.0-520  \
+                               intel-oneapi-mkl-devel=2021.3.0-520  \
+                               intel-oneapi-compiler-dpcpp-cpp=2021.3.0-3350
       - name: Checkout repo
         uses: actions/checkout@v2
         with:
@@ -41,7 +46,7 @@ jobs:
           . /opt/intel/oneapi/setvars.sh
           . ./scripts/install_cmake_lin.sh
           CHANNELS="-c dppy/label/dev -c intel -c defaults --override-channels"
-          VERSIONS="--python 3.8"
+          VERSIONS="--python ${{ matrix.python }}"
           TEST="--no-test"
           conda build \
             $TEST \
@@ -52,18 +57,23 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: dpnp ${{ runner.os }}
+          name: dpnp ${{ runner.os }} ${{ matrix.python }}
           path: /usr/share/miniconda/conda-bld/linux-64/dpnp-*.tar.bz2
 
   upload:
     needs: build
     if: ${{ github.ref == 'refs/heads/master' }}
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python: [3.8, 3.9]
+
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
-          name: dpnp ${{ runner.os }}
+          name: dpnp ${{ runner.os }} ${{ matrix.python }}
 
       - name: Install anaconda-client
         run: conda install anaconda-client
