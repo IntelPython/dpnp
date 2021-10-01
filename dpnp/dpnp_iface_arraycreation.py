@@ -250,9 +250,9 @@ def asanyarray(a, dtype=None, order='C'):
             return a
 
         if order != 'C':
-            checker_throw_value_error("asanyarray", "order", order, 'C')
-
-        return array(a, dtype=dtype, order=order)
+            pass
+        else:
+            return array(a, dtype=dtype, order=order)
 
     return call_origin(numpy.asanyarray, a, dtype, order)
 
