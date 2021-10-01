@@ -326,7 +326,7 @@ cpdef object dpnp_mean(utils.dpnp_descriptor input, axis):
             if i not in axis_:
                 del_ = del_ / shape_input[i]
     dpnp_array = dpnp.array(result_array, dtype=input.dtype)
-    dpnp_result_array = dpnp_array.reshape(output_shape)
+    dpnp_result_array = dpnp.reshape(dpnp_array, output_shape)
     return dpnp_result_array / del_
 
 
@@ -417,10 +417,10 @@ cpdef utils.dpnp_descriptor dpnp_min(utils.dpnp_descriptor input, axis):
 
 
 cpdef utils.dpnp_descriptor dpnp_nanvar(utils.dpnp_descriptor arr, ddof):
-    cdef utils.dpnp_descriptor mask_arr = dpnp_isnan(arr)
-    n = sum(mask_arr.get_pyobj())
+    # dpnp_isnan does not support USM array as input in comparison to dpnp.isnan
+    cdef utils.dpnp_descriptor mask_arr = dpnp.get_dpnp_descriptor(dpnp.isnan(arr.get_pyobj()))
+    n = dpnp.count_nonzero(mask_arr.get_pyobj())
     res_size = arr.size - n
-
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_NANVAR, param1_type, param1_type)

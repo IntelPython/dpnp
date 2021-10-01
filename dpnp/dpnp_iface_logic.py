@@ -251,17 +251,17 @@ def equal(x1, x2):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
-    if x1_desc and x2_desc:
-        if x1_desc.size != x2_desc.size:
-            pass
-        elif x1_desc.dtype != x2_desc.dtype:
-            pass
-        elif x1_desc.shape != x2_desc.shape:
-            pass
-        else:
-            return dpnp_equal(x1_desc, x2_desc).get_pyobj()
+    # x1_desc = dpnp.get_dpnp_descriptor(x1)
+    # x2_desc = dpnp.get_dpnp_descriptor(x2)
+    # if x1_desc and x2_desc:
+    #     if x1_desc.size != x2_desc.size:
+    #         pass
+    #     elif x1_desc.dtype != x2_desc.dtype:
+    #         pass
+    #     elif x1_desc.shape != x2_desc.shape:
+    #         pass
+    #     else:
+    #         return dpnp_equal(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.equal, x1, x2)
 
@@ -297,15 +297,15 @@ def greater(x1, x2):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
-    if x1_desc and x2_desc:
-        if x1_desc.size < 2:
-            pass
-        elif x2_desc.size < 2:
-            pass
-        else:
-            return dpnp_greater(x1_desc, x2_desc).get_pyobj()
+    # x1_desc = dpnp.get_dpnp_descriptor(x1)
+    # x2_desc = dpnp.get_dpnp_descriptor(x2)
+    # if x1_desc and x2_desc:
+    #     if x1_desc.size < 2:
+    #         pass
+    #     elif x2_desc.size < 2:
+    #         pass
+    #     else:
+    #         return dpnp_greater(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.greater, x1, x2)
 
@@ -341,15 +341,15 @@ def greater_equal(x1, x2):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
-    if x1_desc and x2_desc:
-        if x1_desc.size < 2:
-            pass
-        elif x2_desc.size < 2:
-            pass
-        else:
-            return dpnp_greater_equal(x1_desc, x2_desc).get_pyobj()
+    # x1_desc = dpnp.get_dpnp_descriptor(x1)
+    # x2_desc = dpnp.get_dpnp_descriptor(x2)
+    # if x1_desc and x2_desc:
+    #     if x1_desc.size < 2:
+    #         pass
+    #     elif x2_desc.size < 2:
+    #         pass
+    #     else:
+    #         return dpnp_greater_equal(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.greater_equal, x1, x2)
 
@@ -381,14 +381,12 @@ def isclose(x1, x2, rtol=1e-05, atol=1e-08, equal_nan=False):
     [True, False]
 
     """
-    if config.__DPNP_OUTPUT_DPCTL__:
-        return call_origin(numpy.isclose, x1, x2, rtol=rtol, atol=atol, equal_nan=equal_nan)
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
-    if x1_desc and x2_desc:
-        result_obj = dpnp_isclose(x1_desc, x2_desc, rtol, atol, equal_nan).get_pyobj()
-        return result_obj
+    # x1_desc = dpnp.get_dpnp_descriptor(x1)
+    # x2_desc = dpnp.get_dpnp_descriptor(x2)
+    # if x1_desc and x2_desc:
+    #     result_obj = dpnp_isclose(x1_desc, x2_desc, rtol, atol, equal_nan).get_pyobj()
+    #     return result_obj
 
     return call_origin(numpy.isclose, x1, x2, rtol=rtol, atol=atol, equal_nan=equal_nan)
 
@@ -433,12 +431,12 @@ def isfinite(x1, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    if x1_desc and kwargs:
-        if out is not None:
-            pass
-        else:
-            return dpnp_isfinite(x1_desc).get_pyobj()
+    # x1_desc = dpnp.get_dpnp_descriptor(x1)
+    # if x1_desc and kwargs:
+    #     if out is not None:
+    #         pass
+    #     else:
+    #         return dpnp_isfinite(x1_desc).get_pyobj()
 
     return call_origin(numpy.isfinite, x1, out, **kwargs)
 
@@ -478,12 +476,12 @@ def isinf(x1, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    if x1_desc and kwargs:
-        if out is not None:
-            pass
-        else:
-            return dpnp_isinf(x1_desc).get_pyobj()
+    # x1_desc = dpnp.get_dpnp_descriptor(x1)
+    # if x1_desc and kwargs:
+    #     if out is not None:
+    #         pass
+    #     else:
+    #         return dpnp_isinf(x1_desc).get_pyobj()
 
     return call_origin(numpy.isinf, x1, out, **kwargs)
 
@@ -524,12 +522,12 @@ def isnan(x1, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    if x1_desc and kwargs:
-        if out is not None:
-            pass
-        else:
-            return dpnp_isnan(x1_desc).get_pyobj()
+    # x1_desc = dpnp.get_dpnp_descriptor(x1)
+    # if x1_desc and kwargs:
+    #     if out is not None:
+    #         pass
+    #     else:
+    #         return dpnp_isnan(x1_desc).get_pyobj()
 
     return call_origin(numpy.isnan, x1, out, **kwargs)
 
@@ -565,15 +563,15 @@ def less(x1, x2):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
-    if x1_desc and x2_desc:
-        if x1_desc.size < 2:
-            pass
-        elif x2_desc.size < 2:
-            pass
-        else:
-            return dpnp_less(x1_desc, x2_desc).get_pyobj()
+    # x1_desc = dpnp.get_dpnp_descriptor(x1)
+    # x2_desc = dpnp.get_dpnp_descriptor(x2)
+    # if x1_desc and x2_desc:
+    #     if x1_desc.size < 2:
+    #         pass
+    #     elif x2_desc.size < 2:
+    #         pass
+    #     else:
+    #         return dpnp_less(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.less, x1, x2)
 
@@ -609,15 +607,15 @@ def less_equal(x1, x2):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
-    if x1_desc and x2_desc:
-        if x1_desc.size < 2:
-            pass
-        elif x2_desc.size < 2:
-            pass
-        else:
-            return dpnp_less_equal(x1_desc, x2_desc).get_pyobj()
+    # x1_desc = dpnp.get_dpnp_descriptor(x1)
+    # x2_desc = dpnp.get_dpnp_descriptor(x2)
+    # if x1_desc and x2_desc:
+    #     if x1_desc.size < 2:
+    #         pass
+    #     elif x2_desc.size < 2:
+    #         pass
+    #     else:
+    #         return dpnp_less_equal(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.less_equal, x1, x2)
 
@@ -654,13 +652,13 @@ def logical_and(x1, x2, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
-    if x1_desc and x2_desc and not kwargs:
-        if out is not None:
-            pass
-        else:
-            return dpnp_logical_and(x1_desc, x2_desc).get_pyobj()
+    # x1_desc = dpnp.get_dpnp_descriptor(x1)
+    # x2_desc = dpnp.get_dpnp_descriptor(x2)
+    # if x1_desc and x2_desc and not kwargs:
+    #     if out is not None:
+    #         pass
+    #     else:
+    #         return dpnp_logical_and(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.logical_and, x1, x2, out, **kwargs)
 
@@ -695,12 +693,12 @@ def logical_not(x1, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    if x1_desc and not kwargs:
-        if out is not None:
-            pass
-        else:
-            return dpnp_logical_not(x1_desc).get_pyobj()
+    # x1_desc = dpnp.get_dpnp_descriptor(x1)
+    # if x1_desc and not kwargs:
+    #     if out is not None:
+    #         pass
+    #     else:
+    #         return dpnp_logical_not(x1_desc).get_pyobj()
 
     return call_origin(numpy.logical_not, x1, out, **kwargs)
 
@@ -737,13 +735,13 @@ def logical_or(x1, x2, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
-    if x1_desc and x2_desc and not kwargs:
-        if out is not None:
-            pass
-        else:
-            return dpnp_logical_or(x1_desc, x2_desc).get_pyobj()
+    # x1_desc = dpnp.get_dpnp_descriptor(x1)
+    # x2_desc = dpnp.get_dpnp_descriptor(x2)
+    # if x1_desc and x2_desc and not kwargs:
+    #     if out is not None:
+    #         pass
+    #     else:
+    #         return dpnp_logical_or(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.logical_or, x1, x2, out, **kwargs)
 
@@ -780,13 +778,13 @@ def logical_xor(x1, x2, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
-    if x1_desc and x2_desc and not kwargs:
-        if out is not None:
-            pass
-        else:
-            return dpnp_logical_xor(x1_desc, x2_desc).get_pyobj()
+    # x1_desc = dpnp.get_dpnp_descriptor(x1)
+    # x2_desc = dpnp.get_dpnp_descriptor(x2)
+    # if x1_desc and x2_desc and not kwargs:
+    #     if out is not None:
+    #         pass
+    #     else:
+    #         return dpnp_logical_xor(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.logical_xor, x1, x2, out, **kwargs)
 
@@ -823,16 +821,16 @@ def not_equal(x1, x2):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
-    x2_desc = dpnp.get_dpnp_descriptor(x2)
-    if x1_desc and x2_desc:
-        if x1_desc.size < 2:
-            pass
-        elif x2_desc.size < 2:
-            pass
-        else:
-            result = dpnp_not_equal(x1_desc, x2_desc).get_pyobj()
+    # x1_desc = dpnp.get_dpnp_descriptor(x1)
+    # x2_desc = dpnp.get_dpnp_descriptor(x2)
+    # if x1_desc and x2_desc:
+    #     if x1_desc.size < 2:
+    #         pass
+    #     elif x2_desc.size < 2:
+    #         pass
+    #     else:
+    #         result = dpnp_not_equal(x1_desc, x2_desc).get_pyobj()
 
-            return result
+    #         return result
 
     return call_origin(numpy.not_equal, x1, x2)

@@ -44,10 +44,18 @@ __all__ += [
 
 
 # C function pointer to the C library template functions
-ctypedef void(*fptr_2in_1out_shapes_t)(void *, void * , void * , size_t * , size_t * , size_t * , size_t)
-ctypedef void(*fptr_2in_1out_dot_t)(void * , const size_t, const size_t, const long * , const long * ,
-                                    void * , const size_t, const size_t, const long * , const long * ,
-                                    void * , const size_t, const size_t, const long * , const long * )
+ctypedef void(*fptr_2in_1out_shapes_t)(void * , void * , void * , size_t * , size_t * , size_t * , size_t)
+ctypedef void(*fptr_2in_1out_dot_t)(void *, const size_t, const size_t, const long * , const long * ,
+                                    void *, const size_t, const size_t, const long * , const long * ,
+                                    void *, const size_t, const size_t, const long * , const long * )
+
+cdef shape_type_c strides_to_vector(strides, shape) except *:
+    cdef shape_type_c res
+    if strides is None:
+        res = utils.get_axis_offsets(shape)
+    else:
+        res = strides
+    return res
 
 cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp_descriptor in_array2):
 
@@ -56,29 +64,6 @@ cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp
     shape1 = in_array1.shape
     shape2 = in_array2.shape
 
-    cdef size_t dim1 = in_array1.ndim
-    cdef size_t dim2 = in_array2.ndim
-
-    # matrix
-    if dim1 == 2 and dim2 == 2:
-        return dpnp_matmul(in_array1, in_array2)
-
-    # scalar
-    if dim1 == 0 or dim2 == 0:
-        return dpnp_multiply(in_array1, in_array2)
-
-    cdef size_t size1 = 0
-    cdef size_t size2 = 0
-    if not shape1.empty():
-        size1 = shape1.front()
-    if not shape1.empty():
-        size2 = shape2.front()
-
-    # vector
-    # test: pytest tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_dot_vec1 -v -s
-    if size1 != size2:
-        utils.checker_throw_runtime_error("dpnp_dot", "input vectors must be of equal size")
-
     # convert string type names (array.dtype) to C enum DPNPFuncType
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(in_array1.dtype)
     cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(in_array2.dtype)
@@ -86,9 +71,34 @@ cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_DOT, param1_type, param2_type)
 
-    # ceate result array with type given by FPTR data
-    cdef shape_type_c result_shape = (1,)
+    ndim1 = in_array1.ndim
+    ndim2 = in_array2.ndim
+    cdef shape_type_c result_shape
+    if ndim1 == 0:
+        result_shape = shape2
+    elif ndim2 == 0:
+        result_shape = shape1
+    elif ndim1 == 1 and ndim2 == 1:
+        result_shape = ()
+    elif ndim1 == 1:  # ndim2 > 1
+        result_shape = shape2[:-1]
+    elif ndim2 == 1:  # ndim1 > 1
+        result_shape = shape1[:-1]
+    else:
+        if ndim1 == 1:
+            shape1 = (1, shape1[0])
+        if ndim2 == 1:
+            shape2 = (shape1[0], 1)
+        result_shape = shape1[:-1] + shape2[:-2] + shape2[-1:]
+
+    # create result array with type given by FPTR data
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
+
+    cdef shape_type_c result_strides = strides_to_vector(result.strides, result.shape)
+    cdef shape_type_c in_array1_shape = in_array1.shape
+    cdef shape_type_c in_array1_strides = strides_to_vector(in_array1.strides, in_array1.shape)
+    cdef shape_type_c in_array2_shape = in_array2.shape
+    cdef shape_type_c in_array2_strides = strides_to_vector(in_array2.strides, in_array2.shape)
 
     cdef fptr_2in_1out_dot_t func = <fptr_2in_1out_dot_t > kernel_data.ptr
     # call FPTR function
@@ -96,17 +106,17 @@ cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp
          result.size,
          result.ndim,
          result_shape.data(),
-         NULL, # result_strides
+         result_strides.data(),
          in_array1.get_data(),
          in_array1.size,
          in_array1.ndim,
-         shape1.data(),
-         NULL, # in_array1_strides
+         in_array1_shape.data(),
+         in_array1_strides.data(),
          in_array2.get_data(),
          in_array2.size,
          in_array2.ndim,
-         shape2.data(),
-         NULL) # in_array2_strides
+         in_array2_shape.data(),
+         in_array2_strides.data())
 
     return result
 
@@ -165,9 +175,10 @@ cpdef utils.dpnp_descriptor dpnp_inner(dpnp_descriptor array1, dpnp_descriptor a
             array2_lin_index_base += array2_offsets[axis] * xyz[axis2]
 
         # do inner product
-        result.get_pyobj()[idx1] = 0
+        result.get_pyobj()[numpy.unravel_index(idx1, result.shape)] = 0
         for idx2 in range(array1.shape[-1]):
-            result.get_pyobj()[idx1] += array1.get_pyobj()[array1_lin_index_base + idx2] * array2.get_pyobj()[array2_lin_index_base + idx2]
+            result.get_pyobj()[numpy.unravel_index(idx1, result.shape)] += array1.get_pyobj()[numpy.unravel_index(
+                array1_lin_index_base + idx2, array1.shape)] * array2.get_pyobj()[numpy.unravel_index(array2_lin_index_base + idx2, array2.shape)]
 
     return result
 
@@ -270,18 +281,18 @@ cpdef utils.dpnp_descriptor dpnp_matmul(utils.dpnp_descriptor in_array1, utils.d
     func(result.get_data(),
          result.size,
          result.ndim,
-         NULL, # result_shape
-         NULL, # result_strides
+         NULL,  # result_shape
+         NULL,  # result_strides
          in_array1.get_data(),
          in_array1.size,
          in_array1.ndim,
          shape1.data(),
-         NULL, # in_array1_strides
+         NULL,  # in_array1_strides
          in_array2.get_data(),
          in_array2.size,
          in_array2.ndim,
          shape2.data(),
-         NULL) # in_array2_strides
+         NULL)  # in_array2_strides
 
     return result
 
