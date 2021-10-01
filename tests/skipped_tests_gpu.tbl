@@ -35,6 +35,8 @@ tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRoundHalfway_param_0
 tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRoundHalfway_param_1_{decimals=-2}::test_round_halfway_float
 tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRoundHalfway_param_2_{decimals=-1}::test_round_halfway_float
 tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRoundHalfway_param_3_{decimals=0}::test_round_halfway_float
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asanyarray_with_order
+tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asarray_from_numpy
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asarray_preserves_numpy_array_order
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_asarray_with_order
 tests/third_party/cupy/creation_tests/test_from_data.py::TestFromData::test_ascontiguousarray_on_contiguous_array
