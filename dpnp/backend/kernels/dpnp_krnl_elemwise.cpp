@@ -477,7 +477,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                                                                                                                        \
                     const _DataType_output input1_elem = input1_data[input1_id];                                       \
                     const _DataType_output input2_elem = input2_data[input2_id];                                       \
-                    result[output_id] = input1_elem * input2_elem;                                                     \
+                    result[output_id] = __operation1__;                                                                \
                 }                                                                                                      \
             };                                                                                                         \
             auto kernel_func = [&](cl::sycl::handler& cgh) {                                                           \
