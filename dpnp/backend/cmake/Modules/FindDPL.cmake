@@ -24,27 +24,32 @@
 # *****************************************************************************
 
 # The following variables are optionally searched for defaults
-#  PSTL_ROOT_DIR:     Base directory where all components are found
+#  DPLROOT:         Environment variable to specify custom search place
+#  ONEAPI_ROOT:     Environment variable to specify search place from oneAPI
 #
 # The following are set after configuration is done:
-#  PSTL_FOUND
-#  PSTL_INCLUDE_DIR
+#  DPL_FOUND
+#  DPL_INCLUDE_DIR
 
 include(FindPackageHandleStandardArgs)
 
-set(PSTL_ROOT_DIR
-    "${DPNP_ONEAPI_ROOT}/dpl"
-    CACHE PATH "Folder contains PSTL headers")
+if(DEFINED ENV{ONEAPI_ROOT})
+  set(DPNP_ONEAPI_DPL "$ENV{ONEAPI_ROOT}/dpl/latest" CACHE PATH "Folder contains DPL files from ONEAPI_ROOT")
+endif()
+
+if(DEFINED ENV{DPLROOT})
+  set(DPNP_DPLROOT "$ENV{DPLROOT}" CACHE PATH "Folder contains DPL files from DPLROOT")
+endif()
 
 find_path(
-  PSTL_INCLUDE_DIR oneapi/dpl/algorithm
-  HINTS ENV CONDA_PREFIX ${PSTL_ROOT_DIR} # search order is important
-  PATH_SUFFIXES include latest/linux/include
-  DOC "Path to PSTL include files")
+  DPL_INCLUDE_DIR oneapi/dpl/algorithm
+  HINTS ${DPNP_DPLROOT} ${DPNP_ONEAPI_DPL} ENV CONDA_PREFIX ENV PREFIX # search order is important
+  PATH_SUFFIXES include linux/include
+  DOC "Path to DPL include files")
 
-find_package_handle_standard_args(PSTL DEFAULT_MSG PSTL_INCLUDE_DIR)
+find_package_handle_standard_args(DPL DEFAULT_MSG DPL_INCLUDE_DIR)
 
-if(PSTL_FOUND)
-  message(STATUS "Found PSTL:                      (include: ${PSTL_INCLUDE_DIR})")
-  # mark_as_advanced(PSTL_ROOT_DIR PSTL_INCLUDE_DIR)
+if(DPL_FOUND)
+  message(STATUS "Found DPL:                       (include: ${DPL_INCLUDE_DIR})")
+  # mark_as_advanced(DPNP_DPLROOT DPL_INCLUDE_DIR)
 endif()

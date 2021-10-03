@@ -24,7 +24,8 @@
 # *****************************************************************************
 
 # The following variables are optionally searched for defaults
-#  MATHLIB_ROOT_DIR:     Base directory where all components are found
+#  MKLROOT:         Environment variable to specify custom search place
+#  ONEAPI_ROOT:     Environment variable to specify search place from oneAPI
 #
 # The following are set after configuration is done:
 #  MATHLIB_FOUND
@@ -33,9 +34,13 @@
 
 include(FindPackageHandleStandardArgs)
 
-set(MATHLIB_ROOT_DIR
-    "${DPNP_ONEAPI_ROOT}/mkl"
-    CACHE PATH "Folder contains mathlib")
+if(DEFINED ENV{ONEAPI_ROOT})
+  set(DPNP_ONEAPI_MKL "$ENV{ONEAPI_ROOT}/mkl/latest" CACHE PATH "Folder contains Math Lib files from ONEAPI_ROOT")
+endif()
+
+if(DEFINED ENV{MKLROOT})
+  set(DPNP_MKLROOT "$ENV{MKLROOT}" CACHE PATH "Folder contains Math Lib files from MKLROOT")
+endif()
 
 if(UNIX)
   set(MATHLIB_SYCL_LIB
@@ -51,14 +56,14 @@ endif()
 
 find_path(
   MATHLIB_INCLUDE_DIR oneapi/mkl.hpp
-  HINTS ENV CONDA_PREFIX ENV PREFIX ${MATHLIB_ROOT_DIR} # search order is important
-  PATH_SUFFIXES include latest/include
+  HINTS ${DPNP_MKLROOT} ${DPNP_ONEAPI_MKL} ENV CONDA_PREFIX ENV PREFIX # search order is important
+  PATH_SUFFIXES include include
   DOC "Path to mathlib include files")
 
 find_path(
   MATHLIB_LIBRARY_DIR ${MATHLIB_SYCL_LIB}
-  HINTS ENV CONDA_PREFIX ENV PREFIX ${MATHLIB_ROOT_DIR} # search order is important
-  PATH_SUFFIXES lib latest/lib/intel64
+  HINTS ${DPNP_MKLROOT} ${DPNP_ONEAPI_MKL} ENV CONDA_PREFIX ENV PREFIX # search order is important
+  PATH_SUFFIXES lib lib/intel64
   DOC "Path to mathlib library files")
 
 # TODO implement recurcive searching file (GLOB_RECURSE MY_PATH "/opt/intel/*/mkl.hpp")
@@ -68,5 +73,5 @@ find_package_handle_standard_args(MathLib DEFAULT_MSG MATHLIB_INCLUDE_DIR MATHLI
 
 if(MathLib_FOUND)
   message(STATUS "Found MathLib:                   (include: ${MATHLIB_INCLUDE_DIR}, library: ${MATHLIB_LIBRARY_DIR})")
-  mark_as_advanced(MATHLIB_ROOT_DIR MATHLIB_INCLUDE_DIR MATHLIB_LIBRARY_DIR)
+  # mark_as_advanced(DPNP_MKLROOT MATHLIB_INCLUDE_DIR MATHLIB_LIBRARY_DIR)
 endif()
