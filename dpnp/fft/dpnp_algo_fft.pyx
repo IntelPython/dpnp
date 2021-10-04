@@ -53,6 +53,10 @@ cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
 
     cdef shape_type_c input_shape = input.shape
     cdef shape_type_c output_shape = input_shape
+    # TODO
+    # get strides in numpy format (in number of bytest)
+    cdef shape_type_c input_strides = tuple(input.strides)
+    # cdef shape_type_c output_strides = input.strides
 
     cdef long axis_norm = utils.normalize_axis((axis,), input_shape.size())[0]
     output_shape[axis_norm] = output_boundarie
