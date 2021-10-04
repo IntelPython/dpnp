@@ -1095,21 +1095,19 @@ def ptp(arr, axis=None, out=None, keepdims=numpy._NoValue):
     Parameters ``out`` and ``keepdims`` are supported only with default values.
     """
     arr_desc = dpnp.get_dpnp_descriptor(arr)
-    if arr_desc:
-        if axis is not None and not isinstance(axis, int):
-            pass
-        elif out is not None:
-            pass
-        elif keepdims is not numpy._NoValue:
-            pass
-        else:
-            result = dpnp_ptp(arr_desc, axis=axis).get_pyobj()
-   
-            # scalar returned
-            if result.shape == (1,):
-                return result.dtype.type(result[0])
+    if not arr_desc:
+        pass
+    elif axis is not None and not isinstance(axis, int):
+        pass
+    elif out is not None:
+        pass
+    elif keepdims is not numpy._NoValue:
+        pass
+    else:
+        result_obj = dpnp_ptp(arr_desc, axis=axis).get_pyobj()
+        result = dpnp.convert_single_elem_array_to_scalar(result_obj)
 
-            return result
+        return result
 
     return call_origin(numpy.ptp, arr, axis, out, keepdims)
 

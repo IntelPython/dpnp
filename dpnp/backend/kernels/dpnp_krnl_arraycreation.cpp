@@ -182,7 +182,7 @@ void dpnp_ptp_c(void* array1_in, void* result1, const size_t* shape, size_t ndim
         size *= shape[i];
     }
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size, true);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
     DPNPC_ptr_adapter<_DataType> result_ptr(result1, size, true, true);
     _DataType* arr = input1_ptr.get_ptr();
     _DataType* result = result_ptr.get_ptr();
