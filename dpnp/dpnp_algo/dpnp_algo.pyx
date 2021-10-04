@@ -393,7 +393,7 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out_strides(DPNPFuncName fptr_name,
     cdef shape_type_c result_strides = strides_to_vector(result.strides, result_shape)
 
     """ Call FPTR function """
-    cdef fptr_2in_1out__strides_t func = <fptr_2in_1out__strides_t > kernel_data.ptr
+    cdef fptr_2in_1out_strides_t func = <fptr_2in_1out_strides_t > kernel_data.ptr
     func(result.get_data(),
          result.size,
          result.ndim,
