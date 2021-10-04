@@ -51,7 +51,16 @@
     /** @param[out] result1  Output array.                                                                           */ \
     /** @param[in]  size     Number of elements in the input array.                                                  */ \
     template <typename _DataType>                                                                                       \
-    void __name__(void* array1, void* result1, size_t size);
+    void __name__(void* result_out,                                                                                     \
+                  const void* input1_in,                                                                                \
+                  const size_t input1_size,                                                                             \
+                  const size_t* input1_shape,                                                                           \
+                  const size_t input1_shape_ndim,                                                                       \
+                  const void* input2_in,                                                                                \
+                  const size_t input2_size,                                                                             \
+                  const size_t* input2_shape,                                                                           \
+                  const size_t input2_shape_ndim,                                                                       \
+                  const size_t* where)
 
 #endif
 
@@ -59,7 +68,7 @@ MACRO_1ARG_1TYPE_OP(dpnp_conjugate_c, std::conj(input_elem), DPNP_QUEUE.submit(k
 MACRO_1ARG_1TYPE_OP(dpnp_copy_c, input_elem, DPNP_QUEUE.submit(kernel_func))
 MACRO_1ARG_1TYPE_OP(dpnp_erf_c,
                     cl::sycl::erf((double)input_elem),
-                    oneapi::mkl::vm::erf(DPNP_QUEUE, size, array1, result)) // no sycl::erf for int and long
+                    oneapi::mkl::vm::erf(DPNP_QUEUE, input1_size, input1_data, result)) // no sycl::erf for int and long
 MACRO_1ARG_1TYPE_OP(dpnp_negative_c, -input_elem, DPNP_QUEUE.submit(kernel_func))
 MACRO_1ARG_1TYPE_OP(dpnp_recip_c,
                     _DataType(1) / input_elem,
@@ -67,6 +76,8 @@ MACRO_1ARG_1TYPE_OP(dpnp_recip_c,
 MACRO_1ARG_1TYPE_OP(dpnp_sign_c,
                     cl::sycl::sign((double)input_elem),
                     DPNP_QUEUE.submit(kernel_func)) // no sycl::sign for int and long
-MACRO_1ARG_1TYPE_OP(dpnp_square_c, input_elem* input_elem, oneapi::mkl::vm::sqr(DPNP_QUEUE, size, array1, result))
+MACRO_1ARG_1TYPE_OP(dpnp_square_c,
+                    input_elem* input_elem,
+                    oneapi::mkl::vm::sqr(DPNP_QUEUE, input1_size, input1_data, result))
 
 #undef MACRO_1ARG_1TYPE_OP

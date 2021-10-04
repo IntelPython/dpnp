@@ -788,7 +788,7 @@ def reciprocal(x1, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc and not kwargs:
         return dpnp_recip(x1_desc).get_pyobj()
 
@@ -970,7 +970,7 @@ def square(x1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc:
         return dpnp_square(x1_desc).get_pyobj()
 

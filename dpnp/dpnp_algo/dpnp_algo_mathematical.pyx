@@ -138,7 +138,7 @@ cpdef utils.dpnp_descriptor dpnp_ceil(utils.dpnp_descriptor x1, utils.dpnp_descr
 
 
 cpdef utils.dpnp_descriptor dpnp_conjugate(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_CONJIGUATE, x1, x1.shape)
+    return call_fptr_1in_1out_strides(DPNP_FN_CONJIGUATE, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_copysign(utils.dpnp_descriptor x1_obj,
@@ -373,7 +373,7 @@ cpdef utils.dpnp_descriptor dpnp_nansum(utils.dpnp_descriptor x1):
 
 
 cpdef utils.dpnp_descriptor dpnp_negative(dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_NEGATIVE, x1, x1.shape)
+    return call_fptr_1in_1out_strides(DPNP_FN_NEGATIVE, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_power(utils.dpnp_descriptor x1_obj,
@@ -431,7 +431,7 @@ cpdef utils.dpnp_descriptor dpnp_remainder(utils.dpnp_descriptor x1_obj,
 
 
 cpdef utils.dpnp_descriptor dpnp_sign(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_SIGN, x1, x1.shape)
+    return call_fptr_1in_1out_strides(DPNP_FN_SIGN, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_subtract(utils.dpnp_descriptor x1_obj,

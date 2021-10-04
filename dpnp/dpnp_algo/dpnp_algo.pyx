@@ -305,6 +305,57 @@ cdef utils.dpnp_descriptor call_fptr_1in_1out(DPNPFuncName fptr_name,
     return result
 
 
+cdef utils.dpnp_descriptor call_fptr_1in_1out_strides(DPNPFuncName fptr_name,
+                                                      utils.dpnp_descriptor x1_obj,
+                                                      object dtype=None,
+                                                      utils.dpnp_descriptor out=None,
+                                                      object where=True,
+                                                      func_name=None):
+
+    """ Convert type (x1_obj.dtype) to C enum DPNPFuncType """
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1_obj.dtype)
+
+    """ get the FPTR data structure """
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+
+    cdef shape_type_c x1_shape = x1_obj.shape
+    cdef shape_type_c x1_strides = strides_to_vector(x1_obj.strides, x1_shape)
+
+    cdef shape_type_c result_shape = x1_shape
+    cdef utils.dpnp_descriptor result
+
+    if out is None:
+        """ Create result array with type given by FPTR data """
+        result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
+    else:
+        if out.dtype != result_type:
+            utils.checker_throw_value_error(func_name, 'out.dtype', out.dtype, result_type)
+        if out.shape != result_shape:
+            utils.checker_throw_value_error(func_name, 'out.shape', out.shape, result_shape)
+
+        result = out
+
+    cdef shape_type_c result_strides = strides_to_vector(result.strides, result_shape)
+
+    """ Call FPTR function """
+    cdef fptr_1in_1out_strides_t func = <fptr_1in_1out_strides_t > kernel_data.ptr
+    func(result.get_data(),
+         result.size,
+         result.ndim,
+         result_shape.data(),
+         result_strides.data(),
+         x1_obj.get_data(),
+         x1_obj.size,
+         x1_obj.ndim,
+         x1_shape.data(),
+         x1_strides.data(),
+         NULL)
+
+    return result
+
+
 cdef utils.dpnp_descriptor call_fptr_2in_1out(DPNPFuncName fptr_name,
                                               utils.dpnp_descriptor x1_obj,
                                               utils.dpnp_descriptor x2_obj,
