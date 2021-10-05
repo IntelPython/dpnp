@@ -277,7 +277,7 @@ def ceil(x1, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc and not kwargs:
         out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
         return dpnp_ceil(x1_desc, out_desc).get_pyobj()
@@ -648,7 +648,7 @@ def fabs(x1, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc:
         return dpnp_fabs(x1_desc).get_pyobj()
 
@@ -688,7 +688,7 @@ def floor(x1, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc and not kwargs:
         out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
         return dpnp_floor(x1_desc, out_desc).get_pyobj()
@@ -1677,7 +1677,7 @@ def trunc(x1, out=None, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc and not kwargs:
         out_desc = dpnp.get_dpnp_descriptor(out) if out is not None else None
         return dpnp_trunc(x1_desc, out_desc).get_pyobj()

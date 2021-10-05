@@ -134,7 +134,7 @@ cpdef utils.dpnp_descriptor dpnp_around(utils.dpnp_descriptor x1, int decimals):
 
 
 cpdef utils.dpnp_descriptor dpnp_ceil(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
-    return call_fptr_1in_1out(DPNP_FN_CEIL, x1, x1.shape, out, func_name='ceil')
+    return call_fptr_1in_1out_strides(DPNP_FN_CEIL, x1, dtype=None, out=out, where=True, func_name='ceil')
 
 
 cpdef utils.dpnp_descriptor dpnp_conjugate(utils.dpnp_descriptor x1):
@@ -221,15 +221,45 @@ cpdef utils.dpnp_descriptor dpnp_ediff1d(utils.dpnp_descriptor x1):
     if x1.size <= 1:
         return utils.dpnp_descriptor(dpnp.empty(0, dtype=x1.dtype))  # TODO need to call dpnp_empty instead
 
-    return call_fptr_1in_1out(DPNP_FN_EDIFF1D, x1, (x1.size - 1,))
+    # Convert type (x1.dtype) to C enum DPNPFuncType
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_EDIFF1D, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+
+    # Currently shape and strides of the input array are not took into account for the function ediff1d
+    cdef shape_type_c x1_shape = (x1.size,)
+    cdef shape_type_c x1_strides = strides_to_vector(None, x1_shape)
+
+    cdef shape_type_c result_shape = (x1.size - 1,)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
+    cdef shape_type_c result_strides = strides_to_vector(result.strides, result_shape)
+
+    # Call FPTR function
+    cdef fptr_1in_1out_strides_t func = <fptr_1in_1out_strides_t > kernel_data.ptr
+    func(result.get_data(),
+         result.size,
+         result.ndim,
+         result_shape.data(),
+         result_strides.data(),
+         x1.get_data(),
+         x1.size,
+         x1.ndim,
+         x1_shape.data(),
+         x1_strides.data(),
+         NULL)
+
+    return result
 
 
 cpdef utils.dpnp_descriptor dpnp_fabs(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_FABS, x1, x1.shape)
+    return call_fptr_1in_1out_strides(DPNP_FN_FABS, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_floor(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
-    return call_fptr_1in_1out(DPNP_FN_FLOOR, x1, x1.shape, out, func_name='floor')
+    return call_fptr_1in_1out_strides(DPNP_FN_FLOOR, x1, dtype=None, out=out, where=True, func_name='floor')
 
 
 cpdef utils.dpnp_descriptor dpnp_floor_divide(utils.dpnp_descriptor x1_obj,
@@ -488,4 +518,4 @@ cpdef utils.dpnp_descriptor dpnp_trapz(utils.dpnp_descriptor y1, utils.dpnp_desc
 
 
 cpdef utils.dpnp_descriptor dpnp_trunc(utils.dpnp_descriptor x1, utils.dpnp_descriptor out):
-    return call_fptr_1in_1out(DPNP_FN_TRUNC, x1, x1.shape, out, func_name='trunc')
+    return call_fptr_1in_1out_strides(DPNP_FN_TRUNC, x1, dtype=None, out=out, where=True, func_name='trunc')
