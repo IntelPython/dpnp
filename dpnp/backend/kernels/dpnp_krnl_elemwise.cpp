@@ -269,6 +269,7 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
                   const size_t* where)                                                                                 \
     {                                                                                                                  \
         /* avoid warning unused variable*/                                                                             \
+        (void)result_shape;                                                                                            \
         (void)where;                                                                                                   \
                                                                                                                        \
         if (!input1_size)                                                                                              \
@@ -281,7 +282,6 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
         DPNPC_ptr_adapter<size_t> input1_strides_ptr(input1_strides, input1_ndim, true);                               \
                                                                                                                        \
         DPNPC_ptr_adapter<_DataType> result_ptr(result_out, result_size, false, true);                                 \
-        DPNPC_ptr_adapter<size_t> result_shape_ptr(result_shape, result_ndim);                                         \
         DPNPC_ptr_adapter<size_t> result_strides_ptr(result_strides, result_ndim);                                     \
                                                                                                                        \
         _DataType* input1_data = input1_ptr.get_ptr();                                                                 \
@@ -289,7 +289,6 @@ static void func_map_init_elemwise_1arg_2type(func_map_t& fmap)
         size_t* input1_strides_data = input1_strides_ptr.get_ptr();                                                    \
                                                                                                                        \
         _DataType* result = result_ptr.get_ptr();                                                                      \
-        size_t* result_shape_data = result_shape_ptr.get_ptr();                                                        \
         size_t* result_strides_data = result_strides_ptr.get_ptr();                                                    \
                                                                                                                        \
         const size_t input1_shape_size_in_bytes = input1_ndim * sizeof(size_t);                                        \
