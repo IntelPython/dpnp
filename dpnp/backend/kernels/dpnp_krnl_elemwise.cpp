@@ -437,7 +437,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t& fmap)
                                                        input1_strides_data,                                            \
                                                        input1_ndim);                                                   \
                                                                                                                        \
-            input1_it->broadcast_to_shape(result_shape, result_ndim);                                                  \
+            input1_it->broadcast_to_shape(result_shape_data, result_ndim);                                             \
                                                                                                                        \
             DPNPC_id<_DataType_input2>* input2_it;                                                                     \
             const size_t input2_it_size_in_bytes = sizeof(DPNPC_id<_DataType_input2>);                                 \
