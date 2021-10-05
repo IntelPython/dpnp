@@ -3,9 +3,9 @@
 # if ONEAPI_ROOT is specified (use all from it)
 if [ -n "${ONEAPI_ROOT}" ]; then
     export DPCPPROOT=${ONEAPI_ROOT}/compiler/latest
-    # TODO uncomment when CI will be changed
-    # export MKLROOT=${ONEAPI_ROOT}/mkl/latest
+    export MKLROOT=${ONEAPI_ROOT}/mkl/latest
     export TBBROOT=${ONEAPI_ROOT}/tbb/latest
+    export DPLROOT=${ONEAPI_ROOT}/dpl/latest
 fi
 
 # if DPCPPROOT is specified (work with custom DPCPP)
