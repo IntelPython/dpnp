@@ -62,6 +62,7 @@ __all__ = [
     "_get_linear_index",
     "normalize_axis",
     "_object_to_tuple",
+    "strides_to_vector",
     "use_origin_backend"
 ]
 
@@ -471,6 +472,17 @@ cpdef cpp_bool use_origin_backend(input1=None, size_t compute_size=0):
         return True
 
     return False
+
+
+cpdef shape_type_c strides_to_vector(strides, shape) except *:
+    """Get or calculate srtides based on shape."""
+    cdef shape_type_c res
+    if strides is None:
+        res = get_axis_offsets(shape)
+    else:
+        res = strides
+
+    return res
 
 
 cdef class dpnp_descriptor:
