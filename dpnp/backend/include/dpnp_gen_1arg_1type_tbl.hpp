@@ -47,20 +47,29 @@
     /**                                                                                                              */ \
     /** Function "__name__" executes operator "__operation1__" over each element of the array                        */ \
     /**                                                                                                              */ \
-    /** @param[in]  array1   Input array.                                                                            */ \
-    /** @param[out] result1  Output array.                                                                           */ \
-    /** @param[in]  size     Number of elements in the input array.                                                  */ \
+    /** @param[out] result_out      Output array.                                                                    */ \
+    /** @param[in]  result_size     Output array size.                                                               */ \
+    /** @param[in]  result_ndim     Number of output array dimensions.                                               */ \
+    /** @param[in]  result_shape    Output array shape.                                                              */ \
+    /** @param[in]  result_strides  Output array strides.                                                            */ \
+    /** @param[in]  input1_in       Input array 1.                                                                   */ \
+    /** @param[in]  input1_size     Input array 1 size.                                                              */ \
+    /** @param[in]  input1_ndim     Number of input array 1 dimensions.                                              */ \
+    /** @param[in]  input1_shape    Input array 1 shape.                                                             */ \
+    /** @param[in]  input1_strides  Input array 1 strides.                                                           */ \
+    /** @param[in]  where           Where condition.                                                                 */ \
     template <typename _DataType>                                                                                       \
     void __name__(void* result_out,                                                                                     \
+                  const size_t result_size,                                                                             \
+                  const size_t result_ndim,                                                                             \
+                  const size_t* result_shape,                                                                           \
+                  const size_t* result_strides,                                                                         \
                   const void* input1_in,                                                                                \
                   const size_t input1_size,                                                                             \
+                  const size_t input1_ndim,                                                                             \
                   const size_t* input1_shape,                                                                           \
-                  const size_t input1_shape_ndim,                                                                       \
-                  const void* input2_in,                                                                                \
-                  const size_t input2_size,                                                                             \
-                  const size_t* input2_shape,                                                                           \
-                  const size_t input2_shape_ndim,                                                                       \
-                  const size_t* where)
+                  const size_t* input1_strides,                                                                         \
+                  const size_t* where);
 
 #endif
 
