@@ -35,6 +35,73 @@ def test_strides(func_name, type):
 
 
 @pytest.mark.parametrize("func_name",
+                         ["copy", "conjugate", "negative", "sign", "square"])
+@pytest.mark.parametrize("dtype",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=["float64", "float32", "int64", "int32"])
+@pytest.mark.parametrize("shape",
+                         [(10,)],
+                         ids=["(10,)"])
+def test_strides_1arg(func_name, dtype, shape):
+    a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
+    b = a[::2]
+
+    dpa = dpnp.reshape(dpnp.arange(numpy.prod(shape), dtype=dtype), shape)
+    dpb = dpa[::2]
+
+    dpnp_func = _getattr(dpnp, func_name)
+    result = dpnp_func(dpb)
+
+    numpy_func = _getattr(numpy, func_name)
+    expected = numpy_func(b)
+
+    numpy.testing.assert_allclose(result, expected)
+
+
+@pytest.mark.parametrize("dtype",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=["float64", "float32", "int64", "int32"])
+@pytest.mark.parametrize("shape",
+                         [(10,)],
+                         ids=["(10,)"])
+def test_strides_erf(dtype, shape):
+    a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
+    b = a[::2]
+
+    dpa = dpnp.reshape(dpnp.arange(numpy.prod(shape), dtype=dtype), shape)
+    dpb = dpa[::2]
+
+    result = dpnp.erf(dpb)
+
+    expected = numpy.empty_like(b)
+    for idx, val in enumerate(b):
+        expected[idx] = math.erf(val)
+
+    numpy.testing.assert_allclose(result, expected)
+
+
+@pytest.mark.parametrize("dtype",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=["float64", "float32", "int64", "int32"])
+@pytest.mark.parametrize("shape",
+                         [(10,)],
+                         ids=["(10,)"])
+def test_strides_reciprocal(dtype, shape):
+    start, stop = 1, numpy.prod(shape) + 1
+
+    a = numpy.arange(start, stop, dtype=dtype).reshape(shape)
+    b = a[::2]
+
+    dpa = dpnp.reshape(dpnp.arange(start, stop, dtype=dtype), shape)
+    dpb = dpa[::2]
+
+    result = dpnp.reciprocal(dpb)
+    expected = numpy.reciprocal(b)
+
+    numpy.testing.assert_allclose(result, expected, rtol=1e-06)
+
+
+@pytest.mark.parametrize("func_name",
                          ["add", "arctan2", "hypot", "maximum", "minimum", "multiply", "power", "subtract"])
 @pytest.mark.parametrize("dtype",
                          [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
