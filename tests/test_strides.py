@@ -1,3 +1,4 @@
+import math
 import pytest
 
 import dpnp
