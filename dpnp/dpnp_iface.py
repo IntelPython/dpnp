@@ -135,8 +135,12 @@ def asnumpy(input, order='C'):
     This function works exactly the same as :obj:`numpy.asarray`.
 
     """
-    if config.__DPNP_OUTPUT_DPCTL__ and hasattr(input, "__sycl_usm_array_interface__"):
+
+    if isinstance(input, dpctl.tensor.usm_ndarray):
         return dpctl.tensor.to_numpy(input)
+
+    if config.__DPNP_OUTPUT_DPCTL__ and hasattr(input, "__sycl_usm_array_interface__"):
+        return dpctl.tensor.to_numpy(input._array_obj)
 
     return numpy.asarray(input, order=order)
 
