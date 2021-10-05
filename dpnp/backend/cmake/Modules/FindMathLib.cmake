@@ -34,9 +34,7 @@
 
 include(FindPackageHandleStandardArgs)
 
-if(DEFINED ENV{ONEAPI_ROOT})
-  set(DPNP_ONEAPI_MKL "$ENV{ONEAPI_ROOT}/mkl/latest" CACHE PATH "Folder contains Math Lib files from ONEAPI_ROOT")
-endif()
+set(DPNP_ONEAPI_MKL "$ENV{DPNP_ONEAPI_ROOT}/mkl/latest" CACHE PATH "Folder contains Math Lib files from ONEAPI_ROOT")
 
 if(DEFINED ENV{MKLROOT})
   set(DPNP_MKLROOT "$ENV{MKLROOT}" CACHE PATH "Folder contains Math Lib files from MKLROOT")

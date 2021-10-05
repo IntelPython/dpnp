@@ -33,9 +33,7 @@
 
 include(FindPackageHandleStandardArgs)
 
-if(DEFINED ENV{ONEAPI_ROOT})
-  set(DPNP_ONEAPI_DPL "$ENV{ONEAPI_ROOT}/dpl/latest" CACHE PATH "Folder contains DPL files from ONEAPI_ROOT")
-endif()
+set(DPNP_ONEAPI_DPL "$ENV{DPNP_ONEAPI_ROOT}/dpl/latest" CACHE PATH "Folder contains DPL files from ONEAPI_ROOT")
 
 if(DEFINED ENV{DPLROOT})
   set(DPNP_DPLROOT "$ENV{DPLROOT}" CACHE PATH "Folder contains DPL files from DPLROOT")
