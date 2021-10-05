@@ -164,7 +164,7 @@ void dpnp_ones_like_c(void* result, size_t size)
 }
 
 template <typename _DataType>
-void dpnp_ptp_c(void* array1_in, void* result1, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
+void dpnp_ptp_c(void* result1, void* array1_in, const size_t* res_shape, size_t res_ndim, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
 {
     if ((array1_in == nullptr) || (result1 == nullptr))
     {
@@ -182,17 +182,23 @@ void dpnp_ptp_c(void* array1_in, void* result1, const size_t* shape, size_t ndim
         size *= shape[i];
     }
 
-    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
-    DPNPC_ptr_adapter<_DataType> result_ptr(result1, size, true, true);
+    size_t res_size = 1;
+    for (size_t i = 0; i < res_ndim; ++i)
+    {
+        res_size *= res_shape[i];
+    }
+
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size, true);
+    DPNPC_ptr_adapter<_DataType> result_ptr(result1, res_size, false, true);
     _DataType* arr = input1_ptr.get_ptr();
     _DataType* result = result_ptr.get_ptr();
 
-    _DataType* min_arr = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
-    _DataType* max_arr = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
+    _DataType* min_arr = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(res_size * sizeof(_DataType)));
+    _DataType* max_arr = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(res_size * sizeof(_DataType)));
 
-    dpnp_min_c<_DataType>(arr, min_arr, size, shape, ndim, axis, naxis);
-    dpnp_max_c<_DataType>(arr, max_arr, size, shape, ndim, axis, naxis);
-    dpnp_subtract_c<_DataType, _DataType, _DataType>(result, max_arr, size, shape, ndim, min_arr, size, shape, ndim, NULL);
+    dpnp_min_c<_DataType>(arr, min_arr, res_size, shape, ndim, axis, naxis);
+    dpnp_max_c<_DataType>(arr, max_arr, res_size, shape, ndim, axis, naxis);
+    dpnp_subtract_c<_DataType, _DataType, _DataType>(result, max_arr, res_size, res_shape, res_ndim, min_arr, res_size, res_shape, res_ndim, NULL);
 
     dpnp_memory_free_c(min_arr);
     dpnp_memory_free_c(max_arr);

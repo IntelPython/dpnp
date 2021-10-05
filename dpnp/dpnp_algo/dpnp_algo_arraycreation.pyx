@@ -58,7 +58,7 @@ __all__ += [
 
 ctypedef void(*custom_1in_1out_func_ptr_t)(void *, void * , const int , size_t * , size_t * , const size_t, const size_t)
 ctypedef void(*ftpr_custom_vander_1in_1out_t)(void * , void * , size_t, size_t, int)
-ctypedef void(*custom_arraycreation_1in_1out_func_ptr_t)(void * , void * , size_t * , size_t, size_t * , size_t)
+ctypedef void(*custom_arraycreation_1in_1out_func_ptr_t)(void * , void * , size_t * , size_t, size_t * , size_t, size_t * , size_t)
 ctypedef void(*custom_indexing_1out_func_ptr_t)(void * , const size_t , const size_t , const int)
 ctypedef void(*fptr_dpnp_trace_t)(const void *, void * , const size_t * , const size_t)
 
@@ -274,6 +274,7 @@ cpdef utils.dpnp_descriptor dpnp_ones_like(result_shape, result_dtype):
 
 cpdef dpnp_ptp(utils.dpnp_descriptor arr, axis=None):
     cdef shape_type_c shape_arr = arr.shape
+    cdef shape_type_c output_shape
     if axis is None:
         axis_ = axis
         output_shape = (1,)
@@ -292,12 +293,12 @@ cpdef dpnp_ptp(utils.dpnp_descriptor arr, axis=None):
                     _axis_.append(axis[i])
             axis_ = tuple(_axis_)
 
-        output_shape = []
+        out_shape = []
         ind = 0
         for id, shape_axis in enumerate(shape_arr):
             if id not in axis_:
-                output_shape.append(shape_axis)
-        output_shape = tuple(output_shape)
+                out_shape.append(shape_axis)
+        output_shape = tuple(out_shape)
  
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
 
@@ -319,7 +320,7 @@ cpdef dpnp_ptp(utils.dpnp_descriptor arr, axis=None):
             axis2.push_back(shape_it)
         axis_size = len(axis1)
     
-    func(arr.get_data(), result.get_data(), < size_t * > shape_arr.data(), arr.ndim, < size_t * > axis2.data(), axis_size)
+    func(result.get_data(), arr.get_data(), < size_t * > output_shape.data(), result.ndim, < size_t * > shape_arr.data(), arr.ndim, < size_t * > axis2.data(), axis_size)
 
     return result
 
