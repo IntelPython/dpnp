@@ -81,35 +81,32 @@ def choose(x1, choices, out=None, mode='raise'):
     --------
     :obj:`take_along_axis` : Preferable if choices is an array.
     """
-    if not use_origin_backend(x1):
-        if not isinstance(x1, list):
-            pass
-        elif not isinstance(choices, list):
+    x1_desc = dpnp.get_dpnp_descriptor(x1)
+
+    choices_list = []
+    for choice in choices:
+        choices_list.append(dpnp.get_dpnp_descriptor(choice))
+
+    if x1_desc:
+        if any(not desc for desc in choices_list):
             pass
         elif out is not None:
             pass
         elif mode != 'raise':
             pass
+        elif any(not choices[0].dtype == choice.dtype for choice in choices):
+            pass
+        elif not len(choices_list):
+            pass
         else:
-            val = True
-            len_ = len(x1)
-            size_ = choices[0].size
-            for i in range(len(choices)):
-                if choices[i].size != size_ or choices[i].size != len_:
-                    val = False
-                    break
-            if not val:
+            size = x1_desc.size
+            choices_size = choices_list[0].size
+            if any(choice.size != choices_size or choice.size != size for choice in choices):
+                pass
+            elif any(x >= choices_size for x in dpnp.asnumpy(x1)):
                 pass
             else:
-                val = True
-                for i in range(len_):
-                    if x1[i] >= size_:
-                        val = False
-                        break
-                if not val:
-                    pass
-                else:
-                    return dpnp_choose(x1, choices).get_pyobj()
+                return dpnp_choose(x1_desc, choices_list).get_pyobj()
 
     return call_origin(numpy.choose, x1, choices, out, mode)
 
@@ -251,7 +248,7 @@ def fill_diagonal(x1, val, wrap=False):
     :obj:`dpnp.diag_indices_from` : Return the indices to access the main diagonal of an n-dimensional array.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc:
         if not dpnp.isscalar(val):
             pass
@@ -260,7 +257,7 @@ def fill_diagonal(x1, val, wrap=False):
         else:
             return dpnp_fill_diagonal(x1_desc, val)
 
-    return call_origin(numpy.fill_diagonal, x1, val, wrap)
+    return call_origin(numpy.fill_diagonal, x1, val, wrap, dpnp_inplace=True)
 
 
 def indices(dimensions, dtype=int, sparse=False):
@@ -356,7 +353,7 @@ def place(x1, mask, vals):
     if x1_desc and mask_desc and vals_desc:
         return dpnp_place(x1_desc, mask, vals_desc)
 
-    return call_origin(numpy.place, x1, mask, vals)
+    return call_origin(numpy.place, x1, mask, vals, dpnp_inplace=True)
 
 
 def put(x1, ind, v, mode='raise'):
@@ -370,7 +367,7 @@ def put(x1, ind, v, mode='raise'):
     Not supported parameter mode.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc:
         if mode != 'raise':
             pass
@@ -381,7 +378,7 @@ def put(x1, ind, v, mode='raise'):
         else:
             return dpnp_put(x1_desc, ind, v)
 
-    return call_origin(numpy.put, x1, ind, v, mode)
+    return call_origin(numpy.put, x1, ind, v, mode, dpnp_inplace=True)
 
 
 def put_along_axis(x1, indices, values, axis):
@@ -409,7 +406,7 @@ def put_along_axis(x1, indices, values, axis):
         else:
             return dpnp_put_along_axis(x1_desc, indices_desc, values_desc, axis)
 
-    return call_origin(numpy.put_along_axis, x1, indices, values, axis)
+    return call_origin(numpy.put_along_axis, x1, indices, values, axis, dpnp_inplace=True)
 
 
 def putmask(x1, mask, values):
@@ -422,13 +419,13 @@ def putmask(x1, mask, values):
     Input arrays ``arr``, ``mask`` and ``values``  are supported as :obj:`dpnp.ndarray`.
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     mask_desc = dpnp.get_dpnp_descriptor(mask)
     values_desc = dpnp.get_dpnp_descriptor(values)
     if x1_desc and mask_desc and values_desc:
-        return dpnp_putmask(x1, mask, values)
+        return dpnp_putmask(x1_desc, mask_desc, values_desc)
 
-    return call_origin(numpy.putmask, x1, mask, values)
+    return call_origin(numpy.putmask, x1, mask, values, dpnp_inplace=True)
 
 
 def select(condlist, choicelist, default=0):

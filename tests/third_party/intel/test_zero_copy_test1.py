@@ -2,8 +2,10 @@ import sys
 import importlib
 import pytest
 
+
 class dummymodule:
     pass
+
 
 sys.modules['numba_dppy'] = dummymodule
 

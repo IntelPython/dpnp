@@ -81,10 +81,10 @@ def create_output_container(shape, type):
         """ Create DPNP array """
         result = dparray(shape, dtype=type)
 
-    return result    
+    return result
 
 
-def container_copy(dst_obj, src_obj, dst_idx = 0):
+def container_copy(dst_obj, src_obj, dst_idx=0):
     """
     Copy values to `dst` by iterating element by element in `input_obj`
     """

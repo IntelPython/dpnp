@@ -43,12 +43,12 @@
 template <typename _DataType>
 class DPNPC_ptr_adapter final
 {
-    void* aux_ptr = nullptr;         /**< pointer to allocated memory by this adapter */
-    void* orig_ptr = nullptr;        /**< original pointer to memory given by parameters */
-    size_t size_in_bytes = 0;        /**< size of bytes of the memory */
-    bool allocated = false;          /**< True if the memory allocated by this procedure and needs to be free */
-    bool target_no_queue = false;    /**< Indicates that original memory will be accessed from non SYCL environment */
-    bool copy_back = false;          /**< If the memory is 'result' it needs to be copied back to original */
+    void* aux_ptr = nullptr;      /**< pointer to allocated memory by this adapter */
+    void* orig_ptr = nullptr;     /**< original pointer to memory given by parameters */
+    size_t size_in_bytes = 0;     /**< size of bytes of the memory */
+    bool allocated = false;       /**< True if the memory allocated by this procedure and needs to be free */
+    bool target_no_queue = false; /**< Indicates that original memory will be accessed from non SYCL environment */
+    bool copy_back = false;       /**< If the memory is 'result' it needs to be copied back to original */
     const bool verbose = false;
 
 public:
@@ -67,8 +67,8 @@ public:
         // enum class alloc { host = 0, device = 1, shared = 2, unknown = 3 };
         cl::sycl::usm::alloc src_ptr_type = cl::sycl::usm::alloc::unknown;
         src_ptr_type = cl::sycl::get_pointer_type(src_ptr, DPNP_QUEUE.get_context());
-       if (verbose)
-       {
+        if (verbose)
+        {
             std::cerr << "DPNPC_ptr_converter:";
             std::cerr << "\n\t target_no_queue=" << target_no_queue;
             std::cerr << "\n\t copy_back=" << copy_back;
@@ -83,7 +83,7 @@ public:
             std::cerr << "\n\t queue device is_gpu=" << DPNP_QUEUE.get_device().is_gpu();
             std::cerr << "\n\t queue device is_accelerator=" << DPNP_QUEUE.get_device().is_accelerator();
             std::cerr << std::endl;
-       }
+        }
 
         if (is_memcpy_required(src_ptr_type))
         {
@@ -93,9 +93,7 @@ public:
             if (verbose)
             {
                 std::cerr << "DPNPC_ptr_converter::alloc and copy memory"
-                          << " from=" << src_ptr
-                          << " to=" << aux_ptr
-                          << " size_in_bytes=" << size_in_bytes
+                          << " from=" << src_ptr << " to=" << aux_ptr << " size_in_bytes=" << size_in_bytes
                           << std::endl;
             }
         }
@@ -150,10 +148,7 @@ public:
         if (verbose)
         {
             std::cerr << "DPNPC_ptr_converter::copy_data_back:"
-                      << " from=" << aux_ptr
-                      << " to=" << orig_ptr
-                      << " size_in_bytes=" << size_in_bytes
-                      << std::endl;
+                      << " from=" << aux_ptr << " to=" << orig_ptr << " size_in_bytes=" << size_in_bytes << std::endl;
         }
 
         dpnp_memory_memcpy_c(orig_ptr, aux_ptr, size_in_bytes);

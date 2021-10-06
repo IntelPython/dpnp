@@ -202,7 +202,7 @@ void dpnp_rng_f_c(void* result, const _DataType df_num, const _DataType df_den, 
     {
         return;
     }
-    cl::sycl::vector_class<cl::sycl::event> no_deps;
+    std::vector<cl::sycl::event> no_deps;
 
     const _DataType d_zero = (_DataType(0.0));
 
@@ -875,7 +875,7 @@ void dpnp_rng_pareto_c(void* result, const double alpha, const size_t size)
     {
         return;
     }
-    cl::sycl::vector_class<cl::sycl::event> no_deps;
+    std::vector<cl::sycl::event> no_deps;
 
     const _DataType d_zero = _DataType(0.0);
     const _DataType d_one = _DataType(1.0);
@@ -913,7 +913,7 @@ void dpnp_rng_power_c(void* result, const double alpha, const size_t size)
     {
         return;
     }
-    cl::sycl::vector_class<cl::sycl::event> no_deps;
+    std::vector<cl::sycl::event> no_deps;
 
     const _DataType d_zero = _DataType(0.0);
     const _DataType d_one = _DataType(1.0);
@@ -937,7 +937,7 @@ void dpnp_rng_rayleigh_c(void* result, const _DataType scale, const size_t size)
         return;
     }
 
-    cl::sycl::vector_class<cl::sycl::event> no_deps;
+    std::vector<cl::sycl::event> no_deps;
 
     const _DataType a = 0.0;
     const _DataType beta = 2.0;
@@ -1253,7 +1253,7 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
     {
         return;
     }
-    
+
     DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
     _DataType* result1 = result1_ptr.get_ptr();
 
@@ -1547,7 +1547,7 @@ void dpnp_rng_zipf_c(void* result, const _DataType a, const size_t size)
     long X;
     const _DataType d_zero = 0.0;
     const _DataType d_one = 1.0;
-    
+
     DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
     _DataType* result1 = result1_ptr.get_ptr();
 
