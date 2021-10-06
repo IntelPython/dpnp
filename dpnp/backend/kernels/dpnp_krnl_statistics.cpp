@@ -72,7 +72,10 @@ void dpnp_correlate_c(void* result_out,
 }
 
 template <typename _DataType>
-class dpnp_cov_c_kernel;
+class dpnp_cov_c_kernel1;
+
+template <typename _DataType>
+class dpnp_cov_c_kernel2;
 
 template <typename _DataType>
 void dpnp_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols)
@@ -86,7 +89,7 @@ void dpnp_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols)
         return;
     }
 
-    auto policy = oneapi::dpl::execution::make_device_policy<class dpnp_cov_c_kernel<_DataType>>(DPNP_QUEUE);
+    auto policy = oneapi::dpl::execution::make_device_policy<class dpnp_cov_c_kernel1<_DataType>>(DPNP_QUEUE);
 
     _DataType* mean = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(nrows * sizeof(_DataType)));
     for (size_t i = 0; i < nrows; ++i)
@@ -137,7 +140,7 @@ void dpnp_cov_c(void* array1_in, void* result1, size_t nrows, size_t ncols)
     };
 
     auto kernel_func = [&](cl::sycl::handler& cgh) {
-        cgh.parallel_for<class dpnp_cov_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
+        cgh.parallel_for<class dpnp_cov_c_kernel2<_DataType>>(gws, kernel_parallel_for_func);
     };
 
     event = DPNP_QUEUE.submit(kernel_func);
