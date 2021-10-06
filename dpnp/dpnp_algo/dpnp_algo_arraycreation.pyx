@@ -58,7 +58,9 @@ __all__ += [
 
 ctypedef void(*custom_1in_1out_func_ptr_t)(void *, void * , const int , size_t * , size_t * , const size_t, const size_t)
 ctypedef void(*ftpr_custom_vander_1in_1out_t)(void * , void * , size_t, size_t, int)
-ctypedef void(*custom_arraycreation_1in_1out_func_ptr_t)(void * , void * , size_t * , size_t, size_t * , size_t, size_t * , size_t)
+ctypedef void(*custom_arraycreation_1in_1out_func_ptr_t)(void * , const size_t, const size_t, const size_t*, const size_t*,
+                                                         void * , const size_t, const size_t, const size_t*, const size_t*,
+                                                         const size_t*, const size_t)
 ctypedef void(*custom_indexing_1out_func_ptr_t)(void * , const size_t , const size_t , const int)
 ctypedef void(*fptr_dpnp_trace_t)(const void *, void * , const size_t * , const size_t)
 
@@ -320,7 +322,8 @@ cpdef dpnp_ptp(utils.dpnp_descriptor arr, axis=None):
             axis2.push_back(shape_it)
         axis_size = len(axis1)
     
-    func(result.get_data(), arr.get_data(), < size_t * > output_shape.data(), result.ndim, < size_t * > shape_arr.data(), arr.ndim, < size_t * > axis2.data(), axis_size)
+    func(result.get_data(), result.size, result.ndim, < size_t * > output_shape.data(), NULL,
+         arr.get_data(), arr.size, arr.ndim, < size_t * > shape_arr.data(), NULL, < size_t * > axis2.data(), axis_size)
 
     return result
 

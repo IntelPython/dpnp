@@ -164,41 +164,43 @@ void dpnp_ones_like_c(void* result, size_t size)
 }
 
 template <typename _DataType>
-void dpnp_ptp_c(void* result1, void* array1_in, const size_t* res_shape, size_t res_ndim, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis)
+void dpnp_ptp_c(void* result1_out,
+                const size_t result_size,
+                const size_t result_ndim,
+                const size_t* result_shape,
+                const size_t* result_strides,
+                const void* input1_in,
+                const size_t input_size,
+                const size_t input_ndim,
+                const size_t* input_shape,
+                const size_t* input_strides,
+                const size_t* axis,
+                const size_t naxis)
 {
-    if ((array1_in == nullptr) || (result1 == nullptr))
+    (void) result_strides;
+    (void) input_strides;
+
+    if ((input1_in == nullptr) || (result1_out == nullptr))
     {
         return;
     }
 
-    if (ndim < 1)
+    if (input_ndim < 1)
     {
         return;
     }
 
-    size_t size = 1;
-    for (size_t i = 0; i < ndim; ++i)
-    {
-        size *= shape[i];
-    }
-
-    size_t res_size = 1;
-    for (size_t i = 0; i < res_ndim; ++i)
-    {
-        res_size *= res_shape[i];
-    }
-
-    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size, true);
-    DPNPC_ptr_adapter<_DataType> result_ptr(result1, res_size, false, true);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(input1_in, input_size, true);
+    DPNPC_ptr_adapter<_DataType> result_ptr(result1_out, result_size, false, true);
     _DataType* arr = input1_ptr.get_ptr();
     _DataType* result = result_ptr.get_ptr();
 
-    _DataType* min_arr = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(res_size * sizeof(_DataType)));
-    _DataType* max_arr = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(res_size * sizeof(_DataType)));
+    _DataType* min_arr = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(result_size * sizeof(_DataType)));
+    _DataType* max_arr = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(result_size * sizeof(_DataType)));
 
-    dpnp_min_c<_DataType>(arr, min_arr, res_size, shape, ndim, axis, naxis);
-    dpnp_max_c<_DataType>(arr, max_arr, res_size, shape, ndim, axis, naxis);
-    dpnp_subtract_c<_DataType, _DataType, _DataType>(result, max_arr, res_size, res_shape, res_ndim, min_arr, res_size, res_shape, res_ndim, NULL);
+    dpnp_min_c<_DataType>(arr, min_arr, result_size, input_shape, input_ndim, axis, naxis);
+    dpnp_max_c<_DataType>(arr, max_arr, result_size, input_shape, input_ndim, axis, naxis);
+    dpnp_subtract_c<_DataType, _DataType, _DataType>(result, max_arr, result_size, result_shape, result_ndim, min_arr, result_size, result_shape, result_ndim, NULL);
 
     dpnp_memory_free_c(min_arr);
     dpnp_memory_free_c(max_arr);

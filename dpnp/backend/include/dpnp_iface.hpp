@@ -461,18 +461,33 @@ INP_DLLEXPORT void dpnp_prod_c(void* result_out,
  * @ingroup BACKEND_API
  * @brief Range of values (maximum - minimum) along an axis.
  *
- * @param [out] result      Output array.
- * @param [in]  array       Input array with data.
- * @param [in]  res_shape   Shape of input array.
- * @param [in]  res_ndim    Number of elements in shape.
- * @param [in]  shape       Shape of input array.
- * @param [in]  ndim        Number of elements in shape.
- * @param [in]  axis        Axis.
- * @param [in]  naxis       Number of elements in axis.
+ * @param [out] result_out          Output array.
+ * @param [in]  result_size         Size of output array.
+ * @param [in]  result_ndim         Number of output array dimensions.
+ * @param [in]  result_shape        Shape of output array.
+ * @param [in]  result_strides      Strides of output array.
+ * @param [in]  input_in           First input array.
+ * @param [in]  input_size         Size of first input array.
+ * @param [in]  input_ndim         Number of first input array dimensions.
+ * @param [in]  input_shape        Shape of first input array.
+ * @param [in]  input_strides      Strides of first input array.
+ * @param [in]  axis               Axis.
+ * @param [in]  naxis              Number of elements in axis.
  */
 template <typename _DataType>
-void dpnp_ptp_c(void* result1, void* array1_in, const size_t* res_shape, size_t res_ndim, const size_t* shape, size_t ndim, const size_t* axis, size_t naxis);
-
+INP_DLLEXPORT void dpnp_ptp_c(void* result_out,
+                              const size_t result_size,
+                              const size_t result_ndim,
+                              const size_t* result_shape,
+                              const size_t* result_strides,
+                              const void* input_in,
+                              const size_t input_size,
+                              const size_t input_ndim,
+                              const size_t* input_shape,
+                              const size_t* input_strides,
+                              const size_t* axis,
+                              const size_t naxis);
+                              
 /**
  * @ingroup BACKEND_API
  * @brief Product of array elements
