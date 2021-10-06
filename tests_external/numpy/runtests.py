@@ -140,7 +140,7 @@ def replace_kwarg_value(f, arg_name, in_values, out_value):
 unsupported_classes = [
     'byte', 'bytes_', 'cdouble', 'character', 'clongdouble', 'complex_',
     'complexfloating', 'datetime64', 'flexible', 'floating',
-    'generic', 'half', 'inexact', 'int_', 'int16', 'int8', 'intc', 'integer',
+    'generic', 'half', 'inexact', 'int_', 'int16', 'int8', 'intc',
     'longlong', 'matrix', 'memmap', 'nditer', 'nextafter',
     'number', 'object_', 'short', 'signedinteger', 'single', 'stack',
     'timedelta64', 'ubyte', 'uint', 'uint16', 'uint32', 'uint64', 'uint8',
@@ -293,16 +293,85 @@ del numpy
 sys.modules['numpy'] = dpnp  # next import of numpy will be replaced with dpnp
 
 
-NUMPY_TESTS = [
-    'core',
-    'fft',
+NUMPY_CORE_TEST_SUITE = [
+    'core/tests/test_abc.py',
+    # 'core/tests/test_api.py',
+    # 'core/tests/test_array_coercion.py',
+    'core/tests/test_arrayprint.py',
+    'core/tests/test_casting_unittests.py',
+    'core/tests/test_conversion_utils.py',
+    'core/tests/test_cpu_dispatcher.py',
+    'core/tests/test_cpu_features.py',
+    'core/tests/test_cython.py',
+    'core/tests/test_datetime.py',
+    'core/tests/test_defchararray.py',
+    'core/tests/test_deprecations.py',
+    'core/tests/test_dtype.py',
+    'core/tests/test_einsum.py',
+    'core/tests/test_errstate.py',
+    'core/tests/test__exceptions.py',
+    'core/tests/test_extint128.py',
+    'core/tests/test_function_base.py',
+    'core/tests/test_getlimits.py',
+    'core/tests/test_half.py',
+    'core/tests/test_indexerrors.py',
+    'core/tests/test_indexing.py',
+    'core/tests/test_item_selection.py',
+    'core/tests/test_longdouble.py',
+    'core/tests/test_machar.py',
+    'core/tests/test_memmap.py',
+    'core/tests/test_mem_overlap.py',
+    # 'core/tests/test_multiarray.py',
+    # 'core/tests/test_nditer.py',
+    'core/tests/test_numeric.py',
+    'core/tests/test_numerictypes.py',
+    # 'core/tests/test_overrides.py',
+    'core/tests/test_print.py',
+    'core/tests/test_protocols.py',
+    'core/tests/test_records.py',
+    'core/tests/test_regression.py',
+    'core/tests/test_scalarbuffer.py',
+    'core/tests/test_scalar_ctors.py',
+    'core/tests/test_scalarinherit.py',
+    'core/tests/test_scalarmath.py',
+    'core/tests/test_scalar_methods.py',
+    'core/tests/test_scalarprint.py',
+    'core/tests/test_shape_base.py',
+    'core/tests/test_simd_module.py',
+    'core/tests/test_simd.py',
+    'core/tests/test_ufunc.py',
+    'core/tests/test_umath_accuracy.py',
+    'core/tests/test_umath_complex.py',
+    'core/tests/test_umath.py',
+    'core/tests/test_unicode.py',
+]
+NUMPY_FFT_TEST_SUITE = [
+    'fft/tests/test_helper.py',
+    'fft/tests/test_pocketfft.py',
+]
+NUMPY_LINALG_TEST_SUITE = [
     'linalg/tests/test_build.py',
     'linalg/tests/test_deprecations.py',
-    # disabled due to __setitem__ limitation:
-    # https://github.com/numpy/numpy/blob/d7a75e8e8fefc433cf6e5305807d5f3180954273/numpy/linalg/tests/test_linalg.py#L293
     # 'linalg/tests/test_linalg.py',
     'linalg/tests/test_regression.py',
-    'random',
+]
+NUMPY_RANDOM_TEST_SUITE = [
+    'random/tests/test_direct.py',
+    'random/tests/test_extending.py',
+    'random/tests/test_generator_mt19937.py',
+    'random/tests/test_generator_mt19937_regressions.py',
+    'random/tests/test_random.py',
+    'random/tests/test_randomstate.py',
+    'random/tests/test_randomstate_regression.py',
+    'random/tests/test_regression.py',
+    'random/tests/test_seed_sequence.py',
+    'random/tests/test_smoke.py',
+]
+NUMPY_TEST_SUITES = [
+    NUMPY_CORE_TEST_SUITE,
+    NUMPY_FFT_TEST_SUITE,
+    NUMPY_LINALG_TEST_SUITE,
+    NUMPY_RANDOM_TEST_SUITE,
 ]
 NUMPY_NOT_FOUND = 3
 TESTS_EXT_PATH = Path(__file__).parents[1]
@@ -368,15 +437,10 @@ def tests_from_cmdline():
     return args.tests
 
 
-def get_tests(base_path):
+def get_tests(base_path, test_suite=None):
     """Get tests paths from command line or NUMPY_TESTS"""
-    tests_relpaths = tests_from_cmdline()
-    if tests_relpaths:
-        for test_relpath in tests_relpaths:
-            yield base_path / test_relpath
-        return None
-
-    for test_relpath in NUMPY_TESTS:
+    tests_relpaths = test_suite or []
+    for test_relpath in tests_relpaths:
         yield base_path / test_relpath
 
     return None
@@ -391,11 +455,13 @@ def run():
     if FAILED_TESTS_FILE.exists():
         FAILED_TESTS_FILE.unlink()
 
-    test_suites = [str(tests_path) for tests_path in get_tests(numpy_path)]
+    cmdline_tests = tests_from_cmdline()
+    test_suites = [cmdline_tests] if cmdline_tests else NUMPY_TEST_SUITES
 
     try:
         for test_suite in test_suites:
-            code = pytest.main([test_suite])
+            tests = [str(test) for test in get_tests(numpy_path, test_suite=test_suite)]
+            code = pytest.main(tests)
             if code:
                 break
     except SystemExit as exc:
