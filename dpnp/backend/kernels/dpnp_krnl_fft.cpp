@@ -38,6 +38,7 @@ typedef mkl_dft::descriptor<mkl_dft::precision::SINGLE, mkl_dft::domain::COMPLEX
 typedef mkl_dft::descriptor<mkl_dft::precision::DOUBLE, mkl_dft::domain::REAL> desc_dp_real_t;
 typedef mkl_dft::descriptor<mkl_dft::precision::SINGLE, mkl_dft::domain::REAL> desc_sp_real_t;
 
+#if 0
 #ifdef _WIN32
 #ifndef M_PI // Windows compatibility
 #define M_PI 3.14159265358979323846
@@ -163,6 +164,8 @@ void dpnp_fft_fft_sycl_c(const void* array1_in,
     return;
 }
 
+#endif
+
 template <typename _DataType_input, typename _DataType_output, typename _Descriptor_type>
 void dpnp_fft_fft_mathlib_compute_c(const void* array1_in,
                                     void* result1,
@@ -274,6 +277,7 @@ void dpnp_fft_fft_c(const void* array1_in,
         dpnp_fft_fft_mathlib_c<_DataType_input, _DataType_output>(
             array1_in, result1, input_shape, shape_size, result_size, norm);
     }
+#if 0
     else
     {
         dpnp_fft_fft_sycl_c<_DataType_input, _DataType_output>(array1_in,
@@ -287,6 +291,7 @@ void dpnp_fft_fft_c(const void* array1_in,
                                                                input_boundarie,
                                                                inverse);
     }
+#endif
 
     return;
 }
