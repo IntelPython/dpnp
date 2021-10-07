@@ -200,7 +200,8 @@ void dpnp_ptp_c(void* result1_out,
 
     dpnp_min_c<_DataType>(arr, min_arr, result_size, input_shape, input_ndim, axis, naxis);
     dpnp_max_c<_DataType>(arr, max_arr, result_size, input_shape, input_ndim, axis, naxis);
-    dpnp_subtract_c<_DataType, _DataType, _DataType>(result, max_arr, result_size, result_shape, result_ndim, min_arr, result_size, result_shape, result_ndim, NULL);
+    dpnp_subtract_c<_DataType, _DataType, _DataType>(result, max_arr, result_size, result_shape, result_ndim, min_arr,
+                                                     result_size, result_shape, result_ndim, NULL);
 
     dpnp_memory_free_c(min_arr);
     dpnp_memory_free_c(max_arr);
