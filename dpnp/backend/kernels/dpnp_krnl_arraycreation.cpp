@@ -128,7 +128,7 @@ void dpnp_eye_c(void* result1, int k, const size_t* res_shape)
     for (size_t i = 0; i < result_size; ++i)
     {
         result[i] = 0;
-        for (size_t j = 0; j < diag_val; j ++)
+        for (size_t j = 0; j < diag_val; ++j)
         {
             size_t ind = (k >= 0) ? (j * res_shape[1] + j + k) : (j - k) * res_shape[1] + j;
             if (i == ind)
