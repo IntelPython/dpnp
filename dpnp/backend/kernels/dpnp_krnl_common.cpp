@@ -84,7 +84,7 @@ cl::sycl::event dot(cl::sycl::queue& queue,
                     size_t input1_strides,
                     size_t input2_strides,
                     size_t size,
-                    const cl::sycl::vector_class<cl::sycl::event>& dependencies = {})
+                    const std::vector<cl::sycl::event>& dependencies = {})
 {
     (void)dependencies;
 
@@ -322,9 +322,7 @@ void dpnp_dot_c(void* result_out,
         }
     }
 
-    // deprecated? can be replaced with std::vector<cl::sycl::event>
-    cl::sycl::vector_class<cl::sycl::event> dot_events;
-    // std::vector<cl::sycl::event> dot_events;
+    std::vector<cl::sycl::event> dot_events;
     dot_events.reserve(result_size);
 
     size_t dot_st1 = ext_input1_strides[ext_input1_ndim - 1];
