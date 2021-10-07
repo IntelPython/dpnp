@@ -38,6 +38,7 @@ typedef mkl_dft::descriptor<mkl_dft::precision::SINGLE, mkl_dft::domain::COMPLEX
 typedef mkl_dft::descriptor<mkl_dft::precision::DOUBLE, mkl_dft::domain::REAL> desc_dp_real_t;
 typedef mkl_dft::descriptor<mkl_dft::precision::SINGLE, mkl_dft::domain::REAL> desc_sp_real_t;
 
+#if 0
 #ifdef _WIN32
 #ifndef M_PI // Windows compatibility
 #define M_PI 3.14159265358979323846
@@ -162,6 +163,7 @@ void dpnp_fft_fft_sycl_c(const void* array1_in,
 
     return;
 }
+#endif
 
 // TODO
 /* future interface */
@@ -216,6 +218,7 @@ void dpnp_fft_fft_mathlib_real_to_cmplx_c(const void* array1_in,
 
     const std::int64_t* xin_strides = reinterpret_cast<const std::int64_t*>(input_strides);
     const std::int64_t* xout_strides = reinterpret_cast<const std::int64_t*>(output_strides);
+    // TODO
     MKL_LONG input_number_of_transforms = 1; // hardcoded now. TBD
 
     char *tmp = (char *) array_1;
@@ -224,9 +227,9 @@ void dpnp_fft_fft_mathlib_real_to_cmplx_c(const void* array1_in,
     output_strides_desc[1] =
             ((_DataType_output*) (tmp + (xout_strides[0] * sizeof(_DataType_output)))) - result;
 
-    desc.set_value(mkl_dft::config_param::BACKWARD_SCALE, (1.0 / std::sqrt(result_size)));     // TODO
-                                                                                               // result_size is real results_size
-                                                                                               // add bckward_scale / fw_scale params
+    desc.set_value(mkl_dft::config_param::BACKWARD_SCALE, (1.0 / result_size));     // TODO
+                                                                                    // result_size is real results_size
+                                                                                    // add bckward_scale / fw_scale params
 
     desc.set_value(oneapi::mkl::dft::config_param::CONJUGATE_EVEN_STORAGE, DFTI_COMPLEX_COMPLEX);
 
@@ -250,19 +253,29 @@ void dpnp_fft_fft_mathlib_real_to_cmplx_c(const void* array1_in,
 
 /* norm: backward - 0, forward - 1 */
 template <typename _DataType_input, typename _DataType_output>
-void dpnp_fft_fft_mathlib_c(const void* array1_in,
-                            void* result1,
-                            const long* input_shape,
-                            const long* input_strides,
-                            const long* output_strides,
-                            const size_t shape_size,
-                            const size_t result_size,
-                            const size_t norm)
+void dpnp_fft_fft_c(const void* array1_in,
+                    void* result1,
+                    const long* input_shape,
+                    const long* output_shape,   // TODO: remove. input_shape and output_shape should be eq.
+                    const size_t shape_size,
+                    const long* input_strides,
+                    const long* output_strides,
+                    long axis,
+                    const size_t norm)
 {
-    if (!shape_size || !result_size || !array1_in || !result1)
+    if (!shape_size || !input_strides || !output_strides || (shape_size > 3))
     {
         return;
     }
+
+    const size_t result_size = std::accumulate(output_shape, output_shape + shape_size, 1, std::multiplies<size_t>());
+    const size_t input_size = std::accumulate(input_shape, input_shape + shape_size, 1, std::multiplies<size_t>());
+
+    if (!input_size || !result_size || !array1_in || !result1)
+    {
+        return;
+    }
+
     std::vector<std::int64_t> dimensions(input_shape, input_shape + shape_size);
 
     /* complex-to-complex, double precision */
@@ -306,63 +319,6 @@ void dpnp_fft_fft_mathlib_c(const void* array1_in,
             array1_in, result1, shape_size, result_size, input_strides, output_strides, desc, norm);
 
     }
-    return;
-}
-// TODO
-// Will be deprecated
-template <typename _DataType_input, typename _DataType_output>
-void dpnp_fft_fft_c(const void* array1_in,
-                    void* result1,
-                    const long* input_shape,
-                    const long* output_shape,
-                    size_t shape_size,
-                    const long* input_strides,
-                    const long* output_strides,
-                    long axis,
-                    long input_boundarie,
-                    size_t inverse,
-                    const size_t norm)
-{
-    if (!shape_size)
-    {
-        return;
-    }
-
-    const size_t result_size = std::accumulate(output_shape, output_shape + shape_size, 1, std::multiplies<size_t>());
-    const size_t input_size = std::accumulate(input_shape, input_shape + shape_size, 1, std::multiplies<size_t>());
-
-    if (!input_size || !result_size || !array1_in || !result1)
-    {
-        return;
-    }
-
-    if (((std::is_same<_DataType_input, std::complex<double>>::value &&
-          std::is_same<_DataType_output, std::complex<double>>::value) ||
-         (std::is_same<_DataType_input, std::complex<float>>::value &&
-          std::is_same<_DataType_output, std::complex<float>>::value) ||
-         (std::is_same<_DataType_input, double>::value &&
-          std::is_same<_DataType_output, std::complex<double>>::value)||
-         (std::is_same<_DataType_input, float>::value &&
-          std::is_same<_DataType_output, std::complex<float>>::value))
-        && (shape_size <= 3))
-    {
-        dpnp_fft_fft_mathlib_c<_DataType_input, _DataType_output>(
-            array1_in, result1, input_shape, input_strides, output_strides,shape_size, result_size, norm);
-    }
-    else
-    {
-        dpnp_fft_fft_sycl_c<_DataType_input, _DataType_output>(array1_in,
-                                                               result1,
-                                                               input_shape,
-                                                               output_shape,
-                                                               shape_size,
-                                                               result_size,
-                                                               input_size,
-                                                               axis,
-                                                               input_boundarie,
-                                                               inverse);
-    }
-
     return;
 }
 

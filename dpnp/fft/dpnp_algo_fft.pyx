@@ -41,7 +41,8 @@ __all__ = [
     "dpnp_fft"
 ]
 
-ctypedef void(*fptr_dpnp_fft_fft_t)(void *, void * , long * , long * , size_t, long * , long * , long, long, size_t, size_t)
+
+ctypedef void(*fptr_dpnp_fft_fft_t)(void * , void * , long * , long * , size_t, long * , long * , long, size_t)
 
 # TODO:
 # remove after merge PR997
@@ -86,6 +87,6 @@ cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
 
     cdef fptr_dpnp_fft_fft_t func = <fptr_dpnp_fft_fft_t > kernel_data.ptr
     # call FPTR function
-    func(input.get_data(), result.get_data(), input_shape.data(), output_shape.data(), input_shape.size(), input_strides.data(), result_strides.data(), axis_norm, input_boundarie, inverse, norm)
+    func(input.get_data(), result.get_data(), input_shape.data(), output_shape.data(), input_shape.size(), input_strides.data(), result_strides.data(), axis_norm, norm)
 
     return result

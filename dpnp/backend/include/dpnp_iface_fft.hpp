@@ -72,16 +72,14 @@
  * @param[in]  inverse         Using inverse algorithm.
  * @param[in]  norm            Normalization mode. 0 - backward, 1 - forward.
  */
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_fft_fft_c(const void* array_in,
-                                  void* result,
+template <typename _DataType_input, typename _DataType_output>
+INP_DLLEXPORT void dpnp_fft_fft_c(const void* array1_in,
+                                  void* result1,
                                   const long* input_shape,
-                                  const long* output_shape,
-                                  size_t shape_size,
+                                  const long* output_shape,   // TODO: remove. input_shape and output_shape should be eq.
+                                  const size_t shape_size,
                                   const long* input_strides,
                                   const long* output_strides,
                                   long axis,
-                                  long input_boundarie,
-                                  size_t inverse,
                                   const size_t norm);
 #endif // BACKEND_IFACE_FFT_H
