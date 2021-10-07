@@ -1261,7 +1261,8 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
     _DataType s_minus_one, hpt, r_over_two_kappa_minus_one, rho_minus_one;
     _DataType* Uvec = nullptr;
     _DataType* Vvec = nullptr;
-    size_t* n = nullptr;
+    bool* mask_checker = nullptr;
+    bool* mask = nullptr;
     const _DataType d_zero = 0.0, d_one = 1.0;
 
     assert(kappa > 1.0);
@@ -1277,19 +1278,23 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
 
     Uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
     Vvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
-    n = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(sizeof(size_t)));
-    for (*n = 0; *n < size;)
-    {
-        size_t diff_size = size - *n;
-        mkl_rng::uniform<_DataType> uniform_distribution_u(d_zero, 0.5 * M_PI);
-        auto uniform_distr_u_event = mkl_rng::generate(uniform_distribution_u, DPNP_RNG_ENGINE, diff_size, Uvec);
-        mkl_rng::uniform<_DataType> uniform_distribution_v(d_zero, d_one);
-        auto uniform_distr_v_event = mkl_rng::generate(uniform_distribution_v, DPNP_RNG_ENGINE, diff_size, Vvec);
+    
+    mask_checker = (bool*)dpnp_memory_alloc_c(1 * sizeof(bool));
+    mask_checker[0] = false;
+    mask = reinterpret_cast<bool*>(dpnp_memory_alloc_c(size * sizeof(bool)));
+    dpnp_full_c<bool>(mask_checker, mask, size);
 
-        cl::sycl::range<1> diff_gws(diff_size);
+    while(!mask_checker[0])
+    {
+        mkl_rng::uniform<_DataType> uniform_distribution_u(d_zero, 0.5 * M_PI);
+        auto uniform_distr_u_event = mkl_rng::generate(uniform_distribution_u, DPNP_RNG_ENGINE, size, Uvec);
+        mkl_rng::uniform<_DataType> uniform_distribution_v(d_zero, d_one);
+        auto uniform_distr_v_event = mkl_rng::generate(uniform_distribution_v, DPNP_RNG_ENGINE, size, Vvec);
+
+        cl::sycl::range<1> gws(size);
         auto paral_kernel_some = [&](cl::sycl::handler& cgh) {
             cgh.depends_on({uniform_distr_u_event, uniform_distr_v_event});
-            cgh.parallel_for(diff_gws, [=](cl::sycl::id<1> global_id) {
+            cgh.parallel_for(gws, [=](cl::sycl::id<1> global_id) {
                 size_t i = global_id[0];
 
                 _DataType sn, cn, sn2, cn2;
@@ -1304,23 +1309,27 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
                 neg_W_minus_one = s_minus_one * sn2 / (0.5 * s_minus_one + cn2);
                 Y = kappa * (s_minus_one + neg_W_minus_one);
 
-                if ((Y * (2 - Y) >= V) || (cl::sycl::log(Y / V) + 1 >= Y))
+                if (((Y * (2 - Y) >= V) || (cl::sycl::log(Y / V) + 1 >= Y)) && !mask[i])
                 {
                     Y = neg_W_minus_one * (2 - neg_W_minus_one);
                     if (Y < 0)
                         Y = 0.0;
                     else if (Y > 1.0)
                         Y = 1.0;
-                    *n = *n + 1;
-                    result1[*n] = cl::sycl::asin(cl::sycl::sqrt(Y));
+                    
+                    result1[i] = cl::sycl::asin(cl::sycl::sqrt(Y));
+                    mask[i] = true;
                 }
             });
         };
         auto some_event = DPNP_QUEUE.submit(paral_kernel_some);
         some_event.wait();
+
+        dpnp_all_c<bool, bool>(mask, mask_checker, size);
     }
     dpnp_memory_free_c(Uvec);
-    dpnp_memory_free_c(n);
+    dpnp_memory_free_c(mask_checker);
+    dpnp_memory_free_c(mask);
 
     mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
     auto uniform_distr_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
@@ -1359,7 +1368,8 @@ void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _Da
     _DataType rho_over_kappa, rho, r, s_kappa;
     _DataType* Uvec = nullptr;
     _DataType* Vvec = nullptr;
-    size_t* n = nullptr;
+    bool* mask_checker = nullptr;
+    bool* mask = nullptr;
 
     const _DataType d_zero = 0.0, d_one = 1.0;
 
@@ -1374,39 +1384,45 @@ void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _Da
 
     Uvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
     Vvec = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
-    n = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(sizeof(size_t)));
 
-    for (*n = 0; *n < size;)
+    mask_checker = (bool*)dpnp_memory_alloc_c(1 * sizeof(bool));
+    mask_checker[0] = false;
+    mask = reinterpret_cast<bool*>(dpnp_memory_alloc_c(size * sizeof(bool)));
+    dpnp_full_c<bool>(mask_checker, mask, size);
+
+    while (!mask_checker[0])
     {
-        size_t diff_size = size - *n;
         mkl_rng::uniform<_DataType> uniform_distribution_u(d_zero, M_PI);
-        auto uniform_distr_u_event = mkl_rng::generate(uniform_distribution_u, DPNP_RNG_ENGINE, diff_size, Uvec);
+        auto uniform_distr_u_event = mkl_rng::generate(uniform_distribution_u, DPNP_RNG_ENGINE, size, Uvec);
         mkl_rng::uniform<_DataType> uniform_distribution_v(d_zero, d_one);
-        auto uniform_distr_v_event = mkl_rng::generate(uniform_distribution_v, DPNP_RNG_ENGINE, diff_size, Vvec);
+        auto uniform_distr_v_event = mkl_rng::generate(uniform_distribution_v, DPNP_RNG_ENGINE, size, Vvec);
 
-        cl::sycl::range<1> diff_gws((diff_size));
+        cl::sycl::range<1> gws((size));
 
         auto paral_kernel_some = [&](cl::sycl::handler& cgh) {
             cgh.depends_on({uniform_distr_u_event, uniform_distr_v_event});
-            cgh.parallel_for(diff_gws, [=](cl::sycl::id<1> global_id) {
+            cgh.parallel_for(gws, [=](cl::sycl::id<1> global_id) {
                 size_t i = global_id[0];
                 _DataType Z, W, Y, V;
                 Z = cl::sycl::cos(Uvec[i]);
                 V = Vvec[i];
                 W = (kappa + s_kappa * Z) / (s_kappa + kappa * Z);
                 Y = s_kappa - kappa * W;
-                if ((Y * (2 - Y) >= V) || (cl::sycl::log(Y / V) + 1 >= Y))
+                if (((Y * (2 - Y) >= V) || (cl::sycl::log(Y / V) + 1 >= Y)) && !mask[i])
                 {
-                    *n = *n + 1;
-                    result1[*n] = cl::sycl::acos(W);
+                    result1[i] = cl::sycl::acos(W);
+                    mask[i] = true;
                 }
             });
         };
         auto some_event = DPNP_QUEUE.submit(paral_kernel_some);
         some_event.wait();
+
+        dpnp_all_c<bool, bool>(mask, mask_checker, size);
     }
     dpnp_memory_free_c(Uvec);
-    dpnp_memory_free_c(n);
+    dpnp_memory_free_c(mask_checker);
+    dpnp_memory_free_c(mask);
 
     mkl_rng::uniform<_DataType> uniform_distribution(d_zero, d_one);
     auto uniform_distr_event = mkl_rng::generate(uniform_distribution, DPNP_RNG_ENGINE, size, Vvec);
