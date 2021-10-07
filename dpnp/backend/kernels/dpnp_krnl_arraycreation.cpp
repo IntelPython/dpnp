@@ -134,6 +134,7 @@ void dpnp_eye_c(void* result1, int k, const size_t* res_shape)
             if (i == ind)
             {
                 result[i] = 1;
+                break;
             }
         }
     }
