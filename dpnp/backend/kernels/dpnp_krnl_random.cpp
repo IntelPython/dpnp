@@ -1296,7 +1296,7 @@ void dpnp_rng_vonmises_large_kappa_c(void* result, const _DataType mu, const _Da
             cgh.depends_on({uniform_distr_u_event, uniform_distr_v_event});
             cgh.parallel_for(gws, [=](cl::sycl::id<1> global_id) {
                 size_t i = global_id[0];
-                if (!result_mask[0]) {
+                if (!result_mask[i]) {
                     _DataType sn, cn, sn2, cn2;
                     _DataType neg_W_minus_one, V, Y;
 
@@ -1404,7 +1404,7 @@ void dpnp_rng_vonmises_small_kappa_c(void* result, const _DataType mu, const _Da
             cgh.depends_on({uniform_distr_u_event, uniform_distr_v_event});
             cgh.parallel_for(gws, [=](cl::sycl::id<1> global_id) {
                 size_t i = global_id[0];
-                if (!result_mask[0]) {
+                if (!result_mask[i]) {
                     _DataType Z, W, Y, V;
                     Z = cl::sycl::cos(Uvec[i]);
                     V = Vvec[i];
