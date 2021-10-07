@@ -41,7 +41,19 @@ __all__ = [
     "dpnp_fft"
 ]
 
-ctypedef void(*fptr_dpnp_fft_fft_t)(void *, void * , long * , long * , size_t, long, long, size_t, size_t)
+ctypedef void(*fptr_dpnp_fft_fft_t)(void *, void * , long * , long * , size_t, long * , long * , long, long, size_t, size_t)
+
+# TODO:
+# remove after merge PR997
+cdef shape_type_c strides_to_vector(strides, shape) except *:
+    """Get or calculate srtides based on shape."""
+    cdef shape_type_c res
+    if strides is None:
+        res = utils.get_axis_offsets(shape)
+    else:
+        res = strides
+
+    return res
 
 
 cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
@@ -53,10 +65,10 @@ cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
 
     cdef shape_type_c input_shape = input.shape
     cdef shape_type_c output_shape = input_shape
-    # TODO
-    # get strides in numpy format (in number of bytest)
-    cdef shape_type_c input_strides = tuple(input.strides)
-    # cdef shape_type_c output_strides = input.strides
+    cdef shape_type_c input_strides
+    cdef shape_type_c result_strides
+
+    input_strides = strides_to_vector(input.strides, input.shape)
 
     cdef long axis_norm = utils.normalize_axis((axis,), input_shape.size())[0]
     output_shape[axis_norm] = output_boundarie
@@ -70,9 +82,10 @@ cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
     # ceate result array with type given by FPTR data
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(output_shape, kernel_data.return_type, None)
 
+    result_strides = strides_to_vector(result.strides, result.shape)
+
     cdef fptr_dpnp_fft_fft_t func = <fptr_dpnp_fft_fft_t > kernel_data.ptr
     # call FPTR function
-    func(input.get_data(), result.get_data(), input_shape.data(),
-         output_shape.data(), input_shape.size(), axis_norm, input_boundarie, inverse, norm)
+    func(input.get_data(), result.get_data(), input_shape.data(), output_shape.data(), input_shape.size(), input_strides.data(), result_strides.data(), axis_norm, input_boundarie, inverse, norm)
 
     return result

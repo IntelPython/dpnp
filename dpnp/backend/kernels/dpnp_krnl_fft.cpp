@@ -198,6 +198,8 @@ void dpnp_fft_fft_mathlib_real_to_cmplx_c(const void* array1_in,
                                           void* result1,
                                           const size_t shape_size,
                                           const size_t result_size,
+                                          const long* input_strides,
+                                          const long* output_strides,
                                           _Descriptor_type& desc,
                                           const size_t norm)
 {
@@ -209,17 +211,18 @@ void dpnp_fft_fft_mathlib_real_to_cmplx_c(const void* array1_in,
     _DataType_output* result = result_ptr.get_ptr();
 
     // works only for 1d double
-    MKL_LONG input_strides[2] = {0, 1};
-    MKL_LONG output_strides[2] = {0, 1};
-    std::int64_t xin_strides[] = {8};        // hardcoded now. TBD
-    std::int64_t xout_strides[] = {16};      // hardcoded now. TBD
+    MKL_LONG input_strides_desc[2] = {0, 1};
+    MKL_LONG output_strides_desc[2] = {0, 1};
+
+    const std::int64_t* xin_strides = reinterpret_cast<const std::int64_t*>(input_strides);
+    const std::int64_t* xout_strides = reinterpret_cast<const std::int64_t*>(output_strides);
     MKL_LONG input_number_of_transforms = 1; // hardcoded now. TBD
 
     char *tmp = (char *) array_1;
-    input_strides[1] = ((_DataType_input*) (tmp + xin_strides[0])) - array_1;
+    input_strides_desc[1] = ((_DataType_input*) (tmp + (xin_strides[0] * sizeof(_DataType_input)))) - array_1;
     tmp = (char *) result;
-    output_strides[1] =
-            ((_DataType_output*) (tmp + xout_strides[0])) - result; double arr[10];
+    output_strides_desc[1] =
+            ((_DataType_output*) (tmp + (xout_strides[0] * sizeof(_DataType_output)))) - result;
 
     desc.set_value(mkl_dft::config_param::BACKWARD_SCALE, (1.0 / std::sqrt(result_size)));     // TODO
                                                                                                // result_size is real results_size
@@ -232,8 +235,8 @@ void dpnp_fft_fft_mathlib_real_to_cmplx_c(const void* array1_in,
     // instead of mkl_dft::config_value::NOT_INPLACE
     desc.set_value(mkl_dft::config_param::PLACEMENT, DFTI_NOT_INPLACE);
     // TODO lets find correct values
-    desc.set_value(oneapi::mkl::dft::config_param::INPUT_STRIDES, input_strides);
-    desc.set_value(oneapi::mkl::dft::config_param::OUTPUT_STRIDES, output_strides);
+    desc.set_value(oneapi::mkl::dft::config_param::INPUT_STRIDES, input_strides_desc);
+    desc.set_value(oneapi::mkl::dft::config_param::OUTPUT_STRIDES, output_strides_desc);
     desc.set_value(oneapi::mkl::dft::config_param::NUMBER_OF_TRANSFORMS, input_number_of_transforms);
 
     desc.commit(DPNP_QUEUE);
@@ -250,6 +253,8 @@ template <typename _DataType_input, typename _DataType_output>
 void dpnp_fft_fft_mathlib_c(const void* array1_in,
                             void* result1,
                             const long* input_shape,
+                            const long* input_strides,
+                            const long* output_strides,
                             const size_t shape_size,
                             const size_t result_size,
                             const size_t norm)
@@ -287,20 +292,32 @@ void dpnp_fft_fft_mathlib_c(const void* array1_in,
         // const result_size_cce_pack_format = result_size * 2;
         desc_dp_real_t desc(dimensions); // try: 2 * result_size
         dpnp_fft_fft_mathlib_real_to_cmplx_c<_DataType_input, double, desc_dp_real_t>(
-            array1_in, result1, shape_size, result_size, desc, norm);
+            array1_in, result1, shape_size, result_size, input_strides, output_strides, desc, norm);
 
     }
     /* real-to-complex, single precision */
-    // TBD
+    else if (std::is_same<_DataType_input, float>::value &&
+             std::is_same<_DataType_output, std::complex<float>>::value)
+    {
+
+        // const result_size_cce_pack_format = result_size * 2;
+        desc_sp_real_t desc(dimensions); // try: 2 * result_size
+        dpnp_fft_fft_mathlib_real_to_cmplx_c<_DataType_input, float, desc_sp_real_t>(
+            array1_in, result1, shape_size, result_size, input_strides, output_strides, desc, norm);
+
+    }
     return;
 }
-
+// TODO
+// Will be deprecated
 template <typename _DataType_input, typename _DataType_output>
 void dpnp_fft_fft_c(const void* array1_in,
                     void* result1,
                     const long* input_shape,
                     const long* output_shape,
                     size_t shape_size,
+                    const long* input_strides,
+                    const long* output_strides,
                     long axis,
                     long input_boundarie,
                     size_t inverse,
@@ -324,11 +341,13 @@ void dpnp_fft_fft_c(const void* array1_in,
          (std::is_same<_DataType_input, std::complex<float>>::value &&
           std::is_same<_DataType_output, std::complex<float>>::value) ||
          (std::is_same<_DataType_input, double>::value &&
-          std::is_same<_DataType_output, std::complex<double>>::value))
+          std::is_same<_DataType_output, std::complex<double>>::value)||
+         (std::is_same<_DataType_input, float>::value &&
+          std::is_same<_DataType_output, std::complex<float>>::value))
         && (shape_size <= 3))
     {
         dpnp_fft_fft_mathlib_c<_DataType_input, _DataType_output>(
-            array1_in, result1, input_shape, shape_size, result_size, norm);
+            array1_in, result1, input_shape, input_strides, output_strides,shape_size, result_size, norm);
     }
     else
     {
