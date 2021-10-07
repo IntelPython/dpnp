@@ -70,6 +70,7 @@
  * @param[in]  axis            Axis ID to compute by.
  * @param[in]  input_boundarie Limit number of elements for @ref axis.
  * @param[in]  inverse         Using inverse algorithm.
+ * @param[in]  norm            Normalization mode. 0 - backward, 1 - forward.
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_fft_fft_c(const void* array_in,
@@ -79,6 +80,6 @@ INP_DLLEXPORT void dpnp_fft_fft_c(const void* array_in,
                                   size_t shape_size,
                                   long axis,
                                   long input_boundarie,
-                                  size_t inverse);
-
+                                  size_t inverse,
+                                  const size_t norm);
 #endif // BACKEND_IFACE_FFT_H

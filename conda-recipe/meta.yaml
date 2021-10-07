@@ -8,7 +8,7 @@ requirements:
     host:
       - python
       - setuptools
-      - numpy >=1.15                    # [win or osx or py==38]
+      - numpy >=1.15                    # [win or osx or py>=38]
       - numpy 1.17                      # [linux and py==37]
       - cython
       - cmake >=3.16.5
@@ -30,10 +30,11 @@ build:
     number: {{ GIT_DESCRIBE_NUMBER }}
     include_recipe: False
     script_env:
-      - _ONEAPI_ROOT # renamed for ignore in CI
-      - _DPCPPROOT # renamed for ignore in CI
+      - ONEAPI_ROOT
+      - DPCPPROOT
       - MKLROOT
       - TBBROOT
+      - DPLROOT
       - WHEELS_OUTPUT_FOLDER
 
 test:

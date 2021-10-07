@@ -1,16 +1,16 @@
 #!/bin/bash
 THEDIR=$(dirname $(readlink -e ${BASH_SOURCE[0]}))
 
-. ${THEDIR}/0.env.sh
+# . ${THEDIR}/0.env.sh
 cd ${THEDIR}
 
 export DPNP_DEBUG=1
 
 python setup.py clean
-python setup.py build_clib
+DPLROOT=/opt/intel/oneapi/dpl/latest python setup.py build_clib
 
 # inplace build
-python setup.py build_ext --inplace
+CC=dpcpp python setup.py build_ext --inplace
 
 # development build. Root privileges needed
 # python setup.py develop
