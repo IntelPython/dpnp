@@ -42,7 +42,7 @@ __all__ = [
 ]
 
 
-ctypedef void(*fptr_dpnp_fft_fft_t)(void * , void * , long * , long * , size_t, long * , long * , long, size_t)
+ctypedef void(*fptr_dpnp_fft_fft_t)(void * , void * , size_t, size_t, long * , long * , size_t, long * , long * , long, double, long)
 
 # TODO:
 # remove after merge PR997
@@ -68,6 +68,8 @@ cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
     cdef shape_type_c output_shape = input_shape
     cdef shape_type_c input_strides
     cdef shape_type_c result_strides
+    cdef double fsc = 1.0
+    cdef long all_harmonics = 1
 
     input_strides = strides_to_vector(input.strides, input.shape)
 
@@ -86,7 +88,8 @@ cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
     result_strides = strides_to_vector(result.strides, result.shape)
 
     cdef fptr_dpnp_fft_fft_t func = <fptr_dpnp_fft_fft_t > kernel_data.ptr
+
     # call FPTR function
-    func(input.get_data(), result.get_data(), input_shape.data(), output_shape.data(), input_shape.size(), input_strides.data(), result_strides.data(), axis_norm, norm)
+    func(input.get_data(), result.get_data(), input.size, result.size, input_shape.data(), output_shape.data(), input_shape.size(), input_strides.data(), result_strides.data(), axis, fsc, all_harmonics)
 
     return result

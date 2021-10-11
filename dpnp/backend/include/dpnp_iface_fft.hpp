@@ -75,11 +75,14 @@
 template <typename _DataType_input, typename _DataType_output>
 INP_DLLEXPORT void dpnp_fft_fft_c(const void* array1_in,
                                   void* result1,
+                                  const size_t input_size,
+                                  const size_t result_size,
                                   const long* input_shape,
-                                  const long* output_shape,   // TODO: remove. input_shape and output_shape should be eq.
+                                  const long* output_shape,
                                   const size_t shape_size,
                                   const long* input_strides,
                                   const long* output_strides,
                                   long axis,
-                                  const size_t norm);
+                                  const double fsc,
+                                  const long all_harmonics);
 #endif // BACKEND_IFACE_FFT_H

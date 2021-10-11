@@ -108,7 +108,7 @@ def fft(x1, n=None, axis=-1, norm=None):
             pass
         elif not x1_desc.dtype in (numpy.complex128, numpy.complex64, numpy.float32, numpy.float64):
             pass
-        elif x1_desc.ndim > 3:
+        elif x1_desc.ndim > 3:  # TODO: will be removed.
             pass
         else:
             output_boundarie = input_boundarie
