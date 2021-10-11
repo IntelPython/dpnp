@@ -23,46 +23,35 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include "verbose.hpp"
-#include <iostream>
+#pragma once
+#ifndef CONSTANTS_H // Cython compatibility
+#define CONSTANTS_H
 
-bool _is_verbose_mode = false;
-bool _is_verbose_mode_init = false;
+#ifdef _WIN32
+#define INP_DLLEXPORT __declspec(dllexport)
+#else
+#define INP_DLLEXPORT
+#endif
 
-bool is_verbose_mode()
+/**
+ * This is container for the constants from Python interpreter and other modules. These constants are subject to use
+ * in algorithms.
+ */
+struct python_constants
 {
-    if (!_is_verbose_mode_init)
-    {
-        _is_verbose_mode = false;
-        const char* env_var = std::getenv("DPNP_VERBOSE");
-        if (env_var and env_var == std::string("1"))
-        {
-            _is_verbose_mode = true;
-        }
-        _is_verbose_mode_init = true;
-    }
-    return _is_verbose_mode;
-}
+    static void* py_none; /**< Python None */
+    static void* py_nan;  /**< Python NAN or NumPy.nan */
+};
 
-class barrierKernelClass;
+/**
+ * @ingroup BACKEND_API
+ * @brief Python constants initialization in the backend.
+ *
+ * Global values from Python to use in algorithms.
+ *
+ * @param [in]  py_none   Python NONE representation
+ * @param [in]  py_nan    Python NAN representation
+ */
+INP_DLLEXPORT void dpnp_python_constants_initialize_c(void* py_none, void* py_nan);
 
-void set_barrier_event(cl::sycl::queue queue, std::vector<cl::sycl::event>& depends)
-{
-    if (is_verbose_mode())
-    {
-        cl::sycl::event barrier_event = queue.single_task<barrierKernelClass>(depends, [=] {});
-        depends.clear();
-        depends.push_back(barrier_event);
-    }
-}
-
-void verbose_print(std::string header, cl::sycl::event first_event, cl::sycl::event last_event)
-{
-    if (is_verbose_mode())
-    {
-        auto first_event_end = first_event.get_profiling_info<sycl::info::event_profiling::command_end>();
-        auto last_event_end = last_event.get_profiling_info<sycl::info::event_profiling::command_end>();
-        std::cout << "DPNP_VERBOSE " << header << " Time: " << (last_event_end - first_event_end) / 1.0e9 << " s"
-                  << std::endl;
-    }
-}
+#endif // CONSTANTS_H

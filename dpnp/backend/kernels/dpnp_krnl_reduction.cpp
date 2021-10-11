@@ -30,6 +30,7 @@
 #include "dpnp_fptr.hpp"
 #include "dpnp_iterator.hpp"
 #include "dpnp_utils.hpp"
+#include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
 namespace mkl_stats = oneapi::mkl::stats;
@@ -74,12 +75,21 @@ void dpnp_sum_c(void* result_out,
 
     const _DataType_output init = get_initial_value<_DataType_output>(initial, 0);
 
-    _DataType_input* input = get_array_ptr<_DataType_input>(input_in);
+    const size_t input_size =
+        std::accumulate(input_shape, input_shape + input_shape_ndim, size_t(1), std::multiplies<size_t>());
+
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(input_in, input_size, true);
+    _DataType_input* input = input1_ptr.get_ptr();
     _DataType_output* result = get_array_ptr<_DataType_output>(result_out);
 
     if (!input_shape && !input_shape_ndim)
     { // it is a scalar
-        result[0] = input[0];
+        //result[0] = input[0];
+        _DataType_input input_elem = 0;
+        _DataType_output result_elem = 0;
+        dpnp_memory_memcpy_c(&input_elem, input, sizeof(_DataType_input));
+        result_elem = input_elem;
+        dpnp_memory_memcpy_c(result, &result_elem, sizeof(_DataType_output));
 
         return;
     }
@@ -93,8 +103,6 @@ void dpnp_sum_c(void* result_out,
         // - float64 and float32 types only
         if (axes_ndim < 1)
         {
-            const size_t input_size =
-                std::accumulate(input_shape, input_shape + input_shape_ndim, size_t(1), std::multiplies<size_t>());
             auto dataset = mkl_stats::make_dataset<mkl_stats::layout::row_major>(1, input_size, input);
             cl::sycl::event event = mkl_stats::raw_sum(DPNP_QUEUE, dataset, result);
             event.wait();
@@ -116,7 +124,8 @@ void dpnp_sum_c(void* result_out,
             policy, input_it.begin(output_id), input_it.end(output_id), init, std::plus<_DataType_output>());
         policy.queue().wait(); // TODO move out of the loop
 
-        result[output_id] = accumulator;
+        dpnp_memory_memcpy_c(
+            result + output_id, &accumulator, sizeof(_DataType_output)); // result[output_id] = accumulator;
     }
 
     return;
@@ -144,12 +153,21 @@ void dpnp_prod_c(void* result_out,
 
     const _DataType_output init = get_initial_value<_DataType_output>(initial, 1);
 
-    _DataType_input* input = get_array_ptr<_DataType_input>(input_in);
+    const size_t input_size =
+        std::accumulate(input_shape, input_shape + input_shape_ndim, size_t(1), std::multiplies<size_t>());
+
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(input_in, input_size, true);
+    _DataType_input* input = input1_ptr.get_ptr();
     _DataType_output* result = get_array_ptr<_DataType_output>(result_out);
 
     if (!input_shape && !input_shape_ndim)
     { // it is a scalar
-        result[0] = input[0];
+        // result[0] = input[0];
+        _DataType_input input_elem = 0;
+        _DataType_output result_elem = 0;
+        dpnp_memory_memcpy_c(&input_elem, input, sizeof(_DataType_input));
+        result_elem = input_elem;
+        dpnp_memory_memcpy_c(result, &result_elem, sizeof(_DataType_output));
 
         return;
     }
@@ -167,7 +185,8 @@ void dpnp_prod_c(void* result_out,
             policy, input_it.begin(output_id), input_it.end(output_id), init, std::multiplies<_DataType_output>());
         policy.queue().wait(); // TODO move out of the loop
 
-        result[output_id] = accumulator;
+        dpnp_memory_memcpy_c(
+            result + output_id, &accumulator, sizeof(_DataType_output)); // result[output_id] = accumulator;
     }
 
     return;

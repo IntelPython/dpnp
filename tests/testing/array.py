@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2020, Intel Corporation
 # All rights reserved.
@@ -23,28 +24,29 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-# The following variables are optionally searched for defaults
-#  PSTL_ROOT_DIR:     Base directory where all components are found
-#
-# The following are set after configuration is done:
-#  PSTL_FOUND
-#  PSTL_INCLUDE_DIR
+import numpy
+from dpnp.dpnp_utils import convert_item
 
-include(FindPackageHandleStandardArgs)
 
-set(PSTL_ROOT_DIR
-    "${DPNP_ONEAPI_ROOT}/dpl"
-    CACHE PATH "Folder contains PSTL headers")
+assert_allclose_orig = numpy.testing.assert_allclose
+assert_array_equal_orig = numpy.testing.assert_array_equal
+assert_equal_orig = numpy.testing.assert_equal
 
-find_path(
-  PSTL_INCLUDE_DIR oneapi/dpl/algorithm
-  HINTS ENV CONDA_PREFIX ${PSTL_ROOT_DIR} # search order is important
-  PATH_SUFFIXES include latest/linux/include
-  DOC "Path to PSTL include files")
 
-find_package_handle_standard_args(PSTL DEFAULT_MSG PSTL_INCLUDE_DIR)
+def _assert(assert_func, result, expected, *args, **kwargs):
+    result = convert_item(result)
+    expected = convert_item(expected)
 
-if(PSTL_FOUND)
-  message(STATUS "Found PSTL:                      (include: ${PSTL_INCLUDE_DIR})")
-  # mark_as_advanced(PSTL_ROOT_DIR PSTL_INCLUDE_DIR)
-endif()
+    assert_func(result, expected, *args, **kwargs)
+
+
+def assert_allclose(result, expected, *args, **kwargs):
+    _assert(assert_allclose_orig, result, expected, *args, **kwargs)
+
+
+def assert_array_equal(result, expected, *args, **kwargs):
+    _assert(assert_array_equal_orig, result, expected, *args, **kwargs)
+
+
+def assert_equal(result, expected, *args, **kwargs):
+    _assert(assert_equal_orig, result, expected, *args, **kwargs)

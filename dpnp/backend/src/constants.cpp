@@ -23,46 +23,21 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include "verbose.hpp"
 #include <iostream>
 
-bool _is_verbose_mode = false;
-bool _is_verbose_mode_init = false;
+#include "constants.hpp"
 
-bool is_verbose_mode()
+void* python_constants::py_none = nullptr;
+void* python_constants::py_nan = nullptr;
+
+void dpnp_python_constants_initialize_c(void* _py_none, void* _py_nan)
 {
-    if (!_is_verbose_mode_init)
-    {
-        _is_verbose_mode = false;
-        const char* env_var = std::getenv("DPNP_VERBOSE");
-        if (env_var and env_var == std::string("1"))
-        {
-            _is_verbose_mode = true;
-        }
-        _is_verbose_mode_init = true;
-    }
-    return _is_verbose_mode;
-}
-
-class barrierKernelClass;
-
-void set_barrier_event(cl::sycl::queue queue, std::vector<cl::sycl::event>& depends)
-{
-    if (is_verbose_mode())
-    {
-        cl::sycl::event barrier_event = queue.single_task<barrierKernelClass>(depends, [=] {});
-        depends.clear();
-        depends.push_back(barrier_event);
-    }
-}
-
-void verbose_print(std::string header, cl::sycl::event first_event, cl::sycl::event last_event)
-{
-    if (is_verbose_mode())
-    {
-        auto first_event_end = first_event.get_profiling_info<sycl::info::event_profiling::command_end>();
-        auto last_event_end = last_event.get_profiling_info<sycl::info::event_profiling::command_end>();
-        std::cout << "DPNP_VERBOSE " << header << " Time: " << (last_event_end - first_event_end) / 1.0e9 << " s"
-                  << std::endl;
-    }
+    python_constants::py_none = _py_none;
+    python_constants::py_nan = _py_nan;
+    //    std::cout << "========dpnp_python_constants_initialize_c=============" << std::endl;
+    //    std::cout << "\t None=" << _py_none
+    //              << "\n\t NaN=" << _py_nan
+    //              << "\n\t py_none=" << python_constants::py_none
+    //              << "\n\t py_nan=" << python_constants::py_nan
+    //              << std::endl;
 }

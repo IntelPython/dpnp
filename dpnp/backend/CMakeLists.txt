@@ -27,8 +27,8 @@
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-# set(DPNP_VERSION 0.6.2)
-# set(DPNP_API_VERSION 0.6)
+# set(DPNP_VERSION 0.8.0)
+# set(DPNP_API_VERSION 0.8)
 
 # set directory where the custom finders live
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
@@ -38,14 +38,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
 # -----------------------------------------------------------------------------------------------
 if(DEFINED ENV{ONEAPI_ROOT})
   set(DPNP_ONEAPI_ROOT "$ENV{ONEAPI_ROOT}" CACHE PATH "Folder contains oneapi tool set")
-else()
-  if(UNIX)
-    set(DPNP_ONEAPI_ROOT "/opt/intel/oneapi" CACHE PATH "Folder contains oneapi tool set")
-  elseif(WIN32)
-    set(DPNP_ONEAPI_ROOT "C:/Program Files (x86)/Intel/oneAPI" CACHE PATH "Folder contains oneapi tool set")
-  else()
-    message(FATAL_ERROR "Unsupported system ${CMAKE_SYSTEM}")
-  endif()
 endif()
 
 option(DPNP_STATIC_LIB_ENABLE "Enable build DPNP static library" FALSE)
@@ -184,6 +176,7 @@ set(DPNP_SRC
     kernels/dpnp_krnl_searching.cpp
     kernels/dpnp_krnl_sorting.cpp
     kernels/dpnp_krnl_statistics.cpp
+    src/constants.cpp
     src/dpnp_iface_fptr.cpp
     src/memory_sycl.cpp
     src/queue_sycl.cpp
@@ -252,8 +245,8 @@ target_link_libraries(dpnp_backend_c PUBLIC ${DPNP_MATHLIB_DEP_LIBS})
 
 # Parallel STL from DPC++
 if(NOT WIN32)
-  find_package(PSTL REQUIRED)
-  target_include_directories(dpnp_backend_c PUBLIC ${PSTL_INCLUDE_DIR})
+  find_package(DPL REQUIRED)
+  target_include_directories(dpnp_backend_c PUBLIC ${DPL_INCLUDE_DIR})
 endif()
 
 # SYCL queue manager

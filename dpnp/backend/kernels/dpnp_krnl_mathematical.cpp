@@ -28,9 +28,11 @@
 #include <vector>
 
 #include <dpnp_iface.hpp>
+
 #include "dpnp_fptr.hpp"
 #include "dpnp_iterator.hpp"
 #include "dpnp_utils.hpp"
+#include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
 template <typename _KernelNameSpecialization>
@@ -47,7 +49,8 @@ void dpnp_around_c(const void* input_in, void* result_out, const size_t input_si
     }
 
     cl::sycl::event event;
-    _DataType* input = reinterpret_cast<_DataType*>(const_cast<void*>(input_in));
+    DPNPC_ptr_adapter<_DataType> input1_ptr(input_in, input_size);
+    _DataType* input = input1_ptr.get_ptr();
     _DataType* result = reinterpret_cast<_DataType*>(result_out);
 
     if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
@@ -78,7 +81,7 @@ template <typename _KernelNameSpecialization>
 class dpnp_elemwise_absolute_c_kernel;
 
 template <typename _DataType>
-void dpnp_elemwise_absolute_c(void* array1_in, void* result1, size_t size)
+void dpnp_elemwise_absolute_c(const void* input1_in, void* result1, size_t size)
 {
     if (!size)
     {
@@ -86,8 +89,10 @@ void dpnp_elemwise_absolute_c(void* array1_in, void* result1, size_t size)
     }
 
     cl::sycl::event event;
-    _DataType* array1 = reinterpret_cast<_DataType*>(array1_in);
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(input1_in, size);
+    _DataType* array1 = input1_ptr.get_ptr();
+    DPNPC_ptr_adapter<_DataType> result1_ptr(result1, size, false, true);
+    _DataType* result = result1_ptr.get_ptr();
 
     if constexpr (std::is_same<_DataType, double>::value || std::is_same<_DataType, float>::value)
     {
@@ -120,10 +125,10 @@ void dpnp_elemwise_absolute_c(void* array1_in, void* result1, size_t size)
     event.wait();
 }
 
-template void dpnp_elemwise_absolute_c<double>(void* array1_in, void* result1, size_t size);
-template void dpnp_elemwise_absolute_c<float>(void* array1_in, void* result1, size_t size);
-template void dpnp_elemwise_absolute_c<long>(void* array1_in, void* result1, size_t size);
-template void dpnp_elemwise_absolute_c<int>(void* array1_in, void* result1, size_t size);
+// template void dpnp_elemwise_absolute_c<double>(void* array1_in, void* result1, size_t size);
+// template void dpnp_elemwise_absolute_c<float>(void* array1_in, void* result1, size_t size);
+// template void dpnp_elemwise_absolute_c<long>(void* array1_in, void* result1, size_t size);
+// template void dpnp_elemwise_absolute_c<int>(void* array1_in, void* result1, size_t size);
 
 template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>
 void dpnp_cross_c(void* result_out,
@@ -145,9 +150,12 @@ void dpnp_cross_c(void* result_out,
     (void)input2_shape_ndim;
     (void)where;
 
-    const _DataType_input1* input1 = reinterpret_cast<const _DataType_input1*>(input1_in);
-    const _DataType_input2* input2 = reinterpret_cast<const _DataType_input2*>(input2_in);
-    _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
+    DPNPC_ptr_adapter<_DataType_input1> input1_ptr(input1_in, input1_size, true);
+    DPNPC_ptr_adapter<_DataType_input2> input2_ptr(input2_in, input2_size, true);
+    DPNPC_ptr_adapter<_DataType_output> result_ptr(result_out, input1_size, true, true);
+    const _DataType_input1* input1 = input1_ptr.get_ptr();
+    const _DataType_input2* input2 = input2_ptr.get_ptr();
+    _DataType_output* result = result_ptr.get_ptr();
 
     result[0] = input1[1] * input2[2] - input1[2] * input2[1];
 
@@ -169,8 +177,10 @@ void dpnp_cumprod_c(void* array1_in, void* result1, size_t size)
         return;
     }
 
-    _DataType_input* array1 = reinterpret_cast<_DataType_input*>(array1_in);
-    _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, size, true);
+    DPNPC_ptr_adapter<_DataType_output> result_ptr(result1, size, true, true);
+    _DataType_input* array1 = input1_ptr.get_ptr();
+    _DataType_output* result = result_ptr.get_ptr();
 
     _DataType_output cur_res = 1;
 
@@ -194,8 +204,10 @@ void dpnp_cumsum_c(void* array1_in, void* result1, size_t size)
         return;
     }
 
-    _DataType_input* array1 = reinterpret_cast<_DataType_input*>(array1_in);
-    _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, size, true);
+    DPNPC_ptr_adapter<_DataType_output> result_ptr(result1, size, true, true);
+    _DataType_input* array1 = input1_ptr.get_ptr();
+    _DataType_output* result = result_ptr.get_ptr();
 
     _DataType_output cur_res = 0;
 
@@ -230,8 +242,10 @@ void dpnp_floor_divide_c(void* result_out,
         return;
     }
 
-    _DataType_input1* input1_data = reinterpret_cast<_DataType_input1*>(const_cast<void*>(input1_in));
-    _DataType_input2* input2_data = reinterpret_cast<_DataType_input2*>(const_cast<void*>(input2_in));
+    DPNPC_ptr_adapter<_DataType_input1> input1_ptr(input1_in, input1_size);
+    DPNPC_ptr_adapter<_DataType_input2> input2_ptr(input2_in, input2_size);
+    _DataType_input1* input1_data = input1_ptr.get_ptr();
+    _DataType_input2* input2_data = input2_ptr.get_ptr();
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
 
     std::vector<size_t> result_shape =
@@ -301,7 +315,8 @@ template <typename _DataType_input, typename _DataType_output>
 void dpnp_modf_c(void* array1_in, void* result1_out, void* result2_out, size_t size)
 {
     cl::sycl::event event;
-    _DataType_input* array1 = reinterpret_cast<_DataType_input*>(array1_in);
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, size);
+    _DataType_input* array1 = input1_ptr.get_ptr();
     _DataType_output* result1 = reinterpret_cast<_DataType_output*>(result1_out);
     _DataType_output* result2 = reinterpret_cast<_DataType_output*>(result2_out);
 
@@ -353,12 +368,14 @@ void dpnp_remainder_c(void* result_out,
         return;
     }
 
-    _DataType_input1* input1_data = reinterpret_cast<_DataType_input1*>(const_cast<void*>(input1_in));
-    _DataType_input2* input2_data = reinterpret_cast<_DataType_input2*>(const_cast<void*>(input2_in));
+    DPNPC_ptr_adapter<_DataType_input1> input1_ptr(input1_in, input1_size);
+    DPNPC_ptr_adapter<_DataType_input2> input2_ptr(input2_in, input2_size);
+    _DataType_input1* input1_data = input1_ptr.get_ptr();
+    _DataType_input2* input2_data = input2_ptr.get_ptr();
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result_out);
 
-    std::vector<size_t> result_shape = get_result_shape(input1_shape, input1_shape_ndim,
-                                                            input2_shape, input2_shape_ndim); 
+    std::vector<size_t> result_shape =
+        get_result_shape(input1_shape, input1_shape_ndim, input2_shape, input2_shape_ndim);
 
     DPNPC_id<_DataType_input1>* input1_it;
     const size_t input1_it_size_in_bytes = sizeof(DPNPC_id<_DataType_input1>);
@@ -373,10 +390,10 @@ void dpnp_remainder_c(void* result_out,
     new (input2_it) DPNPC_id<_DataType_input2>(input2_data, input2_shape, input2_shape_ndim);
 
     input2_it->broadcast_to_shape(result_shape);
-    
+
     const size_t result_size = input1_it->get_output_size();
 
-    cl::sycl::range<1> gws(result_size); 
+    cl::sycl::range<1> gws(result_size);
     auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
         const size_t i = global_id[0];
         const _DataType_output input1_elem = (*input1_it)[i];
@@ -384,7 +401,6 @@ void dpnp_remainder_c(void* result_out,
         double fmod_res = cl::sycl::fmod((double)input1_elem, (double)input2_elem);
         double add = fmod_res + input2_elem;
         result[i] = cl::sycl::fmod(add, (double)input2_elem);
-
     };
     auto kernel_func = [&](cl::sycl::handler& cgh) {
         cgh.parallel_for<class dpnp_remainder_c_kernel<_DataType_output, _DataType_input1, _DataType_input2>>(
@@ -395,9 +411,8 @@ void dpnp_remainder_c(void* result_out,
 
     if (input1_size == input2_size)
     {
-        if constexpr ((std::is_same<_DataType_input1, double>::value ||
-                        std::is_same<_DataType_input1, float>::value) &&
-                        std::is_same<_DataType_input2, _DataType_input1>::value)
+        if constexpr ((std::is_same<_DataType_input1, double>::value || std::is_same<_DataType_input1, float>::value) &&
+                      std::is_same<_DataType_input2, _DataType_input1>::value)
         {
             event = oneapi::mkl::vm::fmod(DPNP_QUEUE, input1_size, input1_data, input2_data, result);
             event.wait();
@@ -419,7 +434,6 @@ void dpnp_remainder_c(void* result_out,
 
     input1_it->~DPNPC_id();
     input2_it->~DPNPC_id();
-
 }
 
 template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2, typename _KernelNameSpecialization3>
@@ -435,13 +449,16 @@ void dpnp_trapz_c(
     }
 
     cl::sycl::event event;
-    _DataType_input1* array1 = reinterpret_cast<_DataType_input1*>(const_cast<void*>(array1_in));
-    _DataType_input2* array2 = reinterpret_cast<_DataType_input2*>(const_cast<void*>(array2_in));
+    DPNPC_ptr_adapter<_DataType_input1> input1_ptr(array1_in, array1_size);
+    DPNPC_ptr_adapter<_DataType_input2> input2_ptr(array2_in, array2_size);
+    _DataType_input1* array1 = input1_ptr.get_ptr();
+    _DataType_input2* array2 = input2_ptr.get_ptr();
     _DataType_output* result = reinterpret_cast<_DataType_output*>(result1);
 
     if (array1_size < 2)
     {
-        result[0] = 0;
+        const _DataType_output init_val = 0;
+        dpnp_memory_memcpy_c(result, &init_val, sizeof(_DataType_output)); // result[0] = 0;
         return;
     }
 

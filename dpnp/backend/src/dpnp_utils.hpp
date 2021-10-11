@@ -34,6 +34,10 @@
 
 #include <dpnp_iface_fptr.hpp>
 
+#define LIBSYCL_VERSION_GREATER(major, minor, patch)                                                                   \
+    (__LIBSYCL_MAJOR_VERSION > major) || (__LIBSYCL_MAJOR_VERSION == major and __LIBSYCL_MINOR_VERSION > minor) ||     \
+        (__LIBSYCL_MAJOR_VERSION == major and __LIBSYCL_MINOR_VERSION == minor and __LIBSYCL_PATCH_VERSION >= patch)
+
 /**
  * @defgroup BACKEND_UTILS Backend C++ library utilities
  * @{
@@ -65,6 +69,35 @@ void get_shape_offsets_inkernel(const _DataType* shape, size_t shape_size, _Data
         dim_prod_input *= shape[i_reverse];
     }
 
+    return;
+}
+
+/**
+ * @ingroup BACKEND_UTILS
+ * @brief Calculation of indeces in array
+ *
+ * Calculates indeces of element in array with given linear position
+ * for example:
+ *   idx = 5, shape = (2, 3), ndim = 2,
+ *   indeces xyz should be [1, 1]
+ *
+ * @param [in]  idx     linear index of the element in multy-D array.
+ * @param [in]  ndim    number of dimensions.
+ * @param [in]  shape   offsets of array.
+ * @param [out] xyz     indeces.
+ */
+template <typename _DataType>
+void get_xyz_by_id(size_t idx, size_t ndim, const _DataType* offsets, _DataType* xyz)
+{
+    size_t quotient;
+    size_t remainder = idx;
+
+    for (size_t i = 0; i < ndim; ++i)
+    {
+        quotient = remainder / offsets[i];
+        remainder = remainder - quotient * offsets[i];
+        xyz[i] = quotient;
+    }
     return;
 }
 

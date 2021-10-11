@@ -1,6 +1,3 @@
-# cython: language_level=3
-# distutils: language = c++
-# -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2020, Intel Corporation
 # All rights reserved.
@@ -26,63 +23,31 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-"""
-Interface of the function from Python Math library
+# The following variables are optionally searched for defaults
+#  DPLROOT:         Environment variable to specify custom search place
+#  ONEAPI_ROOT:     Environment variable to specify search place from oneAPI
+#
+# The following are set after configuration is done:
+#  DPL_FOUND
+#  DPL_INCLUDE_DIR
 
-Notes
------
-This module is a face or public interface file for the library
-it contains:
- - Interface functions
- - documentation for the functions
- - The functions parameters check
+include(FindPackageHandleStandardArgs)
 
-"""
+set(DPNP_ONEAPI_DPL "$ENV{DPNP_ONEAPI_ROOT}/dpl/latest" CACHE PATH "Folder contains DPL files from ONEAPI_ROOT")
 
-import math
+if(DEFINED ENV{DPLROOT})
+  set(DPNP_DPLROOT "$ENV{DPLROOT}" CACHE PATH "Folder contains DPL files from DPLROOT")
+endif()
 
-from dpnp.dpnp_algo import *
-from dpnp.dpnp_utils import *
-import dpnp
+find_path(
+  DPL_INCLUDE_DIR oneapi/dpl/algorithm
+  HINTS ${DPNP_DPLROOT} ${DPNP_ONEAPI_DPL} ENV CONDA_PREFIX ENV PREFIX # search order is important
+  PATH_SUFFIXES include linux/include
+  DOC "Path to DPL include files")
 
-__all__ = [
-    "erf"
-]
+find_package_handle_standard_args(DPL DEFAULT_MSG DPL_INCLUDE_DIR)
 
-
-def erf(in_array1):
-    """
-    Returns the error function of complex argument.
-
-    For full documentation refer to :obj:`scipy.special.erf`.
-
-    Limitations
-    -----------
-    Parameter ``in_array1`` is supported as :obj:`dpnp.ndarray`.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
-    .. seealso:: :obj:`math.erf`
-
-    Examples
-    --------
-
-    >>> import dpnp as np
-    >>> x = np.linspace(2.0, 3.0, num=5)
-    >>> [i for i in x]
-    [2.0, 2.25, 2.5, 2.75, 3.0]
-    >>> out = np.erf(x)
-    >>> [i for i in out]
-    [0.99532227, 0.99853728, 0.99959305, 0.99989938, 0.99997791]
-
-    """
-
-    x1_desc = dpnp.get_dpnp_descriptor(in_array1)
-    if x1_desc:
-        return dpnp_erf(x1_desc).get_pyobj()
-
-    result = create_output_descriptor_py(in_array1.shape, in_array1.dtype, None).get_pyobj()
-    for i in range(result.size):
-        result[i] = math.erf(in_array1[i])
-
-    return result
+if(DPL_FOUND)
+  message(STATUS "Found DPL:                       (include: ${DPL_INCLUDE_DIR})")
+  # mark_as_advanced(DPNP_DPLROOT DPL_INCLUDE_DIR)
+endif()

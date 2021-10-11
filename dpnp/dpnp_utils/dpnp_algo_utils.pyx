@@ -55,6 +55,7 @@ __all__ = [
     "checker_throw_type_error",
     "checker_throw_value_error",
     "create_output_descriptor_py",
+    "convert_item",
     "dpnp_descriptor",
     "get_axis_indeces",
     "get_axis_offsets",
@@ -66,14 +67,15 @@ __all__ = [
 
 cdef ERROR_PREFIX = "DPNP error:"
 
+
 def convert_item(item):
     if getattr(item, "__sycl_usm_array_interface__", False):
-        item_converted = dpnp.asnumpy(item) 
-    elif getattr(item, "__array_interface__", False): # detect if it is a container (TODO any better way?)
+        item_converted = dpnp.asnumpy(item)
+    elif getattr(item, "__array_interface__", False):  # detect if it is a container (TODO any better way?)
         mod_name = getattr(item, "__module__", 'none')
         if (mod_name != 'numpy'):
             item_converted = dpnp.asnumpy(item)
-        else:  
+        else:
             item_converted = item
     elif isinstance(item, list):
         item_converted = convert_list_args(item)
@@ -81,17 +83,29 @@ def convert_item(item):
         item_converted = tuple(convert_list_args(item))
     else:
         item_converted = item
-    
+
     return item_converted
-    
+
+
 def convert_list_args(input_list):
     result_list = []
     for item in input_list:
-        item_converted = convert_item(item)     
+        item_converted = convert_item(item)
         result_list.append(item_converted)
 
     return result_list
-    
+
+
+def copy_from_origin(dst, src):
+    """Copy origin result to output result."""
+    if config.__DPNP_OUTPUT_DPCTL__ and hasattr(dst, "__sycl_usm_array_interface__"):
+        if src.size:
+            dst.usm_data.copy_from_host(src.reshape(-1).view("|u1"))
+    else:
+        for i in range(dst.size):
+            dst.flat[i] = src.item(i)
+
+
 def call_origin(function, *args, **kwargs):
     """
     Call fallback function for unsupported cases
@@ -107,19 +121,15 @@ def call_origin(function, *args, **kwargs):
         else:
             kwargs["out"] = dpnp.asnumpy(kwargs_out)
 
-    if dpnp_inplace:
-        # TODO replacement of foreign containers is still needed
-        args_new = args
-    else:
-        args_new_list = []
-        for arg in args:
-            argx = convert_item(arg)     
-            args_new_list.append(argx)
-        args_new = tuple(args_new_list)
+    args_new_list = []
+    for arg in args:
+        argx = convert_item(arg)
+        args_new_list.append(argx)
+    args_new = tuple(args_new_list)
 
     kwargs_new = {}
     for key, kwarg in kwargs.items():
-        kwargx = convert_item(kwarg)     
+        kwargx = convert_item(kwarg)
         kwargs_new[key] = kwargx
 
     # print(f"DPNP call_origin(): bakend called. \n\t function={function}, \n\t args_new={args_new}, \n\t kwargs_new={kwargs_new}, \n\t dpnp_inplace={dpnp_inplace}")
@@ -127,7 +137,17 @@ def call_origin(function, *args, **kwargs):
     result_origin = function(*args_new, **kwargs_new)
     # print(f"DPNP call_origin(): result from backend. \n\t result_origin={result_origin}, \n\t args_new={args_new}, \n\t kwargs_new={kwargs_new}, \n\t dpnp_inplace={dpnp_inplace}")
     result = result_origin
-    if isinstance(result, numpy.ndarray):
+    if dpnp_inplace:
+        # enough to modify only first argument in place
+        if args and args_new:
+            arg, arg_new = args[0], args_new[0]
+            if isinstance(arg_new, numpy.ndarray):
+                copy_from_origin(arg, arg_new)
+            elif isinstance(arg_new, list):
+                for i, val in enumerate(arg_new):
+                    arg[i] = val
+
+    elif isinstance(result, numpy.ndarray):
         if (kwargs_out is None):
             result_dtype = result_origin.dtype
             kwargs_dtype = kwargs.get("dtype", None)
@@ -138,8 +158,7 @@ def call_origin(function, *args, **kwargs):
         else:
             result = kwargs_out
 
-        for i in range(result.size):
-            result.flat[i] = result_origin.item(i)
+        copy_from_origin(result, result_origin)
 
     elif isinstance(result, tuple):
         # convert tuple(fallback_array) to tuple(result_array)
@@ -148,8 +167,7 @@ def call_origin(function, *args, **kwargs):
             res = res_origin
             if isinstance(res_origin, numpy.ndarray):
                 res = create_output_container(res_origin.shape, res_origin.dtype)
-                for i in range(res.size):
-                    res.flat[i] = res_origin.item(i)
+                copy_from_origin(res, res_origin)
             result_list.append(res)
 
         result = tuple(result_list)
@@ -186,7 +204,7 @@ cpdef checker_throw_value_error(function_name, param_name, param, expected):
 
 cpdef dpnp_descriptor create_output_descriptor_py(shape_type_c output_shape, object d_type, object requested_out):
     py_type = dpnp.default_float_type() if d_type is None else d_type
-    
+
     cdef DPNPFuncType c_type = dpnp_dtype_to_DPNPFuncType(py_type)
 
     return create_output_descriptor(output_shape, c_type, requested_out)
@@ -357,7 +375,7 @@ cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
 
     if requested_out is None:
         result = None
-        result_dtype = dpnp_DPNPFuncType_to_dtype( < size_t > c_type)
+        result_dtype = dpnp_DPNPFuncType_to_dtype(< size_t > c_type)
         result_obj = create_output_container(output_shape, result_dtype)
         result_desc = dpnp_descriptor(result_obj)
     else:
@@ -565,7 +583,7 @@ cdef class dpnp_descriptor:
         return self.origin_pyobj
 
     cdef void * get_data(self):
-        cdef long val = self.data
+        cdef size_t val = self.data
         return < void * > val
 
     def __bool__(self):

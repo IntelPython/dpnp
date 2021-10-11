@@ -32,12 +32,12 @@ and the rest of the library
 
 """
 
+import numpy
+from dpnp.dpnp_algo cimport *
+import dpnp.dpnp_utils as utils_py
 import dpnp
 cimport dpnp.dpnp_utils as utils
-import dpnp.dpnp_utils as utils_py
-from dpnp.dpnp_algo cimport *
 
-import numpy
 cimport numpy
 
 
@@ -56,12 +56,12 @@ __all__ = [
 
 
 # C function pointer to the C library template functions
-ctypedef void(*custom_linalg_1in_1out_func_ptr_t)(void * , void * , size_t * , size_t)
-ctypedef void(*custom_linalg_1in_1out_func_ptr_t_)(void *, void * , size_t * )
-ctypedef void(*custom_linalg_1in_1out_with_size_func_ptr_t_)(void * , void * , size_t)
-ctypedef void(*custom_linalg_1in_1out_with_2size_func_ptr_t_)(void * , void * , size_t, size_t)
-ctypedef void(*custom_linalg_1in_3out_shape_t)(void * , void * , void * , void * , size_t , size_t )
-ctypedef void(*custom_linalg_2in_1out_func_ptr_t)(void * , void * , void * , size_t )
+ctypedef void(*custom_linalg_1in_1out_func_ptr_t)(void *, void * , size_t * , size_t)
+ctypedef void(*custom_linalg_1in_1out_func_ptr_t_)(void * , void * , size_t * )
+ctypedef void(*custom_linalg_1in_1out_with_size_func_ptr_t_)(void *, void * , size_t)
+ctypedef void(*custom_linalg_1in_1out_with_2size_func_ptr_t_)(void *, void * , size_t, size_t)
+ctypedef void(*custom_linalg_1in_3out_shape_t)(void *, void * , void * , void * , size_t , size_t )
+ctypedef void(*custom_linalg_2in_1out_func_ptr_t)(void *, void * , void * , size_t )
 
 
 cpdef utils.dpnp_descriptor dpnp_cholesky(utils.dpnp_descriptor input_):
@@ -83,22 +83,22 @@ cpdef utils.dpnp_descriptor dpnp_cholesky(utils.dpnp_descriptor input_):
 
 cpdef object dpnp_cond(object input, object p):
     if p in ('f', 'fro'):
-        input = input.ravel(order='K')
+        input = dpnp.ravel(input, order='K')
         sqnorm = dpnp.dot(input, input)
         res = dpnp.sqrt(sqnorm)
         ret = dpnp.array([res])
     elif p == numpy.inf:
         dpnp_sum_val = dpnp.array([dpnp.sum(dpnp.abs(input), axis=1)])
-        ret = dpnp.array([dpnp_sum_val.max()])
+        ret = dpnp.max(dpnp_sum_val)
     elif p == -numpy.inf:
         dpnp_sum_val = dpnp.array([dpnp.sum(dpnp.abs(input), axis=1)])
-        ret = dpnp.array([dpnp_sum_val.min()])
+        ret = dpnp.min(dpnp_sum_val)
     elif p == 1:
         dpnp_sum_val = dpnp.array([dpnp.sum(dpnp.abs(input), axis=0)])
-        ret = dpnp.array([dpnp_sum_val.max()])
+        ret = dpnp.max(dpnp_sum_val)
     elif p == -1:
         dpnp_sum_val = dpnp.array([dpnp.sum(dpnp.abs(input), axis=0)])
-        ret = dpnp.array([dpnp_sum_val.min()])
+        ret = dpnp.min(dpnp_sum_val)
     else:
         ret = dpnp.array([input.item(0)])
     return ret
@@ -139,7 +139,7 @@ cpdef tuple dpnp_eig(utils.dpnp_descriptor x1):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_EIG, param1_type, param1_type)
 
-    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+    result_type = dpnp_DPNPFuncType_to_dtype(< size_t > kernel_data.return_type)
 
     cdef utils.dpnp_descriptor res_val = utils.create_output_descriptor((size,), kernel_data.return_type, None)
     cdef utils.dpnp_descriptor res_vec = utils.create_output_descriptor(x1_shape, kernel_data.return_type, None)
@@ -225,7 +225,7 @@ cpdef object dpnp_norm(object input, ord=None, axis=None):
             (ord in ('f', 'fro') and ndim == 2) or
                 (ord == 2 and ndim == 1)):
 
-            input = input.ravel(order='K')
+            input = dpnp.ravel(input, order='K')
             sqnorm = dpnp.dot(input, input)
             ret = dpnp.sqrt([sqnorm])
             return dpnp.array([ret], dtype=res_type)
@@ -237,7 +237,7 @@ cpdef object dpnp_norm(object input, ord=None, axis=None):
         elif ord == -numpy.inf:
             return dpnp.array([dpnp.abs(input).min(axis=axis)])
         elif ord == 0:
-            return dpnp.array([(input != 0).astype(input.dtype).sum(axis=axis)])
+            return input.dtype.type(dpnp.count_nonzero(input, axis=axis))
         elif ord is None or ord == 2:
             s = input * input
             return dpnp.sqrt(dpnp.sum(s, axis=axis))
@@ -248,16 +248,16 @@ cpdef object dpnp_norm(object input, ord=None, axis=None):
             absx_size = absx.size
             absx_power = utils_py.create_output_descriptor_py((absx_size,), absx.dtype, None).get_pyobj()
             for i in range(absx_size):
-                absx_elem = absx.item(i)
+                absx_elem = absx[numpy.unravel_index(i, absx.shape)]
                 absx_power[i] = absx_elem ** ord
-            absx_ = absx_power.reshape(absx.shape)
+            absx_ = dpnp.reshape(absx_power, absx.shape)
             ret = dpnp.sum(absx_, axis=axis)
             ret_size = ret.size
             ret_power = utils_py.create_output_descriptor_py((ret_size,), None, None).get_pyobj()
             for i in range(ret_size):
-                ret_elem = ret.item(i)
+                ret_elem = ret[numpy.unravel_index(i, ret.shape)]
                 ret_power[i] = ret_elem ** (1 / ord)
-            ret_ = ret_power.reshape(ret.shape)
+            ret_ = dpnp.reshape(ret_power, ret.shape)
             return ret_
     elif len_axis == 2:
         row_axis, col_axis = axis_
@@ -329,7 +329,6 @@ cpdef tuple dpnp_svd(utils.dpnp_descriptor x1, cpp_bool full_matrices, cpp_bool 
     cdef DPNPFuncType type_s = DPNP_FT_DOUBLE
     if x1.dtype == dpnp.float32:
         type_s = DPNP_FT_FLOAT
-
 
     cdef utils.dpnp_descriptor res_u = utils.create_output_descriptor((size_m, size_m), kernel_data.return_type, None)
     cdef utils.dpnp_descriptor res_s = utils.create_output_descriptor((size_s, ), type_s, None)

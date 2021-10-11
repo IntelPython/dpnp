@@ -31,6 +31,7 @@
 
 #include "dpnp_fptr.hpp"
 #include "dpnp_utils.hpp"
+#include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
 
 template <typename _DataType_dst, typename _DataType_src>
@@ -45,12 +46,7 @@ class dpnp_repeat_c_kernel;
 template <typename _DataType>
 void dpnp_repeat_c(const void* array1_in, void* result1, const size_t repeats, const size_t size)
 {
-    cl::sycl::event event;
-
-    const _DataType* array_in = reinterpret_cast<const _DataType*>(array1_in);
-    _DataType* result = reinterpret_cast<_DataType*>(result1);
-
-    if (!array_in || !result)
+    if (!array1_in || !result1)
     {
         return;
     }
@@ -59,6 +55,11 @@ void dpnp_repeat_c(const void* array1_in, void* result1, const size_t repeats, c
     {
         return;
     }
+
+    cl::sycl::event event;
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
+    const _DataType* array_in = input1_ptr.get_ptr();
+    _DataType* result = reinterpret_cast<_DataType*>(result1);
 
     cl::sycl::range<2> gws(size, repeats);
     auto kernel_parallel_for_func = [=](cl::sycl::id<2> global_id) {
@@ -94,7 +95,8 @@ void dpnp_elemwise_transpose_c(void* array1_in,
     }
 
     cl::sycl::event event;
-    _DataType* array1 = reinterpret_cast<_DataType*>(array1_in);
+    DPNPC_ptr_adapter<_DataType> input1_ptr(array1_in, size);
+    _DataType* array1 = input1_ptr.get_ptr();
     _DataType* result = reinterpret_cast<_DataType*>(result1);
 
     size_t* input_offset_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(ndim * sizeof(long)));

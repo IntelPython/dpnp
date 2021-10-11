@@ -42,7 +42,11 @@ it contains:
 
 import os
 import numpy
+import numpy.lib.stride_tricks as np_st
+import dpnp.config as config
 import collections
+
+import dpctl
 
 from dpnp.dpnp_algo import *
 from dpnp.dpnp_utils import *
@@ -53,6 +57,7 @@ from dpnp.random import *
 __all__ = [
     "array_equal",
     "asnumpy",
+    "astype",
     "convert_single_elem_array_to_scalar",
     "dpnp_queue_initialize",
     "dpnp_queue_is_cpu",
@@ -130,8 +135,39 @@ def asnumpy(input, order='C'):
     This function works exactly the same as :obj:`numpy.asarray`.
 
     """
+    if config.__DPNP_OUTPUT_DPCTL__ and hasattr(input, "__sycl_usm_array_interface__"):
+        return dpctl.tensor.to_numpy(input)
 
     return numpy.asarray(input, order=order)
+
+
+def astype(x1, dtype, order='K', casting='unsafe', subok=True, copy=True):
+    """Copy the array with data type casting."""
+    if config.__DPNP_OUTPUT_DPCTL__ and hasattr(x1, "__sycl_usm_array_interface__"):
+        import dpctl.tensor as dpt
+        # TODO: remove check dpctl.tensor has attribute "astype"
+        if hasattr(dpt, "astype"):
+            return dpt.astype(x1, dtype, order=order, casting=casting, copy=copy)
+
+    x1_desc = get_dpnp_descriptor(x1)
+    if not x1_desc:
+        pass
+    elif order != 'K':
+        pass
+    elif casting != 'unsafe':
+        pass
+    elif not subok:
+        pass
+    elif not copy:
+        pass
+    elif x1_desc.dtype == numpy.complex128 or dtype == numpy.complex128:
+        pass
+    elif x1_desc.dtype == numpy.complex64 or dtype == numpy.complex64:
+        pass
+    else:
+        return dpnp_astype(x1_desc, dtype).get_pyobj()
+
+    return call_origin(numpy.ndarray.astype, x1, dtype, order=order, casting=casting, subok=subok, copy=copy)
 
 
 def convert_single_elem_array_to_scalar(obj, keepdims=False):
@@ -145,7 +181,7 @@ def convert_single_elem_array_to_scalar(obj, keepdims=False):
     return obj
 
 
-def get_dpnp_descriptor(ext_obj):
+def get_dpnp_descriptor(ext_obj, copy_when_strides=True):
     """
     Return True:
       never
@@ -163,6 +199,14 @@ def get_dpnp_descriptor(ext_obj):
 
     if use_origin_backend():
         return False
+
+    # while dpnp functions have no implementation with strides support
+    # we need to create a non-strided copy
+    # if function get implementation for strides case
+    # then this behavior can be disabled with setting "copy_when_strides"
+    if copy_when_strides and getattr(ext_obj, "strides", None) is not None:
+        # TODO: replace this workaround when usm_ndarray will provide such functionality
+        ext_obj = array(ext_obj)
 
     dpnp_desc = dpnp_descriptor(ext_obj)
     if dpnp_desc.is_valid:
