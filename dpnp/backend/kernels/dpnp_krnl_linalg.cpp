@@ -455,7 +455,7 @@ void dpnp_qr_c(void* array1_in, void* result1, void* result2, void* result3, siz
     _ComputeDT* geqrf_scratchpad =
         reinterpret_cast<_ComputeDT*>(dpnp_memory_alloc_c(geqrf_scratchpad_size * sizeof(_ComputeDT)));
 
-    cl::sycl::vector_class<cl::sycl::event> depends(1);
+    std::vector<cl::sycl::event> depends(1);
     set_barrier_event(DPNP_QUEUE, depends);
 
     event =
