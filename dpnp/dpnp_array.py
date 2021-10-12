@@ -59,7 +59,9 @@ class dpnp_array:
     def __abs__(self):
         return dpnp.abs(self)
 
- # '__add__',
+    def __add__(self, other):
+        return dpnp.add(self, other)
+
  # '__and__',
  # '__array__',
  # '__array_finalize__',
@@ -132,7 +134,13 @@ class dpnp_array:
     def __le__(self, other):
         return dpnp.less_equal(self, other)
 
- # '__len__',
+    def __len__(self):
+        """
+        Performs the operation __len__.
+        """
+
+        return self._array_obj.__len__()
+
  # '__lshift__',
 
     def __lt__(self, other):
@@ -141,7 +149,8 @@ class dpnp_array:
     def __matmul__(self, other):
         return dpnp.matmul(self, other)
 
- # '__mod__',
+    def __mod__(self, other):
+        return dpnp.remainder(self, other)
 
     def __mul__(self, other):
         return dpnp.multiply(self, other)
@@ -154,7 +163,10 @@ class dpnp_array:
  # '__or__',
  # '__pos__',
  # '__pow__',
- # '__radd__',
+
+    def __radd__(self, other):
+        return dpnp.add(other, self)
+
  # '__rand__',
  # '__rdivmod__',
  # '__reduce__',
@@ -164,19 +176,23 @@ class dpnp_array:
  # '__rlshift__',
 
     def __rmatmul__(self, other):
-        return dpnp.matmul(self, other)
+        return dpnp.matmul(other, self)
 
- # '__rmod__',
+    def __rmod__(self, other):
+        return remainder(other, self)
 
     def __rmul__(self, other):
-        return dpnp.multiply(self, other)
+        return dpnp.multiply(other, self)
 
  # '__ror__',
  # '__rpow__',
  # '__rrshift__',
  # '__rshift__',
  # '__rsub__',
- # '__rtruediv__',
+
+    def __rtruediv__(self, other):
+        return dpnp.true_divide(other, self)
+
  # '__rxor__',
  # '__setattr__',
 
@@ -185,10 +201,25 @@ class dpnp_array:
 
  # '__setstate__',
  # '__sizeof__',
- # '__str__',
+
+    def __str__(self):
+        """ Output values from the array to standard output
+
+        Example:
+          [[ 136.  136.  136.]
+           [ 272.  272.  272.]
+           [ 408.  408.  408.]]
+
+        """
+
+        return str(dpnp.asnumpy(self._array_obj))
+
  # '__sub__',
  # '__subclasshook__',
- # '__truediv__',
+
+    def __truediv__(self, other):
+        return dpnp.true_divide(self, other)
+
  # '__xor__',
 
     def all(self, axis=None, out=None, keepdims=False):
@@ -247,7 +278,7 @@ class dpnp_array:
         array([2, 2])
 
         """
-        return argmax(self, axis, out)
+        return dpnp.argmax(self, axis, out)
 
     def argmin(self, axis=None, out=None):
         """
@@ -372,7 +403,13 @@ class dpnp_array:
  # 'imag',
  # 'item',
  # 'itemset',
- # 'itemsize',
+
+    @property
+    def itemsize(self):
+        """
+        """
+
+        return self._array_obj.itemsize
 
     def max(self, axis=None, out=None, keepdims=numpy._NoValue, initial=numpy._NoValue, where=numpy._NoValue):
         """
@@ -461,8 +498,24 @@ class dpnp_array:
 
  # 'sort',
  # 'squeeze',
- # 'std',
- # 'strides',
+
+    def std(self, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
+        """ Returns the variance of the array elements, along given axis.
+
+        .. seealso::
+           :obj:`dpnp.var` for full documentation,
+
+        """
+
+        return dpnp.std(self, axis, dtype, out, ddof, keepdims)
+
+    @property
+    def strides(self):
+        """
+        """
+
+        return self._array_obj.strides
+
  # 'sum',
  # 'swapaxes',
  # 'take',
