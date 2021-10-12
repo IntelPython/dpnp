@@ -47,9 +47,7 @@ jobs:
           . ./scripts/install_cmake_lin.sh
           CHANNELS="-c dppy/label/dev -c intel -c defaults --override-channels"
           VERSIONS="--python ${{ matrix.python }}"
-          TEST="--no-test"
           conda build \
-            $TEST \
             $VERSIONS \
             $CHANNELS \
             conda-recipe
