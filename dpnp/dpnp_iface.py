@@ -151,7 +151,8 @@ def astype(x1, dtype, order='K', casting='unsafe', subok=True, copy=True):
         import dpctl.tensor as dpt
         # TODO: remove check dpctl.tensor has attribute "astype"
         if hasattr(dpt, "astype"):
-            return dpt.astype(x1, dtype, order=order, casting=casting, copy=copy)
+            # return dpt.astype(x1, dtype, order=order, casting=casting, copy=copy)
+            return dpt.astype(x1._array_obj, dtype, order=order, casting=casting, copy=copy)
 
     x1_desc = get_dpnp_descriptor(x1)
     if not x1_desc:
