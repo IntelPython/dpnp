@@ -32,6 +32,7 @@
 #include "queue_sycl.hpp"
 
 namespace mkl_dft = oneapi::mkl::dft;
+namespace mkl_vm = oneapi::mkl::vm;
 
 typedef mkl_dft::descriptor<mkl_dft::precision::DOUBLE, mkl_dft::domain::COMPLEX> desc_dp_cmplx_t;
 typedef mkl_dft::descriptor<mkl_dft::precision::SINGLE, mkl_dft::domain::COMPLEX> desc_sp_cmplx_t;
@@ -165,6 +166,11 @@ void dpnp_fft_fft_sycl_c(const void* array1_in,
 }
 #endif
 
+// /* x: input array, y: output array */
+// template <typename _DataType_input, typename _DataType_output>
+// void _compute_strides_and_distances_inout(...)
+
+
 // TODO
 /* future interface */
 template <typename _DataType_input, typename _DataType_output, typename _Descriptor_type>
@@ -174,7 +180,8 @@ void dpnp_fft_fft_mathlib_cmplx_to_cmplx_c(const void* array1_in,
                                            const size_t result_size,
                                            _Descriptor_type& desc,
                                            const double fsc,
-                                           const long all_harmonics)
+                                           const long all_harmonics,
+                                           const size_t inverse)
 {
     cl::sycl::event event;
 
@@ -183,19 +190,39 @@ void dpnp_fft_fft_mathlib_cmplx_to_cmplx_c(const void* array1_in,
     _DataType_input* array_1 = input1_ptr.get_ptr();
     _DataType_output* result = result_ptr.get_ptr();
 
-    desc.set_value(mkl_dft::config_param::BACKWARD_SCALE, (1.0 / result_size));
-    // enum value from math library C interface
-    // instead of mkl_dft::config_value::NOT_INPLACE
+    double forward_scale = 1.0;
+    double backward_scale = 1.0;
+
+    // TODO
+    // for inverse
+    if (inverse)
+    { /* we are doing IFFT using Forward computation, swap scales */
+        forward_scale = 1.0/(fsc*result_size);
+        backward_scale = fsc;
+    } else {
+        forward_scale = fsc;
+        backward_scale = 1.0/(fsc*result_size);
+    }
+
+    desc.set_value(mkl_dft::config_param::BACKWARD_SCALE, backward_scale);
+    desc.set_value(mkl_dft::config_param::FORWARD_SCALE, forward_scale);
+
     desc.set_value(mkl_dft::config_param::PLACEMENT, DFTI_NOT_INPLACE);
     desc.commit(DPNP_QUEUE);
 
     event = mkl_dft::compute_forward(desc, array_1, result);
 
+    // TODO:
+    // currently condition on inverse flag.
+    if (inverse) {
+        event = mkl_vm::conj(DPNP_QUEUE, result_size, result, result, {event}, mkl_vm::mode::ha);
+    }
     event.wait();
 
     return;
 }
 
+/* out-of-place compute */
 template <typename _DataType_input, typename _DataType_output, typename _Descriptor_type>
 void dpnp_fft_fft_mathlib_real_to_cmplx_c(const void* array1_in,
                                           void* result1,
@@ -204,8 +231,10 @@ void dpnp_fft_fft_mathlib_real_to_cmplx_c(const void* array1_in,
                                           const long* input_strides,
                                           const long* output_strides,
                                           _Descriptor_type& desc,
+                                          long axis,
                                           const double fsc,
-                                          const long all_harmonics)
+                                          const long all_harmonics,
+                                          const size_t inverse)
 {
     cl::sycl::event event;
 
@@ -218,49 +247,112 @@ void dpnp_fft_fft_mathlib_real_to_cmplx_c(const void* array1_in,
     MKL_LONG input_strides_desc[2] = {0, 1};
     MKL_LONG output_strides_desc[2] = {0, 1};
 
-    _DataType_input forward_scale = 1.0, backward_scale = 1.0;
+    _DataType_input forward_scale = 1.0;
+    _DataType_input backward_scale = 1.0;
 
     const std::int64_t* xin_strides = reinterpret_cast<const std::int64_t*>(input_strides);
     const std::int64_t* xout_strides = reinterpret_cast<const std::int64_t*>(output_strides);
-    // TODO
-    MKL_LONG input_number_of_transforms = 1; // hardcoded now. TBD
+
+    // TODO:
+    // use _compute_strides_and_distances_inout func
+    MKL_LONG input_number_of_transforms = 1;  // hardcoded now. TBD
+    MKL_LONG input_distance = 0;              // hardcoded now. TBD
+    MKL_LONG output_distance = 0;             // hardcoded now. TBD
 
     // TODO
     // for inverse
-    if (0) { /* we are doing IFFT using Forward computation, swap scales */
+    if (inverse)
+    { /* we are doing IFFT using Forward computation, swap scales */
         forward_scale = 1.0/(fsc*result_size);
         backward_scale = fsc;
     } else {
         forward_scale = fsc;
         backward_scale = 1.0/(fsc*result_size);
     }
+    // TODO
+    // impl check kind of
+    // assert( output_shape[axis] == (all_harmonics) ? result_size : result_size/2 + 1);
 
+    // TODO:
+    // add and use axis param.
     char *tmp = (char *) array_1;
     input_strides_desc[1] = ((_DataType_input*) (tmp + (xin_strides[0] * sizeof(_DataType_input)))) - array_1;
     tmp = (char *) result;
     output_strides_desc[1] =
             ((_DataType_output*) (tmp + (xout_strides[0] * sizeof(_DataType_output)))) - result;
 
-    desc.set_value(mkl_dft::config_param::BACKWARD_SCALE, (1.0 / result_size));     // TODO
-                                                                                    // result_size is real results_size
-                                                                                    // add bckward_scale / fw_scale params
+    desc.set_value(mkl_dft::config_param::BACKWARD_SCALE, backward_scale);
+    desc.set_value(mkl_dft::config_param::FORWARD_SCALE, forward_scale);
+
+    // TODO:
+    // call _compute_strides_and_distances_inout func
+
+    desc.set_value(oneapi::mkl::dft::config_param::INPUT_STRIDES, input_strides_desc);
 
     desc.set_value(oneapi::mkl::dft::config_param::CONJUGATE_EVEN_STORAGE, DFTI_COMPLEX_COMPLEX);
 
-    desc.set_value(oneapi::mkl::dft::config_param::PACKED_FORMAT, DFTI_CCE_FORMAT);
-    // enum value from math library C interface
-    // instead of mkl_dft::config_value::NOT_INPLACE
     desc.set_value(mkl_dft::config_param::PLACEMENT, DFTI_NOT_INPLACE);
-    // TODO lets find correct values
-    desc.set_value(oneapi::mkl::dft::config_param::INPUT_STRIDES, input_strides_desc);
+
     desc.set_value(oneapi::mkl::dft::config_param::OUTPUT_STRIDES, output_strides_desc);
+
+    // desc.set_value(oneapi::mkl::dft::config_param::PACKED_FORMAT, DFTI_CCE_FORMAT);
+
     desc.set_value(oneapi::mkl::dft::config_param::NUMBER_OF_TRANSFORMS, input_number_of_transforms);
+
+    desc.set_value(oneapi::mkl::dft::config_param::NUMBER_OF_TRANSFORMS, input_number_of_transforms);
+    //  TODO:
+    // if (input_number_of_transforms > 1)
+    // {
+    //     desc.set_value(oneapi::mkl::dft::config_param::INPUT_DISTANCE, input_distance);
+    //     desc.set_value(oneapi::mkl::dft::config_param::OUTPUT_DISTANCE, output_distance);
+    // }
 
     desc.commit(DPNP_QUEUE);
 
-    event = mkl_dft::compute_forward(desc, array_1, result);
 
-    event.wait();
+    if (!inverse)
+    {
+        // TODO:
+        // if (single_DftiCompute)
+        // single_DftiCompute is returned from _compute_strides_and_distances_inout
+        // if and else cases.
+        if (1)
+        {
+            event = mkl_dft::compute_forward(desc, array_1, result);
+            event.wait();
+        }
+        // TODO
+        // if (all_harmonics)
+        // {
+        // }
+    }
+    else
+    {
+        // TODO:
+        // if (single_DftiCompute)
+        // single_DftiCompute is returned from _compute_strides_and_distances_inout
+        // if and else cases.
+        if (1)
+        {
+            event = mkl_dft::compute_backward(desc, array_1, result);
+            event.wait();
+        }
+        // TODO
+        // if (all_harmonics)
+        // {
+        // }
+    }
+
+    // TODO:
+    // currently on condition on inverse flag.
+    if (inverse) {
+        // TODO:
+        // depend on `event`
+        std::vector<cl::sycl::event> no_deps;
+
+        auto conj_event = mkl_vm::conj(DPNP_QUEUE, result_size, reinterpret_cast<std::complex<_DataType_output> *>(result), reinterpret_cast<std::complex<_DataType_output> *>(result), no_deps, mkl_vm::mode::ha);
+        conj_event.wait();
+    }
 
     return;
 }
@@ -278,7 +370,8 @@ void dpnp_fft_fft_c(const void* array1_in,
                     const long* output_strides,
                     long axis,
                     const double fsc,
-                    const long all_harmonics)
+                    const long all_harmonics,
+                    const size_t inverse)
 {
     // TODO:
     //  (shape_size > 3)
@@ -311,7 +404,7 @@ void dpnp_fft_fft_c(const void* array1_in,
     {
         desc_dp_cmplx_t desc(dimensions);
         dpnp_fft_fft_mathlib_cmplx_to_cmplx_c<_DataType_input, _DataType_output, desc_dp_cmplx_t>(
-            array1_in, result1, shape_size, result_size, desc, fsc, all_harmonics);
+            array1_in, result1, shape_size, result_size, desc, fsc, all_harmonics, inverse);
 
     }
     /* complex-to-complex, single precision */
@@ -321,7 +414,7 @@ void dpnp_fft_fft_c(const void* array1_in,
 
         desc_sp_cmplx_t desc(dimensions);
         dpnp_fft_fft_mathlib_cmplx_to_cmplx_c<_DataType_input, _DataType_output, desc_sp_cmplx_t>(
-            array1_in, result1, shape_size, result_size, desc, fsc, all_harmonics);
+            array1_in, result1, shape_size, result_size, desc, fsc, all_harmonics, inverse);
 
     }
     /* real-to-complex, double precision */
@@ -332,7 +425,7 @@ void dpnp_fft_fft_c(const void* array1_in,
         // const result_size_cce_pack_format = result_size * 2;
         desc_dp_real_t desc(dimensions); // try: 2 * result_size
         dpnp_fft_fft_mathlib_real_to_cmplx_c<_DataType_input, double, desc_dp_real_t>(
-            array1_in, result1, shape_size, result_size, input_strides, output_strides, desc, fsc, all_harmonics);
+            array1_in, result1, shape_size, result_size, input_strides, output_strides, desc, axis, fsc, all_harmonics, inverse);
 
     }
     /* real-to-complex, single precision */
@@ -343,11 +436,28 @@ void dpnp_fft_fft_c(const void* array1_in,
         // const result_size_cce_pack_format = result_size * 2;
         desc_sp_real_t desc(dimensions); // try: 2 * result_size
         dpnp_fft_fft_mathlib_real_to_cmplx_c<_DataType_input, float, desc_sp_real_t>(
-            array1_in, result1, shape_size, result_size, input_strides, output_strides, desc, fsc, all_harmonics);
+            array1_in, result1, shape_size, result_size, input_strides, output_strides, desc, axis, fsc, all_harmonics, inverse);
 
     }
     return;
 }
+
+// template <typename _DataType_input, typename _DataType_output>
+// void dpnp_fft_irfft_c(const void* array1_in,
+//                       void* result1,
+//                       const size_t input_size,
+//                       const size_t result_size,
+//                       const long* input_shape,
+//                       const long* output_shape,
+//                       const size_t shape_size,
+//                       const long* input_strides,
+//                       const long* output_strides,
+//                       long axis,
+//                       const double fsc,
+//                       const long all_harmonics)
+// {
+//     return;
+// }
 
 void func_map_init_fft_func(func_map_t& fmap)
 {
@@ -363,5 +473,8 @@ void func_map_init_fft_func(func_map_t& fmap)
         eft_C64, (void*)dpnp_fft_fft_c<std::complex<float>, std::complex<float>>};
     fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_C128][eft_C128] = {
         eft_C128, (void*)dpnp_fft_fft_c<std::complex<double>, std::complex<double>>};
+
+    // fmap[DPNPFuncName::DPNP_FN_FFT_IRFFT][eft_C64][eft_C64] = { eft_FLT, (void*)dpnp_fft_irfft_c<std::complex<float>, float>};
+    // fmap[DPNPFuncName::DPNP_FN_FFT_IRFFT][eft_C128][eft_C128] = { eft_DBL, (void*)dpnp_fft_irfft_c<std::complex<double>, double>};
     return;
 }

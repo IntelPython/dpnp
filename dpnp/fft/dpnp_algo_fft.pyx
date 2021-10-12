@@ -42,7 +42,7 @@ __all__ = [
 ]
 
 
-ctypedef void(*fptr_dpnp_fft_fft_t)(void * , void * , size_t, size_t, long * , long * , size_t, long * , long * , long, double, long)
+ctypedef void(*fptr_dpnp_fft_fft_t)(void * , void * , size_t, size_t, long * , long * , size_t, long * , long * , long, double, long, size_t)
 
 # TODO:
 # remove after merge PR997
@@ -61,8 +61,7 @@ cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
                                      size_t input_boundarie,
                                      size_t output_boundarie,
                                      long axis,
-                                     size_t inverse,
-                                     size_t norm):
+                                     size_t inverse):
 
     cdef shape_type_c input_shape = input.shape
     cdef shape_type_c output_shape = input_shape
@@ -90,6 +89,6 @@ cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
     cdef fptr_dpnp_fft_fft_t func = <fptr_dpnp_fft_fft_t > kernel_data.ptr
 
     # call FPTR function
-    func(input.get_data(), result.get_data(), input.size, result.size, input_shape.data(), output_shape.data(), input_shape.size(), input_strides.data(), result_strides.data(), axis, fsc, all_harmonics)
+    func(input.get_data(), result.get_data(), input.size, result.size, input_shape.data(), output_shape.data(), input_shape.size(), input_strides.data(), result_strides.data(), axis, fsc, all_harmonics, inverse)
 
     return result

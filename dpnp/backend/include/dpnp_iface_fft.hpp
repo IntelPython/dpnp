@@ -84,5 +84,6 @@ INP_DLLEXPORT void dpnp_fft_fft_c(const void* array1_in,
                                   const long* output_strides,
                                   long axis,
                                   const double fsc,
-                                  const long all_harmonics);
+                                  const long all_harmonics,
+                                  const size_t inverse);
 #endif // BACKEND_IFACE_FFT_H
