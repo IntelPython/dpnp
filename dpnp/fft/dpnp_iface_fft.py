@@ -475,7 +475,7 @@ def irfft(x1, n=None, axis=-1, norm=None):
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
-    if x1_desc and 0:
+    if x1_desc:
         if axis is None:
             axis_param = -1      # the most right dimension (default value)
         else:
@@ -495,11 +495,12 @@ def irfft(x1, n=None, axis=-1, norm=None):
         else:
             output_boundarie = 2 * (input_boundarie - 1)
 
-            result = dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, True).get_pyobj()
+            # result = dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, True).get_pyobj()
             # TODO tmp = utils.create_output_array(result_shape, result_c_type, out)
             # tmp = dparray(result.shape, dtype=dpnp.float64)
             # for it in range(tmp.size):
             #     tmp[it] = result[it].real
+            result = dpnp_rfft(x1_desc, input_boundarie, output_boundarie, axis_param, True).get_pyobj()
             return result
 
     return call_origin(numpy.fft.irfft, x1, n, axis, norm)
