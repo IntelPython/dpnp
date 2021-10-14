@@ -234,6 +234,8 @@ void dpnp_fft_fft_mathlib_cmplx_to_real_c(const void* array1_in,
                                           const size_t result_size,
                                           const long* input_strides,
                                           const long* output_strides,
+                                          const size_t input_itemsize,
+                                          const size_t result_itemsize,
                                           _Descriptor_type& desc,
                                           long axis,
                                           const double fsc,
@@ -283,10 +285,10 @@ void dpnp_fft_fft_mathlib_cmplx_to_real_c(const void* array1_in,
     // TODO:
     // add and use axis param.
     char *tmp = (char *) array_1;
-    input_strides_desc[1] = ((std::complex<_DataType_input>*) (tmp + (xin_strides[0] * sizeof(std::complex<_DataType_input>)))) - reinterpret_cast<std::complex<_DataType_input> *>(array_1);
+    input_strides_desc[1] = ((std::complex<_DataType_input>*) (tmp + (xin_strides[0] * input_itemsize))) - reinterpret_cast<std::complex<_DataType_input> *>(array_1);
     tmp = (char *) result;
     output_strides_desc[1] =
-            ((_DataType_output*) (tmp + (xout_strides[0] * sizeof(_DataType_output)))) - result;
+            ((_DataType_output*) (tmp + (xout_strides[0] * result_itemsize))) - result;
 
     desc.set_value(mkl_dft::config_param::BACKWARD_SCALE, backward_scale);
     desc.set_value(mkl_dft::config_param::FORWARD_SCALE, forward_scale);
@@ -360,6 +362,8 @@ void dpnp_fft_fft_mathlib_real_to_cmplx_c(const void* array1_in,
                                           const size_t result_size,
                                           const long* input_strides,
                                           const long* output_strides,
+                                          const size_t input_itemsize,
+                                          const size_t result_itemsize,
                                           _Descriptor_type& desc,
                                           long axis,
                                           const double fsc,
@@ -406,11 +410,11 @@ void dpnp_fft_fft_mathlib_real_to_cmplx_c(const void* array1_in,
     // TODO:
     // add and use axis param.
     char *tmp = (char *) array_1;
-    input_strides_desc[1] = ((_DataType_input*) (tmp + (xin_strides[0] * sizeof(_DataType_input)))) - array_1;
+    input_strides_desc[1] = ((_DataType_input*) (tmp + (xin_strides[0] * input_itemsize))) - array_1;
     tmp = (char *) result;
 
     output_strides_desc[1] =
-            ((std::complex<_DataType_output>*) (tmp + (xout_strides[0] * sizeof(std::complex<_DataType_output>)))) - reinterpret_cast<std::complex<_DataType_output> *>(result);
+            ((std::complex<_DataType_output>*) (tmp + (xout_strides[0] * result_itemsize))) - reinterpret_cast<std::complex<_DataType_output> *>(result);
 
     desc.set_value(mkl_dft::config_param::BACKWARD_SCALE, backward_scale);
     desc.set_value(mkl_dft::config_param::FORWARD_SCALE, forward_scale);
@@ -497,6 +501,8 @@ void dpnp_fft_fft_c(const void* array1_in,
                     const size_t shape_size,
                     const long* input_strides,
                     const long* output_strides,
+                    const size_t input_itemsize,
+                    const size_t result_itemsize,
                     long axis,
                     const double fsc,
                     const long all_harmonics,
@@ -537,7 +543,7 @@ void dpnp_fft_fft_c(const void* array1_in,
             // const result_size_cce_pack_format = result_size * 2;
             desc_dp_real_t desc(dimensions); // try: 2 * result_size
             dpnp_fft_fft_mathlib_cmplx_to_real_c<double, _DataType_output, desc_dp_real_t>(
-                array1_in, result1, shape_size, result_size, input_strides, output_strides, desc, axis, fsc, all_harmonics, inverse);
+                array1_in, result1, shape_size, result_size, input_strides, output_strides, input_itemsize, result_itemsize, desc, axis, fsc, all_harmonics, inverse);
         }
         /* complex-to-real, single precision */
         else if (std::is_same<_DataType_input, std::complex<float>>::value &&
@@ -546,7 +552,7 @@ void dpnp_fft_fft_c(const void* array1_in,
             // const result_size_cce_pack_format = result_size * 2;
             desc_sp_real_t desc(dimensions); // try: 2 * result_size
             dpnp_fft_fft_mathlib_cmplx_to_real_c<float, _DataType_output, desc_sp_real_t>(
-                array1_in, result1, shape_size, result_size, input_strides, output_strides, desc, axis, fsc, all_harmonics, inverse);
+                array1_in, result1, shape_size, result_size, input_strides, output_strides, input_itemsize, result_itemsize, desc, axis, fsc, all_harmonics, inverse);
         }
     }
     else if (std::is_same<_DataType_output, std::complex<float>>::value ||
@@ -575,7 +581,7 @@ void dpnp_fft_fft_c(const void* array1_in,
             // const result_size_cce_pack_format = result_size * 2;
             desc_dp_real_t desc(dimensions); // try: 2 * result_size
             dpnp_fft_fft_mathlib_real_to_cmplx_c<_DataType_input, double, desc_dp_real_t>(
-                array1_in, result1, shape_size, result_size, input_strides, output_strides, desc, axis, fsc, all_harmonics, inverse);
+                array1_in, result1, shape_size, result_size, input_strides, output_strides, input_itemsize, result_itemsize, desc, axis, fsc, all_harmonics, inverse);
         }
         /* real-to-complex, single precision */
         else if (std::is_same<_DataType_input, float>::value &&
@@ -584,7 +590,7 @@ void dpnp_fft_fft_c(const void* array1_in,
             // const result_size_cce_pack_format = result_size * 2;
             desc_sp_real_t desc(dimensions); // try: 2 * result_size
             dpnp_fft_fft_mathlib_real_to_cmplx_c<_DataType_input, float, desc_sp_real_t>(
-                array1_in, result1, shape_size, result_size, input_strides, output_strides, desc, axis, fsc, all_harmonics, inverse);
+                array1_in, result1, shape_size, result_size, input_strides, output_strides, input_itemsize, result_itemsize, desc, axis, fsc, all_harmonics, inverse);
         }
     }
 

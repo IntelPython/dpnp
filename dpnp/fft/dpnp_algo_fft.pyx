@@ -43,7 +43,7 @@ __all__ = [
 ]
 
 
-ctypedef void(*fptr_dpnp_fft_t)(void * , void * , size_t, size_t, long * , long * , size_t, long * , long * , long, double, long, size_t)
+ctypedef void(*fptr_dpnp_fft_t)(void * , void * , size_t, size_t, long * , long * , size_t, long * , long * , size_t, size_t, long, double, long, size_t)
 
 # TODO:
 # remove after merge PR997
@@ -71,10 +71,8 @@ cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
     cdef double fsc = 1.0
     cdef long all_harmonics = 1
 
-    # TODO:
-    # use it
-    # cdef size_t input_itemsize = input.dtype.itemsize
-    # cdef size_t output_itemsize
+    cdef size_t input_itemsize = input.dtype.itemsize
+    cdef size_t output_itemsize
 
     input_strides = strides_to_vector(input.strides, input.shape)
 
@@ -90,25 +88,23 @@ cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
     # ceate result array with type given by FPTR data
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(output_shape, kernel_data.return_type, None)
 
-    # TODO:
-    # use it
-    # output_itemsize = result.dtype.itemsize
+    output_itemsize = result.dtype.itemsize
 
     result_strides = strides_to_vector(result.strides, result.shape)
 
     cdef fptr_dpnp_fft_t func = <fptr_dpnp_fft_t > kernel_data.ptr
 
     # call FPTR function
-    func(input.get_data(), result.get_data(), input.size, result.size, input_shape.data(), output_shape.data(), input_shape.size(), input_strides.data(), result_strides.data(), axis, fsc, all_harmonics, inverse)
+    func(input.get_data(), result.get_data(), input.size, result.size, input_shape.data(), output_shape.data(), input_shape.size(), input_strides.data(), result_strides.data(), input_itemsize, output_itemsize, axis, fsc, all_harmonics, inverse)
 
     return result
 
 
 cpdef utils.dpnp_descriptor dpnp_rfft(utils.dpnp_descriptor input,
-                                     size_t input_boundarie,
-                                     size_t output_boundarie,
-                                     long axis,
-                                     size_t inverse):
+                                      size_t input_boundarie,
+                                      size_t output_boundarie,
+                                      long axis,
+                                      size_t inverse):
 
     cdef shape_type_c input_shape = input.shape
     cdef shape_type_c output_shape = input_shape
@@ -117,10 +113,8 @@ cpdef utils.dpnp_descriptor dpnp_rfft(utils.dpnp_descriptor input,
     cdef double fsc = 1.0
     cdef long all_harmonics = 1
 
-    # TODO:
-    # use it
-    # cdef size_t input_itemsize = input.dtype.itemsize
-    # cdef size_t output_itemsize
+    cdef size_t input_itemsize = input.dtype.itemsize
+    cdef size_t output_itemsize
 
     input_strides = strides_to_vector(input.strides, input.shape)
 
@@ -136,15 +130,13 @@ cpdef utils.dpnp_descriptor dpnp_rfft(utils.dpnp_descriptor input,
     # ceate result array with type given by FPTR data
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(output_shape, kernel_data.return_type, None)
 
-    # TODO:
-    # use it
-    # output_itemsize = result.dtype.itemsize
+    output_itemsize = result.dtype.itemsize
 
     result_strides = strides_to_vector(result.strides, result.shape)
 
     cdef fptr_dpnp_fft_t func = <fptr_dpnp_fft_t > kernel_data.ptr
 
     # call FPTR function
-    func(input.get_data(), result.get_data(), input.size, result.size, input_shape.data(), output_shape.data(), input_shape.size(), input_strides.data(), result_strides.data(), axis, fsc, all_harmonics, inverse)
+    func(input.get_data(), result.get_data(), input.size, result.size, input_shape.data(), output_shape.data(), input_shape.size(), input_strides.data(), result_strides.data(), input_itemsize, output_itemsize, axis, fsc, all_harmonics, inverse)
 
     return result

@@ -283,8 +283,8 @@ def ifft(x1, n=None, axis=-1, norm=None):
     Limitations
     -----------
     Parameter ``norm`` is unsupported.
-    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
-    ``dpnp.complex128`` datatypes only.
+    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64``,
+    ``dpnp.complex64`` and ``dpnp.complex128`` datatypes only.
 
     For full documentation refer to :obj:`numpy.fft.ifft`.
 
@@ -467,8 +467,8 @@ def irfft(x1, n=None, axis=-1, norm=None):
     Limitations
     -----------
     Parameter ``norm`` is unsupported.
-    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64`` and
-    ``dpnp.complex128`` datatypes only.
+    Parameter ``x1`` supports ``dpnp.int32``, ``dpnp.int64``, ``dpnp.float32``, ``dpnp.float64``,
+    ``dpnp.complex64`` and ``dpnp.complex128`` datatypes only.
 
     For full documentation refer to :obj:`numpy.fft.irfft`.
 
@@ -494,12 +494,6 @@ def irfft(x1, n=None, axis=-1, norm=None):
             pass
         else:
             output_boundarie = 2 * (input_boundarie - 1)
-
-            # result = dpnp_fft(x1_desc, input_boundarie, output_boundarie, axis_param, True).get_pyobj()
-            # TODO tmp = utils.create_output_array(result_shape, result_c_type, out)
-            # tmp = dparray(result.shape, dtype=dpnp.float64)
-            # for it in range(tmp.size):
-            #     tmp[it] = result[it].real
             result = dpnp_rfft(x1_desc, input_boundarie, output_boundarie, axis_param, True).get_pyobj()
             return result
 
