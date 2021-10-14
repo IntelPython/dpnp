@@ -1,5 +1,5 @@
-from tests.third_party.cupy import testing as cupy_testing
 import dpnp
+from tests.third_party.cupy import testing as cupy_testing
 import numpy
 
 from tests import testing
