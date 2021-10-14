@@ -222,6 +222,10 @@ void dpnp_fft_fft_mathlib_cmplx_to_cmplx_c(const void* array1_in,
     return;
 }
 
+// TODO:
+// refactoring
+// change func names due in-place and out-of-place computing
+
 /* out-of-place compute */
 template <typename _DataType_input, typename _DataType_output, typename _Descriptor_type>
 void dpnp_fft_fft_mathlib_cmplx_to_real_c(const void* array1_in,
@@ -279,7 +283,7 @@ void dpnp_fft_fft_mathlib_cmplx_to_real_c(const void* array1_in,
     // TODO:
     // add and use axis param.
     char *tmp = (char *) array_1;
-    input_strides_desc[1] = ((_DataType_input*) (tmp + (xin_strides[0] * sizeof(_DataType_input)))) - array_1;
+    input_strides_desc[1] = ((std::complex<_DataType_input>*) (tmp + (xin_strides[0] * sizeof(std::complex<_DataType_input>)))) - reinterpret_cast<std::complex<_DataType_input> *>(array_1);
     tmp = (char *) result;
     output_strides_desc[1] =
             ((_DataType_output*) (tmp + (xout_strides[0] * sizeof(_DataType_output)))) - result;
