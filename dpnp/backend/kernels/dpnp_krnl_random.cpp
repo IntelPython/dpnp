@@ -974,7 +974,7 @@ void dpnp_rng_shuffle_c(
         return;
     }
 
-    DPNPC_ptr_adapter<char> result1_ptr(result, size, true, true);
+    DPNPC_ptr_adapter<char> result1_ptr(result, size * itemsize, true, true);
     char* result1 = result1_ptr.get_ptr();
 
     size_t uvec_size = high_dim_size - 1;
