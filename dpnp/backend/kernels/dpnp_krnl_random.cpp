@@ -424,7 +424,7 @@ template <typename _DataType>
 void dpnp_rng_multinomial_c(
     void* result, const int ntrial, const double* p_vector, const size_t p_vector_size, const size_t size)
 {
-    if (!size || !result)
+    if (!size || !result || (ntrial < 0))
     {
         return;
     }
@@ -447,7 +447,7 @@ void dpnp_rng_multinomial_c(
 
         // math library supports the distribution generation on GPU device with input parameters
         // which follow the condition
-        if (is_cpu_queue || (!is_cpu_queue && p_vector_size >= ntrial * 16 && ntrial <= 16))
+        if (is_cpu_queue || (!is_cpu_queue && (p_vector_size >= ((size_t)ntrial * 16)) && (ntrial <= 16)))
         {
             mkl_rng::multinomial<std::int32_t> distribution(ntrial, p);
             // perform generation
