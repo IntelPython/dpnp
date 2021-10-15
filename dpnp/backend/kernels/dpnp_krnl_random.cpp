@@ -443,7 +443,11 @@ void dpnp_rng_multinomial_c(
         // `n` is a number of random values to be generated.
         size_t n = size / p.size();
 
-        if (dpnp_queue_is_cpu_c())
+        size_t is_cpu_queue = dpnp_queue_is_cpu_c();
+
+        // math library supports the distribution generation on GPU device with input parameters
+        // which follow the condition
+        if (is_cpu_queue || (!is_cpu_queue && p_vector_size >= ntrial * 16 && ntrial <= 16))
         {
             mkl_rng::multinomial<std::int32_t> distribution(ntrial, p);
             // perform generation
@@ -542,8 +546,8 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             mkl_vm::sqr(DPNP_QUEUE, size, nvec, nvec, {event_gamma_distr, event_gaussian_distr}, mkl_vm::mode::ha);
         auto event_add_out =
             mkl_vm::add(DPNP_QUEUE, size, result1, nvec, result1, {event_sqr_out}, mkl_vm::mode::ha);
-        dpnp_memory_free_c(nvec);
         event_add_out.wait();
+        dpnp_memory_free_c(nvec);
     }
     else if (df < 1)
     {
@@ -891,8 +895,8 @@ void dpnp_rng_standard_t_c(void* result, const _DataType df, const size_t size)
 
     auto event_out = mkl_vm::mul(
         DPNP_QUEUE, size, result1, sn, result1, {invsqrt_event, gaussian_distr_event}, mkl_vm::mode::ha);
-    dpnp_memory_free_c(sn);
     event_out.wait();
+    dpnp_memory_free_c(sn);
 
 }
 
