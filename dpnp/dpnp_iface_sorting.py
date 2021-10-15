@@ -119,6 +119,8 @@ def partition(x1, kth, axis=-1, kind='introselect', order=None):
     if x1_desc:
         if not isinstance(kth, int):
             pass
+        elif x1_desc.ndim == 0:
+            pass
         elif kth >= x1_desc.shape[x1_desc.ndim - 1] or x1_desc.ndim + kth < 0:
             pass
         elif axis != -1:
