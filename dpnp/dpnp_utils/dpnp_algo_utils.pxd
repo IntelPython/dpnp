@@ -150,3 +150,8 @@ cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
 """
 Create output dpnp_descriptor based on shape, type and 'out' parameters
 """
+
+cdef shape_type_c strides_to_vector(object strides, object shape) except *
+"""
+Get or calculate srtides based on shape.
+"""
