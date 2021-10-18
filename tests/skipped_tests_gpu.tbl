@@ -17,6 +17,8 @@ tests/test_random.py::test_check_otput[random_sample]
 tests/test_random.py::test_check_otput[ranf]
 tests/test_random.py::test_check_otput[sample]
 tests/test_random.py::TestDistributionsMultinomial::test_check_sum
+tests/test_random.py::TestDistributionsMultinomial::test_moments
+tests/test_random.py::TestDistributionsMultinomial::test_seed
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.astype(dpnp.asarray(x), dpnp.int8)]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.astype(dpnp.asarray(x), object)]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.vstack([x, x]).T]
@@ -178,20 +180,6 @@ tests/test_linalg.py::test_qr[(16,16)-float32]
 tests/test_linalg.py::test_qr[(16,16)-int64]
 tests/test_linalg.py::test_qr[(16,16)-int32]
 tests/test_random.py::test_randn_normal_distribution
-tests/test_random.py::TestDistributionsBeta::test_moments
-tests/test_random.py::TestDistributionsBinomial::test_moments
-tests/test_random.py::TestDistributionsF::test_moments
-tests/test_random.py::TestDistributionsGamma::test_moments
-tests/test_random.py::TestDistributionsGeometric::test_moments
-tests/test_random.py::TestDistributionsGumbel::test_moments
-tests/test_random.py::TestDistributionsHypergeometric::test_moments
-tests/test_random.py::TestDistributionsLaplace::test_moments
-tests/test_random.py::TestDistributionsLogistic::test_moments
-tests/test_random.py::TestDistributionsLognormal::test_moments
-tests/test_random.py::TestDistributionsMultinomial::test_moments
-tests/test_random.py::TestDistributionsMultivariateNormal::test_moments
-tests/test_random.py::TestDistributionsNormal::test_moments
-tests/test_random.py::TestDistributionsNoncentralChisquare::test_moments[df_grt_1]
 tests/third_party/cupy/linalg_tests/test_product.py::TestProduct::test_multidim_outer
 tests/third_party/cupy/random_tests/test_sample.py::TestRandintDtype::test_dtype
 tests/third_party/cupy/random_tests/test_sample.py::TestRandintDtype::test_dtype2
@@ -201,32 +189,6 @@ tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{extern
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_sequence_kth
 
 tests/third_party/intel/test_zero_copy_test1.py::test_dpnp_interaction_with_dpctl_memory
-tests/test_amin_amax.py::test_amax_int[int64]
-tests/test_amin_amax.py::test_amin_int[int64]
-tests/test_amin_amax.py::test_amax[(4,)-float64]
-tests/test_amin_amax.py::test_amax[(4,)-float32]
-tests/test_amin_amax.py::test_amax[(4,)-int64]
-tests/test_amin_amax.py::test_amax[(4,)-int32]
-tests/test_amin_amax.py::test_amax[(2,3)-float64]
-tests/test_amin_amax.py::test_amax[(2,3)-float32]
-tests/test_amin_amax.py::test_amax[(2,3)-int64]
-tests/test_amin_amax.py::test_amax[(2,3)-int32]
-tests/test_amin_amax.py::test_amax[(4,5,6)-float64]
-tests/test_amin_amax.py::test_amax[(4,5,6)-float32]
-tests/test_amin_amax.py::test_amax[(4,5,6)-int64]
-tests/test_amin_amax.py::test_amax[(4,5,6)-int32]
-tests/test_amin_amax.py::test_amin[(4,)-float64]
-tests/test_amin_amax.py::test_amin[(4,)-float32]
-tests/test_amin_amax.py::test_amin[(4,)-int64]
-tests/test_amin_amax.py::test_amin[(4,)-int32]
-tests/test_amin_amax.py::test_amin[(2,3)-float64]
-tests/test_amin_amax.py::test_amin[(2,3)-float32]
-tests/test_amin_amax.py::test_amin[(2,3)-int64]
-tests/test_amin_amax.py::test_amin[(2,3)-int32]
-tests/test_amin_amax.py::test_amin[(4,5,6)-float64]
-tests/test_amin_amax.py::test_amin[(4,5,6)-float32]
-tests/test_amin_amax.py::test_amin[(4,5,6)-int64]
-tests/test_amin_amax.py::test_amin[(4,5,6)-int32]
 tests/test_arithmetic.py::TestArithmetic::test_nanprod
 tests/test_arithmetic.py::TestArithmetic::test_nansum
 tests/test_arraymanipulation.py::TestHstack::test_generator
@@ -422,58 +384,6 @@ tests/test_linalg.py::test_eig_arange[300-float32]
 tests/test_linalg.py::test_eig_arange[300-float64]
 tests/test_linalg.py::test_eig_arange[300-int32]
 tests/test_linalg.py::test_eig_arange[300-int64]
-tests/test_logic.py::test_all[(0,)-float64]
-tests/test_logic.py::test_all[(0,)-float32]
-tests/test_logic.py::test_all[(0,)-int64]
-tests/test_logic.py::test_all[(0,)-int32]
-tests/test_logic.py::test_all[(0,)-bool]
-tests/test_logic.py::test_all[(0,)-bool_]
-tests/test_logic.py::test_all[(4,)-float64]
-tests/test_logic.py::test_all[(4,)-float32]
-tests/test_logic.py::test_all[(4,)-int64]
-tests/test_logic.py::test_all[(4,)-int32]
-tests/test_logic.py::test_all[(4,)-bool]
-tests/test_logic.py::test_all[(4,)-bool_]
-tests/test_logic.py::test_all[(2,3)-float64]
-tests/test_logic.py::test_all[(2,3)-float32]
-tests/test_logic.py::test_all[(2,3)-int64]
-tests/test_logic.py::test_all[(2,3)-int32]
-tests/test_logic.py::test_all[(2,3)-bool]
-tests/test_logic.py::test_all[(2,3)-bool_]
-tests/test_logic.py::test_all[(2,2,2)-float64]
-tests/test_logic.py::test_all[(2,2,2)-float32]
-tests/test_logic.py::test_all[(2,2,2)-int64]
-tests/test_logic.py::test_all[(2,2,2)-int32]
-tests/test_logic.py::test_all[(2,2,2)-bool]
-tests/test_logic.py::test_all[(2,2,2)-bool_]
-tests/test_logic.py::test_allclose[float64]
-tests/test_logic.py::test_allclose[float32]
-tests/test_logic.py::test_allclose[int64]
-tests/test_logic.py::test_allclose[int32]
-tests/test_logic.py::test_any[(0,)-float64]
-tests/test_logic.py::test_any[(0,)-float32]
-tests/test_logic.py::test_any[(0,)-int64]
-tests/test_logic.py::test_any[(0,)-int32]
-tests/test_logic.py::test_any[(0,)-bool]
-tests/test_logic.py::test_any[(0,)-bool_]
-tests/test_logic.py::test_any[(4,)-float64]
-tests/test_logic.py::test_any[(4,)-float32]
-tests/test_logic.py::test_any[(4,)-int64]
-tests/test_logic.py::test_any[(4,)-int32]
-tests/test_logic.py::test_any[(4,)-bool]
-tests/test_logic.py::test_any[(4,)-bool_]
-tests/test_logic.py::test_any[(2,3)-float64]
-tests/test_logic.py::test_any[(2,3)-float32]
-tests/test_logic.py::test_any[(2,3)-int64]
-tests/test_logic.py::test_any[(2,3)-int32]
-tests/test_logic.py::test_any[(2,3)-bool]
-tests/test_logic.py::test_any[(2,3)-bool_]
-tests/test_logic.py::test_any[(2,2,2)-float64]
-tests/test_logic.py::test_any[(2,2,2)-float32]
-tests/test_logic.py::test_any[(2,2,2)-int64]
-tests/test_logic.py::test_any[(2,2,2)-int32]
-tests/test_logic.py::test_any[(2,2,2)-bool]
-tests/test_logic.py::test_any[(2,2,2)-bool_]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: (dpnp.asarray([(i, i) for i in x], [("a", int), ("b", int)]).view(dpnp.recarray))]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray([(i, i) for i in x], [("a", object), ("b", dpnp.int32)])]]
 tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray(x).astype(dpnp.int8)]
