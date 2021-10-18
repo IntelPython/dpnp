@@ -43,6 +43,7 @@ cimport cpython
 cimport cython
 cimport numpy
 
+import dpctl
 
 """
 Python import functions
@@ -101,7 +102,8 @@ def copy_from_origin(dst, src):
     """Copy origin result to output result."""
     if config.__DPNP_OUTPUT_DPCTL__ and hasattr(dst, "__sycl_usm_array_interface__"):
         if src.size:
-            dst.usm_data.copy_from_host(src.reshape(-1).view("|u1"))
+            # dst.usm_data.copy_from_host(src.reshape(-1).view("|u1"))
+            dpctl.tensor._copy_utils.copy_from_numpy_into(dst, src)
     else:
         for i in range(dst.size):
             dst.flat[i] = src.item(i)
