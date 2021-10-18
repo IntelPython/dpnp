@@ -305,6 +305,6 @@ cpdef utils.dpnp_descriptor dpnp_outer(utils.dpnp_descriptor array1, utils.dpnp_
 
     for idx1 in range(array1.size):
         for idx2 in range(array2.size):
-            result.get_pyobj()[idx1 * array2.size + idx2] = array1.get_pyobj()[idx1] * array2.get_pyobj()[idx2]
+            result.get_pyobj()[numpy.unravel_index(idx1 * array2.size + idx2, result.shape)] = array1.get_pyobj()[numpy.unravel_index(idx1, array1.shape)] * array2.get_pyobj()[numpy.unravel_index(idx2, array2.shape)]
 
     return result

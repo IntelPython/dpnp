@@ -397,7 +397,16 @@ class dpnp_array:
  # 'dumps',
  # 'fill',
  # 'flags',
- # 'flat',
+
+    @property
+    def flat(self):
+        """
+        Return a flat iterator, or set a flattened version of self to value.
+
+        """
+
+        return dpnp.flatiter(self)
+
  # 'flatten',
  # 'getfield',
  # 'imag',
