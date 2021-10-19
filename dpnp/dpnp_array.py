@@ -376,7 +376,20 @@ class dpnp_array:
  # 'choose',
  # 'clip',
  # 'compress',
- # 'conj',
+
+    def conj(self):
+        """
+        Complex-conjugate all elements.
+
+        For full documentation refer to :obj:`numpy.ndarray.conj`.
+
+        """
+
+        if not numpy.issubsctype(self.dtype, numpy.complex):
+            return self
+        else:
+            return dpnp.conjugate(self)
+
  # 'conjugate',
  # 'copy',
  # 'ctypes',
