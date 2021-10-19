@@ -61,6 +61,7 @@ jobs:
       . /usr/share/miniconda/etc/profile.d/conda.sh
       conda activate CondaCodeCov
       echo ============================================ build DPNP ============================================
+      export OCL_ICD_FILENAMES=libintelocl.so
       ./0.build.sh
       echo ============================================ run code coverage =====================================
       pytest --cov-report xml:coverage.xml --cov-report term-missing --cov=dpnp
