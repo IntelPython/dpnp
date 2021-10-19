@@ -390,7 +390,19 @@ class dpnp_array:
         else:
             return dpnp.conjugate(self)
 
- # 'conjugate',
+    def conjugate(self):
+        """
+        Return the complex conjugate, element-wise.
+
+        For full documentation refer to :obj:`numpy.ndarray.conjugate`.
+
+        """
+
+        if not numpy.issubsctype(self.dtype, numpy.complex):
+            return self
+        else:
+            return dpnp.conjugate(self)
+
  # 'copy',
  # 'ctypes',
  # 'cumprod',
