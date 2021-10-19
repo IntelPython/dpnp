@@ -69,55 +69,55 @@ jobs:
       export CODECOV_TOKEN="1158b545-b00a-4a84-a6f9-2bc2c4265d8b"
       bash <(curl -s https://codecov.io/bash) -f coverage.xml
 
-# - job: ubuntu2004
-#   displayName: Ubuntu 20.04
-#   pool:
-#     vmImage: 'ubuntu-20.04'
-#   strategy:
-#     matrix:
-#       Python37:
-#         python.version: '3.7'
-#       Python38:
-#         python.version: '3.8'
-#       Python39:
-#         python.version: '3.9'
-#   steps:
-#   - task: UsePythonVersion@0
-#     inputs:
-#       versionSpec: '$(python.version)'
-#     displayName: 'Use Python $(python.version)'
-#   - bash: |
-#       #echo ========================= Conda ENV ===========================
-#       #conda config --env --add channels conda-forge
-#       #echo ========================= update Conda ENV ===========================
-#       #conda update -y --prefix /usr/share/miniconda anaconda
-#       #echo ========================= 1 update Conda ENV ===========================
-#       #conda update -y libgcc-ng=9.3 libstdcxx-ng=9.3
-#       echo ========================= create Conda ENV ===========================
-#       conda create -q -y -n dpnp$(python.version) python=$(python.version) libgcc-ng=9.3 libstdcxx-ng=9.3
-#       . /usr/share/miniconda/etc/profile.d/conda.sh
-#       conda activate dpnp$(python.version)
-
-#       echo ========================= install OneAPI =================================
-#       # . ./scripts/install_cmake_lin.sh
-#       ./scripts/install_system_deps.sh  # no intel python
-#       ./scripts/install_python_deps.sh  # numpy, conda-build and etc.
-#       echo ========================= build DPNP ==========================
-#       ./0.build.sh
-#       echo ========================= run tests ======================================
-#       . ./0.env.sh
-#       pytest -s
-
 - job: ubuntu2004
   displayName: Ubuntu 20.04
   pool:
     vmImage: 'ubuntu-20.04'
   strategy:
     matrix:
+      Python37:
+        python.version: '3.7'
       Python38:
         python.version: '3.8'
       Python39:
         python.version: '3.9'
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '$(python.version)'
+    displayName: 'Use Python $(python.version)'
+  - bash: |
+      #echo ========================= Conda ENV ===========================
+      #conda config --env --add channels conda-forge
+      #echo ========================= update Conda ENV ===========================
+      #conda update -y --prefix /usr/share/miniconda anaconda
+      #echo ========================= 1 update Conda ENV ===========================
+      #conda update -y libgcc-ng=9.3 libstdcxx-ng=9.3
+      echo ========================= create Conda ENV ===========================
+      conda create -q -y -n dpnp$(python.version) python=$(python.version) libgcc-ng=9.3 libstdcxx-ng=9.3
+      . /usr/share/miniconda/etc/profile.d/conda.sh
+      conda activate dpnp$(python.version)
+
+      echo ========================= install OneAPI =================================
+      # . ./scripts/install_cmake_lin.sh
+      ./scripts/install_system_deps.sh  # no intel python
+      ./scripts/install_python_deps.sh  # numpy, conda-build and etc.
+      echo ========================= build DPNP ==========================
+      ./0.build.sh
+      echo ========================= run tests ======================================
+      . ./0.env.sh
+      pytest -s
+
+- job: conda_build_ubuntu2004
+  displayName: conda-build Ubuntu 20.04
+  pool:
+    vmImage: 'conda-build ubuntu-20.04'
+  strategy:
+    matrix:
+      Python38:
+        python.version: '3.8'
+      #Python39:
+      #  python.version: '3.9'
   steps:
   - task: UsePythonVersion@0
     inputs:
