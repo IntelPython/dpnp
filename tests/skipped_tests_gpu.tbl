@@ -1469,28 +1469,8 @@ tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargm
 tests/third_party/cupy/sorting_tests/test_search.py::TestNanArgMin::test_nanargmin_zero_size_axis1
 tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_0_{array=array(0)}::test_nonzero
 tests/third_party/cupy/sorting_tests/test_search.py::TestNonzeroZeroDimension_param_1_{array=array(1)}::test_nonzero
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_all
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_nan
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_tie
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_zero_size_axis0
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_all
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_nan
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_tie
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_zero_size_axis0
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_axis0
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_axis2
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_axis_large
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_zero_size
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmax_zero_size_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_axis0
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_axis2
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_axis_large
 tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_zero_size
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_argmin_zero_size_axis1
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_external_argmax_axis_large
-tests/third_party/cupy/sorting_tests/test_search.py::TestSearch::test_external_argmin_axis_large
 tests/third_party/cupy/sorting_tests/test_search.py::TestWhereCond_param_0_{cond_shape=(2, 3, 4)}::test_where_cond
 tests/third_party/cupy/sorting_tests/test_search.py::TestWhereCond_param_1_{cond_shape=(4,)}::test_where_cond
 tests/third_party/cupy/sorting_tests/test_search.py::TestWhereCond_param_2_{cond_shape=(2, 3, 4)}::test_where_cond
