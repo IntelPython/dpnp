@@ -111,7 +111,7 @@ jobs:
 - job: conda_build_ubuntu2004
   displayName: conda-build Ubuntu 20.04
   pool:
-    vmImage: 'conda-build ubuntu-20.04'
+    vmImage: 'ubuntu-20.04'
   strategy:
     matrix:
       Python38:
