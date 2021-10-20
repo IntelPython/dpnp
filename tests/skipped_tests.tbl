@@ -263,16 +263,6 @@ tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRoundHalfway_param_0
 tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRoundHalfway_param_1_{decimals=-2}::test_round_halfway_uint
 tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRoundHalfway_param_2_{decimals=-1}::test_round_halfway_uint
 tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRoundHalfway_param_3_{decimals=0}::test_round_halfway_uint
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_0_{decimals=-2}::test_round
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_0_{decimals=-2}::test_round_out
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_1_{decimals=-1}::test_round
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_1_{decimals=-1}::test_round_out
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_2_{decimals=0}::test_round
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_2_{decimals=0}::test_round_out
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_3_{decimals=1}::test_round
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_3_{decimals=1}::test_round_out
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_4_{decimals=2}::test_round
-tests/third_party/cupy/core_tests/test_ndarray_math.py::TestRound_param_4_{decimals=2}::test_round_out
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_max_all
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_max_all_keepdims
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestArrayReduction::test_max_axis0
