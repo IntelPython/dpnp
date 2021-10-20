@@ -668,7 +668,18 @@ class dpnp_array:
 
         return self._array_obj.strides
 
- # 'sum',
+    def sum(self, axis=None, dtype=None, out=None, keepdims=False, initial=0, where=True):
+        """
+        Returns the sum along a given axis.
+
+        .. seealso::
+           :obj:`dpnp.sum` for full documentation,
+           :meth:`dpnp.dparray.sum`
+
+        """
+
+        return dpnp.sum(self, axis, dtype, out, keepdims, initial, where)
+
  # 'swapaxes',
  # 'take',
  # 'tobytes',
@@ -691,4 +702,3 @@ class dpnp_array:
 
  # 'var',
  # 'view'
- 
