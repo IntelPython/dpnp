@@ -677,6 +677,19 @@ class dpnp_array:
  # 'tostring',
  # 'trace',
  # 'transpose',
+
+    def transpose(self, *axes):
+        """
+        Returns a view of the array with axes permuted.
+
+        .. seealso::
+           :obj:`dpnp.transpose` for full documentation,
+           :meth:`numpy.ndarray.reshape`
+
+        """
+
+        return dpnp.transpose(self, axes)
+
  # 'var',
  # 'view'
  
