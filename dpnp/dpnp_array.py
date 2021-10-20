@@ -373,7 +373,15 @@ class dpnp_array:
 
  # 'base',
  # 'byteswap',
- # 'choose',
+
+    def choose(input, choices, out=None, mode='raise'):
+        """
+        Construct an array from an index array and a set of arrays to choose from.
+
+        """
+
+        return dpnp.choose(input, choices, out, mode)
+
  # 'clip',
  # 'compress',
 
