@@ -1103,9 +1103,6 @@ tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_rint_nega
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_prod_all
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_prod_axis
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_prod_dtype
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all2
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all_keepdims
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all_transposed
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all_transposed2
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_axes
