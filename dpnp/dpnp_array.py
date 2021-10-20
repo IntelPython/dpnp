@@ -376,8 +376,33 @@ class dpnp_array:
  # 'choose',
  # 'clip',
  # 'compress',
- # 'conj',
- # 'conjugate',
+
+    def conj(self):
+        """
+        Complex-conjugate all elements.
+
+        For full documentation refer to :obj:`numpy.ndarray.conj`.
+
+        """
+
+        if not numpy.issubsctype(self.dtype, numpy.complex):
+            return self
+        else:
+            return dpnp.conjugate(self)
+
+    def conjugate(self):
+        """
+        Return the complex conjugate, element-wise.
+
+        For full documentation refer to :obj:`numpy.ndarray.conjugate`.
+
+        """
+
+        if not numpy.issubsctype(self.dtype, numpy.complex):
+            return self
+        else:
+            return dpnp.conjugate(self)
+
  # 'copy',
  # 'ctypes',
  # 'cumprod',
@@ -397,8 +422,47 @@ class dpnp_array:
  # 'dumps',
  # 'fill',
  # 'flags',
- # 'flat',
- # 'flatten',
+
+    @property
+    def flat(self):
+        """
+        Return a flat iterator, or set a flattened version of self to value.
+
+        """
+
+        return dpnp.flatiter(self)
+
+    def flatten(self, order='C'):
+        """
+        Return a copy of the array collapsed into one dimension.
+
+        Parameters
+        ----------
+        order: {'C', 'F', 'A', 'K'}, optional
+            'C' means to flatten in row-major (C-style) order.
+            'F' means to flatten in column-major (Fortran- style) order.
+            'A' means to flatten in column-major order if a is Fortran contiguous in memory, row-major order otherwise.
+            'K' means to flatten a in the order the elements occur in memory. The default is 'C'.
+
+        Returns
+        -------
+        out: ndarray
+            A copy of the input array, flattened to one dimension.
+
+        See Also
+        --------
+        :obj:`dpnp.ravel`, :obj:`dpnp.flat`
+
+        """
+
+        new_arr = dpnp.ndarray(self.shape, self.dtype)
+
+        if self.size > 0:
+            dpctl.tensor._copy_utils.copy_from_usm_ndarray_to_usm_ndarray(new_arr._array_obj, self._array_obj)
+            new_arr._array_obj = dpctl.tensor.reshape(new_arr._array_obj, (self.size, ))
+
+        return new_arr
+
  # 'getfield',
  # 'imag',
  # 'item',

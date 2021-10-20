@@ -42,6 +42,8 @@ if "numpy" in sys.modules:
 
 # from dpnp.dparray import dparray as ndarray
 from dpnp.dpnp_array import dpnp_array as ndarray
+from dpnp.dpnp_flatiter import flatiter as flatiter
+
 from dpnp.dpnp_iface import *
 from dpnp.dpnp_iface import __all__ as _iface__all__
 from dpnp.dpnp_iface_types import *
