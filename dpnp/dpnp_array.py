@@ -373,7 +373,15 @@ class dpnp_array:
 
  # 'base',
  # 'byteswap',
- # 'choose',
+
+    def choose(input, choices, out=None, mode='raise'):
+        """
+        Construct an array from an index array and a set of arrays to choose from.
+
+        """
+
+        return dpnp.choose(input, choices, out, mode)
+
  # 'clip',
  # 'compress',
 
@@ -408,7 +416,19 @@ class dpnp_array:
  # 'cumprod',
  # 'cumsum',
  # 'data',
- # 'diagonal',
+
+    def diagonal(input, offset=0, axis1=0, axis2=1):
+        """
+        Return specified diagonals.
+
+        See Also
+        --------
+        :obj:`dpnp.diagonal`
+
+        """
+
+        return dpnp.diagonal(input, offset, axis1, axis2)
+
  # 'dot',
 
     @property
@@ -420,7 +440,32 @@ class dpnp_array:
 
  # 'dump',
  # 'dumps',
- # 'fill',
+
+    def fill(self, value):
+        """
+        Fill the array with a scalar value.
+
+        Parameters
+        ----------
+        value : scalar
+            All elements of `a` will be assigned this value.
+
+        Examples
+        --------
+        >>> a = np.array([1, 2])
+        >>> a.fill(0)
+        >>> a
+        array([0, 0])
+        >>> a = np.empty(2)
+        >>> a.fill(1)
+        >>> a
+        array([1.,  1.])
+
+        """
+
+        for i in range(self.size):
+            self.flat[i] = value
+
  # 'flags',
 
     @property
@@ -465,7 +510,40 @@ class dpnp_array:
 
  # 'getfield',
  # 'imag',
- # 'item',
+
+    def item(self, id=None):
+        """
+        Copy an element of an array to a standard Python scalar and return it.
+
+        For full documentation refer to :obj:`numpy.ndarray.item`.
+
+        Examples
+        --------
+        >>> np.random.seed(123)
+        >>> x = np.random.randint(9, size=(3, 3))
+        >>> x
+        array([[2, 2, 6],
+               [1, 3, 6],
+               [1, 0, 1]])
+        >>> x.item(3)
+        1
+        >>> x.item(7)
+        0
+        >>> x.item((0, 1))
+        2
+        >>> x.item((2, 2))
+        1
+
+        """
+
+        if id is None:
+            if self.size != 1:
+                raise ValueError("DPNP dparray::item(): can only convert an array of size 1 to a Python scalar")
+            else:
+                id = 0
+
+        return self.flat[id]
+
  # 'itemset',
 
     @property
@@ -514,9 +592,50 @@ class dpnp_array:
  # 'ravel',
  # 'real',
  # 'repeat',
- # 'reshape',
+
+    def reshape(self, d0, *dn, order=b'C'):
+        """
+        Returns an array containing the same data with a new shape.
+
+        Refer to `dpnp.reshape` for full documentation.
+
+        .. seealso::
+           :meth:`numpy.ndarray.reshape`
+
+        Notes
+        -----
+        Unlike the free function `dpnp.reshape`, this method on `ndarray` allows
+        the elements of the shape parameter to be passed in as separate arguments.
+        For example, ``a.reshape(10, 11)`` is equivalent to
+        ``a.reshape((10, 11))``.
+
+        """
+
+        if dn:
+            if not isinstance(d0, int):
+                msg_tmpl = "'{}' object cannot be interpreted as an integer"
+                raise TypeError(msg_tmpl.format(type(d0).__name__))
+            shape = [d0, *dn]
+        else:
+            shape = d0
+
+        shape_tup = dpnp.dpnp_utils._object_to_tuple(shape)
+
+        return dpnp.reshape(self, shape_tup)
+
  # 'resize',
- # 'round',
+
+    def round(self, decimals=0, out=None):
+        """
+        Return array with each element rounded to the given number of decimals.
+
+        .. seealso::
+           :obj:`dpnp.around` for full documentation.
+
+        """
+
+        return dpnp.around(self, decimals, out)
+
  # 'searchsorted',
  # 'setfield',
  # 'setflags',
@@ -561,7 +680,17 @@ class dpnp_array:
         return self._array_obj.size
 
  # 'sort',
- # 'squeeze',
+
+    def squeeze(self, axis=None):
+        """
+        Remove single-dimensional entries from the shape of an array.
+
+        .. seealso::
+           :obj:`dpnp.squeeze` for full documentation
+
+        """
+
+        return dpnp.squeeze(self, axis)
 
     def std(self, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
         """ Returns the variance of the array elements, along given axis.
@@ -580,7 +709,18 @@ class dpnp_array:
 
         return self._array_obj.strides
 
- # 'sum',
+    def sum(self, axis=None, dtype=None, out=None, keepdims=False, initial=0, where=True):
+        """
+        Returns the sum along a given axis.
+
+        .. seealso::
+           :obj:`dpnp.sum` for full documentation,
+           :meth:`dpnp.dparray.sum`
+
+        """
+
+        return dpnp.sum(self, axis, dtype, out, keepdims, initial, where)
+
  # 'swapaxes',
  # 'take',
  # 'tobytes',
@@ -588,7 +728,18 @@ class dpnp_array:
  # 'tolist',
  # 'tostring',
  # 'trace',
- # 'transpose',
+
+    def transpose(self, *axes):
+        """
+        Returns a view of the array with axes permuted.
+
+        .. seealso::
+           :obj:`dpnp.transpose` for full documentation,
+           :meth:`numpy.ndarray.reshape`
+
+        """
+
+        return dpnp.transpose(self, axes)
+
  # 'var',
  # 'view'
- 
