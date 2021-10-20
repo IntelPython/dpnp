@@ -514,7 +514,37 @@ class dpnp_array:
  # 'ravel',
  # 'real',
  # 'repeat',
- # 'reshape',
+
+    def reshape(self, d0, *dn, order=b'C'):
+        """
+        Returns an array containing the same data with a new shape.
+
+        Refer to `dpnp.reshape` for full documentation.
+
+        .. seealso::
+           :meth:`numpy.ndarray.reshape`
+
+        Notes
+        -----
+        Unlike the free function `dpnp.reshape`, this method on `ndarray` allows
+        the elements of the shape parameter to be passed in as separate arguments.
+        For example, ``a.reshape(10, 11)`` is equivalent to
+        ``a.reshape((10, 11))``.
+
+        """
+
+        if dn:
+            if not isinstance(d0, int):
+                msg_tmpl = "'{}' object cannot be interpreted as an integer"
+                raise TypeError(msg_tmpl.format(type(d0).__name__))
+            shape = [d0, *dn]
+        else:
+            shape = d0
+
+        shape_tup = dpnp.dpnp_utils._object_to_tuple(shape)
+
+        return dpnp.reshape(self, shape_tup)
+
  # 'resize',
  # 'round',
  # 'searchsorted',
