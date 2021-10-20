@@ -676,7 +676,6 @@ class dpnp_array:
  # 'tolist',
  # 'tostring',
  # 'trace',
- # 'transpose',
 
     def transpose(self, *axes):
         """
