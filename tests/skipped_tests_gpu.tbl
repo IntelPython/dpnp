@@ -906,17 +906,6 @@ tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_s
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_tuple_axis_failure1
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_tuple_axis_failure2
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_tuple_axis_failure3
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze1
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze2
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_failure
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_int_axis1
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_int_axis2
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_scalar1
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_scalar2
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_tuple_axis1
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_tuple_axis2
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_tuple_axis3
-tests/third_party/cupy/manipulation_tests/test_dims.py::TestDims::test_squeeze_tuple_axis4
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_0_{shapes=[(3,), (2,)]}::test_invalid_broadcast
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_0_{shapes=[(3,), (2,)]}::test_invalid_broadcast_arrays
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_1_{shapes=[(3, 2), (2, 3)]}::test_invalid_broadcast

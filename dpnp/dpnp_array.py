@@ -680,7 +680,17 @@ class dpnp_array:
         return self._array_obj.size
 
  # 'sort',
- # 'squeeze',
+
+    def squeeze(self, axis=None):
+        """
+        Remove single-dimensional entries from the shape of an array.
+
+        .. seealso::
+           :obj:`dpnp.squeeze` for full documentation
+
+        """
+
+        return dpnp.squeeze(self, axis)
 
     def std(self, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
         """ Returns the variance of the array elements, along given axis.
