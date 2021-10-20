@@ -62,7 +62,7 @@ jobs:
       conda activate CondaCodeCov
       echo ============================================ build DPNP ============================================
       python setup.py build_clib
-      python setup.py build_ext install
+      CC=dpcpp python setup.py build_ext install
       echo ============================================ run code coverage =====================================
       export OCL_ICD_FILENAMES=libintelocl.so
       pytest --cov-report xml:coverage.xml --cov-report term-missing --cov=dpnp
