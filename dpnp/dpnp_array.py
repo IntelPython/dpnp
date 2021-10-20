@@ -408,7 +408,19 @@ class dpnp_array:
  # 'cumprod',
  # 'cumsum',
  # 'data',
- # 'diagonal',
+
+    def diagonal(input, offset=0, axis1=0, axis2=1):
+        """
+        Return specified diagonals.
+
+        See Also
+        --------
+        :obj:`dpnp.diagonal`
+
+        """
+
+        return dpnp.diagonal(input, offset, axis1, axis2)
+
  # 'dot',
 
     @property
