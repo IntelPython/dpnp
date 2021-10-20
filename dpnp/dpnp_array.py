@@ -616,7 +616,18 @@ class dpnp_array:
         return dpnp.reshape(self, shape_tup)
 
  # 'resize',
- # 'round',
+
+    def round(self, decimals=0, out=None):
+        """
+        Return array with each element rounded to the given number of decimals.
+
+        .. seealso::
+           :obj:`dpnp.around` for full documentation.
+
+        """
+
+        return dpnp.around(self, decimals, out)
+
  # 'searchsorted',
  # 'setfield',
  # 'setflags',
