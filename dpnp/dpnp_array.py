@@ -465,7 +465,40 @@ class dpnp_array:
 
  # 'getfield',
  # 'imag',
- # 'item',
+
+    def item(self, id=None):
+        """
+        Copy an element of an array to a standard Python scalar and return it.
+
+        For full documentation refer to :obj:`numpy.ndarray.item`.
+
+        Examples
+        --------
+        >>> np.random.seed(123)
+        >>> x = np.random.randint(9, size=(3, 3))
+        >>> x
+        array([[2, 2, 6],
+               [1, 3, 6],
+               [1, 0, 1]])
+        >>> x.item(3)
+        1
+        >>> x.item(7)
+        0
+        >>> x.item((0, 1))
+        2
+        >>> x.item((2, 2))
+        1
+
+        """
+
+        if id is None:
+            if self.size != 1:
+                raise ValueError("DPNP dparray::item(): can only convert an array of size 1 to a Python scalar")
+            else:
+                id = 0
+
+        return self.flat[id]
+
  # 'itemset',
 
     @property
