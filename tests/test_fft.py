@@ -6,9 +6,10 @@ import numpy
 
 
 @pytest.mark.parametrize("type", ['complex128', 'complex64', 'float32', 'float64', 'int32', 'int64'])
-def test_fft(type):
+@pytest.mark.parametrize("size", [100, 101, 10, 11, 4, 5])
+def test_fft(type, size):
     # 1 dim array
-    data = numpy.arange(100, dtype=numpy.dtype(type))
+    data = numpy.arange(size, dtype=numpy.dtype(type))
     # TODO:
     # doesn't work correct with `complex64` (not supported)
     # dpnp_data = dpnp.arange(100, dtype=dpnp.dtype(type))
@@ -18,32 +19,16 @@ def test_fft(type):
     dpnp_res = dpnp.asnumpy(dpnp.fft.fft(dpnp_data))
 
     assert dpnp_res.dtype == np_res.dtype
+    assert dpnp_res.size == np_res.size
     numpy.testing.assert_allclose(dpnp_res, np_res, rtol=1e-4, atol=1e-7)
-
-
-# TODO:
-# will be removed
-@pytest.mark.parametrize("type", ['complex128', 'complex64', 'float32', 'float64'])
-def test_fft1(type):
-    # 1 dim array
-    data = numpy.arange(100, dtype=numpy.dtype(type))
-    # TODO:
-    # doesn't work correct with `complex64` (not supported)
-    # dpnp_data = dpnp.arange(100, dtype=dpnp.dtype(type))
-    dpnp_data = dpnp.array(data)
-
-    np_res = numpy.fft.fft(data)
-    dpnp_res = dpnp.asnumpy(dpnp.fft.fft(dpnp_data))
-
-    assert dpnp_res.dtype == np_res.dtype
-    numpy.testing.assert_allclose(dpnp_res[:30], np_res[:30], rtol=1e-4, atol=1e-7)
 
 
 # @pytest.mark.parametrize("type", ['complex128', 'complex64', 'float32', 'float64', 'int32', 'int64'])
 @pytest.mark.parametrize("type", ['complex128', 'complex64', 'float32', 'float64'])
-def test_ifft(type):
+@pytest.mark.parametrize("size", [100, 101, 10, 11, 4, 5])
+def test_ifft(type, size):
     # 1 dim array
-    data = numpy.arange(100, dtype=numpy.dtype(type))
+    data = numpy.arange(size, dtype=numpy.dtype(type))
     # TODO:
     # doesn't work correct with `complex64` (not supported)
     # dpnp_data = dpnp.arange(100, dtype=dpnp.dtype(type))

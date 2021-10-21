@@ -373,7 +373,8 @@ void dpnp_fft_fft_mathlib_real_to_cmplx_c(const void* array1_in,
     cl::sycl::event event;
 
     DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, result_size);
-    DPNPC_ptr_adapter<_DataType_output> result_ptr(result1, result_size);
+    DPNPC_ptr_adapter<_DataType_output> result_ptr(result1, result_size*2, true, true);
+
     _DataType_input* array_1 = input1_ptr.get_ptr();
     _DataType_output* result = result_ptr.get_ptr();
 
@@ -454,6 +455,10 @@ void dpnp_fft_fft_mathlib_real_to_cmplx_c(const void* array1_in,
         {
             event = mkl_dft::compute_forward(desc, array_1, result);
             event.wait();
+            for(size_t i = 0; i <= result_size/2; i++)
+            {
+                *(reinterpret_cast<std::complex<_DataType_output>*>(result) + result_size - i) = std::conj(*(reinterpret_cast<std::complex<_DataType_output>*>(result) + i));
+            }
         }
         // TODO
         // if (all_harmonics)
