@@ -1,9 +1,9 @@
 name: Conda package
 
-on: push
-
-env:
-  PACKAGE_NAME: dpctl
+on:
+  push:
+    branches:
+    tags:
 
 jobs:
   build:
@@ -62,7 +62,7 @@ jobs:
 
   upload:
     needs: build
-    if: ${{ github.ref == 'refs/heads/master' }}
+    if: ${{ github.ref }} == 'refs/heads/master' || ${{ github.ref }} == 'refs/heads/release*'
     runs-on: ubuntu-latest
 
     strategy:
