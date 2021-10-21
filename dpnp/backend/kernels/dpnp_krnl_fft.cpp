@@ -244,8 +244,8 @@ void dpnp_fft_fft_mathlib_cmplx_to_real_c(const void* array1_in,
 {
     cl::sycl::event event;
 
-    DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, result_size);
-    DPNPC_ptr_adapter<_DataType_output> result_ptr(result1, result_size);
+    DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, result_size*2);
+    DPNPC_ptr_adapter<_DataType_output> result_ptr(result1, result_size, true, true);
     _DataType_input* array_1 = input1_ptr.get_ptr();
     _DataType_output* result = result_ptr.get_ptr();
 
@@ -278,6 +278,7 @@ void dpnp_fft_fft_mathlib_cmplx_to_real_c(const void* array1_in,
 
     forward_scale = fsc;
     backward_scale = 1.0/(fsc*result_size);
+
     // TODO
     // impl check kind of
     // assert( output_shape[axis] == (all_harmonics) ? result_size : result_size/2 + 1);
@@ -300,11 +301,11 @@ void dpnp_fft_fft_mathlib_cmplx_to_real_c(const void* array1_in,
 
     desc.set_value(oneapi::mkl::dft::config_param::CONJUGATE_EVEN_STORAGE, DFTI_COMPLEX_COMPLEX);
 
+    desc.set_value(oneapi::mkl::dft::config_param::PACKED_FORMAT, DFTI_CCE_FORMAT);
+
     desc.set_value(mkl_dft::config_param::PLACEMENT, DFTI_NOT_INPLACE);
 
     desc.set_value(oneapi::mkl::dft::config_param::OUTPUT_STRIDES, output_strides_desc);
-
-    // desc.set_value(oneapi::mkl::dft::config_param::PACKED_FORMAT, DFTI_CCE_FORMAT);
 
     desc.set_value(oneapi::mkl::dft::config_param::NUMBER_OF_TRANSFORMS, input_number_of_transforms);
 
@@ -317,39 +318,24 @@ void dpnp_fft_fft_mathlib_cmplx_to_real_c(const void* array1_in,
 
     desc.commit(DPNP_QUEUE);
 
+    // TODO:
+    // if (single_DftiCompute)
+    // single_DftiCompute is returned from _compute_strides_and_distances_inout
+    // if and else cases.
+    if (1)
+    {
+        event = mkl_dft::compute_backward(desc, array_1, result);
+        event.wait();
+        for(size_t i = 0; i <= result_size/2; i++)
+        {
+            *(result + result_size - i) = -(*(result + i));
+        }
+    }
+    // TODO
+    // if (all_harmonics)
+    // {
+    // }
 
-    if (!inverse)
-    {
-        // TODO:
-        // if (single_DftiCompute)
-        // single_DftiCompute is returned from _compute_strides_and_distances_inout
-        // if and else cases.
-        if (1)
-        {
-            event = mkl_dft::compute_forward(desc, array_1, result);
-            event.wait();
-        }
-        // TODO
-        // if (all_harmonics)
-        // {
-        // }
-    }
-    else
-    {
-        // TODO:
-        // if (single_DftiCompute)
-        // single_DftiCompute is returned from _compute_strides_and_distances_inout
-        // if and else cases.
-        if (1)
-        {
-            event = mkl_dft::compute_backward(desc, array_1, result);
-            event.wait();
-        }
-        // TODO
-        // if (all_harmonics)
-        // {
-        // }
-    }
 
     return;
 }
@@ -435,7 +421,7 @@ void dpnp_fft_fft_mathlib_real_to_cmplx_c(const void* array1_in,
 
     desc.set_value(oneapi::mkl::dft::config_param::NUMBER_OF_TRANSFORMS, input_number_of_transforms);
 
-    //  TODO:
+    // TODO:
     // if (input_number_of_transforms > 1)
     // {
     //     desc.set_value(oneapi::mkl::dft::config_param::INPUT_DISTANCE, input_distance);
@@ -445,42 +431,25 @@ void dpnp_fft_fft_mathlib_real_to_cmplx_c(const void* array1_in,
     desc.commit(DPNP_QUEUE);
 
 
-    if (!inverse)
+
+    // TODO:
+    // if (single_DftiCompute)
+    // single_DftiCompute is returned from _compute_strides_and_distances_inout
+    // if and else cases.
+    if (1)
     {
-        // TODO:
-        // if (single_DftiCompute)
-        // single_DftiCompute is returned from _compute_strides_and_distances_inout
-        // if and else cases.
-        if (1)
+        event = mkl_dft::compute_forward(desc, array_1, result);
+        event.wait();
+        for(size_t i = 0; i <= result_size/2; i++)
         {
-            event = mkl_dft::compute_forward(desc, array_1, result);
-            event.wait();
-            for(size_t i = 0; i <= result_size/2; i++)
-            {
-                *(reinterpret_cast<std::complex<_DataType_output>*>(result) + result_size - i) = std::conj(*(reinterpret_cast<std::complex<_DataType_output>*>(result) + i));
-            }
+            *(reinterpret_cast<std::complex<_DataType_output>*>(result) + result_size - i) = std::conj(*(reinterpret_cast<std::complex<_DataType_output>*>(result) + i));
         }
-        // TODO
-        // if (all_harmonics)
-        // {
-        // }
     }
-    else
-    {
-        // TODO:
-        // if (single_DftiCompute)
-        // single_DftiCompute is returned from _compute_strides_and_distances_inout
-        // if and else cases.
-        if (1)
-        {
-            event = mkl_dft::compute_backward(desc, array_1, result);
-            event.wait();
-        }
-        // TODO
-        // if (all_harmonics)
-        // {
-        // }
-    }
+    // TODO
+    // if (all_harmonics)
+    // {
+    // }
+
 
     // TODO:
     // currently on condition on inverse flag.

@@ -42,9 +42,10 @@ def test_ifft(type, size):
 
 
 @pytest.mark.parametrize("type", ['complex128', 'complex64'])
-def test_irfft(type):
+@pytest.mark.parametrize("size", [10, 5])
+def test_irfft(type, size):
     # 1 dim array
-    data = numpy.arange(100, dtype=numpy.dtype(type))
+    data = numpy.arange(size, dtype=numpy.dtype(type))
     # TODO:
     # doesn't work correct with `complex64` (not supported)
     # dpnp_data = dpnp.arange(100, dtype=dpnp.dtype(type))
