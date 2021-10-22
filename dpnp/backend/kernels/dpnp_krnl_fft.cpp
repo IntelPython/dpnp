@@ -242,6 +242,7 @@ void dpnp_fft_fft_mathlib_cmplx_to_real_c(const void* array1_in,
                                           const long all_harmonics,
                                           const size_t inverse)
 {
+#if 0
     cl::sycl::event event;
 
     DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, result_size*2);
@@ -336,8 +337,8 @@ void dpnp_fft_fft_mathlib_cmplx_to_real_c(const void* array1_in,
     // {
     // }
 
-
     return;
+#endif
 }
 
 /* out-of-place compute */
@@ -356,6 +357,7 @@ void dpnp_fft_fft_mathlib_real_to_cmplx_c(const void* array1_in,
                                           const long all_harmonics,
                                           const size_t inverse)
 {
+#if 0
     cl::sycl::event event;
 
     DPNPC_ptr_adapter<_DataType_input> input1_ptr(array1_in, result_size);
@@ -463,6 +465,7 @@ void dpnp_fft_fft_mathlib_real_to_cmplx_c(const void* array1_in,
     }
 
     return;
+#endif
 }
 
 template <typename _DataType_input, typename _DataType_output>

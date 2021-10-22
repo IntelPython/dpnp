@@ -45,18 +45,6 @@ __all__ = [
 
 ctypedef void(*fptr_dpnp_fft_t)(void * , void * , size_t, size_t, long * , long * , size_t, long * , long * , size_t, size_t, long, double, long, size_t)
 
-# TODO:
-# remove after merge PR997
-cdef shape_type_c strides_to_vector(strides, shape) except *:
-    """Get or calculate srtides based on shape."""
-    cdef shape_type_c res
-    if strides is None:
-        res = utils.get_axis_offsets(shape)
-    else:
-        res = strides
-
-    return res
-
 
 cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
                                      size_t input_boundarie,
@@ -74,7 +62,7 @@ cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
     cdef size_t input_itemsize = input.dtype.itemsize
     cdef size_t output_itemsize
 
-    input_strides = strides_to_vector(input.strides, input.shape)
+    input_strides = utils.strides_to_vector(input.strides, input.shape)
 
     cdef long axis_norm = utils.normalize_axis((axis,), input_shape.size())[0]
     output_shape[axis_norm] = output_boundarie
@@ -90,7 +78,7 @@ cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
 
     output_itemsize = result.dtype.itemsize
 
-    result_strides = strides_to_vector(result.strides, result.shape)
+    result_strides = utils.strides_to_vector(result.strides, result.shape)
 
     cdef fptr_dpnp_fft_t func = <fptr_dpnp_fft_t > kernel_data.ptr
 
@@ -116,7 +104,7 @@ cpdef utils.dpnp_descriptor dpnp_rfft(utils.dpnp_descriptor input,
     cdef size_t input_itemsize = input.dtype.itemsize
     cdef size_t output_itemsize
 
-    input_strides = strides_to_vector(input.strides, input.shape)
+    input_strides = utils.strides_to_vector(input.strides, input.shape)
 
     cdef long axis_norm = utils.normalize_axis((axis,), input_shape.size())[0]
     output_shape[axis_norm] = output_boundarie
@@ -132,7 +120,7 @@ cpdef utils.dpnp_descriptor dpnp_rfft(utils.dpnp_descriptor input,
 
     output_itemsize = result.dtype.itemsize
 
-    result_strides = strides_to_vector(result.strides, result.shape)
+    result_strides = utils.strides_to_vector(result.strides, result.shape)
 
     cdef fptr_dpnp_fft_t func = <fptr_dpnp_fft_t > kernel_data.ptr
 

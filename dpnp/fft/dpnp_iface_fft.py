@@ -106,7 +106,7 @@ def fft(x1, n=None, axis=-1, norm=None):
             pass                 # let fallback to handle exception
         elif norm is not None:
             pass
-        elif not x1_desc.dtype in (numpy.complex128, numpy.complex64, numpy.float32, numpy.float64):
+        elif not x1_desc.dtype in (numpy.complex128, numpy.complex64):
             pass
         elif x1_desc.ndim > 3:  # TODO: will be removed.
             pass
@@ -135,7 +135,7 @@ def fft2(x1, s=None, axes=(-2, -1), norm=None):
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
-    if x1_desc:
+    if x1_desc and 0:
         if norm is not None:
             pass
         else:
@@ -176,7 +176,7 @@ def fftn(x1, s=None, axes=None, norm=None):
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
-    if x1_desc:
+    if x1_desc and 0:
         if s is None:
             boundaries = tuple([x1_desc.shape[i] for i in range(x1_desc.ndim)])
         else:
@@ -308,6 +308,8 @@ def ifft(x1, n=None, axis=-1, norm=None):
             pass                 # let fallback to handle exception
         elif norm is not None:
             pass
+        elif not x1_desc.dtype in (numpy.complex128, numpy.complex64):
+            pass
         else:
             output_boundarie = input_boundarie
 
@@ -333,7 +335,7 @@ def ifft2(x1, s=None, axes=(-2, -1), norm=None):
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
-    if x1_desc:
+    if x1_desc and 0:
         if norm is not None:
             pass
         else:
@@ -388,7 +390,7 @@ def ifftn(x1, s=None, axes=None, norm=None):
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
-    if x1_desc:
+    if x1_desc and 0:
         if s is None:
             boundaries = tuple([x1_desc.shape[i] for i in range(x1_desc.ndim)])
         else:
@@ -475,7 +477,7 @@ def irfft(x1, n=None, axis=-1, norm=None):
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
-    if x1_desc:
+    if x1_desc and 0:
         if axis is None:
             axis_param = -1      # the most right dimension (default value)
         else:
@@ -517,7 +519,7 @@ def irfft2(x1, s=None, axes=(-2, -1), norm=None):
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
-    if x1_desc:
+    if x1_desc and 0:
         if norm is not None:
             pass
         else:
@@ -590,7 +592,7 @@ def rfft(x1, n=None, axis=-1, norm=None):
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
-    if x1_desc:
+    if x1_desc and 0:
         if axis is None:
             axis_param = -1                             # the most right dimension (default value)
         else:
@@ -632,7 +634,7 @@ def rfft2(x1, s=None, axes=(-2, -1), norm=None):
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
-    if x1_desc:
+    if x1_desc and 0:
         if norm is not None:
             pass
         else:
@@ -673,7 +675,7 @@ def rfftn(x1, s=None, axes=None, norm=None):
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
-    if x1_desc:
+    if x1_desc and 0:
         if s is None:
             boundaries = tuple([x1_desc.shape[i] for i in range(x1_desc.ndim)])
         else:
