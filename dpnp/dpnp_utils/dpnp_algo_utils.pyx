@@ -475,6 +475,19 @@ cpdef cpp_bool use_origin_backend(input1=None, size_t compute_size=0):
     return False
 
 
+cdef shape_type_c strides_to_vector(object strides, object shape) except *:
+    """
+    Get or calculate srtides based on shape.
+    """
+    cdef shape_type_c res
+    if strides is None:
+        res = get_axis_offsets(shape)
+    else:
+        res = strides
+
+    return res
+
+
 cdef class dpnp_descriptor:
     def __init__(self, obj):
         """ Initialze variables """
