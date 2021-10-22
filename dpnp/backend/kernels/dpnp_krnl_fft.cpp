@@ -170,7 +170,6 @@ void dpnp_fft_fft_sycl_c(const void* array1_in,
 // template <typename _DataType_input, typename _DataType_output>
 // void _compute_strides_and_distances_inout(...)
 
-
 // TODO
 /* future interface */
 template <typename _DataType_input, typename _DataType_output, typename _Descriptor_type>
@@ -197,11 +196,13 @@ void dpnp_fft_fft_mathlib_cmplx_to_cmplx_c(const void* array1_in,
     // for inverse
     if (inverse)
     { /* we are doing IFFT using Forward computation, swap scales */
-        forward_scale = 1.0/(fsc*result_size);
+        forward_scale = 1.0 / (fsc * result_size);
         backward_scale = fsc;
-    } else {
+    }
+    else
+    {
         forward_scale = fsc;
-        backward_scale = 1.0/(fsc*result_size);
+        backward_scale = 1.0 / (fsc * result_size);
     }
 
     desc.set_value(mkl_dft::config_param::BACKWARD_SCALE, backward_scale);
@@ -214,7 +215,8 @@ void dpnp_fft_fft_mathlib_cmplx_to_cmplx_c(const void* array1_in,
 
     // TODO:
     // currently condition on inverse flag.
-    if (inverse) {
+    if (inverse)
+    {
         event = mkl_vm::conj(DPNP_QUEUE, result_size, result, result, {event}, mkl_vm::mode::ha);
     }
     event.wait();
@@ -510,8 +512,7 @@ void dpnp_fft_fft_c(const void* array1_in,
 
     std::vector<std::int64_t> dimensions(input_shape, input_shape + shape_size);
 
-    if constexpr (std::is_same<_DataType_output, float>::value ||
-                  std::is_same<_DataType_output, double>::value)
+    if constexpr (std::is_same<_DataType_output, float>::value || std::is_same<_DataType_output, double>::value)
     {
         /* complex-to-real, double precision */
         if constexpr (std::is_same<_DataType_input, std::complex<double>>::value &&
@@ -519,8 +520,19 @@ void dpnp_fft_fft_c(const void* array1_in,
         {
             // const result_size_cce_pack_format = result_size * 2;
             desc_dp_real_t desc(dimensions); // try: 2 * result_size
-            dpnp_fft_fft_mathlib_cmplx_to_real_c<double, _DataType_output, desc_dp_real_t>(
-                array1_in, result1, shape_size, result_size, input_strides, output_strides, input_itemsize, result_itemsize, desc, axis, fsc, all_harmonics, inverse);
+            dpnp_fft_fft_mathlib_cmplx_to_real_c<double, _DataType_output, desc_dp_real_t>(array1_in,
+                                                                                           result1,
+                                                                                           shape_size,
+                                                                                           result_size,
+                                                                                           input_strides,
+                                                                                           output_strides,
+                                                                                           input_itemsize,
+                                                                                           result_itemsize,
+                                                                                           desc,
+                                                                                           axis,
+                                                                                           fsc,
+                                                                                           all_harmonics,
+                                                                                           inverse);
         }
         /* complex-to-real, single precision */
         else if (std::is_same<_DataType_input, std::complex<float>>::value &&
@@ -528,8 +540,19 @@ void dpnp_fft_fft_c(const void* array1_in,
         {
             // const result_size_cce_pack_format = result_size * 2;
             desc_sp_real_t desc(dimensions); // try: 2 * result_size
-            dpnp_fft_fft_mathlib_cmplx_to_real_c<float, _DataType_output, desc_sp_real_t>(
-                array1_in, result1, shape_size, result_size, input_strides, output_strides, input_itemsize, result_itemsize, desc, axis, fsc, all_harmonics, inverse);
+            dpnp_fft_fft_mathlib_cmplx_to_real_c<float, _DataType_output, desc_sp_real_t>(array1_in,
+                                                                                          result1,
+                                                                                          shape_size,
+                                                                                          result_size,
+                                                                                          input_strides,
+                                                                                          output_strides,
+                                                                                          input_itemsize,
+                                                                                          result_itemsize,
+                                                                                          desc,
+                                                                                          axis,
+                                                                                          fsc,
+                                                                                          all_harmonics,
+                                                                                          inverse);
         }
     }
     else if (std::is_same<_DataType_output, std::complex<float>>::value ||
@@ -557,8 +580,19 @@ void dpnp_fft_fft_c(const void* array1_in,
         {
             // const result_size_cce_pack_format = result_size * 2;
             desc_dp_real_t desc(dimensions); // try: 2 * result_size
-            dpnp_fft_fft_mathlib_real_to_cmplx_c<_DataType_input, double, desc_dp_real_t>(
-                array1_in, result1, shape_size, result_size, input_strides, output_strides, input_itemsize, result_itemsize, desc, axis, fsc, all_harmonics, inverse);
+            dpnp_fft_fft_mathlib_real_to_cmplx_c<_DataType_input, double, desc_dp_real_t>(array1_in,
+                                                                                          result1,
+                                                                                          shape_size,
+                                                                                          result_size,
+                                                                                          input_strides,
+                                                                                          output_strides,
+                                                                                          input_itemsize,
+                                                                                          result_itemsize,
+                                                                                          desc,
+                                                                                          axis,
+                                                                                          fsc,
+                                                                                          all_harmonics,
+                                                                                          inverse);
         }
         /* real-to-complex, single precision */
         else if (std::is_same<_DataType_input, float>::value &&
@@ -566,8 +600,19 @@ void dpnp_fft_fft_c(const void* array1_in,
         {
             // const result_size_cce_pack_format = result_size * 2;
             desc_sp_real_t desc(dimensions); // try: 2 * result_size
-            dpnp_fft_fft_mathlib_real_to_cmplx_c<_DataType_input, float, desc_sp_real_t>(
-                array1_in, result1, shape_size, result_size, input_strides, output_strides, input_itemsize, result_itemsize, desc, axis, fsc, all_harmonics, inverse);
+            dpnp_fft_fft_mathlib_real_to_cmplx_c<_DataType_input, float, desc_sp_real_t>(array1_in,
+                                                                                         result1,
+                                                                                         shape_size,
+                                                                                         result_size,
+                                                                                         input_strides,
+                                                                                         output_strides,
+                                                                                         input_itemsize,
+                                                                                         result_itemsize,
+                                                                                         desc,
+                                                                                         axis,
+                                                                                         fsc,
+                                                                                         all_harmonics,
+                                                                                         inverse);
         }
     }
 
@@ -589,7 +634,9 @@ void func_map_init_fft_func(func_map_t& fmap)
     fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_C128][eft_C128] = {
         eft_C128, (void*)dpnp_fft_fft_c<std::complex<double>, std::complex<double>>};
 
-    fmap[DPNPFuncName::DPNP_FN_FFT_RFFT][eft_C64][eft_C64] = { eft_FLT, (void*)dpnp_fft_fft_c<std::complex<float>, float>};
-    fmap[DPNPFuncName::DPNP_FN_FFT_RFFT][eft_C128][eft_C128] = { eft_DBL, (void*)dpnp_fft_fft_c<std::complex<double>, double>};
+    fmap[DPNPFuncName::DPNP_FN_FFT_RFFT][eft_C64][eft_C64] = {eft_FLT,
+                                                              (void*)dpnp_fft_fft_c<std::complex<float>, float>};
+    fmap[DPNPFuncName::DPNP_FN_FFT_RFFT][eft_C128][eft_C128] = {eft_DBL,
+                                                                (void*)dpnp_fft_fft_c<std::complex<double>, double>};
     return;
 }

@@ -43,7 +43,7 @@ __all__ = [
 ]
 
 
-ctypedef void(*fptr_dpnp_fft_t)(void * , void * , size_t, size_t, long * , long * , size_t, long * , long * , size_t, size_t, long, double, long, size_t)
+ctypedef void(*fptr_dpnp_fft_t)(void *, void * , size_t, size_t, long * , long * , size_t, long * , long * , size_t, size_t, long, double, long, size_t)
 
 
 cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
@@ -83,7 +83,8 @@ cpdef utils.dpnp_descriptor dpnp_fft(utils.dpnp_descriptor input,
     cdef fptr_dpnp_fft_t func = <fptr_dpnp_fft_t > kernel_data.ptr
 
     # call FPTR function
-    func(input.get_data(), result.get_data(), input.size, result.size, input_shape.data(), output_shape.data(), input_shape.size(), input_strides.data(), result_strides.data(), input_itemsize, output_itemsize, axis, fsc, all_harmonics, inverse)
+    func(input.get_data(), result.get_data(), input.size, result.size, input_shape.data(), output_shape.data(), input_shape.size(
+    ), input_strides.data(), result_strides.data(), input_itemsize, output_itemsize, axis, fsc, all_harmonics, inverse)
 
     return result
 
@@ -125,6 +126,7 @@ cpdef utils.dpnp_descriptor dpnp_rfft(utils.dpnp_descriptor input,
     cdef fptr_dpnp_fft_t func = <fptr_dpnp_fft_t > kernel_data.ptr
 
     # call FPTR function
-    func(input.get_data(), result.get_data(), input.size, result.size, input_shape.data(), output_shape.data(), input_shape.size(), input_strides.data(), result_strides.data(), input_itemsize, output_itemsize, axis, fsc, all_harmonics, inverse)
+    func(input.get_data(), result.get_data(), input.size, result.size, input_shape.data(), output_shape.data(), input_shape.size(
+    ), input_strides.data(), result_strides.data(), input_itemsize, output_itemsize, axis, fsc, all_harmonics, inverse)
 
     return result
