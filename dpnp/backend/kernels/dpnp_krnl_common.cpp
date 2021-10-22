@@ -84,7 +84,7 @@ cl::sycl::event dot(cl::sycl::queue& queue,
                     size_t input1_strides,
                     size_t input2_strides,
                     size_t size,
-                    const cl::sycl::vector_class<cl::sycl::event>& dependencies = {})
+                    const std::vector<cl::sycl::event>& dependencies = {})
 {
     (void)dependencies;
 
@@ -322,9 +322,7 @@ void dpnp_dot_c(void* result_out,
         }
     }
 
-    // deprecated? can be replaced with std::vector<cl::sycl::event>
-    cl::sycl::vector_class<cl::sycl::event> dot_events;
-    // std::vector<cl::sycl::event> dot_events;
+    std::vector<cl::sycl::event> dot_events;
     dot_events.reserve(result_size);
 
     size_t dot_st1 = ext_input1_strides[ext_input1_ndim - 1];
@@ -402,6 +400,15 @@ void dpnp_eig_c(const void* array_in, void* result1, void* result2, size_t size)
 
     const std::int64_t scratchpad_size = mkl_lapack::syevd_scratchpad_size<double>(
         DPNP_QUEUE, oneapi::mkl::job::vec, oneapi::mkl::uplo::upper, size, lda);
+
+    // https://github.com/IntelPython/dpnp/issues/1005
+    // Test tests/test_linalg.py::test_eig_arange raises 2 issues in dpnp_eig_c on CPU
+    // 1. Call of mkl_lapack::syevd_scratchpad_size<double> returns wrong value that causes out of memory issue.
+    // 2. Call of the function oneapi::mkl::lapack::syevd causes segfault.
+    // Example of the command to reproduce the issues:
+    // SYCL_DEVICE_FILTER=cpu pytest tests/test_linalg.py::test_eig_arange[2-float64]
+    // High-level reason of the issues is numpy is imported before dpnp in third party tests.
+    // Low-level reason of the issues could be related to MKL runtime library loaded during numpy import.
 
     double* scratchpad = reinterpret_cast<double*>(dpnp_memory_alloc_c(scratchpad_size * sizeof(double)));
 

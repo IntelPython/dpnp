@@ -495,7 +495,7 @@ class TestDistributionsMultinomial(TestDistribution):
         pvals = [1 / 6.] * 6
         dpnp.random.seed(seed)
         res = dpnp.random.multinomial(n, pvals, size)
-        assert_allclose(n, sum(res), rtol=1e-07, atol=0)
+        assert_allclose(n, dpnp.asnumpy(res).sum(), rtol=1e-07, atol=0)
 
     def test_invalid_args(self):
         n = -10                # parameter `n`, non-negative expected
@@ -508,6 +508,14 @@ class TestDistributionsMultinomial(TestDistribution):
     def test_seed(self):
         n = 20
         pvals = [1 / 6.] * 6
+        self.check_seed('multinomial', {'n': n, 'pvals': pvals})
+
+
+    def test_seed1(self):
+        # pvals_size >= ntrial * 16 && ntrial <= 16
+        n = 4
+        pvals_size = 16 * n
+        pvals = [1 / pvals_size] * pvals_size
         self.check_seed('multinomial', {'n': n, 'pvals': pvals})
 
 
@@ -966,10 +974,10 @@ class TestPermutationsTestShuffle:
         assert_array_equal(actual_x, desired_x)
 
     @pytest.mark.parametrize("conv", [lambda x: dpnp.array([]),
-                                      lambda x: dpnp.astype(dpnp.asarray(x), dpnp.int8),
+                                      # lambda x: dpnp.astype(dpnp.asarray(x), dpnp.int8),
                                       lambda x: dpnp.astype(dpnp.asarray(x), dpnp.float32),
                                       # lambda x: dpnp.asarray(x).astype(dpnp.complex64),
-                                      lambda x: dpnp.astype(dpnp.asarray(x), object),
+                                      # lambda x: dpnp.astype(dpnp.asarray(x), object),
                                       lambda x: dpnp.asarray([[i, i] for i in x]),
                                       lambda x: dpnp.vstack([x, x]).T,
                                       lambda x: (dpnp.asarray([(i, i) for i in x], [
@@ -977,10 +985,10 @@ class TestPermutationsTestShuffle:
                                       lambda x: dpnp.asarray([(i, i) for i in x],
                                                              [("a", object), ("b", dpnp.int32)])],
                              ids=['lambda x: dpnp.array([])',
-                                  'lambda x: dpnp.astype(dpnp.asarray(x), dpnp.int8)',
+                                  # 'lambda x: dpnp.astype(dpnp.asarray(x), dpnp.int8)',
                                   'lambda x: dpnp.astype(dpnp.asarray(x), dpnp.float32)',
                                   # 'lambda x: dpnp.asarray(x).astype(dpnp.complex64)',
-                                  'lambda x: dpnp.astype(dpnp.asarray(x), object)',
+                                  # 'lambda x: dpnp.astype(dpnp.asarray(x), object)',
                                   'lambda x: dpnp.asarray([[i, i] for i in x])',
                                   'lambda x: dpnp.vstack([x, x]).T',
                                   'lambda x: (dpnp.asarray([(i, i) for i in x], ['\
