@@ -299,7 +299,8 @@ cpdef dpnp_putmask(utils.dpnp_descriptor arr, utils.dpnp_descriptor mask, utils.
     cdef int values_size = values.size
     for i in range(arr.size):
         if mask.get_pyobj()[numpy.unravel_index(i, mask.shape)]:
-            arr.get_pyobj()[numpy.unravel_index(i, arr.shape)] = values.get_pyobj()[numpy.unravel_index(i % values_size, values.shape)]
+            arr.get_pyobj()[numpy.unravel_index(i, arr.shape)] = values.get_pyobj()[
+                numpy.unravel_index(i % values_size, values.shape)]
 
 
 cpdef utils.dpnp_descriptor dpnp_select(list condlist, list choicelist, default):

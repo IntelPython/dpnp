@@ -510,7 +510,6 @@ class TestDistributionsMultinomial(TestDistribution):
         pvals = [1 / 6.] * 6
         self.check_seed('multinomial', {'n': n, 'pvals': pvals})
 
-
     def test_seed1(self):
         # pvals_size >= ntrial * 16 && ntrial <= 16
         n = 4

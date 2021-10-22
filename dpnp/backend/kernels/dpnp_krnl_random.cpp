@@ -178,7 +178,6 @@ void dpnp_rng_f_c(void* result, const _DataType df_num, const _DataType df_den, 
     DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, true, true);
     _DataType* result1 = result1_ptr.get_ptr();
 
-
     mkl_rng::gamma<_DataType> gamma_distribution1(shape, d_zero, scale);
     auto event_gamma_distribution1 = mkl_rng::generate(gamma_distribution1, DPNP_RNG_ENGINE, size, result1);
 
@@ -188,11 +187,16 @@ void dpnp_rng_f_c(void* result, const _DataType df_num, const _DataType df_den, 
     mkl_rng::gamma<_DataType> gamma_distribution2(shape, d_zero, scale);
     auto event_gamma_distribution2 = mkl_rng::generate(gamma_distribution2, DPNP_RNG_ENGINE, size, den);
 
-    auto event_out = mkl_vm::div(DPNP_QUEUE, size, result1, den, result1, {event_gamma_distribution1, event_gamma_distribution2}, mkl_vm::mode::ha);
+    auto event_out = mkl_vm::div(DPNP_QUEUE,
+                                 size,
+                                 result1,
+                                 den,
+                                 result1,
+                                 {event_gamma_distribution1, event_gamma_distribution2},
+                                 mkl_vm::mode::ha);
     event_out.wait();
 
     dpnp_memory_free_c(den);
-
 }
 
 template <typename _DataType>
@@ -522,8 +526,8 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
     const _DataType d_one = _DataType(1.0);
     const _DataType d_two = _DataType(2.0);
 
-        _DataType shape, loc;
-        size_t i;
+    _DataType shape, loc;
+    size_t i;
 
     if (df > 1)
     {
@@ -544,8 +548,7 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
         /* squaring could result in an overflow */
         auto event_sqr_out =
             mkl_vm::sqr(DPNP_QUEUE, size, nvec, nvec, {event_gamma_distr, event_gaussian_distr}, mkl_vm::mode::ha);
-        auto event_add_out =
-            mkl_vm::add(DPNP_QUEUE, size, result1, nvec, result1, {event_sqr_out}, mkl_vm::mode::ha);
+        auto event_add_out = mkl_vm::add(DPNP_QUEUE, size, result1, nvec, result1, {event_sqr_out}, mkl_vm::mode::ha);
         event_add_out.wait();
         dpnp_memory_free_c(nvec);
     }
@@ -893,11 +896,10 @@ void dpnp_rng_standard_t_c(void* result, const _DataType df, const size_t size)
     mkl_rng::gaussian<_DataType> gaussian_distribution(d_zero, d_one);
     auto gaussian_distr_event = mkl_rng::generate(gaussian_distribution, DPNP_RNG_ENGINE, size, sn);
 
-    auto event_out = mkl_vm::mul(
-        DPNP_QUEUE, size, result1, sn, result1, {invsqrt_event, gaussian_distr_event}, mkl_vm::mode::ha);
+    auto event_out =
+        mkl_vm::mul(DPNP_QUEUE, size, result1, sn, result1, {invsqrt_event, gaussian_distr_event}, mkl_vm::mode::ha);
     event_out.wait();
     dpnp_memory_free_c(sn);
-
 }
 
 template <typename _KernelNameSpecialization>

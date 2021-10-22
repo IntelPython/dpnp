@@ -31,6 +31,7 @@ This module contains differnt helpers and utilities
 
 """
 
+import dpctl
 import numpy
 import dpnp.config as config
 import dpnp
@@ -43,7 +44,6 @@ cimport cpython
 cimport cython
 cimport numpy
 
-import dpctl
 
 """
 Python import functions
@@ -377,7 +377,7 @@ cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
 
     if requested_out is None:
         result = None
-        result_dtype = dpnp_DPNPFuncType_to_dtype(< size_t > c_type)
+        result_dtype = dpnp_DPNPFuncType_to_dtype( < size_t > c_type)
         result_obj = create_output_container(output_shape, result_dtype)
         result_desc = dpnp_descriptor(result_obj)
     else:
