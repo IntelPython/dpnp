@@ -124,13 +124,7 @@ jobs:
       versionSpec: '$(python.version)'
     displayName: 'Use Python $(python.version)'
   - bash: |
-      echo ========================= create Conda ENV ===========================
-      conda create -q -y -n dpnp$(python.version) conda-build --override-channels -c intel -c conda-forge
-      . /usr/share/miniconda/etc/profile.d/conda.sh
-      conda activate dpnp$(python.version)
-      echo ========================= build DPNP and run tests ==========================
-      export OCL_ICD_FILENAMES=libintelocl.so
-      conda-build --python $(python.version) --override-channels -c intel -c conda-forge -c dppy/label/dev ./conda-recipe/
+      . ./scripts/build_dpnp.sh -p $(python.version)
 
 #- job: ubuntu2004_tests_external
 #  displayName: Ubuntu 20.04 External Tests
