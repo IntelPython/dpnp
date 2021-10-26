@@ -414,7 +414,19 @@ class dpnp_array:
  # 'copy',
  # 'ctypes',
  # 'cumprod',
- # 'cumsum',
+
+    def cumsum(self, axis=None, dtype=None, out=None):
+        """
+        Return the cumulative sum of the elements along the given axis.
+
+        See Also
+        --------
+        :obj:`dpnp.cumsum`
+
+        """
+
+        return dpnp.cumsum(self, axis=axis, dtype=dtype, out=out)
+
  # 'data',
 
     def diagonal(input, offset=0, axis1=0, axis2=1):
