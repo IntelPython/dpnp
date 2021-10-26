@@ -162,7 +162,6 @@ tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{extern
 tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_negative_axis
 tests/third_party/cupy/statistics_tests/test_correlation.py::TestCov::test_cov_empty
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_external_mean_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_axis_ddof
 
 tests/test_linalg.py::test_eig_arange[16-float64]
 tests/test_linalg.py::test_eig_arange[16-float32]
@@ -1550,16 +1549,6 @@ tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_h
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_same_value
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_weights_basic
 tests/third_party/cupy/statistics_tests/test_histogram.py::TestHistogram::test_histogram_weights_mismatch
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_mean_all
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_mean_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_std_all
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_std_all_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_std_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_std_axis_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_all
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_all_ddof
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMeanVar::test_var_axis_ddo
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_all_nan
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_float16
 tests/third_party/cupy/statistics_tests/test_meanvar.py::TestNanMeanAdditional::test_nanmean_huge

@@ -741,5 +741,22 @@ class dpnp_array:
 
         return dpnp.transpose(self, axes)
 
- # 'var',
+    def var(self, axis=None, dtype=None, out=None, ddof=0, keepdims=False):
+        """
+        Returns the variance of the array elements along given axis.
+
+        Masked entries are ignored, and result elements which are not
+        finite will be masked.
+
+        Refer to `numpy.var` for full documentation.
+
+        See Also
+        --------
+        :obj:`numpy.ndarray.var` : corresponding function for ndarrays
+        :obj:`numpy.var` : Equivalent function
+
+        """
+
+        return dpnp.var(self, axis, dtype, out, ddof, keepdims)
+
  # 'view'
