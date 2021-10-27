@@ -85,10 +85,7 @@ def choose(x1, choices, out=None, mode='raise'):
 
     choices_list = []
     for choice in choices:
-        # if choices is usm_ndarray then each choice will have the same address but different offset
-        # we don't use offsets at all therefore need to reset offset for each choice to 0 with dpnp.asarray
-        choice_ary = dpnp.asarray(choice, dtype=getattr(choice, "dtype"))
-        choices_list.append(dpnp.get_dpnp_descriptor(choice_ary))
+        choices_list.append(dpnp.get_dpnp_descriptor(choice))
 
     if x1_desc:
         if any(not desc for desc in choices_list):
