@@ -734,7 +734,6 @@ class dpnp_array:
         return dpnp.sum(self, axis, dtype, out, keepdims, initial, where)
 
  # 'swapaxes',
- # 'take',
 
     def take(self, indices, axis=None, out=None, mode='raise'):
         """
