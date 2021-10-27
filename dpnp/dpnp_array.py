@@ -598,7 +598,19 @@ class dpnp_array:
  # 'newbyteorder',
  # 'nonzero',
  # 'partition',
- # 'prod',
+
+    def prod(self, axis=None, dtype=None, out=None, keepdims=False, initial=None, where=True):
+        """
+        Returns the prod along a given axis.
+
+        .. seealso::
+           :obj:`dpnp.prod` for full documentation,
+           :meth:`dpnp.dparray.sum`
+
+        """
+
+        return dpnp.prod(self, axis, dtype, out, keepdims, initial, where)
+
  # 'ptp',
  # 'put',
  # 'ravel',
