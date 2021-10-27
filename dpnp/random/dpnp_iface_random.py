@@ -1302,7 +1302,7 @@ def shuffle(x1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc:
         if not dpnp.is_type_supported(x1_desc.dtype):
             pass
