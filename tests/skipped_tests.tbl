@@ -890,9 +890,6 @@ tests/third_party/cupy/math_tests/test_rounding.py::TestRoundExtreme_param_6_{de
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_fix
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_rint
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_rint_negative
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_prod_all
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_prod_axis
-tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_prod_dtype
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all2
 tests/third_party/cupy/math_tests/test_sumprod.py::TestSumprod::test_sum_all_keepdims
