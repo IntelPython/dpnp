@@ -16,6 +16,7 @@ requirements:
       - mkl-devel-dpcpp
       - tbb-devel
       - wheel
+      - dpl-include
     build:
       - {{ compiler('dpcpp') }}
     run:
