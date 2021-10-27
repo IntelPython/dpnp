@@ -414,7 +414,19 @@ class dpnp_array:
  # 'copy',
  # 'ctypes',
  # 'cumprod',
- # 'cumsum',
+
+    def cumsum(self, axis=None, dtype=None, out=None):
+        """
+        Return the cumulative sum of the elements along the given axis.
+
+        See Also
+        --------
+        :obj:`dpnp.cumsum`
+
+        """
+
+        return dpnp.cumsum(self, axis=axis, dtype=dtype, out=out)
+
  # 'data',
 
     def diagonal(input, offset=0, axis1=0, axis2=1):
@@ -586,7 +598,19 @@ class dpnp_array:
  # 'newbyteorder',
  # 'nonzero',
  # 'partition',
- # 'prod',
+
+    def prod(self, axis=None, dtype=None, out=None, keepdims=False, initial=None, where=True):
+        """
+        Returns the prod along a given axis.
+
+        .. seealso::
+           :obj:`dpnp.prod` for full documentation,
+           :meth:`dpnp.dparray.sum`
+
+        """
+
+        return dpnp.prod(self, axis, dtype, out, keepdims, initial, where)
+
  # 'ptp',
  # 'put',
  # 'ravel',
@@ -722,7 +746,17 @@ class dpnp_array:
         return dpnp.sum(self, axis, dtype, out, keepdims, initial, where)
 
  # 'swapaxes',
- # 'take',
+
+    def take(self, indices, axis=None, out=None, mode='raise'):
+        """
+        Take elements from an array.
+
+        For full documentation refer to :obj:`numpy.take`.
+
+        """
+
+        return dpnp.take(self, indices, axis, out, mode)
+
  # 'tobytes',
  # 'tofile',
  # 'tolist',
