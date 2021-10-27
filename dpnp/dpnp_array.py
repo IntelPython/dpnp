@@ -735,6 +735,17 @@ class dpnp_array:
 
  # 'swapaxes',
  # 'take',
+
+    def take(self, indices, axis=None, out=None, mode='raise'):
+        """
+        Take elements from an array.
+
+        For full documentation refer to :obj:`numpy.take`.
+
+        """
+
+        return dpnp.take(self, indices, axis, out, mode)
+
  # 'tobytes',
  # 'tofile',
  # 'tolist',
