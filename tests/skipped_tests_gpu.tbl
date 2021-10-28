@@ -1,3 +1,6 @@
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray([[i, i] for i in x])]
+tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose
+
 tests/test_arraymanipulation.py::TestConcatenate::test_concatenate
 tests/test_histograms.py::TestHistogram::test_density
 tests/test_indexing.py::test_take_along_axis
