@@ -30,17 +30,13 @@
  * for one and ndim arrays.
  *
  * Possible compile line:
- * dpcpp -g -fPIC   -W -Wextra -Wshadow -Wall -Wstrict-prototypes -Wformat -Wformat-security -fsycl
- * -fsycl-device-code-split=per_kernel -O0 -fno-delete-null-pointer-checks -fstack-protector-strong
- * -fno-strict-overflow -std=gnu++17 dpnp/backend/examples/example11.cpp -Idpnp -Idpnp/backend/include
- * -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example11 -lmkl_sycl -lmkl_intel_ilp64 -lmkl_core
+ * g++ -g dpnp/backend/examples/example11.cpp -Idpnp -Idpnp/backend/include -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example11
+ *
  */
 
 #include <iostream>
 
 #include <dpnp_iface.hpp>
-
-namespace mkl_rng = oneapi::mkl::rng;
 
 template <typename T>
 void print_dpnp_array(T* arr, size_t size)
@@ -51,15 +47,6 @@ void print_dpnp_array(T* arr, size_t size)
         std::cout << arr[i] << ", ";
     }
     std::cout << std::endl;
-}
-
-template <typename T>
-void init(T* x, size_t size)
-{
-    for (size_t i = 0; i < size; ++i)
-    {
-        x[i] = static_cast<T>(i);
-    }
 }
 
 int main(int, char**)
@@ -76,21 +63,21 @@ int main(int, char**)
 
     // DPNPC dpnp_rng_shuffle_c
     // DPNPC interface
-    double* array_2 = reinterpret_cast<double*>(dpnp_memory_alloc_c(size * sizeof(double)));
+    double* array_1 = reinterpret_cast<double*>(dpnp_memory_alloc_c(size * sizeof(double)));
     for (size_t i = 0; i < ndim_cases; i++)
     {
         std::cout << "\nREPRODUCE: DPNPC dpnp_rng_shuffle_c:";
         std::cout << "\nDIMS: " << ndim[i] <<std::endl;
         // init array 0, 1, 2, 3, 4, 5, 6, ....
-        init<double>(array_2, size);
+        dpnp_arange_c<double>(0, 1, array_1, size);
         // print before shuffle
-        std::cout << "\nINPUT array 2:";
-        print_dpnp_array(array_2, size);
+        std::cout << "\nINPUT array:";
+        print_dpnp_array(array_1, size);
         dpnp_rng_srand_c(seed);
-        dpnp_rng_shuffle_c<double>(array_2, itemsize, ndim[i], high_dim_size[i], size);
+        dpnp_rng_shuffle_c<double>(array_1, itemsize, ndim[i], high_dim_size[i], size);
         // print shuffle result
-        std::cout << "\nSHUFFLE INPUT array 2:";
-        print_dpnp_array(array_2, size); 
+        std::cout << "\nSHUFFLE INPUT array:";
+        print_dpnp_array(array_1, size); 
     }
-    dpnp_memory_free_c(array_2);
+    dpnp_memory_free_c(array_1);
 }
