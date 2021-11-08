@@ -211,7 +211,9 @@ def get_dpnp_descriptor(ext_obj, copy_when_strides=True):
     # then this behavior can be disabled with setting "copy_when_strides"
     if copy_when_strides and getattr(ext_obj, "strides", None) is not None:
         # TODO: replace this workaround when usm_ndarray will provide such functionality
-        ext_obj = array(ext_obj)
+        shape_offsets = tuple(numpy.prod(ext_obj.shape[i+1:], dtype=numpy.int64) for i in range(ext_obj.ndim))
+        if ext_obj.strides != shape_offsets:
+            ext_obj = array(ext_obj)
 
     dpnp_desc = dpnp_descriptor(ext_obj)
     if dpnp_desc.is_valid:

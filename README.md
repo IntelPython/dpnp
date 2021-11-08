@@ -2,7 +2,7 @@
 [![codecov](https://codecov.io/gh/IntelPython/dpnp/branch/master/graph/badge.svg)](https://codecov.io/gh/IntelPython/dpnp)
 [![Build Sphinx](https://github.com/IntelPython/dpnp/workflows/Build%20Sphinx/badge.svg)](https://intelpython.github.io/dpnp)
 
-# DPNP: NumPy-like API accelerated with SYCL
+# DPNP: NumPy Drop-In Replacement for Intel(R) XPU
 [API coverage summary](https://intelpython.github.io/dpnp/reference/comparison.html#summary)
 
 [Full documentation](https://intelpython.github.io/dpnp/)
