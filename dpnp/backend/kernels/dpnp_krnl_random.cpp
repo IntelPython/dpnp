@@ -435,7 +435,8 @@ void dpnp_rng_multinomial_c(
     }
     else
     {
-        std::int32_t* result1 = reinterpret_cast<std::int32_t*>(result);
+        DPNPC_ptr_adapter<std::int32_t> result_ptr(result, size, true, true);
+        std::int32_t* result1 = result_ptr.get_ptr();
         std::vector<double> p(p_vector, p_vector + p_vector_size);
         // size = size
         // `result` is a array for random numbers
@@ -456,6 +457,9 @@ void dpnp_rng_multinomial_c(
         }
         else
         {
+            DPNPC_ptr_adapter<double> p_vector_ptr(p_vector, p_vector_size);
+            double* p_vector1 = p_vector_ptr.get_ptr();
+            
             int errcode = viRngMultinomial(
                 VSL_RNG_METHOD_MULTINOMIAL_MULTPOISSON, get_rng_stream(), n, result1, ntrial, p_vector_size, p_vector);
             if (errcode != VSL_STATUS_OK)
