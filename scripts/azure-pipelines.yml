@@ -124,7 +124,7 @@ jobs:
       versionSpec: '$(python.version)'
     displayName: 'Use Python $(python.version)'
   - bash: |
-      . ./scripts/build_dpnp.sh -p $(python.version)
+      . ./scripts/build_dpnp.sh -p $(python.version) -m 2021.4
 
 #- job: ubuntu2004_tests_external
 #  displayName: Ubuntu 20.04 External Tests

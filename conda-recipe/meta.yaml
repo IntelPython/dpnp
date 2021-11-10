@@ -8,12 +8,11 @@ requirements:
     host:
       - python
       - setuptools
-      - numpy >=1.15                    # [win or osx or py>=38]
-      - numpy 1.17                      # [linux and py==37]
+      - numpy 1.19.5
       - cython
       - cmake 3.19
       - dpctl >=0.10
-      - mkl-devel-dpcpp
+      - mkl-devel-dpcpp {{ MKL_VER }}
       - tbb-devel
       - wheel
     build:
@@ -22,7 +21,7 @@ requirements:
       - python
       - dpctl >=0.10
       - dpcpp_cpp_rt >=2021.1.1
-      - mkl >=2021.1.1
+      - mkl {{ MKL_VER }}
       - mkl-dpcpp >=2021.1.1
       - numpy >=1.15
 
