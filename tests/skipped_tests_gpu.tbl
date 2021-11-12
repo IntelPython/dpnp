@@ -15,10 +15,6 @@ tests/test_mathematical.py::TestGradient::test_gradient_y1[array2]
 tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[2-array0]
 tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[2-array1]
 tests/test_mathematical.py::TestGradient::test_gradient_y1_dx[2-array2]
-tests/test_random.py::test_check_otput[random]
-tests/test_random.py::test_check_otput[random_sample]
-tests/test_random.py::test_check_otput[ranf]
-tests/test_random.py::test_check_otput[sample]
 tests/test_random.py::TestDistributionsMultinomial::test_check_sum
 tests/test_random.py::TestDistributionsMultinomial::test_moments
 tests/test_random.py::TestDistributionsMultinomial::test_seed
