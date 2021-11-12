@@ -435,8 +435,6 @@ void dpnp_rng_multinomial_c(
     }
     else
     {
-        DPNPC_ptr_adapter<std::int32_t> result_ptr(result, size, true, true);
-        std::int32_t* result1 = result_ptr.get_ptr();
         std::vector<double> p(p_vector, p_vector + p_vector_size);
         // size = size
         // `result` is a array for random numbers
@@ -450,6 +448,8 @@ void dpnp_rng_multinomial_c(
         // which follow the condition
         if (is_cpu_queue || (!is_cpu_queue && (p_vector_size >= ((size_t)ntrial * 16)) && (ntrial <= 16)))
         {
+            DPNPC_ptr_adapter<std::int32_t> result_ptr(result, size, false, true);
+            std::int32_t* result1 = result_ptr.get_ptr();
             mkl_rng::multinomial<std::int32_t> distribution(ntrial, p);
             // perform generation
             auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, n, result1);
@@ -457,6 +457,8 @@ void dpnp_rng_multinomial_c(
         }
         else
         {
+            DPNPC_ptr_adapter<std::int32_t> result_ptr(result, size, true, true);
+            std::int32_t* result1 = result_ptr.get_ptr();
             int errcode = viRngMultinomial(
                 VSL_RNG_METHOD_MULTINOMIAL_MULTPOISSON, get_rng_stream(), n, result1, ntrial, p_vector_size, p_vector);
             if (errcode != VSL_STATUS_OK)
