@@ -255,9 +255,6 @@ void dpnp_rng_geometric_c(void* result, const float p, const size_t size)
     }
 }
 
-template <typename _KernelNameSpecialization>
-class dpnp_blas_scal_c_kernel;
-
 template <typename _DataType>
 void dpnp_rng_gumbel_c(void* result, const double loc, const double scale, const size_t size)
 {
