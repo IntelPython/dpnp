@@ -724,13 +724,8 @@ void dpnp_rng_rayleigh_c(void* result, const _DataType scale, const size_t size)
     event_out.wait();
     event_out = mkl_vm::sqrt(DPNP_QUEUE, size, result1, result1, no_deps, mkl_vm::mode::ha);
     event_out.wait();
-    // with MKL
-    // event_out = mkl_blas::axpy(DPNP_QUEUE, size, scale, result1, 1, result1, 1);
-    // event_out.wait();
-    for (size_t i = 0; i < size; i++)
-    {
-        result1[i] *= scale;
-    }
+    event_out = mkl_blas::scal(DPNP_QUEUE, size, scale, result1, 1);
+    event_out.wait();
 }
 
 template <typename _DataType>
