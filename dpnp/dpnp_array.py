@@ -37,8 +37,8 @@ class dpnp_array:
 
     """
 
-    def __init__(self, shape, dtype=numpy.float64):
-        self._array_obj = dpctl.tensor.usm_ndarray(shape, dtype=dtype)
+    def __init__(self, array_obj):
+        self._array_obj = array_obj
 
     @property
     def __sycl_usm_array_interface__(self):

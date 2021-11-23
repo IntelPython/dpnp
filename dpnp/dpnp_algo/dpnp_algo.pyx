@@ -330,7 +330,13 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out(DPNPFuncName fptr_name,
 
     if out is None:
         """ Create result array with type given by FPTR data """
-        result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
+        result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(x1_obj, x2_obj)
+        result = utils.create_output_descriptor(result_shape,
+                                                kernel_data.return_type,
+                                                None,
+                                                device=result_sycl_device,
+                                                usm_type=result_usm_type,
+                                                sycl_queue=result_sycl_queue)
     else:
         if out.dtype != result_type:
             utils.checker_throw_value_error(func_name, 'out.dtype', out.dtype, result_type)

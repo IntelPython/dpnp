@@ -146,7 +146,10 @@ Calculate output array type by 'out' and 'dtype' cast parameters
 
 cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
                                               DPNPFuncType c_type,
-                                              dpnp_descriptor requested_out)
+                                              dpnp_descriptor requested_out,
+                                              object device=*,
+                                              object usm_type=*,
+                                              object sycl_queue=*)
 """
 Create output dpnp_descriptor based on shape, type and 'out' parameters
 """
@@ -154,4 +157,9 @@ Create output dpnp_descriptor based on shape, type and 'out' parameters
 cdef shape_type_c strides_to_vector(object strides, object shape) except *
 """
 Get or calculate srtides based on shape.
+"""
+
+cdef tuple get_common_usm_allocation(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj)
+"""
+Get common USM allocation in the form of (sycl_device, usm_type, sycl_queue)
 """

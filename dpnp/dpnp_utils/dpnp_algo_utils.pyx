@@ -33,6 +33,7 @@ This module contains differnt helpers and utilities
 
 import numpy
 import dpnp.config as config
+import dpnp.dpnp_container as dpnp_container
 import dpnp
 from dpnp.dpnp_algo cimport dpnp_DPNPFuncType_to_dtype, dpnp_dtype_to_DPNPFuncType, get_dpnp_function_ptr
 from dpnp.dpnp_container import create_output_container, container_copy
@@ -204,12 +205,22 @@ cpdef checker_throw_value_error(function_name, param_name, param, expected):
     raise ValueError(err_msg)
 
 
-cpdef dpnp_descriptor create_output_descriptor_py(shape_type_c output_shape, object d_type, object requested_out):
+cpdef dpnp_descriptor create_output_descriptor_py(shape_type_c output_shape,
+                                                  object d_type,
+                                                  object requested_out,
+                                                  object device=None,
+                                                  object usm_type="device",
+                                                  object sycl_queue=None):
     py_type = dpnp.default_float_type() if d_type is None else d_type
 
     cdef DPNPFuncType c_type = dpnp_dtype_to_DPNPFuncType(py_type)
 
-    return create_output_descriptor(output_shape, c_type, requested_out)
+    return create_output_descriptor(output_shape,
+                                    c_type,
+                                    requested_out,
+                                    device=device,
+                                    usm_type=usm_type,
+                                    sycl_queue=sycl_queue)
 
 
 cpdef tuple get_axis_indeces(idx, shape):
@@ -372,13 +383,20 @@ cdef DPNPFuncType get_output_c_type(DPNPFuncName funcID,
 
 cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
                                               DPNPFuncType c_type,
-                                              dpnp_descriptor requested_out):
+                                              dpnp_descriptor requested_out,
+                                              object device=None,
+                                              object usm_type="device",
+                                              object sycl_queue=None):
     cdef dpnp_descriptor result_desc
 
     if requested_out is None:
         result = None
         result_dtype = dpnp_DPNPFuncType_to_dtype(< size_t > c_type)
-        result_obj = create_output_container(output_shape, result_dtype)
+        result_obj = dpnp_container.empty(output_shape,
+                                          dtype=result_dtype,
+                                          device=device,
+                                          usm_type=usm_type,
+                                          sycl_queue=sycl_queue)
         result_desc = dpnp_descriptor(result_obj)
     else:
         """ Based on 'out' parameter """
@@ -486,6 +504,33 @@ cdef shape_type_c strides_to_vector(object strides, object shape) except *:
         res = strides
 
     return res
+
+
+cdef tuple get_common_usm_allocation(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj):
+    """Get common USM allocation in the form of (sycl_device, usm_type, sycl_queue)."""
+    array1_obj = x1_obj.get_pyobj()._array_obj
+    array2_obj = x2_obj.get_pyobj()._array_obj
+
+    if array1_obj.sycl_device and array2_obj.sycl_device and array1_obj.sycl_device != array2_obj.sycl_device:
+        raise ValueError(
+            "inputs recognized on different SYCL devices {} and {}, expected on the same SYCL device"
+            "".format(array1_obj.sycl_device, array2_obj.sycl_device))
+
+    if array1_obj.usm_type and array2_obj.usm_type and array1_obj.usm_type != array2_obj.usm_type:
+        raise ValueError(
+            "inputs recognized of different USM types {} and {}, expected of the same USM type"
+            "".format(array1_obj.usm_type, array2_obj.usm_type))
+
+    if array1_obj.sycl_queue and array2_obj.sycl_queue and array1_obj.sycl_queue != array2_obj.sycl_queue:
+        raise ValueError(
+            "inputs recognized in different SYCL queues {} and {}, expected in the same SYCL queue"
+            "".format(array1_obj.sycl_queue, array2_obj.sycl_queue))
+
+    common_sycl_device = array1_obj.sycl_device or array2_obj.sycl_device
+    common_usm_type = array1_obj.usm_type or array2_obj.usm_type
+    common_sycl_queue = array1_obj.sycl_queue or array2_obj.sycl_queue
+
+    return (common_sycl_device, common_usm_type, common_sycl_queue)
 
 
 cdef class dpnp_descriptor:

@@ -40,6 +40,8 @@ from dpnp.dpnp_array import dpnp_array
 
 import numpy
 
+import dpctl.tensor as dpt
+
 
 if config.__DPNP_OUTPUT_DPCTL__:
     try:
@@ -56,8 +58,46 @@ if config.__DPNP_OUTPUT_DPCTL__:
 
 
 __all__ = [
-    "create_output_container"
+    "asarray",
+    "create_empty_container",
+    "empty",
 ]
+
+
+def asarray(x1,
+            dtype=None,
+            copy=True,
+            order="C",
+            device=None,
+            usm_type=None,
+            sycl_queue=None):
+    """Converts `x1` to `dpnp_array`."""
+    array_obj = dpt.asarray(x1,
+                            dtype=dtype,
+                            copy=copy,
+                            order=order,
+                            device=device,
+                            usm_type=usm_type,
+                            sycl_queue=sycl_queue)
+
+    return dpnp_array(array_obj)
+
+
+def empty(shape,
+          dtype="f8",
+          order="C",
+          device=None,
+          usm_type="device",
+          sycl_queue=None):
+    """Creates `dpnp_array` from uninitialized USM allocation."""
+    array_obj = dpt.empty(shape,
+                          dtype=dtype,
+                          order=order,
+                          device=device,
+                          usm_type=usm_type,
+                          sycl_queue=sycl_queue)
+
+    return dpnp_array(array_obj)
 
 
 def create_output_container(shape, type):

@@ -218,12 +218,19 @@ cpdef tuple dpnp_nonzero(utils.dpnp_descriptor in_array1):
 
     cdef fptr_dpnp_nonzero_t func = <fptr_dpnp_nonzero_t > kernel_data.ptr
 
+    array1_obj = in_array1.get_pyobj()._array_obj
+
     res_list = []
     cdef utils.dpnp_descriptor res_arr
     cdef shape_type_c result_shape
     for j in range(res_count):
         result_shape = utils._object_to_tuple(res_size)
-        res_arr = utils_py.create_output_descriptor_py(result_shape, dpnp.int64, None)
+        res_arr = utils_py.create_output_descriptor_py(result_shape,
+                                                       dpnp.int64,
+                                                       None,
+                                                       device=array1_obj.sycl_device,
+                                                       usm_type=array1_obj.usm_type,
+                                                       sycl_queue=array1_obj.sycl_queue)
 
         func(in_array1.get_data(), res_arr.get_data(), res_arr.size, < size_t * > shape_arr.data(), in_array1.ndim, j)
 
