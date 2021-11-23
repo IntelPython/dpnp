@@ -720,12 +720,10 @@ void dpnp_rng_rayleigh_c(void* result, const _DataType scale, const size_t size)
 
     mkl_rng::exponential<_DataType> distribution(a, beta);
 
-    auto event_out = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
-    event_out.wait();
-    event_out = mkl_vm::sqrt(DPNP_QUEUE, size, result1, result1, no_deps, mkl_vm::mode::ha);
-    event_out.wait();
-    event_out = mkl_blas::scal(DPNP_QUEUE, size, scale, result1, 1);
-    event_out.wait();
+    auto exponential_rng_event = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
+    auto sqrt_event = mkl_vm::sqrt(DPNP_QUEUE, size, result1, result1, {exponential_rng_event}, mkl_vm::mode::ha);
+    auto blas_event = mkl_blas::scal(DPNP_QUEUE, size, scale, result1, 1, {sqrt_event});
+    blas_event.wait();
 }
 
 template <typename _DataType>
