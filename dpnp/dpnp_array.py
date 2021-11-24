@@ -24,7 +24,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-import dpctl
+import dpctl.tensor as dpt
 import dpnp
 import numpy
 
@@ -512,11 +512,17 @@ class dpnp_array:
 
         """
 
-        new_arr = dpnp.ndarray(self.shape, self.dtype)
+        array_obj = dpt.empty(self.shape,
+                              dtype=self.dtype,
+                              order=order,
+                              device=self._array_obj.sycl_device,
+                              usm_type=self._array_obj.usm_type,
+                              sycl_queue=self._array_obj.sycl_queue)
+        new_arr = dpnp.ndarray(array_obj)
 
         if self.size > 0:
-            dpctl.tensor._copy_utils.copy_from_usm_ndarray_to_usm_ndarray(new_arr._array_obj, self._array_obj)
-            new_arr._array_obj = dpctl.tensor.reshape(new_arr._array_obj, (self.size, ))
+            dpt._copy_utils.copy_from_usm_ndarray_to_usm_ndarray(new_arr._array_obj, self._array_obj)
+            new_arr._array_obj = dpt.reshape(new_arr._array_obj, (self.size, ))
 
         return new_arr
 
