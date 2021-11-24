@@ -518,7 +518,7 @@ class dpnp_array:
                               device=self._array_obj.sycl_device,
                               usm_type=self._array_obj.usm_type,
                               sycl_queue=self._array_obj.sycl_queue)
-        new_arr = dpnp.ndarray(array_obj)
+        new_arr = self.__class__(array_obj)
 
         if self.size > 0:
             dpt._copy_utils.copy_from_usm_ndarray_to_usm_ndarray(new_arr._array_obj, self._array_obj)
