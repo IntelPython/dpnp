@@ -36,7 +36,6 @@ import dpnp.config as config
 import dpnp.dpnp_container as dpnp_container
 import dpnp
 from dpnp.dpnp_algo cimport dpnp_DPNPFuncType_to_dtype, dpnp_dtype_to_DPNPFuncType, get_dpnp_function_ptr
-from dpnp.dpnp_container import create_output_container, container_copy
 from libcpp cimport bool as cpp_bool
 from libcpp.complex cimport complex as cpp_complex
 
@@ -157,7 +156,7 @@ def call_origin(function, *args, **kwargs):
             if (kwargs_dtype is not None):
                 result_dtype = kwargs_dtype
 
-            result = create_output_container(result_origin.shape, result_dtype)
+            result = dpnp_container.empty(result_origin.shape, dtype=result_dtype)
         else:
             result = kwargs_out
 
@@ -169,7 +168,7 @@ def call_origin(function, *args, **kwargs):
         for res_origin in result:
             res = res_origin
             if isinstance(res_origin, numpy.ndarray):
-                res = create_output_container(res_origin.shape, res_origin.dtype)
+                res = dpnp_container.empty(res_origin.shape, dtype=res_origin.dtype)
                 copy_from_origin(res, res_origin)
             result_list.append(res)
 
