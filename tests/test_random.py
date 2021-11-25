@@ -1015,7 +1015,6 @@ class TestPermutationsTestShuffle:
         list_1d = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
         dpnp_1d = dpnp.array(list_1d)
         dpnp.random.shuffle(dpnp_1d)  # inplace
-        dpnp_desired_1d = dpnp_1d
 
         dpnp.random.seed(seed)
         alist = conv(list_1d)
