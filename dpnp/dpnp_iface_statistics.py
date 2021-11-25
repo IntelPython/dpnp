@@ -400,8 +400,9 @@ def mean(x1, axis=None, **kwargs):
     Limitations
     -----------
     Input array is supported as :obj:`dpnp.ndarray`.
+    Prameters ``axis`` is supported only with default value ``None``.
     Keyword arguments ``kwargs`` are currently unsupported.
-    Size of input array is limited by ``a.size > 0``.
+    Size of input array is limited by ``x1.size > 0``.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
@@ -429,6 +430,8 @@ def mean(x1, axis=None, **kwargs):
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and not kwargs:
         if x1_desc.size == 0:
+            pass
+        if axis is not None:
             pass
         else:
             result_obj = dpnp_mean(x1_desc, axis)
