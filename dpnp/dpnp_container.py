@@ -66,7 +66,7 @@ __all__ = [
 
 def asarray(x1,
             dtype=None,
-            copy=True,
+            copy=False,
             order="C",
             device=None,
             usm_type=None,
@@ -80,7 +80,7 @@ def asarray(x1,
                             usm_type=usm_type,
                             sycl_queue=sycl_queue)
 
-    return dpnp_array(array_obj)
+    return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
 
 
 def empty(shape,
@@ -97,7 +97,7 @@ def empty(shape,
                           usm_type=usm_type,
                           sycl_queue=sycl_queue)
 
-    return dpnp_array(array_obj)
+    return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
 
 
 def create_output_container(shape, type):

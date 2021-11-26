@@ -37,8 +37,42 @@ class dpnp_array:
 
     """
 
-    def __init__(self, array_obj):
-        self._array_obj = array_obj
+    def __init__(self,
+                 shape,
+                 dtype="f8",
+                 buffer=None,
+                 offset=0,
+                 strides=None,
+                 order=None,
+                 device=None,
+                 usm_type=None,
+                 sycl_queue=None):
+        if buffer is not None:
+            if not isinstance(buffer, dpt.usm_ndarray):
+                raise TypeError(
+                    "Expected dpctl.tensor.usm_ndarray, got {}"
+                    "".format(type(buffer))
+                )
+            if buffer.shape != shape:
+                raise ValueError(
+                    "Expected buffer.shape={}, got {}"
+                    "".format(shape, buffer.shape)
+                )
+            self._array_obj = dpt.asarray(buffer,
+                                          dtype=buffer.dtype,
+                                          copy=False,
+                                          order=order,
+                                          device=buffer.sycl_device,
+                                          usm_type=buffer.usm_type,
+                                          sycl_queue=buffer.sycl_queue)
+        else:
+            self._array_obj = dpt.usm_ndarray(shape,
+                                              dtype=dtype,
+                                              strides=strides,
+                                              buffer=usm_type,
+                                              offset=offset,
+                                              order=order,
+                                              buffer_ctor_kwargs={"queue": sycl_queue})
 
     @property
     def __sycl_usm_array_interface__(self):
@@ -518,7 +552,7 @@ class dpnp_array:
                               device=self._array_obj.sycl_device,
                               usm_type=self._array_obj.usm_type,
                               sycl_queue=self._array_obj.sycl_queue)
-        new_arr = self.__class__(array_obj)
+        new_arr = self.__class__(array_obj.shape, buffer=array_obj, order=order)
 
         if self.size > 0:
             dpt._copy_utils.copy_from_usm_ndarray_to_usm_ndarray(new_arr._array_obj, self._array_obj)
