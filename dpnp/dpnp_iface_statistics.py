@@ -431,7 +431,7 @@ def mean(x1, axis=None, **kwargs):
     if x1_desc and not kwargs:
         if x1_desc.size == 0:
             pass
-        if axis is not None:
+        elif axis is not None:
             pass
         else:
             result_obj = dpnp_mean(x1_desc, axis)

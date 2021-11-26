@@ -37,6 +37,7 @@ from libcpp.vector cimport vector
 import dpnp
 import dpnp.config as config
 import dpnp.dpnp_utils as utils_py
+from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_container import container_copy
 
 import numpy
@@ -96,33 +97,6 @@ cpdef utils.dpnp_descriptor dpnp_arange(start, stop, step, dtype):
 
     cdef fptr_dpnp_arange_t func = <fptr_dpnp_arange_t > kernel_data.ptr
     func(start, step, result.get_data(), result.size)
-
-    return result
-
-
-cpdef utils.dpnp_descriptor dpnp_array(object obj, object dtype=None):
-    cdef utils.dpnp_descriptor result
-    cdef shape_type_c obj_shape
-
-    # convert scalar to tuple
-    if dpnp.isscalar(obj):
-        obj = (obj, )
-
-    if not cpython.PySequence_Check(obj):
-        raise TypeError(f"DPNP dpnp_array(): Unsupported non-sequence obj={type(obj)}")
-
-    obj_shape, obj_dtype = utils.get_shape_dtype(obj)
-    if dtype is not None:
-        """ Set type from parameter. result might be empty array """
-        result = utils_py.create_output_descriptor_py(obj_shape, dtype, None)
-    else:
-        if obj_shape.empty():
-            """ Empty object (ex. empty list) and no type provided """
-            result = utils_py.create_output_descriptor_py(obj_shape, None, None)
-        else:
-            result = utils_py.create_output_descriptor_py(obj_shape, obj_dtype, None)
-
-    container_copy(result.get_pyobj(), obj)
 
     return result
 
