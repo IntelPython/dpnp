@@ -49,14 +49,6 @@ ctypedef void(*fptr_2in_1out_dot_t)(void *, const size_t, const size_t, const lo
                                     void *, const size_t, const size_t, const long * , const long * ,
                                     void *, const size_t, const size_t, const long * , const long * )
 
-cdef shape_type_c strides_to_vector(strides, shape) except *:
-    cdef shape_type_c res
-    if strides is None:
-        res = utils.get_axis_offsets(shape)
-    else:
-        res = strides
-    return res
-
 cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp_descriptor in_array2):
 
     cdef shape_type_c shape1, shape2
@@ -94,11 +86,11 @@ cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp
     # create result array with type given by FPTR data
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
-    cdef shape_type_c result_strides = strides_to_vector(result.strides, result.shape)
+    cdef shape_type_c result_strides = utils.strides_to_vector(result.strides, result.shape)
     cdef shape_type_c in_array1_shape = in_array1.shape
-    cdef shape_type_c in_array1_strides = strides_to_vector(in_array1.strides, in_array1.shape)
+    cdef shape_type_c in_array1_strides = utils.strides_to_vector(in_array1.strides, in_array1.shape)
     cdef shape_type_c in_array2_shape = in_array2.shape
-    cdef shape_type_c in_array2_strides = strides_to_vector(in_array2.strides, in_array2.shape)
+    cdef shape_type_c in_array2_strides = utils.strides_to_vector(in_array2.strides, in_array2.shape)
 
     cdef fptr_2in_1out_dot_t func = <fptr_2in_1out_dot_t > kernel_data.ptr
     # call FPTR function
@@ -305,6 +297,6 @@ cpdef utils.dpnp_descriptor dpnp_outer(utils.dpnp_descriptor array1, utils.dpnp_
 
     for idx1 in range(array1.size):
         for idx2 in range(array2.size):
-            result.get_pyobj()[idx1 * array2.size + idx2] = array1.get_pyobj()[idx1] * array2.get_pyobj()[idx2]
+            result.get_pyobj()[numpy.unravel_index(idx1 * array2.size + idx2, result.shape)] = array1.get_pyobj()[numpy.unravel_index(idx1, array1.shape)] * array2.get_pyobj()[numpy.unravel_index(idx2, array2.shape)]
 
     return result
