@@ -306,6 +306,9 @@ void dpnp_floor_divide_c(void* result_out,
 
     input1_it->~DPNPC_id();
     input2_it->~DPNPC_id();
+
+    dpnp_memory_free_c(input1_it);
+    dpnp_memory_free_c(input2_it);
 }
 
 template <typename _KernelNameSpecialization1, typename _KernelNameSpecialization2>
