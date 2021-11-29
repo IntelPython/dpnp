@@ -1,74 +1,36 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Comparison Table &mdash; dpnp 0.9.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  <title>Comparison Table &mdash; dpnp 0.6.2 documentation</title>
-  
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Miscellaneous routines" href="misc.html" />
     <link rel="prev" title="Difference between DPNP and NumPy" href="difference.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> dpnp
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
-                0.6
+                0.9
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -76,17 +38,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a><ul class="current">
@@ -111,77 +63,38 @@
 <li class="toctree-l1"><a class="reference internal" href="../dpctl.html">DPCtl Usage</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">dpnp</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html">Docs</a> &raquo;</li>
-        
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="index.html">API Reference</a> &raquo;</li>
-        
       <li>Comparison Table</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="../_sources/reference/comparison.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <section id="comparison-table">
-<h1>Comparison Table<a class="headerlink" href="#comparison-table" title="Permalink to this headline">¶</a></h1>
+             
+  <div class="section" id="comparison-table">
+<h1>Comparison Table<a class="headerlink" href="#comparison-table" title="Permalink to this headline"></a></h1>
 <p>Here is a list of NumPy APIs and its corresponding DPNP implementations.</p>
 <p><code class="docutils literal notranslate"><span class="pre">-</span></code> in DPNP column means that DPNP implementation is not provided yet.</p>
-<p><strong>NumPy(v1.20.3) / DPNP(v0.7.1) / CuPy(v9.4.0) APIs</strong></p>
-<section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<p><strong>NumPy(v1.20.3) / DPNP(v0.9.0) / CuPy(v9.6.0) APIs</strong></p>
+<div class="section" id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline"></a></h2>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 25%" />
@@ -197,12 +110,12 @@
 </tr>
 <tr class="row-even"><td><p>Module-Level</p></td>
 <td><p>401</p></td>
-<td><p>198</p></td>
+<td><p>199</p></td>
 <td><p>299</p></td>
 </tr>
 <tr class="row-odd"><td><p>Multi-Dimensional Array</p></td>
 <td><p>56</p></td>
-<td><p>36</p></td>
+<td><p>26</p></td>
 <td><p>47</p></td>
 </tr>
 <tr class="row-even"><td><p>Linear Algebra</p></td>
@@ -211,7 +124,7 @@
 <td><p>16</p></td>
 </tr>
 <tr class="row-odd"><td><p>Discrete Fourier Transform</p></td>
-<td><p>18</p></td>
+<td><p>21</p></td>
 <td><p>18</p></td>
 <td><p>18</p></td>
 </tr>
@@ -221,15 +134,15 @@
 <td><p>49</p></td>
 </tr>
 <tr class="row-odd"><td><p>Total</p></td>
-<td><p>546</p></td>
-<td><p>312</p></td>
+<td><p>549</p></td>
+<td><p>303</p></td>
 <td><p>429</p></td>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="module-level">
-<h2>Module-Level<a class="headerlink" href="#module-level" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-level">
+<h2>Module-Level<a class="headerlink" href="#module-level" title="Permalink to this headline"></a></h2>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 33%" />
@@ -1504,7 +1417,7 @@
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.require</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.reshape.html#numpy.reshape" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.reshape</span></code></a></p></td>
-<td><p>-</p></td>
+<td><p><a class="reference internal" href="generated/dpnp.reshape.html#dpnp.reshape" title="dpnp.reshape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.reshape</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.reshape</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.resize.html#numpy.resize" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.resize</span></code></a></p></td>
@@ -1852,14 +1765,14 @@
 <td><p><strong>CuPy Total</strong></p></td>
 </tr>
 <tr class="row-even"><td><p>401</p></td>
-<td><p>198</p></td>
+<td><p>199</p></td>
 <td><p>299</p></td>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="multi-dimensional-array">
-<h2>Multi-Dimensional Array<a class="headerlink" href="#multi-dimensional-array" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="multi-dimensional-array">
+<h2>Multi-Dimensional Array<a class="headerlink" href="#multi-dimensional-array" title="Permalink to this headline"></a></h2>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 33%" />
@@ -1926,11 +1839,11 @@
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.conjugate()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.copy.html#numpy.ndarray.copy" title="(in NumPy v1.21)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.copy()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.copy()</span></code></p></td>
+<td><p>-</p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.copy()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.cumprod.html#numpy.ndarray.cumprod" title="(in NumPy v1.21)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.cumprod()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.cumprod()</span></code></p></td>
+<td><p>-</p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.cumprod()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.cumsum.html#numpy.ndarray.cumsum" title="(in NumPy v1.21)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.cumsum()</span></code></a></p></td>
@@ -1994,7 +1907,7 @@
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.nonzero()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.partition.html#numpy.ndarray.partition" title="(in NumPy v1.21)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.partition()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.partition()</span></code></p></td>
+<td><p>-</p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.partition()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.prod.html#numpy.ndarray.prod" title="(in NumPy v1.21)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.prod()</span></code></a></p></td>
@@ -2010,11 +1923,11 @@
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.put()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.ravel.html#numpy.ndarray.ravel" title="(in NumPy v1.21)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.ravel()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.ravel()</span></code></p></td>
+<td><p>-</p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.ravel()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.repeat.html#numpy.ndarray.repeat" title="(in NumPy v1.21)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.repeat()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.repeat()</span></code></p></td>
+<td><p>-</p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.repeat()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.reshape.html#numpy.ndarray.reshape" title="(in NumPy v1.21)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.reshape()</span></code></a></p></td>
@@ -2042,7 +1955,7 @@
 <td><p>-</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.sort.html#numpy.ndarray.sort" title="(in NumPy v1.21)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.sort()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.sort()</span></code></p></td>
+<td><p>-</p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.sort()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.squeeze.html#numpy.ndarray.squeeze" title="(in NumPy v1.21)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.squeeze()</span></code></a></p></td>
@@ -2066,19 +1979,19 @@
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.take()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.tobytes.html#numpy.ndarray.tobytes" title="(in NumPy v1.21)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.tobytes()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.tobytes()</span></code></p></td>
+<td><p>-</p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.tobytes()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.tofile.html#numpy.ndarray.tofile" title="(in NumPy v1.21)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.tofile()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.tofile()</span></code></p></td>
+<td><p>-</p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.tofile()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.tolist.html#numpy.ndarray.tolist" title="(in NumPy v1.21)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.tolist()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.tolist()</span></code></p></td>
+<td><p>-</p></td>
 <td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">cupy.ndarray.tolist()</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.tostring.html#numpy.ndarray.tostring" title="(in NumPy v1.21)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.tostring()</span></code></a></p></td>
-<td><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">dpnp.ndarray.tostring()</span></code></p></td>
+<td><p>-</p></td>
 <td><p>-</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.trace.html#numpy.ndarray.trace" title="(in NumPy v1.21)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ndarray.trace()</span></code></a></p></td>
@@ -2102,14 +2015,14 @@
 <td><p><strong>CuPy Total</strong></p></td>
 </tr>
 <tr class="row-odd"><td><p>56</p></td>
-<td><p>36</p></td>
+<td><p>26</p></td>
 <td><p>47</p></td>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="linear-algebra">
-<h2>Linear Algebra<a class="headerlink" href="#linear-algebra" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="linear-algebra">
+<h2>Linear Algebra<a class="headerlink" href="#linear-algebra" title="Permalink to this headline"></a></h2>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 33%" />
@@ -2213,9 +2126,9 @@
 </tr>
 </tbody>
 </table>
-</section>
-<section id="discrete-fourier-transform">
-<h2>Discrete Fourier Transform<a class="headerlink" href="#discrete-fourier-transform" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="discrete-fourier-transform">
+<h2>Discrete Fourier Transform<a class="headerlink" href="#discrete-fourier-transform" title="Permalink to this headline"></a></h2>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 33%" />
@@ -2285,35 +2198,47 @@
 <td><p><a class="reference internal" href="generated/dpnp.fft.irfftn.html#dpnp.fft.irfftn" title="dpnp.fft.irfftn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.irfftn</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.fft.irfftn</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.fft.rfft.html#numpy.fft.rfft" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fft.rfft</span></code></a></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fft.register_func</span></code></p></td>
+<td><p>-</p></td>
+<td><p>-</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fft.restore_all</span></code></p></td>
+<td><p>-</p></td>
+<td><p>-</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fft.restore_func</span></code></p></td>
+<td><p>-</p></td>
+<td><p>-</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.fft.rfft.html#numpy.fft.rfft" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fft.rfft</span></code></a></p></td>
 <td><p><a class="reference internal" href="generated/dpnp.fft.rfft.html#dpnp.fft.rfft" title="dpnp.fft.rfft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.rfft</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.fft.rfft</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.fft.rfft2.html#numpy.fft.rfft2" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fft.rfft2</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.fft.rfft2.html#numpy.fft.rfft2" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fft.rfft2</span></code></a></p></td>
 <td><p><a class="reference internal" href="generated/dpnp.fft.rfft2.html#dpnp.fft.rfft2" title="dpnp.fft.rfft2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.rfft2</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.fft.rfft2</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.fft.rfftfreq.html#numpy.fft.rfftfreq" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fft.rfftfreq</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.fft.rfftfreq.html#numpy.fft.rfftfreq" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fft.rfftfreq</span></code></a></p></td>
 <td><p><a class="reference internal" href="generated/dpnp.fft.rfftfreq.html#dpnp.fft.rfftfreq" title="dpnp.fft.rfftfreq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.rfftfreq</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.fft.rfftfreq</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.fft.rfftn.html#numpy.fft.rfftn" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fft.rfftn</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.fft.rfftn.html#numpy.fft.rfftn" title="(in NumPy v1.21)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.fft.rfftn</span></code></a></p></td>
 <td><p><a class="reference internal" href="generated/dpnp.fft.rfftn.html#dpnp.fft.rfftn" title="dpnp.fft.rfftn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.rfftn</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.fft.rfftn</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><strong>NumPy Total</strong></p></td>
+<tr class="row-odd"><td><p><strong>NumPy Total</strong></p></td>
 <td><p><strong>DPNP Total</strong></p></td>
 <td><p><strong>CuPy Total</strong></p></td>
 </tr>
-<tr class="row-odd"><td><p>18</p></td>
+<tr class="row-even"><td><p>21</p></td>
 <td><p>18</p></td>
 <td><p>18</p></td>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="random-sampling">
-<h2>Random Sampling<a class="headerlink" href="#random-sampling" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="random-sampling">
+<h2>Random Sampling<a class="headerlink" href="#random-sampling" title="Permalink to this headline"></a></h2>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 33%" />
@@ -2541,56 +2466,38 @@
 </tr>
 </tbody>
 </table>
-</section>
-</section>
+</div>
+</div>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="misc.html" class="btn btn-neutral float-right" title="Miscellaneous routines" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="difference.html" class="btn btn-neutral float-left" title="Difference between DPNP and NumPy" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="difference.html" class="btn btn-neutral float-left" title="Difference between DPNP and NumPy" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="misc.html" class="btn btn-neutral float-right" title="Miscellaneous routines" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2020, Intel
-
-    </p>
+    <p>&#169; Copyright 2020, Intel.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

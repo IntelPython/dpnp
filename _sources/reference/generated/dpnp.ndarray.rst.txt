@@ -26,10 +26,6 @@
    .. automethod:: __len__
 
 
-   .. automethod:: __next__
-
-
-   .. automethod:: __iter__
 
 
    ..
@@ -65,12 +61,6 @@
    .. automethod:: conjugate
 
 
-   .. automethod:: copy
-
-
-   .. automethod:: cumprod
-
-
    .. automethod:: cumsum
 
 
@@ -95,25 +85,13 @@
    .. automethod:: min
 
 
-   .. automethod:: partition
-
-
    .. automethod:: prod
-
-
-   .. automethod:: ravel
-
-
-   .. automethod:: repeat
 
 
    .. automethod:: reshape
 
 
    .. automethod:: round
-
-
-   .. automethod:: sort
 
 
    .. automethod:: squeeze
@@ -126,18 +104,6 @@
 
 
    .. automethod:: take
-
-
-   .. automethod:: tobytes
-
-
-   .. automethod:: tofile
-
-
-   .. automethod:: tolist
-
-
-   .. automethod:: tostring
 
 
    .. automethod:: transpose
@@ -180,10 +146,8 @@
 
    .. autoattribute:: T
    .. autoattribute:: dtype
-   .. autoattribute:: flags
    .. autoattribute:: flat
    .. autoattribute:: itemsize
-   .. autoattribute:: nbytes
    .. autoattribute:: ndim
    .. autoattribute:: shape
    .. autoattribute:: size

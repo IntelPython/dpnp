@@ -26,7 +26,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">DPNP C++ backend kernel library
-   &#160;<span id="projectnumber">0.6.2</span>
+   &#160;<span id="projectnumber">0.9.0</span>
    </div>
    <div id="projectbrief">NumPy-like API accelerated with SYCL</div>
   </td>
@@ -92,16 +92,16 @@ $(document).ready(function(){initNavTree('group___b_a_c_k_e_n_d___f_f_t___a_p_i.
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga92bc5f583fc50c6527c4656761f2623c"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
-<tr class="memitem:ga92bc5f583fc50c6527c4656761f2623c"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga92bc5f583fc50c6527c4656761f2623c">dpnp_fft_fft_c</a> (const void *array_in, void *result, const long *input_shape, const long *output_shape, size_t shape_size, long axis, long input_boundarie, size_t inverse)</td></tr>
-<tr class="memdesc:ga92bc5f583fc50c6527c4656761f2623c"><td class="mdescLeft">&#160;</td><td class="mdescRight">1D discrete Fourier Transform.  <a href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga92bc5f583fc50c6527c4656761f2623c">More...</a><br /></td></tr>
-<tr class="separator:ga92bc5f583fc50c6527c4656761f2623c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga72ca244e9f59d2d55ccb86255c004ffe"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
+<tr class="memitem:ga72ca244e9f59d2d55ccb86255c004ffe"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga72ca244e9f59d2d55ccb86255c004ffe">dpnp_fft_fft_c</a> (const void *array_in, void *result, const long *input_shape, const long *output_shape, size_t shape_size, long axis, long input_boundarie, size_t inverse, const size_t norm)</td></tr>
+<tr class="memdesc:ga72ca244e9f59d2d55ccb86255c004ffe"><td class="mdescLeft">&#160;</td><td class="mdescRight">1D discrete Fourier Transform.  <a href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga72ca244e9f59d2d55ccb86255c004ffe">More...</a><br /></td></tr>
+<tr class="separator:ga72ca244e9f59d2d55ccb86255c004ffe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>This section describes Backend API for Discrete Fourier Transform (DFT) part. </p>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ga92bc5f583fc50c6527c4656761f2623c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga92bc5f583fc50c6527c4656761f2623c">&#9670;&nbsp;</a></span>dpnp_fft_fft_c()</h2>
+<a id="ga72ca244e9f59d2d55ccb86255c004ffe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga72ca244e9f59d2d55ccb86255c004ffe">&#9670;&nbsp;</a></span>dpnp_fft_fft_c()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -154,7 +154,13 @@ template&lt;typename _DataType &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>inverse</em>&#160;</td>
+          <td class="paramname"><em>inverse</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>norm</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -176,6 +182,7 @@ template&lt;typename _DataType &gt; </div>
     <tr><td class="paramdir">[in]</td><td class="paramname">axis</td><td>Axis ID to compute by. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">input_boundarie</td><td>Limit number of elements for axis. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">inverse</td><td>Using inverse algorithm. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">norm</td><td>Normalization mode. 0 - backward, 1 - forward. </td></tr>
   </table>
   </dd>
 </dl>

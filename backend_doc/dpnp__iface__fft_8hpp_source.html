@@ -26,7 +26,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">DPNP C++ backend kernel library
-   &#160;<span id="projectnumber">0.6.2</span>
+   &#160;<span id="projectnumber">0.9.0</span>
    </div>
    <div id="projectbrief">NumPy-like API accelerated with SYCL</div>
   </td>
@@ -138,18 +138,18 @@ $(document).ready(function(){initNavTree('dpnp__iface__fft_8hpp_source.html','')
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">// TODO needs to move into common place like backend_defs.hpp</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="comment"></span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> _DataType&gt;</div>
-<div class="line"><a name="l00075"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga92bc5f583fc50c6527c4656761f2623c">   75</a></span>&#160;INP_DLLEXPORT <span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga92bc5f583fc50c6527c4656761f2623c">dpnp_fft_fft_c</a>(<span class="keyword">const</span> <span class="keywordtype">void</span>* array_in,</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                                  <span class="keywordtype">void</span>* result,</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                                  <span class="keyword">const</span> <span class="keywordtype">long</span>* input_shape,</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                                  <span class="keyword">const</span> <span class="keywordtype">long</span>* output_shape,</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;                                  <span class="keywordtype">size_t</span> shape_size,</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                                  <span class="keywordtype">long</span> axis,</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;                                  <span class="keywordtype">long</span> input_boundarie,</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;                                  <span class="keywordtype">size_t</span> inverse);</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; </div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// BACKEND_IFACE_FFT_H</span></div>
-<div class="ttc" id="agroup___b_a_c_k_e_n_d___f_f_t___a_p_i_html_ga92bc5f583fc50c6527c4656761f2623c"><div class="ttname"><a href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga92bc5f583fc50c6527c4656761f2623c">dpnp_fft_fft_c</a></div><div class="ttdeci">void dpnp_fft_fft_c(const void *array_in, void *result, const long *input_shape, const long *output_shape, size_t shape_size, long axis, long input_boundarie, size_t inverse)</div><div class="ttdoc">1D discrete Fourier Transform.</div></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="comment"></span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> _DataType&gt;</div>
+<div class="line"><a name="l00076"></a><span class="lineno"><a class="line" href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga72ca244e9f59d2d55ccb86255c004ffe">   76</a></span>&#160;INP_DLLEXPORT <span class="keywordtype">void</span> <a class="code" href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga72ca244e9f59d2d55ccb86255c004ffe">dpnp_fft_fft_c</a>(<span class="keyword">const</span> <span class="keywordtype">void</span>* array_in,</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                                  <span class="keywordtype">void</span>* result,</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                                  <span class="keyword">const</span> <span class="keywordtype">long</span>* input_shape,</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;                                  <span class="keyword">const</span> <span class="keywordtype">long</span>* output_shape,</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                                  <span class="keywordtype">size_t</span> shape_size,</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;                                  <span class="keywordtype">long</span> axis,</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;                                  <span class="keywordtype">long</span> input_boundarie,</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;                                  <span class="keywordtype">size_t</span> inverse,</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;                                  <span class="keyword">const</span> <span class="keywordtype">size_t</span> norm);</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// BACKEND_IFACE_FFT_H</span></div>
+<div class="ttc" id="agroup___b_a_c_k_e_n_d___f_f_t___a_p_i_html_ga72ca244e9f59d2d55ccb86255c004ffe"><div class="ttname"><a href="group___b_a_c_k_e_n_d___f_f_t___a_p_i.html#ga72ca244e9f59d2d55ccb86255c004ffe">dpnp_fft_fft_c</a></div><div class="ttdeci">void dpnp_fft_fft_c(const void *array_in, void *result, const long *input_shape, const long *output_shape, size_t shape_size, long axis, long input_boundarie, size_t inverse, const size_t norm)</div><div class="ttdoc">1D discrete Fourier Transform.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
