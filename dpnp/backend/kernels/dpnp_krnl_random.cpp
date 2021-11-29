@@ -508,6 +508,10 @@ void dpnp_rng_negative_binomial_c(void* result, const double a, const double p, 
     event_out.wait();
 }
 
+template <typename _KernelNameSpecialization>
+class dpnp_rng_noncentral_chisquare_c_kernel1;
+template <typename _KernelNameSpecialization>
+class dpnp_rng_noncentral_chisquare_c_kernel2;
 template <typename _DataType>
 void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _DataType nonc, const size_t size)
 {
@@ -562,14 +566,24 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
         event_out.wait();
 
         shape = 0.5 * df;
-
+  
         if (0.125 * size > sqrt(lambda))
         {
             size_t* idx = nullptr;
             _DataType* tmp = nullptr;
             idx = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(size * sizeof(size_t)));
-            for (i = 0; i < size; i++)
+
+            cl::sycl::range<1> gws1(size);
+            auto kernel_parallel_for_func1 = [=](cl::sycl::id<1> global_id) {
+                size_t i = global_id[0];
                 idx[i] = i;
+            };
+            auto kernel_func1 = [&](cl::sycl::handler& cgh) {
+                cgh.parallel_for<class dpnp_rng_noncentral_chisquare_c_kernel1<_DataType>>(gws1, 
+                                                                                           kernel_parallel_for_func1);
+            };
+            event_out = DPNP_QUEUE.submit(kernel_func1);
+            event_out.wait();
 
             std::sort(idx, idx + size, [pvec](size_t i1, size_t i2) { return pvec[i1] < pvec[i2]; });
             /* idx now contains original indexes of ordered Poisson outputs */
@@ -578,14 +592,13 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
             tmp = reinterpret_cast<_DataType*>(dpnp_memory_alloc_c(size * sizeof(_DataType)));
             for (i = 0; i < size;)
             {
-                size_t k, j;
+                size_t j;
                 int cv = pvec[idx[i]];
-
                 // TODO vectorize
                 for (j = i + 1; (j < size) && (pvec[idx[j]] == cv); j++)
                 {
                 }
-                // assert(j > i);
+
                 if (j <= i)
                 {
                     throw std::runtime_error("DPNP RNG Error: dpnp_rng_noncentral_chisquare_c() failed.");
@@ -594,13 +607,20 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
                 event_out = mkl_rng::generate(gamma_distribution, DPNP_RNG_ENGINE, j - i, tmp);
                 event_out.wait();
 
-                // TODO vectorize
-                for (k = i; k < j; k++)
-                    result1[idx[k]] = tmp[k - i];
+                cl::sycl::range<1> gws2(j - i);
+                auto kernel_parallel_for_func2 = [=](cl::sycl::id<1> global_id) {
+                    size_t index = global_id[0];
+                    result1[idx[index + i]] = tmp[index];
+                };
+                auto kernel_func2 = [&](cl::sycl::handler& cgh) {
+                    cgh.parallel_for<class dpnp_rng_noncentral_chisquare_c_kernel2<_DataType>>(gws2, 
+                                                                                               kernel_parallel_for_func2);
+                };
+                event_out = DPNP_QUEUE.submit(kernel_func2);
+                event_out.wait();
 
                 i = j;
             }
-
             dpnp_memory_free_c(tmp);
             dpnp_memory_free_c(idx);
         }
