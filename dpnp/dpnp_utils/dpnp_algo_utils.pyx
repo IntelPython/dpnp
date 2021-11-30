@@ -510,26 +510,34 @@ cdef tuple get_common_usm_allocation(dpnp_descriptor x1_obj, dpnp_descriptor x2_
     array1_obj = x1_obj.get_pyobj().get_array()
     array2_obj = x2_obj.get_pyobj().get_array()
 
-    if array1_obj.sycl_device and array2_obj.sycl_device and array1_obj.sycl_device != array2_obj.sycl_device:
-        raise ValueError(
-            "inputs recognized on different SYCL devices {} and {}, expected on the same SYCL device"
-            "".format(array1_obj.sycl_device, array2_obj.sycl_device))
+    def get_usm_type(usm_types):
+        if not isinstance(usm_types, (list, tuple)):
+            raise TypeError(
+                "Expected a list or a tuple, got {}".format(type(usm_types))
+        )
+        if len(usm_types) == 0:
+            return None
+        elif len(usm_types) == 1:
+            return usm_types[0]
+        for usm_type1, usm_type2 in zip(usm_types, usm_types[1:]):
+            if usm_type1 != usm_type2:
+                return None
+        return usm_types[0]
 
-    if array1_obj.usm_type and array2_obj.usm_type and array1_obj.usm_type != array2_obj.usm_type:
+    # TODO: use similar function from dpctl.utils instead of get_usm_type
+    common_usm_type = get_usm_type((array1_obj.usm_type, array2_obj.usm_type))
+    if common_usm_type is None:
         raise ValueError(
-            "inputs recognized of different USM types {} and {}, expected of the same USM type"
+            "could not recognize common USM type for inputs of USM types {} and {}"
             "".format(array1_obj.usm_type, array2_obj.usm_type))
 
-    if array1_obj.sycl_queue and array2_obj.sycl_queue and array1_obj.sycl_queue != array2_obj.sycl_queue:
+    common_sycl_queue = dpctl.utils.get_execution_queue((array1_obj.sycl_queue, array2_obj.sycl_queue))
+    if common_sycl_queue is None:
         raise ValueError(
-            "inputs recognized in different SYCL queues {} and {}, expected in the same SYCL queue"
+            "could not recognize common SYCL queue for inputs in SYCL queues {} and {}"
             "".format(array1_obj.sycl_queue, array2_obj.sycl_queue))
 
-    common_sycl_device = array1_obj.sycl_device or array2_obj.sycl_device
-    common_usm_type = array1_obj.usm_type or array2_obj.usm_type
-    common_sycl_queue = array1_obj.sycl_queue or array2_obj.sycl_queue
-
-    return (common_sycl_device, common_usm_type, common_sycl_queue)
+    return (common_sycl_queue.sycl_device, common_usm_type, common_sycl_queue)
 
 
 cdef class dpnp_descriptor:

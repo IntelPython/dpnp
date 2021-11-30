@@ -66,13 +66,18 @@ class dpnp_array:
                                           usm_type=buffer.usm_type,
                                           sycl_queue=buffer.sycl_queue)
         else:
+            def normalize_queue_device(q=None, d=None):
+                return sycl_queue
+
+            # TODO: use similar function from dpctl.utils instead of normalize_queue_device
+            sycl_queue_normalized = normalize_queue_device(sycl_queue, device)
             self._array_obj = dpt.usm_ndarray(shape,
                                               dtype=dtype,
                                               strides=strides,
                                               buffer=usm_type,
                                               offset=offset,
                                               order=order,
-                                              buffer_ctor_kwargs={"queue": sycl_queue})
+                                              buffer_ctor_kwargs={"queue": sycl_queue_normalized})
 
     @property
     def __sycl_usm_array_interface__(self):
