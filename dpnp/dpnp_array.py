@@ -78,6 +78,10 @@ class dpnp_array:
     def __sycl_usm_array_interface__(self):
         return self._array_obj.__sycl_usm_array_interface__
 
+    def get_array(self):
+        """Get usm_ndarray object."""
+        return self._array_obj
+
     @property
     def T(self):
         """Shape-reversed view of the array.

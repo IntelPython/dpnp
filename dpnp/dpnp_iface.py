@@ -140,7 +140,7 @@ def asnumpy(input, order='C'):
         return dpctl.tensor.to_numpy(input)
 
     if config.__DPNP_OUTPUT_DPCTL__ and hasattr(input, "__sycl_usm_array_interface__"):
-        return dpctl.tensor.to_numpy(input._array_obj)
+        return dpctl.tensor.to_numpy(input.get_array())
 
     return numpy.asarray(input, order=order)
 
@@ -152,7 +152,7 @@ def astype(x1, dtype, order='K', casting='unsafe', subok=True, copy=True):
         # TODO: remove check dpctl.tensor has attribute "astype"
         if hasattr(dpt, "astype"):
             # return dpt.astype(x1, dtype, order=order, casting=casting, copy=copy)
-            return dpt.astype(x1._array_obj, dtype, order=order, casting=casting, copy=copy)
+            return dpt.astype(x1.get_array(), dtype, order=order, casting=casting, copy=copy)
 
     x1_desc = get_dpnp_descriptor(x1)
     if not x1_desc:

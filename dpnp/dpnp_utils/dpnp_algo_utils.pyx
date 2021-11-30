@@ -507,8 +507,8 @@ cdef shape_type_c strides_to_vector(object strides, object shape) except *:
 
 cdef tuple get_common_usm_allocation(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj):
     """Get common USM allocation in the form of (sycl_device, usm_type, sycl_queue)."""
-    array1_obj = x1_obj.get_pyobj()._array_obj
-    array2_obj = x2_obj.get_pyobj()._array_obj
+    array1_obj = x1_obj.get_pyobj().get_array()
+    array2_obj = x2_obj.get_pyobj().get_array()
 
     if array1_obj.sycl_device and array2_obj.sycl_device and array1_obj.sycl_device != array2_obj.sycl_device:
         raise ValueError(

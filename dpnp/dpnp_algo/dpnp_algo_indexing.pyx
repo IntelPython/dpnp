@@ -218,7 +218,7 @@ cpdef tuple dpnp_nonzero(utils.dpnp_descriptor in_array1):
 
     cdef fptr_dpnp_nonzero_t func = <fptr_dpnp_nonzero_t > kernel_data.ptr
 
-    array1_obj = in_array1.get_pyobj()._array_obj
+    array1_obj = in_array1.get_pyobj().get_array()
 
     res_list = []
     cdef utils.dpnp_descriptor res_arr
