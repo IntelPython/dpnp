@@ -204,6 +204,29 @@ static inline bool
 
 /**
  * @ingroup BACKEND_UTILS
+ * @brief Check arrays are equal.
+ *
+ * @param [in] input1        Input1.
+ * @param [in] input1_size   Input1 size.
+ * @param [in] input2        Input2.
+ * @param [in] input2_size   Input2 size.
+ *
+ * @return                   Arrays are equal.
+ */
+template <typename _DataType>
+static inline bool
+    array_equal(const _DataType* input1, const size_t input1_size, const _DataType* input2, const size_t input2_size)
+{
+    if (input1_size != input2_size) return false;
+
+    const std::vector<_DataType> input1_vec(input1, input1 + input1_size);
+    const std::vector<_DataType> input2_vec(input2, input2 + input2_size);
+
+    return std::equal(std::begin(input1_vec), std::end(input1_vec), std::begin(input2_vec));
+}
+
+/**
+ * @ingroup BACKEND_UTILS
  * @brief Get common shape based on input shapes.
  *
  * Example:
