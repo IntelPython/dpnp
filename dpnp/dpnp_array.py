@@ -43,9 +43,9 @@ class dpnp_array:
                  buffer=None,
                  offset=0,
                  strides=None,
-                 order=None,
+                 order="C",
                  device=None,
-                 usm_type=None,
+                 usm_type="device",
                  sycl_queue=None):
         if buffer is not None:
             if not isinstance(buffer, dpt.usm_ndarray):
