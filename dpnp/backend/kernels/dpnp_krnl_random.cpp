@@ -566,7 +566,6 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
         event_out.wait();
 
         shape = 0.5 * df;
-  
         if (0.125 * size > sqrt(lambda))
         {
             size_t* idx = nullptr;
