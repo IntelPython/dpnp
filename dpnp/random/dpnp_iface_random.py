@@ -125,7 +125,7 @@ def beta(a, b, size=None):
 
     """
 
-    if not use_origin_backend(a) and dpnp_queue_is_cpu():
+    if not use_origin_backend(a):
         # TODO:
         # array_like of floats for `a`, `b`
         if not dpnp.isscalar(a):
@@ -171,7 +171,7 @@ def binomial(n, p, size=None):
 
     """
 
-    if not use_origin_backend(n) and dpnp_queue_is_cpu():
+    if not use_origin_backend(n):
         # TODO:
         # array_like of floats for `p` param
         if not dpnp.isscalar(n):
@@ -225,7 +225,7 @@ def chisquare(df, size=None):
 
     """
 
-    if not use_origin_backend(df) and dpnp_queue_is_cpu():
+    if not use_origin_backend(df):
         # TODO:
         # array_like of floats for `df`
         if not dpnp.isscalar(df):
@@ -364,7 +364,7 @@ def gamma(shape, scale=1.0, size=None):
 
     """
 
-    if not use_origin_backend(scale) and dpnp_queue_is_cpu():
+    if not use_origin_backend(scale):
         # TODO:
         # array_like of floats for `scale` and `shape`
         if not dpnp.isscalar(scale):
@@ -474,7 +474,7 @@ def hypergeometric(ngood, nbad, nsample, size=None):
 
     """
 
-    if not use_origin_backend(ngood) and dpnp_queue_is_cpu():
+    if not use_origin_backend(ngood):
         # TODO:
         # array_like of ints for `ngood`, `nbad`, `nsample` param
         if not dpnp.isscalar(ngood):
@@ -654,7 +654,7 @@ def multinomial(n, pvals, size=None):
 
     """
 
-    if not use_origin_backend(n) and dpnp_queue_is_cpu():
+    if not use_origin_backend(n):
         pvals_sum = sum(pvals)
         d = len(pvals)
         if n < 0:
@@ -702,7 +702,7 @@ def multivariate_normal(mean, cov, size=None, check_valid='warn', tol=1e-8):
 
     """
 
-    if not use_origin_backend(mean) and dpnp_queue_is_cpu():
+    if not use_origin_backend(mean):
         mean_ = numpy.array(mean, dtype=numpy.float64, order='C')
         cov_ = numpy.array(cov, dtype=numpy.float64, order='C')
         if size is None:
@@ -755,7 +755,7 @@ def negative_binomial(n, p, size=None):
 
     """
 
-    if not use_origin_backend(n) and dpnp_queue_is_cpu():
+    if not use_origin_backend(n):
         # TODO:
         # array_like of floats for `p` and `n` params
         if not dpnp.isscalar(n):
@@ -1302,7 +1302,7 @@ def shuffle(x1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc:
         if not dpnp.is_type_supported(x1_desc.dtype):
             pass
@@ -1416,7 +1416,7 @@ def standard_gamma(shape, size=None):
 
     """
 
-    if not use_origin_backend(shape) and dpnp_queue_is_cpu():
+    if not use_origin_backend(shape):
         # TODO:
         # array_like of floats for `shape`
         if not dpnp.isscalar(shape):
@@ -1476,7 +1476,7 @@ def standard_t(df, size=None):
 
     """
 
-    if not use_origin_backend(df) and dpnp_queue_is_cpu():
+    if not use_origin_backend(df):
         # TODO:
         # array_like of floats for `df`
         if not dpnp.isscalar(df):

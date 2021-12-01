@@ -27,8 +27,8 @@
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
-# set(DPNP_VERSION 0.8.0)
-# set(DPNP_API_VERSION 0.8)
+# set(DPNP_VERSION 0.9.0)
+# set(DPNP_API_VERSION 0.9)
 
 # set directory where the custom finders live
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
@@ -38,14 +38,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
 # -----------------------------------------------------------------------------------------------
 if(DEFINED ENV{ONEAPI_ROOT})
   set(DPNP_ONEAPI_ROOT "$ENV{ONEAPI_ROOT}" CACHE PATH "Folder contains oneapi tool set")
-else()
-  if(UNIX)
-    set(DPNP_ONEAPI_ROOT "/opt/intel/oneapi" CACHE PATH "Folder contains oneapi tool set")
-  elseif(WIN32)
-    set(DPNP_ONEAPI_ROOT "C:/Program Files (x86)/Intel/oneAPI" CACHE PATH "Folder contains oneapi tool set")
-  else()
-    message(FATAL_ERROR "Unsupported system ${CMAKE_SYSTEM}")
-  endif()
 endif()
 
 option(DPNP_STATIC_LIB_ENABLE "Enable build DPNP static library" FALSE)
@@ -238,10 +230,10 @@ elseif(WIN32)
 # -DMKL_ILP64 -I"%MKLROOT%\include"
 # mkl_sycl_dll.lib mkl_intel_ilp64_dll.lib mkl_sequential_dll.lib mkl_core_dll.lib sycl.lib OpenCL.lib
   set(DPNP_MATHLIB_DEP_LIBS
-      mkl_sycl        # _dll
-      mkl_intel_ilp64 # _dll
-      mkl_sequential  # _dll
-      mkl_core        # _dll
+      mkl_sycl_dll
+      mkl_intel_ilp64_dll
+      mkl_sequential_dll
+      mkl_core_dll
       sycl
       OpenCL
       CACHE STRING "Set of libraries to link")
@@ -253,8 +245,8 @@ target_link_libraries(dpnp_backend_c PUBLIC ${DPNP_MATHLIB_DEP_LIBS})
 
 # Parallel STL from DPC++
 if(NOT WIN32)
-  find_package(PSTL REQUIRED)
-  target_include_directories(dpnp_backend_c PUBLIC ${PSTL_INCLUDE_DIR})
+  find_package(DPL REQUIRED)
+  target_include_directories(dpnp_backend_c PUBLIC ${DPL_INCLUDE_DIR})
 endif()
 
 # SYCL queue manager

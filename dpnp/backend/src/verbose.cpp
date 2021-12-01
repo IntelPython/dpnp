@@ -46,7 +46,7 @@ bool is_verbose_mode()
 
 class barrierKernelClass;
 
-void set_barrier_event(cl::sycl::queue queue, sycl::vector_class<sycl::event>& depends)
+void set_barrier_event(cl::sycl::queue queue, std::vector<cl::sycl::event>& depends)
 {
     if (is_verbose_mode())
     {
