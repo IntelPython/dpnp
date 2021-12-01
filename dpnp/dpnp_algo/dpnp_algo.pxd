@@ -241,6 +241,10 @@ ctypedef void(*fptr_1in_1out_strides_t)(void *, const size_t, const size_t, cons
                                         const long * )
 ctypedef void(*fptr_2in_1out_t)(void * , const void * , const size_t, const long * , const size_t,
                                 const void *, const size_t, const long * , const size_t, const long * )
+ctypedef void(*fptr_2in_1out_strides_t)(void *, const size_t, const size_t, const long * , const long * ,
+                                        void *, const size_t, const size_t, const long * , const long * ,
+                                        void *, const size_t, const size_t, const long * , const long * ,
+                                        const long * )
 ctypedef void(*fptr_blas_gemm_2in_1out_t)(void *, void * , void * , size_t, size_t, size_t)
 ctypedef void(*dpnp_reduction_c_t)(void *, const void * , const size_t*, const size_t, const long*, const size_t, const void * , const long*)
 

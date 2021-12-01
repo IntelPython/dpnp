@@ -93,10 +93,10 @@ cpdef dpnp_copyto(utils.dpnp_descriptor dst, utils.dpnp_descriptor src, where=Tr
     cdef DPNPFuncType src_type = dpnp_dtype_to_DPNPFuncType(src.dtype)
 
     cdef shape_type_c dst_shape = dst.shape
-    cdef shape_type_c dst_strides = strides_to_vector(dst.strides, dst_shape)
+    cdef shape_type_c dst_strides = utils.strides_to_vector(dst.strides, dst_shape)
 
     cdef shape_type_c src_shape = src.shape
-    cdef shape_type_c src_strides = strides_to_vector(src.strides, src_shape)
+    cdef shape_type_c src_strides = utils.strides_to_vector(src.strides, src_shape)
 
     # get the FPTR data structure
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_COPYTO, dst_type, src_type)
@@ -164,7 +164,8 @@ cpdef utils.dpnp_descriptor dpnp_repeat(utils.dpnp_descriptor array1, repeats, a
 
 cpdef utils.dpnp_descriptor dpnp_reshape(utils.dpnp_descriptor array1, newshape, order=None):
     # return dpnp.get_dpnp_descriptor(dpctl.tensor.usm_ndarray(newshape, dtype=numpy.dtype(array1.dtype).name, buffer=array1.get_pyobj()))
-    return dpnp.get_dpnp_descriptor(dpctl.tensor.reshape(array1.get_pyobj(), newshape))
+    # return dpnp.get_dpnp_descriptor(dpctl.tensor.reshape(array1.get_pyobj(), newshape))
+    return dpnp.get_dpnp_descriptor(dpctl.tensor.reshape(array1.get_pyobj()._array_obj, newshape))
 
 
 cpdef utils.dpnp_descriptor dpnp_transpose(utils.dpnp_descriptor array1, axes=None):

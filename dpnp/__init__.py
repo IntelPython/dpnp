@@ -40,7 +40,20 @@ import warnings
 if "numpy" in sys.modules:
     warnings.warn("\nDPNP: Module NumPy found. Please load DPNP module before NumPy.\n")
 
-from dpnp.dparray import dparray as ndarray
+
+import os
+mypath = os.path.dirname(os.path.realpath(__file__))
+
+import dpctl
+dpctlpath = os.path.dirname(dpctl.__file__)
+
+os.environ["PATH"] += os.pathsep + mypath + os.pathsep + dpctlpath
+
+
+# from dpnp.dparray import dparray as ndarray
+from dpnp.dpnp_array import dpnp_array as ndarray
+from dpnp.dpnp_flatiter import flatiter as flatiter
+
 from dpnp.dpnp_iface import *
 from dpnp.dpnp_iface import __all__ as _iface__all__
 from dpnp.dpnp_iface_types import *
