@@ -43,6 +43,7 @@ cimport cpython
 cimport cython
 cimport numpy
 
+import dpctl
 
 """
 Python import functions
@@ -62,7 +63,6 @@ __all__ = [
     "_get_linear_index",
     "normalize_axis",
     "_object_to_tuple",
-    "strides_to_vector",
     "use_origin_backend"
 ]
 
@@ -101,7 +101,8 @@ def copy_from_origin(dst, src):
     """Copy origin result to output result."""
     if config.__DPNP_OUTPUT_DPCTL__ and hasattr(dst, "__sycl_usm_array_interface__"):
         if src.size:
-            dst.usm_data.copy_from_host(src.reshape(-1).view("|u1"))
+            # dst.usm_data.copy_from_host(src.reshape(-1).view("|u1"))
+            dpctl.tensor._copy_utils.copy_from_numpy_into(dst, src)
     else:
         for i in range(dst.size):
             dst.flat[i] = src.item(i)
@@ -474,8 +475,10 @@ cpdef cpp_bool use_origin_backend(input1=None, size_t compute_size=0):
     return False
 
 
-cpdef shape_type_c strides_to_vector(strides, shape) except *:
-    """Get or calculate srtides based on shape."""
+cdef shape_type_c strides_to_vector(object strides, object shape) except *:
+    """
+    Get or calculate srtides based on shape.
+    """
     cdef shape_type_c res
     if strides is None:
         res = get_axis_offsets(shape)

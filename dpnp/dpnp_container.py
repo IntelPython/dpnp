@@ -35,7 +35,8 @@ This module contains code and dependency on diffrent containers used in DPNP
 
 
 import dpnp.config as config
-from dpnp.dparray import dparray
+# from dpnp.dparray import dparray
+from dpnp.dpnp_array import dpnp_array
 
 import numpy
 
@@ -60,6 +61,9 @@ __all__ = [
 
 
 def create_output_container(shape, type):
+    result = dpnp_array(shape, type)
+    return result
+
     if config.__DPNP_OUTPUT_NUMPY__:
         """ Create NumPy ndarray """
         # TODO need to use "buffer=" parameter to use SYCL aware memory
@@ -90,14 +94,15 @@ def container_copy(dst_obj, src_obj, dst_idx=0):
     """
 
     # zero dimensional arrays are not iterable
-    if issubclass(type(src_obj), (numpy.ndarray, dparray)) and (src_obj.ndim == 0):
+    # if issubclass(type(src_obj), (numpy.ndarray, dparray)) and (src_obj.ndim == 0):
+    if issubclass(type(src_obj), (numpy.ndarray)) and (src_obj.ndim == 0):
         dst_idx = container_copy(dst_obj, (src_obj.item(0),), dst_idx)
     else:
         for elem_value in src_obj:
             if isinstance(elem_value, (list, tuple)):
                 dst_idx = container_copy(dst_obj, elem_value, dst_idx)
-            elif issubclass(type(elem_value), (numpy.ndarray, dparray)):
-                dst_idx = container_copy(dst_obj, elem_value, dst_idx)
+            # elif issubclass(type(elem_value), (numpy.ndarray, dparray)):
+                # dst_idx = container_copy(dst_obj, elem_value, dst_idx)
             else:
                 dst_obj.flat[dst_idx] = elem_value
                 dst_idx += 1
