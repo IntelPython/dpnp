@@ -154,7 +154,7 @@ cpdef utils.dpnp_descriptor dpnp_flatten(utils.dpnp_descriptor x1_obj):
     cdef shape_type_c x1_strides = utils.strides_to_vector(x1_obj.strides, x1_shape)
 
     # ceate result array with type given by FPTR data
-    cdef shape_type_c result_shape = x1_shape
+    cdef shape_type_c result_shape = (x1_obj.size,)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
     cdef shape_type_c result_strides = utils.strides_to_vector(result.strides, result_shape)
