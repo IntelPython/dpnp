@@ -31,3 +31,84 @@ def test_strides(func_name, type):
     expected = numpy_func(a_strides)
 
     numpy.testing.assert_allclose(expected, result)
+
+
+@pytest.mark.parametrize("func_name",
+                         ["add", "arctan2", "hypot", "maximum", "minimum", "multiply", "power", "subtract"])
+@pytest.mark.parametrize("dtype",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=["float64", "float32", "int64", "int32"])
+@pytest.mark.parametrize("shape",
+                         [(3, 3)],
+                         ids=["(3, 3)"])
+def test_strides_2args(func_name, dtype, shape):
+    a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
+    b = a.T
+
+    dpa = dpnp.reshape(dpnp.arange(numpy.prod(shape), dtype=dtype), shape)
+    dpb = dpa.T
+
+    dpnp_func = _getattr(dpnp, func_name)
+    result = dpnp_func(dpa, dpb)
+
+    numpy_func = _getattr(numpy, func_name)
+    expected = numpy_func(a, b)
+
+    numpy.testing.assert_allclose(result, expected)
+
+
+@pytest.mark.parametrize("dtype",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=["float64", "float32", "int64", "int32"])
+@pytest.mark.parametrize("shape",
+                         [(3, 3)],
+                         ids=["(3, 3)"])
+def test_strides_copysign(dtype, shape):
+    a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
+    b = -a.T
+
+    dpa = dpnp.reshape(dpnp.arange(numpy.prod(shape), dtype=dtype), shape)
+    dpb = -dpa.T
+
+    result = dpnp.copysign(dpa, dpb)
+    expected = numpy.copysign(a, b)
+
+    numpy.testing.assert_allclose(result, expected)
+
+
+@pytest.mark.parametrize("dtype",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=["float64", "float32", "int64", "int32"])
+@pytest.mark.parametrize("shape",
+                         [(3, 3)],
+                         ids=["(3, 3)"])
+def test_strides_fmod(dtype, shape):
+    a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
+    b = a.T + 1
+
+    dpa = dpnp.reshape(dpnp.arange(numpy.prod(shape), dtype=dtype), shape)
+    dpb = dpa.T + 1
+
+    result = dpnp.fmod(dpa, dpb)
+    expected = numpy.fmod(a, b)
+
+    numpy.testing.assert_allclose(result, expected)
+
+
+@pytest.mark.parametrize("dtype",
+                         [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
+                         ids=["float64", "float32", "int64", "int32"])
+@pytest.mark.parametrize("shape",
+                         [(3, 3)],
+                         ids=["(3, 3)"])
+def test_strides_true_devide(dtype, shape):
+    a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
+    b = a.T + 1
+
+    dpa = dpnp.reshape(dpnp.arange(numpy.prod(shape), dtype=dtype), shape)
+    dpb = dpa.T + 1
+
+    result = dpnp.fmod(dpa, dpb)
+    expected = numpy.fmod(a, b)
+
+    numpy.testing.assert_allclose(result, expected)
