@@ -309,7 +309,7 @@ def conjugate(x1, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1)
     if x1_desc and not kwargs:
-        return dpnp_conjugate(x1_desc)
+        return dpnp_conjugate(x1_desc).get_pyobj()
 
     return call_origin(numpy.conjugate, x1, **kwargs)
 
