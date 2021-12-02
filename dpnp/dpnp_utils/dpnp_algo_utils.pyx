@@ -205,11 +205,11 @@ cpdef checker_throw_value_error(function_name, param_name, param, expected):
 
 
 cpdef dpnp_descriptor create_output_descriptor_py(shape_type_c output_shape,
-                                                  object d_type,
-                                                  object requested_out,
-                                                  object device=None,
-                                                  object usm_type="device",
-                                                  object sycl_queue=None):
+                                                  d_type,
+                                                  requested_out,
+                                                  device=None,
+                                                  usm_type="device",
+                                                  sycl_queue=None):
     py_type = dpnp.default_float_type() if d_type is None else d_type
 
     cdef DPNPFuncType c_type = dpnp_dtype_to_DPNPFuncType(py_type)
@@ -383,9 +383,9 @@ cdef DPNPFuncType get_output_c_type(DPNPFuncName funcID,
 cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
                                               DPNPFuncType c_type,
                                               dpnp_descriptor requested_out,
-                                              object device=None,
-                                              object usm_type="device",
-                                              object sycl_queue=None):
+                                              device=None,
+                                              usm_type="device",
+                                              sycl_queue=None):
     cdef dpnp_descriptor result_desc
 
     if requested_out is None:

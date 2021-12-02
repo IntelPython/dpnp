@@ -59,7 +59,6 @@ if config.__DPNP_OUTPUT_DPCTL__:
 
 __all__ = [
     "asarray",
-    "create_empty_container",
     "empty",
 ]
 
@@ -98,53 +97,3 @@ def empty(shape,
                           sycl_queue=sycl_queue)
 
     return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
-
-
-def create_output_container(shape, type):
-    result = dpnp_array(shape, type)
-    return result
-
-    if config.__DPNP_OUTPUT_NUMPY__:
-        """ Create NumPy ndarray """
-        # TODO need to use "buffer=" parameter to use SYCL aware memory
-        result = numpy.ndarray(shape, dtype=type)
-    elif config.__DPNP_OUTPUT_DPCTL__:
-        """ Create DPCTL array """
-        if config.__DPNP_OUTPUT_DPCTL_DEFAULT_SHARED__:
-            """
-            From DPCtrl documentation:
-            'buffer can be strings ('device'|'shared'|'host' to allocate new memory)'
-            """
-            result = dpctl.usm_ndarray(shape, dtype=numpy.dtype(type).name, buffer='shared')
-        else:
-            """
-            Can't pass 'None' as buffer= parameter to allow DPCtrl uses it's default
-            """
-            result = dpctl.usm_ndarray(shape, dtype=numpy.dtype(type).name)
-    else:
-        """ Create DPNP array """
-        result = dparray(shape, dtype=type)
-
-    return result
-
-
-def container_copy(dst_obj, src_obj, dst_idx=0):
-    """
-    Copy values to `dst` by iterating element by element in `input_obj`
-    """
-
-    # zero dimensional arrays are not iterable
-    # if issubclass(type(src_obj), (numpy.ndarray, dparray)) and (src_obj.ndim == 0):
-    if issubclass(type(src_obj), (numpy.ndarray)) and (src_obj.ndim == 0):
-        dst_idx = container_copy(dst_obj, (src_obj.item(0),), dst_idx)
-    else:
-        for elem_value in src_obj:
-            if isinstance(elem_value, (list, tuple)):
-                dst_idx = container_copy(dst_obj, elem_value, dst_idx)
-            # elif issubclass(type(elem_value), (numpy.ndarray, dparray)):
-                # dst_idx = container_copy(dst_obj, elem_value, dst_idx)
-            else:
-                dst_obj.flat[dst_idx] = elem_value
-                dst_idx += 1
-
-    return dst_idx

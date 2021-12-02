@@ -147,9 +147,9 @@ Calculate output array type by 'out' and 'dtype' cast parameters
 cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
                                               DPNPFuncType c_type,
                                               dpnp_descriptor requested_out,
-                                              object device=*,
-                                              object usm_type=*,
-                                              object sycl_queue=*)
+                                              device=*,
+                                              usm_type=*,
+                                              sycl_queue=*)
 """
 Create output dpnp_descriptor based on shape, type and 'out' parameters
 """

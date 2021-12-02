@@ -67,7 +67,7 @@ class dpnp_array:
                                           sycl_queue=buffer.sycl_queue)
         else:
             def normalize_queue_device(q=None, d=None):
-                return sycl_queue
+                return q
 
             # TODO: use similar function from dpctl.utils instead of normalize_queue_device
             sycl_queue_normalized = normalize_queue_device(sycl_queue, device)
