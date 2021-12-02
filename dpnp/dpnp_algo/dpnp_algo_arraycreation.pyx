@@ -63,7 +63,7 @@ ctypedef void(*fptr_dpnp_trace_t)(const void * , void * , const size_t * , const
 
 
 cpdef utils.dpnp_descriptor dpnp_copy(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_COPY, x1, x1.shape)
+    return call_fptr_1in_1out_strides(DPNP_FN_COPY, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_diag(utils.dpnp_descriptor v, int k):

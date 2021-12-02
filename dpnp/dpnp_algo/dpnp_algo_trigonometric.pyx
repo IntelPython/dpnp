@@ -133,7 +133,7 @@ cpdef utils.dpnp_descriptor dpnp_log2(utils.dpnp_descriptor x1):
 
 
 cpdef utils.dpnp_descriptor dpnp_recip(utils.dpnp_descriptor x1):
-    return call_fptr_1in_1out(DPNP_FN_RECIP, x1, x1.shape)
+    return call_fptr_1in_1out_strides(DPNP_FN_RECIP, x1)
 
 
 cpdef utils.dpnp_descriptor dpnp_radians(utils.dpnp_descriptor x1):

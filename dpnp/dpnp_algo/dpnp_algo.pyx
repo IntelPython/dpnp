@@ -75,7 +75,9 @@ include "dpnp_algo_trigonometric.pyx"
 
 ctypedef void(*fptr_dpnp_arange_t)(size_t, size_t, void *, size_t)
 ctypedef void(*fptr_dpnp_astype_t)(const void *, void * , const size_t)
-ctypedef void(*fptr_dpnp_flatten_t)(const void *, void * , const size_t)
+ctypedef void(*fptr_dpnp_flatten_t)(void *, const size_t, const size_t, const long * , const long * ,
+                                    void *, const size_t, const size_t, const long * , const long * ,
+                                    const long * )
 ctypedef void(*fptr_dpnp_initval_t)(void *, void * , size_t)
 
 
@@ -143,17 +145,32 @@ cpdef utils.dpnp_descriptor dpnp_astype(utils.dpnp_descriptor array1, dtype):
     return result
 
 
-cpdef utils.dpnp_descriptor dpnp_flatten(utils.dpnp_descriptor array_):
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array_.dtype)
+cpdef utils.dpnp_descriptor dpnp_flatten(utils.dpnp_descriptor x1_obj):
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1_obj.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FLATTEN, param1_type, param1_type)
 
+    cdef shape_type_c x1_shape = x1_obj.shape
+    cdef shape_type_c x1_strides = utils.strides_to_vector(x1_obj.strides, x1_shape)
+
     # ceate result array with type given by FPTR data
-    cdef shape_type_c result_shape = (array_.size,)
+    cdef shape_type_c result_shape = (x1_obj.size,)
     cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
 
+    cdef shape_type_c result_strides = utils.strides_to_vector(result.strides, result_shape)
+
     cdef fptr_dpnp_flatten_t func = <fptr_dpnp_flatten_t > kernel_data.ptr
-    func(array_.get_data(), result.get_data(), array_.size)
+    func(result.get_data(),
+         result.size,
+         result.ndim,
+         result_shape.data(),
+         result_strides.data(),
+         x1_obj.get_data(),
+         x1_obj.size,
+         x1_obj.ndim,
+         x1_shape.data(),
+         x1_strides.data(),
+         NULL)
 
     return result
 
