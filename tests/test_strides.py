@@ -68,7 +68,7 @@ def test_strides_copysign(dtype, shape):
     b = -a.T
 
     dpa = dpnp.reshape(dpnp.arange(numpy.prod(shape), dtype=dtype), shape)
-    dpb = -dpa.T
+    dpb = dpnp.negative(dpa.T)
 
     result = dpnp.copysign(dpa, dpb)
     expected = numpy.copysign(a, b)
