@@ -307,9 +307,9 @@ def conjugate(x1, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc and not kwargs:
-        return dpnp_conjugate(x1_desc)
+        return dpnp_conjugate(x1_desc).get_pyobj()
 
     return call_origin(numpy.conjugate, x1, **kwargs)
 
@@ -1281,7 +1281,7 @@ def negative(x1, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc and not kwargs:
         return dpnp_negative(x1_desc).get_pyobj()
 
@@ -1486,7 +1486,7 @@ def sign(x1, **kwargs):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc and not kwargs:
         return dpnp_sign(x1_desc).get_pyobj()
 
