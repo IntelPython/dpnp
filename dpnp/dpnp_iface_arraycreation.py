@@ -388,7 +388,7 @@ def copy(x1, order='K', subok=False):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1)
+    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc:
         if order != 'K':
             pass

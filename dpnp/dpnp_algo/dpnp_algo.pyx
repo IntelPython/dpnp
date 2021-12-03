@@ -75,7 +75,9 @@ include "dpnp_algo_trigonometric.pyx"
 
 ctypedef void(*fptr_dpnp_arange_t)(size_t, size_t, void *, size_t)
 ctypedef void(*fptr_dpnp_astype_t)(const void *, void * , const size_t)
-ctypedef void(*fptr_dpnp_flatten_t)(const void *, void * , const size_t)
+ctypedef void(*fptr_dpnp_flatten_t)(void *, const size_t, const size_t, const long * , const long * ,
+                                    void *, const size_t, const size_t, const long * , const long * ,
+                                    const long * )
 ctypedef void(*fptr_dpnp_initval_t)(void *, void * , size_t)
 
 
@@ -128,6 +130,9 @@ cpdef utils.dpnp_descriptor dpnp_flatten(utils.dpnp_descriptor x1):
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FLATTEN, param1_type, param1_type)
 
+    cdef shape_type_c x1_shape = x1.shape
+    cdef shape_type_c x1_strides = utils.strides_to_vector(x1.strides, x1_shape)
+
     x1_obj = x1.get_pyobj().get_array()
 
     # ceate result array with type given by FPTR data
@@ -139,8 +144,20 @@ cpdef utils.dpnp_descriptor dpnp_flatten(utils.dpnp_descriptor x1):
                                                                        usm_type=x1_obj.usm_type,
                                                                        sycl_queue=x1_obj.sycl_queue)
 
+    cdef shape_type_c result_strides = utils.strides_to_vector(result.strides, result_shape)
+
     cdef fptr_dpnp_flatten_t func = <fptr_dpnp_flatten_t > kernel_data.ptr
-    func(x1.get_data(), result.get_data(), x1.size)
+    func(result.get_data(),
+         result.size,
+         result.ndim,
+         result_shape.data(),
+         result_strides.data(),
+         x1.get_data(),
+         x1.size,
+         x1.ndim,
+         x1_shape.data(),
+         x1_strides.data(),
+         NULL)
 
     return result
 
@@ -298,6 +315,57 @@ cdef utils.dpnp_descriptor call_fptr_1in_1out(DPNPFuncName fptr_name,
     return result
 
 
+cdef utils.dpnp_descriptor call_fptr_1in_1out_strides(DPNPFuncName fptr_name,
+                                                      utils.dpnp_descriptor x1_obj,
+                                                      object dtype=None,
+                                                      utils.dpnp_descriptor out=None,
+                                                      object where=True,
+                                                      func_name=None):
+
+    """ Convert type (x1_obj.dtype) to C enum DPNPFuncType """
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1_obj.dtype)
+
+    """ get the FPTR data structure """
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, param1_type, param1_type)
+
+    result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
+
+    cdef shape_type_c x1_shape = x1_obj.shape
+    cdef shape_type_c x1_strides = utils.strides_to_vector(x1_obj.strides, x1_shape)
+
+    cdef shape_type_c result_shape = x1_shape
+    cdef utils.dpnp_descriptor result
+
+    if out is None:
+        """ Create result array with type given by FPTR data """
+        result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
+    else:
+        if out.dtype != result_type:
+            utils.checker_throw_value_error(func_name, 'out.dtype', out.dtype, result_type)
+        if out.shape != result_shape:
+            utils.checker_throw_value_error(func_name, 'out.shape', out.shape, result_shape)
+
+        result = out
+
+    cdef shape_type_c result_strides = utils.strides_to_vector(result.strides, result_shape)
+
+    """ Call FPTR function """
+    cdef fptr_1in_1out_strides_t func = <fptr_1in_1out_strides_t > kernel_data.ptr
+    func(result.get_data(),
+         result.size,
+         result.ndim,
+         result_shape.data(),
+         result_strides.data(),
+         x1_obj.get_data(),
+         x1_obj.size,
+         x1_obj.ndim,
+         x1_shape.data(),
+         x1_strides.data(),
+         NULL)
+
+    return result
+
+
 cdef utils.dpnp_descriptor call_fptr_2in_1out(DPNPFuncName fptr_name,
                                               utils.dpnp_descriptor x1_obj,
                                               utils.dpnp_descriptor x2_obj,
@@ -372,9 +440,11 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out_strides(DPNPFuncName fptr_name,
 
     # Create result array
     cdef shape_type_c x1_shape = x1_obj.shape
+
     cdef shape_type_c x1_strides = utils.strides_to_vector(x1_obj.strides, x1_shape)
     cdef shape_type_c x2_shape = x2_obj.shape
     cdef shape_type_c x2_strides = utils.strides_to_vector(x2_obj.strides, x2_shape)
+
     cdef shape_type_c result_shape = utils.get_common_shape(x1_shape, x2_shape)
     cdef utils.dpnp_descriptor result
 
