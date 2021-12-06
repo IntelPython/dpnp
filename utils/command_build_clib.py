@@ -41,7 +41,7 @@ from distutils import log
 from distutils.dep_util import newer_group
 from distutils.file_util import copy_file
 
-from utils.dpnp_build_utils import find_cmplr, find_dpl, find_mathlib, find_omp
+from utils.dpnp_build_utils import find_cmplr, find_dpl, find_mathlib, find_python_env
 
 IS_WIN = False
 IS_MAC = False
@@ -91,6 +91,9 @@ _sdl_ldflags = ["-Wl,-z,noexecstack,-z,relro,-z,now"]
 # by defining PSTL_USE_PARALLEL_POLICIES (in GCC 9), _GLIBCXX_USE_TBB_PAR_BACKEND (in GCC 10) macro to zero
 # before inclusion of the first standard header file in each translation unit.
 _project_cmplr_macro += [("PSTL_USE_PARALLEL_POLICIES", "0"), ("_GLIBCXX_USE_TBB_PAR_BACKEND", "0")]
+
+# disable PSTL predefined policies objects (global queues, prevent fail on Windows)
+_project_cmplr_macro += [("ONEDPL_USE_PREDEFINED_POLICIES", "0")]
 
 try:
     """
@@ -147,7 +150,7 @@ if IS_LIN:
     _mathlibs = ["mkl_sycl", "mkl_intel_ilp64", "mkl_sequential",
                  "mkl_core", "sycl", "OpenCL", "pthread", "m", "dl"]
 elif IS_WIN:
-    _mathlibs = ["mkl_sycl", "mkl_intel_ilp64", "mkl_tbb_thread", "mkl_core", "sycl", "OpenCL", "tbb"]
+    _mathlibs = ["mkl_sycl_dll", "mkl_intel_ilp64_dll", "mkl_tbb_thread_dll", "mkl_core_dll", "sycl", "OpenCL", "tbb"]
 
 """
 Final set of arguments for extentions
@@ -168,7 +171,9 @@ dpnp_backend_c_description = [
                 "dpnp/backend/kernels/dpnp_krnl_common.cpp",
                 "dpnp/backend/kernels/dpnp_krnl_elemwise.cpp",
                 "dpnp/backend/kernels/dpnp_krnl_fft.cpp",
+                "dpnp/backend/kernels/dpnp_krnl_indexing.cpp",
                 "dpnp/backend/kernels/dpnp_krnl_linalg.cpp",
+                "dpnp/backend/kernels/dpnp_krnl_logic.cpp",
                 "dpnp/backend/kernels/dpnp_krnl_manipulation.cpp",
                 "dpnp/backend/kernels/dpnp_krnl_mathematical.cpp",
                 "dpnp/backend/kernels/dpnp_krnl_random.cpp",
@@ -178,12 +183,16 @@ dpnp_backend_c_description = [
                 "dpnp/backend/kernels/dpnp_krnl_statistics.cpp",
                 "dpnp/backend/src/dpnp_iface_fptr.cpp",
                 "dpnp/backend/src/memory_sycl.cpp",
-                "dpnp/backend/src/constants.cpp"
-                "dpnp/backend/src/queue_sycl.cpp"
+                "dpnp/backend/src/constants.cpp",
+                "dpnp/backend/src/queue_sycl.cpp",
+                "dpnp/backend/src/verbose.cpp",
             ],
         }
      ]
 ]
+
+
+conda_root_var = "PREFIX" if os.environ.get("CONDA_BUILD") == "1" else "CONDA_PREFIX"
 
 
 class custom_build_clib(build_clib.build_clib):
@@ -213,13 +222,14 @@ class custom_build_clib(build_clib.build_clib):
             """
             _cmplr_include, _cmplr_libpath = find_cmplr(verbose=True)
             _mathlib_include, _mathlib_path = find_mathlib(verbose=True)
-            _, _omp_libpath = find_omp(verbose=True)
+            # _, _omp_libpath = find_omp(verbose=True)
             _dpl_include, _ = find_dpl(verbose=True)
+            _py_env_include, _py_env_lib = find_python_env(verbose=True)
 
             macros = _project_cmplr_macro
-            include_dirs = _cmplr_include + _dpl_include + _mathlib_include + _project_backend_dir + _dpctrl_include
+            include_dirs = _cmplr_include + _dpl_include + _mathlib_include + _project_backend_dir + _dpctrl_include + _py_env_include
             libraries = _mathlibs + _dpctrl_lib
-            library_dirs = _mathlib_path + _omp_libpath + _dpctrl_libpath
+            library_dirs = _mathlib_path + _dpctrl_libpath + _py_env_lib # + _omp_libpath
             runtime_library_dirs = _project_rpath + _dpctrl_libpath
             extra_preargs = _project_cmplr_flag_sycl + _sdl_cflags
             extra_link_postargs = _project_cmplr_flag_lib
@@ -236,6 +246,8 @@ class custom_build_clib(build_clib.build_clib):
             self.compiler.compiler_cxx = self.compiler.compiler_so
             self.compiler.linker_so = linker + default_flags
             self.compiler.linker_exe = self.compiler.linker_so
+
+            os.environ["CC"] = _project_compiler
 
             objects = []
             """
@@ -270,8 +282,10 @@ class custom_build_clib(build_clib.build_clib):
                     link_command += " /link"  # start linker options
                     link_command += " " + " ".join(extra_link_preargs)
                     link_command += " " + ".lib ".join(libraries) + ".lib"  # libraries
+                    link_command += " /LIBPATH:" + " /LIBPATH:".join(library_dirs)
                     link_command += " /OUT:" + c_library_filename  # output file name
                     link_command += " " + " ".join(extra_link_postargs)
+                    print(link_command)
                     os.system(link_command)
                 else:
                     self.compiler.link_shared_lib(objects,
