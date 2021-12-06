@@ -561,7 +561,7 @@ class dpnp_array:
         new_arr = self.__class__(array_obj.shape, buffer=array_obj, order=order)
 
         if self.size > 0:
-            dpt._copy_utils.copy_from_usm_ndarray_to_usm_ndarray(new_arr._array_obj, self._array_obj)
+            dpt._copy_utils._copy_from_usm_ndarray_to_usm_ndarray(new_arr._array_obj, self._array_obj)
             new_arr._array_obj = dpt.reshape(new_arr._array_obj, (self.size, ))
 
         return new_arr
