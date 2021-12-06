@@ -25,6 +25,7 @@
 # *****************************************************************************
 
 import dpctl.tensor as dpt
+from dpctl.tensor._device import normalize_queue_device
 import dpnp
 import numpy
 
@@ -66,10 +67,6 @@ class dpnp_array:
                                           usm_type=buffer.usm_type,
                                           sycl_queue=buffer.sycl_queue)
         else:
-            def normalize_queue_device(q=None, d=None):
-                return q
-
-            # TODO: use similar function from dpctl.tensor._device instead of normalize_queue_device
             sycl_queue_normalized = normalize_queue_device(sycl_queue=sycl_queue, device=device)
             self._array_obj = dpt.usm_ndarray(shape,
                                               dtype=dtype,
