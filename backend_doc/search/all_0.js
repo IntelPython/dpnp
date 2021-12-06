@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['_5f_5fdpnp_5fcopyto_5fc_0',['__dpnp_copyto_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gadffce2a68272c18fd8cedf7801b65c7b',1,'dpnp_gen_1arg_2type_tbl.hpp']]]
+  ['auto_5fselector_0',['AUTO_SELECTOR',['../group___b_a_c_k_e_n_d___a_p_i.html#ggaae520250ac00985feaadcbd984c30ab1a8625883de23e4800c0b865aef6e284ae',1,'dpnp_iface.hpp']]]
 ];

@@ -1,13 +1,6 @@
 var searchData=
 [
-  ['get_5fdpnp_5ffunction_5fptr_347',['get_dpnp_function_ptr',['../group___b_a_c_k_e_n_d___a_p_i.html#ga5d37203d4448c22f7b046710d639fd4e',1,'dpnp_iface_fptr.hpp']]],
-  ['get_5fdpnp_5ffunction_5fptr1_348',['get_dpnp_function_ptr1',['../group___b_a_c_k_e_n_d___a_p_i.html#gaa4be84f68fb1e6f7a0706e22378d54e0',1,'dpnp_iface_fptr.hpp']]],
-  ['get_5fid_5fby_5fxyz_5finkernel_349',['get_id_by_xyz_inkernel',['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga064c245ca5bae67e4c986442e22d484e',1,'dpnp_utils.hpp']]],
-  ['get_5foutput_5fsize_350',['get_output_size',['../class_d_p_n_p_c__id.html#a79168b2adbe07a8099747374bba2c483',1,'DPNPC_id']]],
-  ['get_5fqueue_351',['get_queue',['../classbackend__sycl.html#ae542c859b7075e058f14197b025a1b4b',1,'backend_sycl']]],
-  ['get_5frng_5fengine_352',['get_rng_engine',['../classbackend__sycl.html#a9531c22868410d767bc1d959d036e286',1,'backend_sycl']]],
-  ['get_5fshape_5foffsets_5finkernel_353',['get_shape_offsets_inkernel',['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga4706968b8ce210d69309a0cae330cea5',1,'dpnp_utils.hpp']]],
-  ['get_5fxyz_5fby_5fid_354',['get_xyz_by_id',['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga81df4307ea53001fc552b6cd76c0ebf8',1,'dpnp_utils.hpp']]],
-  ['get_5fxyz_5fid_5fby_5fid_5finkernel_355',['get_xyz_id_by_id_inkernel',['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#gad37eb9ce0ad29590cc931a9b6cd538e2',1,'dpnp_utils.hpp']]],
-  ['gpu_5fselector_356',['GPU_SELECTOR',['../group___b_a_c_k_e_n_d___a_p_i.html#ggaae520250ac00985feaadcbd984c30ab1a332c42fe262bf0855ca1de84d27049b1',1,'dpnp_iface.hpp']]]
+  ['operator_2b_2b_356',['operator++',['../class_d_p_n_p___u_s_m__iterator.html#a072dbb5c50b38c7ec6d4f67bb2118dbc',1,'DPNP_USM_iterator::operator++()'],['../class_d_p_n_p___u_s_m__iterator.html#a8f31f980fbfb90d1e9367438a7351e26',1,'DPNP_USM_iterator::operator++(int)']]],
+  ['operator_3c_3c_357',['operator&lt;&lt;',['../class_d_p_n_p___u_s_m__iterator.html#ac842925181d9da0b095b9aeec7653d05',1,'DPNP_USM_iterator::operator&lt;&lt;()'],['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga9ed3925b3af87fcbebdf27990480b98b',1,'operator&lt;&lt;(std::ostream &amp;out, const std::vector&lt; T &gt; &amp;vec):&#160;dpnp_utils.hpp'],['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga198cbdd953fb93be953e9e52fa9a4a15',1,'operator&lt;&lt;(std::ostream &amp;out, DPNPFuncType elem):&#160;dpnp_utils.hpp']]],
+  ['operator_5b_5d_358',['operator[]',['../class_d_p_n_p_c__id.html#a2e98849be3b71da7efdfbccdcb26c010',1,'DPNPC_id']]]
 ];
