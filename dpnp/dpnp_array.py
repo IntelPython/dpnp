@@ -69,8 +69,8 @@ class dpnp_array:
             def normalize_queue_device(q=None, d=None):
                 return q
 
-            # TODO: use similar function from dpctl.utils instead of normalize_queue_device
-            sycl_queue_normalized = normalize_queue_device(sycl_queue, device)
+            # TODO: use similar function from dpctl.tensor._device instead of normalize_queue_device
+            sycl_queue_normalized = normalize_queue_device(sycl_queue=sycl_queue, device=device)
             self._array_obj = dpt.usm_ndarray(shape,
                                               dtype=dtype,
                                               strides=strides,
