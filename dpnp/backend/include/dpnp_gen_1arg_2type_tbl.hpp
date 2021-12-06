@@ -58,7 +58,7 @@
     /** @param[in]  input1_shape    Input array 1 shape.                                                             */ \
     /** @param[in]  input1_strides  Input array 1 strides.                                                           */ \
     /** @param[in]  where           Where condition.                                                                 */ \
-    template <typename _DataType_output, typename _DataType_input>                                                      \
+    template <typename _DataType_input, typename _DataType_output>                                                      \
     void __name__(void* result_out,                                                                                     \
                   const size_t result_size,                                                                             \
                   const size_t result_ndim,                                                                             \

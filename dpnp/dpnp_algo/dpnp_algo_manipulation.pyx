@@ -99,7 +99,7 @@ cpdef dpnp_copyto(utils.dpnp_descriptor dst, utils.dpnp_descriptor src, where=Tr
     cdef shape_type_c src_strides = utils.strides_to_vector(src.strides, src_shape)
 
     # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_COPYTO, dst_type, src_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_COPYTO, src_type, dst_type)
 
     # Call FPTR function
     cdef fptr_1in_1out_strides_t func = <fptr_1in_1out_strides_t > kernel_data.ptr

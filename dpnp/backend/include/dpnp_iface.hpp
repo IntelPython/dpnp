@@ -974,7 +974,7 @@ INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
 #include <dpnp_gen_1arg_1type_tbl.hpp>
 
 #define MACRO_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)                                                 \
-    template <typename _DataType_output, typename _DataType_input>                                                     \
+    template <typename _DataType_input, typename _DataType_output>                                                     \
     INP_DLLEXPORT void __name__(void* result_out,                                                                      \
                                 const size_t result_size,                                                              \
                                 const size_t result_ndim,                                                              \
