@@ -192,9 +192,6 @@ dpnp_backend_c_description = [
 ]
 
 
-conda_root_var = "PREFIX" if os.environ.get("CONDA_BUILD") == "1" else "CONDA_PREFIX"
-
-
 class custom_build_clib(build_clib.build_clib):
 
     def build_libraries(self, libraries):
