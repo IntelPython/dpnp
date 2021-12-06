@@ -403,7 +403,7 @@ cpdef object dpnp_take_along_axis(object arr, object indices, int axis):
             else:
                 ind_array[result_offset] += 1
 
-            if ind_array[result_offset] % size_indices == indices[result_offset % size_indices]:
+            if ind_array[result_offset] % size_indices == indices.item(result_offset % size_indices):
                 result_array[result_offset] = arr_elem
 
         dpnp_array = dpnp.array(result_array, dtype=res_type)
@@ -411,11 +411,14 @@ cpdef object dpnp_take_along_axis(object arr, object indices, int axis):
         return dpnp_result_array
 
     else:
-        result_array = utils_py.create_output_descriptor_py(shape_arr, res_type, None).get_pyobj()
+        result_array = [None] * size_arr
         for i in range(size_arr):
-            ind = size_indices * (i // size_indices) + indices[i % size_indices]
-            result_array[i] = arr[ind]
-        return result_array
+            ind = size_indices * (i // size_indices) + indices.item(i % size_indices)
+            result_array[i] = arr.item(ind)
+
+        dpnp_array = dpnp.array(result_array, dtype=res_type)
+        dpnp_result_array = dpnp.reshape(dpnp_array, shape_arr)
+        return dpnp_result_array
 
 
 cpdef tuple dpnp_tril_indices(n, k=0, m=None):
