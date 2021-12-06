@@ -92,12 +92,28 @@ cpdef dpnp_copyto(utils.dpnp_descriptor dst, utils.dpnp_descriptor src, where=Tr
     cdef DPNPFuncType dst_type = dpnp_dtype_to_DPNPFuncType(dst.dtype)
     cdef DPNPFuncType src_type = dpnp_dtype_to_DPNPFuncType(src.dtype)
 
-    # get the FPTR data structure
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_COPYTO, dst_type, src_type)
+    cdef shape_type_c dst_shape = dst.shape
+    cdef shape_type_c dst_strides = utils.strides_to_vector(dst.strides, dst_shape)
 
-    cdef fptr_1in_1out_t func = <fptr_1in_1out_t > kernel_data.ptr
+    cdef shape_type_c src_shape = src.shape
+    cdef shape_type_c src_strides = utils.strides_to_vector(src.strides, src_shape)
+
+    # get the FPTR data structure
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_COPYTO, src_type, dst_type)
+
     # Call FPTR function
-    func(dst.get_data(), src.get_data(), dst.size)
+    cdef fptr_1in_1out_strides_t func = <fptr_1in_1out_strides_t > kernel_data.ptr
+    func(dst.get_data(),
+         dst.size,
+         dst.ndim,
+         dst_shape.data(),
+         dst_strides.data(),
+         src.get_data(),
+         src.size,
+         src.ndim,
+         src_shape.data(),
+         src_strides.data(),
+         NULL)
 
 
 cpdef utils.dpnp_descriptor dpnp_expand_dims(utils.dpnp_descriptor in_array, axis):
