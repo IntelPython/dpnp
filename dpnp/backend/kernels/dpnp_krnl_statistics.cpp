@@ -680,9 +680,42 @@ void dpnp_std_c(
     _ResultType* var = reinterpret_cast<_ResultType*>(dpnp_memory_alloc_c(1 * sizeof(_ResultType)));
 
     dpnp_var_c<_DataType, _ResultType>(array1_in, var, shape, ndim, axis, naxis, ddof);
-    dpnp_sqrt_c<_ResultType, _ResultType>(var, result1, 1);
+
+    const size_t result1_size = 1;
+    const size_t result1_ndim = 1;
+    const size_t result1_shape_size_in_bytes = result1_ndim * sizeof(size_t);
+    const size_t result1_strides_size_in_bytes = result1_ndim * sizeof(size_t);
+    size_t* result1_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(result1_shape_size_in_bytes));
+    *result1_shape = 1;
+    size_t* result1_strides = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(result1_strides_size_in_bytes));
+    *result1_strides = 1;
+
+    const size_t var_size = 1;
+    const size_t var_ndim = 1;
+    const size_t var_shape_size_in_bytes = var_ndim * sizeof(size_t);
+    const size_t var_strides_size_in_bytes = var_ndim * sizeof(size_t);
+    size_t* var_shape = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(var_shape_size_in_bytes));
+    *var_shape = 1;
+    size_t* var_strides = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(var_strides_size_in_bytes));
+    *var_strides = 1;
+
+    dpnp_sqrt_c<_ResultType, _ResultType>(result1,
+                                          result1_size,
+                                          result1_ndim,
+                                          result1_shape,
+                                          result1_strides,
+                                          var,
+                                          var_size,
+                                          var_ndim,
+                                          var_shape,
+                                          var_strides,
+                                          NULL);
 
     dpnp_memory_free_c(var);
+    dpnp_memory_free_c(result1_shape);
+    dpnp_memory_free_c(result1_strides);
+    dpnp_memory_free_c(var_shape);
+    dpnp_memory_free_c(var_strides);
 
     return;
 }

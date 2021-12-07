@@ -939,41 +939,73 @@ INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
 #define MACRO_2ARG_1TYPE_OP(__name__, __operation__)                                                                   \
     template <typename _DataType>                                                                                      \
     INP_DLLEXPORT void __name__(void* result_out,                                                                      \
+                                const size_t result_size,                                                              \
+                                const size_t result_ndim,                                                              \
+                                const size_t* result_shape,                                                            \
+                                const size_t* result_strides,                                                          \
                                 const void* input1_in,                                                                 \
                                 const size_t input1_size,                                                              \
+                                const size_t input1_ndim,                                                              \
                                 const size_t* input1_shape,                                                            \
-                                const size_t input1_shape_ndim,                                                        \
+                                const size_t* input1_strides,                                                          \
                                 const void* input2_in,                                                                 \
                                 const size_t input2_size,                                                              \
+                                const size_t input2_ndim,                                                              \
                                 const size_t* input2_shape,                                                            \
-                                const size_t input2_shape_ndim,                                                        \
+                                const size_t* input2_strides,                                                          \
                                 const size_t* where);
 
 #include <dpnp_gen_2arg_1type_tbl.hpp>
 
 #define MACRO_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)                                                  \
     template <typename _DataType>                                                                                      \
-    INP_DLLEXPORT void __name__(void* array1, void* result1, size_t size);
+    INP_DLLEXPORT void __name__(void* result_out,                                                                      \
+                                const size_t result_size,                                                              \
+                                const size_t result_ndim,                                                              \
+                                const size_t* result_shape,                                                            \
+                                const size_t* result_strides,                                                          \
+                                const void* input1_in,                                                                 \
+                                const size_t input1_size,                                                              \
+                                const size_t input1_ndim,                                                              \
+                                const size_t* input1_shape,                                                            \
+                                const size_t* input1_strides,                                                          \
+                                const size_t* where);
 
 #include <dpnp_gen_1arg_1type_tbl.hpp>
 
 #define MACRO_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)                                                 \
     template <typename _DataType_input, typename _DataType_output>                                                     \
-    INP_DLLEXPORT void __name__(void* array1, void* result1, size_t size);
+    INP_DLLEXPORT void __name__(void* result_out,                                                                      \
+                                const size_t result_size,                                                              \
+                                const size_t result_ndim,                                                              \
+                                const size_t* result_shape,                                                            \
+                                const size_t* result_strides,                                                          \
+                                const void* input1_in,                                                                 \
+                                const size_t input1_size,                                                              \
+                                const size_t input1_ndim,                                                              \
+                                const size_t* input1_shape,                                                            \
+                                const size_t* input1_strides,                                                          \
+                                const size_t* where);
 
 #include <dpnp_gen_1arg_2type_tbl.hpp>
 
 #define MACRO_2ARG_3TYPES_OP(__name__, __operation1__, __operation2__)                                                 \
     template <typename _DataType_output, typename _DataType_input1, typename _DataType_input2>                         \
     INP_DLLEXPORT void __name__(void* result_out,                                                                      \
+                                const size_t result_size,                                                              \
+                                const size_t result_ndim,                                                              \
+                                const size_t* result_shape,                                                            \
+                                const size_t* result_strides,                                                          \
                                 const void* input1_in,                                                                 \
                                 const size_t input1_size,                                                              \
+                                const size_t input1_ndim,                                                              \
                                 const size_t* input1_shape,                                                            \
-                                const size_t input1_shape_ndim,                                                        \
+                                const size_t* input1_strides,                                                          \
                                 const void* input2_in,                                                                 \
                                 const size_t input2_size,                                                              \
+                                const size_t input2_ndim,                                                              \
                                 const size_t* input2_shape,                                                            \
-                                const size_t input2_shape_ndim,                                                        \
+                                const size_t* input2_strides,                                                          \
                                 const size_t* where);
 
 #include <dpnp_gen_2arg_3type_tbl.hpp>
@@ -1091,17 +1123,6 @@ INP_DLLEXPORT void dpnp_remainder_c(void* result_out,
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_repeat_c(const void* array_in, void* result, const size_t repeats, const size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief copyto function.
- *
- * @param [out] destination  Destination array.
- * @param [in]  source       Source array.
- * @param [in]  size         Number of elements in destination array.
- */
-template <typename _DataType_dst, typename _DataType_src>
-INP_DLLEXPORT void dpnp_copyto_c(void* destination, void* source, const size_t size);
 
 /**
  * @ingroup BACKEND_API

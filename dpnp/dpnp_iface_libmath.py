@@ -77,7 +77,7 @@ def erf(in_array1):
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(in_array1)
+    x1_desc = dpnp.get_dpnp_descriptor(in_array1, copy_when_strides=False)
     if x1_desc:
         return dpnp_erf(x1_desc).get_pyobj()
 
