@@ -26,6 +26,7 @@
 #include <iostream>
 
 #include "dpnp_fptr.hpp"
+#include "dpnp_utils.hpp"
 #include "dpnp_iface.hpp"
 #include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
@@ -71,23 +72,29 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
     template <typename _KernelNameSpecialization>                                                                      \
     class __name__##_kernel;                                                                                           \
                                                                                                                        \
+    template <typename _KernelNameSpecialization>                                                                      \
+    class __name__##_strides_kernel;                                                                                   \
+                                                                                                                       \
     template <typename _DataType>                                                                                      \
     void __name__(void* result_out,                                                                                    \
+                  const size_t result_size,                                                                            \
+                  const size_t result_ndim,                                                                            \
+                  const size_t* result_shape,                                                                          \
+                  const size_t* result_strides,                                                                        \
                   const void* input1_in,                                                                               \
                   const size_t input1_size,                                                                            \
+                  const size_t input1_ndim,                                                                            \
                   const size_t* input1_shape,                                                                          \
-                  const size_t input1_shape_ndim,                                                                      \
+                  const size_t* input1_strides,                                                                        \
                   const void* input2_in,                                                                               \
                   const size_t input2_size,                                                                            \
+                  const size_t input2_ndim,                                                                            \
                   const size_t* input2_shape,                                                                          \
-                  const size_t input2_shape_ndim,                                                                      \
+                  const size_t* input2_strides,                                                                        \
                   const size_t* where)                                                                                 \
     {                                                                                                                  \
         /* avoid warning unused variable*/                                                                             \
-        (void)input1_shape;                                                                                            \
-        (void)input1_shape_ndim;                                                                                       \
-        (void)input2_shape;                                                                                            \
-        (void)input2_shape_ndim;                                                                                       \
+        (void)result_shape;                                                                                            \
         (void)where;                                                                                                   \
                                                                                                                        \
         if (!input1_size || !input2_size)                                                                              \
@@ -95,29 +102,85 @@ static void func_map_init_bitwise_1arg_1type(func_map_t& fmap)
             return;                                                                                                    \
         }                                                                                                              \
                                                                                                                        \
-        cl::sycl::event event;                                                                                         \
         DPNPC_ptr_adapter<_DataType> input1_ptr(input1_in, input1_size);                                               \
+        DPNPC_ptr_adapter<size_t> input1_shape_ptr(input1_shape, input1_ndim, true);                                   \
+        DPNPC_ptr_adapter<size_t> input1_strides_ptr(input1_strides, input1_ndim, true);                               \
+                                                                                                                       \
         DPNPC_ptr_adapter<_DataType> input2_ptr(input2_in, input2_size);                                               \
-        const _DataType* input1 = input1_ptr.get_ptr();                                                                \
-        const _DataType* input2 = input2_ptr.get_ptr();                                                                \
-        _DataType* result = reinterpret_cast<_DataType*>(result_out);                                                  \
+        DPNPC_ptr_adapter<size_t> input2_shape_ptr(input2_shape, input2_ndim, true);                                   \
+        DPNPC_ptr_adapter<size_t> input2_strides_ptr(input2_strides, input2_ndim, true);                               \
                                                                                                                        \
-        const size_t gws_size = std::max(input1_size, input2_size);                                                    \
-        cl::sycl::range<1> gws(gws_size);                                                                              \
-        auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                               \
-            size_t i = global_id[0]; /*for (size_t i = 0; i < size; ++i)*/                                             \
-            const _DataType input_elem1 = (input1_size == 1) ? input1[0] : input1[i];                                  \
-            const _DataType input_elem2 = (input2_size == 1) ? input2[0] : input2[i];                                  \
-            result[i] = __operation__;                                                                                 \
-        };                                                                                                             \
+        DPNPC_ptr_adapter<_DataType> result_ptr(result_out, result_size, false, true);                                 \
+        DPNPC_ptr_adapter<size_t> result_strides_ptr(result_strides, result_ndim);                                     \
                                                                                                                        \
-        auto kernel_func = [&](cl::sycl::handler& cgh) {                                                               \
-            cgh.parallel_for<class __name__##_kernel<_DataType>>(gws, kernel_parallel_for_func);                       \
-        };                                                                                                             \
+        _DataType* input1_data = input1_ptr.get_ptr();                                                                 \
+        size_t* input1_shape_data = input1_shape_ptr.get_ptr();                                                        \
+        size_t* input1_strides_data = input1_strides_ptr.get_ptr();                                                    \
                                                                                                                        \
-        event = DPNP_QUEUE.submit(kernel_func);                                                                        \
+        _DataType* input2_data = input2_ptr.get_ptr();                                                                 \
+        size_t* input2_shape_data = input2_shape_ptr.get_ptr();                                                        \
+        size_t* input2_strides_data = input2_strides_ptr.get_ptr();                                                    \
                                                                                                                        \
-        event.wait();                                                                                                  \
+        _DataType* result = result_ptr.get_ptr();                                                                      \
+        size_t* result_strides_data = result_strides_ptr.get_ptr();                                                    \
+                                                                                                                       \
+        const size_t input1_shape_size_in_bytes = input1_ndim * sizeof(size_t);                                        \
+        size_t* input1_shape_offsets = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(input1_shape_size_in_bytes));     \
+        get_shape_offsets_inkernel(input1_shape_data, input1_ndim, input1_shape_offsets);                              \
+        bool use_strides = !array_equal(input1_strides_data, input1_ndim, input1_shape_offsets, input1_ndim);          \
+        dpnp_memory_free_c(input1_shape_offsets);                                                                      \
+                                                                                                                       \
+        const size_t input2_shape_size_in_bytes = input2_ndim * sizeof(size_t);                                        \
+        size_t* input2_shape_offsets = reinterpret_cast<size_t*>(dpnp_memory_alloc_c(input2_shape_size_in_bytes));     \
+        get_shape_offsets_inkernel(input2_shape_data, input2_ndim, input2_shape_offsets);                              \
+        use_strides = use_strides || !array_equal(input2_strides_data, input2_ndim, input2_shape_offsets, input2_ndim);\
+        dpnp_memory_free_c(input2_shape_offsets);                                                                      \
+                                                                                                                       \
+        cl::sycl::event event;                                                                                         \
+        cl::sycl::range<1> gws(result_size);                                                                           \
+                                                                                                                       \
+        if (use_strides)                                                                                               \
+        {                                                                                                              \
+            auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                           \
+                const size_t output_id = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/                    \
+                {                                                                                                      \
+                    size_t input1_id = 0;                                                                              \
+                    size_t input2_id = 0;                                                                              \
+                    for (size_t i = 0; i < result_ndim; ++i)                                                           \
+                    {                                                                                                  \
+                        const size_t output_xyz_id = get_xyz_id_by_id_inkernel(output_id,                              \
+                                                                               result_strides_data,                    \
+                                                                               result_ndim,                            \
+                                                                               i);                                     \
+                        input1_id += output_xyz_id * input1_strides_data[i];                                           \
+                        input2_id += output_xyz_id * input2_strides_data[i];                                           \
+                    }                                                                                                  \
+                                                                                                                       \
+                    const _DataType input1_elem = (input1_size == 1) ? input1_data[0] : input1_data[input1_id];        \
+                    const _DataType input2_elem = (input2_size == 1) ? input2_data[0] : input2_data[input2_id];        \
+                    result[output_id] = __operation__;                                                                 \
+                }                                                                                                      \
+            };                                                                                                         \
+            auto kernel_func = [&](cl::sycl::handler& cgh) {                                                           \
+                cgh.parallel_for<class __name__##_strides_kernel<_DataType>>(gws, kernel_parallel_for_func);           \
+            };                                                                                                         \
+            event = DPNP_QUEUE.submit(kernel_func);                                                                    \
+            event.wait();                                                                                              \
+        }                                                                                                              \
+        else                                                                                                           \
+        {                                                                                                              \
+            auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {                                           \
+                size_t i = global_id[0]; /*for (size_t i = 0; i < result_size; ++i)*/                                  \
+                const _DataType input1_elem = (input1_size == 1) ? input1_data[0] : input1_data[i];                    \
+                const _DataType input2_elem = (input2_size == 1) ? input2_data[0] : input2_data[i];                    \
+                result[i] = __operation__;                                                                             \
+            };                                                                                                         \
+            auto kernel_func = [&](cl::sycl::handler& cgh) {                                                           \
+                cgh.parallel_for<class __name__##_kernel<_DataType>>(gws, kernel_parallel_for_func);                   \
+            };                                                                                                         \
+            event = DPNP_QUEUE.submit(kernel_func);                                                                    \
+            event.wait();                                                                                              \
+        }                                                                                                              \
     }
 
 #include <dpnp_gen_2arg_1type_tbl.hpp>
