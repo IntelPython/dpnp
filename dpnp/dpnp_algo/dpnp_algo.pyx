@@ -227,23 +227,25 @@ cpdef dpnp_queue_is_cpu():
 Internal functions
 """
 cdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype):
+    dt = numpy.dtype(dtype).char
 
-    if dtype in [numpy.float64, numpy.float, 'float64', 'float', 'f8']:
+    if dt == 'd':
         return DPNP_FT_DOUBLE
-    elif dtype in [numpy.float32, 'float32', 'f4']:
+    elif dt == 'f':
         return DPNP_FT_FLOAT
-    elif dtype in [numpy.int64, numpy.int, 'int64', 'int', int]:
+    elif dt == 'q':
         return DPNP_FT_LONG
-    elif dtype in [numpy.int32, 'int32']:
+    elif dt == 'l':
         return DPNP_FT_INT
-    elif dtype in [numpy.complex64, 'complex64']:
+    elif dt == 'F':
         return DPNP_FT_CMPLX64
-    elif dtype in [numpy.complex128, 'complex128']:
+    elif dt == 'D':
         return DPNP_FT_CMPLX128
-    elif dtype in [numpy.bool, numpy.bool_, 'bool', '?']:
+    elif dt == '?':
         return DPNP_FT_BOOL
     else:
         utils.checker_throw_type_error("dpnp_dtype_to_DPNPFuncType", dtype)
+
 
 cdef dpnp_DPNPFuncType_to_dtype(size_t type):
     """
