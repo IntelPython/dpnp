@@ -722,8 +722,8 @@ void dpnp_rng_rayleigh_c(void* result, const _DataType scale, const size_t size)
 
     auto exponential_rng_event = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
     auto sqrt_event = mkl_vm::sqrt(DPNP_QUEUE, size, result1, result1, {exponential_rng_event}, mkl_vm::mode::ha);
-    auto blas_event = mkl_blas::scal(DPNP_QUEUE, size, scale, result1, 1, {sqrt_event});
-    blas_event.wait();
+    auto scal_event = mkl_blas::scal(DPNP_QUEUE, size, scale, result1, 1, {sqrt_event});
+    scal_event.wait();
 }
 
 template <typename _DataType>
