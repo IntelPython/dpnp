@@ -255,9 +255,6 @@ void dpnp_rng_geometric_c(void* result, const float p, const size_t size)
     }
 }
 
-template <typename _KernelNameSpecialization>
-class dpnp_blas_scal_c_kernel;
-
 template <typename _DataType>
 void dpnp_rng_gumbel_c(void* result, const double loc, const double scale, const size_t size)
 {
@@ -283,27 +280,8 @@ void dpnp_rng_gumbel_c(void* result, const double loc, const double scale, const
         mkl_rng::gumbel<_DataType> distribution(negloc, scale);
         auto event_distribution = mkl_rng::generate(distribution, DPNP_RNG_ENGINE, size, result1);
 
-        // OK for CPU and segfault for GPU device
-        // event = mkl_blas::scal(DPNP_QUEUE, size, alpha, result1, incx);
         cl::sycl::event prod_event;
-        if (dpnp_queue_is_cpu_c())
-        {
-            prod_event = mkl_blas::scal(DPNP_QUEUE, size, alpha, result1, incx, {event_distribution});
-        }
-        else
-        {
-            // for (size_t i = 0; i < size; i++) result1[i] *= alpha;
-            cl::sycl::range<1> gws(size);
-            auto kernel_parallel_for_func = [=](cl::sycl::id<1> global_id) {
-                size_t i = global_id[0];
-                result1[i] *= alpha;
-            };
-            auto kernel_func = [&](cl::sycl::handler& cgh) {
-                cgh.depends_on({event_distribution});
-                cgh.parallel_for<class dpnp_blas_scal_c_kernel<_DataType>>(gws, kernel_parallel_for_func);
-            };
-            prod_event = DPNP_QUEUE.submit(kernel_func);
-        }
+        prod_event = mkl_blas::scal(DPNP_QUEUE, size, alpha, result1, incx, {event_distribution});
         prod_event.wait();
     }
 }
