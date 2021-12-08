@@ -49,7 +49,6 @@ cimport numpy
 
 __all__ = [
     "dpnp_arange",
-    "dpnp_array",
     "dpnp_astype",
     "dpnp_flatten",
     "dpnp_init_val",
