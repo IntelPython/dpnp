@@ -497,7 +497,7 @@ void dpnp_rng_noncentral_chisquare_c(void* result, const _DataType df, const _Da
     {
         return;
     }
-    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, false, false);
+    DPNPC_ptr_adapter<_DataType> result1_ptr(result, size, false, true);
     _DataType* result1 = result1_ptr.get_ptr();
 
     const _DataType d_zero = _DataType(0.0);
