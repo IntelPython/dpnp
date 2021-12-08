@@ -139,13 +139,13 @@ void dpnp_elemwise_transpose_c(void* array1_in,
 
 void func_map_init_manipulation(func_map_t& fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_REPEAT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_repeat_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_REPEAT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_repeat_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_REPEAT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_repeat_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_REPEAT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_repeat_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_REPEAT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_repeat_c<float>};
     fmap[DPNPFuncName::DPNP_FN_REPEAT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_repeat_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_elemwise_transpose_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_elemwise_transpose_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_elemwise_transpose_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_elemwise_transpose_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_elemwise_transpose_c<float>};
     fmap[DPNPFuncName::DPNP_FN_TRANSPOSE][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_elemwise_transpose_c<double>};
 
