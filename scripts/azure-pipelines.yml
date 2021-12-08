@@ -112,10 +112,14 @@ jobs:
   displayName: conda-build Ubuntu 20.04
   pool:
     vmImage: 'ubuntu-20.04'
+  variables:
+    mkl.version: 2021.4
   strategy:
-    cross-product:
-      python.version: [ '3.8' ]
-      mkl.version: [ '2021.4' ]
+    matrix:
+      Python38:
+        python.version: '3.8'
+      #Python39:
+      #  python.version: '3.9'
   steps:
   - task: UsePythonVersion@0
     inputs:
