@@ -113,10 +113,9 @@ jobs:
   pool:
     vmImage: 'ubuntu-20.04'
   strategy:
-    matrix:
-      Python38_MKL20214:
-        python.version: '3.8'
-        mkl.version: '2021.4'
+    cross-product:
+      python.version: [ '3.8' ]
+      mkl.version: [ '2021.4' ]
   steps:
   - task: UsePythonVersion@0
     inputs:
