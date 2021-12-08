@@ -108,7 +108,7 @@ cpdef utils.dpnp_descriptor dpnp_astype(utils.dpnp_descriptor x1, dtype):
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ASTYPE, param1_type, param2_type)
 
-    x1_obj = x1.get_pyobj().get_array()
+    x1_obj = x1.get_array()
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = x1.shape
@@ -133,7 +133,7 @@ cpdef utils.dpnp_descriptor dpnp_flatten(utils.dpnp_descriptor x1):
     cdef shape_type_c x1_shape = x1.shape
     cdef shape_type_c x1_strides = utils.strides_to_vector(x1.strides, x1_shape)
 
-    x1_obj = x1.get_pyobj().get_array()
+    x1_obj = x1.get_array()
 
     # ceate result array with type given by FPTR data
     cdef shape_type_c result_shape = (x1.size,)
@@ -293,7 +293,7 @@ cdef utils.dpnp_descriptor call_fptr_1in_1out(DPNPFuncName fptr_name,
 
     if out is None:
         """ Create result array with type given by FPTR data """
-        x1_obj = x1.get_pyobj().get_array()
+        x1_obj = x1.get_array()
         result = utils.create_output_descriptor(result_shape,
                                                 kernel_data.return_type,
                                                 None,
@@ -338,7 +338,7 @@ cdef utils.dpnp_descriptor call_fptr_1in_1out_strides(DPNPFuncName fptr_name,
 
     if out is None:
         """ Create result array with type given by FPTR data """
-        x1_obj = x1.get_pyobj().get_array()
+        x1_obj = x1.get_array()
         result = utils.create_output_descriptor(result_shape,
                                                 kernel_data.return_type,
                                                 None,

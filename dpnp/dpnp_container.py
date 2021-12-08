@@ -71,7 +71,12 @@ def asarray(x1,
             usm_type=None,
             sycl_queue=None):
     """Converts `x1` to `dpnp_array`."""
-    array_obj = dpt.asarray(x1,
+    if isinstance(x1, dpnp_array):
+        x1_obj = x1.get_array()
+    else:
+        x1_obj = x1
+
+    array_obj = dpt.asarray(x1_obj,
                             dtype=dtype,
                             copy=copy,
                             order=order,

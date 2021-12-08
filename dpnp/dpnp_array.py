@@ -142,7 +142,16 @@ class dpnp_array:
  # '__getattribute__',
 
     def __getitem__(self, key):
-        return self._array_obj.__getitem__(key)
+        item = self._array_obj.__getitem__(key)
+        if not isinstance(item, dpt.usm_ndarray):
+            raise RuntimeError(
+                "Expected dpctl.tensor.usm_ndarray, got {}"
+                "".format(type(item)))
+
+        res = self.__new__(dpnp_array)
+        res._array_obj = item
+
+        return res
 
     def __gt__(self, other):
         return dpnp.greater(self, other)
@@ -202,7 +211,9 @@ class dpnp_array:
  # '__new__',
  # '__or__',
  # '__pos__',
- # '__pow__',
+
+    def __pow__(self, other):
+        return dpnp.power(self, other)
 
     def __radd__(self, other):
         return dpnp.add(other, self)
@@ -254,7 +265,9 @@ class dpnp_array:
 
         return str(dpnp.asnumpy(self._array_obj))
 
- # '__sub__',
+    def __sub__(self, other):
+        return dpnp.subtract(self, other)
+
  # '__subclasshook__',
 
     def __truediv__(self, other):
@@ -551,14 +564,13 @@ class dpnp_array:
         :obj:`dpnp.ravel`, :obj:`dpnp.flat`
 
         """
-
-        array_obj = dpt.empty(self.shape,
-                              dtype=self.dtype,
-                              order=order,
-                              device=self._array_obj.sycl_device,
-                              usm_type=self._array_obj.usm_type,
-                              sycl_queue=self._array_obj.sycl_queue)
-        new_arr = self.__class__(array_obj.shape, buffer=array_obj, order=order)
+        new_arr = self.__new__(dpnp_array)
+        new_arr._array_obj = dpt.empty(self.shape,
+                                       dtype=self.dtype,
+                                       order=order,
+                                       device=self._array_obj.sycl_device,
+                                       usm_type=self._array_obj.usm_type,
+                                       sycl_queue=self._array_obj.sycl_queue)
 
         if self.size > 0:
             dpt._copy_utils._copy_from_usm_ndarray_to_usm_ndarray(new_arr._array_obj, self._array_obj)

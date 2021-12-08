@@ -505,10 +505,10 @@ cdef shape_type_c strides_to_vector(object strides, object shape) except *:
     return res
 
 
-cdef tuple get_common_usm_allocation(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj):
+cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2):
     """Get common USM allocation in the form of (sycl_device, usm_type, sycl_queue)."""
-    array1_obj = x1_obj.get_pyobj().get_array()
-    array2_obj = x2_obj.get_pyobj().get_array()
+    array1_obj = x1.get_array()
+    array2_obj = x2.get_array()
 
     def get_usm_type(usm_types):
         if not isinstance(usm_types, (list, tuple)):
@@ -648,6 +648,16 @@ cdef class dpnp_descriptor:
 
     def get_pyobj(self):
         return self.origin_pyobj
+
+    def get_array(self):
+        if isinstance(self.origin_pyobj, dpctl.tensor.usm_ndarray):
+            return self.origin_pyobj
+        if isinstance(self.origin_pyobj, dpnp.dpnp_array.dpnp_array):
+            return self.origin_pyobj.get_array()
+
+        raise TypeError(
+            "expected either dpctl.tensor.usm_ndarray or dpnp.dpnp_array.dpnp_array, got {}"
+            "".format(type(self.origin_pyobj)))
 
     cdef void * get_data(self):
         cdef size_t val = self.data

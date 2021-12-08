@@ -159,7 +159,7 @@ cdef shape_type_c strides_to_vector(object strides, object shape) except *
 Get or calculate srtides based on shape.
 """
 
-cdef tuple get_common_usm_allocation(dpnp_descriptor x1_obj, dpnp_descriptor x2_obj)
+cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2)
 """
 Get common USM allocation in the form of (sycl_device, usm_type, sycl_queue)
 """
