@@ -134,7 +134,6 @@ jobs:
       export MKL_VER=$(mkl.version)
       export OCL_ICD_FILENAMES=libintelocl.so
       conda-build --python $(python.version) --override-channels -c intel -c conda-forge -c dppy/label/dev ./conda-recipe/
-#      . ./scripts/build_dpnp.sh -p $(python.version) -m 2021.4
 
 #- job: ubuntu2004_tests_external
 #  displayName: Ubuntu 20.04 External Tests
