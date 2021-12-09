@@ -113,7 +113,7 @@ jobs:
   pool:
     vmImage: 'ubuntu-20.04'
   variables:
-    mkl.version: 2021.4
+    mkl.version: '>=2021.4'
   strategy:
     matrix:
       Python38:
