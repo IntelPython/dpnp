@@ -214,7 +214,9 @@ class dpnp_array:
 
         return str(dpnp.asnumpy(self._array_obj))
 
- # '__sub__',
+    def __sub__(self, other):
+        return dpnp.subtract(self, other)
+
  # '__subclasshook__',
 
     def __truediv__(self, other):
