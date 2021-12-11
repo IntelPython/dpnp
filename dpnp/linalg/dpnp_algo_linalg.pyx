@@ -88,16 +88,16 @@ cpdef object dpnp_cond(object input, object p):
         res = dpnp.sqrt(sqnorm)
         ret = dpnp.array([res])
     elif p == numpy.inf:
-        dpnp_sum_val = dpnp.array([dpnp.sum(dpnp.abs(input), axis=1)])
+        dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=1)
         ret = dpnp.max(dpnp_sum_val)
     elif p == -numpy.inf:
-        dpnp_sum_val = dpnp.array([dpnp.sum(dpnp.abs(input), axis=1)])
+        dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=1)
         ret = dpnp.min(dpnp_sum_val)
     elif p == 1:
-        dpnp_sum_val = dpnp.array([dpnp.sum(dpnp.abs(input), axis=0)])
+        dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=0)
         ret = dpnp.max(dpnp_sum_val)
     elif p == -1:
-        dpnp_sum_val = dpnp.array([dpnp.sum(dpnp.abs(input), axis=0)])
+        dpnp_sum_val = dpnp.sum(dpnp.abs(input), axis=0)
         ret = dpnp.min(dpnp_sum_val)
     else:
         ret = dpnp.array([input.item(0)])
@@ -228,7 +228,7 @@ cpdef object dpnp_norm(object input, ord=None, axis=None):
             input = dpnp.ravel(input, order='K')
             sqnorm = dpnp.dot(input, input)
             ret = dpnp.sqrt([sqnorm])
-            return dpnp.array([ret], dtype=res_type)
+            return dpnp.array(ret.reshape(1, *ret.shape), dtype=res_type)
 
     len_axis = 1 if axis is None else len(axis_)
     if len_axis == 1:
