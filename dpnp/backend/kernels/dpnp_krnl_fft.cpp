@@ -294,9 +294,9 @@ void dpnp_fft_fft_c(const void* array1_in,
 void func_map_init_fft_func(func_map_t& fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_INT][eft_INT] = {eft_C128,
-                                                             (void*)dpnp_fft_fft_c<int, std::complex<double>>};
+                                                             (void*)dpnp_fft_fft_c<int32_t, std::complex<double>>};
     fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_LNG][eft_LNG] = {eft_C128,
-                                                             (void*)dpnp_fft_fft_c<long, std::complex<double>>};
+                                                             (void*)dpnp_fft_fft_c<int64_t, std::complex<double>>};
     fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_FLT][eft_FLT] = {eft_C64,
                                                              (void*)dpnp_fft_fft_c<float, std::complex<float>>};
     fmap[DPNPFuncName::DPNP_FN_FFT_FFT][eft_DBL][eft_DBL] = {eft_C128,

@@ -302,23 +302,23 @@ void dpnp_sort_c(void* array1_in, void* result1, size_t size)
 
 void func_map_init_sorting(func_map_t& fmap)
 {
-    fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_INT][eft_INT] = {eft_LNG, (void*)dpnp_argsort_c<int, long>};
-    fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_argsort_c<long, long>};
-    fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_FLT][eft_FLT] = {eft_LNG, (void*)dpnp_argsort_c<float, long>};
-    fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_DBL][eft_DBL] = {eft_LNG, (void*)dpnp_argsort_c<double, long>};
+    fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_INT][eft_INT] = {eft_LNG, (void*)dpnp_argsort_c<int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_argsort_c<int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_FLT][eft_FLT] = {eft_LNG, (void*)dpnp_argsort_c<float, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_DBL][eft_DBL] = {eft_LNG, (void*)dpnp_argsort_c<double, int64_t>};
 
-    fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_partition_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_partition_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_partition_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_partition_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_partition_c<float>};
     fmap[DPNPFuncName::DPNP_FN_PARTITION][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_partition_c<double>};
 
-    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_searchsorted_c<int, long>};
-    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_searchsorted_c<long, long>};
-    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_searchsorted_c<float, long>};
-    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_searchsorted_c<double, long>};
+    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_searchsorted_c<int32_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_searchsorted_c<int64_t, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_searchsorted_c<float, int64_t>};
+    fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_searchsorted_c<double, int64_t>};
 
-    fmap[DPNPFuncName::DPNP_FN_SORT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_sort_c<int>};
-    fmap[DPNPFuncName::DPNP_FN_SORT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_sort_c<long>};
+    fmap[DPNPFuncName::DPNP_FN_SORT][eft_INT][eft_INT] = {eft_INT, (void*)dpnp_sort_c<int32_t>};
+    fmap[DPNPFuncName::DPNP_FN_SORT][eft_LNG][eft_LNG] = {eft_LNG, (void*)dpnp_sort_c<int64_t>};
     fmap[DPNPFuncName::DPNP_FN_SORT][eft_FLT][eft_FLT] = {eft_FLT, (void*)dpnp_sort_c<float>};
     fmap[DPNPFuncName::DPNP_FN_SORT][eft_DBL][eft_DBL] = {eft_DBL, (void*)dpnp_sort_c<double>};
 
