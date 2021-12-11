@@ -248,8 +248,8 @@ ctypedef void(*fptr_2in_1out_strides_t)(void *, const size_t, const size_t, cons
 ctypedef void(*fptr_blas_gemm_2in_1out_t)(void *, void * , void * , size_t, size_t, size_t)
 ctypedef void(*dpnp_reduction_c_t)(void *, const void * , const size_t*, const size_t, const long*, const size_t, const void * , const long*)
 
-cpdef dpnp_descriptor dpnp_astype(dpnp_descriptor array1, dtype)
-cpdef dpnp_descriptor dpnp_flatten(dpnp_descriptor array1)
+cpdef dpnp_descriptor dpnp_astype(dpnp_descriptor x1, dtype)
+cpdef dpnp_descriptor dpnp_flatten(dpnp_descriptor x1)
 
 
 """
@@ -318,7 +318,6 @@ cpdef dpnp_descriptor dpnp_matmul(dpnp_descriptor in_array1, dpnp_descriptor in_
 Array creation routines
 """
 cpdef dpnp_descriptor dpnp_arange(start, stop, step, dtype)
-cpdef dpnp_descriptor dpnp_array(object obj, object dtype=*)
 cpdef dpnp_descriptor dpnp_init_val(shape, dtype, value)
 cpdef dpnp_descriptor dpnp_full(result_shape, value_in, result_dtype)  # same as dpnp_init_val
 cpdef dpnp_descriptor dpnp_copy(dpnp_descriptor x1)

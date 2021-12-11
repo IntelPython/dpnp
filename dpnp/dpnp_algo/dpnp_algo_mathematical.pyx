@@ -181,31 +181,21 @@ cpdef utils.dpnp_descriptor dpnp_cumsum(utils.dpnp_descriptor x1):
     return call_fptr_1in_1out(DPNP_FN_CUMSUM, x1, (x1.size,))
 
 
-cpdef object dpnp_diff(utils.dpnp_descriptor input, int n):
-    if n == 0:
-        return input.get_pyobj()
-    if n < input.shape[-1]:
-        arr = input.get_pyobj()
-        for _ in range(n):
-            list_shape_i = list(arr.shape)
-            list_shape_i[-1] = list_shape_i[-1] - 1
-            output_shape = tuple(list_shape_i)
-            res = []
-            size_idx = output_shape[-1]
-            counter = 0
-            for i in range(arr.size):
-                if counter < size_idx:
-                    counter += 1
-                    arr_elem = arr[numpy.unravel_index(i + 1, arr.shape)] - arr[numpy.unravel_index(i, arr.shape)]
-                    res.append(arr_elem)
-                else:
-                    counter = 0
+cpdef utils.dpnp_descriptor dpnp_diff(utils.dpnp_descriptor x1, int n):
+    cdef utils.dpnp_descriptor res
 
-            dpnp_array = dpnp.array(res, dtype=input.dtype)
-            arr = dpnp.reshape(dpnp_array, output_shape)
-        return arr
-    else:
-        return dpnp.array([], dtype=input.dtype)
+    if x1.size - n < 1:
+        res = utils.dpnp_descriptor(dpnp.empty(0, dtype=x1.dtype))
+        return res
+
+    res = utils.dpnp_descriptor(dpnp.empty(x1.size - 1, dtype=x1.dtype))
+    for i in range(res.size):
+        res.get_pyobj()[i] = x1.get_pyobj()[i+1] - x1.get_pyobj()[i]
+
+    if n == 1:
+        return res
+
+    return dpnp_diff(res, n-1)
 
 
 cpdef utils.dpnp_descriptor dpnp_divide(utils.dpnp_descriptor x1_obj,
