@@ -160,18 +160,18 @@ template <typename _DataType_output, typename _DataType_input1, typename _DataTy
 void dpnp_dot_c(void* result_out,
                 const size_t result_size,
                 const size_t result_ndim,
-                const size_t* result_shape,
-                const size_t* result_strides,
+                const shape_elem_type* result_shape,
+                const shape_elem_type* result_strides,
                 const void* input1_in,
                 const size_t input1_size,
                 const size_t input1_ndim,
-                const size_t* input1_shape,
-                const size_t* input1_strides,
+                const shape_elem_type* input1_shape,
+                const shape_elem_type* input1_strides,
                 const void* input2_in,
                 const size_t input2_size,
                 const size_t input2_ndim,
-                const size_t* input2_shape,
-                const size_t* input2_strides)
+                const shape_elem_type* input2_shape,
+                const shape_elem_type* input2_strides)
 {
     DPNPC_ptr_adapter<_DataType_input1> input1_ptr(input1_in, input1_size);
     DPNPC_ptr_adapter<_DataType_input2> input2_ptr(input2_in, input2_size);
@@ -223,8 +223,8 @@ void dpnp_dot_c(void* result_out,
 
     // 1D vector
     size_t ext_input1_ndim = input1_ndim == 1 ? 2 : input1_ndim;
-    size_t* ext_input1_shape = new size_t[ext_input1_ndim];
-    size_t* ext_input1_strides = new size_t[ext_input1_ndim];
+    shape_elem_type* ext_input1_shape = new shape_elem_type[ext_input1_ndim];
+    shape_elem_type* ext_input1_strides = new shape_elem_type[ext_input1_ndim];
     if (input1_ndim == 1)
     {
         ext_input1_shape[0] = 1;
@@ -241,8 +241,8 @@ void dpnp_dot_c(void* result_out,
         }
     }
     size_t ext_input2_ndim = input2_ndim == 1 ? 2 : input2_ndim;
-    size_t* ext_input2_shape = new size_t[ext_input2_ndim];
-    size_t* ext_input2_strides = new size_t[ext_input2_ndim];
+    shape_elem_type* ext_input2_shape = new shape_elem_type[ext_input2_ndim];
+    shape_elem_type* ext_input2_strides = new shape_elem_type[ext_input2_ndim];
     if (input2_ndim == 1)
     {
         ext_input2_shape[0] = input2_shape[0];
@@ -259,7 +259,7 @@ void dpnp_dot_c(void* result_out,
         }
     }
     size_t ext_result_ndim = ((input1_ndim == 1) || (input2_ndim == 1)) ? 2 : result_ndim;
-    size_t* ext_result_shape = new size_t[ext_result_ndim];
+    shape_elem_type* ext_result_shape = new shape_elem_type[ext_result_ndim];
     if ((input1_ndim == 1) || (input2_ndim == 1))
     {
         ext_result_shape[0] = ext_input1_shape[0];
@@ -333,8 +333,8 @@ void dpnp_dot_c(void* result_out,
     size_t dot_st2 = ext_input2_strides[ext_input2_ndim - 2];
     size_t dot_size = ext_input1_shape[ext_input1_ndim - 1];
 
-    size_t* res_coords = new size_t[ext_result_ndim];
-    size_t* result_offsets = new size_t[ext_result_ndim];
+    shape_elem_type* res_coords = new shape_elem_type[ext_result_ndim];
+    shape_elem_type* result_offsets = new shape_elem_type[ext_result_ndim];
     get_shape_offsets_inkernel(ext_result_shape, ext_result_ndim, result_offsets);
 
     for (size_t i = 0; i < result_size; ++i)

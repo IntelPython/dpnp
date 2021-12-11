@@ -53,7 +53,7 @@ public:
     using iterator_category = std::random_access_iterator_tag;
     using pointer = value_type*;
     using reference = value_type&;
-    using size_type = size_t;
+    using size_type = shape_elem_type;
 
     DPNP_USM_iterator(pointer __base_ptr,
                       size_type __id,
@@ -199,7 +199,7 @@ public:
     using iterator = DPNP_USM_iterator<value_type>;
     using pointer = value_type*;
     using reference = value_type&;
-    using size_type = size_t;
+    using size_type = shape_elem_type;
 
     DPNPC_id(pointer __ptr, const size_type* __shape, const size_type __shape_size)
     {
