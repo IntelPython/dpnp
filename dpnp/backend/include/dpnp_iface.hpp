@@ -51,6 +51,8 @@
 #define INP_DLLEXPORT
 #endif
 
+typedef long shape_elem_type;
+
 /**
  * @defgroup BACKEND_API Backend C++ library interface API
  * @{
@@ -640,7 +642,7 @@ INP_DLLEXPORT void
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_diag_c(
-    void* array, void* result, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim);
+    void* array, void* result, const int k, shape_elem_type* shape, shape_elem_type* res_shape, const size_t ndim, const size_t res_ndim);
 
 /**
  * @ingroup BACKEND_API
@@ -863,7 +865,7 @@ INP_DLLEXPORT void dpnp_take_c(void* array, const size_t array1_size, void* indi
  * @param [in]  ndim       Number of elements in array.shape.
  */
 template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void dpnp_trace_c(const void* array, void* result, const size_t* shape, const size_t ndim);
+INP_DLLEXPORT void dpnp_trace_c(const void* array, void* result, const shape_elem_type* shape, const size_t ndim);
 
 /**
  * @ingroup BACKEND_API
@@ -891,7 +893,7 @@ INP_DLLEXPORT void dpnp_tri_c(void* result, const size_t N, const size_t M, cons
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_tril_c(
-    void* array, void* result, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim);
+    void* array, void* result, const int k, shape_elem_type* shape, shape_elem_type* res_shape, const size_t ndim, const size_t res_ndim);
 
 /**
  * @ingroup BACKEND_API
@@ -907,7 +909,7 @@ INP_DLLEXPORT void dpnp_tril_c(
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_triu_c(
-    void* array, void* result, const int k, size_t* shape, size_t* res_shape, const size_t ndim, const size_t res_ndim);
+    void* array, void* result, const int k, shape_elem_type* shape, shape_elem_type* res_shape, const size_t ndim, const size_t res_ndim);
 
 /**
  * @ingroup BACKEND_API
