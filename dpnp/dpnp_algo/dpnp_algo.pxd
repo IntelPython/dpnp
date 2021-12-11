@@ -31,7 +31,8 @@ from libcpp cimport bool as cpp_bool
 from dpnp.dpnp_utils.dpnp_algo_utils cimport dpnp_descriptor
 
 
-ctypedef vector.vector[long] shape_type_c
+ctypedef long shape_elem_type
+ctypedef vector.vector[shape_elem_type] shape_type_c
 
 
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
