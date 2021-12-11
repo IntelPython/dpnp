@@ -162,10 +162,11 @@ cpdef utils.dpnp_descriptor dpnp_repeat(utils.dpnp_descriptor array1, repeats, a
     return result
 
 
-cpdef utils.dpnp_descriptor dpnp_reshape(utils.dpnp_descriptor array1, newshape, order=None):
+cpdef utils.dpnp_descriptor dpnp_reshape(utils.dpnp_descriptor array1, newshape, order="C"):
     # return dpnp.get_dpnp_descriptor(dpctl.tensor.usm_ndarray(newshape, dtype=numpy.dtype(array1.dtype).name, buffer=array1.get_pyobj()))
     # return dpnp.get_dpnp_descriptor(dpctl.tensor.reshape(array1.get_pyobj(), newshape))
-    return dpnp.get_dpnp_descriptor(dpctl.tensor.reshape(array1.get_pyobj()._array_obj, newshape))
+    array_obj = dpctl.tensor.reshape(array1.get_array(), newshape, order=order)
+    return dpnp.get_dpnp_descriptor(dpnp_array(array_obj.shape, buffer=array_obj, order=order))
 
 
 cpdef utils.dpnp_descriptor dpnp_transpose(utils.dpnp_descriptor array1, axes=None):

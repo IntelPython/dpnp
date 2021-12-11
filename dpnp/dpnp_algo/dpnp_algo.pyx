@@ -37,7 +37,7 @@ from libcpp.vector cimport vector
 import dpnp
 import dpnp.config as config
 import dpnp.dpnp_utils as utils_py
-from dpnp.dpnp_container import container_copy
+from dpnp.dpnp_array import dpnp_array
 
 import numpy
 import dpctl
@@ -49,7 +49,6 @@ cimport numpy
 
 __all__ = [
     "dpnp_arange",
-    "dpnp_array",
     "dpnp_astype",
     "dpnp_flatten",
     "dpnp_init_val",
@@ -102,60 +101,47 @@ cpdef utils.dpnp_descriptor dpnp_arange(start, stop, step, dtype):
     return result
 
 
-cpdef utils.dpnp_descriptor dpnp_array(object obj, object dtype=None):
-    cdef utils.dpnp_descriptor result
-    cdef shape_type_c obj_shape
-
-    # convert scalar to tuple
-    if dpnp.isscalar(obj):
-        obj = (obj, )
-
-    if not cpython.PySequence_Check(obj):
-        raise TypeError(f"DPNP dpnp_array(): Unsupported non-sequence obj={type(obj)}")
-
-    obj_shape, obj_dtype = utils.get_shape_dtype(obj)
-    if dtype is not None:
-        """ Set type from parameter. result might be empty array """
-        result = utils_py.create_output_descriptor_py(obj_shape, dtype, None)
-    else:
-        if obj_shape.empty():
-            """ Empty object (ex. empty list) and no type provided """
-            result = utils_py.create_output_descriptor_py(obj_shape, None, None)
-        else:
-            result = utils_py.create_output_descriptor_py(obj_shape, obj_dtype, None)
-
-    container_copy(result.get_pyobj(), obj)
-
-    return result
-
-
-cpdef utils.dpnp_descriptor dpnp_astype(utils.dpnp_descriptor array1, dtype):
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
+cpdef utils.dpnp_descriptor dpnp_astype(utils.dpnp_descriptor x1, dtype):
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
     cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_ASTYPE, param1_type, param2_type)
 
+    x1_obj = x1.get_array()
+
     # ceate result array with type given by FPTR data
-    cdef shape_type_c result_shape = array1.shape
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
+    cdef shape_type_c result_shape = x1.shape
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
+                                                                       kernel_data.return_type,
+                                                                       None,
+                                                                       device=x1_obj.sycl_device,
+                                                                       usm_type=x1_obj.usm_type,
+                                                                       sycl_queue=x1_obj.sycl_queue)
 
     cdef fptr_dpnp_astype_t func = <fptr_dpnp_astype_t > kernel_data.ptr
-    func(array1.get_data(), result.get_data(), array1.size)
+    func(x1.get_data(), result.get_data(), x1.size)
 
     return result
 
 
-cpdef utils.dpnp_descriptor dpnp_flatten(utils.dpnp_descriptor x1_obj):
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1_obj.dtype)
+cpdef utils.dpnp_descriptor dpnp_flatten(utils.dpnp_descriptor x1):
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
 
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_FLATTEN, param1_type, param1_type)
 
-    cdef shape_type_c x1_shape = x1_obj.shape
-    cdef shape_type_c x1_strides = utils.strides_to_vector(x1_obj.strides, x1_shape)
+    cdef shape_type_c x1_shape = x1.shape
+    cdef shape_type_c x1_strides = utils.strides_to_vector(x1.strides, x1_shape)
+
+    x1_obj = x1.get_array()
 
     # ceate result array with type given by FPTR data
-    cdef shape_type_c result_shape = (x1_obj.size,)
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
+    cdef shape_type_c result_shape = (x1.size,)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(result_shape,
+                                                                       kernel_data.return_type,
+                                                                       None,
+                                                                       device=x1_obj.sycl_device,
+                                                                       usm_type=x1_obj.usm_type,
+                                                                       sycl_queue=x1_obj.sycl_queue)
 
     cdef shape_type_c result_strides = utils.strides_to_vector(result.strides, result_shape)
 
@@ -165,9 +151,9 @@ cpdef utils.dpnp_descriptor dpnp_flatten(utils.dpnp_descriptor x1_obj):
          result.ndim,
          result_shape.data(),
          result_strides.data(),
-         x1_obj.get_data(),
-         x1_obj.size,
-         x1_obj.ndim,
+         x1.get_data(),
+         x1.size,
+         x1.ndim,
          x1_shape.data(),
          x1_strides.data(),
          NULL)
@@ -306,7 +292,13 @@ cdef utils.dpnp_descriptor call_fptr_1in_1out(DPNPFuncName fptr_name,
 
     if out is None:
         """ Create result array with type given by FPTR data """
-        result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
+        x1_obj = x1.get_array()
+        result = utils.create_output_descriptor(result_shape,
+                                                kernel_data.return_type,
+                                                None,
+                                                device=x1_obj.sycl_device,
+                                                usm_type=x1_obj.usm_type,
+                                                sycl_queue=x1_obj.sycl_queue)
     else:
         if out.dtype != result_type:
             utils.checker_throw_value_error(func_name, 'out.dtype', out.dtype, result_type)
@@ -323,29 +315,35 @@ cdef utils.dpnp_descriptor call_fptr_1in_1out(DPNPFuncName fptr_name,
 
 
 cdef utils.dpnp_descriptor call_fptr_1in_1out_strides(DPNPFuncName fptr_name,
-                                                      utils.dpnp_descriptor x1_obj,
+                                                      utils.dpnp_descriptor x1,
                                                       object dtype=None,
                                                       utils.dpnp_descriptor out=None,
                                                       object where=True,
                                                       func_name=None):
 
-    """ Convert type (x1_obj.dtype) to C enum DPNPFuncType """
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1_obj.dtype)
+    """ Convert type (x1.dtype) to C enum DPNPFuncType """
+    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
 
     """ get the FPTR data structure """
     cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(fptr_name, param1_type, param1_type)
 
     result_type = dpnp_DPNPFuncType_to_dtype( < size_t > kernel_data.return_type)
 
-    cdef shape_type_c x1_shape = x1_obj.shape
-    cdef shape_type_c x1_strides = utils.strides_to_vector(x1_obj.strides, x1_shape)
+    cdef shape_type_c x1_shape = x1.shape
+    cdef shape_type_c x1_strides = utils.strides_to_vector(x1.strides, x1_shape)
 
     cdef shape_type_c result_shape = x1_shape
     cdef utils.dpnp_descriptor result
 
     if out is None:
         """ Create result array with type given by FPTR data """
-        result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
+        x1_obj = x1.get_array()
+        result = utils.create_output_descriptor(result_shape,
+                                                kernel_data.return_type,
+                                                None,
+                                                device=x1_obj.sycl_device,
+                                                usm_type=x1_obj.usm_type,
+                                                sycl_queue=x1_obj.sycl_queue)
     else:
         if out.dtype != result_type:
             utils.checker_throw_value_error(func_name, 'out.dtype', out.dtype, result_type)
@@ -363,9 +361,9 @@ cdef utils.dpnp_descriptor call_fptr_1in_1out_strides(DPNPFuncName fptr_name,
          result.ndim,
          result_shape.data(),
          result_strides.data(),
-         x1_obj.get_data(),
-         x1_obj.size,
-         x1_obj.ndim,
+         x1.get_data(),
+         x1.size,
+         x1.ndim,
          x1_shape.data(),
          x1_strides.data(),
          NULL)
@@ -398,7 +396,13 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out(DPNPFuncName fptr_name,
 
     if out is None:
         """ Create result array with type given by FPTR data """
-        result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
+        result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(x1_obj, x2_obj)
+        result = utils.create_output_descriptor(result_shape,
+                                                kernel_data.return_type,
+                                                None,
+                                                device=result_sycl_device,
+                                                usm_type=result_usm_type,
+                                                sycl_queue=result_sycl_queue)
     else:
         if out.dtype != result_type:
             utils.checker_throw_value_error(func_name, 'out.dtype', out.dtype, result_type)
@@ -451,7 +455,13 @@ cdef utils.dpnp_descriptor call_fptr_2in_1out_strides(DPNPFuncName fptr_name,
 
     if out is None:
         """ Create result array with type given by FPTR data """
-        result = utils.create_output_descriptor(result_shape, kernel_data.return_type, None)
+        result_sycl_device, result_usm_type, result_sycl_queue = utils.get_common_usm_allocation(x1_obj, x2_obj)
+        result = utils.create_output_descriptor(result_shape,
+                                                kernel_data.return_type,
+                                                None,
+                                                device=result_sycl_device,
+                                                usm_type=result_usm_type,
+                                                sycl_queue=result_sycl_queue)
     else:
         if out.dtype != result_type:
             utils.checker_throw_value_error(func_name, 'out.dtype', out.dtype, result_type)
