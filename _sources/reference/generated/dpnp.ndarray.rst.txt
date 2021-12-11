@@ -73,6 +73,9 @@
    .. automethod:: flatten
 
 
+   .. automethod:: get_array
+
+
    .. automethod:: item
 
 

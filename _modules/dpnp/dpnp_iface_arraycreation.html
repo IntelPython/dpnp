@@ -118,6 +118,9 @@
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="o">*</span>
 
+<span class="kn">import</span> <span class="nn">dpnp.dpnp_container</span> <span class="k">as</span> <span class="nn">dpnp_container</span>
+
+
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;arange&quot;</span><span class="p">,</span>
     <span class="s2">&quot;array&quot;</span><span class="p">,</span>
@@ -221,7 +224,16 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="array"><a class="viewcode-back" href="../../reference/generated/dpnp.array.html#dpnp.array">[docs]</a><span class="k">def</span> <span class="nf">array</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="array"><a class="viewcode-back" href="../../reference/generated/dpnp.array.html#dpnp.array">[docs]</a><span class="k">def</span> <span class="nf">array</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span>
+          <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+          <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+          <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+          <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+          <span class="n">ndmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+          <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+          <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+          <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+          <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates an array.</span>
 
@@ -229,10 +241,9 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``copy`` is supported only with default value ``True``.</span>
-<span class="sd">    Parameter ``order`` is supported only with default value ``&quot;C&quot;``.</span>
 <span class="sd">    Parameter ``subok`` is supported only with default value ``False``.</span>
 <span class="sd">    Parameter ``ndmin`` is supported only with default value ``0``.</span>
+<span class="sd">    Parameter ``like`` is supported only with default value ``None``.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -251,35 +262,43 @@
 <span class="sd">    &gt;&gt;&gt; x = np.array([1, 2, 3])</span>
 <span class="sd">    &gt;&gt;&gt; x.ndim, x.size, x.shape</span>
 <span class="sd">    (1, 3, (3,))</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in x]</span>
-<span class="sd">    [1, 2, 3]</span>
+<span class="sd">    &gt;&gt;&gt; print(x)</span>
+<span class="sd">    [1 2 3]</span>
 
 <span class="sd">    More than one dimension:</span>
 
 <span class="sd">    &gt;&gt;&gt; x2 = np.array([[1, 2], [3, 4]])</span>
 <span class="sd">    &gt;&gt;&gt; x2.ndim, x2.size, x2.shape</span>
 <span class="sd">    (2, 4, (2, 2))</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in x2]</span>
-<span class="sd">    [1, 2, 3, 4]</span>
+<span class="sd">    &gt;&gt;&gt; print(x2)</span>
+<span class="sd">    [[1 2]</span>
+<span class="sd">     [3 4]]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_type_supported</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">pass</span>
-    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">__DPNP_OUTPUT_DPCTL__</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="n">ndmin</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
-        <span class="k">pass</span>
-    <span class="k">elif</span> <span class="n">copy</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="k">pass</span>
-    <span class="k">elif</span> <span class="n">order</span> <span class="o">!=</span> <span class="s1">&#39;C&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
         <span class="k">pass</span>
     <span class="k">elif</span> <span class="n">ndmin</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">pass</span>
+    <span class="k">elif</span> <span class="n">like</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_array</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span>
+                                      <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+                                      <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">,</span>
+                                      <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                                      <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                                      <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+                                      <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="n">ndmin</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
+                       <span class="n">x1</span><span class="p">,</span>
+                       <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+                       <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">,</span>
+                       <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                       <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
+                       <span class="n">ndmin</span><span class="o">=</span><span class="n">ndmin</span><span class="p">,</span>
+                       <span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="asanyarray"><a class="viewcode-back" href="../../reference/generated/dpnp.asanyarray.html#dpnp.asanyarray">[docs]</a><span class="k">def</span> <span class="nf">asanyarray</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
@@ -327,7 +346,13 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="asarray"><a class="viewcode-back" href="../../reference/generated/dpnp.asarray.html#dpnp.asarray">[docs]</a><span class="k">def</span> <span class="nf">asarray</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="asarray"><a class="viewcode-back" href="../../reference/generated/dpnp.asarray.html#dpnp.asarray">[docs]</a><span class="k">def</span> <span class="nf">asarray</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+            <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts an input object into array.</span>
 
@@ -335,7 +360,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``order`` is supported only with default value ``&quot;C&quot;``.</span>
+<span class="sd">    Parameter ``like`` is supported only with default value ``None``.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -354,15 +379,23 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; x = np.asarray([1, 2, 3])</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in x]</span>
-<span class="sd">    [1, 2, 3]</span>
+<span class="sd">    &gt;&gt;&gt; print(x)</span>
+<span class="sd">    [1 2 3]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">use_origin_backend</span><span class="p">(</span><span class="nb">input</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">like</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span>
+                                      <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+                                      <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Converting Python sequence to usm_ndarray requires a copy</span>
+                                      <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                                      <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                                      <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+                                      <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">array</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ascontiguousarray"><a class="viewcode-back" href="../../reference/generated/dpnp.ascontiguousarray.html#dpnp.ascontiguousarray">[docs]</a><span class="k">def</span> <span class="nf">ascontiguousarray</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -511,7 +544,13 @@
     <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">diagflat</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="empty"><a class="viewcode-back" href="../../reference/generated/dpnp.empty.html#dpnp.empty">[docs]</a><span class="k">def</span> <span class="nf">empty</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="empty"><a class="viewcode-back" href="../../reference/generated/dpnp.empty.html#dpnp.empty">[docs]</a><span class="k">def</span> <span class="nf">empty</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span>
+          <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;f8&quot;</span><span class="p">,</span>
+          <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+          <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+          <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+          <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">,</span>
+          <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a new array of given shape and type, without initializing entries.</span>
 
@@ -519,7 +558,7 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter ``order`` is supported only with default value ``&quot;C&quot;``.</span>
+<span class="sd">    Parameter ``like`` is supported only with default value ``None``.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -532,19 +571,22 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; x = np.empty(4)</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in x]</span>
-<span class="sd">    [0.0, 0.0, 1e-323, -3.5935729608842025e+22]</span>
+<span class="sd">    &gt;&gt;&gt; print(x)</span>
+<span class="sd">    [0. 0. 0. 0.]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">use_origin_backend</span><span class="p">()):</span>
-        <span class="k">if</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">create_output_descriptor_py</span><span class="p">(</span><span class="n">_object_to_tuple</span><span class="p">(</span><span class="n">shape</span><span class="p">),</span> <span class="n">dtype</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">result</span>
+    <span class="k">if</span> <span class="n">like</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span>
+                                    <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+                                    <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+                                    <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+                                    <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+                                    <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="empty_like"><a class="viewcode-back" href="../../reference/generated/dpnp.empty_like.html#dpnp.empty_like">[docs]</a><span class="k">def</span> <span class="nf">empty_like</span><span class="p">(</span><span class="n">prototype</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
