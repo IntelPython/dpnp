@@ -215,6 +215,8 @@ Internal functions
 cdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype):
     dt_c = numpy.dtype(dtype).char
     kind = numpy.dtype(dtype).kind
+    if isinstance(kind, int):
+        kind = chr(kind)
     itemsize = numpy.dtype(dtype).itemsize
 
     if dt_c == 'd':
