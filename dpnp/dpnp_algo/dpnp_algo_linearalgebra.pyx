@@ -48,6 +48,10 @@ ctypedef void(*fptr_2in_1out_shapes_t)(void * , void * , void * , size_t * , siz
 ctypedef void(*fptr_2in_1out_dot_t)(void *, const size_t, const size_t, const long * , const long * ,
                                     void *, const size_t, const size_t, const long * , const long * ,
                                     void *, const size_t, const size_t, const long * , const long * )
+ctypedef void(*fptr_2in_1out_matmul_t)(void *, const size_t, const size_t, const long * , const long * ,
+                                       void *, const size_t, const size_t, const long * , const long * ,
+                                       void *, const size_t, const size_t, const long * , const long * ,
+                                       void *)
 
 cpdef utils.dpnp_descriptor dpnp_dot(utils.dpnp_descriptor in_array1, utils.dpnp_descriptor in_array2):
 
@@ -274,7 +278,10 @@ cpdef utils.dpnp_descriptor dpnp_matmul(utils.dpnp_descriptor in_array1, utils.d
     if result.size == 0:
         return result
 
-    cdef fptr_2in_1out_dot_t func = <fptr_2in_1out_dot_t > kernel_data.ptr
+    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
+    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
+
+    cdef fptr_2in_1out_matmul_t func = <fptr_2in_1out_matmul_t > kernel_data.ptr
     # call FPTR function
     func(result.get_data(),
          result.size,
@@ -290,7 +297,8 @@ cpdef utils.dpnp_descriptor dpnp_matmul(utils.dpnp_descriptor in_array1, utils.d
          in_array2.size,
          in_array2.ndim,
          shape2.data(),
-         NULL)  # in_array2_strides
+         NULL,   # in_array2_strides
+         q_ref)
 
     return result
 

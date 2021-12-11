@@ -40,6 +40,7 @@ It provides:
 import importlib.machinery as imm  # Python 3 is required
 import sys
 import os
+import dpctl
 import numpy
 
 from setuptools import setup, Extension
@@ -122,7 +123,7 @@ if IS_WIN:
 The project modules description
 """
 kwargs_common = {
-    "include_dirs": [numpy.get_include()] + _project_backend_dir,
+    "include_dirs": [numpy.get_include(), dpctl.get_include()] + _project_backend_dir,
     "extra_compile_args": _sdl_cflags,
     "extra_link_args": _project_extra_link_args,
     "define_macros": [("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")],

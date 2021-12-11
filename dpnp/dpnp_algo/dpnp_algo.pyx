@@ -39,12 +39,14 @@ import dpnp.config as config
 import dpnp.dpnp_utils as utils_py
 from dpnp.dpnp_array import dpnp_array
 
-import numpy
+cimport dpctl as c_dpctl
 import dpctl
 
 cimport cpython
 cimport dpnp.dpnp_utils as utils
+
 cimport numpy
+import numpy
 
 
 __all__ = [

@@ -210,6 +210,47 @@ INP_DLLEXPORT void dpnp_full_like_c(void* array_in, void* result, size_t size);
  * @param [in]  input2_ndim         Number of second input array dimensions.
  * @param [in]  input2_shape        Shape of second input array.
  * @param [in]  input2_strides      Strides of second input array.
+ * @param [in]  q_ref               Reference to SYCL queue.
+ */
+template <typename _DataType>
+INP_DLLEXPORT void dpnp_matmul_c(void* result_out,
+                                 const size_t result_size,
+                                 const size_t result_ndim,
+                                 const size_t* result_shape,
+                                 const size_t* result_strides,
+                                 const void* input1_in,
+                                 const size_t input1_size,
+                                 const size_t input1_ndim,
+                                 const size_t* input1_shape,
+                                 const size_t* input1_strides,
+                                 const void* input2_in,
+                                 const size_t input2_size,
+                                 const size_t input2_ndim,
+                                 const size_t* input2_shape,
+                                 const size_t* input2_strides,
+                                 void* q_ref);
+
+/**
+ * @ingroup BACKEND_API
+ * @brief Matrix multiplication.
+ *
+ * Matrix multiplication procedure.
+ *
+ * @param [out] result_out          Output array.
+ * @param [in]  result_size         Size of output array.
+ * @param [in]  result_ndim         Number of output array dimensions.
+ * @param [in]  result_shape        Shape of output array.
+ * @param [in]  result_strides      Strides of output array.
+ * @param [in]  input1_in           First input array.
+ * @param [in]  input1_size         Size of first input array.
+ * @param [in]  input1_ndim         Number of first input array dimensions.
+ * @param [in]  input1_shape        Shape of first input array.
+ * @param [in]  input1_strides      Strides of first input array.
+ * @param [in]  input2_in           Second input array.
+ * @param [in]  input2_size         Size of second input array.
+ * @param [in]  input2_ndim         Number of second input array dimensions.
+ * @param [in]  input2_shape        Shape of second input array.
+ * @param [in]  input2_strides      Strides of second input array.
  */
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_matmul_c(void* result_out,
