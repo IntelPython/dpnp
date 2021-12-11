@@ -215,23 +215,32 @@ cpdef dpnp_queue_is_cpu():
 Internal functions
 """
 cdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype):
+    dt_c = numpy.dtype(dtype).char
+    kind = numpy.dtype(dtype).kind
+    if isinstance(kind, int):
+        kind = chr(kind)
+    itemsize = numpy.dtype(dtype).itemsize
 
-    if dtype in [numpy.float64, numpy.float, 'float64', 'float', 'f8']:
+    if dt_c == 'd':
         return DPNP_FT_DOUBLE
-    elif dtype in [numpy.float32, 'float32', 'f4']:
+    elif dt_c == 'f':
         return DPNP_FT_FLOAT
-    elif dtype in [numpy.int64, numpy.int, 'int64', 'int', int]:
-        return DPNP_FT_LONG
-    elif dtype in [numpy.int32, 'int32']:
-        return DPNP_FT_INT
-    elif dtype in [numpy.complex64, 'complex64']:
+    elif kind == 'i':
+        if itemsize == 8:
+            return DPNP_FT_LONG
+        elif itemsize == 4:
+            return DPNP_FT_INT
+        else:
+            utils.checker_throw_type_error("dpnp_dtype_to_DPNPFuncType", dtype)
+    elif dt_c == 'F':
         return DPNP_FT_CMPLX64
-    elif dtype in [numpy.complex128, 'complex128']:
+    elif dt_c == 'D':
         return DPNP_FT_CMPLX128
-    elif dtype in [numpy.bool, numpy.bool_, 'bool', '?']:
+    elif dt_c == '?':
         return DPNP_FT_BOOL
     else:
         utils.checker_throw_type_error("dpnp_dtype_to_DPNPFuncType", dtype)
+
 
 cdef dpnp_DPNPFuncType_to_dtype(size_t type):
     """
