@@ -93,11 +93,11 @@ void dpnp_diagonal_c(void* array1_in,
                      const size_t input1_size,
                      void* result1,
                      const size_t offset,
-                     size_t* shape,
-                     size_t* res_shape,
+                     shape_elem_type* shape,
+                     shape_elem_type* res_shape,
                      const size_t res_ndim)
 {
-    const size_t res_size = std::accumulate(res_shape, res_shape + res_ndim, 1, std::multiplies<size_t>());
+    const size_t res_size = std::accumulate(res_shape, res_shape + res_ndim, 1, std::multiplies<shape_elem_type>());
     if (!(res_size && input1_size))
     {
         return;
@@ -205,9 +205,9 @@ void dpnp_diagonal_c(void* array1_in,
 }
 
 template <typename _DataType>
-void dpnp_fill_diagonal_c(void* array1_in, void* val_in, size_t* shape, const size_t ndim)
+void dpnp_fill_diagonal_c(void* array1_in, void* val_in, shape_elem_type* shape, const size_t ndim)
 {
-    const size_t result_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    const size_t result_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
     if (!(result_size && array1_in))
     {
         return;
@@ -249,7 +249,7 @@ template <typename _DataType>
 void dpnp_nonzero_c(const void* in_array1,
                     void* result1,
                     const size_t result_size,
-                    const size_t* shape,
+                    const shape_elem_type* shape,
                     const size_t ndim,
                     const size_t j)
 {
@@ -263,7 +263,7 @@ void dpnp_nonzero_c(const void* in_array1,
         return;
     }
 
-    const size_t input1_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    const size_t input1_size = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
 
     DPNPC_ptr_adapter<_DataType> input1_ptr(in_array1, input1_size, true);
     DPNPC_ptr_adapter<long> result_ptr(result1, result_size, true, true);
@@ -367,14 +367,14 @@ void dpnp_put_along_axis_c(void* arr_in,
                            long* indices_in,
                            void* values_in,
                            size_t axis,
-                           const size_t* shape,
+                           const shape_elem_type* shape,
                            size_t ndim,
                            size_t size_indices,
                            size_t values_size)
 {
     size_t res_ndim = ndim - 1;
     size_t res_shape[res_ndim];
-    const size_t size_arr = std::accumulate(shape, shape + ndim, 1, std::multiplies<size_t>());
+    const size_t size_arr = std::accumulate(shape, shape + ndim, 1, std::multiplies<shape_elem_type>());
 
     DPNPC_ptr_adapter<size_t> input1_ptr(indices_in, size_indices, true);
     DPNPC_ptr_adapter<_DataType> input2_ptr(values_in, values_size, true);

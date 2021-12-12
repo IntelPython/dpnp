@@ -258,7 +258,7 @@ template <typename _DataType>
 INP_DLLEXPORT void dpnp_nonzero_c(const void* array1,
                                   void* result1,
                                   const size_t result_size,
-                                  const size_t* shape,
+                                  const shape_elem_type* shape,
                                   const size_t ndim,
                                   const size_t j);
 
@@ -484,7 +484,7 @@ INP_DLLEXPORT void dpnp_put_along_axis_c(void* arr_in,
                                          long* indices_in,
                                          void* values_in,
                                          size_t axis,
-                                         const size_t* shape,
+                                         const shape_elem_type* shape,
                                          size_t ndim,
                                          size_t size_indices,
                                          size_t values_size);
@@ -671,8 +671,8 @@ INP_DLLEXPORT void dpnp_diagonal_c(void* array1_in,
                                    const size_t input1_size,
                                    void* result1,
                                    const size_t offset,
-                                   size_t* shape,
-                                   size_t* res_shape,
+                                   shape_elem_type* shape,
+                                   shape_elem_type* res_shape,
                                    const size_t res_ndim);
 
 /**
@@ -1022,7 +1022,7 @@ INP_DLLEXPORT void dpnp_invert_c(void* array1_in, void* result, size_t size);
  * @param [in]  ndim         Number of elements in shape.
  */
 template <typename _DataType>
-INP_DLLEXPORT void dpnp_fill_diagonal_c(void* array1_in, void* val, size_t* shape, const size_t ndim);
+INP_DLLEXPORT void dpnp_fill_diagonal_c(void* array1_in, void* val, shape_elem_type* shape, const size_t ndim);
 
 /**
  * @ingroup BACKEND_API
