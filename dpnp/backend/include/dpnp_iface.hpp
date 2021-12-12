@@ -738,7 +738,7 @@ INP_DLLEXPORT void dpnp_max_c(void* array1_in,
                               const size_t result_size,
                               const shape_elem_type* shape,
                               size_t ndim,
-                              const size_t* axis,
+                              const shape_elem_type* axis,
                               size_t naxis);
 
 /**
@@ -754,7 +754,7 @@ INP_DLLEXPORT void dpnp_max_c(void* array1_in,
  */
 template <typename _DataType, typename _ResultType>
 INP_DLLEXPORT void
-    dpnp_mean_c(void* array, void* result, const shape_elem_type* shape, size_t ndim, const size_t* axis, size_t naxis);
+    dpnp_mean_c(void* array, void* result, const shape_elem_type* shape, size_t ndim, const shape_elem_type* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
@@ -769,7 +769,7 @@ INP_DLLEXPORT void
  */
 template <typename _DataType, typename _ResultType>
 INP_DLLEXPORT void
-    dpnp_median_c(void* array, void* result, const shape_elem_type* shape, size_t ndim, const size_t* axis, size_t naxis);
+    dpnp_median_c(void* array, void* result, const shape_elem_type* shape, size_t ndim, const shape_elem_type* axis, size_t naxis);
 
 /**
  * @ingroup BACKEND_API
@@ -789,7 +789,7 @@ INP_DLLEXPORT void dpnp_min_c(void* array,
                               const size_t result_size,
                               const shape_elem_type* shape,
                               size_t ndim,
-                              const size_t* axis,
+                              const shape_elem_type* axis,
                               size_t naxis);
 
 /**
@@ -840,7 +840,7 @@ INP_DLLEXPORT void dpnp_around_c(const void* input_in, void* result_out, const s
  */
 template <typename _DataType, typename _ResultType>
 INP_DLLEXPORT void dpnp_std_c(
-    void* array, void* result, const shape_elem_type* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
+    void* array, void* result, const shape_elem_type* shape, size_t ndim, const shape_elem_type* axis, size_t naxis, size_t ddof);
 
 /**
  * @ingroup BACKEND_API
@@ -925,7 +925,7 @@ INP_DLLEXPORT void dpnp_triu_c(
  */
 template <typename _DataType, typename _ResultType>
 INP_DLLEXPORT void dpnp_var_c(
-    void* array, void* result, const shape_elem_type* shape, size_t ndim, const size_t* axis, size_t naxis, size_t ddof);
+    void* array, void* result, const shape_elem_type* shape, size_t ndim, const shape_elem_type* axis, size_t naxis, size_t ddof);
 
 /**
  * @ingroup BACKEND_API
