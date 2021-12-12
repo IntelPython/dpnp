@@ -416,7 +416,7 @@ INP_DLLEXPORT void dpnp_count_nonzero_c(void* array1_in, void* result1_out, size
  */
 template <typename _DataType>
 INP_DLLEXPORT void
-    dpnp_partition_c(void* array, void* array2, void* result, const size_t kth, const size_t* shape, const size_t ndim);
+    dpnp_partition_c(void* array, void* array2, void* result, const size_t kth, const shape_elem_type* shape, const size_t ndim);
 
 /**
  * @ingroup BACKEND_API
