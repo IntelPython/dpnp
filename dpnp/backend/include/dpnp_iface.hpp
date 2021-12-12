@@ -217,18 +217,18 @@ template <typename _DataType>
 INP_DLLEXPORT void dpnp_matmul_c(void* result_out,
                                  const size_t result_size,
                                  const size_t result_ndim,
-                                 const size_t* result_shape,
-                                 const size_t* result_strides,
+                                 const shape_elem_type* result_shape,
+                                 const shape_elem_type* result_strides,
                                  const void* input1_in,
                                  const size_t input1_size,
                                  const size_t input1_ndim,
-                                 const size_t* input1_shape,
-                                 const size_t* input1_strides,
+                                 const shape_elem_type* input1_shape,
+                                 const shape_elem_type* input1_strides,
                                  const void* input2_in,
                                  const size_t input2_size,
                                  const size_t input2_ndim,
-                                 const size_t* input2_shape,
-                                 const size_t* input2_strides);
+                                 const shape_elem_type* input2_shape,
+                                 const shape_elem_type* input2_strides);
 
 /**
  * @ingroup BACKEND_API
