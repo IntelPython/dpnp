@@ -385,10 +385,10 @@ Functions</h2></td></tr>
 <tr class="memitem:ga174e2a595bce08da1db3f330accc2aaf"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga174e2a595bce08da1db3f330accc2aaf">dpnp_full_like_c</a> (void *array_in, void *result, size_t size)</td></tr>
 <tr class="memdesc:ga174e2a595bce08da1db3f330accc2aaf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementation of full_like function.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga174e2a595bce08da1db3f330accc2aaf">More...</a><br /></td></tr>
 <tr class="separator:ga174e2a595bce08da1db3f330accc2aaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga20210dc02d40f3c085f736041a391ea8"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
-<tr class="memitem:ga20210dc02d40f3c085f736041a391ea8"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga20210dc02d40f3c085f736041a391ea8">dpnp_matmul_c</a> (void *result_out, const size_t result_size, const size_t result_ndim, const size_t *result_shape, const size_t *result_strides, const void *input1_in, const size_t input1_size, const size_t input1_ndim, const size_t *input1_shape, const size_t *input1_strides, const void *input2_in, const size_t input2_size, const size_t input2_ndim, const size_t *input2_shape, const size_t *input2_strides)</td></tr>
-<tr class="memdesc:ga20210dc02d40f3c085f736041a391ea8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Matrix multiplication.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#ga20210dc02d40f3c085f736041a391ea8">More...</a><br /></td></tr>
-<tr class="separator:ga20210dc02d40f3c085f736041a391ea8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gace1146827505a7f43492d9b794eb7333"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
+<tr class="memitem:gace1146827505a7f43492d9b794eb7333"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gace1146827505a7f43492d9b794eb7333">dpnp_matmul_c</a> (void *result_out, const size_t result_size, const size_t result_ndim, const shape_elem_type *result_shape, const shape_elem_type *result_strides, const void *input1_in, const size_t input1_size, const size_t input1_ndim, const shape_elem_type *input1_shape, const shape_elem_type *input1_strides, const void *input2_in, const size_t input2_size, const size_t input2_ndim, const shape_elem_type *input2_shape, const shape_elem_type *input2_strides)</td></tr>
+<tr class="memdesc:gace1146827505a7f43492d9b794eb7333"><td class="mdescLeft">&#160;</td><td class="mdescRight">Matrix multiplication.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gace1146827505a7f43492d9b794eb7333">More...</a><br /></td></tr>
+<tr class="separator:gace1146827505a7f43492d9b794eb7333"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa28fd9511cff726d0a28d22bf16315e3"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:gaa28fd9511cff726d0a28d22bf16315e3"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gaa28fd9511cff726d0a28d22bf16315e3">dpnp_nanvar_c</a> (void *array, void *mask_arr, void *result, const size_t result_size, size_t size)</td></tr>
 <tr class="memdesc:gaa28fd9511cff726d0a28d22bf16315e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the variance along the specified axis, while ignoring NaNs.  <a href="group___b_a_c_k_e_n_d___a_p_i.html#gaa28fd9511cff726d0a28d22bf16315e3">More...</a><br /></td></tr>
@@ -7094,8 +7094,8 @@ template&lt;typename _DataType_input , typename _DataType_output &gt; </div>
 
 </div>
 </div>
-<a id="ga20210dc02d40f3c085f736041a391ea8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga20210dc02d40f3c085f736041a391ea8">&#9670;&nbsp;</a></span>dpnp_matmul_c()</h2>
+<a id="gace1146827505a7f43492d9b794eb7333"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gace1146827505a7f43492d9b794eb7333">&#9670;&nbsp;</a></span>dpnp_matmul_c()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -7123,13 +7123,13 @@ template&lt;typename _DataType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const size_t *&#160;</td>
+          <td class="paramtype">const shape_elem_type *&#160;</td>
           <td class="paramname"><em>result_shape</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const size_t *&#160;</td>
+          <td class="paramtype">const shape_elem_type *&#160;</td>
           <td class="paramname"><em>result_strides</em>, </td>
         </tr>
         <tr>
@@ -7153,13 +7153,13 @@ template&lt;typename _DataType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const size_t *&#160;</td>
+          <td class="paramtype">const shape_elem_type *&#160;</td>
           <td class="paramname"><em>input1_shape</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const size_t *&#160;</td>
+          <td class="paramtype">const shape_elem_type *&#160;</td>
           <td class="paramname"><em>input1_strides</em>, </td>
         </tr>
         <tr>
@@ -7183,13 +7183,13 @@ template&lt;typename _DataType &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const size_t *&#160;</td>
+          <td class="paramtype">const shape_elem_type *&#160;</td>
           <td class="paramname"><em>input2_shape</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const size_t *&#160;</td>
+          <td class="paramtype">const shape_elem_type *&#160;</td>
           <td class="paramname"><em>input2_strides</em>&#160;</td>
         </tr>
         <tr>

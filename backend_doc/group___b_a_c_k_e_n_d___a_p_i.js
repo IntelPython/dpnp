@@ -74,7 +74,7 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_log1p_c", "group___b_a_c_k_e_n_d___a_p_i.html#gae36ec16bd4a480f2ce191752b997a7fe", null ],
     [ "dpnp_log2_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga6286bc2c5fb4b2bf5e09abae64f851a0", null ],
     [ "dpnp_log_c", "group___b_a_c_k_e_n_d___a_p_i.html#gab099c90096444b5e7b8c2815c2e41a26", null ],
-    [ "dpnp_matmul_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga20210dc02d40f3c085f736041a391ea8", null ],
+    [ "dpnp_matmul_c", "group___b_a_c_k_e_n_d___a_p_i.html#gace1146827505a7f43492d9b794eb7333", null ],
     [ "dpnp_matrix_rank_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga5567dc424276574ab4a302e38faf4a8b", null ],
     [ "dpnp_max_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga5378137d2a124aed2c3af84e592b5a9b", null ],
     [ "dpnp_maximum_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga2653fa35e11dd013124b0d946e10996a", null ],
